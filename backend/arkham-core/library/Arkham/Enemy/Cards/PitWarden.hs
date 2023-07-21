@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.PitWarden
-  ( pitWarden
-  , PitWarden(..)
-  ) where
+module Arkham.Enemy.Cards.PitWarden (
+  pitWarden,
+  PitWarden (..),
+) where
 
 import Arkham.Prelude
 
@@ -17,16 +17,18 @@ newtype PitWarden = PitWarden EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 pitWarden :: EnemyCard PitWarden
-pitWarden = enemyWith
-  PitWarden
-  Cards.pitWarden
-  (4, Static 4, 1)
-  (1, 1)
-  (spawnAtL ?~ SpawnAtFirst
-    [ SpawnLocation (LocationWithEnemy $ enemyIs Enemies.yig)
-    , SpawnPlaced (OutOfPlay PursuitZone)
-    ]
-  )
+pitWarden =
+  enemyWith
+    PitWarden
+    Cards.pitWarden
+    (4, Static 4, 1)
+    (1, 1)
+    ( spawnAtL
+        ?~ SpawnAtFirst
+          [ SpawnLocation (LocationWithEnemy $ enemyIs Enemies.yig)
+          , SpawnPlaced (OutOfPlay PursuitZone)
+          ]
+    )
 
 instance RunMessage PitWarden where
   runMessage msg (PitWarden attrs) = PitWarden <$> runMessage msg attrs

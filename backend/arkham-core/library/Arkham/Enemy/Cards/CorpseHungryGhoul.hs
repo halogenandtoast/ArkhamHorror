@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.CorpseHungryGhoul
-  ( corpseHungryGhoul
-  , CorpseHungryGhoul(..)
-  ) where
+module Arkham.Enemy.Cards.CorpseHungryGhoul (
+  corpseHungryGhoul,
+  CorpseHungryGhoul (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,12 +15,13 @@ newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 corpseHungryGhoul :: EnemyCard CorpseHungryGhoul
-corpseHungryGhoul = enemyWith
-  CorpseHungryGhoul
-  Cards.corpseHungryGhoul
-  (4, Static 3, 3)
-  (2, 2)
-  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Bedroom"))
+corpseHungryGhoul =
+  enemyWith
+    CorpseHungryGhoul
+    Cards.corpseHungryGhoul
+    (4, Static 3, 3)
+    (2, 2)
+    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Bedroom"))
 
 instance RunMessage CorpseHungryGhoul where
   runMessage msg (CorpseHungryGhoul attrs) =

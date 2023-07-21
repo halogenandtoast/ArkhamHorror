@@ -1,18 +1,18 @@
-module Arkham.Agenda.Cards.HorrorsUnleashed
-  ( HorrorsUnleashed(..)
-  , horrorsUnleashed
-  ) where
+module Arkham.Agenda.Cards.HorrorsUnleashed (
+  HorrorsUnleashed (..),
+  horrorsUnleashed,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
-import Arkham.Matcher hiding ( ChosenRandomLocation )
+import Arkham.Matcher hiding (ChosenRandomLocation)
 import Arkham.Message
 import Arkham.Modifier qualified as Modifier
 import Arkham.Phase
@@ -22,7 +22,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype HorrorsUnleashed = HorrorsUnleashed AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 horrorsUnleashed :: AgendaCard HorrorsUnleashed
@@ -45,18 +45,22 @@ instance RunMessage HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      broodOfYogSothoth <- selectListMap EnemyTarget
-        $ EnemyWithTitle "Brood of Yog-Sothoth"
-      a <$ when
-        (notNull broodOfYogSothoth)
-        (push $ chooseOneAtATime
-          leadInvestigatorId
-          [ TargetLabel target [ChooseRandomLocation target mempty]
-          | target <- broodOfYogSothoth
-          ]
-        )
+      broodOfYogSothoth <-
+        selectListMap EnemyTarget $
+          EnemyWithTitle "Brood of Yog-Sothoth"
+      a
+        <$ when
+          (notNull broodOfYogSothoth)
+          ( push $
+              chooseOneAtATime
+                leadInvestigatorId
+                [ TargetLabel target [ChooseRandomLocation target mempty]
+                | target <- broodOfYogSothoth
+                ]
+          )
     ChosenRandomLocation target@(EnemyTarget _) lid ->
       a <$ push (MoveToward target (LocationWithId lid))
-    AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 1)
+    AdvanceAgenda aid
+      | aid == agendaId attrs && onSide B attrs ->
+          a <$ push (ScenarioResolution $ Resolution 1)
     _ -> HorrorsUnleashed <$> runMessage msg attrs

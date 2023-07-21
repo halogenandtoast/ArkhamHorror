@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.EntryHall
-  ( entryHall
-  , EntryHall(..)
-  ) where
+module Arkham.Location.Cards.EntryHall (
+  entryHall,
+  EntryHall (..),
+) where
 
 import Arkham.Prelude
 
@@ -17,14 +17,15 @@ newtype EntryHall = EntryHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entryHall :: LocationCard EntryHall
-entryHall = locationWith
-  EntryHall
-  Cards.entryHall
-  2
-  (Static 0)
-  ((connectedMatchersL <>~ [LocationWithTrait GroundFloor])
-  . (revealedConnectedMatchersL <>~ [LocationWithTrait GroundFloor])
-  )
+entryHall =
+  locationWith
+    EntryHall
+    Cards.entryHall
+    2
+    (Static 0)
+    ( (connectedMatchersL <>~ [LocationWithTrait GroundFloor])
+        . (revealedConnectedMatchersL <>~ [LocationWithTrait GroundFloor])
+    )
 
 instance HasAbilities EntryHall where
   getAbilities (EntryHall attrs) = withResignAction attrs []

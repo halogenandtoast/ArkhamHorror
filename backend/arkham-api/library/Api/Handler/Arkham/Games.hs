@@ -129,12 +129,12 @@ getApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   games <- runDB $ select $ do
     (players :& games) <-
-      from
-        $ table @ArkhamPlayer
+      from $
+        table @ArkhamPlayer
           `InnerJoin` table @ArkhamGame
-        `on` ( \(players :& games) ->
-                players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
-             )
+            `on` ( \(players :& games) ->
+                    players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
+                 )
     where_ (players ^. ArkhamPlayerUserId ==. val userId)
     orderBy [desc $ games ^. ArkhamGameUpdatedAt]
     pure games
@@ -167,7 +167,7 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
       (SomeRecordableType RecordableMemento) ->
         let entries = map (toEntry @Memento) vs
         in  setCampaignLogRecorded k entries cl
-  toEntry :: forall a. (Recordable a) => SetRecordedEntry -> SomeRecorded
+  toEntry :: forall a. Recordable a => SetRecordedEntry -> SomeRecorded
   toEntry (SetAsRecorded e) = case fromJSON @a e of
     Success a -> recorded a
     Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
@@ -259,7 +259,7 @@ makeCampaignLog settings =
     case rt of
       (SomeRecordableType RecordableCardCode) -> map (toEntry @CardCode) entries
       (SomeRecordableType RecordableMemento) -> map (toEntry @Memento) entries
-  toEntry :: forall a. (Recordable a) => CampaignRecordedEntry -> SomeRecorded
+  toEntry :: forall a. Recordable a => CampaignRecordedEntry -> SomeRecorded
   toEntry (CampaignEntryRecorded e) = case fromJSON @a e of
     Success a -> recorded a
     Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
@@ -508,7 +508,7 @@ newtype RawGameJsonPut = RawGameJsonPut
   deriving anyclass (FromJSON)
 
 handleMessageLog
-  :: (MonadIO m) => IORef [Text] -> TChan BSL.ByteString -> Text -> m ()
+  :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> Text -> m ()
 handleMessageLog logRef writeChannel msg = liftIO $ do
   atomicModifyIORef' logRef (\logs -> (logs <> [msg], ()))
   atomically $ writeTChan writeChannel (encode $ GameMessage msg)

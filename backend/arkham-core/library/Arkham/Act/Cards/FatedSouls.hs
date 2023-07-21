@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.FatedSouls
-  ( FatedSouls(..)
-  , fatedSouls
-  ) where
+module Arkham.Act.Cards.FatedSouls (
+  FatedSouls (..),
+  fatedSouls,
+) where
 
 import Arkham.Prelude
 

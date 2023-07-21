@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.RuinsOfEztli
-  ( ruinsOfEztli
-  , RuinsOfEztli(..)
-  ) where
+module Arkham.Location.Cards.RuinsOfEztli (
+  ruinsOfEztli,
+  RuinsOfEztli (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,16 +22,17 @@ ruinsOfEztli :: LocationCard RuinsOfEztli
 ruinsOfEztli = location RuinsOfEztli Cards.ruinsOfEztli 3 (PerPlayer 2)
 
 instance HasAbilities RuinsOfEztli where
-  getAbilities (RuinsOfEztli attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1
-      $ ForcedAbility
-      $ SkillTestResult
-          Timing.After
-          You
-          (WhileInvestigating $ LocationWithId $ toId attrs)
-      $ FailureResult AnyValue
-    ]
+  getAbilities (RuinsOfEztli attrs) =
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+          $ FailureResult AnyValue
+      ]
 
 instance RunMessage RuinsOfEztli where
   runMessage msg l@(RuinsOfEztli attrs) = case msg of

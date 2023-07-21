@@ -8,143 +8,157 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.Name
-import Arkham.Trait hiding ( Supply )
+import Arkham.Trait hiding (Supply)
 
 investigator :: CardCode -> Name -> ClassSymbol -> [Trait] -> CardDef
-investigator cardCode name classSymbol traits = CardDef
-  { cdCardCode = cardCode
-  , cdName = name
-  , cdRevealedName = Nothing
-  , cdCost = Nothing
-  , cdAdditionalCost = Nothing
-  , cdLevel = 0
-  , cdCardType = InvestigatorType
-  , cdCardSubType = Nothing
-  , cdClassSymbols = singleton classSymbol
-  , cdSkills = mempty
-  , cdCardTraits = setFromList traits
-  , cdRevealedCardTraits = mempty
-  , cdKeywords = mempty
-  , cdFastWindow = Nothing
-  , cdActions = []
-  , cdRevelation = False
-  , cdVictoryPoints = Nothing
-  , cdVengeancePoints = Nothing
-  , cdCriteria = mempty
-  , cdOverrideActionPlayableIfCriteriaMet = False
-  , cdCommitRestrictions = mempty
-  , cdAttackOfOpportunityModifiers = mempty
-  , cdPermanent = False
-  , cdEncounterSet = Nothing
-  , cdEncounterSetQuantity = Nothing
-  , cdUnique = True
-  , cdDoubleSided = False
-  , cdLimits = []
-  , cdExceptional = False
-  , cdUses = NoUses
-  , cdPlayableFromDiscard = False
-  , cdStage = Nothing
-  , cdSlots = []
-  , cdCardInHandEffects = False
-  , cdCardInDiscardEffects = False
-  , cdCardInSearchEffects = False
-  , cdAlternateCardCodes = []
-  , cdArt = unCardCode cardCode
-  , cdLocationSymbol = Nothing
-  , cdLocationRevealedSymbol = Nothing
-  , cdLocationConnections = []
-  , cdLocationRevealedConnections = []
-  , cdPurchaseMentalTrauma = Nothing
-  , cdCanReplace = True
-  , cdDeckRestrictions = []
-  }
+investigator cardCode name classSymbol traits =
+  CardDef
+    { cdCardCode = cardCode
+    , cdName = name
+    , cdRevealedName = Nothing
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType = InvestigatorType
+    , cdCardSubType = Nothing
+    , cdClassSymbols = singleton classSymbol
+    , cdSkills = mempty
+    , cdCardTraits = setFromList traits
+    , cdRevealedCardTraits = mempty
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = []
+    , cdRevelation = False
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = Nothing
+    , cdEncounterSetQuantity = Nothing
+    , cdUnique = True
+    , cdDoubleSided = False
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Nothing
+    , cdSlots = []
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
+    , cdArt = unCardCode cardCode
+    , cdLocationSymbol = Nothing
+    , cdLocationRevealedSymbol = Nothing
+    , cdLocationConnections = []
+    , cdLocationRevealedConnections = []
+    , cdPurchaseMentalTrauma = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    }
 
 allInvestigatorCards :: Map CardCode CardDef
-allInvestigatorCards = mapFromList $ concatMap
-  toCardCodePairs
-  [ rolandBanks
-  , daisyWalker
-  , skidsOToole
-  , agnesBaker
-  , wendyAdams
-  , zoeySamaras
-  , rexMurphy
-  , jennyBarnes
-  , jimCulver
-  , ashcanPete
-  , markHarrigan
-  , minhThiPhan
-  , sefinaRousseau
-  , akachiOnyele
-  , williamYorick
-  , lolaHayes
-  , leoAnderson
-  , ursulaDowns
-  , finnEdwards
-  , fatherMateo
-  , calvinWright
-  , carolynFern
-  , joeDiamond
-  , prestonFairmont
-  , dianaStanley
-  , ritaYoung
-  , marieLambeau
-  , dexterDrake
-  , normanWithers
-  , nathanielCho
-  , harveyWalters
-  , winifredHabbamock
-  , jacquelineFine
-  , stellaClark
-  , daisyWalkerParallel
-  ]
+allInvestigatorCards =
+  mapFromList $
+    concatMap
+      toCardCodePairs
+      [ rolandBanks
+      , daisyWalker
+      , skidsOToole
+      , agnesBaker
+      , wendyAdams
+      , zoeySamaras
+      , rexMurphy
+      , jennyBarnes
+      , jimCulver
+      , ashcanPete
+      , markHarrigan
+      , minhThiPhan
+      , sefinaRousseau
+      , akachiOnyele
+      , williamYorick
+      , lolaHayes
+      , leoAnderson
+      , ursulaDowns
+      , finnEdwards
+      , fatherMateo
+      , calvinWright
+      , carolynFern
+      , joeDiamond
+      , prestonFairmont
+      , dianaStanley
+      , ritaYoung
+      , marieLambeau
+      , dexterDrake
+      , normanWithers
+      , nathanielCho
+      , harveyWalters
+      , winifredHabbamock
+      , jacquelineFine
+      , stellaClark
+      , daisyWalkerParallel
+      ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
-allEncounterInvestigatorCards = mapFromList $ concatMap
-  toCardCodePairs
-  [ bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite ]
+allEncounterInvestigatorCards =
+  mapFromList $
+    concatMap
+      toCardCodePairs
+      [bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite]
 
 withAlternate :: CardCode -> CardDef -> CardDef
 withAlternate ccode = withAlternates [ccode]
 
 withAlternates :: [CardCode] -> CardDef -> CardDef
-withAlternates ccodes def = def { cdAlternateCardCodes = ccodes }
+withAlternates ccodes def = def {cdAlternateCardCodes = ccodes}
 
 rolandBanks :: CardDef
-rolandBanks = withAlternates ["01501", "98004"] $ investigator
-  "01001"
-  ("Roland Banks" <:> "The Fed")
-  Guardian
-  [Agency, Detective]
+rolandBanks =
+  withAlternates ["01501", "98004"] $
+    investigator
+      "01001"
+      ("Roland Banks" <:> "The Fed")
+      Guardian
+      [Agency, Detective]
 
 daisyWalker :: CardDef
-daisyWalker = withAlternate "01502" $ investigator
-  "01002"
-  ("Daisy Walker" <:> "The Librarian")
-  Seeker
-  [Miskatonic]
+daisyWalker =
+  withAlternate "01502" $
+    investigator
+      "01002"
+      ("Daisy Walker" <:> "The Librarian")
+      Seeker
+      [Miskatonic]
 
 skidsOToole :: CardDef
-skidsOToole = withAlternate "01503" $ investigator
-  "01003"
-  ("\"Skids\" O'Toole" <:> "The Ex-Con")
-  Rogue
-  [Criminal]
+skidsOToole =
+  withAlternate "01503" $
+    investigator
+      "01003"
+      ("\"Skids\" O'Toole" <:> "The Ex-Con")
+      Rogue
+      [Criminal]
 
 agnesBaker :: CardDef
-agnesBaker = withAlternate "01504"
-  $ investigator "01004" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]
+agnesBaker =
+  withAlternate "01504" $
+    investigator "01004" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]
 
 wendyAdams :: CardDef
-wendyAdams = withAlternate "01505"
-  $ investigator "01005" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter]
+wendyAdams =
+  withAlternate "01505" $
+    investigator "01005" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter]
 
 zoeySamaras :: CardDef
-zoeySamaras = investigator
-  "02001"
-  ("Zoey Samaras" <:> "The Chef")
-  Guardian
-  [Believer, Hunter]
+zoeySamaras =
+  investigator
+    "02001"
+    ("Zoey Samaras" <:> "The Chef")
+    Guardian
+    [Believer, Hunter]
 
 rexMurphy :: CardDef
 rexMurphy =
@@ -179,22 +193,24 @@ akachiOnyele =
   investigator "03004" ("Akachi Onyele" <:> "The Shaman") Mystic [Sorcerer]
 
 williamYorick :: CardDef
-williamYorick = investigator
-  "03005"
-  ("William Yorick" <:> "The Gravedigger")
-  Survivor
-  [Warden]
+williamYorick =
+  investigator
+    "03005"
+    ("William Yorick" <:> "The Gravedigger")
+    Survivor
+    [Warden]
 
 lolaHayes :: CardDef
 lolaHayes =
   investigator "03006" ("Lola Hayes" <:> "The Actress") Neutral [Performer]
 
 leoAnderson :: CardDef
-leoAnderson = investigator
-  "04001"
-  ("Leo Anderson" <:> "The Expedition Leader")
-  Guardian
-  [Veteran, Wayfarer]
+leoAnderson =
+  investigator
+    "04001"
+    ("Leo Anderson" <:> "The Expedition Leader")
+    Guardian
+    [Veteran, Wayfarer]
 
 ursulaDowns :: CardDef
 ursulaDowns =
@@ -205,144 +221,171 @@ finnEdwards =
   investigator "04003" ("Finn Edwards" <:> "The Bootlegger") Rogue [Criminal]
 
 fatherMateo :: CardDef
-fatherMateo = investigator
-  "04004"
-  ("Father Mateo" <:> "The Priest")
-  Mystic
-  [Believer, Warden]
+fatherMateo =
+  investigator
+    "04004"
+    ("Father Mateo" <:> "The Priest")
+    Mystic
+    [Believer, Warden]
 
 calvinWright :: CardDef
-calvinWright = investigator
-  "04005"
-  ("Calvin Wright" <:> "The Haunted")
-  Survivor
-  [Cursed, Drifter]
+calvinWright =
+  investigator
+    "04005"
+    ("Calvin Wright" <:> "The Haunted")
+    Survivor
+    [Cursed, Drifter]
 
 bodyOfAYithian :: CardDef
-bodyOfAYithian = (investigator
-  "04244"
-  ("Body of a Yithian" <:> "Captive in Another Form")
-  Neutral
-  [Monster, Yithian]) { cdUnique = False }
+bodyOfAYithian =
+  ( investigator
+      "04244"
+      ("Body of a Yithian" <:> "Captive in Another Form")
+      Neutral
+      [Monster, Yithian]
+  )
+    { cdUnique = False
+    }
 
 carolynFern :: CardDef
-carolynFern = withAlternate "98010" $ investigator
-  "05001"
-  ("Carolyn Fern" <:> "The Psychologist")
-  Guardian
-  [Miskatonic]
+carolynFern =
+  withAlternate "98010" $
+    investigator
+      "05001"
+      ("Carolyn Fern" <:> "The Psychologist")
+      Guardian
+      [Miskatonic]
 
 joeDiamond :: CardDef
-joeDiamond = investigator
-  "05002"
-  ("Joe Diamond" <:> "The Private Investigator")
-  Seeker
-  [Detective]
+joeDiamond =
+  investigator
+    "05002"
+    ("Joe Diamond" <:> "The Private Investigator")
+    Seeker
+    [Detective]
 
 prestonFairmont :: CardDef
-prestonFairmont = investigator
-  "05003"
-  ("Preston Fairmont" <:> "The Millionaire")
-  Rogue
-  [SilverTwilight, Socialite]
+prestonFairmont =
+  investigator
+    "05003"
+    ("Preston Fairmont" <:> "The Millionaire")
+    Rogue
+    [SilverTwilight, Socialite]
 
 dianaStanley :: CardDef
-dianaStanley = investigator
-  "05004"
-  ("Diana Stanley" <:> "The Redeemed Cultist")
-  Mystic
-  [Cultist, SilverTwilight]
+dianaStanley =
+  investigator
+    "05004"
+    ("Diana Stanley" <:> "The Redeemed Cultist")
+    Mystic
+    [Cultist, SilverTwilight]
 
 ritaYoung :: CardDef
-ritaYoung = investigator
-  "05005"
-  ("Rita Young" <:> "The Athlete")
-  Survivor
-  [Miskatonic]
+ritaYoung =
+  investigator
+    "05005"
+    ("Rita Young" <:> "The Athlete")
+    Survivor
+    [Miskatonic]
 
 marieLambeau :: CardDef
-marieLambeau = withAlternate "99001" $ investigator
-  "05006"
-  ("Marie Lambeau" <:> "The Entertainer")
-  Mystic
-  [Performer, Sorcerer]
+marieLambeau =
+  withAlternate "99001" $
+    investigator
+      "05006"
+      ("Marie Lambeau" <:> "The Entertainer")
+      Mystic
+      [Performer, Sorcerer]
 
 gavriellaMizrah :: CardDef
-gavriellaMizrah = investigator
-  "05046"
-  ("Gavriella Mizrah" <:> "Private Security")
-  Neutral
-  [Veteran]
+gavriellaMizrah =
+  investigator
+    "05046"
+    ("Gavriella Mizrah" <:> "Private Security")
+    Neutral
+    [Veteran]
 
 jeromeDavids :: CardDef
-jeromeDavids = investigator
-  "05047"
-  ("Jerome Davids" <:> "Josef's Secretary")
-  Neutral
-  [Assistant, SilverTwilight]
+jeromeDavids =
+  investigator
+    "05047"
+    ("Jerome Davids" <:> "Josef's Secretary")
+    Neutral
+    [Assistant, SilverTwilight]
 
 valentinoRivas :: CardDef
-valentinoRivas = investigator
-  "05048"
-  ("Valentino Rivas" <:> "Wealthy Philanthropist")
-  Neutral
-  [SilverTwilight, Socialite]
+valentinoRivas =
+  investigator
+    "05048"
+    ("Valentino Rivas" <:> "Wealthy Philanthropist")
+    Neutral
+    [SilverTwilight, Socialite]
 
 pennyWhite :: CardDef
-pennyWhite = investigator
-  "05049"
-  ("Penny White" <:> "Josef's Housekeeper")
-  Neutral
-  [Assistant]
+pennyWhite =
+  investigator
+    "05049"
+    ("Penny White" <:> "Josef's Housekeeper")
+    Neutral
+    [Assistant]
 
 dexterDrake :: CardDef
-dexterDrake = withAlternate "98016" $ investigator
-  "07004"
-  ("Dexter Drake" <:> "The Magician")
-  Mystic
-  [Sorcerer, Veteran]
+dexterDrake =
+  withAlternate "98016" $
+    investigator
+      "07004"
+      ("Dexter Drake" <:> "The Magician")
+      Mystic
+      [Sorcerer, Veteran]
 
 normanWithers :: CardDef
-normanWithers = withAlternate "98007" $ investigator
-  "08004"
-  ("Norman Withers" <:> "The Astronomer")
-  Seeker
-  [Miskatonic]
+normanWithers =
+  withAlternate "98007" $
+    investigator
+      "08004"
+      ("Norman Withers" <:> "The Astronomer")
+      Seeker
+      [Miskatonic]
 
 nathanielCho :: CardDef
-nathanielCho = investigator
-  "60101"
-  ("Nathanial Cho" <:> "The Boxer")
-  Guardian
-  [Criminal, Warden]
+nathanielCho =
+  investigator
+    "60101"
+    ("Nathanial Cho" <:> "The Boxer")
+    Guardian
+    [Criminal, Warden]
 
 harveyWalters :: CardDef
-harveyWalters = investigator
-  "60201"
-  ("Harvey Walters" <:> "The Professor")
-  Seeker
-  [Miskatonic]
+harveyWalters =
+  investigator
+    "60201"
+    ("Harvey Walters" <:> "The Professor")
+    Seeker
+    [Miskatonic]
 
 winifredHabbamock :: CardDef
-winifredHabbamock = investigator
-  "60301"
-  ("Winifred Habbamock" <:> "The Aviatrix")
-  Rogue
-  [Criminal]
+winifredHabbamock =
+  investigator
+    "60301"
+    ("Winifred Habbamock" <:> "The Aviatrix")
+    Rogue
+    [Criminal]
 
 jacquelineFine :: CardDef
-jacquelineFine = investigator
-  "60401"
-  ("Jacqueline Fine" <:> "The Psychic")
-  Mystic
-  [Clairvoyant]
+jacquelineFine =
+  investigator
+    "60401"
+    ("Jacqueline Fine" <:> "The Psychic")
+    Mystic
+    [Clairvoyant]
 
 stellaClark :: CardDef
-stellaClark = investigator
-  "60501"
-  ("Stella Clark" <:> "The Letter Carrier")
-  Survivor
-  [Chosen, Civic]
+stellaClark =
+  investigator
+    "60501"
+    ("Stella Clark" <:> "The Letter Carrier")
+    Survivor
+    [Chosen, Civic]
 
 daisyWalkerParallel :: CardDef
 daisyWalkerParallel =

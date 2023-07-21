@@ -1,13 +1,13 @@
-module Arkham.Enemy.Cards.SilverTwilightAcolyte
-  ( SilverTwilightAcolyte(..)
-  , silverTwilightAcolyte
-  ) where
+module Arkham.Enemy.Cards.SilverTwilightAcolyte (
+  SilverTwilightAcolyte (..),
+  silverTwilightAcolyte,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
@@ -18,22 +18,24 @@ newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 silverTwilightAcolyte :: EnemyCard SilverTwilightAcolyte
-silverTwilightAcolyte = enemyWith
-  SilverTwilightAcolyte
-  Cards.silverTwilightAcolyte
-  (2, Static 3, 3)
-  (1, 0)
-  (\a -> a & preyL .~ BearerOf (toId a))
+silverTwilightAcolyte =
+  enemyWith
+    SilverTwilightAcolyte
+    Cards.silverTwilightAcolyte
+    (2, Static 3, 3)
+    (1, 0)
+    (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasAbilities SilverTwilightAcolyte where
-  getAbilities (SilverTwilightAcolyte a) = withBaseAbilities
-    a
-    [ mkAbility a 1
-      $ ForcedAbility
-      $ EnemyAttacks Timing.After Anyone AnyEnemyAttack
-      $ EnemyWithId
-      $ toId a
-    ]
+  getAbilities (SilverTwilightAcolyte a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            EnemyAttacks Timing.After Anyone AnyEnemyAttack $
+              EnemyWithId $
+                toId a
+      ]
 
 instance RunMessage SilverTwilightAcolyte where
   runMessage msg e@(SilverTwilightAcolyte attrs) = case msg of

@@ -1,6 +1,6 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module TestImport (
   module TestImport,
@@ -9,14 +9,14 @@ module TestImport (
 
 import Application (makeFoundation, makeLogWare)
 import Database.Persist as X hiding (get)
-import Database.Persist.Sql
-  ( SqlPersistM
-  , connEscapeName
-  , rawExecute
-  , rawSql
-  , runSqlPersistMPool
-  , unSingle
-  )
+import Database.Persist.Sql (
+  SqlPersistM,
+  connEscapeName,
+  rawExecute,
+  rawSql,
+  runSqlPersistMPool,
+  unSingle,
+ )
 import Foundation as X
 import Model as X
 import Relude

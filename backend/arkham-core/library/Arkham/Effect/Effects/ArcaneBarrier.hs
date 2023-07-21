@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.ArcaneBarrier
-  ( ArcaneBarrier(..)
-  , arcaneBarrier
-  ) where
+module Arkham.Effect.Effects.ArcaneBarrier (
+  ArcaneBarrier (..),
+  arcaneBarrier,
+) where
 
 import Arkham.Prelude
 
@@ -22,30 +22,31 @@ instance RunMessage ArcaneBarrier where
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId -> do
       push $ beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) SkillWillpower 4
       pure e
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        let
-          moveMessages = case effectMetadata of
-            Just (EffectMessages msgs) -> msgs
-            _ -> error "messages must be supplied"
-        e <$ pushAll
-          [ chooseOne
-            iid
-            [ Label "Cancel Move" []
-            , Label
-              "Discard top 5 cards of your deck"
-              (DiscardTopOfDeck iid 5 effectSource Nothing : moveMessages)
-            ]
-          , DisableEffect effectId
-          ]
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+          let
+            moveMessages = case effectMetadata of
+              Just (EffectMessages msgs) -> msgs
+              _ -> error "messages must be supplied"
+          e
+            <$ pushAll
+              [ chooseOne
+                  iid
+                  [ Label "Cancel Move" []
+                  , Label
+                      "Discard top 5 cards of your deck"
+                      (DiscardTopOfDeck iid 5 effectSource Nothing : moveMessages)
+                  ]
+              , DisableEffect effectId
+              ]
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        let
-          moveMessages = case effectMetadata of
-            Just (EffectMessages msgs) -> msgs
-            _ -> error "messages must be supplied"
-        case effectSource of
-          TreacherySource tid ->
-            e <$ pushAll (Discard effectSource (TreacheryTarget tid) : moveMessages)
-          _ -> error "Has to be a treachery source"
+          let
+            moveMessages = case effectMetadata of
+              Just (EffectMessages msgs) -> msgs
+              _ -> error "messages must be supplied"
+          case effectSource of
+            TreacherySource tid ->
+              e <$ pushAll (Discard effectSource (TreacheryTarget tid) : moveMessages)
+            _ -> error "Has to be a treachery source"
     _ -> ArcaneBarrier <$> runMessage msg attrs

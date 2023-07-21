@@ -34,8 +34,8 @@ import System.Directory (doesFileExist)
 import System.Environment (getEnvironment)
 import System.Exit (exitSuccess)
 import System.Log.FastLogger (LoggerSet)
-import System.Posix.Signals (Handler(Catch), installHandler, sigINT)
-import Yesod.Core.Types (Logger(Logger))
+import System.Posix.Signals (Handler (Catch), installHandler, sigINT)
+import Yesod.Core.Types (Logger (Logger))
 
 -- | Location of the default config file.
 configSettingsYml :: FilePath

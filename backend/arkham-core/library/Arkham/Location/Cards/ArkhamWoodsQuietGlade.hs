@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.ArkhamWoodsQuietGlade
-  ( ArkhamWoodsQuietGlade(..)
-  , arkhamWoodsQuietGlade
-  ) where
+module Arkham.Location.Cards.ArkhamWoodsQuietGlade (
+  ArkhamWoodsQuietGlade (..),
+  arkhamWoodsQuietGlade,
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Location.Cards qualified as Cards ( arkhamWoodsQuietGlade )
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsQuietGlade)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -24,22 +24,24 @@ arkhamWoodsQuietGlade =
   location ArkhamWoodsQuietGlade Cards.arkhamWoodsQuietGlade 1 (Static 0)
 
 instance HasAbilities ArkhamWoodsQuietGlade where
-  getAbilities (ArkhamWoodsQuietGlade attrs) | locationRevealed attrs =
-    withBaseAbilities attrs
-      $ [ limitedAbility (PlayerLimit PerTurn 1)
-          $ restrictedAbility
-              attrs
-              1
-              (Here <> InvestigatorExists
-                (AnyInvestigator
-                  [ HealableInvestigator (toSource attrs) HorrorType You
-                  , HealableInvestigator (toSource attrs) DamageType You
-                  ]
+  getAbilities (ArkhamWoodsQuietGlade attrs)
+    | locationRevealed attrs =
+        withBaseAbilities attrs $
+          [ limitedAbility (PlayerLimit PerTurn 1)
+              $ restrictedAbility
+                attrs
+                1
+                ( Here
+                    <> InvestigatorExists
+                      ( AnyInvestigator
+                          [ HealableInvestigator (toSource attrs) HorrorType You
+                          , HealableInvestigator (toSource attrs) DamageType You
+                          ]
+                      )
                 )
-              )
-          $ ActionAbility Nothing
-          $ ActionCost 1
-        ]
+              $ ActionAbility Nothing
+              $ ActionCost 1
+          ]
   getAbilities (ArkhamWoodsQuietGlade attrs) = getAbilities attrs
 
 instance RunMessage ArkhamWoodsQuietGlade where
@@ -48,10 +50,10 @@ instance RunMessage ArkhamWoodsQuietGlade where
       UseCardAbility iid (LocationSource lid) 1 _ _ | lid == locationId -> do
         mHealHorror <- getHealHorrorMessage attrs 1 iid
         canHealDamage <- canHaveDamageHealed attrs iid
-        pushAll
-          $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
-            | canHealDamage
-            ]
-          <> maybeToList mHealHorror
+        pushAll $
+          [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
+          | canHealDamage
+          ]
+            <> maybeToList mHealHorror
         pure l
       _ -> ArkhamWoodsQuietGlade <$> runMessage msg attrs

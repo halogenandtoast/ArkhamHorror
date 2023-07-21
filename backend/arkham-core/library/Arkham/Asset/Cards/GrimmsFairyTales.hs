@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.GrimmsFairyTales
-  ( grimmsFairyTales
-  , GrimmsFairyTales(..)
-  ) where
+module Arkham.Asset.Cards.GrimmsFairyTales (
+  grimmsFairyTales,
+  GrimmsFairyTales (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype GrimmsFairyTales = GrimmsFairyTales AssetAttrs
@@ -27,20 +27,20 @@ instance HasAbilities GrimmsFairyTales where
   getAbilities (GrimmsFairyTales a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (SkillTestResult
-                Timing.After
-                (HealableInvestigator
+          ( SkillTestResult
+              Timing.After
+              ( HealableInvestigator
                   (toSource a)
                   HorrorType
                   (InvestigatorAt YourLocation)
-                )
-                AnySkillTest
-            $ FailureResult
-            $ AtLeast
-            $ Static 2
-            )
+              )
+              AnySkillTest
+              $ FailureResult
+              $ AtLeast
+              $ Static 2
+          )
         $ ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Secret 1
+          <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 toInvestigator :: [Window] -> InvestigatorId

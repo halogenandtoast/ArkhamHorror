@@ -1,11 +1,11 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# OPTIONS_GHC -Wno-missing-deriving-strategies #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
@@ -15,23 +15,29 @@ import Import.NoFoundation
 
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
-import Data.Aeson (Result(Success), fromJSON)
+import Data.Aeson (Result (Success), fromJSON)
 import Data.ByteString.Lazy qualified as BSL
-import Database.Persist.Sql
-  (ConnectionPool, SqlBackend, SqlPersistT, runSqlPool)
-import Network.HTTP.Client.Conduit (HasHttpManager(..), Manager)
+import Database.Persist.Sql (
+  ConnectionPool,
+  SqlBackend,
+  SqlPersistT,
+  runSqlPool,
+ )
+import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
 
 import Orphans ()
 
--- | The foundation datatype for your application. This can be a good place to
--- keep settings and values requiring initialization before your application
--- starts running, such as database connections. Every handler will have
--- access to the data present here.
+{- | The foundation datatype for your application. This can be a good place to
+keep settings and values requiring initialization before your application
+starts running, such as database connections. Every handler will have
+access to the data present here.
+-}
 data App = App
   { appSettings :: AppSettings
-  , appConnPool :: ConnectionPool -- ^ Database connection pool.
+  , appConnPool :: ConnectionPool
+  -- ^ Database connection pool.
   , appHttpManager :: Manager
   , appLogger :: Logger
   , appGameChannels :: !(IORef (Map ArkhamGameId (TChan BSL.ByteString)))
@@ -53,13 +59,13 @@ data App = App
 mkYesodData "App" $(parseRoutesFile "config/routes")
 
 -- | A convenient synonym for database access functions.
-type DB a = forall (m :: Type -> Type) . (MonadIO m) => ReaderT SqlBackend m a
+type DB a = forall (m :: Type -> Type). MonadIO m => ReaderT SqlBackend m a
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
 instance Yesod App where
-    -- Controls the base of generated URLs. For more information on modifying,
-    -- see: https://github.com/yesodweb/yesod/wiki/Overriding-approot
+  -- Controls the base of generated URLs. For more information on modifying,
+  -- see: https://github.com/yesodweb/yesod/wiki/Overriding-approot
   approot :: Approot App
   approot = ApprootRequest $ \app req -> case appRoot $ appSettings app of
     Nothing -> getApprootText guessApproot app req
@@ -68,9 +74,11 @@ instance Yesod App where
   -- Store session data on the client in encrypted cookies,
   -- default session idle timeout is 120 minutes
   makeSessionBackend :: App -> IO (Maybe SessionBackend)
-  makeSessionBackend _ = Just <$> defaultClientSessionBackend
-    120    -- timeout in minutes
-    "config/client_session_key.aes"
+  makeSessionBackend _ =
+    Just
+      <$> defaultClientSessionBackend
+        120 -- timeout in minutes
+        "config/client_session_key.aes"
 
   -- Yesod Middleware allows you to run code before and after each handler function.
   -- The defaultYesodMiddleware adds the response header "Vary: Accept, Accept-Language" and performs authorization checks.
@@ -86,8 +94,10 @@ instance Yesod App where
   defaultLayout _ = pure ""
 
   isAuthorized
-    :: Route App  -- ^ The route the user is visiting.
-    -> Bool       -- ^ Whether or not this is a "write" request.
+    :: Route App
+    -- \^ The route the user is visiting.
+    -> Bool
+    -- \^ Whether or not this is a "write" request.
     -> Handler AuthResult
   -- Routes not requiring authentication.
   isAuthorized HealthR _ = pure Authorized
@@ -97,12 +107,12 @@ instance Yesod App where
   -- in development, and warnings and errors in production.
   shouldLogIO :: App -> LogSource -> LogLevel -> IO Bool
   shouldLogIO app _source level =
-    pure
-      $ appShouldLogAll (appSettings app)
-      || level
-      == LevelWarn
-      || level
-      == LevelError
+    pure $
+      appShouldLogAll (appSettings app)
+        || level
+        == LevelWarn
+        || level
+        == LevelError
 
   makeLogger :: App -> IO Logger
   makeLogger = pure . appLogger

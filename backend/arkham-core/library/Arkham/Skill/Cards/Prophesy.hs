@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Prophesy
-  ( prophesy
-  , Prophesy(..)
-  )
+module Arkham.Skill.Cards.Prophesy (
+  prophesy,
+  Prophesy (..),
+)
 where
 
 import Arkham.Prelude
@@ -25,16 +25,18 @@ instance HasModifiersFor Prophesy where
   getModifiersFor (CardIdTarget cid) (Prophesy attrs) | toCardId attrs == cid =
     do
       doom <- getDoomCount
-      pure $ toModifiers
-        attrs
-        [ AddSkillIcons $ if doom >= 6
-            then
-              [ WildIcon
-              , WildIcon
-              ]
-            else [WildIcon]
-        | doom >= 3
-        ]
+      pure $
+        toModifiers
+          attrs
+          [ AddSkillIcons $
+            if doom >= 6
+              then
+                [ WildIcon
+                , WildIcon
+                ]
+              else [WildIcon]
+          | doom >= 3
+          ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Prophesy where

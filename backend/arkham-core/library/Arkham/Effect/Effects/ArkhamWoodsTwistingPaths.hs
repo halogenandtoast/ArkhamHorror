@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
-  ( arkhamWoodsTwistingPaths
-  , ArkhamWoodsTwistingPaths(..)
-  ) where
+module Arkham.Effect.Effects.ArkhamWoodsTwistingPaths (
+  arkhamWoodsTwistingPaths,
+  ArkhamWoodsTwistingPaths (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,22 +23,26 @@ instance HasModifiersFor ArkhamWoodsTwistingPaths
 
 instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of
-    PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
+    PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
       do
-        arkhamWoodsTwistingPathsId <- getJustLocationIdByName
-          ("Arkham Woods" <:> "Twisting Paths")
+        arkhamWoodsTwistingPathsId <-
+          getJustLocationIdByName
+            ("Arkham Woods" <:> "Twisting Paths")
         let disable = DisableEffect (effectId attrs)
-        e <$ when
-          (lid == arkhamWoodsTwistingPathsId)
-          (case effectMetadata attrs of
-            Just (EffectMessages msgs) -> pushAll (msgs <> [disable])
-            _ -> push disable
-          )
-    FailedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
+        e
+          <$ when
+            (lid == arkhamWoodsTwistingPathsId)
+            ( case effectMetadata attrs of
+                Just (EffectMessages msgs) -> pushAll (msgs <> [disable])
+                _ -> push disable
+            )
+    FailedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
       do
-        arkhamWoodsTwistingPathsId <- getJustLocationIdByName
-          ("Arkham Woods" <:> "Twisting Paths")
-        e <$ when
-          (lid == arkhamWoodsTwistingPathsId)
-          (push $ DisableEffect $ effectId attrs)
+        arkhamWoodsTwistingPathsId <-
+          getJustLocationIdByName
+            ("Arkham Woods" <:> "Twisting Paths")
+        e
+          <$ when
+            (lid == arkhamWoodsTwistingPathsId)
+            (push $ DisableEffect $ effectId attrs)
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

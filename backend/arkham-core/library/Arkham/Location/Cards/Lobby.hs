@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Lobby
-  ( lobby
-  , Lobby(..)
-  ) where
+module Arkham.Location.Cards.Lobby (
+  lobby,
+  Lobby (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,28 +23,31 @@ lobby = location Lobby Cards.lobby 4 (Static 1)
 
 instance HasAbilities Lobby where
   getAbilities (Lobby attrs) =
-    withBaseAbilities attrs $ if locationRevealed attrs
-      then
-        [ restrictedAbility attrs 1 CanDrawCards
-        $ ForcedAbility
-        $ RevealLocation Timing.When Anyone
-        $ LocationWithId
-        $ toId attrs
-        , restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
-        ]
-      else []
+    withBaseAbilities attrs $
+      if locationRevealed attrs
+        then
+          [ restrictedAbility attrs 1 CanDrawCards $
+              ForcedAbility $
+                RevealLocation Timing.When Anyone $
+                  LocationWithId $
+                    toId attrs
+          , restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
+          ]
+        else []
 
 instance RunMessage Lobby where
   runMessage msg l@(Lobby attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      lobbyDoorwayCount <- selectCount
-        (LocationWithUnrevealedTitle "Lobby Doorway")
+      lobbyDoorwayCount <-
+        selectCount
+          (LocationWithUnrevealedTitle "Lobby Doorway")
       lobbyDoorways <-
         zip [lobbyDoorwayCount ..]
-        . take 2
-        <$> (shuffleM =<< selectList
-              (SetAsideCardMatch $ CardWithTitle "Lobby Doorway")
-            )
+          . take 2
+          <$> ( shuffleM
+                  =<< selectList
+                    (SetAsideCardMatch $ CardWithTitle "Lobby Doorway")
+              )
       msgs <- for lobbyDoorways \(idx, lobbyDoorway) -> do
         (locationId, placement) <- placeLocation lobbyDoorway
         pure [placement, SetLocationLabel locationId $ "lobbyDoorway" <> tshow (idx + 1)]

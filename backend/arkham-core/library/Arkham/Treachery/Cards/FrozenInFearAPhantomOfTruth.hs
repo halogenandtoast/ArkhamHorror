@@ -1,17 +1,17 @@
-module Arkham.Treachery.Cards.FrozenInFearAPhantomOfTruth
-  ( frozenInFearAPhantomOfTruth
-  , FrozenInFearAPhantomOfTruth(..)
-  ) where
+module Arkham.Treachery.Cards.FrozenInFearAPhantomOfTruth (
+  frozenInFearAPhantomOfTruth,
+  FrozenInFearAPhantomOfTruth (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Cards.FrozenInFear
+import Arkham.Treachery.Runner
 
 newtype FrozenInFearAPhantomOfTruth = FrozenInFearAPhantomOfTruth FrozenInFear
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, HasAbilities)
 
 frozenInFearAPhantomOfTruth :: TreacheryCard FrozenInFearAPhantomOfTruth

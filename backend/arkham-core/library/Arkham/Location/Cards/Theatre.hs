@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Theatre
-  ( theatre
-  , Theatre(..)
-  ) where
+module Arkham.Location.Cards.Theatre (
+  theatre,
+  Theatre (..),
+) where
 
 import Arkham.Prelude
 

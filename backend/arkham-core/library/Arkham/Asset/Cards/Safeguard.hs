@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Safeguard
-  ( safeguard
-  , Safeguard(..)
-  ) where
+module Arkham.Asset.Cards.Safeguard (
+  safeguard,
+  Safeguard (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype Safeguard = Safeguard AssetAttrs
@@ -26,7 +26,7 @@ instance HasAbilities Safeguard where
   getAbilities (Safeguard a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (Moves Timing.After NotYou AnySource YourLocation (ConnectedFrom YourLocation))
+          (Moves Timing.After NotYou AnySource YourLocation (ConnectedFrom YourLocation))
         $ ExhaustCost
         $ toTarget a
     ]

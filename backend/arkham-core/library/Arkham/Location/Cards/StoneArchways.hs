@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.StoneArchways
-  ( stoneArchways
-  , StoneArchways(..)
-  ) where
+module Arkham.Location.Cards.StoneArchways (
+  stoneArchways,
+  StoneArchways (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,49 +18,54 @@ import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Timing qualified as Timing
 
 newtype StoneArchways = StoneArchways LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stoneArchways :: LocationCard StoneArchways
-stoneArchways = locationWith
-  StoneArchways
-  Cards.stoneArchways
-  2
-  (Static 0)
-  ((connectsToL .~ adjacentLocations)
-  . (costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+stoneArchways =
+  locationWith
+    StoneArchways
+    Cards.stoneArchways
+    2
+    (Static 0)
+    ( (connectsToL .~ adjacentLocations)
+        . ( costToEnterUnrevealedL
+              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+          )
     )
-  )
 
 instance HasModifiersFor StoneArchways where
   getModifiersFor (LocationTarget lid) (StoneArchways attrs) = do
-    isUnrevealedAdjacent <- member lid <$> select
-      (UnrevealedLocation <> LocationMatchAny
-        [ LocationInDirection dir (LocationWithId $ toId attrs)
-        | dir <- [minBound .. maxBound]
-        ]
-      )
-    pure $ toModifiers attrs [ Blank | isUnrevealedAdjacent ]
+    isUnrevealedAdjacent <-
+      member lid
+        <$> select
+          ( UnrevealedLocation
+              <> LocationMatchAny
+                [ LocationInDirection dir (LocationWithId $ toId attrs)
+                | dir <- [minBound .. maxBound]
+                ]
+          )
+    pure $ toModifiers attrs [Blank | isUnrevealedAdjacent]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StoneArchways where
-  getAbilities (StoneArchways attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (StoneArchways attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
-        (Negate
-          (LocationExists
-          $ LocationInDirection RightOf (LocationWithId $ toId attrs)
-          )
+        ( Negate
+            ( LocationExists $
+                LocationInDirection RightOf (LocationWithId $ toId attrs)
+            )
         )
-      $ ForcedAbility
-      $ RevealLocation Timing.When Anyone
-      $ LocationWithId
-      $ toId attrs
-    | locationRevealed attrs
-    ]
+        $ ForcedAbility
+        $ RevealLocation Timing.When Anyone
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage StoneArchways where
   runMessage msg l@(StoneArchways attrs) = case msg of

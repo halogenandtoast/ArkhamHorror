@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.OrnateBow3
-  ( ornateBow3
-  , OrnateBow3(..)
-  ) where
+module Arkham.Asset.Cards.OrnateBow3 (
+  ornateBow3,
+  OrnateBow3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,18 +21,18 @@ ornateBow3 = asset OrnateBow3 Cards.ornateBow3
 
 instance HasAbilities OrnateBow3 where
   getAbilities (OrnateBow3 a) =
-    [ restrictedAbility a 1 ControlsThis
-      $ ActionAbilityWithSkill (Just Action.Fight) SkillAgility
-      $ ActionCost 1
-      <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbilityWithSkill (Just Action.Fight) SkillAgility $
+          ActionCost 1
+            <> UseCost (AssetWithId $ toId a) Ammo 1
     , restrictedAbility
         a
         2
-        (ControlsThis
-        <> AssetExists (AssetWithId (toId a) <> NotAsset (AssetWithUses Ammo))
+        ( ControlsThis
+            <> AssetExists (AssetWithId (toId a) <> NotAsset (AssetWithUses Ammo))
         )
-      $ ActionAbility Nothing
-      $ ActionCost 1
+        $ ActionAbility Nothing
+        $ ActionCost 1
     ]
 
 instance RunMessage OrnateBow3 where
@@ -40,16 +40,16 @@ instance RunMessage OrnateBow3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ skillTestModifiers
-          attrs
-          (InvestigatorTarget iid)
-          [DamageDealt 2, SkillModifier SkillAgility 2]
+            attrs
+            (InvestigatorTarget iid)
+            [DamageDealt 2, SkillModifier SkillAgility 2]
         , ChooseFightEnemy
-          iid
-          (toSource attrs)
-          Nothing
-          SkillAgility
-          mempty
-          False
+            iid
+            (toSource attrs)
+            Nothing
+            SkillAgility
+            mempty
+            False
         ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do

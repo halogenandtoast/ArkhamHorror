@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ClaspOfBlackOnyx
-  ( claspOfBlackOnyx
-  , ClaspOfBlackOnyx(..)
-  ) where
+module Arkham.Asset.Cards.ClaspOfBlackOnyx (
+  claspOfBlackOnyx,
+  ClaspOfBlackOnyx (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,9 +15,10 @@ newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
 
 instance HasModifiersFor ClaspOfBlackOnyx where
   getModifiersFor (InvestigatorHandTarget _) (ClaspOfBlackOnyx attrs) =
-    pure $ toModifiers
-      attrs
-      [IncreaseCostOf (NotCard $ CardWithTitle "Clasp of Black Onyx") 1]
+    pure $
+      toModifiers
+        attrs
+        [IncreaseCostOf (NotCard $ CardWithTitle "Clasp of Black Onyx") 1]
   getModifiersFor _ _ = pure []
 
 claspOfBlackOnyx :: AssetCard ClaspOfBlackOnyx

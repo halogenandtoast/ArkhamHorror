@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.EmergencyAid
-  ( emergencyAid
-  , EmergencyAid(..)
-  ) where
+module Arkham.Event.Cards.EmergencyAid (
+  emergencyAid,
+  EmergencyAid (..),
+) where
 
 import Arkham.Prelude
 
@@ -27,24 +27,27 @@ instance RunMessage EmergencyAid where
 
       choices <- flip mapMaybeM iids $ \iid' -> do
         healableAllies <-
-          selectList
-          $ HealableAsset (toSource attrs) DamageType
-          $ AllyAsset
-          <> assetControlledBy iid'
+          selectList $
+            HealableAsset (toSource attrs) DamageType $
+              AllyAsset
+                <> assetControlledBy iid'
         healable <- canHaveDamageHealed attrs iid'
 
-        pure $ if healable || notNull healableAllies
-          then Just $ targetLabel
-            iid'
-            [ chooseOrRunOne iid
-              $ [ targetLabel iid' [HealDamage (InvestigatorTarget iid') (toSource attrs) 2]
-                | healable
-                ]
-              <> [ targetLabel asset [HealDamage (AssetTarget asset) (toSource attrs) 2]
-                 | asset <- healableAllies
-                 ]
-            ]
-          else Nothing
+        pure $
+          if healable || notNull healableAllies
+            then
+              Just $
+                targetLabel
+                  iid'
+                  [ chooseOrRunOne iid $
+                      [ targetLabel iid' [HealDamage (InvestigatorTarget iid') (toSource attrs) 2]
+                      | healable
+                      ]
+                        <> [ targetLabel asset [HealDamage (AssetTarget asset) (toSource attrs) 2]
+                           | asset <- healableAllies
+                           ]
+                  ]
+            else Nothing
 
       pushAll [chooseOne iid choices]
       pure e

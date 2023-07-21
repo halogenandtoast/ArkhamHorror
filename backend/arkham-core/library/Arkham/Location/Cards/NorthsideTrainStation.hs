@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.NorthsideTrainStation
-  ( NorthsideTrainStation(..)
-  , northsideTrainStation
-  ) where
+module Arkham.Location.Cards.NorthsideTrainStation (
+  NorthsideTrainStation (..),
+  northsideTrainStation,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( northsideTrainStation )
+import Arkham.Location.Cards qualified as Cards (northsideTrainStation)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -25,23 +25,24 @@ northsideTrainStation =
 
 instance HasAbilities NorthsideTrainStation where
   getAbilities (NorthsideTrainStation attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-          $ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
-          $ ActionCost 1
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ limitedAbility (PlayerLimit PerGame 1) $
+        restrictedAbility attrs 1 Here $
+          ActionAbility Nothing $
+            ActionCost 1
+      | locationRevealed attrs
+      ]
 
 instance RunMessage NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationIds <- selectList $ LocationWithTrait Arkham
-      l <$ push
-        (chooseOne
-          iid
-          [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
-          | lid <- locationIds
-          ]
-        )
+      l
+        <$ push
+          ( chooseOne
+              iid
+              [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
+              | lid <- locationIds
+              ]
+          )
     _ -> NorthsideTrainStation <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BoxOffice
-  ( boxOffice
-  , BoxOffice(..)
-  ) where
+module Arkham.Location.Cards.BoxOffice (
+  boxOffice,
+  BoxOffice (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,17 +21,19 @@ boxOffice :: LocationCard BoxOffice
 boxOffice = location BoxOffice Cards.boxOffice 2 (Static 0)
 
 instance HasAbilities BoxOffice where
-  getAbilities (BoxOffice attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (GroupLimit PerGame 1)
-      $ restrictedAbility attrs 1 Here
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    | locationRevealed attrs
-    ]
+  getAbilities (BoxOffice attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (GroupLimit PerGame 1) $
+        restrictedAbility attrs 1 Here $
+          ActionAbility Nothing $
+            ActionCost 1
+      | locationRevealed attrs
+      ]
 
 instance RunMessage BoxOffice where
   runMessage msg l@(BoxOffice attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ pushAll [TakeResources iid 5 (toAbilitySource attrs 1) False, Remember StoleFromTheBoxOffice]
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l <$ pushAll [TakeResources iid 5 (toAbilitySource attrs 1) False, Remember StoleFromTheBoxOffice]
     _ -> BoxOffice <$> runMessage msg attrs

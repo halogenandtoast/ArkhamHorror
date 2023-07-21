@@ -17,14 +17,14 @@ import Data.Map.Strict qualified as Map
 withDeck :: ([a] -> [a]) -> Deck a -> Deck a
 withDeck f (Deck xs) = Deck (f xs)
 
-withDeckM :: (Functor f) => ([a] -> f [a]) -> Deck a -> f (Deck a)
+withDeckM :: Functor f => ([a] -> f [a]) -> Deck a -> f (Deck a)
 withDeckM f (Deck xs) = Deck <$> f xs
 
-removeEachFromDeck :: (HasCardDef a) => Deck a -> [CardDef] -> Deck a
+removeEachFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
 removeEachFromDeck deck removals = flip withDeck deck $ \cards ->
   foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards removals
 
-getDeck :: (HasGame m) => Deck.DeckSignifier -> m [Card]
+getDeck :: HasGame m => Deck.DeckSignifier -> m [Card]
 getDeck = \case
   Deck.InvestigatorDeck iid -> fieldMap InvestigatorDeck (map PlayerCard . unDeck) iid
   Deck.InvestigatorDiscard iid -> fieldMap InvestigatorDiscard (map PlayerCard) iid

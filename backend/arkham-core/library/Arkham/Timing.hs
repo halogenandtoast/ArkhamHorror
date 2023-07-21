@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Timing where
 
 import Arkham.Prelude

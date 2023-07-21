@@ -98,7 +98,8 @@ instance RunMessage ReturnToTheGathering where
           genCards
             [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
 
-        ReturnToTheGathering . TheGathering
+        ReturnToTheGathering
+          . TheGathering
           <$> runMessage
             msg
             ( attrs

@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.MarkHarrigan
-  ( markHarrigan
-  , MarkHarrigan(..)
-  ) where
+module Arkham.Investigator.Cards.MarkHarrigan (
+  markHarrigan,
+  MarkHarrigan (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,33 +18,34 @@ newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 markHarrigan :: InvestigatorCard MarkHarrigan
-markHarrigan = investigatorWith
-  MarkHarrigan
-  Cards.markHarrigan
-  Stats
-    { willpower = 3
-    , intellect = 2
-    , combat = 5
-    , agility = 3
-    , health = 9
-    , sanity = 5
-    }
-  (startsWithL .~ [Assets.sophieInLovingMemory])
+markHarrigan =
+  investigatorWith
+    MarkHarrigan
+    Cards.markHarrigan
+    Stats
+      { willpower = 3
+      , intellect = 2
+      , combat = 5
+      , agility = 3
+      , health = 9
+      , sanity = 5
+      }
+    (startsWithL .~ [Assets.sophieInLovingMemory])
 
 instance HasAbilities MarkHarrigan where
   getAbilities (MarkHarrigan attrs) =
     [ restrictedAbility
-          attrs
-          1
-          Self
-          (ReactionAbility
-            (OrWindowMatcher
-              [ DealtDamage Timing.When AnySource You
-              , AssetDealtDamage Timing.When AnySource (AssetControlledBy You)
-              ]
+        attrs
+        1
+        Self
+        ( ReactionAbility
+            ( OrWindowMatcher
+                [ DealtDamage Timing.When AnySource You
+                , AssetDealtDamage Timing.When AnySource (AssetControlledBy You)
+                ]
             )
             Free
-          )
+        )
         & (abilityLimitL .~ PlayerLimit PerPhase 1)
     ]
 

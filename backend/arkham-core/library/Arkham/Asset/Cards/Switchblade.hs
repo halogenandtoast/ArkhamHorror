@@ -1,13 +1,13 @@
-module Arkham.Asset.Cards.Switchblade
-  ( Switchblade(..)
-  , switchblade
-  ) where
+module Arkham.Asset.Cards.Switchblade (
+  Switchblade (..),
+  switchblade,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.SkillType
 
@@ -20,16 +20,18 @@ switchblade = asset Switchblade Cards.switchblade
 
 instance HasAbilities Switchblade where
   getAbilities (Switchblade a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 
 instance RunMessage Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
-    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
-      | n >= 2 && isSource attrs source
-      -> a <$ push
-        (skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1))
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
+    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget {} _ n
+      | n >= 2 && isSource attrs source ->
+          a
+            <$ push
+              (skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1))
     _ -> Switchblade <$> runMessage msg attrs

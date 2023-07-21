@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AlejandroVela
-  ( alejandroVela
-  , AlejandroVela(..)
-  ) where
+module Arkham.Asset.Cards.AlejandroVela (
+  alejandroVela,
+  AlejandroVela (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Trait
 
 newtype AlejandroVela = AlejandroVela AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alejandroVela :: AssetCard AlejandroVela
@@ -22,24 +22,24 @@ alejandroVela = ally AlejandroVela Cards.alejandroVela (2, 2)
 instance HasModifiersFor AlejandroVela where
   getModifiersFor (InvestigatorTarget iid) (AlejandroVela a)
     | controlledBy a iid = do
-      mTarget <- getSkillTestTarget
-      mAction <- getSkillTestAction
-      case (mTarget, mAction) of
-        (Just (LocationTarget lid), Just Action.Investigate) -> do
-          isAncient <- lid <=~> LocationWithTrait Ancient
-          pure $ toModifiers a [ AnySkillValue 1 | isAncient ]
-        _ -> pure []
+        mTarget <- getSkillTestTarget
+        mAction <- getSkillTestAction
+        case (mTarget, mAction) of
+          (Just (LocationTarget lid), Just Action.Investigate) -> do
+            isAncient <- lid <=~> LocationWithTrait Ancient
+            pure $ toModifiers a [AnySkillValue 1 | isAncient]
+          _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> OnLocation (LocationWithTrait Ancient))
+        a
+        1
+        (ControlsThis <> OnLocation (LocationWithTrait Ancient))
         $ ActionAbility Nothing
         $ ActionCost 1
-        <> ExhaustCost (toTarget a)
+          <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage AlejandroVela where

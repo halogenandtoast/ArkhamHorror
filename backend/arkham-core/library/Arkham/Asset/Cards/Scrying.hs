@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Scrying
-  ( Scrying(..)
-  , scrying
-  ) where
+module Arkham.Asset.Cards.Scrying (
+  Scrying (..),
+  scrying,
+) where
 
 import Arkham.Prelude
 
@@ -19,20 +19,23 @@ scrying = asset Scrying Cards.scrying
 
 instance HasAbilities Scrying where
   getAbilities (Scrying a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ Costs
-        [ ActionCost 1
-        , UseCost (AssetWithId $ toId a) Charge 1
-        , ExhaustCost $ toTarget a
-        ]
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility Nothing $
+          Costs
+            [ ActionCost 1
+            , UseCost (AssetWithId $ toId a) Charge 1
+            , ExhaustCost $ toTarget a
+            ]
     ]
 
 instance RunMessage Scrying where
   runMessage msg a@(Scrying attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds
-      push $ chooseOne
-        iid
-        [ TargetLabel
+      push $
+        chooseOne
+          iid
+          [ TargetLabel
             target
             [ Search
                 iid
@@ -42,7 +45,7 @@ instance RunMessage Scrying where
                 AnyCard
                 ReturnCards
             ]
-        | target <- EncounterDeckTarget : targets
-        ]
+          | target <- EncounterDeckTarget : targets
+          ]
       pure a
     _ -> Scrying <$> runMessage msg attrs

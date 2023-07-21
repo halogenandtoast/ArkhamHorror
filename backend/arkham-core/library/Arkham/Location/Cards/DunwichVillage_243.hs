@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.DunwichVillage_243
-  ( dunwichVillage_243
-  , DunwichVillage_243(..)
-  ) where
+module Arkham.Location.Cards.DunwichVillage_243 (
+  dunwichVillage_243,
+  DunwichVillage_243 (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Exception
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( dunwichVillage_243 )
+import Arkham.Location.Cards qualified as Cards (dunwichVillage_243)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
@@ -23,18 +23,20 @@ dunwichVillage_243 =
   location DunwichVillage_243 Cards.dunwichVillage_243 2 (Static 3)
 
 instance HasAbilities DunwichVillage_243 where
-  getAbilities (DunwichVillage_243 x) = withResignAction
-    x
-    [ restrictedAbility
+  getAbilities (DunwichVillage_243 x) =
+    withResignAction
+      x
+      [ restrictedAbility
         x
         1
-        (Here <> EnemyCriteria
-          (EnemyExists $ EnemyWithTitle "Brood of Yog-Sothoth")
+        ( Here
+            <> EnemyCriteria
+              (EnemyExists $ EnemyWithTitle "Brood of Yog-Sothoth")
         )
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    | locationRevealed x
-    ]
+        $ ActionAbility Nothing
+        $ ActionCost 1
+      | locationRevealed x
+      ]
 
 instance RunMessage DunwichVillage_243 where
   runMessage msg l@(DunwichVillage_243 attrs) = case msg of
@@ -43,13 +45,14 @@ instance RunMessage DunwichVillage_243 where
       when
         (null broodOfYogSothoth)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l <$ pushAll
-        [ chooseOne
+      l
+        <$ pushAll
+          [ chooseOne
             iid
             [ TargetLabel
                 (EnemyTarget eid)
                 [MoveToward (EnemyTarget eid) (LocationWithId $ toId attrs)]
             ]
-        | eid <- broodOfYogSothoth
-        ]
+          | eid <- broodOfYogSothoth
+          ]
     _ -> DunwichVillage_243 <$> runMessage msg attrs

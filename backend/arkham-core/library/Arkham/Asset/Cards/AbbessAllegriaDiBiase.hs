@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AbbessAllegriaDiBiase
-  ( abbessAllegriaDiBiase
-  , AbbessAllegriaDiBiase(..)
-  ) where
+module Arkham.Asset.Cards.AbbessAllegriaDiBiase (
+  abbessAllegriaDiBiase,
+  AbbessAllegriaDiBiase (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Matcher hiding ( MoveAction )
+import Arkham.Matcher hiding (MoveAction)
 import Arkham.Projection
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
@@ -23,14 +23,16 @@ abbessAllegriaDiBiase =
 instance HasAbilities AbbessAllegriaDiBiase where
   getAbilities (AbbessAllegriaDiBiase attrs) =
     [ restrictedAbility
-          attrs
-          1
-          (AnyCriterion
+        attrs
+        1
+        ( AnyCriterion
             [ OnSameLocation <> LocationExists AccessibleLocation
-            , LocationExists $ YourLocation <> ConnectedTo
-              (locationWithAsset $ toId attrs)
+            , LocationExists $
+                YourLocation
+                  <> ConnectedTo
+                    (locationWithAsset $ toId attrs)
             ]
-          )
+        )
         $ FastAbility
         $ ExhaustCost (toTarget attrs)
     ]
@@ -43,13 +45,14 @@ instance RunMessage AbbessAllegriaDiBiase where
       if locationId == abbessLocationId
         then do
           connectedLocationIds <- selectList $ accessibleFrom locationId
-          push $ chooseOrRunOne
-            iid
-            [ targetLabel
+          push $
+            chooseOrRunOne
+              iid
+              [ targetLabel
                 connectedLocationId
                 [MoveAction iid connectedLocationId Free False]
-            | connectedLocationId <- connectedLocationIds
-            ]
+              | connectedLocationId <- connectedLocationIds
+              ]
         else push $ MoveAction iid abbessLocationId Free False
       pure a
     _ -> AbbessAllegriaDiBiase <$> runMessage msg attrs

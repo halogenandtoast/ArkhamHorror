@@ -133,7 +133,7 @@ putApiV1ArkhamGameDecksR gameId = do
       ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
 
 fromPostData
-  :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
+  :: MonadIO m => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
 fromPostData userId CreateDeckPost {..} = do
   edecklist <- getDeckList deckUrl
   pure $ do
@@ -147,7 +147,7 @@ fromPostData userId CreateDeckPost {..} = do
         , arkhamDeckList = decklist
         }
 
-getDeckList :: (MonadIO m) => Text -> m (Either String ArkhamDBDecklist)
+getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
 getDeckList url = liftIO $ eitherDecode <$> simpleHttp (T.unpack url)
 
 getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)

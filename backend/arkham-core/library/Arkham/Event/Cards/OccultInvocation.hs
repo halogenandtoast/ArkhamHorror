@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.OccultInvocation
-  ( occultInvocation
-  , OccultInvocation(..)
-  ) where
+module Arkham.Event.Cards.OccultInvocation (
+  occultInvocation,
+  OccultInvocation (..),
+) where
 
 import Arkham.Prelude
 
@@ -32,16 +32,16 @@ instance RunMessage OccultInvocation where
     PaidForCardCost iid card (countCards -> n) | toCardId card == toCardId attrs -> do
       pushAll
         [ skillTestModifiers
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          [DamageDealt n, SkillModifier SkillIntellect n]
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            [DamageDealt n, SkillModifier SkillIntellect n]
         , ChooseFightEnemy
-          iid
-          (toSource attrs)
-          Nothing
-          SkillIntellect
-          mempty
-          False
+            iid
+            (toSource attrs)
+            Nothing
+            SkillIntellect
+            mempty
+            False
         ]
       pure e
     _ -> OccultInvocation <$> runMessage msg attrs

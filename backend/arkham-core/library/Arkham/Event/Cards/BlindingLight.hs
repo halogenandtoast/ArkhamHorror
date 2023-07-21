@@ -2,8 +2,8 @@ module Arkham.Event.Cards.BlindingLight where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -18,15 +18,18 @@ blindingLight = event BlindingLight Cards.blindingLight
 
 instance RunMessage BlindingLight where
   runMessage msg e@(BlindingLight attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
-      [ CreateEffect "01066" Nothing (toSource attrs) (InvestigatorTarget iid)
-      , CreateEffect "01066" Nothing (toSource attrs) SkillTestTarget
-      , ChooseEvadeEnemy
-        iid
-        (EventSource eid)
-        Nothing
-        SkillWillpower
-        AnyEnemy
-        False
-      ]
+    InvestigatorPlayEvent iid eid _ _ _
+      | eid == eventId ->
+          e
+            <$ pushAll
+              [ CreateEffect "01066" Nothing (toSource attrs) (InvestigatorTarget iid)
+              , CreateEffect "01066" Nothing (toSource attrs) SkillTestTarget
+              , ChooseEvadeEnemy
+                  iid
+                  (EventSource eid)
+                  Nothing
+                  SkillWillpower
+                  AnyEnemy
+                  False
+              ]
     _ -> BlindingLight <$> runMessage msg attrs

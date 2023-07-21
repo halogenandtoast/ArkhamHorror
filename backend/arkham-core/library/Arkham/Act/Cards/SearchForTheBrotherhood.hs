@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.SearchForTheBrotherhood
-  ( SearchForTheBrotherhood(..)
-  , searchForTheBrotherhood
-  ) where
+module Arkham.Act.Cards.SearchForTheBrotherhood (
+  SearchForTheBrotherhood (..),
+  searchForTheBrotherhood,
+) where
 
 import Arkham.Prelude
 
@@ -22,9 +22,9 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Types ( Field (..) )
+import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing
-import Arkham.Trait ( Trait (Hex, Shattered) )
+import Arkham.Trait (Trait (Hex, Shattered))
 
 newtype SearchForTheBrotherhood = SearchForTheBrotherhood ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -35,13 +35,14 @@ searchForTheBrotherhood =
   act (2, A) SearchForTheBrotherhood Cards.searchForTheBrotherhood Nothing
 
 instance HasAbilities SearchForTheBrotherhood where
-  getAbilities (SearchForTheBrotherhood attrs) | onSide A attrs =
-    [ mkAbility attrs 1
-        $ Objective
-        $ ForcedAbility
-        $ Enters Timing.After Anyone
-        $ locationIs Locations.aPocketInTime
-    ]
+  getAbilities (SearchForTheBrotherhood attrs)
+    | onSide A attrs =
+        [ mkAbility attrs 1 $
+            Objective $
+              ForcedAbility $
+                Enters Timing.After Anyone $
+                  locationIs Locations.aPocketInTime
+        ]
   getAbilities _ = []
 
 instance RunMessage SearchForTheBrotherhood where
@@ -52,23 +53,24 @@ instance RunMessage SearchForTheBrotherhood where
       shattered <- getSetAsideCardsMatching $ CardWithTrait Shattered
       iids <- getInvestigatorIds
       relicIsMissing <- getHasRecord TheRelicIsMissing
-      mRelic <- if relicIsMissing
-        then Just <$> getSetAsideCard Assets.relicOfAgesUnleashTheTimestream
-        else pure Nothing
+      mRelic <-
+        if relicIsMissing
+          then Just <$> getSetAsideCard Assets.relicOfAgesUnleashTheTimestream
+          else pure Nothing
       aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
       assetId <- getRandom
-      pushAll
-        $ [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) shattered]
-        <> [ NextAdvanceActStep (toId attrs) idx | (idx, _) <- zip [1 ..] iids ]
-        <> [ CreateAssetAt assetId relic $ AttachedToLocation aPocketInTime
-           | relic <- maybeToList mRelic
-           ]
-        <> [ AdvanceToAct
-               (actDeckId attrs)
-               Acts.theYithianRelic
-               A
-               (toSource attrs)
-           ]
+      pushAll $
+        [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) shattered]
+          <> [NextAdvanceActStep (toId attrs) idx | (idx, _) <- zip [1 ..] iids]
+          <> [ CreateAssetAt assetId relic $ AttachedToLocation aPocketInTime
+             | relic <- maybeToList mRelic
+             ]
+          <> [ AdvanceToAct
+                (actDeckId attrs)
+                Acts.theYithianRelic
+                A
+                (toSource attrs)
+             ]
       pure a
     NextAdvanceActStep aid idx | aid == toId attrs -> do
       iids <- getInvestigatorIds
@@ -78,15 +80,16 @@ instance RunMessage SearchForTheBrotherhood where
         let (nonMatch, rest) = break (`cardMatch` CardWithTrait Hex) discard
         case rest of
           [] -> pure ()
-          (x : _) -> pushAll
-            [ FocusCards (map EncounterCard $ nonMatch <> [x])
-            , chooseOne
-              iid
-              [ TargetLabel
-                  (CardIdTarget $ toCardId x)
-                  [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [EncounterCard x]]
+          (x : _) ->
+            pushAll
+              [ FocusCards (map EncounterCard $ nonMatch <> [x])
+              , chooseOne
+                  iid
+                  [ TargetLabel
+                      (CardIdTarget $ toCardId x)
+                      [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [EncounterCard x]]
+                  ]
+              , UnfocusCards
               ]
-            , UnfocusCards
-            ]
       pure a
     _ -> SearchForTheBrotherhood <$> runMessage msg attrs

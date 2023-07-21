@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ShapesInTheMist
-  ( shapesInTheMist
-  , ShapesInTheMist(..)
-  ) where
+module Arkham.Treachery.Cards.ShapesInTheMist (
+  shapesInTheMist,
+  ShapesInTheMist (..),
+) where
 
 import Arkham.Prelude
 

@@ -10,26 +10,28 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 professorWarrenRice :: AssetCard ProfessorWarrenRice
-professorWarrenRice = allyWith
-  ProfessorWarrenRice
-  Cards.professorWarrenRice
-  (2, 3)
-  (isStoryL .~ True)
+professorWarrenRice =
+  allyWith
+    ProfessorWarrenRice
+    Cards.professorWarrenRice
+    (2, 3)
+    (isStoryL .~ True)
 
 instance HasModifiersFor ProfessorWarrenRice where
   getModifiersFor (InvestigatorTarget iid) (ProfessorWarrenRice a) =
-    pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
+    pure [toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ProfessorWarrenRice where
   getAbilities (ProfessorWarrenRice a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (DiscoveringLastClue Timing.After You YourLocation)
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          (DiscoveringLastClue Timing.After You YourLocation)
+          (ExhaustCost $ toTarget a)
     ]
 
 instance RunMessage ProfessorWarrenRice where

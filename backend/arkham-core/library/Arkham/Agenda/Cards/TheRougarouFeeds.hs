@@ -1,16 +1,16 @@
-module Arkham.Agenda.Cards.TheRougarouFeeds
-  ( TheRougarouFeeds(..)
-  , theRougarouFeeds
-  ) where
+module Arkham.Agenda.Cards.TheRougarouFeeds (
+  TheRougarouFeeds (..),
+  theRougarouFeeds,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers hiding ( matches )
+import Arkham.Agenda.Helpers hiding (matches)
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
@@ -28,11 +28,12 @@ instance RunMessage TheRougarouFeeds where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       mrougarou <- getTheRougarou
       case mrougarou of
-        Nothing -> pushAll
-          [ ShuffleAllInEncounterDiscardBackIn "81034"
-          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-          , PlaceDoomOnAgenda
-          ]
+        Nothing ->
+          pushAll
+            [ ShuffleAllInEncounterDiscardBackIn "81034"
+            , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+            , PlaceDoomOnAgenda
+            ]
         Just eid -> do
           leadInvestigatorId <- getLeadInvestigatorId
           targets <- setToList <$> nonBayouLocations
@@ -49,11 +50,12 @@ instance RunMessage TheRougarouFeeds where
                 in
                   case matches' of
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
-                    xs -> chooseOne
-                      leadInvestigatorId
-                      [ targetLabel x [MoveUntil x (EnemyTarget eid)]
-                      | (x, _) <- xs
-                      ]
+                    xs ->
+                      chooseOne
+                        leadInvestigatorId
+                        [ targetLabel x [MoveUntil x (EnemyTarget eid)]
+                        | (x, _) <- xs
+                        ]
           pushAll
             [ ShuffleAllInEncounterDiscardBackIn "81034"
             , moveMessage

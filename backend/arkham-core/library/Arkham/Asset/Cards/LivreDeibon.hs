@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.LivreDeibon
-  ( livreDeibon
-  , LivreDeibon(..)
-  ) where
+module Arkham.Asset.Cards.LivreDeibon (
+  livreDeibon,
+  LivreDeibon (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -26,22 +26,22 @@ instance HasAbilities LivreDeibon where
   getAbilities (LivreDeibon a) =
     [ withTooltip
         "{fast} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
-      $ restrictedAbility a 1 ControlsThis
-      $ FastAbility
-      $ ExhaustCost
-      $ toTarget a
+        $ restrictedAbility a 1 ControlsThis
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget a
     , withTooltip
         "{fast} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location."
-      $ restrictedAbility
+        $ restrictedAbility
           a
           2
-          (ControlsThis
-          <> DuringSkillTest SkillTestAtYourLocation
-          <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
+          ( ControlsThis
+              <> DuringSkillTest SkillTestAtYourLocation
+              <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
           )
-      $ FastAbility
-      $ ExhaustCost
-      $ toTarget a
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget a
     ]
 
 instance RunMessage LivreDeibon where
@@ -49,13 +49,13 @@ instance RunMessage LivreDeibon where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       handCards <- field InvestigatorHand iid
       drawing <- drawCards iid attrs 1
-      push
-        $ chooseOne iid
-        $ [ TargetLabel
-              (CardIdTarget $ toCardId c)
-              [ drawing
-              , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
-              ]
+      push $
+        chooseOne iid $
+          [ TargetLabel
+            (CardIdTarget $ toCardId c)
+            [ drawing
+            , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
+            ]
           | c <- mapMaybe (preview _PlayerCard) handCards
           ]
       pure a

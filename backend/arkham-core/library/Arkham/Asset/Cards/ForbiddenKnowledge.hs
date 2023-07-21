@@ -12,10 +12,11 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
-forbiddenKnowledge = assetWith
-  ForbiddenKnowledge
-  Cards.forbiddenKnowledge
-  (discardWhenNoUsesL .~ True)
+forbiddenKnowledge =
+  assetWith
+    ForbiddenKnowledge
+    Cards.forbiddenKnowledge
+    (discardWhenNoUsesL .~ True)
 
 instance HasAbilities ForbiddenKnowledge where
   getAbilities (ForbiddenKnowledge a) =
@@ -23,11 +24,12 @@ instance HasAbilities ForbiddenKnowledge where
         (toSource a)
         1
         ControlsThis
-        (FastAbility $ Costs
-          [ UseCost (AssetWithId $ toId a) Secret 1
-          , HorrorCost (toSource a) YouTarget 1
-          , ExhaustCost (toTarget a)
-          ]
+        ( FastAbility $
+            Costs
+              [ UseCost (AssetWithId $ toId a) Secret 1
+              , HorrorCost (toSource a) YouTarget 1
+              , ExhaustCost (toTarget a)
+              ]
         )
     ]
 

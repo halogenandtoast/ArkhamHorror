@@ -1,17 +1,17 @@
-module Arkham.Event.Cards.VoiceOfRa
-  ( voiceOfRa
-  , VoiceOfRa(..)
-  ) where
+module Arkham.Event.Cards.VoiceOfRa (
+  voiceOfRa,
+  VoiceOfRa (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.ChaosBag.RevealStrategy
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.ChaosToken
 
 newtype VoiceOfRa = VoiceOfRa EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,8 +25,8 @@ instance RunMessage VoiceOfRa where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       pure e
-    RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens)
-      -> do
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) ->
+      do
         push $ ResetChaosTokens (toSource attrs)
         let
           n =

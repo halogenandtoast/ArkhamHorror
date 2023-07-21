@@ -63,7 +63,7 @@ pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source 100 _ _
 withRevealedAbilities :: LocationAttrs -> [Ability] -> [Ability]
 withRevealedAbilities attrs other = withBaseAbilities attrs $ guard (locationRevealed attrs) *> other
 
-cluesToDiscover :: (HasGame m) => InvestigatorId -> Int -> m Int
+cluesToDiscover :: HasGame m => InvestigatorId -> Int -> m Int
 cluesToDiscover investigatorId startValue = do
   msource <- getSkillTestSource
   case msource of

@@ -1,12 +1,12 @@
-module Arkham.Location.Cards.ChoeurGothique_293
-  ( choeurGothique_293
-  , ChoeurGothique_293(..)
-  ) where
+module Arkham.Location.Cards.ChoeurGothique_293 (
+  choeurGothique_293,
+  ChoeurGothique_293 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Sequence ( AgendaSide (C) )
+import Arkham.Agenda.Sequence (AgendaSide (C))
 import Arkham.Classes
 import Arkham.Damage
 import Arkham.GameValue
@@ -25,19 +25,21 @@ choeurGothique_293 =
   location ChoeurGothique_293 Cards.choeurGothique_293 3 (PerPlayer 1)
 
 instance HasAbilities ChoeurGothique_293 where
-  getAbilities (ChoeurGothique_293 a) = withBaseAbilities
-    a
-    [ limitedAbility (GroupLimit PerGame 1)
-      $ restrictedAbility
-          a
-          1
-          (Here <> InvestigatorExists
-            (HealableInvestigator (toSource a) HorrorType You)
-          )
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide C) 1
-    ]
+  getAbilities (ChoeurGothique_293 a) =
+    withBaseAbilities
+      a
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility
+            a
+            1
+            ( Here
+                <> InvestigatorExists
+                  (HealableInvestigator (toSource a) HorrorType You)
+            )
+          $ ActionAbility Nothing
+          $ ActionCost 1
+            <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide C) 1
+      ]
 
 instance RunMessage ChoeurGothique_293 where
   runMessage msg l@(ChoeurGothique_293 attrs) = case msg of

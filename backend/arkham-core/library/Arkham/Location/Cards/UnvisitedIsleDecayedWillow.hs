@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.UnvisitedIsleDecayedWillow
-  ( unvisitedIsleDecayedWillow
-  , UnvisitedIsleDecayedWillow(..)
-  )
+module Arkham.Location.Cards.UnvisitedIsleDecayedWillow (
+  unvisitedIsleDecayedWillow,
+  UnvisitedIsleDecayedWillow (..),
+)
 where
 
 import Arkham.Prelude
@@ -20,7 +20,8 @@ unvisitedIsleDecayedWillow = location UnvisitedIsleDecayedWillow Cards.unvisited
 instance HasAbilities UnvisitedIsleDecayedWillow where
   getAbilities (UnvisitedIsleDecayedWillow attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage UnvisitedIsleDecayedWillow where
   runMessage msg (UnvisitedIsleDecayedWillow attrs) =

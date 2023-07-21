@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TerrorInTheNight
-  ( terrorInTheNight
-  , TerrorInTheNight(..)
-  ) where
+module Arkham.Treachery.Cards.TerrorInTheNight (
+  terrorInTheNight,
+  TerrorInTheNight (..),
+) where
 
 import Arkham.Prelude
 
@@ -27,29 +27,30 @@ instance RunMessage TerrorInTheNight where
     Revelation iid (isSource attrs -> True) -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 4
       pure t
-    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
-      -> do
+    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
+      do
         aid <- selectJust AnyAgenda
         other <- selectList $ treacheryIs Cards.terrorInTheNight
         iids <- getInvestigatorIds
-        attached <- filterM
-          (fieldMap TreacheryPlacement (== TreacheryAttachedTo (toTarget aid)))
-          other
-        pushAll
-          $ AttachTreachery (toId attrs) (toTarget aid)
-          : [ gainSurge attrs | n >= 3 ]
-          <> (guard (length attached >= 2)
-             *> (Discard (toSource attrs) (toTarget attrs)
-                : map (Discard (toSource attrs) . toTarget) attached
-                <> [ InvestigatorAssignDamage
-                       iid
-                       (toSource attrs)
-                       DamageAny
-                       0
-                       3
-                   | iid <- iids
-                   ]
-                )
-             )
+        attached <-
+          filterM
+            (fieldMap TreacheryPlacement (== TreacheryAttachedTo (toTarget aid)))
+            other
+        pushAll $
+          AttachTreachery (toId attrs) (toTarget aid)
+            : [gainSurge attrs | n >= 3]
+              <> ( guard (length attached >= 2)
+                    *> ( Discard (toSource attrs) (toTarget attrs)
+                          : map (Discard (toSource attrs) . toTarget) attached
+                            <> [ InvestigatorAssignDamage
+                                iid
+                                (toSource attrs)
+                                DamageAny
+                                0
+                                3
+                               | iid <- iids
+                               ]
+                       )
+                 )
         pure t
     _ -> TerrorInTheNight <$> runMessage msg attrs

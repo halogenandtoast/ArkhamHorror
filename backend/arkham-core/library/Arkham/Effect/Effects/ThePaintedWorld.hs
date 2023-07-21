@@ -1,13 +1,13 @@
-module Arkham.Effect.Effects.ThePaintedWorld
-  ( ThePaintedWorld(..)
-  , thePaintedWorld
-  ) where
+module Arkham.Effect.Effects.ThePaintedWorld (
+  ThePaintedWorld (..),
+  thePaintedWorld,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Event.Types ( Field (..) )
+import Arkham.Event.Types (Field (..))
 import Arkham.Game.Helpers
 import Arkham.Projection
 
@@ -21,9 +21,10 @@ thePaintedWorld = ThePaintedWorld . uncurry4 (baseAttrs "03012")
 instance HasModifiersFor ThePaintedWorld where
   getModifiersFor (EventTarget eid) (ThePaintedWorld a@EffectAttrs {..}) = do
     cardId <- field EventCardId eid
-    pure $ toModifiers
-      a
-      [ RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget ]
+    pure $
+      toModifiers
+        a
+        [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ThePaintedWorld where

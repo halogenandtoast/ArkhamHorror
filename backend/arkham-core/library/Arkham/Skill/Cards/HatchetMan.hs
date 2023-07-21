@@ -1,8 +1,8 @@
-module Arkham.Skill.Cards.HatchetMan
-  ( hatchetMan
-  , hatchetManEffect
-  , HatchetMan(..)
-  ) where
+module Arkham.Skill.Cards.HatchetMan (
+  hatchetMan,
+  hatchetManEffect,
+  HatchetMan (..),
+) where
 
 import Arkham.Prelude
 
@@ -29,11 +29,13 @@ instance RunMessage HatchetMan where
       do
         target <- getSkillTestTarget
         case target of
-          Just (EnemyTarget eid) -> push $ createCardEffect
-            Cards.hatchetMan
-            Nothing
-            (toSource attrs)
-            (EnemyTarget eid)
+          Just (EnemyTarget eid) ->
+            push $
+              createCardEffect
+                Cards.hatchetMan
+                Nothing
+                (toSource attrs)
+                (EnemyTarget eid)
           _ -> pure ()
         pure s
     _ -> HatchetMan <$> runMessage msg attrs
@@ -46,8 +48,9 @@ hatchetManEffect :: EffectArgs -> HatchetManEffect
 hatchetManEffect = cardEffect HatchetManEffect Cards.hatchetMan
 
 instance HasModifiersFor HatchetManEffect where
-  getModifiersFor target (HatchetManEffect a) | effectTarget a == target =
-    pure $ toModifiers a [DamageTaken 1]
+  getModifiersFor target (HatchetManEffect a)
+    | effectTarget a == target =
+        pure $ toModifiers a [DamageTaken 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HatchetManEffect where

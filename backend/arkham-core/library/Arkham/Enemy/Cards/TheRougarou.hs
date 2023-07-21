@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.TheRougarou
-  ( TheRougarou(..)
-  , theRougarou
-  ) where
+module Arkham.Enemy.Cards.TheRougarou (
+  TheRougarou (..),
+  theRougarou,
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Timing qualified as Timing
 
-newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
+newtype TheRougarouMetadata = TheRougarouMetadata {damagePerPhase :: Int}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -25,11 +25,12 @@ newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarou :: EnemyCard TheRougarou
-theRougarou = enemy
-  (TheRougarou . (`with` TheRougarouMetadata 0))
-  Cards.theRougarou
-  (3, PerPlayer 5, 3)
-  (2, 2)
+theRougarou =
+  enemy
+    (TheRougarou . (`with` TheRougarouMetadata 0))
+    Cards.theRougarou
+    (3, PerPlayer 5, 3)
+    (2, 2)
 
 isEngage :: Ability -> Bool
 isEngage ability = case abilityType ability of
@@ -42,29 +43,31 @@ instance HasAbilities TheRougarou where
       actions' = getAbilities attrs
       forcedAbility =
         restrictedAbility
-            attrs
-            1
-            (ValueIs (damagePerPhase meta) (EqualTo $ PerPlayer 1))
-            (ForcedAbility $ EnemyDealtDamage
-              Timing.After
-              AnyDamageEffect
-              (EnemyWithId $ toId attrs)
-              AnySource
-            )
+          attrs
+          1
+          (ValueIs (damagePerPhase meta) (EqualTo $ PerPlayer 1))
+          ( ForcedAbility $
+              EnemyDealtDamage
+                Timing.After
+                AnyDamageEffect
+                (EnemyWithId $ toId attrs)
+                AnySource
+          )
           & (abilityLimitL .~ NoLimit)
     if any isEngage actions'
       then do
         let
           engageAction =
             restrictedAbility
-                attrs
-                102
-                (OnSameLocation <> Negate
-                  (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
-                )
+              attrs
+              102
+              ( OnSameLocation
+                  <> Negate
+                    (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
+              )
               $ ActionAbility (Just Action.Engage)
               $ GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere
-              <> ActionCost 1
+                <> ActionCost 1
         forcedAbility : filter (not . isEngage) actions' <> [engageAction]
       else forcedAbility : actions'
 
@@ -78,19 +81,23 @@ instance RunMessage TheRougarou where
         case farthestLocationIds of
           [] -> error "can't happen"
           [x] -> push (MoveUntil x (EnemyTarget enemyId))
-          xs -> push $ chooseOne
-            leadInvestigatorId
-            [ targetLabel x [MoveUntil x (EnemyTarget enemyId)] | x <- xs ]
+          xs ->
+            push $
+              chooseOne
+                leadInvestigatorId
+                [targetLabel x [MoveUntil x (EnemyTarget enemyId)] | x <- xs]
 
         TheRougarou
-          . (`with` TheRougarouMetadata
-              (damagePerPhase metadata `mod` damageThreshold)
+          . ( `with`
+                TheRougarouMetadata
+                  (damagePerPhase metadata `mod` damageThreshold)
             )
           <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-      Msg.EnemyDamage eid (damageAssignmentAmount -> n) | eid == enemyId ->
-        TheRougarou
-          . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
-          <$> runMessage msg attrs
+      Msg.EnemyDamage eid (damageAssignmentAmount -> n)
+        | eid == enemyId ->
+            TheRougarou
+              . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
+              <$> runMessage msg attrs
       _ -> TheRougarou . (`with` metadata) <$> runMessage msg attrs

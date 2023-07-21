@@ -1,6 +1,6 @@
-module Arkham.Campaigns.TheCircleUndone.Import
-  ( module X
-  )
+module Arkham.Campaigns.TheCircleUndone.Import (
+  module X,
+)
 where
 
 import Arkham.Campaigns.TheCircleUndone.CampaignSteps as X

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.WatchersGazeUnionAndDisillusion
-  ( watchersGazeUnionAndDisillusion
-  , WatchersGazeUnionAndDisillusion(..)
-  )
+module Arkham.Treachery.Cards.WatchersGazeUnionAndDisillusion (
+  watchersGazeUnionAndDisillusion,
+  WatchersGazeUnionAndDisillusion (..),
+)
 where
 
 import Arkham.Prelude

@@ -131,5 +131,6 @@ instance RunMessage AgendaAttrs where
       pure $
         a
           & (sequenceL .~ flipSequence agendaSequence)
-          & flippedL .~ False
+          & flippedL
+          .~ False
     _ -> pure a

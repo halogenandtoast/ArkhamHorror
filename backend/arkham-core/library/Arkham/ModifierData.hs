@@ -1,6 +1,6 @@
-module Arkham.ModifierData
-  ( module Arkham.ModifierData
-  ) where
+module Arkham.ModifierData (
+  module Arkham.ModifierData,
+) where
 
 import Arkham.Prelude
 
@@ -8,7 +8,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Modifier
 
-newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
+newtype ModifierData = ModifierData {mdModifiers :: [Modifier]}
   deriving stock (Show, Eq, Generic)
 
 instance ToJSON ModifierData where
@@ -29,7 +29,7 @@ instance ToJSON LocationMetadata where
   toJSON = genericToJSON $ aesonOptions $ Just "lm"
   toEncoding = genericToEncoding $ aesonOptions $ Just "lm"
 
-newtype ConnectionData = ConnectionData { cdConnectedLocations :: [LocationId] }
+newtype ConnectionData = ConnectionData {cdConnectedLocations :: [LocationId]}
   deriving stock (Show, Eq, Generic)
 
 instance ToJSON ConnectionData where

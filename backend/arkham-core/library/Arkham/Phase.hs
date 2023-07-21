@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Phase where
 
 import Arkham.Prelude

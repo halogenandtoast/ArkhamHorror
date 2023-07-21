@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TimeWrackedWoods
-  ( timeWrackedWoods
-  , TimeWrackedWoods(..)
-  ) where
+module Arkham.Location.Cards.TimeWrackedWoods (
+  timeWrackedWoods,
+  TimeWrackedWoods (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,34 +23,40 @@ timeWrackedWoods =
   location TimeWrackedWoods Cards.timeWrackedWoods 4 (PerPlayer 2)
 
 instance HasAbilities TimeWrackedWoods where
-  getAbilities (TimeWrackedWoods attrs) = withBaseAbilities
-    attrs
-    [ limitedAbility (GroupLimit PerGame 1)
-      $ restrictedAbility
-          attrs
-          1
-          (Here <> InVictoryDisplay
-            (CardWithVengeance <> NotCard (CardWithTrait Elite))
-            (AtLeast $ Static 1)
-          )
-      $ ActionAbility Nothing
-      $ ActionCost 2
-    ]
+  getAbilities (TimeWrackedWoods attrs) =
+    withBaseAbilities
+      attrs
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility
+            attrs
+            1
+            ( Here
+                <> InVictoryDisplay
+                  (CardWithVengeance <> NotCard (CardWithTrait Elite))
+                  (AtLeast $ Static 1)
+            )
+          $ ActionAbility Nothing
+          $ ActionCost 2
+      ]
 
 instance RunMessage TimeWrackedWoods where
   runMessage msg l@(TimeWrackedWoods attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <- mapMaybe (preview _EncounterCard) <$> selectList
-        (VictoryDisplayCardMatch $ CardWithVengeance <> NotCard
-          (CardWithTrait Elite)
-        )
+      targets <-
+        mapMaybe (preview _EncounterCard)
+          <$> selectList
+            ( VictoryDisplayCardMatch $
+                CardWithVengeance
+                  <> NotCard
+                    (CardWithTrait Elite)
+            )
       pushAll
         [ FocusCards $ map EncounterCard targets
         , chooseOrRunOne
-          iid
-          [ TargetLabel (CardIdTarget $ toCardId c) [AddToEncounterDiscard c]
-          | c <- targets
-          ]
+            iid
+            [ TargetLabel (CardIdTarget $ toCardId c) [AddToEncounterDiscard c]
+            | c <- targets
+            ]
         , UnfocusCards
         ]
       pure l

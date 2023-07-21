@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Fieldwork
-  ( fieldwork
-  , Fieldwork(..)
-  ) where
+module Arkham.Asset.Cards.Fieldwork (
+  fieldwork,
+  Fieldwork (..),
+) where
 
 import Arkham.Prelude
 
@@ -25,21 +25,22 @@ instance HasAbilities Fieldwork where
         attrs
         1
         ControlsThis
-        (ReactionAbility
-            (Enters Timing.After You
-            $ LocationWithClues (GreaterThan $ Static 0)
+        ( ReactionAbility
+            ( Enters Timing.After You $
+                LocationWithClues (GreaterThan $ Static 0)
             )
-        $ ExhaustCost
-        $ toTarget attrs
+            $ ExhaustCost
+            $ toTarget attrs
         )
     ]
 
 instance RunMessage Fieldwork where
   runMessage msg a@(Fieldwork attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a
-        <$ push
-             (CreateEffect (toCardCode attrs) Nothing source
-             $ InvestigatorTarget iid
-             )
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ push
+              ( CreateEffect (toCardCode attrs) Nothing source $
+                  InvestigatorTarget iid
+              )
     _ -> Fieldwork <$> runMessage msg attrs

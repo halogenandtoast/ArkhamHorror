@@ -20,33 +20,33 @@ import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 
 getBaseValueForSkillTestType
-  :: (HasGame m) => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
+  :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
 getBaseValueForSkillTestType iid mAction = \case
   SkillSkillTest skillType -> baseSkillValueFor skillType mAction [] iid
   ResourceSkillTest -> field InvestigatorResources iid
 
-getSkillTestInvestigator :: (HasGame m) => m (Maybe InvestigatorId)
+getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
 getSkillTestInvestigator = fmap skillTestInvestigator <$> getSkillTest
 
-getSkillTestTarget :: (HasGame m) => m (Maybe Target)
+getSkillTestTarget :: HasGame m => m (Maybe Target)
 getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
 
-getSkillTestSource :: (HasGame m) => m (Maybe Source)
+getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = fmap toSource <$> getSkillTest
 
-getSkillTestAction :: (HasGame m) => m (Maybe Action)
+getSkillTestAction :: HasGame m => m (Maybe Action)
 getSkillTestAction =
   getSkillTestSource <&> \case
     Just (SkillTestSource _ _ _ maction) -> maction
     _ -> Nothing
 
-getSkillTestSkillTypes :: (HasGame m) => m [SkillType]
+getSkillTestSkillTypes :: HasGame m => m [SkillType]
 getSkillTestSkillTypes =
   getSkillTestSource <&> \case
     Just (SkillTestSource _ (SkillSkillTest skillType) _ _) -> [skillType]
     _ -> []
 
-getSkillTestMatchingSkillIcons :: (HasGame m) => m (Set SkillIcon)
+getSkillTestMatchingSkillIcons :: HasGame m => m (Set SkillIcon)
 getSkillTestMatchingSkillIcons =
   getSkillTestSource <&> \case
     Just (SkillTestSource _ stType _ _) -> case stType of
@@ -54,14 +54,14 @@ getSkillTestMatchingSkillIcons =
       ResourceSkillTest -> setFromList [#wildMinus, #wild]
     _ -> mempty
 
-getIsBeingInvestigated :: (HasGame m) => LocationId -> m Bool
+getIsBeingInvestigated :: HasGame m => LocationId -> m Bool
 getIsBeingInvestigated lid = do
   mTarget <- getSkillTestTarget
   mAction <- getSkillTestAction
   pure $ mAction == Just Investigate && mTarget == Just (LocationTarget lid)
 
 revelationSkillTest
-  :: (Sourceable source)
+  :: Sourceable source
   => InvestigatorId
   -> source
   -> SkillType
@@ -136,7 +136,7 @@ investigate iid (toSource -> source) (toTarget -> target) sType n =
       { skillTestAction = Just Investigate
       }
 
-getIsScenarioAbility :: (HasGame m) => m Bool
+getIsScenarioAbility :: HasGame m => m Bool
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   case source of
@@ -151,7 +151,7 @@ getIsScenarioAbility = do
       _ -> pure False
     _ -> pure False
 
-getAttackedEnemy :: (HasGame m) => m (Maybe EnemyId)
+getAttackedEnemy :: HasGame m => m (Maybe EnemyId)
 getAttackedEnemy = do
   mTarget <- getSkillTestTarget
   case mTarget of
@@ -160,7 +160,7 @@ getAttackedEnemy = do
     Just _ -> pure Nothing
     Nothing -> pure Nothing
 
-isInvestigating :: (HasGame m) => InvestigatorId -> LocationId -> m Bool
+isInvestigating :: HasGame m => InvestigatorId -> LocationId -> m Bool
 isInvestigating iid lid =
   andM
     [ (== Just (LocationTarget lid)) <$> getSkillTestTarget
@@ -168,7 +168,7 @@ isInvestigating iid lid =
     , (== Just iid) <$> getSkillTestInvestigator
     ]
 
-getIsPerilous :: (HasGame m) => SkillTest -> m Bool
+getIsPerilous :: HasGame m => SkillTest -> m Bool
 getIsPerilous skillTest = case skillTestSource skillTest of
   TreacherySource tid -> do
     keywords <- field TreacheryKeywords tid

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.LadyEsprit
-  ( LadyEsprit(..)
-  , ladyEsprit
-  ) where
+module Arkham.Asset.Cards.LadyEsprit (
+  LadyEsprit (..),
+  ladyEsprit,
+) where
 
 import Arkham.Prelude
 
@@ -24,18 +24,20 @@ instance HasAbilities LadyEsprit where
     [ restrictedAbility
         x
         1
-        (OnSameLocation <> InvestigatorExists
-          (AnyInvestigator
-            [ HealableInvestigator (toSource x) DamageType You
-            , You <> InvestigatorCanGainResources
-            ]
-          )
+        ( OnSameLocation
+            <> InvestigatorExists
+              ( AnyInvestigator
+                  [ HealableInvestigator (toSource x) DamageType You
+                  , You <> InvestigatorCanGainResources
+                  ]
+              )
         )
-        (ActionAbility Nothing $ Costs
-          [ ActionCost 1
-          , ExhaustCost (toTarget x)
-          , HorrorCost (toSource x) (toTarget x) 1
-          ]
+        ( ActionAbility Nothing $
+            Costs
+              [ ActionCost 1
+              , ExhaustCost (toTarget x)
+              , HorrorCost (toSource x) (toTarget x) 1
+              ]
         )
     ]
 
@@ -44,17 +46,17 @@ instance RunMessage LadyEsprit where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       canHeal <- canHaveDamageHealed attrs iid
       canGainResources <- withoutModifier (InvestigatorTarget iid) CannotGainResources
-      push
-        $ chooseOne iid
-        $ [ ComponentLabel
-              (InvestigatorComponent iid DamageToken)
-              [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
+      push $
+        chooseOne iid $
+          [ ComponentLabel
+            (InvestigatorComponent iid DamageToken)
+            [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
           | canHeal
           ]
-        <> [ ComponentLabel
-               (InvestigatorComponent iid ResourceToken)
-               [TakeResources iid 2 (toAbilitySource attrs 1) False]
-           | canGainResources
-           ]
+            <> [ ComponentLabel
+                (InvestigatorComponent iid ResourceToken)
+                [TakeResources iid 2 (toAbilitySource attrs 1) False]
+               | canGainResources
+               ]
       pure a
     _ -> LadyEsprit <$> runMessage msg attrs

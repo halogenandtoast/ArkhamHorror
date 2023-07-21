@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.CustomAmmunition3
-  ( customAmmunition3
-  , CustomAmmunition3(..)
-  ) where
+module Arkham.Event.Cards.CustomAmmunition3 (
+  customAmmunition3,
+  CustomAmmunition3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -29,11 +29,11 @@ instance HasModifiersFor CustomAmmunition3 where
     mSkillTestTarget <- getSkillTestTarget
     case (mSkillTestSource, mSkillTestTarget) of
       (Just (SkillTestSource _ _ (AssetSource aid) (Just Action.Fight)), Just (EnemyTarget eid))
-        | Just (AssetTarget aid) == eventAttachedTarget a
-        -> do
-          isMonster <- eid <=~> EnemyWithTrait Monster
-          isController <- iid <=~> HasMatchingAsset (AssetWithId aid)
-          pure $ toModifiers a [ DamageDealt 1 | isMonster && isController ]
+        | Just (AssetTarget aid) == eventAttachedTarget a ->
+            do
+              isMonster <- eid <=~> EnemyWithTrait Monster
+              isController <- iid <=~> HasMatchingAsset (AssetWithId aid)
+              pure $ toModifiers a [DamageDealt 1 | isMonster && isController]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -41,21 +41,24 @@ instance RunMessage CustomAmmunition3 where
   runMessage msg e@(CustomAmmunition3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <-
-        selectList
-        $ AssetControlledBy (colocatedWith iid)
-        <> AssetWithTrait Firearm
-        <> NotAsset
-             (AssetWithAttachedEvent $ EventCardMatch $ cardIs
-               Cards.customAmmunition3
-             )
-      push $ chooseOne
-        iid
-        [ targetLabel
+        selectList $
+          AssetControlledBy (colocatedWith iid)
+            <> AssetWithTrait Firearm
+            <> NotAsset
+              ( AssetWithAttachedEvent $
+                  EventCardMatch $
+                    cardIs
+                      Cards.customAmmunition3
+              )
+      push $
+        chooseOne
+          iid
+          [ targetLabel
             asset
             [ PlaceEvent iid eid (AttachedToAsset asset Nothing)
             , AddUses asset Ammo 2
             ]
-        | asset <- assets
-        ]
+          | asset <- assets
+          ]
       pure e
     _ -> CustomAmmunition3 <$> runMessage msg attrs

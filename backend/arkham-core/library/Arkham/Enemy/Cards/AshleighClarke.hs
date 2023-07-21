@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.AshleighClarke
-  ( ashleighClarke
-  , AshleighClarke(..)
-  ) where
+module Arkham.Enemy.Cards.AshleighClarke (
+  ashleighClarke,
+  AshleighClarke (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Phase
 import Arkham.Projection
 
 newtype AshleighClarke = AshleighClarke EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ashleighClarke :: EnemyCard AshleighClarke
@@ -26,11 +26,12 @@ instance HasModifiersFor AshleighClarke where
     lid <- getJustLocation iid
     enemyLocation <- field EnemyLocation (toId attrs)
     phase <- getPhase
-    pure $ toModifiers
-      attrs
-      [ CannotDrawCards
-      | phase == UpkeepPhase && Just lid == enemyLocation
-      ]
+    pure $
+      toModifiers
+        attrs
+        [ CannotDrawCards
+        | phase == UpkeepPhase && Just lid == enemyLocation
+        ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AshleighClarke where

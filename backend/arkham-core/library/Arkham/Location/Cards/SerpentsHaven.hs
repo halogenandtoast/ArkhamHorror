@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.SerpentsHaven
-  ( serpentsHaven
-  , SerpentsHaven(..)
-  ) where
+module Arkham.Location.Cards.SerpentsHaven (
+  serpentsHaven,
+  SerpentsHaven (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,7 +18,7 @@ import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SerpentsHaven = SerpentsHaven LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 serpentsHaven :: LocationCard SerpentsHaven
@@ -27,24 +27,26 @@ serpentsHaven = location SerpentsHaven Cards.serpentsHaven 2 (PerPlayer 2)
 instance HasModifiersFor SerpentsHaven where
   getModifiersFor (EnemyTarget eid) (SerpentsHaven a) = do
     modified <- eid <=~> (enemyAt (toId a) <> EnemyWithTrait Serpent)
-    pure $ toModifiers a [ EnemyFight 1 | modified ]
+    pure $ toModifiers a [EnemyFight 1 | modified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SerpentsHaven where
-  getAbilities (SerpentsHaven attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
-        attrs
-        1
-        (Here <> TreacheryExists
-          (treacheryIs Treacheries.poisoned <> TreacheryInThreatAreaOf You)
-        )
-      $ ForcedAbility
-      $ PerformAction
-          Timing.After
-          You
-          (ActionOneOf [ActionIs Action.Investigate, ActionIs Action.Explore])
-    ]
+  getAbilities (SerpentsHaven attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
+          attrs
+          1
+          ( Here
+              <> TreacheryExists
+                (treacheryIs Treacheries.poisoned <> TreacheryInThreatAreaOf You)
+          )
+          $ ForcedAbility
+          $ PerformAction
+            Timing.After
+            You
+            (ActionOneOf [ActionIs Action.Investigate, ActionIs Action.Explore])
+      ]
 
 instance RunMessage SerpentsHaven where
   runMessage msg l@(SerpentsHaven attrs) = case msg of

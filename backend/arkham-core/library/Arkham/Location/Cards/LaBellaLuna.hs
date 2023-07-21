@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.LaBellaLuna
-  ( laBellaLuna
-  , LaBellaLuna(..)
-  ) where
+module Arkham.Location.Cards.LaBellaLuna (
+  laBellaLuna,
+  LaBellaLuna (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( laBellaLuna )
+import Arkham.Location.Cards qualified as Cards (laBellaLuna)
 import Arkham.Location.Runner
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs

@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark
-  ( TheCaveOfDarknessTunnelsInTheDark(..)
-  , theCaveOfDarknessTunnelsInTheDark
-  ) where
+module Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark (
+  TheCaveOfDarknessTunnelsInTheDark (..),
+  theCaveOfDarknessTunnelsInTheDark,
+) where
 
 import Arkham.Prelude
 
@@ -23,21 +23,22 @@ newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark Ac
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCaveOfDarknessTunnelsInTheDark :: ActCard TheCaveOfDarknessTunnelsInTheDark
-theCaveOfDarknessTunnelsInTheDark = act
-  (2, E)
-  TheCaveOfDarknessTunnelsInTheDark
-  Cards.theCaveOfDarknessTunnelsInTheDark
-  Nothing
+theCaveOfDarknessTunnelsInTheDark =
+  act
+    (2, E)
+    TheCaveOfDarknessTunnelsInTheDark
+    Cards.theCaveOfDarknessTunnelsInTheDark
+    Nothing
 
 instance HasAbilities TheCaveOfDarknessTunnelsInTheDark where
   getAbilities (TheCaveOfDarknessTunnelsInTheDark attrs) =
     [ restrictedAbility
-          attrs
-          999
-          (LocationExists
-          $ LocationWithTitle "Black Cave"
-          <> LocationWithoutClues
-          )
+        attrs
+        999
+        ( LocationExists $
+            LocationWithTitle "Black Cave"
+              <> LocationWithoutClues
+        )
         $ Objective
         $ FastAbility
         $ GroupClueCost (PerPlayer 2)
@@ -50,11 +51,12 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
       blackCave <- selectJust $ locationIs Locations.blackCave
       mTownHall <- selectOne $ locationIs Locations.townHall
       townHallMessages <- case mTownHall of
-        Just townHall -> pure
-          [ Remember $ IchtacasDestination $ labeled Locations.townHall townHall
-          , AddDirectConnection blackCave townHall
-          , AddDirectConnection townHall blackCave
-          ]
+        Just townHall ->
+          pure
+            [ Remember $ IchtacasDestination $ labeled Locations.townHall townHall
+            , AddDirectConnection blackCave townHall
+            , AddDirectConnection townHall blackCave
+            ]
         Nothing -> do
           (townHallId, placeTownHall) <- placeSetAsideLocation Locations.townHall
           pure
@@ -64,15 +66,15 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
             , AddDirectConnection townHallId blackCave
             ]
       iids <- getInvestigatorIds
-      pushAll
-        $ townHallMessages
-        <> [ DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids ]
-        <> [ AdvanceToAct
-               (actDeckId attrs)
-               Acts.strangeOccurences
-               E
-               (toSource attrs)
-           ]
+      pushAll $
+        townHallMessages
+          <> [DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids]
+          <> [ AdvanceToAct
+                (actDeckId attrs)
+                Acts.strangeOccurences
+                E
+                (toSource attrs)
+             ]
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do
       when (toCardType card == TreacheryType) $ do

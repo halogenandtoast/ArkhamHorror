@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.ManoAMano2
-  ( manoAMano2
-  , ManoAMano2(..)
-  ) where
+module Arkham.Event.Cards.ManoAMano2 (
+  manoAMano2,
+  ManoAMano2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,7 +9,7 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 
 newtype ManoAMano2 = ManoAMano2 EventAttrs
@@ -25,10 +25,10 @@ instance RunMessage ManoAMano2 where
       enemies <- selectList $ enemyEngagedWith iid
       pushAll
         [ chooseOrRunOne
-          iid
-          [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 2]
-          | enemy <- enemies
-          ]
+            iid
+            [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 2]
+            | enemy <- enemies
+            ]
         ]
       pure e
     _ -> ManoAMano2 <$> runMessage msg attrs

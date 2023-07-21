@@ -257,12 +257,12 @@ instance RunMessage DimCarcosa where
           ( attrs
               & ( setAsideCardsL
                     .~ PlayerCard theManInThePallidMask
-                      : ( setAsideCards
-                            <> setAsideBleakPlains
-                            <> setAsideRuinsOfCarcosa
-                            <> setAsideDimStreets
-                            <> setAsideDepthsOfDemhe
-                        )
+                    : ( setAsideCards
+                          <> setAsideBleakPlains
+                          <> setAsideRuinsOfCarcosa
+                          <> setAsideDimStreets
+                          <> setAsideDepthsOfDemhe
+                      )
                 )
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.OozeAndFilth
-  ( oozeAndFilth
-  , OozeAndFilth(..)
-  ) where
+module Arkham.Treachery.Cards.OozeAndFilth (
+  oozeAndFilth,
+  OozeAndFilth (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype OozeAndFilth = OozeAndFilth TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oozeAndFilth :: TreacheryCard OozeAndFilth
@@ -35,12 +35,14 @@ instance RunMessage OozeAndFilth where
   runMessage msg t@(OozeAndFilth attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetAgendas <- selectListMap AgendaTarget AnyAgenda
-      push $ chooseOrRunOne
-        iid
-        [ TargetLabel target [AttachTreachery (toId attrs) target]
-        | target <- targetAgendas
-        ]
+      push $
+        chooseOrRunOne
+          iid
+          [ TargetLabel target [AttachTreachery (toId attrs) target]
+          | target <- targetAgendas
+          ]
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> OozeAndFilth <$> runMessage msg attrs

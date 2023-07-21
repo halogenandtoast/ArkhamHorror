@@ -1,14 +1,14 @@
-module Arkham.Agenda.Cards.ChaosInTheCloverClub
-  ( ChaosInTheCloverClub(..)
-  , chaosInTheCloverClub
-  ) where
+module Arkham.Agenda.Cards.ChaosInTheCloverClub (
+  ChaosInTheCloverClub (..),
+  chaosInTheCloverClub,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
@@ -28,16 +28,20 @@ chaosInTheCloverClub =
 
 instance HasAbilities ChaosInTheCloverClub where
   getAbilities (ChaosInTheCloverClub x) =
-    [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.When $ PhaseIs
-        EnemyPhase
+    [ mkAbility x 1 $
+      ForcedAbility $
+        PhaseBegins Timing.When $
+          PhaseIs
+            EnemyPhase
     | onSide A x
     ]
 
 instance RunMessage ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
-      pushAll [ Discard (toSource attrs) $ EnemyTarget eid | eid <- criminals ]
+      criminals <-
+        selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
+      pushAll [Discard (toSource attrs) $ EnemyTarget eid | eid <- criminals]
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

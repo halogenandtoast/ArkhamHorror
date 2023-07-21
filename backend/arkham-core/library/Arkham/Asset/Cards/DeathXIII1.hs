@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DeathXIII1
-  ( deathXiii1
-  , DeathXIII1(..)
-  )
+module Arkham.Asset.Cards.DeathXIII1 (
+  deathXiii1,
+  DeathXIII1 (..),
+)
 where
 
 import Arkham.Prelude
@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
 newtype DeathXIII1 = DeathXIII1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deathXiii1 :: AssetCard DeathXIII1

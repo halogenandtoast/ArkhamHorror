@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.VaultOfKnowledge
-  ( vaultOfKnowledge
-  , VaultOfKnowledge(..)
-  ) where
+module Arkham.Asset.Cards.VaultOfKnowledge (
+  vaultOfKnowledge,
+  VaultOfKnowledge (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype VaultOfKnowledge = VaultOfKnowledge AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vaultOfKnowledge :: AssetCard VaultOfKnowledge
@@ -27,9 +27,9 @@ instance HasAbilities VaultOfKnowledge where
   getAbilities (VaultOfKnowledge a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (SkillTestResult Timing.After You (WhileInvestigating Anywhere)
-            $ SuccessResult AnyValue
-            )
+          ( SkillTestResult Timing.After You (WhileInvestigating Anywhere) $
+              SuccessResult AnyValue
+          )
         $ ExhaustCost (toTarget a)
     ]
 
@@ -38,8 +38,9 @@ instance RunMessage VaultOfKnowledge where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ colocatedWith iid
       investigators <- forToSnd iids $ \iid' -> drawCards iid' attrs 1
-      push $ chooseOrRunOne
-        iid
-        [ targetLabel iid' [drawing] | (iid', drawing) <- investigators ]
+      push $
+        chooseOrRunOne
+          iid
+          [targetLabel iid' [drawing] | (iid', drawing) <- investigators]
       pure a
     _ -> VaultOfKnowledge <$> runMessage msg attrs

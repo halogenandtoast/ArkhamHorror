@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Scavenging
-  ( Scavenging(..)
-  , scavenging
-  ) where
+module Arkham.Asset.Cards.Scavenging (
+  Scavenging (..),
+  scavenging,
+) where
 
 import Arkham.Prelude
 
@@ -23,33 +23,37 @@ scavenging = asset Scavenging Cards.scavenging
 instance HasAbilities Scavenging where
   getAbilities (Scavenging a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> InvestigatorExists
-            (You
-            <> DiscardWith (HasCard $ CardWithTrait Item)
-            <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
-            )
-          )
+        a
+        1
+        ( ControlsThis
+            <> InvestigatorExists
+              ( You
+                  <> DiscardWith (HasCard $ CardWithTrait Item)
+                  <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
+              )
+        )
         $ ReactionAbility
-            (SkillTestResult
+          ( SkillTestResult
               Timing.After
               You
               (WhileInvestigating Anywhere)
               (SuccessResult $ AtLeast $ Static 2)
-            )
-            (ExhaustCost $ toTarget a)
+          )
+          (ExhaustCost $ toTarget a)
     ]
 
 instance RunMessage Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (Search
-          iid
-          source
-          (InvestigatorTarget iid)
-          [(Zone.FromDiscard, PutBack)]
-          (CardWithTrait Item)
-      $ DrawFound iid 1
-      )
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ push
+              ( Search
+                  iid
+                  source
+                  (InvestigatorTarget iid)
+                  [(Zone.FromDiscard, PutBack)]
+                  (CardWithTrait Item)
+                  $ DrawFound iid 1
+              )
     _ -> Scavenging <$> runMessage msg attrs

@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.EncounterSet where
 
 import Arkham.Prelude

@@ -37,24 +37,30 @@ locationsWithLabels trait locationSet = do
     ]
 
 locationsByTrait :: Map Trait [CardDef]
-locationsByTrait = mapFromList
-  [ ( NewOrleans
-    , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]
-    )
-  , ( Riverside
-    , [ Locations.brackishWaters
-      , Locations.audubonPark
-      , Locations.faubourgMarigny
-      ]
-    )
-  , ( Wilderness
-    , [ Locations.forgottenMarsh
-      , Locations.trappersCabin
-      , Locations.twistedUnderbrush
-      ]
-    )
-  , ( Unhallowed
-    , [Locations.foulSwamp, Locations.ritualGrounds, Locations.overgrownCairns]
-    )
-  ]
-
+locationsByTrait =
+  mapFromList
+    [
+      ( NewOrleans
+      , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]
+      )
+    ,
+      ( Riverside
+      ,
+        [ Locations.brackishWaters
+        , Locations.audubonPark
+        , Locations.faubourgMarigny
+        ]
+      )
+    ,
+      ( Wilderness
+      ,
+        [ Locations.forgottenMarsh
+        , Locations.trappersCabin
+        , Locations.twistedUnderbrush
+        ]
+      )
+    ,
+      ( Unhallowed
+      , [Locations.foulSwamp, Locations.ritualGrounds, Locations.overgrownCairns]
+      )
+    ]

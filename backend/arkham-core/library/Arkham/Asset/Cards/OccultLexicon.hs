@@ -3,10 +3,10 @@ module Arkham.Asset.Cards.OccultLexicon where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Event.Cards qualified as Events
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck
+import Arkham.Event.Cards qualified as Events
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
@@ -21,9 +21,9 @@ instance RunMessage OccultLexicon where
       handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
       deckBloodRites <- replicateM 2 (genCard Events.bloodRite)
       canShuffleDeck <- getCanShuffleDeck iid
-      pushAll
-        $ addToHand iid handBloodRite
-        : [ ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck ]
+      pushAll $
+        addToHand iid handBloodRite
+          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
       let iid = getOwner attrs

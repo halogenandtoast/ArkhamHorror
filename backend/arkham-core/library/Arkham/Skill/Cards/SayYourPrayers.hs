@@ -1,12 +1,12 @@
-module Arkham.Skill.Cards.SayYourPrayers
-  ( sayYourPrayers
-  , SayYourPrayers(..)
-  ) where
+module Arkham.Skill.Cards.SayYourPrayers (
+  sayYourPrayers,
+  SayYourPrayers (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
 newtype SayYourPrayers = SayYourPrayers SkillAttrs

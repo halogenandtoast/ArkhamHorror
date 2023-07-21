@@ -134,8 +134,11 @@ instance RunMessage JoeDiamond where
         $ JoeDiamond
           . (`with` Metadata Nothing)
         $ attrs
-          & deckL %~ withDeck (filter ((/= insight) . PlayerCard))
-          & decksL . at HunchDeck ?~ hunchDeck'
+          & deckL
+          %~ withDeck (filter ((/= insight) . PlayerCard))
+          & decksL
+          . at HunchDeck
+          ?~ hunchDeck'
     RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase)]
       | iid == toId attrs -> do
           case hunchDeck attrs of

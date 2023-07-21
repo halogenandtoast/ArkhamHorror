@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.QuickStudy2
-  ( quickStudy2
-  , QuickStudy2(..)
-  ) where
+module Arkham.Asset.Cards.QuickStudy2 (
+  quickStudy2,
+  QuickStudy2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,10 +19,10 @@ quickStudy2 = asset QuickStudy2 Cards.quickStudy2
 
 instance HasAbilities QuickStudy2 where
   getAbilities (QuickStudy2 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility
-        $ ExhaustCost (toTarget a)
-        <> PlaceClueOnLocationCost 1
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
+        FastAbility $
+          ExhaustCost (toTarget a)
+            <> PlaceClueOnLocationCost 1
     ]
 
 instance RunMessage QuickStudy2 where

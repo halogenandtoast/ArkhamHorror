@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TwistedToHisWill
-  ( twistedToHisWill
-  , TwistedToHisWill(..)
-  ) where
+module Arkham.Treachery.Cards.TwistedToHisWill (
+  twistedToHisWill,
+  TwistedToHisWill (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,12 +23,13 @@ instance RunMessage TwistedToHisWill where
   runMessage msg t@(TwistedToHisWill attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       doomCount <- getDoomCount
-      push $ if doomCount > 0
-        then RevelationSkillTest iid source SkillWillpower doomCount
-        else gainSurge attrs
+      push $
+        if doomCount > 0
+          then RevelationSkillTest iid source SkillWillpower doomCount
+          else gainSurge attrs
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         pushAll
           [ toMessage $ randomDiscard iid attrs
           , toMessage $ randomDiscard iid attrs

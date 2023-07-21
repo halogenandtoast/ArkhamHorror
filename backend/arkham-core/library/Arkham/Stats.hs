@@ -1,7 +1,7 @@
-module Arkham.Stats
-  ( Stats(..)
-  , statsSkillValue
-  ) where
+module Arkham.Stats (
+  Stats (..),
+  statsSkillValue,
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ data Stats = Stats
   , combat :: Int
   , agility :: Int
   }
-  deriving stock Show
+  deriving stock (Show)
 
 statsSkillValue :: Stats -> SkillType -> Int
 statsSkillValue Stats {..} = \case
@@ -29,4 +29,3 @@ instance Semigroup Stats where
     Stats (a1 + a2) (b1 + b2) (c1 + c2) (d1 + d2) (e1 + e2) (f1 + f2)
 instance Monoid Stats where
   mempty = Stats 0 0 0 0 0 0
-

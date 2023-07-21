@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.M1918Bar4
-  ( m1918Bar4
-  , M1918Bar4(..)
-  ) where
+module Arkham.Asset.Cards.M1918Bar4 (
+  m1918Bar4,
+  M1918Bar4 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,8 +21,9 @@ m1918Bar4 = asset M1918Bar4 Cards.m1918Bar4
 
 instance HasAbilities M1918Bar4 where
   getAbilities (M1918Bar4 a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility
-        (Just Action.Fight)
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility
+          (Just Action.Fight)
         $ ActionCost 1 <> UseCostUpTo (AssetWithId $ toId a) Ammo 1 5
     ]
 
@@ -37,13 +38,13 @@ instance RunMessage M1918Bar4 where
       let uses = totalUses payments
       pushAll
         [ skillTestModifier
-          attrs
-          (InvestigatorTarget iid)
-          (SkillModifier SkillCombat uses)
+            attrs
+            (InvestigatorTarget iid)
+            (SkillModifier SkillCombat uses)
         , skillTestModifier
-          attrs
-          (InvestigatorTarget iid)
-          (DamageDealt (uses - 1))
+            attrs
+            (InvestigatorTarget iid)
+            (DamageDealt (uses - 1))
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure a

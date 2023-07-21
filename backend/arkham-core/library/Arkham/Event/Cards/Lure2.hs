@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Lure2
-  ( lure2
-  , Lure2(..)
-  ) where
+module Arkham.Event.Cards.Lure2 (
+  lure2,
+  Lure2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Placement
 import Arkham.Timing qualified as Timing
 
 newtype Lure2 = Lure2 EventAttrs
-  deriving anyclass IsEvent
+  deriving anyclass (IsEvent)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lure2 :: EventCard Lure2

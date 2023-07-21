@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.DarkPact
-  ( darkPact
-  , DarkPact(..)
-  ) where
+module Arkham.Event.Cards.DarkPact (
+  darkPact,
+  DarkPact (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,10 +24,12 @@ darkPact = event DarkPact Cards.darkPact
 
 instance HasAbilities DarkPact where
   getAbilities (DarkPact x) =
-    [ restrictedAbility x 1 InYourHand $ ForcedAbility $ OrWindowMatcher
-        [ GameEnds Timing.When
-        , InvestigatorEliminated Timing.When You
-        ]
+    [ restrictedAbility x 1 InYourHand $
+        ForcedAbility $
+          OrWindowMatcher
+            [ GameEnds Timing.When
+            , InvestigatorEliminated Timing.When You
+            ]
     ]
 
 instance RunMessage DarkPact where
@@ -36,12 +38,12 @@ instance RunMessage DarkPact where
       iids <- selectList $ colocatedWith iid
       pushAll
         [ chooseOne
-          iid
-          [ targetLabel
+            iid
+            [ targetLabel
               iid'
               [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 2 0]
-          | iid' <- iids
-          ]
+            | iid' <- iids
+            ]
         ]
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)

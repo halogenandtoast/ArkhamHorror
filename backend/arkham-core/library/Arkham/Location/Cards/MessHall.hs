@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.MessHall
-  ( messHall
-  , MessHall(..)
-  ) where
+module Arkham.Location.Cards.MessHall (
+  messHall,
+  MessHall (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,14 +22,15 @@ messHall :: LocationCard MessHall
 messHall = location MessHall Cards.messHall 2 (PerPlayer 2)
 
 instance HasAbilities MessHall where
-  getAbilities (MessHall attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 Here
-      $ ForcedAbility
-      $ SkillTestResult Timing.After You (WhileInvestigating YourLocation)
-      $ SuccessResult AnyValue
-    | locationRevealed attrs
-    ]
+  getAbilities (MessHall attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 Here $
+        ForcedAbility $
+          SkillTestResult Timing.After You (WhileInvestigating YourLocation) $
+            SuccessResult AnyValue
+      | locationRevealed attrs
+      ]
 
 instance RunMessage MessHall where
   runMessage msg l@(MessHall attrs) = case msg of

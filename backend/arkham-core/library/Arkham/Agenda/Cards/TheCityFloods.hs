@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheCityFloods
-  ( TheCityFloods(..)
-  , theCityFloods
-  ) where
+module Arkham.Agenda.Cards.TheCityFloods (
+  TheCityFloods (..),
+  theCityFloods,
+) where
 
 import Arkham.Prelude
 
@@ -26,13 +26,15 @@ theCityFloods = agenda (3, A) TheCityFloods Cards.theCityFloods (Static 8)
 instance HasModifiersFor TheCityFloods where
   getModifiersFor (CardIdTarget cardId) (TheCityFloods a) = do
     card <- getCard cardId
-    pure $ toModifiers
-      a
-      [ AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils ]
+    pure $
+      toModifiers
+        a
+        [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheCityFloods where
   runMessage msg a@(TheCityFloods attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 3)
+    AdvanceAgenda aid
+      | aid == toId attrs && onSide B attrs ->
+          a <$ push (ScenarioResolution $ Resolution 3)
     _ -> TheCityFloods <$> runMessage msg attrs

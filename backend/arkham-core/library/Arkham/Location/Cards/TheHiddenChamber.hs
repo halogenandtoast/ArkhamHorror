@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.TheHiddenChamber
-  ( theHiddenChamber
-  , TheHiddenChamber(..)
-  ) where
+module Arkham.Location.Cards.TheHiddenChamber (
+  theHiddenChamber,
+  TheHiddenChamber (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,12 +13,12 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Matcher hiding ( RevealLocation )
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Name
 import Arkham.Projection
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theHiddenChamber :: LocationCard TheHiddenChamber
@@ -28,13 +28,15 @@ theHiddenChamber =
 instance HasModifiersFor TheHiddenChamber where
   getModifiersFor target (TheHiddenChamber attrs) | isTarget attrs target = do
     mKeyToTheChamber <- selectOne (assetIs Assets.keyToTheChamber)
-    pure $ toModifiers
-      attrs
-      (case mKeyToTheChamber of
-        Just keyToTheChamber | keyToTheChamber `member` locationAssets attrs ->
-          []
-        _ -> [Blocked]
-      )
+    pure $
+      toModifiers
+        attrs
+        ( case mKeyToTheChamber of
+            Just keyToTheChamber
+              | keyToTheChamber `member` locationAssets attrs ->
+                  []
+            _ -> [Blocked]
+        )
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheHiddenChamber where

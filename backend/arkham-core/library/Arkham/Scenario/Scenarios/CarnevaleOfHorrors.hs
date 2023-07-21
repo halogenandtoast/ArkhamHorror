@@ -95,7 +95,7 @@ abbessSatisfied lead investigatorIds =
           Assets.abbessAllegriaDiBiase
       ]
 
-additionalRewards :: (HasGame m) => ScenarioAttrs -> m [Message]
+additionalRewards :: HasGame m => ScenarioAttrs -> m [Message]
 additionalRewards s = do
   lead <- getLead
   investigatorIds <- allInvestigatorIds
@@ -108,7 +108,7 @@ additionalRewards s = do
     proceedToAbbessSatisfied =
       if null (scenarioCardsUnderAgendaDeck s)
         && length (scenarioCardsUnderAgendaDeck s)
-          == 3
+        == 3
         then abbessSatisfied lead investigatorIds
         else []
   pure $

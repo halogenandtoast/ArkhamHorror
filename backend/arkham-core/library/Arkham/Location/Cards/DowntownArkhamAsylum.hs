@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.DowntownArkhamAsylum
-  ( DowntownArkhamAsylum(..)
-  , downtownArkhamAsylum
-  ) where
+module Arkham.Location.Cards.DowntownArkhamAsylum (
+  DowntownArkhamAsylum (..),
+  downtownArkhamAsylum,
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Location.Cards qualified as Cards ( downtownArkhamAsylum )
+import Arkham.Location.Cards qualified as Cards (downtownArkhamAsylum)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -24,18 +24,21 @@ downtownArkhamAsylum =
   location DowntownArkhamAsylum Cards.downtownArkhamAsylum 4 (PerPlayer 2)
 
 instance HasAbilities DowntownArkhamAsylum where
-  getAbilities (DowntownArkhamAsylum x) | locationRevealed x = withBaseAbilities
-    x
-    [ limitedAbility (PlayerLimit PerGame 1)
-      $ restrictedAbility
+  getAbilities (DowntownArkhamAsylum x)
+    | locationRevealed x =
+        withBaseAbilities
           x
-          1
-          (Here <> InvestigatorExists
-            (HealableInvestigator (toSource x) HorrorType You)
-          )
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    ]
+          [ limitedAbility (PlayerLimit PerGame 1)
+              $ restrictedAbility
+                x
+                1
+                ( Here
+                    <> InvestigatorExists
+                      (HealableInvestigator (toSource x) HorrorType You)
+                )
+              $ ActionAbility Nothing
+              $ ActionCost 1
+          ]
   getAbilities (DowntownArkhamAsylum attrs) = getAbilities attrs
 
 instance RunMessage DowntownArkhamAsylum where

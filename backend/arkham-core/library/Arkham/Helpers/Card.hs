@@ -30,7 +30,7 @@ isDiscardable = not . isWeakness
     EncounterCard _ -> True -- maybe?
     VengeanceCard _ -> False -- should be an error
 
-getCardPayments :: (HasGame m) => Card -> m (Maybe Payment)
+getCardPayments :: HasGame m => Card -> m (Maybe Payment)
 getCardPayments c = do
   costs <- getActiveCosts
   pure $ activeCostPayments <$> find (isCardTarget . activeCostTarget) costs
@@ -46,7 +46,7 @@ extendedCardMatch (toCard -> c) matcher =
   selectAny (BasicCardMatch (CardWithId (toCardId c)) <> matcher)
 
 class ConvertToCard a where
-  convertToCard :: (HasGame m) => a -> m Card
+  convertToCard :: HasGame m => a -> m Card
 
 instance ConvertToCard EnemyId where
   convertToCard = getEntityCard @Enemy
@@ -102,8 +102,8 @@ getPrintedVictoryPoints = getCardField cdVictoryPoints
 getCardAbilities :: InvestigatorId -> Card -> [Ability]
 getCardAbilities iid c = getAbilities $ addCardEntityWith iid id mempty c
 
-findJustCard :: (HasGame m) => (Card -> Bool) -> m Card
+findJustCard :: HasGame m => (Card -> Bool) -> m Card
 findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred
 
-findUniqueCard :: (HasGame m) => CardDef -> m Card
+findUniqueCard :: HasGame m => CardDef -> m Card
 findUniqueCard def = findJustCard (`cardMatch` (cardIs def <> CardIsUnique))

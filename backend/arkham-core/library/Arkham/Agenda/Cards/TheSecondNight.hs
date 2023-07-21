@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheSecondNight
-  ( TheSecondNight(..)
-  , theSecondNight
-  ) where
+module Arkham.Agenda.Cards.TheSecondNight (
+  TheSecondNight (..),
+  theSecondNight,
+) where
 
 import Arkham.Prelude
 
@@ -26,7 +26,7 @@ theSecondNight = agenda (2, A) TheSecondNight Cards.theSecondNight (Static 5)
 instance HasModifiersFor TheSecondNight where
   getModifiersFor target (TheSecondNight a) | not (isTarget a target) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
-    pure $ toModifiers a $ [ DoomSubtracts | moreConvictionThanDoubt ]
+    pure $ toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheSecondNight where
@@ -40,13 +40,14 @@ instance RunMessage TheSecondNight where
       spawnJordanPerryMessages <- do
         spawnJordanPerry <- not <$> slain Enemies.jordanPerry
         card <- genCard Enemies.jordanPerry
-        createJordanPerry <- createEnemyAtLocationMatching_
-          card
-          (LocationWithTitle "Montparnasse")
-        pure [ createJordanPerry | spawnJordanPerry ]
-      pushAll
-        $ organistMsg
-        : spawnJordanPerryMessages
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+        createJordanPerry <-
+          createEnemyAtLocationMatching_
+            card
+            (LocationWithTitle "Montparnasse")
+        pure [createJordanPerry | spawnJordanPerry]
+      pushAll $
+        organistMsg
+          : spawnJordanPerryMessages
+            <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> TheSecondNight <$> runMessage msg attrs

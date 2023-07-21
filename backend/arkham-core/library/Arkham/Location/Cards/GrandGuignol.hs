@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.GrandGuignol
-  ( grandGuignol
-  , GrandGuignol(..)
-  ) where
+module Arkham.Location.Cards.GrandGuignol (
+  grandGuignol,
+  GrandGuignol (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,32 +23,34 @@ grandGuignol :: LocationCard GrandGuignol
 grandGuignol = location GrandGuignol Cards.grandGuignol 3 (PerPlayer 1)
 
 instance HasAbilities GrandGuignol where
-  getAbilities (GrandGuignol attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 Here
-      $ ForcedAbility
-      $ RevealLocation Timing.After You
-      $ LocationWithId
-      $ toId attrs
-    | locationRevealed attrs
-    ]
+  getAbilities (GrandGuignol attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 Here $
+        ForcedAbility $
+          RevealLocation Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage GrandGuignol where
   runMessage msg a@(GrandGuignol attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      nonWeaknessCards <- selectListMap
-        toCardId
-        (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))
+      nonWeaknessCards <-
+        selectListMap
+          toCardId
+          (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))
       drawing <- drawCards iid attrs (length nonWeaknessCards)
-      push
-        $ chooseOrRunOne iid
-        $ Label
+      push $
+        chooseOrRunOne iid $
+          Label
             "Take 2 Horror"
             [InvestigatorAssignDamage iid source DamageAny 0 2]
-        : [ Label
-              "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
-              (map (DiscardCard iid (toAbilitySource attrs 1)) nonWeaknessCards <> [drawing])
-          | not (null nonWeaknessCards)
-          ]
+            : [ Label
+                "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
+                (map (DiscardCard iid (toAbilitySource attrs 1)) nonWeaknessCards <> [drawing])
+              | not (null nonWeaknessCards)
+              ]
       pure a
     _ -> GrandGuignol <$> runMessage msg attrs

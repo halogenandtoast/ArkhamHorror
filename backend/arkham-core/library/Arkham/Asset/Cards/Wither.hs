@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.Wither
-  ( wither
-  , witherEffect
-  , Wither(..)
-  )
+module Arkham.Asset.Cards.Wither (
+  wither,
+  witherEffect,
+  Wither (..),
+)
 where
 
 import Arkham.Prelude
@@ -11,12 +11,12 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.ChaosToken
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.SkillType
-import Arkham.ChaosToken
 import Arkham.Window qualified as Window
 
 newtype Wither = Wither AssetAttrs
@@ -28,18 +28,22 @@ wither = asset Wither Cards.wither
 
 instance HasAbilities Wither where
   getAbilities (Wither a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbilityWithSkill
-        (Just Action.Fight)
-        SkillWillpower
-        (ActionCost 1)
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbilityWithSkill
+          (Just Action.Fight)
+          SkillWillpower
+          (ActionCost 1)
     ]
 
 instance RunMessage Wither where
   runMessage msg a@(Wither attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ pushAll
-      [ createCardEffect Cards.wither Nothing source (InvestigatorTarget iid)
-      , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
-      ]
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ pushAll
+              [ createCardEffect Cards.wither Nothing source (InvestigatorTarget iid)
+              , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
+              ]
     _ -> Wither <$> runMessage msg attrs
 
 newtype WitherEffect = WitherEffect EffectAttrs
@@ -55,12 +59,18 @@ instance RunMessage WitherEffect where
       enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
       when
         (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing])
-        (pushAll
-          [ If
-            (Window.RevealChaosTokenEffect iid token effectId)
-            [CreateWindowModifierEffect EffectTurnWindow (EffectModifiers $ toModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]) (AbilitySource effectSource 1) (toTarget enemyId)]
-          , DisableEffect effectId
-          ]
+        ( pushAll
+            [ If
+                (Window.RevealChaosTokenEffect iid token effectId)
+                [ CreateWindowModifierEffect
+                    EffectTurnWindow
+                    ( EffectModifiers $ toModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]
+                    )
+                    (AbilitySource effectSource 1)
+                    (toTarget enemyId)
+                ]
+            , DisableEffect effectId
+            ]
         )
       pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)

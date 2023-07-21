@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.HuntedDown
-  ( HuntedDown(..)
-  , huntedDown
-  ) where
+module Arkham.Treachery.Cards.HuntedDown (
+  HuntedDown (..),
+  huntedDown,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -35,22 +35,29 @@ instance RunMessage HuntedDown where
               case mLocationId of
                 Nothing -> pure Nothing
                 Just locationId -> do
-                  closestLocationIds <- selectList
-                    $ ClosestPathLocation locationId destinationId
+                  closestLocationIds <-
+                    selectList $
+                      ClosestPathLocation locationId destinationId
                   case closestLocationIds of
                     [] -> pure Nothing
-                    [x] -> pure $ Just $ targetLabel
-                      eid
-                      ([ EnemyMove eid x | locationId /= x ]
-                      <> [EnemyAttackIfEngaged eid (Just iid)]
-                      )
-                    xs -> pure $ Just $ targetLabel
-                      eid
-                      [ chooseOne
-                        iid
-                        [ targetLabel x [EnemyMove eid x] | x <- xs, x /= locationId ]
-                      , EnemyAttackIfEngaged eid (Just iid)
-                      ]
+                    [x] ->
+                      pure $
+                        Just $
+                          targetLabel
+                            eid
+                            ( [EnemyMove eid x | locationId /= x]
+                                <> [EnemyAttackIfEngaged eid (Just iid)]
+                            )
+                    xs ->
+                      pure $
+                        Just $
+                          targetLabel
+                            eid
+                            [ chooseOne
+                                iid
+                                [targetLabel x [EnemyMove eid x] | x <- xs, x /= locationId]
+                            , EnemyAttackIfEngaged eid (Just iid)
+                            ]
 
             unless
               (null enemiesToMove || null (catMaybes messages))

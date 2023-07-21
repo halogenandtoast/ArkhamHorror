@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
 newtype AceOfSwords1 = AceOfSwords1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aceOfSwords1 :: AssetCard AceOfSwords1

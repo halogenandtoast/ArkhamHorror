@@ -1,9 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Strategy where
 
-import Arkham.Prelude
 import Arkham.Card.CardDef
 import Arkham.Id
+import Arkham.Prelude
 import Arkham.Target
 import Arkham.Zone
 import Data.Aeson.TH
@@ -14,8 +15,8 @@ data DamageStrategy
   | DamageFirst CardDef
   | SingleTarget
   | DamageEvenly
-  -- Hastur has specific damage rules
-  | DamageFromHastur
+  | -- Hastur has specific damage rules
+    DamageFromHastur
   deriving stock (Show, Eq, Ord)
 
 data ZoneReturnStrategy

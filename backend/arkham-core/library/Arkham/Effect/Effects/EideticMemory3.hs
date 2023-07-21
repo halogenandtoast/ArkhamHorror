@@ -1,13 +1,13 @@
-module Arkham.Effect.Effects.EideticMemory3
-  ( EideticMemory3(..)
-  , eideticMemory3
-  ) where
+module Arkham.Effect.Effects.EideticMemory3 (
+  EideticMemory3 (..),
+  eideticMemory3,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Event.Types (Field(..))
+import Arkham.Event.Types (Field (..))
 import Arkham.Game.Helpers
 import Arkham.Projection
 

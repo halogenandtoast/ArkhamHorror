@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.ReturnToCellar
-  ( returnToCellar
-  , ReturnToCellar(..)
-  ) where
+module Arkham.Location.Cards.ReturnToCellar (
+  returnToCellar,
+  ReturnToCellar (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,14 +23,14 @@ returnToCellar = location ReturnToCellar Cards.returnToCellar 2 (PerPlayer 1)
 
 instance HasAbilities ReturnToCellar where
   getAbilities (ReturnToCellar attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          RevealLocation Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage ReturnToCellar where
   runMessage msg l@(ReturnToCellar attrs) = case msg of

@@ -1,13 +1,13 @@
-module Arkham.Treachery.Cards.Mesmerize
-  ( mesmerize
-  , Mesmerize(..)
-  ) where
+module Arkham.Treachery.Cards.Mesmerize (
+  mesmerize,
+  Mesmerize (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card.CardCode
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -28,15 +28,17 @@ instance RunMessage Mesmerize where
       t <$ case mlid of
         Nothing -> push $ gainSurge attrs
         Just lid -> do
-          maskedCarnevaleGoers <- selectListMap
-            AssetTarget
-            (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
+          maskedCarnevaleGoers <-
+            selectListMap
+              AssetTarget
+              (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
           case maskedCarnevaleGoers of
             [] -> push $ chooseOne iid [targetLabel attrs [gainSurge attrs]]
-            xs -> pushAll
-              [ CreateEffect (toCardCode attrs) Nothing source (toTarget iid)
-              , chooseOne
-                iid
-                [ TargetLabel target [Flip iid source target] | target <- xs ]
-              ]
+            xs ->
+              pushAll
+                [ CreateEffect (toCardCode attrs) Nothing source (toTarget iid)
+                , chooseOne
+                    iid
+                    [TargetLabel target [Flip iid source target] | target <- xs]
+                ]
     _ -> Mesmerize <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.NotWithoutAFight
-  ( notWithoutAFight
-  , NotWithoutAFight(..)
-  ) where
+module Arkham.Skill.Cards.NotWithoutAFight (
+  notWithoutAFight,
+  NotWithoutAFight (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,11 +23,16 @@ notWithoutAFight = skill NotWithoutAFight Cards.notWithoutAFight
 instance HasModifiersFor NotWithoutAFight where
   getModifiersFor (CardIdTarget cid) (NotWithoutAFight attrs)
     | toCardId attrs == cid = do
-      n <- selectCount $ EnemyIsEngagedWith $ InvestigatorWithId $ skillOwner
-        attrs
-      pure $ toModifiers
-        attrs
-        [AddSkillIcons $ cycleN n [SkillIcon SkillWillpower, SkillIcon SkillCombat, SkillIcon SkillAgility]]
+        n <-
+          selectCount $
+            EnemyIsEngagedWith $
+              InvestigatorWithId $
+                skillOwner
+                  attrs
+        pure $
+          toModifiers
+            attrs
+            [AddSkillIcons $ cycleN n [SkillIcon SkillWillpower, SkillIcon SkillCombat, SkillIcon SkillAgility]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage NotWithoutAFight where

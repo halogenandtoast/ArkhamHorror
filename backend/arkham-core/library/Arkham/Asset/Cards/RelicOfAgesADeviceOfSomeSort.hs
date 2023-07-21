@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.RelicOfAgesADeviceOfSomeSort
-  ( relicOfAgesADeviceOfSomeSort
-  , RelicOfAgesADeviceOfSomeSort(..)
-  ) where
+module Arkham.Asset.Cards.RelicOfAgesADeviceOfSomeSort (
+  relicOfAgesADeviceOfSomeSort,
+  RelicOfAgesADeviceOfSomeSort (..),
+) where
 
 import Arkham.Prelude
 

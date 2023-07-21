@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheShadowOfTheEclipse
-  ( TheShadowOfTheEclipse(..)
-  , theShadowOfTheEclipse
-  ) where
+module Arkham.Agenda.Cards.TheShadowOfTheEclipse (
+  TheShadowOfTheEclipse (..),
+  theShadowOfTheEclipse,
+) where
 
 import Arkham.Prelude
 
@@ -24,24 +24,26 @@ theShadowOfTheEclipse =
 instance RunMessage TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      maskedCarnevaleGoers <- selectList
-        (AssetWithTitle "Masked Carnevale-Goer")
+      maskedCarnevaleGoers <-
+        selectList
+          (AssetWithTitle "Masked Carnevale-Goer")
       leadInvestigatorId <- getLeadInvestigatorId
       case maskedCarnevaleGoers of
         [] -> push $ AdvanceAgendaDeck agendaDeckId (toSource attrs)
-        xs -> pushAll
-          [ chooseOne
-            leadInvestigatorId
-            [ targetLabel
-                x
-                [ Flip
-                    leadInvestigatorId
-                    (InvestigatorSource leadInvestigatorId)
-                    (AssetTarget x)
+        xs ->
+          pushAll
+            [ chooseOne
+                leadInvestigatorId
+                [ targetLabel
+                  x
+                  [ Flip
+                      leadInvestigatorId
+                      (InvestigatorSource leadInvestigatorId)
+                      (AssetTarget x)
+                  ]
+                | x <- xs
                 ]
-            | x <- xs
+            , RevertAgenda aid
             ]
-          , RevertAgenda aid
-          ]
       pure a
     _ -> TheShadowOfTheEclipse <$> runMessage msg attrs

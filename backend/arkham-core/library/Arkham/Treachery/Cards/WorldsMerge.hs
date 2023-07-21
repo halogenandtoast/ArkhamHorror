@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.WorldsMerge
-  ( worldsMerge
-  , WorldsMerge(..)
-  ) where
+module Arkham.Treachery.Cards.WorldsMerge (
+  worldsMerge,
+  WorldsMerge (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Agenda.Sequence qualified as AS
-import Arkham.Agenda.Types ( Field (AgendaSequence) )
+import Arkham.Agenda.Types (Field (AgendaSequence))
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
@@ -36,11 +36,13 @@ instance RunMessage WorldsMerge where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid source SkillWillpower 3
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        n <- getStep =<< selectOne (AgendaWithSide AS.C)
-        pushAll $ InvestigatorAssignDamage iid source DamageAny 0 n : replicate
-          n
-          (toMessage $ chooseAndDiscardCard iid attrs)
-        pure t
+          n <- getStep =<< selectOne (AgendaWithSide AS.C)
+          pushAll $
+            InvestigatorAssignDamage iid source DamageAny 0 n
+              : replicate
+                n
+                (toMessage $ chooseAndDiscardCard iid attrs)
+          pure t
     _ -> WorldsMerge <$> runMessage msg attrs

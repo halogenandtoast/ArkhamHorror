@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.LightingBox
-  ( lightingBox
-  , LightingBox(..)
-  ) where
+module Arkham.Location.Cards.LightingBox (
+  lightingBox,
+  LightingBox (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 
 newtype LightingBox = LightingBox LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 lightingBox :: LocationCard LightingBox

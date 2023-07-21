@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.TheGuardiansInquiry
-  ( TheGuardiansInquiry(..)
-  , theGuardiansInquiry
-  ) where
+module Arkham.Act.Cards.TheGuardiansInquiry (
+  TheGuardiansInquiry (..),
+  theGuardiansInquiry,
+) where
 
 import Arkham.Prelude
 
@@ -20,10 +20,10 @@ newtype TheGuardiansInquiry = TheGuardiansInquiry ActAttrs
 
 theGuardiansInquiry :: ActCard TheGuardiansInquiry
 theGuardiansInquiry =
-  act (1, E) TheGuardiansInquiry Cards.theGuardiansInquiry
-    $ Just
-    $ GroupClueCost (PerPlayer 1)
-    $ LocationWithTitle "Northside"
+  act (1, E) TheGuardiansInquiry Cards.theGuardiansInquiry $
+    Just $
+      GroupClueCost (PerPlayer 1) $
+        LocationWithTitle "Northside"
 
 instance RunMessage TheGuardiansInquiry where
   runMessage msg a@(TheGuardiansInquiry attrs) = case msg of

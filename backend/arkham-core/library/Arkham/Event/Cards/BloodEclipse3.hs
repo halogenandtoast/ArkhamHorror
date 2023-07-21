@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.BloodEclipse3
-  ( bloodEclipse3
-  , BloodEclipse3(..)
-  ) where
+module Arkham.Event.Cards.BloodEclipse3 (
+  bloodEclipse3,
+  BloodEclipse3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -31,18 +31,18 @@ instance RunMessage BloodEclipse3 where
   runMessage msg e@(BloodEclipse3 attrs) = case msg of
     PaidForCardCost iid card (countDamage -> n)
       | toCardId card == toCardId attrs -> do
-        pushAll
-          [ skillTestModifiers
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            [DamageDealt n, SkillModifier SkillWillpower n]
-          , ChooseFightEnemy
-            iid
-            (toSource attrs)
-            Nothing
-            SkillWillpower
-            mempty
-            False
-          ]
-        pure e
+          pushAll
+            [ skillTestModifiers
+                (toSource attrs)
+                (InvestigatorTarget iid)
+                [DamageDealt n, SkillModifier SkillWillpower n]
+            , ChooseFightEnemy
+                iid
+                (toSource attrs)
+                Nothing
+                SkillWillpower
+                mempty
+                False
+            ]
+          pure e
     _ -> BloodEclipse3 <$> runMessage msg attrs

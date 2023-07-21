@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.Entombed
-  ( entombed
-  , Entombed(..)
-  ) where
+module Arkham.Treachery.Cards.Entombed (
+  entombed,
+  Entombed (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,12 +14,12 @@ import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
-newtype Metadata = Metadata { difficultyReduction :: Int }
+newtype Metadata = Metadata {difficultyReduction :: Int}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype Entombed = Entombed (TreacheryAttrs `With` Metadata)
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entombed :: TreacheryCard Entombed
@@ -34,9 +34,9 @@ instance HasModifiersFor Entombed where
 
 instance HasAbilities Entombed where
   getAbilities (Entombed (a `With` _)) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ActionAbility Nothing
-        $ ActionCost 1
+    [ restrictedAbility a 1 (InThreatAreaOf You) $
+        ActionAbility Nothing $
+          ActionCost 1
     ]
 
 instance RunMessage Entombed where
@@ -47,17 +47,21 @@ instance RunMessage Entombed where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         difficulty = max 0 (4 - difficultyReduction metadata)
-        testChoice sType = SkillLabel
-          sType
-          [beginSkillTest iid source (toTarget iid) sType difficulty]
+        testChoice sType =
+          SkillLabel
+            sType
+            [beginSkillTest iid source (toTarget iid) sType difficulty]
       push $ chooseOne iid [testChoice SkillAgility, testChoice SkillCombat]
       pure t
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        pure $ Entombed $ attrs `With` Metadata
-          (difficultyReduction metadata + 1)
+          pure $
+            Entombed $
+              attrs
+                `With` Metadata
+                  (difficultyReduction metadata + 1)
     EndRound -> do
       pure $ Entombed $ attrs `With` Metadata 0
     _ -> Entombed . (`with` metadata) <$> runMessage msg attrs

@@ -14,7 +14,7 @@ import Arkham.Story.Stories
 import Arkham.Story.Types
 import Arkham.Target
 
-createStory :: (IsCard a) => a -> Maybe Target -> StoryId -> Story
+createStory :: IsCard a => a -> Maybe Target -> StoryId -> Story
 createStory a mtarget sId = lookupStory sId mtarget (toCardId a)
 
 lookupStory :: StoryId -> Maybe Target -> CardId -> Story
@@ -27,7 +27,7 @@ instance FromJSON Story where
     cCode <- o .: "id"
     withStoryCardCode cCode $ \(_ :: StoryCard a) -> Story <$> parseJSON @a (Object o)
 
-withStoryCardCode :: CardCode -> (forall a. (IsStory a) => StoryCard a -> r) -> r
+withStoryCardCode :: CardCode -> (forall a. IsStory a => StoryCard a -> r) -> r
 withStoryCardCode cCode f = case lookup cCode allStories of
   Nothing -> error $ "Unknown story: " <> show cCode
   Just (SomeStoryCard a) -> f a

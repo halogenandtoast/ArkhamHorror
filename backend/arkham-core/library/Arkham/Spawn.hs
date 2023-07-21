@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Spawn where
 
 import Arkham.Prelude
@@ -15,4 +16,3 @@ data SpawnAt
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''SpawnAt)
-

@@ -20,23 +20,24 @@ onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
 
 instance RunMessage OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (RevelationSkillTest iid source SkillAgility 4)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    Revelation iid source
+      | isSource attrs source ->
+          t <$ push (RevelationSkillTest iid source SkillAgility 4)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        centralLocations <- selectList $ LocationWithTrait Central
-        enemiesToDisengage <-
-          selectList
-          $ EnemyIsEngagedWith (InvestigatorWithId iid)
-          <> EnemyWithoutTrait Nightgaunt
-        pushAll
-          $ InvestigatorAssignDamage iid source DamageAny 1 1
-          : map (DisengageEnemy iid) enemiesToDisengage
-          <> [ chooseOne
-                 iid
-                 [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
-                 | lid <- centralLocations
-                 ]
-             ]
-        pure t
+          centralLocations <- selectList $ LocationWithTrait Central
+          enemiesToDisengage <-
+            selectList $
+              EnemyIsEngagedWith (InvestigatorWithId iid)
+                <> EnemyWithoutTrait Nightgaunt
+          pushAll $
+            InvestigatorAssignDamage iid source DamageAny 1 1
+              : map (DisengageEnemy iid) enemiesToDisengage
+                <> [ chooseOne
+                      iid
+                      [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
+                      | lid <- centralLocations
+                      ]
+                   ]
+          pure t
     _ -> OnWingsOfDarkness <$> runMessage msg attrs

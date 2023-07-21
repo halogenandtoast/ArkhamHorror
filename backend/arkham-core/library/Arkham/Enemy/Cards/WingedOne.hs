@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.WingedOne
-  ( wingedOne
-  , WingedOne(..)
-  ) where
+module Arkham.Enemy.Cards.WingedOne (
+  wingedOne,
+  WingedOne (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,25 +24,26 @@ wingedOne :: EnemyCard WingedOne
 wingedOne = enemy WingedOne Cards.wingedOne (3, Static 3, 4) (3, 1)
 
 instance HasAbilities WingedOne where
-  getAbilities (WingedOne a) = withBaseAbilities
-    a
-    [ restrictedAbility
-        a
-        1
-        (EnemyCriteria
-        $ EnemyExists
-        $ EnemyWithId (toId a)
-        <> ReadyEnemy
-        <> UnengagedEnemy
-        )
-      $ ForcedAbility
-      $ Matcher.FlipLocation Timing.When Anyone Anywhere
-    ]
+  getAbilities (WingedOne a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility
+          a
+          1
+          ( EnemyCriteria $
+              EnemyExists $
+                EnemyWithId (toId a)
+                  <> ReadyEnemy
+                  <> UnengagedEnemy
+          )
+          $ ForcedAbility
+          $ Matcher.FlipLocation Timing.When Anyone Anywhere
+      ]
 
 instance RunMessage WingedOne where
   runMessage msg e@(WingedOne attrs) = case msg of
     UseCardAbility _ source 1 [Window _ (Window.FlipLocation _ lid)] _
       | isSource attrs source -> do
-        push $ MoveToward (toTarget attrs) (LocationWithId lid)
-        pure e
+          push $ MoveToward (toTarget attrs) (LocationWithId lid)
+          pure e
     _ -> WingedOne <$> runMessage msg attrs

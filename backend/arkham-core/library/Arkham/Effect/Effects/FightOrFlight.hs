@@ -1,14 +1,14 @@
-module Arkham.Effect.Effects.FightOrFlight
-  ( FightOrFlight(..)
-  , fightOrFlight
-  ) where
+module Arkham.Effect.Effects.FightOrFlight (
+  FightOrFlight (..),
+  fightOrFlight,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -23,10 +23,11 @@ fightOrFlight = FightOrFlight . uncurry4 (baseAttrs "03155")
 instance HasModifiersFor FightOrFlight where
   getModifiersFor target@(InvestigatorTarget iid) (FightOrFlight attrs)
     | effectTarget attrs == target = do
-      horror <- field InvestigatorHorror iid
-      pure $ toModifiers
-        attrs
-        [SkillModifier SkillCombat horror, SkillModifier SkillAgility horror]
+        horror <- field InvestigatorHorror iid
+        pure $
+          toModifiers
+            attrs
+            [SkillModifier SkillCombat horror, SkillModifier SkillAgility horror]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FightOrFlight where

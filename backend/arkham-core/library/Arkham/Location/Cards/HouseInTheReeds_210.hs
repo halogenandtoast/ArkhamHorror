@@ -1,20 +1,20 @@
-module Arkham.Location.Cards.HouseInTheReeds_210
-  ( houseInTheReeds_210
-  , HouseInTheReeds_210(..)
-  ) where
+module Arkham.Location.Cards.HouseInTheReeds_210 (
+  houseInTheReeds_210,
+  HouseInTheReeds_210 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( houseInTheReeds_210 )
+import Arkham.Location.Cards qualified as Cards (houseInTheReeds_210)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 
 newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 houseInTheReeds_210 :: LocationCard HouseInTheReeds_210
@@ -23,11 +23,12 @@ houseInTheReeds_210 =
 
 instance HasModifiersFor HouseInTheReeds_210 where
   getModifiersFor (InvestigatorTarget iid) (HouseInTheReeds_210 attrs) =
-    pure $ toModifiers
-      attrs
-      [ CannotPlay (CardWithType EventType)
-      | iid `elem` locationInvestigators attrs
-      ]
+    pure $
+      toModifiers
+        attrs
+        [ CannotPlay (CardWithType EventType)
+        | iid `elem` locationInvestigators attrs
+        ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HouseInTheReeds_210 where

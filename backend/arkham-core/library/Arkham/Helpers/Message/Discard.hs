@@ -10,7 +10,7 @@ import Arkham.Message
 import Arkham.Source
 
 discardFromHand
-  :: (Sourceable source)
+  :: Sourceable source
   => InvestigatorId
   -> source
   -> DiscardStrategy
@@ -28,7 +28,7 @@ discardFromHand iid (toSource -> source) strategy amount =
     }
 
 chooseAndDiscardCard
-  :: (Sourceable source) => InvestigatorId -> source -> HandDiscard Message
+  :: Sourceable source => InvestigatorId -> source -> HandDiscard Message
 chooseAndDiscardCard iid source = discardFromHand iid source DiscardChoose 1
 
 discardCard
@@ -41,15 +41,15 @@ discardCard iid source (toCardId -> cardId) =
   (chooseAndDiscardCard iid source) {discardFilter = CardWithId cardId}
 
 randomDiscard
-  :: (Sourceable source) => InvestigatorId -> source -> HandDiscard Message
+  :: Sourceable source => InvestigatorId -> source -> HandDiscard Message
 randomDiscard iid source = randomDiscardMatching iid source AnyCard
 
 randomDiscardN
-  :: (Sourceable source) => InvestigatorId -> source -> Int -> HandDiscard Message
+  :: Sourceable source => InvestigatorId -> source -> Int -> HandDiscard Message
 randomDiscardN iid source n = (randomDiscard iid source) {discardAmount = n}
 
 randomDiscardMatching
-  :: (Sourceable source)
+  :: Sourceable source
   => InvestigatorId
   -> source
   -> CardMatcher

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.AsylumHallsEasternPatientWing_170
-  ( asylumHallsEasternPatientWing_170
-  , AsylumHallsEasternPatientWing_170(..)
-  ) where
+module Arkham.Location.Cards.AsylumHallsEasternPatientWing_170 (
+  asylumHallsEasternPatientWing_170,
+  AsylumHallsEasternPatientWing_170 (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Matcher hiding ( EnemyEvaded )
+import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message qualified as Msg
 import Arkham.Trait
 
@@ -21,32 +21,36 @@ newtype AsylumHallsEasternPatientWing_170 = AsylumHallsEasternPatientWing_170 Lo
 
 asylumHallsEasternPatientWing_170
   :: LocationCard AsylumHallsEasternPatientWing_170
-asylumHallsEasternPatientWing_170 = location
-  AsylumHallsEasternPatientWing_170
-  Cards.asylumHallsEasternPatientWing_170
-  3
-  (Static 0)
+asylumHallsEasternPatientWing_170 =
+  location
+    AsylumHallsEasternPatientWing_170
+    Cards.asylumHallsEasternPatientWing_170
+    3
+    (Static 0)
 
 instance HasAbilities AsylumHallsEasternPatientWing_170 where
-  getAbilities (AsylumHallsEasternPatientWing_170 attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (AsylumHallsEasternPatientWing_170 attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
-        (Here <> EnemyCriteria
-          (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Lunatic)
+        ( Here
+            <> EnemyCriteria
+              (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Lunatic)
         )
-      $ ActionAbility Nothing
-      $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
-    | locationRevealed attrs
-    ]
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage AsylumHallsEasternPatientWing_170 where
   runMessage msg l@(AsylumHallsEasternPatientWing_170 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <- selectList $ EnemyAt YourLocation <> EnemyWithTrait Lunatic
-      push $ chooseOne
-        iid
-        [ targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- enemies ]
+      push $
+        chooseOne
+          iid
+          [targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- enemies]
       pure l
     _ -> AsylumHallsEasternPatientWing_170 <$> runMessage msg attrs

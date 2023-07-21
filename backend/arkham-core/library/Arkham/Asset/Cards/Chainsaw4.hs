@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Chainsaw4
-  ( chainsaw4
-  , Chainsaw4(..)
-  ) where
+module Arkham.Asset.Cards.Chainsaw4 (
+  chainsaw4,
+  Chainsaw4 (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,9 +22,9 @@ chainsaw4 = asset Chainsaw4 Cards.chainsaw4
 
 instance HasAbilities Chainsaw4 where
   getAbilities (Chainsaw4 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ UseCost (AssetWithId $ toId a) Supply 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          UseCost (AssetWithId $ toId a) Supply 1
     ]
 
 instance RunMessage Chainsaw4 where
@@ -32,25 +32,27 @@ instance RunMessage Chainsaw4 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       pushAll
         [ skillTestModifiers
-          attrs
-          (InvestigatorTarget iid)
-          [SkillModifier SkillCombat 2, DamageDealt 2]
+            attrs
+            (InvestigatorTarget iid)
+            [SkillModifier SkillCombat 2, DamageDealt 2]
         , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
       pure a
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        mTarget <- getSkillTestTarget
-        case mTarget of
-          Just (EnemyTarget eid) -> push $ chooseOne
-            iid
-            [ Label
-              "Place 1 supply on Chainsaw"
-              [AddUses (toId attrs) Supply 1]
-            , Label
-              "Deal 1 damage to the attacked enemy"
-              [EnemyDamage eid $ nonAttack source 1]
-            ]
-          _ -> error "invalid call"
-        pure a
+          mTarget <- getSkillTestTarget
+          case mTarget of
+            Just (EnemyTarget eid) ->
+              push $
+                chooseOne
+                  iid
+                  [ Label
+                      "Place 1 supply on Chainsaw"
+                      [AddUses (toId attrs) Supply 1]
+                  , Label
+                      "Deal 1 damage to the attacked enemy"
+                      [EnemyDamage eid $ nonAttack source 1]
+                  ]
+            _ -> error "invalid call"
+          pure a
     _ -> Chainsaw4 <$> runMessage msg attrs

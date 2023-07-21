@@ -45,7 +45,7 @@ instance IsCampaign TheDunwichLegacy where
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
 
-findOwner :: (HasGame m) => CardCode -> m (Maybe InvestigatorId)
+findOwner :: HasGame m => CardCode -> m (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
@@ -132,7 +132,7 @@ instance RunMessage TheDunwichLegacy where
             <$ guard
               ( drHenryArmitageUnowned
                   && recorded (toCardCode Assets.drHenryArmitage)
-                    `notElem` sacrificedToYogSothoth
+                  `notElem` sacrificedToYogSothoth
               )
         addProfessorWarrenRice =
           addCampaignCardToDeckChoice
@@ -142,7 +142,7 @@ instance RunMessage TheDunwichLegacy where
             <$ guard
               ( professorWarrenRiceUnowned
                   && recorded (toCardCode Assets.professorWarrenRice)
-                    `notElem` sacrificedToYogSothoth
+                  `notElem` sacrificedToYogSothoth
               )
         addDrFrancisMorgan =
           addCampaignCardToDeckChoice
@@ -152,7 +152,7 @@ instance RunMessage TheDunwichLegacy where
             <$ guard
               ( drFrancisMorganUnowned
                   && recorded (toCardCode Assets.drFrancisMorgan)
-                    `notElem` sacrificedToYogSothoth
+                  `notElem` sacrificedToYogSothoth
               )
         addZebulonWhateley =
           addCampaignCardToDeckChoice

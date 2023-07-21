@@ -17,11 +17,12 @@ newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mysteriousGateway :: ActCard MysteriousGateway
-mysteriousGateway = act
-  (1, A)
-  MysteriousGateway
-  Cards.mysteriousGateway
-  (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Guest Hall"))
+mysteriousGateway =
+  act
+    (1, A)
+    MysteriousGateway
+    Cards.mysteriousGateway
+    (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Guest Hall"))
 
 instance RunMessage MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
@@ -33,17 +34,18 @@ instance RunMessage MysteriousGateway where
         [ placeHoleInTheWall
         , chooseOne
             leadInvestigatorId
-            [ targetLabel iid'
-               [ MoveTo $ move (toSource attrs) iid' holeInTheWallId
-               , beginSkillTest iid' (ActSource aid) (InvestigatorTarget iid') SkillWillpower 4
-               ]
+            [ targetLabel
+              iid'
+              [ MoveTo $ move (toSource attrs) iid' holeInTheWallId
+              , beginSkillTest iid' (ActSource aid) (InvestigatorTarget iid') SkillWillpower 4
+              ]
             | iid' <- investigatorIds
             ]
         , AdvanceActDeck actDeckId (toSource attrs)
         ]
       pure a
-    FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} _ n
+    FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget {} _ n
       | aid == actId -> do
-      pushAll $ replicate n $ toMessage $ randomDiscard iid attrs
-      pure a
+          pushAll $ replicate n $ toMessage $ randomDiscard iid attrs
+          pure a
     _ -> MysteriousGateway <$> runMessage msg attrs

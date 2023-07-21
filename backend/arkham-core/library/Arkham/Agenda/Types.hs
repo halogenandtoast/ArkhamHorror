@@ -132,7 +132,7 @@ instance HasCardDef AgendaAttrs where
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
-data Agenda = forall a. (IsAgenda a) => Agenda a
+data Agenda = forall a. IsAgenda a => Agenda a
 
 instance Eq Agenda where
   (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of
@@ -180,7 +180,7 @@ instance IsCard Agenda where
   toCardId = agendaCardId . toAttrs
   toCardOwner = const Nothing
 
-data SomeAgendaCard = forall a. (IsAgenda a) => SomeAgendaCard (AgendaCard a)
+data SomeAgendaCard = forall a. IsAgenda a => SomeAgendaCard (AgendaCard a)
 
 liftSomeAgendaCard :: (forall a. AgendaCard a -> b) -> SomeAgendaCard -> b
 liftSomeAgendaCard f (SomeAgendaCard a) = f a

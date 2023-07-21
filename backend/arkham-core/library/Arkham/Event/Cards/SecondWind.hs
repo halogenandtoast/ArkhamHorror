@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.SecondWind
-  ( secondWind
-  , SecondWind(..)
-  ) where
+module Arkham.Event.Cards.SecondWind (
+  secondWind,
+  SecondWind (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History

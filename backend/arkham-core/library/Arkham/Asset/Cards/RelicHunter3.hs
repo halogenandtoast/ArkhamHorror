@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.RelicHunter3
-  ( relicHunter3
-  , RelicHunter3(..)
-  ) where
+module Arkham.Asset.Cards.RelicHunter3 (
+  relicHunter3,
+  RelicHunter3 (..),
+) where
 
 import Arkham.Prelude
 

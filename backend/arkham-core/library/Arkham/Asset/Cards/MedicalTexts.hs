@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MedicalTexts
-  ( MedicalTexts(..)
-  , medicalTexts
-  ) where
+module Arkham.Asset.Cards.MedicalTexts (
+  MedicalTexts (..),
+  medicalTexts,
+) where
 
 import Arkham.Prelude
 
@@ -28,9 +28,10 @@ instance RunMessage MedicalTexts where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let controllerId = getController attrs
       locationInvestigatorIds <- selectList $ colocatedWith controllerId
-      push $ chooseOne
-        iid
-        [ TargetLabel
+      push $
+        chooseOne
+          iid
+          [ TargetLabel
             (InvestigatorTarget iid')
             [ beginSkillTest
                 iid
@@ -39,20 +40,22 @@ instance RunMessage MedicalTexts where
                 SkillIntellect
                 2
             ]
-        | iid' <- locationInvestigatorIds
-        ]
+          | iid' <- locationInvestigatorIds
+          ]
       pure a
     PassedSkillTest _ _ source (SkillTestInitiatorTarget target@(InvestigatorTarget iid)) _ _
-      | isSource attrs source
-      -> do
-        whenM (canHaveDamageHealed attrs iid) $ push $ HealDamage
-          target
-          (toSource attrs)
-          1
-        pure a
+      | isSource attrs source ->
+          do
+            whenM (canHaveDamageHealed attrs iid) $
+              push $
+                HealDamage
+                  target
+                  (toSource attrs)
+                  1
+            pure a
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
-      | isSource attrs source
-      -> do
-        push (InvestigatorAssignDamage iid source DamageAny 1 0)
-        pure a
+      | isSource attrs source ->
+          do
+            push (InvestigatorAssignDamage iid source DamageAny 1 0)
+            pure a
     _ -> MedicalTexts <$> runMessage msg attrs

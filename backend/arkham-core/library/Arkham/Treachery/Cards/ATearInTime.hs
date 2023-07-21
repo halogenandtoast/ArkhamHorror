@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.ATearInTime
-  ( aTearInTime
-  , ATearInTime(..)
-  ) where
+module Arkham.Treachery.Cards.ATearInTime (
+  aTearInTime,
+  ATearInTime (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (InvestigatorRemainingActions) )
+import Arkham.Investigator.Types (Field (InvestigatorRemainingActions))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -25,20 +25,20 @@ instance RunMessage ATearInTime where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid source SkillWillpower 3
       pure t
-    FailedSkillTest iid maction source target@SkillTestInitiatorTarget{} sType n
+    FailedSkillTest iid maction source target@SkillTestInitiatorTarget {} sType n
       | isSource attrs source && n > 0 -> do
-        hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
-        pushAll
-          $ chooseOrRunOne
+          hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
+          pushAll $
+            chooseOrRunOne
               iid
-              ([ Label "Lose 1 Action" [LoseActions iid source 1]
-               | hasRemainingActions
-               ]
-              <> [ Label
-                     "Take 1 Horror"
-                     [InvestigatorAssignDamage iid source DamageAny 0 1]
-                 ]
+              ( [ Label "Lose 1 Action" [LoseActions iid source 1]
+                | hasRemainingActions
+                ]
+                  <> [ Label
+                        "Take 1 Horror"
+                        [InvestigatorAssignDamage iid source DamageAny 0 1]
+                     ]
               )
-          : [FailedSkillTest iid maction source target sType (n - 1)]
-        pure t
+              : [FailedSkillTest iid maction source target sType (n - 1)]
+          pure t
     _ -> ATearInTime <$> runMessage msg attrs

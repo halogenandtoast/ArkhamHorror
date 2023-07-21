@@ -1,20 +1,20 @@
-module Arkham.Event.Cards.MystifyingSong
-  ( mystifyingSong
-  , mystifyingSongEffect
-  , MystifyingSong(..)
-  )
+module Arkham.Event.Cards.MystifyingSong (
+  mystifyingSong,
+  mystifyingSongEffect,
+  MystifyingSong (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
+import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype MystifyingSong = MystifyingSong EventAttrs
@@ -32,10 +32,10 @@ isAfterAgendaWouldAdvanceWindow _ = False
 instance RunMessage MystifyingSong where
   runMessage msg e@(MystifyingSong attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      popMessageMatching_  $ \case
-        Do AdvanceAgendaIfThresholdSatisfied  -> True
+      popMessageMatching_ $ \case
+        Do AdvanceAgendaIfThresholdSatisfied -> True
         _ -> False
-      popMessageMatching_  $ \case
+      popMessageMatching_ $ \case
         CheckWindow _ ws -> any isAfterAgendaWouldAdvanceWindow ws
         _ -> False
       push $ createCardEffect Cards.mystifyingSong Nothing (toSource attrs) (InvestigatorTarget iid)
@@ -51,7 +51,7 @@ mystifyingSongEffect = cardEffect MystifyingSongEffect Cards.mystifyingSong
 
 instance HasModifiersFor MystifyingSongEffect where
   getModifiersFor (AgendaTarget _) (MystifyingSongEffect a) =
-    pure $ toModifiers a [ CannotBeAdvancedByDoomThreshold ]
+    pure $ toModifiers a [CannotBeAdvancedByDoomThreshold]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MystifyingSongEffect where

@@ -10,7 +10,7 @@ import Arkham.Id
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Treacheries
 
-createTreachery :: (IsCard a) => a -> InvestigatorId -> TreacheryId -> Treachery
+createTreachery :: IsCard a => a -> InvestigatorId -> TreacheryId -> Treachery
 createTreachery a iid tid =
   lookupTreachery (toCardCode a) iid tid (toCardId a)
 
@@ -29,7 +29,7 @@ instance FromJSON Treachery where
       \(_ :: TreacheryCard a) -> Treachery <$> parseJSON @a (Object o)
 
 withTreacheryCardCode
-  :: CardCode -> (forall a. (IsTreachery a) => TreacheryCard a -> r) -> r
+  :: CardCode -> (forall a. IsTreachery a => TreacheryCard a -> r) -> r
 withTreacheryCardCode cCode f = case lookup cCode allTreacheries of
   Nothing -> error $ "Unknown treachery: " <> show cCode
   Just (SomeTreacheryCard a) -> f a

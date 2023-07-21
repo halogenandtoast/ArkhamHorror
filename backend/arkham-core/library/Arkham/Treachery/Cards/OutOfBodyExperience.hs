@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.OutOfBodyExperience
-  ( outOfBodyExperience
-  , OutOfBodyExperience(..)
-  ) where
+module Arkham.Treachery.Cards.OutOfBodyExperience (
+  outOfBodyExperience,
+  OutOfBodyExperience (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

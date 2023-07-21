@@ -1,8 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Text where
 
-import Arkham.Prelude
 import Arkham.Json
+import Arkham.Prelude
 import Data.Aeson.TH
 
 newtype Tooltip = Tooltip Text

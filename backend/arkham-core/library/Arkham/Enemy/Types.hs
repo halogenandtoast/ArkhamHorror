@@ -226,7 +226,7 @@ instance Sourceable EnemyAttrs where
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
   isSource _ _ = False
 
-data Enemy = forall a. (IsEnemy a) => Enemy a
+data Enemy = forall a. IsEnemy a => Enemy a
 
 type instance IdOf EnemyId = Enemy
 
@@ -262,7 +262,7 @@ instance Sourceable Enemy where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-data SomeEnemyCard = forall a. (IsEnemy a) => SomeEnemyCard (EnemyCard a)
+data SomeEnemyCard = forall a. IsEnemy a => SomeEnemyCard (EnemyCard a)
 
 liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
 liftSomeEnemyCard f (SomeEnemyCard a) = f a

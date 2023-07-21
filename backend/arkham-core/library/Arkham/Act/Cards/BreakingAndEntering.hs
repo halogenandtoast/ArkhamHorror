@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.BreakingAndEntering
-  ( BreakingAndEntering(..)
-  , breakingAndEntering
-  ) where
+module Arkham.Act.Cards.BreakingAndEntering (
+  BreakingAndEntering (..),
+  breakingAndEntering,
+) where
 
 import Arkham.Prelude
 
@@ -29,8 +29,11 @@ breakingAndEntering =
 
 instance HasAbilities BreakingAndEntering where
   getAbilities (BreakingAndEntering x) =
-    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ locationIs
-        Cards.exhibitHallRestrictedHall
+    [ mkAbility x 1 $
+        ForcedAbility $
+          Enters Timing.When You $
+            locationIs
+              Cards.exhibitHallRestrictedHall
     ]
 
 instance RunMessage BreakingAndEntering where
@@ -48,26 +51,27 @@ instance RunMessage BreakingAndEntering where
           lid <- getRestrictedHall
           pushAll
             [ chooseOne
-              leadInvestigatorId
-              [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
-              | iid <- investigatorIds
-              ]
+                leadInvestigatorId
+                [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
+                | iid <- investigatorIds
+                ]
             , EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
-        Nothing -> pushAll
-          [ chooseOne
-            leadInvestigatorId
-            [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
-            | iid <- investigatorIds
+        Nothing ->
+          pushAll
+            [ chooseOne
+                leadInvestigatorId
+                [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
+                | iid <- investigatorIds
+                ]
+            , FindEncounterCard
+                leadInvestigatorId
+                (toTarget attrs)
+                [FromEncounterDeck, FromEncounterDiscard, FromVoid]
+                (cardIs Enemies.huntingHorror)
             ]
-          , FindEncounterCard
-            leadInvestigatorId
-            (toTarget attrs)
-            [FromEncounterDeck, FromEncounterDiscard, FromVoid]
-            (cardIs Enemies.huntingHorror)
-          ]
       pure a
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- getRestrictedHall

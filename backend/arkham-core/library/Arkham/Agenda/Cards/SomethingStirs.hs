@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.SomethingStirs
-  ( SomethingStirs(..)
-  , somethingStirs
-  ) where
+module Arkham.Agenda.Cards.SomethingStirs (
+  SomethingStirs (..),
+  somethingStirs,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -23,20 +23,20 @@ newtype SomethingStirs = SomethingStirs AgendaAttrs
 somethingStirs :: AgendaCard SomethingStirs
 somethingStirs =
   agendaWith
-      (1, A)
-      SomethingStirs
-      Cards.somethingStirs
-      (StaticWithPerPlayer 6 1)
+    (1, A)
+    SomethingStirs
+    Cards.somethingStirs
+    (StaticWithPerPlayer 6 1)
     $ removeDoomMatchersL
-    %~ (\m -> m { removeDoomLocations = Nowhere })
+      %~ (\m -> m {removeDoomLocations = Nowhere})
 
 instance HasAbilities SomethingStirs where
   getAbilities (SomethingStirs a) =
-    [ mkAbility a 1
-        $ ForcedAbility
-        $ AgendaAdvances Timing.When
-        $ AgendaWithId
-        $ toId a
+    [ mkAbility a 1 $
+        ForcedAbility $
+          AgendaAdvances Timing.When $
+            AgendaWithId $
+              toId a
     ]
 
 -- ability does not do anything, just triggers the button
@@ -52,8 +52,8 @@ instance RunMessage SomethingStirs where
       choices <- for targets $ \target -> do
         choice <- createEnemyAt_ harbingerOfValusia target Nothing
         pure $ targetLabel target [choice]
-      pushAll
-        $ chooseOne lead choices
-        : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll $
+        chooseOne lead choices
+          : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> SomethingStirs <$> runMessage msg attrs

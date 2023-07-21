@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.RecoverTheRelic
-  ( RecoverTheRelic(..)
-  , recoverTheRelic
-  ) where
+module Arkham.Act.Cards.RecoverTheRelic (
+  RecoverTheRelic (..),
+  recoverTheRelic,
+) where
 
 import Arkham.Prelude
 
@@ -18,7 +18,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Timing qualified as Timing
 
 newtype RecoverTheRelic = RecoverTheRelic ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 recoverTheRelic :: ActCard RecoverTheRelic
@@ -26,18 +26,19 @@ recoverTheRelic = act (3, A) RecoverTheRelic Cards.recoverTheRelic Nothing
 
 instance HasModifiersFor RecoverTheRelic where
   getModifiersFor (EnemyTarget lid) (RecoverTheRelic a) = do
-    isModified <- lid
-      <=~> EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-    pure $ toModifiers a [ HealthModifier 2 | isModified ]
+    isModified <-
+      lid
+        <=~> EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+    pure $ toModifiers a [HealthModifier 2 | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RecoverTheRelic where
   getAbilities (RecoverTheRelic a) =
-    [ mkAbility a 1
-        $ Objective
-        $ ForcedAbility
-        $ EnemyLeavesPlay Timing.When
-        $ EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+    [ mkAbility a 1 $
+        Objective $
+          ForcedAbility $
+            EnemyLeavesPlay Timing.When $
+              EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
     ]
 
 instance RunMessage RecoverTheRelic where
@@ -49,15 +50,21 @@ instance RunMessage RecoverTheRelic where
       leadInvestigatorId <- getLeadInvestigatorId
       deckCount <- getActDecksInPlayCount
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
-      iids <- selectList $ NearestToEnemy $ EnemyWithAsset $ assetIs
-        Assets.relicOfAgesADeviceOfSomeSort
+      iids <-
+        selectList $
+          NearestToEnemy $
+            EnemyWithAsset $
+              assetIs
+                Assets.relicOfAgesADeviceOfSomeSort
       let
-        takeControlMessage = chooseOrRunOne
-          leadInvestigatorId
-          [ targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids ]
-        nextMessage = if deckCount <= 1
-          then ScenarioResolution $ Resolution 1
-          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
+        takeControlMessage =
+          chooseOrRunOne
+            leadInvestigatorId
+            [targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids]
+        nextMessage =
+          if deckCount <= 1
+            then ScenarioResolution $ Resolution 1
+            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> RecoverTheRelic <$> runMessage msg attrs

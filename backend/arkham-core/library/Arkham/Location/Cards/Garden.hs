@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Garden
-  ( garden
-  , Garden(..)
-  ) where
+module Arkham.Location.Cards.Garden (
+  garden,
+  Garden (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,36 +15,41 @@ import Arkham.ScenarioLogKey
 import Arkham.SkillType
 
 newtype Garden = Garden LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 garden :: LocationCard Garden
 garden = location Garden Cards.garden 3 (PerPlayer 1)
 
 instance HasModifiersFor Garden where
-  getModifiersFor (LocationTarget lid) (Garden attrs) | lid == toId attrs =
-    pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
+  getModifiersFor (LocationTarget lid) (Garden attrs)
+    | lid == toId attrs =
+        pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Garden where
-  getAbilities (Garden attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    | locationRevealed attrs
-    ]
+  getAbilities (Garden attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis) $
+        ActionAbility Nothing $
+          ActionCost 1
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Garden where
   runMessage msg l@(Garden attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> l <$ push
-      (beginSkillTest
-        iid
-        source
-        (toTarget attrs)
-        SkillAgility
-        2
-      )
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l
+            <$ push
+              ( beginSkillTest
+                  iid
+                  source
+                  (toTarget attrs)
+                  SkillAgility
+                  2
+              )
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> l <$ push (Remember DistractedTheGuards)
     _ -> Garden <$> runMessage msg attrs

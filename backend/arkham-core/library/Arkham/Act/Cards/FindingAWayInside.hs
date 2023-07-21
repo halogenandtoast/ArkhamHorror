@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.FindingAWayInside
-  ( FindingAWayInside(..)
-  , findingAWayInside
-  ) where
+module Arkham.Act.Cards.FindingAWayInside (
+  FindingAWayInside (..),
+  findingAWayInside,
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Matcher hiding ( RevealLocation )
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
@@ -20,47 +20,52 @@ newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 findingAWayInside :: ActCard FindingAWayInside
-findingAWayInside = act
-  (1, A)
-  FindingAWayInside
-  Cards.findingAWayInside
-  (Just $ GroupClueCost (Static 2) Anywhere)
+findingAWayInside =
+  act
+    (1, A)
+    FindingAWayInside
+    Cards.findingAWayInside
+    (Just $ GroupClueCost (Static 2) Anywhere)
 
 instance RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid source@(LocationSource _) advanceMode
       | aid == actId && onSide A attrs -> do
-      -- When advanced from Museum Halls we don't spend clues
-        leadInvestigatorId <- getLeadInvestigatorId
-        push $ chooseOne
-          leadInvestigatorId
-          [targetLabel aid [AdvanceAct aid source advanceMode]]
-        pure $ FindingAWayInside $ attrs & sequenceL .~ Sequence 1 B
-    AdvanceAct aid _ _ | aid == actId && onSide A attrs ->
-      -- otherwise we do the default
-      FindingAWayInside <$> runMessage msg attrs
+          -- When advanced from Museum Halls we don't spend clues
+          leadInvestigatorId <- getLeadInvestigatorId
+          push $
+            chooseOne
+              leadInvestigatorId
+              [targetLabel aid [AdvanceAct aid source advanceMode]]
+          pure $ FindingAWayInside $ attrs & sequenceL .~ Sequence 1 B
+    AdvanceAct aid _ _
+      | aid == actId && onSide A attrs ->
+          -- otherwise we do the default
+          FindingAWayInside <$> runMessage msg attrs
     AdvanceAct aid source _
       | aid == actId && onSide B attrs && isSource attrs source -> do
-        leadInvestigatorId <- getLeadInvestigatorId
-        investigatorIds <- getInvestigatorIds
-        adamLynch <- EncounterCard <$> genEncounterCard Assets.adamLynch
-        museumHallsId <- fromJustNote "missing museum halls"
-          <$> selectOne (LocationWithTitle "Museum Halls")
-        pushAll
-          [ chooseOne
-            leadInvestigatorId
-            [ TargetLabel
-                (InvestigatorTarget iid)
-                [TakeControlOfSetAsideAsset iid adamLynch]
-            | iid <- investigatorIds
+          leadInvestigatorId <- getLeadInvestigatorId
+          investigatorIds <- getInvestigatorIds
+          adamLynch <- EncounterCard <$> genEncounterCard Assets.adamLynch
+          museumHallsId <-
+            fromJustNote "missing museum halls"
+              <$> selectOne (LocationWithTitle "Museum Halls")
+          pushAll
+            [ chooseOne
+                leadInvestigatorId
+                [ TargetLabel
+                  (InvestigatorTarget iid)
+                  [TakeControlOfSetAsideAsset iid adamLynch]
+                | iid <- investigatorIds
+                ]
+            , RevealLocation Nothing museumHallsId
+            , AdvanceToAct actDeckId Acts.nightAtTheMuseum A (toSource attrs)
             ]
-          , RevealLocation Nothing museumHallsId
-          , AdvanceToAct actDeckId Acts.nightAtTheMuseum A (toSource attrs)
-          ]
-        pure a
+          pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      museumHallsId <- fromJustNote "missing museum halls"
-        <$> selectOne (LocationWithTitle "Museum Halls")
+      museumHallsId <-
+        fromJustNote "missing museum halls"
+          <$> selectOne (LocationWithTitle "Museum Halls")
       pushAll
         [ RevealLocation Nothing museumHallsId
         , AdvanceToAct actDeckId Acts.breakingAndEntering A (toSource attrs)

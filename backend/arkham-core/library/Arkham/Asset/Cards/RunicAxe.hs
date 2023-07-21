@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.RunicAxe
-  ( runicAxe
-  , RunicAxe(..)
-  ) where
+module Arkham.Asset.Cards.RunicAxe (
+  runicAxe,
+  RunicAxe (..),
+) where
 
 import Arkham.Prelude
 

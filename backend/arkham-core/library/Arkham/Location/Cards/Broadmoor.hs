@@ -1,13 +1,13 @@
-module Arkham.Location.Cards.Broadmoor
-  ( Broadmoor(..)
-  , broadmoor
-  ) where
+module Arkham.Location.Cards.Broadmoor (
+  Broadmoor (..),
+  broadmoor,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( broadmoor )
+import Arkham.Location.Cards qualified as Cards (broadmoor)
 import Arkham.Location.Runner
 
 newtype Broadmoor = Broadmoor LocationAttrs

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.TheSkeletonKey2
-  ( theSkeletonKey2
-  , TheSkeletonKey2(..)
-  ) where
+module Arkham.Asset.Cards.TheSkeletonKey2 (
+  theSkeletonKey2,
+  TheSkeletonKey2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Placement
 
 newtype TheSkeletonKey2 = TheSkeletonKey2 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theSkeletonKey2 :: AssetCard TheSkeletonKey2
@@ -21,16 +21,17 @@ theSkeletonKey2 = asset TheSkeletonKey2 Cards.theSkeletonKey2
 instance HasModifiersFor TheSkeletonKey2 where
   getModifiersFor (LocationTarget lid) (TheSkeletonKey2 a) =
     case assetPlacement a of
-      AttachedToLocation lid' | lid == lid' ->
-        pure $ toModifiers a [SetShroud 1]
+      AttachedToLocation lid'
+        | lid == lid' ->
+            pure $ toModifiers a [SetShroud 1]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheSkeletonKey2 where
   getAbilities (TheSkeletonKey2 a) =
-    [ restrictedAbility a 1 (ControlsThis <> additionalCriteria)
-        $ ActionAbility Nothing
-        $ ActionCost 1
+    [ restrictedAbility a 1 (ControlsThis <> additionalCriteria) $
+        ActionAbility Nothing $
+          ActionCost 1
     ]
    where
     additionalCriteria = case assetPlacement a of

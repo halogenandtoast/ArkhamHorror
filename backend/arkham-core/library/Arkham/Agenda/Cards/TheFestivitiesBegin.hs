@@ -1,17 +1,17 @@
-module Arkham.Agenda.Cards.TheFestivitiesBegin
-  ( TheFestivitiesBegin(..)
-  , theFestivitiesBegin
-  ) where
+module Arkham.Agenda.Cards.TheFestivitiesBegin (
+  TheFestivitiesBegin (..),
+  theFestivitiesBegin,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Message
 
@@ -28,8 +28,9 @@ instance RunMessage TheFestivitiesBegin where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       balefulReveler <- genEncounterCard Enemies.balefulReveler
-      a <$ pushAll
-        [ InvestigatorDrewEncounterCard leadInvestigatorId balefulReveler
-        , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-        ]
+      a
+        <$ pushAll
+          [ InvestigatorDrewEncounterCard leadInvestigatorId balefulReveler
+          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+          ]
     _ -> TheFestivitiesBegin <$> runMessage msg attrs

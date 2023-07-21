@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.EntryHallAtDeathsDoorstep
-  ( entryHallAtDeathsDoorstep
-  , EntryHallAtDeathsDoorstep(..)
-  )
+module Arkham.Location.Cards.EntryHallAtDeathsDoorstep (
+  entryHallAtDeathsDoorstep,
+  EntryHallAtDeathsDoorstep (..),
+)
 where
 
 import Arkham.Prelude
@@ -21,10 +21,13 @@ entryHallAtDeathsDoorstep = location EntryHallAtDeathsDoorstep Cards.entryHallAt
 
 instance HasAbilities EntryHallAtDeathsDoorstep where
   getAbilities (EntryHallAtDeathsDoorstep attrs) =
-    withBaseAbilities attrs
-        [ withTooltip
-          "\"I guess there is nothing to those disappearances after all.\""
-          (locationResignAction attrs) | locationRevealed attrs]
+    withBaseAbilities
+      attrs
+      [ withTooltip
+        "\"I guess there is nothing to those disappearances after all.\""
+        (locationResignAction attrs)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage EntryHallAtDeathsDoorstep where
   runMessage msg (EntryHallAtDeathsDoorstep attrs) =

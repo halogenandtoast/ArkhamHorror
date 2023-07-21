@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Bandolier
-  ( Bandolier(..)
-  , bandolier
-  ) where
+module Arkham.Asset.Cards.Bandolier (
+  Bandolier (..),
+  bandolier,
+) where
 
 import Arkham.Prelude
 

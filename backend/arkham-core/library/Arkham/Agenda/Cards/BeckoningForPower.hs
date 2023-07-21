@@ -1,13 +1,13 @@
-module Arkham.Agenda.Cards.BeckoningForPower
-  ( BeckoningForPower(..)
-  , beckoningForPower
-  ) where
+module Arkham.Agenda.Cards.BeckoningForPower (
+  BeckoningForPower (..),
+  beckoningForPower,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
@@ -23,6 +23,7 @@ beckoningForPower =
 
 instance RunMessage BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 2)
+    AdvanceAgenda aid
+      | aid == agendaId && onSide B attrs ->
+          a <$ push (ScenarioResolution $ Resolution 2)
     _ -> BeckoningForPower <$> runMessage msg attrs

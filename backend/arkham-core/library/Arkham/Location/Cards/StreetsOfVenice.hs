@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.StreetsOfVenice
-  ( streetsOfVenice
-  , StreetsOfVenice(..)
-  ) where
+module Arkham.Location.Cards.StreetsOfVenice (
+  streetsOfVenice,
+  StreetsOfVenice (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Matcher hiding ( MoveAction )
+import Arkham.Matcher hiding (MoveAction)
 import Arkham.Message qualified as Msg
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
@@ -20,19 +20,20 @@ newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 streetsOfVenice :: LocationCard StreetsOfVenice
-streetsOfVenice = locationWith
-  StreetsOfVenice
-  Cards.streetsOfVenice
-  2
-  (Static 2)
-  (connectsToL .~ singleton RightOf)
+streetsOfVenice =
+  locationWith
+    StreetsOfVenice
+    Cards.streetsOfVenice
+    2
+    (Static 2)
+    (connectsToL .~ singleton RightOf)
 
 instance HasAbilities StreetsOfVenice where
   getAbilities (StreetsOfVenice attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here $ FastAbility Free
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ restrictedAbility attrs 1 Here $ FastAbility Free
+      | locationRevealed attrs
+      ]
 
 instance RunMessage StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of

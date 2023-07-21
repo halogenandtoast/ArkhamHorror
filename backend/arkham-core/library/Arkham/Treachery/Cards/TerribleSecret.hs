@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TerribleSecret
-  ( terribleSecret
-  , TerribleSecret(..)
-  )
+module Arkham.Treachery.Cards.TerribleSecret (
+  terribleSecret,
+  TerribleSecret (..),
+)
 where
 
 import Arkham.Prelude
@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
@@ -29,16 +29,19 @@ instance RunMessage TerribleSecret where
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
       if null cardsUnderneath
         then push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-        else pushAll
-          [ FocusCards cardsUnderneath
-          , chooseUpToN
-              iid
-              (length cardsUnderneath)
-              "Keep Remaining Cards"
-              [ targetLabel (toCardId c) [AddToDiscard iid c]
-              | pc <- cardsUnderneath, c <- maybeToList (preview _PlayerCard pc)
-              ]
-          , UnfocusCards]
+        else
+          pushAll
+            [ FocusCards cardsUnderneath
+            , chooseUpToN
+                iid
+                (length cardsUnderneath)
+                "Keep Remaining Cards"
+                [ targetLabel (toCardId c) [AddToDiscard iid c]
+                | pc <- cardsUnderneath
+                , c <- maybeToList (preview _PlayerCard pc)
+                ]
+            , UnfocusCards
+            ]
       pure t
     AfterRevelation iid tid | tid == toId attrs -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid

@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.DumbLuck
-  ( dumbLuck
-  , DumbLuck(..)
-  ) where
+module Arkham.Event.Cards.DumbLuck (
+  dumbLuck,
+  DumbLuck (..),
+) where
 
 import Arkham.Prelude
 
@@ -32,7 +32,8 @@ instance RunMessage DumbLuck where
   runMessage msg e@(DumbLuck attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
       let enemyId = toEnemyId windows
-      e <$ pushAll
-        [ PutOnTopOfDeck iid Deck.EncounterDeck (EnemyTarget enemyId)
-        ]
+      e
+        <$ pushAll
+          [ PutOnTopOfDeck iid Deck.EncounterDeck (EnemyTarget enemyId)
+          ]
     _ -> DumbLuck <$> runMessage msg attrs

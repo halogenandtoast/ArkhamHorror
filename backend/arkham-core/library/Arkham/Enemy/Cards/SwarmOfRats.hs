@@ -1,12 +1,12 @@
-module Arkham.Enemy.Cards.SwarmOfRats
-  ( SwarmOfRats(..)
-  , swarmOfRats
-  ) where
+module Arkham.Enemy.Cards.SwarmOfRats (
+  SwarmOfRats (..),
+  swarmOfRats,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 
 newtype SwarmOfRats = SwarmOfRats EnemyAttrs

@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.Intruders
-  ( Intruders(..)
-  , intruders
-  ) where
+module Arkham.Agenda.Cards.Intruders (
+  Intruders (..),
+  intruders,
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Matcher hiding ( InvestigatorDefeated )
+import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -27,32 +27,33 @@ intruders = agenda (2, A) Intruders Cards.intruders (Static 9)
 
 instance HasAbilities Intruders where
   getAbilities (Intruders a) =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility (Just Action.Explore)
-        $ ActionCost 1
+    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
+        ActionAbility (Just Action.Explore) $
+          ActionCost 1
     ]
 
 instance RunMessage Intruders where
   runMessage msg a@(Intruders attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore
-        iid
-        source
-        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $
+        Explore
+          iid
+          source
+          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- getInvestigatorIds
       unpoisoned <-
-        selectList
-        $ NotInvestigator
-        $ HasMatchingTreachery
-        $ treacheryIs
-        $ Treacheries.poisoned
-      pushAll
-        $ [ InvestigatorDefeated (toSource attrs) iid | iid <- iids ]
-        <> [ AddCampaignCardToDeck iid Treacheries.poisoned
-           | iid <- unpoisoned
-           ]
+        selectList $
+          NotInvestigator $
+            HasMatchingTreachery $
+              treacheryIs $
+                Treacheries.poisoned
+      pushAll $
+        [InvestigatorDefeated (toSource attrs) iid | iid <- iids]
+          <> [ AddCampaignCardToDeck iid Treacheries.poisoned
+             | iid <- unpoisoned
+             ]
       pure a
     _ -> Intruders <$> runMessage msg attrs

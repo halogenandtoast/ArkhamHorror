@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.InterviewRoomIchorFilledChamber
-  ( interviewRoomIchorFilledChamber
-  , InterviewRoomIchorFilledChamber(..)
-  ) where
+module Arkham.Location.Cards.InterviewRoomIchorFilledChamber (
+  interviewRoomIchorFilledChamber,
+  InterviewRoomIchorFilledChamber (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,34 +19,36 @@ newtype InterviewRoomIchorFilledChamber = InterviewRoomIchorFilledChamber Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 interviewRoomIchorFilledChamber :: LocationCard InterviewRoomIchorFilledChamber
-interviewRoomIchorFilledChamber = location
-  InterviewRoomIchorFilledChamber
-  Cards.interviewRoomIchorFilledChamber
-  1
-  (PerPlayer 1)
+interviewRoomIchorFilledChamber =
+  location
+    InterviewRoomIchorFilledChamber
+    Cards.interviewRoomIchorFilledChamber
+    1
+    (PerPlayer 1)
 
 instance HasAbilities InterviewRoomIchorFilledChamber where
   getAbilities (InterviewRoomIchorFilledChamber a) =
-    withBaseAbilities a
-      $ [ mkAbility a 1
-          $ ForcedAbility
-          $ Enters Timing.After You
-          $ LocationWithId
-          $ toId a
-        ]
+    withBaseAbilities a $
+      [ mkAbility a 1 $
+          ForcedAbility $
+            Enters Timing.After You $
+              LocationWithId $
+                toId a
+      ]
 
 instance RunMessage InterviewRoomIchorFilledChamber where
   runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest
-        iid
-        (toSource attrs)
-        (InvestigatorTarget iid)
-        SkillWillpower
-        3
+      push $
+        beginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          SkillWillpower
+          3
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
+      do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
         pure l
     _ -> InterviewRoomIchorFilledChamber <$> runMessage msg attrs

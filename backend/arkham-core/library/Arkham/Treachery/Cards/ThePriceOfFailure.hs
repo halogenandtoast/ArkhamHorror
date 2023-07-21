@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ThePriceOfFailure
-  ( thePriceOfFailure
-  , ThePriceOfFailure(..)
-  ) where
+module Arkham.Treachery.Cards.ThePriceOfFailure (
+  thePriceOfFailure,
+  ThePriceOfFailure (..),
+) where
 
 import Arkham.Prelude
 

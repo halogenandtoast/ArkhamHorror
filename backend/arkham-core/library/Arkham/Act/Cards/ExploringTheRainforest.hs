@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.ExploringTheRainforest
-  ( ExploringTheRainforest(..)
-  , exploringTheRainforest
-  ) where
+module Arkham.Act.Cards.ExploringTheRainforest (
+  ExploringTheRainforest (..),
+  exploringTheRainforest,
+) where
 
 import Arkham.Prelude
 
@@ -25,21 +25,22 @@ exploringTheRainforest =
 
 instance HasAbilities ExploringTheRainforest where
   getAbilities (ExploringTheRainforest x) =
-    [ mkAbility x 1
-        $ Objective
-        $ ReactionAbility (RoundEnds Timing.When)
-        $ GroupClueCost (PerPlayer 3) (NotLocation $ LocationWithTrait Campsite)
+    [ mkAbility x 1 $
+        Objective $
+          ReactionAbility (RoundEnds Timing.When) $
+            GroupClueCost (PerPlayer 3) (NotLocation $ LocationWithTrait Campsite)
     ]
 
 instance RunMessage ExploringTheRainforest where
   runMessage msg a@(ExploringTheRainforest attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       ichtaca <-
         fromJustNote "Ichtaca was not set aside"
-        . listToMaybe
-        <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
+          . listToMaybe
+          <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
       locationId <- selectJust LeadInvestigatorLocation
       createIchtaca <- createEnemyAt_ ichtaca locationId Nothing
       pushAll

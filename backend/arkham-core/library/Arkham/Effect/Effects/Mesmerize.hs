@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.Mesmerize
-  ( Mesmerize(..)
-  , mesmerize
-  ) where
+module Arkham.Effect.Effects.Mesmerize (
+  Mesmerize (..),
+  mesmerize,
+) where
 
 import Arkham.Prelude
 
@@ -27,16 +27,18 @@ instance RunMessage Mesmerize where
           aid <- selectJust $ AssetWithCardId $ toCardId card
           case effectTarget attrs of
             InvestigatorTarget iid -> do
-              locationTargets <- selectListMap LocationTarget $ FarthestLocationFromYou LocationWithoutInvestigators
-              e <$ pushAll
-                [ chooseOne
-                  iid
-                  [ TargetLabel locationTarget [AttachAsset aid locationTarget]
-                  | locationTarget <- locationTargets
+              locationTargets <-
+                selectListMap LocationTarget $ FarthestLocationFromYou LocationWithoutInvestigators
+              e
+                <$ pushAll
+                  [ chooseOne
+                      iid
+                      [ TargetLabel locationTarget [AttachAsset aid locationTarget]
+                      | locationTarget <- locationTargets
+                      ]
+                  , AssetDamage aid (effectSource attrs) 1 1
+                  , DisableEffect $ toId attrs
                   ]
-                , AssetDamage aid (effectSource attrs) 1 1
-                , DisableEffect $ toId attrs
-                ]
             _ -> error "Must be investigator target"
         else e <$ push (DisableEffect $ toId attrs)
     _ -> Mesmerize <$> runMessage msg attrs

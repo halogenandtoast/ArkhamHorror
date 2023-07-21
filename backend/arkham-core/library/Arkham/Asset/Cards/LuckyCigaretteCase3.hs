@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.LuckyCigaretteCase3
-  ( luckyCigaretteCase3
-  , LuckyCigaretteCase3(..)
-  ) where
+module Arkham.Asset.Cards.LuckyCigaretteCase3 (
+  luckyCigaretteCase3,
+  LuckyCigaretteCase3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype LuckyCigaretteCase3 = LuckyCigaretteCase3 AssetAttrs
@@ -22,14 +22,15 @@ luckyCigaretteCase3 = asset LuckyCigaretteCase3 Cards.luckyCigaretteCase3
 
 instance HasAbilities LuckyCigaretteCase3 where
   getAbilities (LuckyCigaretteCase3 a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
-        (SkillTestResult
-          Timing.After
-          You
-          AnySkillTest
-          (SuccessResult $ AtLeast $ Static 1)
-        )
-        (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
+          ( SkillTestResult
+              Timing.After
+              You
+              AnySkillTest
+              (SuccessResult $ AtLeast $ Static 1)
+          )
+          (ExhaustCost $ toTarget a)
     ]
 
 toSuccessResult :: [Window] -> Int

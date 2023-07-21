@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.NathanielCho
-  ( NathanielCho(..)
-  , nathanielCho
-  ) where
+module Arkham.Effect.Effects.NathanielCho (
+  NathanielCho (..),
+  nathanielCho,
+) where
 
 import Arkham.Prelude
 
@@ -9,11 +9,11 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype NathanielCho = NathanielCho EffectAttrs
@@ -42,22 +42,24 @@ instance RunMessage NathanielCho where
   runMessage msg e@(NathanielCho attrs) = case msg of
     PassedSkillTest iid _ _ _ _ _
       | effectTarget attrs == InvestigatorTarget iid -> do
-        discardedCards <- field InvestigatorDiscard iid
-        let events = filter ((== EventType) . toCardType) discardedCards
-        if null events
-          then push (DisableEffect $ toId attrs)
-          else pushAll
-            [ chooseOne
-              iid
-              [ TargetLabel
-                  (CardIdTarget $ toCardId event)
-                  [ReturnToHand iid (CardTarget $ PlayerCard event)]
-              | event <- events
-              ]
-            , DisableEffect $ toId attrs
-            ]
-        pure e
-    CheckWindow _ windows' | any (isTakeDamage attrs) windows' ->
-      e <$ push (DisableEffect $ toId attrs)
+          discardedCards <- field InvestigatorDiscard iid
+          let events = filter ((== EventType) . toCardType) discardedCards
+          if null events
+            then push (DisableEffect $ toId attrs)
+            else
+              pushAll
+                [ chooseOne
+                    iid
+                    [ TargetLabel
+                      (CardIdTarget $ toCardId event)
+                      [ReturnToHand iid (CardTarget $ PlayerCard event)]
+                    | event <- events
+                    ]
+                , DisableEffect $ toId attrs
+                ]
+          pure e
+    CheckWindow _ windows'
+      | any (isTakeDamage attrs) windows' ->
+          e <$ push (DisableEffect $ toId attrs)
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> NathanielCho <$> runMessage msg attrs

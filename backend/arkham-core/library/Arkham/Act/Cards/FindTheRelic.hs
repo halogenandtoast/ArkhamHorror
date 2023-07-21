@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.FindTheRelic
-  ( FindTheRelic(..)
-  , findTheRelic
-  ) where
+module Arkham.Act.Cards.FindTheRelic (
+  FindTheRelic (..),
+  findTheRelic,
+) where
 
 import Arkham.Prelude
 
@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype FindTheRelic = FindTheRelic ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 findTheRelic :: ActCard FindTheRelic
@@ -24,22 +24,23 @@ findTheRelic = act (3, A) FindTheRelic Cards.findTheRelic Nothing
 
 instance HasModifiersFor FindTheRelic where
   getModifiersFor (LocationTarget lid) (FindTheRelic a) = do
-    isModified <- lid
-      <=~> LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-    pure $ toModifiers a [ ShroudModifier 2 | isModified ]
+    isModified <-
+      lid
+        <=~> LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+    pure $ toModifiers a [ShroudModifier 2 | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FindTheRelic where
   getAbilities (FindTheRelic a) =
     [ restrictedAbility
-          a
-          1
-          (LocationExists
-          $ LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-          <> LocationWithoutClues
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      ( LocationExists $
+          LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+            <> LocationWithoutClues
+      )
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide A a
     ]
 
@@ -52,15 +53,21 @@ instance RunMessage FindTheRelic where
       leadInvestigatorId <- getLeadInvestigatorId
       deckCount <- getActDecksInPlayCount
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
-      iids <- selectList $ NearestToLocation $ LocationWithAsset $ assetIs
-        Assets.relicOfAgesADeviceOfSomeSort
+      iids <-
+        selectList $
+          NearestToLocation $
+            LocationWithAsset $
+              assetIs
+                Assets.relicOfAgesADeviceOfSomeSort
       let
-        takeControlMessage = chooseOrRunOne
-          leadInvestigatorId
-          [ targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids ]
-        nextMessage = if deckCount <= 1
-          then scenarioResolution 1
-          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
+        takeControlMessage =
+          chooseOrRunOne
+            leadInvestigatorId
+            [targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids]
+        nextMessage =
+          if deckCount <= 1
+            then scenarioResolution 1
+            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> FindTheRelic <$> runMessage msg attrs

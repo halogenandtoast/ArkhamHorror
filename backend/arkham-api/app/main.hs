@@ -1,6 +1,6 @@
 import Application (appMain)
-import Prelude (IO)
 import Arkham.Game ()
+import Prelude (IO)
 
 main :: IO ()
 main = appMain

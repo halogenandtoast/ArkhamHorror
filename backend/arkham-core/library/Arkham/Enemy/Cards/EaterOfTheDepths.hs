@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.EaterOfTheDepths
-  ( eaterOfTheDepths
-  , EaterOfTheDepths(..)
-  ) where
+module Arkham.Enemy.Cards.EaterOfTheDepths (
+  eaterOfTheDepths,
+  EaterOfTheDepths (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,12 +14,13 @@ newtype EaterOfTheDepths = EaterOfTheDepths EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 eaterOfTheDepths :: EnemyCard EaterOfTheDepths
-eaterOfTheDepths = enemyWith
-  EaterOfTheDepths
-  Cards.eaterOfTheDepths
-  (5, Static 6, 0)
-  (3, 2)
-  (spawnAtL ?~ SpawnAtRandomSetAsideLocation)
+eaterOfTheDepths =
+  enemyWith
+    EaterOfTheDepths
+    Cards.eaterOfTheDepths
+    (5, Static 6, 0)
+    (3, 2)
+    (spawnAtL ?~ SpawnAtRandomSetAsideLocation)
 
 instance RunMessage EaterOfTheDepths where
   runMessage msg (EaterOfTheDepths attrs) =

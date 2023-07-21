@@ -1,15 +1,15 @@
-module Arkham.Event.Cards.NarrowEscape
-  ( narrowEscape
-  , NarrowEscape(..)
-  ) where
+module Arkham.Event.Cards.NarrowEscape (
+  narrowEscape,
+  NarrowEscape (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Event.Helpers
 import Arkham.Event.Cards qualified as Cards
+import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
 
@@ -26,10 +26,10 @@ instance RunMessage NarrowEscape where
       pushAll
         [ CancelNext (toSource attrs) AttackMessage
         , CreateWindowModifierEffect
-          (FirstEffectWindow [EffectSkillTestWindow, EffectTurnWindow])
-          (EffectModifiers $ toModifiers attrs [AnySkillValue 2])
-          (toSource attrs)
-          (InvestigatorTarget iid)
+            (FirstEffectWindow [EffectSkillTestWindow, EffectTurnWindow])
+            (EffectModifiers $ toModifiers attrs [AnySkillValue 2])
+            (toSource attrs)
+            (InvestigatorTarget iid)
         ]
       pure e
     _ -> NarrowEscape <$> runMessage msg attrs

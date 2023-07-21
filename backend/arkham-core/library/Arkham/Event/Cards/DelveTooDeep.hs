@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.DelveTooDeep
-  ( delveTooDeep
-  , DelveTooDeep(..)
-  ) where
+module Arkham.Event.Cards.DelveTooDeep (
+  delveTooDeep,
+  DelveTooDeep (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 

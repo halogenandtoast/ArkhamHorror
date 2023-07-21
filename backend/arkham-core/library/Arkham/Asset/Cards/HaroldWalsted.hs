@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.HaroldWalsted
-  ( haroldWalsted
-  , HaroldWalsted(..)
-  ) where
+module Arkham.Asset.Cards.HaroldWalsted (
+  haroldWalsted,
+  HaroldWalsted (..),
+) where
 
 import Arkham.Prelude
 
@@ -9,30 +9,31 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.ChaosToken
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.ChaosToken
 import Arkham.Trait
 
 newtype HaroldWalsted = HaroldWalsted AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haroldWalsted :: AssetCard HaroldWalsted
-haroldWalsted = allyWith
-  HaroldWalsted
-  Cards.haroldWalsted
-  (1, 1)
-  ((isStoryL .~ True) . (slotsL .~ mempty))
+haroldWalsted =
+  allyWith
+    HaroldWalsted
+    Cards.haroldWalsted
+    (1, 1)
+    ((isStoryL .~ True) . (slotsL .~ mempty))
 
 instance HasAbilities HaroldWalsted where
   getAbilities (HaroldWalsted x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ AssetLeavesPlay Timing.When
-        $ AssetWithId
-        $ toId x
+    [ mkAbility x 1 $
+        ForcedAbility $
+          AssetLeavesPlay Timing.When $
+            AssetWithId $
+              toId x
     ]
 
 instance HasModifiersFor HaroldWalsted where
@@ -41,19 +42,21 @@ instance HasModifiersFor HaroldWalsted where
     case mAction of
       Just Action.Investigate -> do
         isMiskatonic <-
-          selectAny
-          $ LocationWithInvestigator (InvestigatorWithId iid)
-          <> LocationWithTrait Miskatonic
-        pure $ toModifiers
-          attrs
-          [ SkillModifier SkillIntellect 2
-          | isMiskatonic && controlledBy attrs iid
-          ]
+          selectAny $
+            LocationWithInvestigator (InvestigatorWithId iid)
+              <> LocationWithTrait Miskatonic
+        pure $
+          toModifiers
+            attrs
+            [ SkillModifier SkillIntellect 2
+            | isMiskatonic && controlledBy attrs iid
+            ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ pushAll [AddChaosToken Tablet, RemoveFromGame $ toTarget attrs]
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ pushAll [AddChaosToken Tablet, RemoveFromGame $ toTarget attrs]
     _ -> HaroldWalsted <$> runMessage msg attrs

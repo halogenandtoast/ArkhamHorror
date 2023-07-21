@@ -7,14 +7,14 @@ module Orphans where
 
 import Arkham.Game
 import Arkham.Message
-import Control.Error.Util ( hush )
+import Control.Error.Util (hush)
 import Control.Monad.Fail qualified as Fail
-import Data.Aeson hiding ( Key )
-import Data.Aeson.Types hiding ( Key )
+import Data.Aeson hiding (Key)
+import Data.Aeson.Types hiding (Key)
 import Data.ByteString.Char8 qualified as BS8
-import Data.Hashable ( Hashable (hash) )
+import Data.Hashable (Hashable (hash))
 import Data.Text qualified as T
-import Data.UUID ( UUID )
+import Data.UUID (UUID)
 import Data.UUID qualified as UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
@@ -22,7 +22,7 @@ import Relude
 import Web.HttpApiData
 import Web.PathPieces
 import Yesod.Core.Content
-import Yesod.Test ( SIO )
+import Yesod.Test (SIO)
 
 fmapLeft :: (a -> b) -> Either a c -> Either b c
 fmapLeft f (Left a) = Left (f a)
@@ -75,11 +75,12 @@ instance {-# OVERLAPPABLE #-} ToJSON a => ToTypedContent a where
 instance {-# OVERLAPPABLE #-} ToJSON a => ToContent a where
   toContent = toContent . encode
 
-instance (ToBackendKey SqlBackend a) => ToJSONKey (Key a) where
+instance ToBackendKey SqlBackend a => ToJSONKey (Key a) where
   toJSONKey = toJSONKeyText keyAsText
-    where keyAsText = T.pack . show . fromSqlKey
+   where
+    keyAsText = T.pack . show . fromSqlKey
 
-instance (ToBackendKey SqlBackend a) => FromJSONKey (Key a) where
+instance ToBackendKey SqlBackend a => FromJSONKey (Key a) where
   fromJSONKey = toSqlKey <$> fromJSONKey
 
 instance (Eq (Key a), ToBackendKey SqlBackend a) => Hashable (Key a) where

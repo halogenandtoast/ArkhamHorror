@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.Improvisation
-  ( improvisation
-  , Improvisation(..)
-  ) where
+module Arkham.Event.Cards.Improvisation (
+  improvisation,
+  Improvisation (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Message
@@ -19,9 +19,10 @@ improvisation :: EventCard Improvisation
 improvisation = event Improvisation Cards.improvisation
 
 switchRole :: InvestigatorId -> Message
-switchRole iid = chooseOne
-  iid
-  [ Label (tshow role) [SetRole iid role] | role <- [minBound .. maxBound] ]
+switchRole iid =
+  chooseOne
+    iid
+    [Label (tshow role) [SetRole iid role] | role <- [minBound .. maxBound]]
 
 reductionEffect :: InvestigatorId -> EventAttrs -> Message
 reductionEffect iid attrs =

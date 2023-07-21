@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.DreamsOfRlyeh
-  ( DreamsOfRlyeh(..)
-  , dreamsOfRlyeh
-  ) where
+module Arkham.Treachery.Cards.DreamsOfRlyeh (
+  DreamsOfRlyeh (..),
+  dreamsOfRlyeh,
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamsOfRlyeh :: TreacheryCard DreamsOfRlyeh
@@ -30,18 +30,22 @@ instance HasModifiersFor DreamsOfRlyeh where
 
 instance HasAbilities DreamsOfRlyeh where
   getAbilities (DreamsOfRlyeh a) =
-    [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
-        1
+    [ restrictedAbility a 1 OnSameLocation $
+        ActionAbility Nothing $
+          ActionCost
+            1
     ]
 
 instance RunMessage DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source ->
-      t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
+    Revelation iid source
+      | isSource attrs source ->
+          t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ beginSkillTest iid source (InvestigatorTarget iid) SkillWillpower 3
       pure t
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> t
-      <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
+      | isSource attrs source ->
+          t
+            <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

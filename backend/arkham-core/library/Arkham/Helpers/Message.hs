@@ -44,7 +44,7 @@ drawCardsAction i source n = do
   drawing <- newCardDraw i source n
   pure $ DrawCards $ asDrawAction drawing
 
-resolveWithWindow :: (HasGame m) => Message -> WindowType -> m [Message]
+resolveWithWindow :: HasGame m => Message -> WindowType -> m [Message]
 resolveWithWindow msg window' = do
   whenWindow <- checkWindows [Window Timing.When window']
   atIfWindow <- checkWindows [Window Timing.AtIf window']
@@ -94,44 +94,44 @@ createEnemy (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
       , enemyCreationInvestigator = Nothing
       }
 
-createEnemyWithPlacement :: (MonadRandom m) => Card -> Placement -> m (EnemyId, Message)
+createEnemyWithPlacement :: MonadRandom m => Card -> Placement -> m (EnemyId, Message)
 createEnemyWithPlacement c placement = do
   creation <- createEnemy c placement
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
-createEnemyWithPlacement_ :: (MonadRandom m) => Card -> Placement -> m Message
+createEnemyWithPlacement_ :: MonadRandom m => Card -> Placement -> m Message
 createEnemyWithPlacement_ c placement = snd <$> createEnemyWithPlacement c placement
 
-createEnemyAt :: (MonadRandom m) => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
+createEnemyAt :: MonadRandom m => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
 createEnemyAt c lid mTarget = do
   creation <- createEnemy c lid
   pure (enemyCreationEnemyId creation, CreateEnemy $ creation {enemyCreationTarget = mTarget})
 
-createEnemyAt_ :: (MonadRandom m) => Card -> LocationId -> Maybe Target -> m Message
+createEnemyAt_ :: MonadRandom m => Card -> LocationId -> Maybe Target -> m Message
 createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
 
-createEnemyAtLocationMatching :: (MonadRandom m) => Card -> LocationMatcher -> m (EnemyId, Message)
+createEnemyAtLocationMatching :: MonadRandom m => Card -> LocationMatcher -> m (EnemyId, Message)
 createEnemyAtLocationMatching c matcher = do
   creation <- createEnemy c matcher
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
-createEnemyAtLocationMatching_ :: (MonadRandom m) => Card -> LocationMatcher -> m Message
+createEnemyAtLocationMatching_ :: MonadRandom m => Card -> LocationMatcher -> m Message
 createEnemyAtLocationMatching_ c matcher = snd <$> createEnemyAtLocationMatching c matcher
 
-createEnemyEngagedWithPrey :: (MonadRandom m) => Card -> m (EnemyId, Message)
+createEnemyEngagedWithPrey :: MonadRandom m => Card -> m (EnemyId, Message)
 createEnemyEngagedWithPrey c = do
   creation <- createEnemy c SpawnEngagedWithPrey
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
-createEnemyEngagedWithPrey_ :: (MonadRandom m) => Card -> m Message
+createEnemyEngagedWithPrey_ :: MonadRandom m => Card -> m Message
 createEnemyEngagedWithPrey_ = fmap snd . createEnemyEngagedWithPrey
 
-placeLocation :: (MonadRandom m) => Card -> m (LocationId, Message)
+placeLocation :: MonadRandom m => Card -> m (LocationId, Message)
 placeLocation c = do
   locationId <- getRandom
   pure (locationId, PlaceLocation locationId c)
 
-placeLocation_ :: (MonadRandom m) => Card -> m Message
+placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
 placeSetAsideLocation :: CardDef -> GameT (LocationId, Message)
@@ -158,17 +158,17 @@ gainSurge a = GainSurge (toSource a) (toTarget a)
 toDiscard :: (Sourceable source, Targetable target) => source -> target -> Message
 toDiscard source target = Discard (toSource source) (toTarget target)
 
-pushAllM :: (IsMessage msg) => GameT [msg] -> GameT ()
+pushAllM :: IsMessage msg => GameT [msg] -> GameT ()
 pushAllM mmsgs = do
   msgs <- mmsgs
   pushAll $ map toMessage msgs
 
-pushM :: (IsMessage msg) => GameT msg -> GameT ()
+pushM :: IsMessage msg => GameT msg -> GameT ()
 pushM mmsg = do
   msg <- mmsg
   push $ toMessage msg
 
-removeMessageType :: (HasQueue Message m) => MessageType -> m ()
+removeMessageType :: HasQueue Message m => MessageType -> m ()
 removeMessageType msgType = withQueue_ $ \queue ->
   let
     (before, after) = break ((== Just msgType) . messageType) queue
@@ -176,7 +176,7 @@ removeMessageType msgType = withQueue_ $ \queue ->
   in
     before <> remaining
 
-addToHand :: (IsCard a) => InvestigatorId -> a -> Message
+addToHand :: IsCard a => InvestigatorId -> a -> Message
 addToHand i (toCard -> c) = AddToHand i [c]
 
 shuffleIntoDeck :: (IsDeck deck, Targetable target) => deck -> target -> Message

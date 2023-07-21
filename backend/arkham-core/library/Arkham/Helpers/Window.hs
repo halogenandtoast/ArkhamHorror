@@ -12,7 +12,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window
 
-checkWindows :: (HasGame m) => [Window] -> m Message
+checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
   iids <- selectList UneliminatedInvestigator
   if null iids
@@ -21,14 +21,14 @@ checkWindows windows' = do
       pure $ CheckWindow iids' windows'
     else pure $ CheckWindow iids windows'
 
-windows :: (HasGame m) => [WindowType] -> m [Message]
+windows :: HasGame m => [WindowType] -> m [Message]
 windows windows' = do
   iids <- selectList UneliminatedInvestigator
   pure $ do
     timing <- [Timing.When, Timing.AtIf, Timing.After]
     [CheckWindow iids $ map (Window timing) windows']
 
-splitWithWindows :: (HasGame m) => Message -> [WindowType] -> m [Message]
+splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do
   iids <- selectList UneliminatedInvestigator
   pure $

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.RialtoBridge
-  ( rialtoBridge
-  , RialtoBridge(..)
-  ) where
+module Arkham.Location.Cards.RialtoBridge (
+  rialtoBridge,
+  RialtoBridge (..),
+) where
 
 import Arkham.Prelude
 
@@ -20,26 +20,28 @@ newtype RialtoBridge = RialtoBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rialtoBridge :: LocationCard RialtoBridge
-rialtoBridge = locationWith
-  RialtoBridge
-  Cards.rialtoBridge
-  2
-  (Static 1)
-  (connectsToL .~ singleton RightOf)
+rialtoBridge =
+  locationWith
+    RialtoBridge
+    Cards.rialtoBridge
+    2
+    (Static 1)
+    (connectsToL .~ singleton RightOf)
 
 instance HasAbilities RialtoBridge where
   getAbilities (RialtoBridge attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ Leaves Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          Leaves Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (LoseActions iid source 1)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l <$ push (LoseActions iid source 1)
     _ -> RialtoBridge <$> runMessage msg attrs

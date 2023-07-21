@@ -1,15 +1,15 @@
-module Arkham.Event.Cards.WillToSurvive
-  ( willToSurvive
-  , WillToSurvive(..)
-  , willToSurviveEffect
-  , WillToSurviveEffect(..)
-  ) where
+module Arkham.Event.Cards.WillToSurvive (
+  willToSurvive,
+  WillToSurvive (..),
+  willToSurviveEffect,
+  WillToSurviveEffect (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Types
 import Arkham.Effect.Runner ()
+import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
@@ -25,9 +25,10 @@ willToSurvive = event WillToSurvive Cards.willToSurvive
 instance RunMessage WillToSurvive where
   runMessage msg e@(WillToSurvive attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll
-        [ CreateEffect "60512" Nothing (toSource attrs) (InvestigatorTarget iid)
-        ]
+      e
+        <$ pushAll
+          [ CreateEffect "60512" Nothing (toSource attrs) (InvestigatorTarget iid)
+          ]
     _ -> WillToSurvive <$> runMessage msg attrs
 
 newtype WillToSurviveEffect = WillToSurviveEffect EffectAttrs
@@ -39,8 +40,9 @@ willToSurviveEffect = WillToSurviveEffect . uncurry4 (baseAttrs "60512")
 
 instance HasModifiersFor WillToSurviveEffect where
   getModifiersFor target (WillToSurviveEffect a@EffectAttrs {..})
-    | target == effectTarget = pure
-      [toModifier a DoNotDrawChaosTokensForSkillChecks]
+    | target == effectTarget =
+        pure
+          [toModifier a DoNotDrawChaosTokensForSkillChecks]
   getModifiersFor _ _ = pure []
 
 instance RunMessage WillToSurviveEffect where

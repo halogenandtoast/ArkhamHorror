@@ -1,14 +1,14 @@
-module Arkham.Treachery.Cards.DaemonicPiping
-  ( daemonicPiping
-  , DaemonicPiping(..)
-  )
+module Arkham.Treachery.Cards.DaemonicPiping (
+  daemonicPiping,
+  DaemonicPiping (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype DaemonicPiping = DaemonicPiping TreacheryAttrs

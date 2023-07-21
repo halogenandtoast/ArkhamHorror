@@ -17,10 +17,23 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Window ( Window )
+import Arkham.Window (Window)
 import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EffectId, EntityAttrs a ~ EffectAttrs) => IsEffect a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ EffectId
+  , EntityAttrs a ~ EffectAttrs
+  ) =>
+  IsEffect a
 
 data instance Field Effect :: Type -> Type where
   EffectCardCode :: Field Effect CardCode
@@ -44,10 +57,10 @@ data EffectAttrs = EffectAttrs
   deriving stock (Show, Eq, Generic)
 
 finishedL :: Lens' EffectAttrs Bool
-finishedL = lens effectFinished $ \m x -> m { effectFinished = x }
+finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
 
-type EffectArgs
-  = (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
+type EffectArgs =
+  (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
 
 baseAttrs
   :: CardCode
@@ -56,19 +69,20 @@ baseAttrs
   -> Source
   -> Target
   -> EffectAttrs
-baseAttrs cardCode eid meffectMetadata source target = EffectAttrs
-  { effectId = eid
-  , effectSource = source
-  , effectTarget = target
-  , effectCardCode = cardCode
-  , effectMetadata = meffectMetadata
-  , effectTraits = mempty
-  , effectWindow = Nothing
-  , effectFinished = False
-  }
+baseAttrs cardCode eid meffectMetadata source target =
+  EffectAttrs
+    { effectId = eid
+    , effectSource = source
+    , effectTarget = target
+    , effectCardCode = cardCode
+    , effectMetadata = meffectMetadata
+    , effectTraits = mempty
+    , effectWindow = Nothing
+    , effectFinished = False
+    }
 
 targetL :: Lens' EffectAttrs Target
-targetL = lens effectTarget $ \m x -> m { effectTarget = x }
+targetL = lens effectTarget $ \m x -> m {effectTarget = x}
 
 instance ToJSON EffectAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "effect"
@@ -80,8 +94,9 @@ instance FromJSON EffectAttrs where
 instance HasAbilities EffectAttrs
 
 isEndOfWindow :: EffectAttrs -> EffectWindow -> Bool
-isEndOfWindow EffectAttrs { effectWindow } effectWindow' = effectWindow'
-  `elem` toEffectWindowList effectWindow
+isEndOfWindow EffectAttrs {effectWindow} effectWindow' =
+  effectWindow'
+    `elem` toEffectWindowList effectWindow
  where
   toEffectWindowList Nothing = []
   toEffectWindowList (Just (FirstEffectWindow xs)) = xs
@@ -96,15 +111,15 @@ instance Entity EffectAttrs where
 
 instance Targetable EffectAttrs where
   toTarget = EffectTarget . toId
-  isTarget EffectAttrs { effectId } (EffectTarget eid) = effectId == eid
+  isTarget EffectAttrs {effectId} (EffectTarget eid) = effectId == eid
   isTarget _ _ = False
 
 instance Sourceable EffectAttrs where
   toSource = EffectSource . toId
-  isSource EffectAttrs { effectId } (EffectSource eid) = effectId == eid
+  isSource EffectAttrs {effectId} (EffectSource eid) = effectId == eid
   isSource _ _ = False
 
-data Effect = forall a . IsEffect a => Effect a
+data Effect = forall a. IsEffect a => Effect a
 
 instance Eq Effect where
   (Effect (a :: a)) == (Effect (b :: b)) = case eqT @a @b of
@@ -138,5 +153,4 @@ instance Sourceable Effect where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-data SomeEffect = forall a . IsEffect a => SomeEffect (EffectArgs -> a)
-
+data SomeEffect = forall a. IsEffect a => SomeEffect (EffectArgs -> a)

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Aquinnah3
-  ( Aquinnah3(..)
-  , aquinnah3
-  ) where
+module Arkham.Asset.Cards.Aquinnah3 (
+  Aquinnah3 (..),
+  aquinnah3,
+) where
 
 import Arkham.Prelude
 
@@ -10,8 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Attack
 import Arkham.DamageEffect
-import Arkham.Enemy.Types ( Field (EnemyHealthDamage, EnemySanityDamage) )
-import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
@@ -29,13 +29,13 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 instance HasAbilities Aquinnah3 where
   getAbilities (Aquinnah3 a) =
     [ restrictedAbility
-          a
-          1
-          (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        a
+        1
+        (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
         $ ReactionAbility
-            (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
+          (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
         $ Costs
-            [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
+          [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
     ]
 
 instance RunMessage Aquinnah3 where
@@ -46,24 +46,26 @@ instance RunMessage Aquinnah3 where
         _ -> error "unhandled"
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId
-      enemyIds <- selectList
-        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+      enemyIds <-
+        selectList $
+          EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
 
       when (null enemyIds) (error "enemies have to be present")
 
-      push $ chooseOne
-        iid
-        [ targetLabel
+      push $
+        chooseOne
+          iid
+          [ targetLabel
             eid
             [ EnemyDamage eid $ nonAttack source healthDamage'
             , InvestigatorAssignDamage
-              iid
-              (EnemySource enemyId)
-              DamageAny
-              0
-              sanityDamage'
+                iid
+                (EnemySource enemyId)
+                DamageAny
+                0
+                sanityDamage'
             ]
-        | eid <- enemyIds
-        ]
+          | eid <- enemyIds
+          ]
       pure a
     _ -> Aquinnah3 <$> runMessage msg attrs

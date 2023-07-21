@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Straitjacket
-  ( straitjacket
-  , Straitjacket(..)
-  ) where
+module Arkham.Asset.Cards.Straitjacket (
+  straitjacket,
+  Straitjacket (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,10 +15,11 @@ newtype Straitjacket = Straitjacket AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 straitjacket :: AssetCard Straitjacket
-straitjacket = assetWith
-  Straitjacket
-  Cards.straitjacket
-  ((canLeavePlayByNormalMeansL .~ False) . (isStoryL .~ True))
+straitjacket =
+  assetWith
+    Straitjacket
+    Cards.straitjacket
+    ((canLeavePlayByNormalMeansL .~ False) . (isStoryL .~ True))
 
 -- Ability is usable by investigators at the same location due to this "ruling" from MJ:
 --
@@ -33,8 +34,10 @@ straitjacket = assetWith
 
 instance HasAbilities Straitjacket where
   getAbilities (Straitjacket a) =
-    [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
-        2
+    [ restrictedAbility a 1 OnSameLocation $
+        ActionAbility Nothing $
+          ActionCost
+            2
     ]
 
 instance RunMessage Straitjacket where

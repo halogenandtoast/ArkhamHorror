@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.SerpentsCall
-  ( serpentsCall
-  , SerpentsCall(..)
-  ) where
+module Arkham.Treachery.Cards.SerpentsCall (
+  serpentsCall,
+  SerpentsCall (..),
+) where
 
 import Arkham.Prelude
 
@@ -29,14 +29,15 @@ instance RunMessage SerpentsCall where
         then pushAll drawEncounterCards
         else do
           poisoned <- getSetAsidePoisoned
-          push $ chooseOne
-            iid
-            [ Label
-              "Put a set-aside Poisoned weakness into play in your threat area"
-              [CreateWeaknessInThreatArea poisoned iid]
-            , Label
-              "Draw the top 2 cards of the encounter deck"
-              drawEncounterCards
-            ]
+          push $
+            chooseOne
+              iid
+              [ Label
+                  "Put a set-aside Poisoned weakness into play in your threat area"
+                  [CreateWeaknessInThreatArea poisoned iid]
+              , Label
+                  "Draw the top 2 cards of the encounter deck"
+                  drawEncounterCards
+              ]
       pure t
     _ -> SerpentsCall <$> runMessage msg attrs

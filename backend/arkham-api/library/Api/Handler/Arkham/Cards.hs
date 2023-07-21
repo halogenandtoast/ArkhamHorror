@@ -1,6 +1,6 @@
-module Api.Handler.Arkham.Cards
-  ( getApiV1ArkhamCardsR
-  ) where
+module Api.Handler.Arkham.Cards (
+  getApiV1ArkhamCardsR,
+) where
 
 import Import
 
@@ -16,35 +16,39 @@ import Data.Text qualified as T
 
 getApiV1ArkhamCardsR :: Handler [CardDef]
 getApiV1ArkhamCardsR = do
-  showEncounter <- maybe False (const True)
-    <$> lookupGetParam "includeEncounter"
+  showEncounter <-
+    maybe False (const True)
+      <$> lookupGetParam "includeEncounter"
   let
-    cards = if showEncounter
-      then
-        allInvestigatorCards
-        <> allPlayerCards
-        <> allEncounterCards
-        <> allScenarioCards
-        <> allEncounterInvestigatorCards
-      else
-        allInvestigatorCards
-          <> Map.filter (isNothing . cdEncounterSet) allPlayerCards
+    cards =
+      if showEncounter
+        then
+          allInvestigatorCards
+            <> allPlayerCards
+            <> allEncounterCards
+            <> allScenarioCards
+            <> allEncounterInvestigatorCards
+        else
+          allInvestigatorCards
+            <> Map.filter (isNothing . cdEncounterSet) allPlayerCards
     safeBCodes = ["03047b", "03084b"]
     safeDCodes = ["03084d"]
 
   pure
     $ filter
-        (and
-        . sequence
+      ( and
+          . sequence
             [ (/= "01000")
-            , or . sequence
-              [(not . T.isSuffixOf "b" . unCardCode), (`elem` safeBCodes)]
-            , or . sequence
-              [(not . T.isSuffixOf "d" . unCardCode), (`elem` safeDCodes)]
+            , or
+                . sequence
+                  [(not . T.isSuffixOf "b" . unCardCode), (`elem` safeBCodes)]
+            , or
+                . sequence
+                  [(not . T.isSuffixOf "d" . unCardCode), (`elem` safeDCodes)]
             , (not . T.isSuffixOf "f" . unCardCode)
             ]
-        . toCardCode
-        )
+          . toCardCode
+      )
     $ toList
     $ cards
-    `Map.difference` allSpecialPlayerAssetCards
+      `Map.difference` allSpecialPlayerAssetCards

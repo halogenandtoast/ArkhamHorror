@@ -3,10 +3,10 @@ module Arkham.Asset.Cards.HallowedMirror where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Event.Cards qualified as Events
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck
+import Arkham.Event.Cards qualified as Events
 
 newtype HallowedMirror = HallowedMirror AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
@@ -21,9 +21,9 @@ instance RunMessage HallowedMirror where
       handSoothingMelody <- PlayerCard <$> genPlayerCard Events.soothingMelody
       deckSoothingMelodies <- replicateM 2 (genCard Events.soothingMelody)
       canShuffleDeck <- getCanShuffleDeck iid
-      pushAll
-        $ addToHand iid handSoothingMelody
-        : [ ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck ]
+      pushAll $
+        addToHand iid handSoothingMelody
+          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
       HallowedMirror <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
       let iid = getOwner attrs

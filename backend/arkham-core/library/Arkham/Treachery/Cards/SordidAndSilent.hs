@@ -1,18 +1,18 @@
-module Arkham.Treachery.Cards.SordidAndSilent
-  ( SordidAndSilent(..)
-  , sordidAndSilent
-  ) where
+module Arkham.Treachery.Cards.SordidAndSilent (
+  SordidAndSilent (..),
+  sordidAndSilent,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Investigator.Types ( Field(..) )
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
@@ -40,11 +40,12 @@ instance RunMessage SordidAndSilent where
         Just (LocationTarget lid) -> do
           iids <- selectList $ InvestigatorAt $ LocationWithId lid
           pushAll
-             [ InvestigatorAssignDamage iid source DamageAny 0 1
-             | iid <- iids
-             ]
+            [ InvestigatorAssignDamage iid source DamageAny 0 1
+            | iid <- iids
+            ]
           pure t
         _ -> pure t
-    UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
+    UseCardAbility _ source 2 _ _
+      | isSource attrs source ->
+          t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
     _ -> SordidAndSilent <$> runMessage msg attrs

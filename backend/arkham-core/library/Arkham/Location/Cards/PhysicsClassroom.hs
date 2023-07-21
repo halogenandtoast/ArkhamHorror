@@ -24,19 +24,19 @@ instance HasAbilities PhysicsClassroom where
   getAbilities (PhysicsClassroom a) =
     withRevealedAbilities
       a
-      [ limitedAbility (PlayerLimit PerRound 1) $
-          restrictedAbility
+      [ limitedAbility (PlayerLimit PerRound 1)
+          $ restrictedAbility
             a
             1
             ( CanDiscoverCluesAt $
                 RevealedLocation <> LocationWithAnyClues <> NotLocation (LocationWithId $ toId a)
-            ) $
-            ReactionAbility
-              ( SkillTestResult Timing.After You (WhileInvestigating $ LocationWithId $ toId a) $
-                  SuccessResult $
-                    AtLeast (Static 2)
-              )
-              Free
+            )
+          $ ReactionAbility
+            ( SkillTestResult Timing.After You (WhileInvestigating $ LocationWithId $ toId a) $
+                SuccessResult $
+                  AtLeast (Static 2)
+            )
+            Free
       ]
 
 instance RunMessage PhysicsClassroom where

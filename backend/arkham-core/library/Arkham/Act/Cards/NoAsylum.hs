@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.NoAsylum
-  ( NoAsylum(..)
-  , noAsylum
-  ) where
+module Arkham.Act.Cards.NoAsylum (
+  NoAsylum (..),
+  noAsylum,
+) where
 
 import Arkham.Prelude
 
@@ -19,30 +19,33 @@ import Arkham.ScenarioLogKey
 import Arkham.Trait
 
 newtype NoAsylum = NoAsylum ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 noAsylum :: ActCard NoAsylum
 noAsylum = act (4, A) NoAsylum Cards.noAsylum Nothing
 
 instance HasAbilities NoAsylum where
-  getAbilities (NoAsylum x) = withBaseAbilities x $ if onSide A x
-    then
-      [ restrictedAbility
-        (ProxySource
-          (LocationMatcherSource $ locationIs Locations.garden)
-          (toSource x)
-        )
-        99
-        (Here <> Negate
-          (EnemyCriteria $ EnemyExists $ ReadyEnemy <> EnemyAt YourLocation)
-        )
-        (ActionAbility (Just Action.Resign) $ ActionCost 1)
-      , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
-      $ Objective
-      $ ForcedAbility AnyWindow
-      ]
-    else []
+  getAbilities (NoAsylum x) =
+    withBaseAbilities x $
+      if onSide A x
+        then
+          [ restrictedAbility
+              ( ProxySource
+                  (LocationMatcherSource $ locationIs Locations.garden)
+                  (toSource x)
+              )
+              99
+              ( Here
+                  <> Negate
+                    (EnemyCriteria $ EnemyExists $ ReadyEnemy <> EnemyAt YourLocation)
+              )
+              (ActionAbility (Just Action.Resign) $ ActionCost 1)
+          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned $
+              Objective $
+                ForcedAbility AnyWindow
+          ]
+        else []
 
 instance HasModifiersFor NoAsylum where
   getModifiersFor (LocationTarget lid) (NoAsylum attrs) = do
@@ -55,10 +58,12 @@ instance HasModifiersFor NoAsylum where
 
 instance RunMessage NoAsylum where
   runMessage msg a@(NoAsylum attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       tookKeysByForce <- remembered YouTookTheKeysByForce
-      a <$ push
-        (ScenarioResolution $ Resolution $ if tookKeysByForce then 2 else 3)
+      a
+        <$ push
+          (ScenarioResolution $ Resolution $ if tookKeysByForce then 2 else 3)
     _ -> NoAsylum <$> runMessage msg attrs

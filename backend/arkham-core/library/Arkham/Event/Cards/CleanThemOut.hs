@@ -1,13 +1,13 @@
-module Arkham.Event.Cards.CleanThemOut
-  ( cleanThemOut
-  , CleanThemOut(..)
-  )
+module Arkham.Event.Cards.CleanThemOut (
+  cleanThemOut,
+  CleanThemOut (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.SkillType

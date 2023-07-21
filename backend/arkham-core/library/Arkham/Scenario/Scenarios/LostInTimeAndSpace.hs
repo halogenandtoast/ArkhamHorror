@@ -101,7 +101,7 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-readInvestigatorDefeat :: (HasGame m) => ScenarioAttrs -> m [Message]
+readInvestigatorDefeat :: HasGame m => ScenarioAttrs -> m [Message]
 readInvestigatorDefeat a = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds

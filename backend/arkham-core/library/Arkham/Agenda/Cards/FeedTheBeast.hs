@@ -1,13 +1,13 @@
-module Arkham.Agenda.Cards.FeedTheBeast
-  ( FeedTheBeast(..)
-  , feedTheBeast
-  ) where
+module Arkham.Agenda.Cards.FeedTheBeast (
+  FeedTheBeast (..),
+  feedTheBeast,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
@@ -24,5 +24,5 @@ instance RunMessage FeedTheBeast where
   runMessage msg a@(FeedTheBeast attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- selectList UneliminatedInvestigator
-      a <$ pushAll [ Resign iid | iid <- investigatorIds ]
+      a <$ pushAll [Resign iid | iid <- investigatorIds]
     _ -> FeedTheBeast <$> runMessage msg attrs

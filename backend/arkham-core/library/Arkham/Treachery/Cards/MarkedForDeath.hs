@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.MarkedForDeath
-  ( markedForDeath
-  , MarkedForDeath(..)
-  )
+module Arkham.Treachery.Cards.MarkedForDeath (
+  markedForDeath,
+  MarkedForDeath (..),
+)
 where
 
 import Arkham.Prelude

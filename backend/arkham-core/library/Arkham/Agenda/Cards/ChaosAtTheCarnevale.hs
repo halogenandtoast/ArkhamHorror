@@ -48,7 +48,7 @@ instance RunMessage ChaosAtTheCarnevale where
         [ EnemyAttack $
           enemyAttack cnidathquaId attrs iid
             & damageStrategyL
-              .~ DamageFirst Assets.innocentReveler
+            .~ DamageFirst Assets.innocentReveler
         | iid <- investigatorIds
         ]
           <> [RevertAgenda (toId attrs)]

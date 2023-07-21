@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.AnetteMason
-  ( anetteMason
-  , AnetteMason(..)
-  ) where
+module Arkham.Enemy.Cards.AnetteMason (
+  anetteMason,
+  AnetteMason (..),
+) where
 
 import Arkham.Prelude
 
@@ -29,11 +29,15 @@ anetteMason = enemy AnetteMason Cards.anetteMason (4, PerPlayer 4, 4) (1, 1)
 -- her.
 
 instance HasAbilities AnetteMason where
-  getAbilities (AnetteMason a) = withBaseAbilities
-    a
-    [ mkAbility a 1 $ ForcedAbility $ PhaseBegins Timing.After $ PhaseIs
-        EnemyPhase
-    ]
+  getAbilities (AnetteMason a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            PhaseBegins Timing.After $
+              PhaseIs
+                EnemyPhase
+      ]
 
 instance RunMessage AnetteMason where
   runMessage msg e@(AnetteMason attrs) = case msg of

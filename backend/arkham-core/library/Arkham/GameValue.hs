@@ -1,9 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.GameValue
-  ( GameValue(..)
-  , fromGameValue
-  , toGameValue
-  ) where
+
+module Arkham.GameValue (
+  GameValue (..),
+  fromGameValue,
+  toGameValue,
+) where
 
 import Arkham.Prelude
 

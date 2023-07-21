@@ -16,10 +16,10 @@ class Entity a where
   toAttrs :: a -> EntityAttrs a
   overAttrs :: (EntityAttrs a -> EntityAttrs a) -> a -> a
 
-updateAttrs :: (Entity a) => a -> (EntityAttrs a -> EntityAttrs a) -> a
+updateAttrs :: Entity a => a -> (EntityAttrs a -> EntityAttrs a) -> a
 updateAttrs a f = overAttrs f a
 
-patchEntity :: (Entity a) => a -> EntityAttrs a -> a
+patchEntity :: Entity a => a -> EntityAttrs a -> a
 patchEntity a attrs = overAttrs (const attrs) a
 
 overAttrsM :: (Monad m, Entity a) => (EntityAttrs a -> m (EntityAttrs a)) -> a -> m a
@@ -27,14 +27,14 @@ overAttrsM f a = do
   attrs <- f $ toAttrs a
   pure $ overAttrs (const attrs) a
 
-instance (Entity a) => Entity (a `With` b) where
+instance Entity a => Entity (a `With` b) where
   type EntityId (a `With` b) = EntityId a
   type EntityAttrs (a `With` b) = EntityAttrs a
   toId (a `With` _) = toId a
   toAttrs (a `With` _) = toAttrs a
   overAttrs f (a `With` b) = With (overAttrs f a) b
 
-instance (Targetable a) => Targetable (a `With` b) where
+instance Targetable a => Targetable (a `With` b) where
   toTarget (a `With` _) = toTarget a
   isTarget (a `With` _) = isTarget a
 
@@ -49,7 +49,7 @@ instance Targetable ChaosToken where
 
 newtype DiscardedEntity a = DiscardedEntity a
 
-instance (Entity a) => Entity (DiscardedEntity a) where
+instance Entity a => Entity (DiscardedEntity a) where
   type EntityId (DiscardedEntity a) = EntityId a
   type EntityAttrs (DiscardedEntity a) = EntityAttrs a
   toId (DiscardedEntity a) = toId a
@@ -58,7 +58,7 @@ instance (Entity a) => Entity (DiscardedEntity a) where
 
 newtype InHandEntity a = InHandEntity a
 
-instance (Entity a) => Entity (InHandEntity a) where
+instance Entity a => Entity (InHandEntity a) where
   type EntityId (InHandEntity a) = EntityId a
   type EntityAttrs (InHandEntity a) = EntityAttrs a
   toId (InHandEntity a) = toId a
@@ -67,7 +67,7 @@ instance (Entity a) => Entity (InHandEntity a) where
 
 newtype OutOfPlayEntity a = OutOfPlayEntity a
 
-instance (Entity a) => Entity (OutOfPlayEntity a) where
+instance Entity a => Entity (OutOfPlayEntity a) where
   type EntityId (OutOfPlayEntity a) = EntityId a
   type EntityAttrs (OutOfPlayEntity a) = EntityAttrs a
   toId (OutOfPlayEntity a) = toId a

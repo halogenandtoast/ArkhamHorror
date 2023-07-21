@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Campaigns.TheForgottenAge.Supply where
 
 import Arkham.Prelude

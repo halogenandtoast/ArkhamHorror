@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.HemisphericMap3
-  ( hemisphericMap3
-  , HemisphericMap3(..)
-  ) where
+module Arkham.Asset.Cards.HemisphericMap3 (
+  hemisphericMap3,
+  HemisphericMap3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -17,14 +17,16 @@ newtype HemisphericMap3 = HemisphericMap3 AssetAttrs
 instance HasModifiersFor HemisphericMap3 where
   getModifiersFor (InvestigatorTarget iid) (HemisphericMap3 a)
     | controlledBy a iid = do
-      connectedLocationCount <-
-        selectCount $ ConnectedFrom $ locationWithInvestigator iid
-      pure $ toModifiers a $ case connectedLocationCount of
-        n | n >= 4 ->
-          [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]
-        n | n >= 2 ->
-          [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]
-        _ -> []
+        connectedLocationCount <-
+          selectCount $ ConnectedFrom $ locationWithInvestigator iid
+        pure $ toModifiers a $ case connectedLocationCount of
+          n
+            | n >= 4 ->
+                [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]
+          n
+            | n >= 2 ->
+                [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]
+          _ -> []
   getModifiersFor _ _ = pure []
 
 hemisphericMap3 :: AssetCard HemisphericMap3

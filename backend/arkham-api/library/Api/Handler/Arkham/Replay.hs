@@ -1,20 +1,20 @@
-module Api.Handler.Arkham.Replay
-  ( getApiV1ArkhamGameReplayR
-  ) where
+module Api.Handler.Arkham.Replay (
+  getApiV1ArkhamGameReplayR,
+) where
 
 import Api.Arkham.Helpers
 import Arkham.Game
 import Database.Esqueleto.Experimental
 import Entity.Arkham.Step
-import Import hiding ( delete, on, (==.) )
-import Safe ( fromJustNote )
+import Import hiding (delete, on, (==.))
+import Safe (fromJustNote)
 
 data GetReplayJson = GetReplayJson
   { totalSteps :: Int
   , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
-  deriving anyclass ToJSON
+  deriving anyclass (ToJSON)
 
 newtype ReplayId = ReplayId {id :: ArkhamGameId}
   deriving stock (Show, Generic)
@@ -33,16 +33,20 @@ getApiV1ArkhamGameReplayR gameId step = do
   let choices = map (arkhamStepChoice . entityVal) $ reverse $ drop step allChoices
   let gameJson' = replayChoices gameJson $ map choicePatchDown choices
 
-  pure $ GetReplayJson
-    (length choices)
-    (toPublicGame (Entity
-      gameId
-      (ArkhamGame
-        (arkhamGameName ge)
-        gameJson'
-        (arkhamGameStep ge)
-        (arkhamGameMultiplayerVariant ge)
-        (arkhamGameCreatedAt ge)
-        (arkhamGameUpdatedAt ge)
+  pure $
+    GetReplayJson
+      (length choices)
+      ( toPublicGame
+          ( Entity
+              gameId
+              ( ArkhamGame
+                  (arkhamGameName ge)
+                  gameJson'
+                  (arkhamGameStep ge)
+                  (arkhamGameMultiplayerVariant ge)
+                  (arkhamGameCreatedAt ge)
+                  (arkhamGameUpdatedAt ge)
+              )
+          )
+          mempty
       )
-    ) mempty)

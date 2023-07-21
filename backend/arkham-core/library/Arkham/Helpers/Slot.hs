@@ -1,7 +1,7 @@
-module Arkham.Helpers.Slot
-  ( module Arkham.Helpers.Slot
-  , module X
-  ) where
+module Arkham.Helpers.Slot (
+  module Arkham.Helpers.Slot,
+  module X,
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ isEmptySlot = isNothing . slotItem
 
 canPutIntoSlot :: IsCard a => a -> Slot -> Bool
 canPutIntoSlot a = \case
-  slot@Slot{} -> isEmptySlot slot
+  slot@Slot {} -> isEmptySlot slot
   tslot@(RestrictedSlot _ matcher _) -> isEmptySlot tslot && cardMatch a matcher
 
 putIntoSlot :: AssetId -> Slot -> Slot
@@ -36,6 +36,7 @@ removeIfMatches :: AssetId -> Slot -> Slot
 removeIfMatches aid = \case
   Slot source masset ->
     if masset == Just aid then Slot source Nothing else Slot source masset
-  RestrictedSlot source trait masset -> if masset == Just aid
-    then RestrictedSlot source trait Nothing
-    else RestrictedSlot source trait masset
+  RestrictedSlot source trait masset ->
+    if masset == Just aid
+      then RestrictedSlot source trait Nothing
+      else RestrictedSlot source trait masset

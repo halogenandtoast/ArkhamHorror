@@ -1,13 +1,13 @@
-module Arkham.Enemy.Cards.Wraith
-  ( wraith
-  , Wraith(..)
-  )
+module Arkham.Enemy.Cards.Wraith (
+  wraith,
+  Wraith (..),
+)
 where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 
 newtype Wraith = Wraith EnemyAttrs

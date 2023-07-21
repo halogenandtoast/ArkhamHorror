@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ScrollOfProphecies
-  ( ScrollOfProphecies(..)
-  , scrollOfProphecies
-  ) where
+module Arkham.Asset.Cards.ScrollOfProphecies (
+  ScrollOfProphecies (..),
+  scrollOfProphecies,
+) where
 
 import Arkham.Prelude
 
@@ -19,10 +19,10 @@ scrollOfProphecies = asset ScrollOfProphecies Cards.scrollOfProphecies
 
 instance HasAbilities ScrollOfProphecies where
   getAbilities (ScrollOfProphecies x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> UseCost (AssetWithId $ toId x) Secret 1
+    [ restrictedAbility x 1 ControlsThis $
+        ActionAbility Nothing $
+          ActionCost 1
+            <> UseCost (AssetWithId $ toId x) Secret 1
     ]
 
 instance RunMessage ScrollOfProphecies where
@@ -30,14 +30,15 @@ instance RunMessage ScrollOfProphecies where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorIds <- selectList $ colocatedWith iid
       investigators <- forToSnd investigatorIds $ \i -> drawCards i attrs 3
-      push $ chooseOne
-        iid
-        [ targetLabel
+      push $
+        chooseOne
+          iid
+          [ targetLabel
             iid'
             [ drawing
             , toMessage $ chooseAndDiscardCard iid' (toAbilitySource attrs 1)
             ]
-        | (iid', drawing) <- investigators
-        ]
+          | (iid', drawing) <- investigators
+          ]
       pure a
     _ -> ScrollOfProphecies <$> runMessage msg attrs

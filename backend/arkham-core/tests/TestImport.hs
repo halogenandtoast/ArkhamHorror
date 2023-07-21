@@ -169,7 +169,7 @@ instance HasGameLogger TestApp where
   gameLoggerL = lens testGameLogger $ \m x -> m {testGameLogger = x}
 
 testScenario
-  :: (MonadIO m)
+  :: MonadIO m
   => CardCode
   -> (ScenarioAttrs -> ScenarioAttrs)
   -> m Scenario
@@ -179,12 +179,12 @@ testScenario cardCode f = do
     . Scenario
     $ scenario (TheGathering . f) cardCode name Easy []
 
-buildEvent :: (CardGen m) => CardDef -> Investigator -> m Event
+buildEvent :: CardGen m => CardDef -> Investigator -> m Event
 buildEvent cardDef investigator = do
   card <- genCard cardDef
   createEvent card (toId investigator) <$> getRandom
 
-buildEnemy :: (HasCallStack) => (CardGen m) => CardCode -> m Enemy
+buildEnemy :: HasCallStack => CardGen m => CardCode -> m Enemy
 buildEnemy cardCode = case lookupCardDef cardCode of
   Nothing -> error $ "Test used invalid card code" <> show cardCode
   Just def -> do
@@ -192,7 +192,7 @@ buildEnemy cardCode = case lookupCardDef cardCode of
     lookupEnemy cardCode <$> getRandom <*> pure (toCardId card)
 
 buildAsset
-  :: (CardGen m) => CardDef -> Maybe Investigator -> m Asset
+  :: CardGen m => CardDef -> Maybe Investigator -> m Asset
 buildAsset cardDef mOwner = do
   card <- genCard cardDef
   lookupAsset (toCardCode card)
@@ -200,10 +200,10 @@ buildAsset cardDef mOwner = do
     <*> pure (toId <$> mOwner)
     <*> pure (toCardId card)
 
-testPlayerCards :: (CardGen m) => Int -> m [PlayerCard]
+testPlayerCards :: CardGen m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
 
-testPlayerCard :: (CardGen m) => (CardDef -> CardDef) -> m PlayerCard
+testPlayerCard :: CardGen m => (CardDef -> CardDef) -> m PlayerCard
 testPlayerCard f = genPlayerCard (f Cards.adaptable1) -- use adaptable because it has no in game effects
 
 testEnemy :: (EnemyAttrs -> EnemyAttrs) -> TestAppT Enemy
@@ -282,7 +282,7 @@ disruptive during tests since they won't add extra windows
 or abilities
 -}
 testInvestigator
-  :: (MonadIO m)
+  :: MonadIO m
   => CardDef
   -> (InvestigatorAttrs -> InvestigatorAttrs)
   -> m Investigator
@@ -290,7 +290,7 @@ testInvestigator cardDef f =
   pure $ overAttrs f $ lookupInvestigator (InvestigatorId $ toCardCode cardDef)
 
 testJenny
-  :: (MonadIO m) => (InvestigatorAttrs -> InvestigatorAttrs) -> m Investigator
+  :: MonadIO m => (InvestigatorAttrs -> InvestigatorAttrs) -> m Investigator
 testJenny = testInvestigator Investigators.jennyBarnes
 
 addInvestigator
@@ -412,7 +412,7 @@ replaceScenario f = do
   ref <- view gameRefL
   atomicModifyIORef' ref (\g -> (g {gameMode = That scenario'}, ()))
 
-chooseOnlyOption :: (HasCallStack) => String -> TestAppT ()
+chooseOnlyOption :: HasCallStack => String -> TestAppT ()
 chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -424,7 +424,7 @@ chooseOnlyOption _reason = do
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
-chooseFirstOption :: (HasCallStack) => String -> TestAppT ()
+chooseFirstOption :: HasCallStack => String -> TestAppT ()
 chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -434,7 +434,7 @@ chooseFirstOption _reason = do
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
 
-chooseOptionMatching :: (HasCallStack) => String -> (UI Message -> Bool) -> TestAppT ()
+chooseOptionMatching :: HasCallStack => String -> (UI Message -> Bool) -> TestAppT ()
 chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -465,7 +465,7 @@ gameTestWith investigatorDef body = do
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
 
-newGame :: (MonadIO m) => Investigator -> m Game
+newGame :: MonadIO m => Investigator -> m Game
 newGame investigator = do
   scenario' <- testScenario "01104" id
   seed <- liftIO getRandom
@@ -533,7 +533,7 @@ newGame investigator = do
 -- Helpers
 
 isInDiscardOf
-  :: (HasCardDef cardDef) => Investigator -> cardDef -> TestAppT Bool
+  :: HasCardDef cardDef => Investigator -> cardDef -> TestAppT Bool
 isInDiscardOf i (toCardDef -> cardDef) = do
   fieldP InvestigatorDiscard (any (`cardMatch` cardIs cardDef)) (toId i)
 
@@ -591,7 +591,7 @@ fieldAssertLength fld n = fieldAssert fld ((== n) . length)
 handIs :: [Card] -> Investigator -> TestAppT Bool
 handIs cards = fieldP InvestigatorHand (== cards) . toId
 
-putCardIntoPlay :: (HasCardDef def) => Investigator -> def -> TestAppT ()
+putCardIntoPlay :: HasCardDef def => Investigator -> def -> TestAppT ()
 putCardIntoPlay i (toCardDef -> def) = do
   card <- genCard def
   let

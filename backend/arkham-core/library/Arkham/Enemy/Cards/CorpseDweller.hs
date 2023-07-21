@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.CorpseDweller
-  ( corpseDweller
-  , CorpseDweller(..)
-  ) where
+module Arkham.Enemy.Cards.CorpseDweller (
+  corpseDweller,
+  CorpseDweller (..),
+) where
 
 import Arkham.Prelude
 
@@ -17,26 +17,31 @@ newtype CorpseDweller = CorpseDweller EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 corpseDweller :: EnemyCard CorpseDweller
-corpseDweller = enemyWith
-  CorpseDweller
-  Cards.corpseDweller
-  (3, Static 5, 4)
-  (2, 1)
-  ((spawnAtL ?~ SpawnLocation (LocationWithEnemy (EnemyWithTrait Humanoid)))
-  . (surgeIfUnableToSpawnL .~ True)
-  )
+corpseDweller =
+  enemyWith
+    CorpseDweller
+    Cards.corpseDweller
+    (3, Static 5, 4)
+    (2, 1)
+    ( (spawnAtL ?~ SpawnLocation (LocationWithEnemy (EnemyWithTrait Humanoid)))
+        . (surgeIfUnableToSpawnL .~ True)
+    )
 
 instance RunMessage CorpseDweller where
   runMessage msg (CorpseDweller attrs) = case msg of
     EnemySpawn miid lid eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       let iid = fromMaybe leadInvestigatorId miid
-      humanoids <- selectList $ EnemyWithTrait Humanoid <> EnemyAt
-        (LocationWithId lid)
-      push $ chooseOrRunOne
-        iid
-        [ targetLabel humanoid [Discard (toSource attrs) (EnemyTarget humanoid)]
-        | humanoid <- humanoids
-        ]
+      humanoids <-
+        selectList $
+          EnemyWithTrait Humanoid
+            <> EnemyAt
+              (LocationWithId lid)
+      push $
+        chooseOrRunOne
+          iid
+          [ targetLabel humanoid [Discard (toSource attrs) (EnemyTarget humanoid)]
+          | humanoid <- humanoids
+          ]
       CorpseDweller <$> runMessage msg attrs
     _ -> CorpseDweller <$> runMessage msg attrs

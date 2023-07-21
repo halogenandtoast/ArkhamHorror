@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.StubbornDetective
-  ( StubbornDetective(..)
-  , stubbornDetective
-  ) where
+module Arkham.Enemy.Cards.StubbornDetective (
+  StubbornDetective (..),
+  stubbornDetective,
+) where
 
 import Arkham.Prelude
 
@@ -11,22 +11,23 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype StubbornDetective = StubbornDetective EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 stubbornDetective :: EnemyCard StubbornDetective
-stubbornDetective = enemyWith
-  StubbornDetective
-  Cards.stubbornDetective
-  (3, Static 2, 2)
-  (1, 0)
-  (\a -> a & preyL .~ BearerOf (toId a))
+stubbornDetective =
+  enemyWith
+    StubbornDetective
+    Cards.stubbornDetective
+    (3, Static 2, 2)
+    (1, 0)
+    (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasModifiersFor StubbornDetective where
-  getModifiersFor (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
-    = do
+  getModifiersFor (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..}) =
+    do
       sameLocation <- iid <=~> InvestigatorAt (locationWithEnemy enemyId)
-      pure $ toModifiers a [ Blank | sameLocation ]
+      pure $ toModifiers a [Blank | sameLocation]
   getModifiersFor _ _ = pure []
 
 instance RunMessage StubbornDetective where

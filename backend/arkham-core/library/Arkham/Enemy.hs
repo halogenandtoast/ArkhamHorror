@@ -30,7 +30,7 @@ instance RunMessage Enemy where
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Enemy <$> runMessage msg' x
 
-lookupEnemy :: (HasCallStack) => CardCode -> EnemyId -> CardId -> Enemy
+lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of
   Nothing -> error $ "Unknown enemy: " <> show cardCode
   Just (SomeEnemyCard a) -> \e c -> Enemy $ cbCardBuilder a c e
@@ -42,7 +42,7 @@ instance FromJSON Enemy where
       \(_ :: EnemyCard a) -> Enemy <$> parseJSON @a (Object o)
 
 withEnemyCardCode
-  :: CardCode -> (forall a. (IsEnemy a) => EnemyCard a -> r) -> r
+  :: CardCode -> (forall a. IsEnemy a => EnemyCard a -> r) -> r
 withEnemyCardCode cCode f = case lookup cCode allEnemies of
   Nothing -> error $ "Unknown enemy: " <> show cCode
   Just (SomeEnemyCard a) -> f a

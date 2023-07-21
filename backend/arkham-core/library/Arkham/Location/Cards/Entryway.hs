@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Entryway
-  ( entryway
-  , Entryway(..)
-  ) where
+module Arkham.Location.Cards.Entryway (
+  entryway,
+  Entryway (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,31 +24,34 @@ newtype Entryway = Entryway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entryway :: LocationCard Entryway
-entryway = locationWith
-  Entryway
-  Cards.entryway
-  2
-  (PerPlayer 1)
-  (connectsToL .~ singleton LeftOf)
+entryway =
+  locationWith
+    Entryway
+    Cards.entryway
+    2
+    (PerPlayer 1)
+    (connectsToL .~ singleton LeftOf)
 
 instance HasAbilities Entryway where
-  getAbilities (Entryway attrs) = withResignAction
-    attrs
-    [ restrictedAbility
+  getAbilities (Entryway attrs) =
+    withResignAction
+      attrs
+      [ restrictedAbility
         attrs
         1
         (Here <> HasSupply Torches)
         (ActionAbility Nothing $ ActionCost 1)
-    | locationRevealed attrs
-    ]
+      | locationRevealed attrs
+      ]
 
 handleTreacheries :: InvestigatorId -> [EncounterCard] -> Message
 handleTreacheries iid [] = chooseOne iid [Label "No Treacheries Found" []]
-handleTreacheries iid treacheries = chooseOneAtATime
-  iid
-  [ TargetLabel (CardIdTarget $ toCardId c) [AddToEncounterDiscard c]
-  | c <- treacheries
-  ]
+handleTreacheries iid treacheries =
+  chooseOneAtATime
+    iid
+    [ TargetLabel (CardIdTarget $ toCardId c) [AddToEncounterDiscard c]
+    | c <- treacheries
+    ]
 
 instance RunMessage Entryway where
   runMessage msg l@(Entryway attrs) = case msg of
@@ -59,14 +62,14 @@ instance RunMessage Entryway where
         (viewing, rest) = splitAt 2 explorationDeck
         (treacheries, other) =
           partition (`cardMatch` CardWithType TreacheryType) viewing
-      pushAll
-        $ [ FocusCards viewing
-          , SetScenarioDeck ExplorationDeck $ other <> rest
-          , handleTreacheries
+      pushAll $
+        [ FocusCards viewing
+        , SetScenarioDeck ExplorationDeck $ other <> rest
+        , handleTreacheries
             iid
             (mapMaybe (preview _EncounterCard) treacheries)
-          ]
-        <> [ PutCardOnBottomOfDeck iid deckKey c | c <- other ]
-        <> [UnfocusCards, ShuffleDeck deckKey]
+        ]
+          <> [PutCardOnBottomOfDeck iid deckKey c | c <- other]
+          <> [UnfocusCards, ShuffleDeck deckKey]
       pure l
     _ -> Entryway <$> runMessage msg attrs

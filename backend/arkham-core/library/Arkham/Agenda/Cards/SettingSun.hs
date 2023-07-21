@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.SettingSun
-  ( SettingSun(..)
-  , settingSun
-  ) where
+module Arkham.Agenda.Cards.SettingSun (
+  SettingSun (..),
+  settingSun,
+) where
 
 import Arkham.Prelude
 
@@ -26,19 +26,20 @@ settingSun = agenda (2, A) SettingSun Cards.settingSun (Static 5)
 
 instance HasAbilities SettingSun where
   getAbilities (SettingSun a) =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility (Just Action.Explore)
-        $ ActionCost 1
+    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
+        ActionAbility (Just Action.Explore) $
+          ActionCost 1
     ]
 
 instance RunMessage SettingSun where
   runMessage msg a@(SettingSun attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore
-        iid
-        source
-        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $
+        Explore
+          iid
+          source
+          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- selectList UneliminatedInvestigator

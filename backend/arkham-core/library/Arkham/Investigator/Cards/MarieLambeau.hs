@@ -47,9 +47,10 @@ instance HasModifiersFor MarieLambeau where
       toModifiers a [GiveAdditionalAction (TraitRestrictedAdditionalAction Spell NoRestriction) | hasDoom]
   getModifiersFor _ _ = pure []
 
-getDoomAmongstControlledCards :: (HasGame m) => InvestigatorId -> m Int
+getDoomAmongstControlledCards :: HasGame m => InvestigatorId -> m Int
 getDoomAmongstControlledCards iid =
-  getSum . fold
+  getSum
+    . fold
     <$> sequence
       [ selectAgg Sum AssetDoom (assetControlledBy iid)
       , selectAgg Sum EventDoom (eventControlledBy iid)

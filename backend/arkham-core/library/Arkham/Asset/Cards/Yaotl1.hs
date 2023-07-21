@@ -1,9 +1,9 @@
-module Arkham.Asset.Cards.Yaotl1
-  ( yaotl1
-  , Yaotl1(..)
-  , yaotl1Effect
-  , Yaotl1Effect(..)
-  ) where
+module Arkham.Asset.Cards.Yaotl1 (
+  yaotl1,
+  Yaotl1 (..),
+  yaotl1Effect,
+  Yaotl1Effect (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillType
@@ -29,14 +29,14 @@ instance HasAbilities Yaotl1 where
   getAbilities (Yaotl1 a) =
     [ withTooltip
         "{fast} Exhaust Yaotl: During this skill test, you get a bonus to each skill equal to the number of matching skill icons on the top card of your discard pile (not counting {skillWild} icons)."
-      $ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-      $ FastAbility
-      $ ExhaustCost (toTarget a)
+        $ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility
+        $ ExhaustCost (toTarget a)
     , withTooltip
         "{fast}: Discard the top card of your deck. (Limit once per phase.)"
-      $ limitedAbility (PlayerLimit PerPhase 1)
-      $ restrictedAbility a 2 (ControlsThis <> CanManipulateDeck)
-      $ FastAbility Free
+        $ limitedAbility (PlayerLimit PerPhase 1)
+        $ restrictedAbility a 2 (ControlsThis <> CanManipulateDeck)
+        $ FastAbility Free
     ]
 
 instance RunMessage Yaotl1 where
@@ -59,20 +59,20 @@ yaotl1Effect = Yaotl1Effect . uncurry4 (baseAttrs "04035")
 instance HasModifiersFor Yaotl1Effect where
   getModifiersFor target@(InvestigatorTarget iid) (Yaotl1Effect a)
     | effectTarget a == target = do
-      discard <- field InvestigatorDiscard iid
-      case discard of
-        [] -> pure []
-        (x : _) -> do
-          let
-            skillIcons = cdSkills $ toCardDef x
-            skillCount sk = count (== SkillIcon sk) skillIcons
-          pure
-            $ toModifiers a
-            $ [ SkillModifier sk n
-              | sk <- allSkills
-              , let n = skillCount sk
-              , n > 0
-              ]
+        discard <- field InvestigatorDiscard iid
+        case discard of
+          [] -> pure []
+          (x : _) -> do
+            let
+              skillIcons = cdSkills $ toCardDef x
+              skillCount sk = count (== SkillIcon sk) skillIcons
+            pure $
+              toModifiers a $
+                [ SkillModifier sk n
+                | sk <- allSkills
+                , let n = skillCount sk
+                , n > 0
+                ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Yaotl1Effect where

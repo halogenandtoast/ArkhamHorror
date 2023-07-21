@@ -2,7 +2,7 @@ module Arkham.Scenarios.UndimensionedAndUnseen.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.Card ( Card )
+import Arkham.Card (Card)
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameEnv

@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.StealthyByakhee
-  ( stealthyByakhee
-  , StealthyByakhee(..)
-  ) where
+module Arkham.Enemy.Cards.StealthyByakhee (
+  stealthyByakhee,
+  StealthyByakhee (..),
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Modifier qualified as Modifier
 
 newtype StealthyByakhee = StealthyByakhee EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 stealthyByakhee :: EnemyCard StealthyByakhee
@@ -19,8 +19,9 @@ stealthyByakhee =
   enemy StealthyByakhee Cards.stealthyByakhee (5, Static 2, 3) (2, 1)
 
 instance HasModifiersFor StealthyByakhee where
-  getModifiersFor target (StealthyByakhee attrs) | isTarget attrs target =
-    pure $ toModifiers attrs [ Modifier.EnemyFight (-3) | enemyExhausted attrs ]
+  getModifiersFor target (StealthyByakhee attrs)
+    | isTarget attrs target =
+        pure $ toModifiers attrs [Modifier.EnemyFight (-3) | enemyExhausted attrs]
   getModifiersFor _ _ = pure []
 
 instance RunMessage StealthyByakhee where

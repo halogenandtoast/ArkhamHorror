@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Pantalone
-  ( pantalone
-  , Pantalone(..)
-  ) where
+module Arkham.Asset.Cards.Pantalone (
+  pantalone,
+  Pantalone (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,13 +22,14 @@ pantalone = asset Pantalone Cards.pantalone
 
 instance HasAbilities Pantalone where
   getAbilities (Pantalone a) =
-    [ restrictedAbility a 1 ControlsThis
-      $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $
+        ReactionAbility
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
-    , restrictedAbility a 2 ControlsThis $ ReactionAbility
-      (InitiatedSkillTest Timing.When You (NotSkillType SkillIntellect) AnySkillTestValue)
-      (DiscardCost FromPlay $ toTarget a)
+    , restrictedAbility a 2 ControlsThis $
+        ReactionAbility
+          (InitiatedSkillTest Timing.When You (NotSkillType SkillIntellect) AnySkillTestValue)
+          (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage Pantalone where
@@ -38,21 +39,21 @@ instance RunMessage Pantalone where
       push drawing
       pure a
     UseCardAbility _ source 2 _ _
-      | isSource attrs source
-      -> do
-        replaceMessageMatching
-          (\case
-            BeginSkillTestAfterFast{} -> True
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast{} : _) : _))
-              -> True
-            _ -> False
-          )
-          (\case
-            BeginSkillTestAfterFast skillTest
-              -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillIntellect } ]
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _))
-              -> [ BeginSkillTest $ skillTest { skillTestType = SkillSkillTest SkillIntellect } ]
-            _ -> error "invalid match"
-          )
-        pure a
+      | isSource attrs source ->
+          do
+            replaceMessageMatching
+              ( \case
+                  BeginSkillTestAfterFast {} -> True
+                  Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast {} : _) : _)) ->
+                    True
+                  _ -> False
+              )
+              ( \case
+                  BeginSkillTestAfterFast skillTest ->
+                    [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillIntellect}]
+                  Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _)) ->
+                    [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillIntellect}]
+                  _ -> error "invalid match"
+              )
+            pure a
     _ -> Pantalone <$> runMessage msg attrs

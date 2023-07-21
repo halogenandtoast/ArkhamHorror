@@ -33,7 +33,7 @@ newLogEntry gameId step now body =
     , arkhamLogEntryCreatedAt = now
     }
 
-getGameLog :: (MonadIO m) => ArkhamGameId -> Maybe Int -> SqlPersistT m GameLog
+getGameLog :: MonadIO m => ArkhamGameId -> Maybe Int -> SqlPersistT m GameLog
 getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
   entries <- from $ table @ArkhamLogEntry
   where_ $ entries.arkhamGameId ==. val gameId
@@ -42,7 +42,7 @@ getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
   orderBy [asc entries.createdAt]
   pure $ entries.body
 
-getGameLogEntries :: (MonadIO m) => ArkhamGameId -> SqlPersistT m [ArkhamLogEntry]
+getGameLogEntries :: MonadIO m => ArkhamGameId -> SqlPersistT m [ArkhamLogEntry]
 getGameLogEntries gameId = fmap (fmap entityVal) . select $ do
   entries <- from $ table @ArkhamLogEntry
   where_ $ entries.arkhamGameId ==. val gameId
@@ -90,7 +90,7 @@ instance CardGen GameAppT where
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = Map.insert cardId card (gameCards g)}, ())
 
-newApp :: (MonadIO m) => Game -> (Text -> IO ()) -> [Message] -> m GameApp
+newApp :: MonadIO m => Game -> (Text -> IO ()) -> [Message] -> m GameApp
 newApp g logger msgs = do
   gameRef <- newIORef g
   queueRef <- newQueue msgs
@@ -109,10 +109,10 @@ instance HasQueue Message GameAppT where
 instance HasGameLogger GameApp where
   gameLoggerL = lens appLogger $ \m x -> m {appLogger = x}
 
-runGameApp :: (MonadIO m) => GameApp -> GameAppT a -> m a
+runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT
 
-noLogger :: (Applicative m) => Text -> m ()
+noLogger :: Applicative m => Text -> m ()
 noLogger = const (pure ())
 
 getChannel :: ArkhamGameId -> Handler (TChan BSL.ByteString)

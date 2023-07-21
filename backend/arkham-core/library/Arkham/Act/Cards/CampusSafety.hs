@@ -14,10 +14,10 @@ newtype CampusSafety = CampusSafety ActAttrs
 campusSafety :: ActCard CampusSafety
 campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing
 
--- | Missing HasAbilities?
--- Campus Safety has an Objective but it is triggered by other cards so this is
--- left off of this definition
-
+{- | Missing HasAbilities?
+Campus Safety has an Objective but it is triggered by other cards so this is
+left off of this definition
+-}
 instance RunMessage CampusSafety where
   runMessage msg a@(CampusSafety attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do

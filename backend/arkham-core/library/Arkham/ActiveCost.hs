@@ -91,7 +91,7 @@ matchTarget takenActions (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-getActionCostModifier :: (HasGame m) => ActiveCost -> m Int
+getActionCostModifier :: HasGame m => ActiveCost -> m Int
 getActionCostModifier ac = do
   let iid = activeCostInvestigator ac
   takenActions <- field InvestigatorActionsTaken iid
@@ -375,9 +375,9 @@ instance RunMessage ActiveCost where
           pure $
             c
               & costPaymentsL
-                <>~ SealChaosTokenPayment token
+              <>~ SealChaosTokenPayment token
               & costSealedChaosTokensL
-                %~ (token :)
+              %~ (token :)
         ReleaseChaosTokensCost n -> do
           case source of
             AssetSource aid -> do
@@ -957,7 +957,7 @@ instance RunMessage ActiveCost where
       pure c
     _ -> pure c
 
-targetToCard :: (HasGame m) => Target -> m Card
+targetToCard :: HasGame m => Target -> m Card
 targetToCard = \case
   AssetTarget aid -> field AssetCard aid
   EventTarget aid -> field EventCard aid

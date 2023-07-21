@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AnalyticalMind
-  ( analyticalMind
-  , AnalyticalMind(..)
-  ) where
+module Arkham.Asset.Cards.AnalyticalMind (
+  analyticalMind,
+  AnalyticalMind (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype AnalyticalMind = AnalyticalMind AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 analyticalMind :: AssetCard AnalyticalMind
@@ -22,15 +22,17 @@ instance HasAbilities AnalyticalMind where
   getAbilities (AnalyticalMind attrs) =
     [ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility
-            (CommittedCards Timing.After You $ LengthIs $ EqualTo $ Static 1)
+          (CommittedCards Timing.After You $ LengthIs $ EqualTo $ Static 1)
         $ ExhaustCost (toTarget attrs)
     ]
 
 instance HasModifiersFor AnalyticalMind where
   getModifiersFor (InvestigatorTarget iid) (AnalyticalMind attrs)
-    | controlledBy attrs iid = pure $ toModifiers
-      attrs
-      [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
+    | controlledBy attrs iid =
+        pure $
+          toModifiers
+            attrs
+            [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AnalyticalMind where

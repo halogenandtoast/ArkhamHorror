@@ -301,7 +301,7 @@ on :: InvestigatorId -> LocationAttrs -> Bool
 on iid LocationAttrs {locationInvestigators} =
   iid `member` locationInvestigators
 
-data Location = forall a. (IsLocation a) => Location a
+data Location = forall a. IsLocation a => Location a
 
 instance Eq Location where
   Location (a :: a) == Location (b :: b) = case eqT @a @b of
@@ -373,7 +373,7 @@ isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs
 
 data SomeLocationCard where
-  SomeLocationCard :: (IsLocation a) => LocationCard a -> SomeLocationCard
+  SomeLocationCard :: IsLocation a => LocationCard a -> SomeLocationCard
 
 someLocationCardCode :: SomeLocationCard -> CardCode
 someLocationCardCode (SomeLocationCard a) = cbCardCode a

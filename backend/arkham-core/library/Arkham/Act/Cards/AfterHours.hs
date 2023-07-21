@@ -15,11 +15,12 @@ newtype AfterHours = AfterHours ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 afterHours :: ActCard AfterHours
-afterHours = act
-  (1, A)
-  AfterHours
-  Cards.afterHours
-  (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+afterHours =
+  act
+    (1, A)
+    AfterHours
+    Cards.afterHours
+    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance RunMessage AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of

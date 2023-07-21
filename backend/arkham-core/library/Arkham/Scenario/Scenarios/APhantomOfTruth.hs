@@ -84,7 +84,7 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-gatherTheMidnightMasks :: (CardGen m) => Int -> Int -> m [EncounterCard]
+gatherTheMidnightMasks :: CardGen m => Int -> Int -> m [EncounterCard]
 gatherTheMidnightMasks conviction doubt = do
   traverse genEncounterCard $
     if conviction > doubt

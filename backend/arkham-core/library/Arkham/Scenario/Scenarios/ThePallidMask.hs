@@ -149,7 +149,7 @@ instance RunMessage ThePallidMask where
         . ThePallidMask
         $ attrs
           & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+          .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       didNotEscapeGazeOfThePhantom <-

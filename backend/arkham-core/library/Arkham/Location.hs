@@ -15,7 +15,7 @@ import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Location.Types as X (Location)
 
-createLocation :: (IsCard a) => a -> LocationId -> Location
+createLocation :: IsCard a => a -> LocationId -> Location
 createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
 
 lookupLocation :: CardCode -> LocationId -> CardId -> Location
@@ -36,7 +36,7 @@ instance FromJSON Location where
       \(_ :: LocationCard a) -> Location <$> parseJSON @a (Object o)
 
 withLocationCardCode
-  :: CardCode -> (forall a. (IsLocation a) => LocationCard a -> r) -> r
+  :: CardCode -> (forall a. IsLocation a => LocationCard a -> r) -> r
 withLocationCardCode cCode f = case lookup cCode allLocations of
   Nothing -> error "invalid locations"
   Just (SomeLocationCard a) -> f a

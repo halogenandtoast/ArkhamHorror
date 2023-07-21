@@ -11,32 +11,36 @@ module Arkham.Cost.FieldCost where
 import Arkham.Prelude
 
 import Arkham.Classes.Entity
+import Arkham.Classes.Query
 import Arkham.Field
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Projection
-import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Query
-import Arkham.Classes.Query
 import Data.Typeable
 
 data FieldCost where
-  FieldCost :: forall matcher rec fld.
-    ( fld ~ Field rec Int
-    , QueryElement matcher ~ EntityId rec
-    , Typeable matcher
-    , Typeable rec
-    , Typeable fld
-    , Show matcher
-    , Show fld
-    , ToJSON matcher
-    , ToJSON fld
-    , Ord fld
-    , Ord matcher
-    , FromJSON (SomeField rec)
-    , Projection rec
-    , Query matcher
-    ) => matcher -> fld -> FieldCost
+  FieldCost
+    :: forall matcher rec fld
+     . ( fld ~ Field rec Int
+       , QueryElement matcher ~ EntityId rec
+       , Typeable matcher
+       , Typeable rec
+       , Typeable fld
+       , Show matcher
+       , Show fld
+       , ToJSON matcher
+       , ToJSON fld
+       , Ord fld
+       , Ord matcher
+       , FromJSON (SomeField rec)
+       , Projection rec
+       , Query matcher
+       )
+    => matcher
+    -> fld
+    -> FieldCost
 
 deriving stock instance Show FieldCost
 

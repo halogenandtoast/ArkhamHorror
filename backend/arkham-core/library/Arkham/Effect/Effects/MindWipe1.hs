@@ -1,13 +1,13 @@
-module Arkham.Effect.Effects.MindWipe1
-  ( mindWipe1
-  , MindWipe1(..)
-  ) where
+module Arkham.Effect.Effects.MindWipe1 (
+  mindWipe1,
+  MindWipe1 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
+import Arkham.Effect.Runner
 import Arkham.Message
 
 newtype MindWipe1 = MindWipe1 EffectAttrs

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.CharonsObol1
-  ( charonsObol1
-  , CharonsObol1(..)
-  ) where
+module Arkham.Asset.Cards.CharonsObol1 (
+  charonsObol1,
+  CharonsObol1 (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,11 +16,11 @@ newtype CharonsObol1 = CharonsObol1 AssetAttrs
 instance HasModifiersFor CharonsObol1 where
   getModifiersFor (InvestigatorTarget iid) (CharonsObol1 attrs)
     | controlledBy attrs iid = do
-      isDefeated <- member iid <$> select DefeatedInvestigator
-      pure
-        $ toModifiers attrs
-        $ KilledIfDefeated
-        : [ XPModifier 2 | not isDefeated ]
+        isDefeated <- member iid <$> select DefeatedInvestigator
+        pure $
+          toModifiers attrs $
+            KilledIfDefeated
+              : [XPModifier 2 | not isDefeated]
   getModifiersFor _ _ = pure []
 
 charonsObol1 :: AssetCard CharonsObol1

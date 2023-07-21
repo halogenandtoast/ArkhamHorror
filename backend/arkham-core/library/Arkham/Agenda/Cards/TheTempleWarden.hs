@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheTempleWarden
-  ( TheTempleWarden(..)
-  , theTempleWarden
-  ) where
+module Arkham.Agenda.Cards.TheTempleWarden (
+  TheTempleWarden (..),
+  theTempleWarden,
+) where
 
 import Arkham.Prelude
 

@@ -181,8 +181,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & actStackL
-          . at n
-          ?~ actStack'
+        . at n
+        ?~ actStack'
         & (completedActStackL . at n ?~ (oldAct : completedActStack))
   SetCurrentActDeck n stack@(current : _) -> do
     actIds <- selectList $ Matcher.ActWithDeckId n
@@ -313,7 +313,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & countsL
-          %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
+        %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveChaosToken _drawnToken token iid -> do
     ChaosTokenValue _ tokenModifier <- getChaosTokenValue iid token ()
     when (tokenModifier == AutoFailModifier) $ push FailSkillTest
@@ -430,7 +430,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     handler <- getEncounterDeckHandler (toCardId ec)
     pure $
       a
-        & discardLens handler %~ (ec :)
+        & discardLens handler
+        %~ (ec :)
         & (encounterDeckL %~ withDeck (filter (/= ec)))
         & (victoryDisplayL %~ filter (/= EncounterCard ec))
         & (setAsideCardsL %~ filter (/= EncounterCard ec))
@@ -569,10 +570,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure $
           a
             & storyCardsL
-              %~ insertWith
-                (<>)
-                iid
-                [card {pcOwner = Just iid}]
+            %~ insertWith
+              (<>)
+              iid
+              [card {pcOwner = Just iid}]
       else pure a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
@@ -934,10 +935,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       shuffleM $ cards <> maybe [] (filter (`notElem` cards)) (view (decksL . at deckKey) a)
     pure $
       a
-        & decksL . at deckKey ?~ deck'
+        & decksL
+        . at deckKey
+        ?~ deck'
         & discardL
-          %~ filter
-            ((`notElem` cards) . EncounterCard)
+        %~ filter
+          ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do
     investigatorIds <-
       selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid

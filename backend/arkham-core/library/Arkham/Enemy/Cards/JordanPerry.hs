@@ -1,13 +1,13 @@
-module Arkham.Enemy.Cards.JordanPerry
-  ( jordanPerry
-  , JordanPerry(..)
-  ) where
+module Arkham.Enemy.Cards.JordanPerry (
+  jordanPerry,
+  JordanPerry (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -22,13 +22,14 @@ jordanPerry :: EnemyCard JordanPerry
 jordanPerry = enemy JordanPerry Cards.jordanPerry (2, Static 8, 2) (1, 1)
 
 instance HasAbilities JordanPerry where
-  getAbilities (JordanPerry a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy EnemyWithAnyDamage)
-      $ ForcedAbility
-      $ PhaseBegins Timing.When
-      $ PhaseIs EnemyPhase
-    ]
+  getAbilities (JordanPerry a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy EnemyWithAnyDamage) $
+          ForcedAbility $
+            PhaseBegins Timing.When $
+              PhaseIs EnemyPhase
+      ]
 
 instance RunMessage JordanPerry where
   runMessage msg e@(JordanPerry attrs) = case msg of

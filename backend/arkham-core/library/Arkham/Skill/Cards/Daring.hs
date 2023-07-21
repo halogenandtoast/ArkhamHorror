@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Daring
-  ( daring
-  , Daring(..)
-  ) where
+module Arkham.Skill.Cards.Daring (
+  daring,
+  Daring (..),
+) where
 
 import Arkham.Prelude
 
@@ -29,10 +29,12 @@ instance RunMessage Daring where
     InvestigatorCommittedSkill _ sid | sid == toId attrs -> do
       mtarget <- getSkillTestTarget
       case mtarget of
-        Just target@(EnemyTarget _) -> push $ skillTestModifiers
-          (toSource attrs)
-          target
-          [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
+        Just target@(EnemyTarget _) ->
+          push $
+            skillTestModifiers
+              (toSource attrs)
+              target
+              [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
         _ -> error "Target was invalid"
       pure s
     SkillTestEnds _ _ -> do

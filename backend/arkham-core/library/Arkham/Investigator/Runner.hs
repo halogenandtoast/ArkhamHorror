@@ -447,7 +447,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toTarget a)
     if null investigatorDiscard
       || CardsCannotLeaveYourDiscardPile
-        `elem` modifiers'
+      `elem` modifiers'
       then pure a
       else do
         deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
@@ -672,11 +672,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $
           a
             & handL
-              %~ filter (/= card)
+            %~ filter (/= card)
             & discardL
-              %~ (pc :)
+            %~ (pc :)
             & discardingL
-              %~ fmap updateHandDiscard
+            %~ fmap updateHandDiscard
       EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
       VengeanceCard _ -> error "vengeance card"
   DoneDiscarding iid | iid == investigatorId -> case investigatorDiscarding of
@@ -817,7 +817,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       applyFightCostModifiers costToEnter (ActionCostOf actionTarget n) =
         case actionTarget of
           FirstOneOf as
-            | Action.Fight `elem` as
+            | Action.Fight
+                `elem` as
                 && null
                   (takenActions `intersect` setFromList as) ->
                 increaseActionCost costToEnter n
@@ -918,7 +919,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       applyEvadeCostModifiers costToEnter (ActionCostOf actionTarget n) =
         case actionTarget of
           FirstOneOf as
-            | Action.Evade `elem` as
+            | Action.Evade
+                `elem` as
                 && null
                   (takenActions `intersect` setFromList as) ->
                 increaseActionCost costToEnter n
@@ -1041,7 +1043,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             b
         other -> other
   InvestigatorDirectDamage iid source damage horror
-    | iid == investigatorId
+    | iid
+        == investigatorId
         && not
           (investigatorDefeated || investigatorResigned) ->
         do
@@ -1081,7 +1084,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
           pure a
   InvestigatorAssignDamage iid source strategy damage horror
-    | iid == investigatorId
+    | iid
+        == investigatorId
         && not
           (investigatorDefeated || investigatorResigned) ->
         do
@@ -1185,9 +1189,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ( damageStrategy
                 == DamageFromHastur
                 && toTarget a
-                  `elem` horrorTargets
+                `elem` horrorTargets
                 && investigatorSanityDamage a
-                  > investigatorSanity
+                > investigatorSanity
             )
             $ push
             $ InvestigatorDirectDamage iid source 1 0
@@ -1764,9 +1768,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $
           a
             & tokensL
-              %~ ( addTokens Token.Damage investigatorAssignedHealthDamage
-                    . addTokens Horror investigatorAssignedSanityDamage
-                 )
+            %~ ( addTokens Token.Damage investigatorAssignedHealthDamage
+                  . addTokens Horror investigatorAssignedSanityDamage
+               )
             & (assignedHealthDamageL .~ 0)
             & (assignedSanityDamageL .~ 0)
   CancelAssignedDamage target damageReduction horrorReduction
@@ -1817,8 +1821,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             push afterWindow
             pure $
               a
-                & tokensL %~ subtractTokens Horror additional
-                & horrorHealedL .~ 0
+                & tokensL
+                %~ subtractTokens Horror additional
+                & horrorHealedL
+                .~ 0
   HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId ->
     do
       cannotHealHorror <- hasModifier a CannotHealHorror
@@ -2047,7 +2053,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let (cards, deck) = draw n investigatorDeck
         pure $ a & deckL .~ Deck.withDeck (<> cards) deck
   DrawCards cardDraw
-    | cardDrawInvestigator cardDraw == investigatorId
+    | cardDrawInvestigator cardDraw
+        == investigatorId
         && not
           (cardDrawAction cardDraw) ->
         do
@@ -2079,7 +2086,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               unless
                 ( null investigatorDiscard
                     || CardsCannotLeaveYourDiscardPile
-                      `elem` modifiers'
+                    `elem` modifiers'
                 )
                 $ do
                   drawing <- drawCards iid source n
@@ -2119,7 +2126,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                         other
                           | hasRevelation card
                               && other
-                                `notElem` [PlayerTreacheryType, PlayerEnemyType] ->
+                              `notElem` [PlayerTreacheryType, PlayerEnemyType] ->
                               do
                                 guard $
                                   ShuffleBackInEachWeakness
@@ -2174,9 +2181,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   pure $
                     a
                       & handL
-                        %~ (<> map PlayerCard allDrawn)
+                      %~ (<> map PlayerCard allDrawn)
                       & deckL
-                        .~ Deck deck'
+                      .~ Deck deck'
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-
       checkWindows
@@ -2394,7 +2401,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       && ( any (`member` skillIcons) (cdSkills (toCardDef card))
                             || ( null (cdSkills $ toCardDef card)
                                   && toCardType card
-                                    == SkillType
+                                  == SkillType
                                )
                          )
                       && passesCommitRestrictions
@@ -2542,7 +2549,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                           && ( any (`member` skillIcons) (cdSkills (toCardDef card))
                                 || ( null (cdSkills (toCardDef card))
                                       && toCardType card
-                                        == SkillType
+                                      == SkillType
                                    )
                              )
                           && passesCriterias
@@ -3365,16 +3372,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 )
           )
         & additionalActionsL
-          .~ mempty
+        .~ mempty
   EndTurn iid
     | iid == investigatorId ->
         pure $
           a
             & usedAbilitiesL
-              %~ filter
-                ( \UsedAbility {..} ->
-                    abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
-                )
+            %~ filter
+              ( \UsedAbility {..} ->
+                  abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
+              )
   UseCardAbility iid (isSource a -> True) 500 _ _ -> do
     otherInvestigators <-
       selectList $ colocatedWith investigatorId <> NotInvestigator (InvestigatorWithId investigatorId)
@@ -3438,7 +3445,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Blanked msg' -> runMessage msg' a
   _ -> pure a
 
-getFacingDefeat :: (HasGame m) => InvestigatorAttrs -> m Bool
+getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
   canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
   modifiedHealth <- getModifiedHealth a
@@ -3453,7 +3460,7 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
             && not canOnlyBeDefeatedByDamage
          )
 
-getModifiedHealth :: (HasGame m) => InvestigatorAttrs -> m Int
+getModifiedHealth :: HasGame m => InvestigatorAttrs -> m Int
 getModifiedHealth attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier investigatorHealth modifiers
@@ -3461,7 +3468,7 @@ getModifiedHealth attrs@InvestigatorAttrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getModifiedSanity :: (HasGame m) => InvestigatorAttrs -> m Int
+getModifiedSanity :: HasGame m => InvestigatorAttrs -> m Int
 getModifiedSanity attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier investigatorSanity modifiers

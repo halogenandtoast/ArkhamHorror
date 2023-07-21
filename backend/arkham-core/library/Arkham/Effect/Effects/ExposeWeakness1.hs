@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.ExposeWeakness1
-  ( exposeWeakness1
-  , ExposeWeakness1(..)
-  ) where
+module Arkham.Effect.Effects.ExposeWeakness1 (
+  exposeWeakness1,
+  ExposeWeakness1 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,17 +21,17 @@ exposeWeakness1 = ExposeWeakness1 . uncurry4 (baseAttrs "02228")
 instance HasModifiersFor ExposeWeakness1 where
   getModifiersFor target (ExposeWeakness1 attrs)
     | target == effectTarget attrs = case effectMetadata attrs of
-      Just (EffectInt n) -> pure $ toModifiers attrs [EnemyFight (-n)]
-      _ -> error "invalid effect metadata"
+        Just (EffectInt n) -> pure $ toModifiers attrs [EnemyFight (-n)]
+        _ -> error "invalid effect metadata"
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs@EffectAttrs {..}) = case msg of
     PassedSkillTest _ (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
-      | target == effectTarget
-      -> e <$ push (DisableEffect effectId)
+      | target == effectTarget ->
+          e <$ push (DisableEffect effectId)
     FailedSkillTest _ (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
-      | target == effectTarget
-      -> e <$ push (DisableEffect effectId)
+      | target == effectTarget ->
+          e <$ push (DisableEffect effectId)
     EndPhase -> e <$ push (DisableEffect effectId)
     _ -> ExposeWeakness1 <$> runMessage msg attrs

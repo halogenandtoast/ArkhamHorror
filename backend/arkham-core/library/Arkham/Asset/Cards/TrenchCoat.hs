@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.TrenchCoat
-  ( trenchCoat
-  , TrenchCoat(..)
-  ) where
+module Arkham.Asset.Cards.TrenchCoat (
+  trenchCoat,
+  TrenchCoat (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,10 +18,11 @@ trenchCoat :: AssetCard TrenchCoat
 trenchCoat = assetWith TrenchCoat Cards.trenchCoat (healthL ?~ 2)
 
 instance HasModifiersFor TrenchCoat where
-  getModifiersFor (InvestigatorTarget iid) (TrenchCoat a) = pure
-    [ toModifier a $ ActionSkillModifier Action.Evade SkillAgility 1
-    | controlledBy a iid
-    ]
+  getModifiersFor (InvestigatorTarget iid) (TrenchCoat a) =
+    pure
+      [ toModifier a $ ActionSkillModifier Action.Evade SkillAgility 1
+      | controlledBy a iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TrenchCoat where

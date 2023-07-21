@@ -2,12 +2,12 @@ module Arkham.Helpers.Act where
 
 import Arkham.Prelude
 
-import Arkham.Act.Types (Field(..))
 import Arkham.Act.Sequence qualified as AS
-import Arkham.Id
+import Arkham.Act.Types (Field (..))
 import Arkham.Classes.Query
-import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
 

@@ -1,12 +1,13 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Agenda.Sequence where
 
 import Arkham.Prelude
 
 import Data.Aeson.TH
 
-newtype AgendaStep = AgendaStep { unAgendaStep :: Int }
-  deriving newtype Eq
+newtype AgendaStep = AgendaStep {unAgendaStep :: Int}
+  deriving newtype (Eq)
 
 agendaStep :: AgendaSequence -> AgendaStep
 agendaStep (Sequence num _) = AgendaStep num
@@ -32,7 +33,7 @@ flipAgendaSide = \case
 
 flipSequence :: AgendaSequence -> AgendaSequence
 flipSequence as =
-  as { agendaSequenceSide = flipAgendaSide (agendaSequenceSide as) }
+  as {agendaSequenceSide = flipAgendaSide (agendaSequenceSide as)}
 
 $(deriveJSON defaultOptions ''AgendaSide)
 $(deriveJSON defaultOptions ''AgendaSequence)

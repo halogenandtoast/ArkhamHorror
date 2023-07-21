@@ -13,13 +13,13 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 
-getCampaignLog :: (HasGame m) => m CampaignLog
+getCampaignLog :: HasGame m => m CampaignLog
 getCampaignLog =
   withStandalone
     (field CampaignCampaignLog)
     (field ScenarioStandaloneCampaignLog)
 
-getHasRecord :: (HasGame m) => CampaignLogKey -> m Bool
+getHasRecord :: HasGame m => CampaignLogKey -> m Bool
 getHasRecord k = do
   campaignLog <- getCampaignLog
   pure $
@@ -28,18 +28,18 @@ getHasRecord k = do
       , k `member` campaignLogRecordedCounts campaignLog
       ]
 
-whenHasRecord :: (HasGame m) => CampaignLogKey -> m () -> m ()
+whenHasRecord :: HasGame m => CampaignLogKey -> m () -> m ()
 whenHasRecord k = whenM (getHasRecord k)
 
-getRecordCount :: (HasGame m) => CampaignLogKey -> m Int
+getRecordCount :: HasGame m => CampaignLogKey -> m Int
 getRecordCount k =
   findWithDefault 0 k . campaignLogRecordedCounts <$> getCampaignLog
 
-getRecordSet :: (HasGame m) => CampaignLogKey -> m [SomeRecorded]
+getRecordSet :: HasGame m => CampaignLogKey -> m [SomeRecorded]
 getRecordSet k =
   findWithDefault [] k . campaignLogRecordedSets <$> getCampaignLog
 
-getRecordedCardCodes :: (HasGame m) => CampaignLogKey -> m [CardCode]
+getRecordedCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
 getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k
  where
   onlyRecorded :: SomeRecorded -> Maybe CardCode
@@ -47,7 +47,7 @@ getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k
     SomeRecorded RecordableCardCode (Recorded cCode) -> Just cCode
     _ -> Nothing
 
-getCrossedOutCardCodes :: (HasGame m) => CampaignLogKey -> m [CardCode]
+getCrossedOutCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
 getCrossedOutCardCodes k = mapMaybe onlyCrossedOut <$> getRecordSet k
  where
   onlyCrossedOut :: SomeRecorded -> Maybe CardCode
@@ -55,10 +55,10 @@ getCrossedOutCardCodes k = mapMaybe onlyCrossedOut <$> getRecordSet k
     SomeRecorded RecordableCardCode (CrossedOut cCode) -> Just cCode
     _ -> Nothing
 
-remembered :: (HasGame m) => ScenarioLogKey -> m Bool
+remembered :: HasGame m => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
 
-scenarioCount :: (HasGame m) => ScenarioCountKey -> m Int
+scenarioCount :: HasGame m => ScenarioCountKey -> m Int
 scenarioCount k = fromMaybe 0 . lookup k <$> scenarioField ScenarioCounts
 
 recordSetInsert
@@ -68,5 +68,5 @@ recordSetInsert
   -> Message
 recordSetInsert k xs = RecordSetInsert k $ map recorded $ toList xs
 
-crossOutRecordSetEntries :: (Recordable a) => CampaignLogKey -> [a] -> Message
+crossOutRecordSetEntries :: Recordable a => CampaignLogKey -> [a] -> Message
 crossOutRecordSetEntries k xs = CrossOutRecordSetEntries k $ map recorded xs

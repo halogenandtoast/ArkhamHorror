@@ -225,7 +225,7 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
-data Treachery = forall a. (IsTreachery a) => Treachery a
+data Treachery = forall a. IsTreachery a => Treachery a
 
 instance Eq Treachery where
   Treachery (a :: a) == Treachery (b :: b) = case eqT @a @b of
@@ -272,7 +272,7 @@ instance IsCard Treachery where
 
 data SomeTreacheryCard
   = forall a.
-    (IsTreachery a) =>
+    IsTreachery a =>
     SomeTreacheryCard
       (TreacheryCard a)
 

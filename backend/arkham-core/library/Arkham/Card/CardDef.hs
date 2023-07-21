@@ -129,9 +129,9 @@ class GetCardDef m a where
   getCardDef :: a -> m CardDef
 
 class HasCardDef a where
-  toCardDef :: (HasCallStack) => a -> CardDef
+  toCardDef :: HasCallStack => a -> CardDef
 
-hasRevelation :: (HasCardDef a) => a -> Bool
+hasRevelation :: HasCardDef a => a -> Bool
 hasRevelation = cdRevelation . toCardDef
 
 class HasOriginalCardCode a where
@@ -140,13 +140,13 @@ class HasOriginalCardCode a where
 class HasCardType a where
   toCardType :: a -> CardType
 
-instance (HasCardDef a) => HasCardType a where
+instance HasCardDef a => HasCardType a where
   toCardType = cdCardType . toCardDef
 
-instance {-# OVERLAPPABLE #-} (HasCardDef a) => HasTraits a where
+instance {-# OVERLAPPABLE #-} HasCardDef a => HasTraits a where
   toTraits = cdCardTraits . toCardDef
 
-instance (HasCardDef a) => HasKeywords a where
+instance HasCardDef a => HasKeywords a where
   toKeywords = cdKeywords . toCardDef
 
 instance HasCardDef CardDef where

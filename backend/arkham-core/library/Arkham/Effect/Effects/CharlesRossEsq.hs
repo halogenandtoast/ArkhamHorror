@@ -1,16 +1,16 @@
-module Arkham.Effect.Effects.CharlesRossEsq
-  ( CharlesRossEsq(..)
-  , charlesRossEsq
-  ) where
+module Arkham.Effect.Effects.CharlesRossEsq (
+  CharlesRossEsq (..),
+  charlesRossEsq,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -29,11 +29,12 @@ instance HasModifiersFor CharlesRossEsq where
       AssetSource aid -> do
         assetLid <- field AssetLocation aid
         investigatorLid <- field InvestigatorLocation iid
-        pure $ toModifiers
-          attrs
-          [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Item) 1
-          | isJust assetLid && assetLid == investigatorLid
-          ]
+        pure $
+          toModifiers
+            attrs
+            [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Item) 1
+            | isJust assetLid && assetLid == investigatorLid
+            ]
       _ -> error "invalid source"
   getModifiersFor _ _ = pure []
 
@@ -43,7 +44,10 @@ instance RunMessage CharlesRossEsq where
       AssetSource aid -> do
         assetLid <- field AssetLocation aid
         investigatorLid <- field InvestigatorLocation iid
-        if isJust assetLid && assetLid == investigatorLid && cardMatch
+        if isJust assetLid
+          && assetLid
+          == investigatorLid
+          && cardMatch
             card
             (CardWithType AssetType <> CardWithTrait Item)
           then e <$ push (DisableEffect $ toId attrs)

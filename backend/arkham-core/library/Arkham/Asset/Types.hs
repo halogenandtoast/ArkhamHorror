@@ -29,7 +29,7 @@ import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Data.Typeable
 
-data Asset = forall a. (IsAsset a) => Asset a
+data Asset = forall a. IsAsset a => Asset a
 
 instance Eq Asset where
   Asset (a :: a) == Asset (b :: b) = case eqT @a @b of
@@ -55,7 +55,7 @@ instance Entity Asset where
   toAttrs (Asset a) = toAttrs a
   overAttrs f (Asset a) = Asset $ overAttrs f a
 
-data SomeAssetCard = forall a. (IsAsset a) => SomeAssetCard (AssetCard a)
+data SomeAssetCard = forall a. IsAsset a => SomeAssetCard (AssetCard a)
 
 liftAssetCard :: (forall a. AssetCard a -> b) -> SomeAssetCard -> b
 liftAssetCard f (SomeAssetCard a) = f a
@@ -297,15 +297,15 @@ attachedToEnemy AssetAttrs {..} eid = case assetPlacement of
   _ -> False
 
 whenControlledBy
-  :: (Applicative m) => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
+  :: Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
 whenControlledBy a iid f = if controlledBy a iid then f else pure []
 
 makeLensesWith suffixedFields ''AssetAttrs
 
-getOwner :: (HasCallStack) => AssetAttrs -> InvestigatorId
+getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
 getOwner = fromJustNote "asset must be owned" . view ownerL
 
-getController :: (HasCallStack) => AssetAttrs -> InvestigatorId
+getController :: HasCallStack => AssetAttrs -> InvestigatorId
 getController = fromJustNote "asset must be controlled" . view controllerL
 
 ally

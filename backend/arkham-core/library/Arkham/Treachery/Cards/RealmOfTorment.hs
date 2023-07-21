@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.RealmOfTorment
-  ( realmOfTorment
-  , RealmOfTorment(..)
-  ) where
+module Arkham.Treachery.Cards.RealmOfTorment (
+  realmOfTorment,
+  RealmOfTorment (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,12 +24,16 @@ realmOfTorment = treachery RealmOfTorment Cards.realmOfTorment
 
 instance HasAbilities RealmOfTorment where
   getAbilities (RealmOfTorment a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ TurnBegins
-      Timing.When
-      You
-    , restrictedAbility a 2 (InThreatAreaOf You) $ ForcedAbility $ TurnEnds
-      Timing.When
-      You
+    [ restrictedAbility a 1 (InThreatAreaOf You) $
+        ForcedAbility $
+          TurnBegins
+            Timing.When
+            You
+    , restrictedAbility a 2 (InThreatAreaOf You) $
+        ForcedAbility $
+          TurnEnds
+            Timing.When
+            You
     ]
 
 instance RunMessage RealmOfTorment where
@@ -43,8 +47,8 @@ instance RunMessage RealmOfTorment where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 3
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ Discard (toAbilitySource attrs 1) $ toTarget attrs
         pure t
     _ -> RealmOfTorment <$> runMessage msg attrs

@@ -1,8 +1,8 @@
-module Arkham.Asset.Cards.Fence1
-  ( fence1
-  , fence1Effect
-  , Fence1(..)
-  ) where
+module Arkham.Asset.Cards.Fence1 (
+  fence1,
+  fence1Effect,
+  Fence1 (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,44 +16,49 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype Fence1 = Fence1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fence1 :: AssetCard Fence1
 fence1 = asset Fence1 Cards.fence1
 
 instance HasModifiersFor Fence1 where
-  getModifiersFor (InvestigatorTarget iid) (Fence1 a) | controlledBy a iid && not (assetExhausted a) =
-      pure $ toModifiers a [CanBecomeFast (CardWithTrait Illicit), CanReduceCostOf (CardWithTrait Illicit <> FastCard) 1]
+  getModifiersFor (InvestigatorTarget iid) (Fence1 a)
+    | controlledBy a iid && not (assetExhausted a) =
+        pure $
+          toModifiers
+            a
+            [CanBecomeFast (CardWithTrait Illicit), CanReduceCostOf (CardWithTrait Illicit <> FastCard) 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Fence1 where
   getAbilities (Fence1 a) =
     [ restrictedAbility a 1 (ControlsThis <> DuringTurn You)
         $ ReactionAbility
-            (Matcher.PlayCard
+          ( Matcher.PlayCard
               Timing.When
               You
               (BasicCardMatch $ CardWithTrait Illicit)
-            )
+          )
         $ ExhaustCost (toTarget a)
     ]
-
 
 instance RunMessage Fence1 where
   runMessage msg a@(Fence1 attrs) = case msg of
     UseCardAbility _ source 1 [Window Timing.When (Window.PlayCard _ card)] _
-      | isSource attrs source -> a <$ push
-        (createCardEffect
-          Cards.fence1
-          Nothing
-          source
-          (CardIdTarget $ toCardId card)
-        )
+      | isSource attrs source ->
+          a
+            <$ push
+              ( createCardEffect
+                  Cards.fence1
+                  Nothing
+                  source
+                  (CardIdTarget $ toCardId card)
+              )
     _ -> Fence1 <$> runMessage msg attrs
 
 newtype Fence1Effect = Fence1Effect EffectAttrs
@@ -70,6 +75,7 @@ instance HasModifiersFor Fence1Effect where
 
 instance RunMessage Fence1Effect where
   runMessage msg e@(Fence1Effect attrs) = case msg of
-    CardEnteredPlay _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
-      e <$ push (DisableEffect $ toId attrs)
+    CardEnteredPlay _ card
+      | CardIdTarget (toCardId card) == effectTarget attrs ->
+          e <$ push (DisableEffect $ toId attrs)
     _ -> Fence1Effect <$> runMessage msg attrs

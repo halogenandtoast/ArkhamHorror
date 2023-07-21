@@ -1,16 +1,16 @@
-module Arkham.Event.Cards.CheapShot2
-  ( cheapShot2
-  , cheapShot2Effect
-  , CheapShot2(..)
-  ) where
+module Arkham.Event.Cards.CheapShot2 (
+  cheapShot2,
+  cheapShot2Effect,
+  CheapShot2 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Effect.Helpers
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.Effect.Helpers
 import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -33,7 +33,9 @@ instance RunMessage CheapShot2 where
         ]
       pure e
     PassedSkillTest iid _ _ (SkillTestInitiatorTarget (InvestigatorTarget _)) _ n | n >= 1 -> do
-      when (n >= 3) $ push $ createCardEffect Cards.cheapShot2 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
+      when (n >= 3) $
+        push $
+          createCardEffect Cards.cheapShot2 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       mSkillTestTarget <- getSkillTestTarget
       case mSkillTestTarget of
         Just (EnemyTarget eid) -> push $ EnemyEvaded iid eid

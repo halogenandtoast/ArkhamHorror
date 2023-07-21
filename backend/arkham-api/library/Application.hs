@@ -1,8 +1,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Application (
@@ -22,36 +22,40 @@ module Application (
   db,
 ) where
 
-import Network.Wai.Middleware.Gzip (gzip, def)
 import Config
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.CaseInsensitive (mk)
-import Database.Persist.Postgresql
-  (SqlBackend, createPostgresqlPool, pgConnStr, pgPoolSize)
+import Database.Persist.Postgresql (
+  SqlBackend,
+  createPostgresqlPool,
+  pgConnStr,
+  pgPoolSize,
+ )
 import Import hiding (sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
 import Network.HTTP.Types (ResponseHeaders, status200)
 import Network.Wai (Middleware, requestHeaders, requestMethod, responseLBS)
-import Network.Wai.Handler.Warp
-  ( Settings
-  , defaultSettings
-  , defaultShouldDisplayException
-  , getPort
-  , runSettings
-  , setHost
-  , setOnException
-  , setPort
-  )
+import Network.Wai.Handler.Warp (
+  Settings,
+  defaultSettings,
+  defaultShouldDisplayException,
+  getPort,
+  runSettings,
+  setHost,
+  setOnException,
+  setPort,
+ )
 import Network.Wai.Middleware.AddHeaders (addHeaders)
-import Network.Wai.Middleware.RequestLogger
-  ( Destination(Logger)
-  , IPAddrSource(..)
-  , OutputFormat(..)
-  , destination
-  , mkRequestLogger
-  , outputFormat
-  )
+import Network.Wai.Middleware.Gzip (def, gzip)
+import Network.Wai.Middleware.RequestLogger (
+  Destination (Logger),
+  IPAddrSource (..),
+  OutputFormat (..),
+  destination,
+  mkRequestLogger,
+  outputFormat,
+ )
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 import Text.Regex.Posix ((=~))
 

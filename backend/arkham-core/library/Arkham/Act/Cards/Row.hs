@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.Row
-  ( Row(..)
-  , row
-  ) where
+module Arkham.Act.Cards.Row (
+  Row (..),
+  row,
+) where
 
 import Arkham.Prelude
 
@@ -11,7 +11,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -26,19 +26,22 @@ row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
 instance HasAbilities Row where
-  getAbilities (Row x) | onSide A x =
-    [ mkAbility x 1 $ ForcedAbility $ WouldDrawEncounterCard
-      Timing.When
-      You
-      AnyPhase
-    , restrictedAbility
-        x
-        2
-        (ResourcesOnLocation (LocationWithTitle "Gondola") (AtLeast $ PerPlayer 4)
-        )
-      $ Objective
-      $ ForcedAbility AnyWindow
-    ]
+  getAbilities (Row x)
+    | onSide A x =
+        [ mkAbility x 1 $
+            ForcedAbility $
+              WouldDrawEncounterCard
+                Timing.When
+                You
+                AnyPhase
+        , restrictedAbility
+            x
+            2
+            ( ResourcesOnLocation (LocationWithTitle "Gondola") (AtLeast $ PerPlayer 4)
+            )
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage Row where
@@ -49,21 +52,23 @@ instance RunMessage Row where
         _ -> False
       a
         <$ push
-             (DiscardTopOfEncounterDeck
-               iid
-               5
-               (toSource attrs)
-               (Just $ toTarget attrs)
-             )
+          ( DiscardTopOfEncounterDeck
+              iid
+              5
+              (toSource attrs)
+              (Just $ toTarget attrs)
+          )
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 1)
+    AdvanceAct aid _ _
+      | aid == toId attrs && onSide B attrs ->
+          a <$ push (ScenarioResolution $ Resolution 1)
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
-      lid <- fieldMap
-        InvestigatorLocation
-        (fromJustNote "Must be at a location")
-        iid
+      lid <-
+        fieldMap
+          InvestigatorLocation
+          (fromJustNote "Must be at a location")
+          iid
       let
         writhingAppendages =
           filter ((== Enemies.writhingAppendage) . toCardDef) cards

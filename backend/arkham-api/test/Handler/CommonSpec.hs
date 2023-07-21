@@ -1,6 +1,6 @@
-module Handler.CommonSpec
-  ( spec
-  ) where
+module Handler.CommonSpec (
+  spec,
+) where
 
 import TestImport
 

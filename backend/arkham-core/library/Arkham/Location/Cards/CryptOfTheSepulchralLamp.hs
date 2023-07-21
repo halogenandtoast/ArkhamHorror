@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.CryptOfTheSepulchralLamp
-  ( cryptOfTheSepulchralLamp
-  , CryptOfTheSepulchralLamp(..)
-  ) where
+module Arkham.Location.Cards.CryptOfTheSepulchralLamp (
+  cryptOfTheSepulchralLamp,
+  CryptOfTheSepulchralLamp (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,38 +23,40 @@ newtype CryptOfTheSepulchralLamp = CryptOfTheSepulchralLamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cryptOfTheSepulchralLamp :: LocationCard CryptOfTheSepulchralLamp
-cryptOfTheSepulchralLamp = locationWith
-  CryptOfTheSepulchralLamp
-  Cards.cryptOfTheSepulchralLamp
-  2
-  (PerPlayer 2)
-  ((connectsToL .~ adjacentLocations)
-  . (costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+cryptOfTheSepulchralLamp =
+  locationWith
+    CryptOfTheSepulchralLamp
+    Cards.cryptOfTheSepulchralLamp
+    2
+    (PerPlayer 2)
+    ( (connectsToL .~ adjacentLocations)
+        . ( costToEnterUnrevealedL
+              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+          )
+        . (investigateSkillL .~ SkillWillpower)
     )
-  . (investigateSkillL .~ SkillWillpower)
-  )
 
 instance HasAbilities CryptOfTheSepulchralLamp where
-  getAbilities (CryptOfTheSepulchralLamp attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility
+  getAbilities (CryptOfTheSepulchralLamp attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility
         attrs
         1
-        (AnyCriterion
-          [ Negate
-              (LocationExists
-              $ LocationInDirection dir (LocationWithId $ toId attrs)
+        ( AnyCriterion
+            [ Negate
+              ( LocationExists $
+                  LocationInDirection dir (LocationWithId $ toId attrs)
               )
-          | dir <- [Above, RightOf]
-          ]
+            | dir <- [Above, RightOf]
+            ]
         )
-      $ ForcedAbility
-      $ RevealLocation Timing.When Anyone
-      $ LocationWithId
-      $ toId attrs
-    | locationRevealed attrs
-    ]
+        $ ForcedAbility
+        $ RevealLocation Timing.When Anyone
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage CryptOfTheSepulchralLamp where
   runMessage msg l@(CryptOfTheSepulchralLamp attrs) = case msg of

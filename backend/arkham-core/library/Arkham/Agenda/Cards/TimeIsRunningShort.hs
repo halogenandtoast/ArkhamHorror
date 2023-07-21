@@ -1,15 +1,15 @@
-module Arkham.Agenda.Cards.TimeIsRunningShort
-  ( TimeIsRunningShort(..)
-  , timeIsRunningShort
-  ) where
+module Arkham.Agenda.Cards.TimeIsRunningShort (
+  TimeIsRunningShort (..),
+  timeIsRunningShort,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Action qualified as Action
-import Arkham.Agenda.Types
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
@@ -29,8 +29,9 @@ instance HasAbilities TimeIsRunningShort where
 
 instance RunMessage TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 2)
+    AdvanceAgenda aid
+      | aid == agendaId && onSide B attrs ->
+          a <$ push (ScenarioResolution $ Resolution 2)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ push (Resign iid)
     _ -> TimeIsRunningShort <$> runMessage msg attrs

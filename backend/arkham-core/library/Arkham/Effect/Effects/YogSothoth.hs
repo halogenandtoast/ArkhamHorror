@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.YogSothoth
-  ( YogSothoth(..)
-  , yogSothoth
-  ) where
+module Arkham.Effect.Effects.YogSothoth (
+  YogSothoth (..),
+  yogSothoth,
+) where
 
 import Arkham.Prelude
 
@@ -21,14 +21,16 @@ instance HasModifiersFor YogSothoth where
   getModifiersFor target (YogSothoth attrs) = case effectMetadata attrs of
     Just (EffectInt n) -> case target of
       EnemyTarget eid -> case effectSource attrs of
-        EnemySource eid' | eid' == eid ->
-          pure $ toModifiers attrs [HorrorDealt (-n)]
+        EnemySource eid'
+          | eid' == eid ->
+              pure $ toModifiers attrs [HorrorDealt (-n)]
         _ -> pure []
       _ -> pure []
     _ -> pure []
 
 instance RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs) = case msg of
-    DeckHasNoCards iid _ | isTarget attrs (InvestigatorTarget iid) ->
-      e <$ push (DrivenInsane iid)
+    DeckHasNoCards iid _
+      | isTarget attrs (InvestigatorTarget iid) ->
+          e <$ push (DrivenInsane iid)
     _ -> YogSothoth <$> runMessage msg attrs

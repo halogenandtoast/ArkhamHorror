@@ -21,7 +21,7 @@ instance WithTrait AssetMatcher where
 
 -- ** Investigator Helpers **
 
-investigatorIs :: (HasCardCode a) => a -> InvestigatorMatcher
+investigatorIs :: HasCardCode a => a -> InvestigatorMatcher
 investigatorIs = InvestigatorIs . toCardCode
 
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
@@ -55,7 +55,7 @@ preyWith (BearerOf m1) _ = BearerOf m1 -- I do not think we should combine here
 
 -- ** Asset Helpers **
 
-assetIs :: (HasCardCode a) => a -> AssetMatcher
+assetIs :: HasCardCode a => a -> AssetMatcher
 assetIs = AssetIs . toCardCode
 
 assetControlledBy :: InvestigatorId -> AssetMatcher
@@ -66,7 +66,7 @@ assetAt = AssetAt . LocationWithId
 
 -- ** Enemy Helpers **
 
-enemyIs :: (HasCardCode a) => a -> EnemyMatcher
+enemyIs :: HasCardCode a => a -> EnemyMatcher
 enemyIs = EnemyIs . toCardCode
 
 enemyAt :: LocationId -> EnemyMatcher
@@ -77,7 +77,7 @@ enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId
 
 -- ** Location Helpers **
 
-locationIs :: (HasCardCode a) => a -> LocationMatcher
+locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}
 
@@ -102,7 +102,7 @@ locationWithTreachery :: TreacheryId -> LocationMatcher
 locationWithTreachery = LocationWithTreachery . TreacheryWithId
 {-# INLINE locationWithTreachery #-}
 
-locationWithoutTreachery :: (HasCardCode a) => a -> LocationMatcher
+locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher
 locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
 {-# INLINE locationWithoutTreachery #-}
 
@@ -110,13 +110,13 @@ accessibleFrom :: LocationId -> LocationMatcher
 accessibleFrom = AccessibleFrom . LocationWithId
 {-# INLINE accessibleFrom #-}
 
-locationNotOneOf :: (IsLocationMatcher a) => [a] -> LocationMatcher
+locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
 
 -- ** Treachery Helpers **
 
-treacheryIs :: (HasCardCode a) => a -> TreacheryMatcher
+treacheryIs :: HasCardCode a => a -> TreacheryMatcher
 treacheryIs = TreacheryIs . toCardCode
 
 treacheryAt :: LocationId -> TreacheryMatcher
@@ -131,7 +131,7 @@ treacheryInThreatAreaOf = TreacheryInThreatAreaOf . InvestigatorWithId
 
 -- ** Event Helpers **
 
-eventIs :: (HasCardCode a) => a -> EventMatcher
+eventIs :: HasCardCode a => a -> EventMatcher
 eventIs = EventIs . toCardCode
 
 eventAt :: LocationId -> EventMatcher
@@ -146,7 +146,7 @@ skillControlledBy = SkillControlledBy . InvestigatorWithId
 
 -- ** Card Helpers **
 
-cardIs :: (HasCardCode a) => a -> CardMatcher
+cardIs :: HasCardCode a => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
 
 -- ** Replacements

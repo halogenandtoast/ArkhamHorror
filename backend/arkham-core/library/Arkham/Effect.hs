@@ -104,7 +104,7 @@ import Arkham.Story.Stories (
 import Arkham.Treachery.Treacheries (mysteriesOfTheLodgeEffect)
 
 createEffect
-  :: (MonadRandom m)
+  :: MonadRandom m
   => CardCode
   -> Maybe (EffectMetadata Window Message)
   -> Source
@@ -115,13 +115,13 @@ createEffect cardCode meffectMetadata source target = do
   pure (eid, lookupEffect cardCode eid meffectMetadata source target)
 
 createChaosTokenValueEffect
-  :: (MonadRandom m) => Int -> Source -> Target -> m (EffectId, Effect)
+  :: MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
 createChaosTokenValueEffect n source target = do
   eid <- getRandom
   pure (eid, buildChaosTokenValueEffect eid n source target)
 
 createWindowModifierEffect
-  :: (MonadRandom m)
+  :: MonadRandom m
   => EffectWindow
   -> EffectMetadata Window Message
   -> Source
@@ -135,7 +135,7 @@ createWindowModifierEffect effectWindow effectMetadata source target = do
     )
 
 createChaosTokenEffect
-  :: (MonadRandom m)
+  :: MonadRandom m
   => EffectMetadata Window Message
   -> Source
   -> ChaosToken

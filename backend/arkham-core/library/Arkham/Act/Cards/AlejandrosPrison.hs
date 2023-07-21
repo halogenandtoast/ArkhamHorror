@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.AlejandrosPrison
-  ( AlejandrosPrison(..)
-  , alejandrosPrison
-  ) where
+module Arkham.Act.Cards.AlejandrosPrison (
+  AlejandrosPrison (..),
+  alejandrosPrison,
+) where
 
 import Arkham.Prelude
 
@@ -17,7 +17,7 @@ import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AlejandrosPrison = AlejandrosPrison ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alejandrosPrison :: ActCard AlejandrosPrison
@@ -26,20 +26,20 @@ alejandrosPrison = act (3, C) AlejandrosPrison Cards.alejandrosPrison Nothing
 instance HasModifiersFor AlejandrosPrison where
   getModifiersFor (LocationTarget lid) (AlejandrosPrison a) = do
     isModified <- lid <=~> LocationWithAsset (assetIs Assets.alejandroVela)
-    pure $ toModifiers a [ ShroudModifier 2 | isModified ]
+    pure $ toModifiers a [ShroudModifier 2 | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AlejandrosPrison where
   getAbilities (AlejandrosPrison a) =
     [ restrictedAbility
-          a
-          1
-          (LocationExists
-          $ LocationWithAsset (assetIs Assets.alejandroVela)
-          <> LocationWithoutClues
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
+      a
+      1
+      ( LocationExists $
+          LocationWithAsset (assetIs Assets.alejandroVela)
+            <> LocationWithoutClues
+      )
+      $ Objective
+      $ ForcedAbility AnyWindow
     | onSide C a
     ]
 
@@ -52,17 +52,23 @@ instance RunMessage AlejandrosPrison where
       leadInvestigatorId <- getLeadInvestigatorId
       deckCount <- getActDecksInPlayCount
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela
-      iids <- selectList $ NearestToLocation $ LocationWithAsset $ assetIs
-        Assets.alejandroVela
+      iids <-
+        selectList $
+          NearestToLocation $
+            LocationWithAsset $
+              assetIs
+                Assets.alejandroVela
       let
-        takeControlMessage = chooseOrRunOne
-          leadInvestigatorId
-          [ targetLabel iid [TakeControlOfAsset iid alejandroVela]
-          | iid <- iids
-          ]
-        nextMessage = if deckCount <= 1
-          then ScenarioResolution $ Resolution 1
-          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
+        takeControlMessage =
+          chooseOrRunOne
+            leadInvestigatorId
+            [ targetLabel iid [TakeControlOfAsset iid alejandroVela]
+            | iid <- iids
+            ]
+        nextMessage =
+          if deckCount <= 1
+            then ScenarioResolution $ Resolution 1
+            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pushAll [takeControlMessage, nextMessage]
       pure a
     _ -> AlejandrosPrison <$> runMessage msg attrs

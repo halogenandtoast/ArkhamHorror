@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.CatacombsDocent
-  ( catacombsDocent
-  , CatacombsDocent(..)
-  ) where
+module Arkham.Enemy.Cards.CatacombsDocent (
+  catacombsDocent,
+  CatacombsDocent (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,39 +19,43 @@ newtype CatacombsDocent = CatacombsDocent EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 catacombsDocent :: EnemyCard CatacombsDocent
-catacombsDocent = enemyWith
-  CatacombsDocent
-  Cards.catacombsDocent
-  (3, Static 2, 2)
-  (0, 1)
-  (spawnAtL ?~ SpawnLocation (NearestLocationToYou UnrevealedLocation))
+catacombsDocent =
+  enemyWith
+    CatacombsDocent
+    Cards.catacombsDocent
+    (3, Static 2, 2)
+    (0, 1)
+    (spawnAtL ?~ SpawnLocation (NearestLocationToYou UnrevealedLocation))
 
 instance HasAbilities CatacombsDocent where
-  getAbilities (CatacombsDocent a) = withBaseAbilities
-    a
-    [ restrictedAbility a 1 (LocationExists UnrevealedLocation)
-        $ ActionAbility (Just Action.Parley) (ActionCost 1)
-    ]
+  getAbilities (CatacombsDocent a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility a 1 (LocationExists UnrevealedLocation) $
+          ActionAbility (Just Action.Parley) (ActionCost 1)
+      ]
 
 instance RunMessage CatacombsDocent where
   runMessage msg e@(CatacombsDocent attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ parley
-        iid
-        (toSource attrs)
-        (toTarget attrs)
-        SkillIntellect
-        4
-      pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
-        unrevealedLocations <- selectList UnrevealedLocation
-        push $ chooseOne
+      push $
+        parley
           iid
-          [ targetLabel
+          (toSource attrs)
+          (toTarget attrs)
+          SkillIntellect
+          4
+      pure e
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
+        unrevealedLocations <- selectList UnrevealedLocation
+        push $
+          chooseOne
+            iid
+            [ targetLabel
               location
               [LookAtRevealed iid (toSource attrs) (LocationTarget location)]
-          | location <- unrevealedLocations
-          ]
+            | location <- unrevealedLocations
+            ]
         pure e
     _ -> CatacombsDocent <$> runMessage msg attrs

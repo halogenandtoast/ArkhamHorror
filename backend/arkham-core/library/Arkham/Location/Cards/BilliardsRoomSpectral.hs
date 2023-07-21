@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.BilliardsRoomSpectral
-  ( billiardsRoomSpectral
-  , BilliardsRoomSpectral(..)
-  ) where
+module Arkham.Location.Cards.BilliardsRoomSpectral (
+  billiardsRoomSpectral,
+  BilliardsRoomSpectral (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,27 +21,28 @@ billiardsRoomSpectral =
   location BilliardsRoomSpectral Cards.billiardsRoomSpectral 3 (PerPlayer 1)
 
 instance HasAbilities BilliardsRoomSpectral where
-  getAbilities (BilliardsRoomSpectral attrs) = withBaseAbilities
-    attrs
-    [ haunted
-        "You must either discard an asset you control or take 1 damage."
-        attrs
-        1
-    ]
+  getAbilities (BilliardsRoomSpectral attrs) =
+    withBaseAbilities
+      attrs
+      [ haunted
+          "You must either discard an asset you control or take 1 damage."
+          attrs
+          1
+      ]
 
 instance RunMessage BilliardsRoomSpectral where
   runMessage msg l@(BilliardsRoomSpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       assets <- selectList $ assetControlledBy iid <> DiscardableAsset
-      push
-        $ chooseOrRunOne iid
-        $ Label
+      push $
+        chooseOrRunOne iid $
+          Label
             "Take 1 damage"
             [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-        : [ Label
-              "Discard an asset"
-              [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
-          | notNull assets
-          ]
+            : [ Label
+                "Discard an asset"
+                [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
+              | notNull assets
+              ]
       pure l
     _ -> BilliardsRoomSpectral <$> runMessage msg attrs

@@ -1,14 +1,14 @@
-module Arkham.Treachery.Cards.LostInTime
-  ( lostInTime
-  , LostInTime(..)
-  ) where
+module Arkham.Treachery.Cards.LostInTime (
+  lostInTime,
+  LostInTime (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message hiding ( AssetDamage )
+import Arkham.Message hiding (AssetDamage)
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -30,15 +30,16 @@ instance RunMessage LostInTime where
         pure (asset, damage, horror)
       if notNull assetsWithDamageAndHorror
         then do
-          push $ chooseOne
-            iid
-            [ targetLabel aid
-              $ shuffleIntoDeck iid aid
-              : [ InvestigatorDamage iid (toSource attrs) dmg hrr
-                | dmg > 0 || hrr > 0
-                ]
-            | (aid, dmg, hrr) <- assetsWithDamageAndHorror
-            ]
+          push $
+            chooseOne
+              iid
+              [ targetLabel aid $
+                shuffleIntoDeck iid aid
+                  : [ InvestigatorDamage iid (toSource attrs) dmg hrr
+                    | dmg > 0 || hrr > 0
+                    ]
+              | (aid, dmg, hrr) <- assetsWithDamageAndHorror
+              ]
         else pushAll $ replicate 3 $ toMessage $ chooseAndDiscardCard iid attrs
       pure t
     _ -> LostInTime <$> runMessage msg attrs

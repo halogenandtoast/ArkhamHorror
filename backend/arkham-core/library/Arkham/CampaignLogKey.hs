@@ -209,11 +209,11 @@ instance FromJSONKey CampaignLogKey
 data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Ord, Eq)
 
-instance (ToJSON a) => ToJSON (Recorded a) where
+instance ToJSON a => ToJSON (Recorded a) where
   toJSON (Recorded a) = object ["tag" .= String "Recorded", "contents" .= a]
   toJSON (CrossedOut a) = object ["tag" .= String "CrossedOut", "contents" .= a]
 
-instance (FromJSON a) => FromJSON (Recorded a) where
+instance FromJSON a => FromJSON (Recorded a) where
   parseJSON = withObject "Recorded" $ \o -> do
     tag :: Text <- o .: "tag"
     case tag of
@@ -226,7 +226,7 @@ recordedCardCodes [] = []
 recordedCardCodes (SomeRecorded RecordableCardCode (Recorded a) : as) = a : recordedCardCodes as
 recordedCardCodes (_ : as) = recordedCardCodes as
 
-unrecorded :: forall a. (Recordable a) => SomeRecorded -> Maybe a
+unrecorded :: forall a. Recordable a => SomeRecorded -> Maybe a
 unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
   Just Refl -> case rec of
     Recorded a -> Just a
@@ -254,10 +254,10 @@ instance Recordable CardCode where
 instance Recordable Memento where
   recordableType = RecordableMemento
 
-recorded :: forall a. (Recordable a) => a -> SomeRecorded
+recorded :: forall a. Recordable a => a -> SomeRecorded
 recorded a = SomeRecorded (recordableType @a) (Recorded a)
 
-crossedOut :: forall a. (Recordable a) => a -> SomeRecorded
+crossedOut :: forall a. Recordable a => a -> SomeRecorded
 crossedOut a = SomeRecorded (recordableType @a) (CrossedOut a)
 
 data RecordableType a where
@@ -282,7 +282,7 @@ instance FromJSON SomeRecordableType where
     other -> fail $ "No such recordable type: " <> unpack other
 
 data SomeRecorded where
-  SomeRecorded :: (Recordable a) => RecordableType a -> Recorded a -> SomeRecorded
+  SomeRecorded :: Recordable a => RecordableType a -> Recorded a -> SomeRecorded
 
 deriving stock instance Show SomeRecorded
 

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.RipplesOnTheSurface
-  ( RipplesOnTheSurface(..)
-  , ripplesOnTheSurface
-  ) where
+module Arkham.Treachery.Cards.RipplesOnTheSurface (
+  RipplesOnTheSurface (..),
+  ripplesOnTheSurface,
+) where
 
 import Arkham.Prelude
 
@@ -30,24 +30,28 @@ instance HasModifiersFor RipplesOnTheSurface where
     case mSkillTestSource of
       Just (SkillTestSource _ _ source _) | isSource attrs source -> do
         isBayou <-
-          selectAny $ LocationWithTrait Bayou <> LocationWithInvestigator
-            (InvestigatorWithId iid)
-        pure $ toModifiers attrs [ CannotCommitCards AnyCard | isBayou ]
+          selectAny $
+            LocationWithTrait Bayou
+              <> LocationWithInvestigator
+                (InvestigatorWithId iid)
+        pure $ toModifiers attrs [CannotCommitCards AnyCard | isBayou]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =
     case msg of
-      Revelation iid source | isSource attrs source ->
-        t <$ push (RevelationSkillTest iid source SkillWillpower 3)
-      FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
+      Revelation iid source
+        | isSource attrs source ->
+            t <$ push (RevelationSkillTest iid source SkillWillpower 3)
+      FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n
         | tid == treacheryId -> do
-          push $ InvestigatorAssignDamage
-            iid
-            (TreacherySource treacheryId)
-            DamageAny
-            0
-            n
-          pure t
+            push $
+              InvestigatorAssignDamage
+                iid
+                (TreacherySource treacheryId)
+                DamageAny
+                0
+                n
+            pure t
       _ -> RipplesOnTheSurface <$> runMessage msg attrs

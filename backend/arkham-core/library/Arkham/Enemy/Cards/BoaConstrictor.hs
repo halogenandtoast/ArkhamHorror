@@ -1,9 +1,9 @@
-module Arkham.Enemy.Cards.BoaConstrictor
-  ( boaConstrictor
-  , BoaConstrictor(..)
-  , boaConstrictorEffect
-  , BoaConstrictorEffect(..)
-  ) where
+module Arkham.Enemy.Cards.BoaConstrictor (
+  boaConstrictor,
+  BoaConstrictor (..),
+  boaConstrictorEffect,
+  BoaConstrictorEffect (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,7 +15,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
-import Arkham.Message hiding ( EnemyAttacks )
+import Arkham.Message hiding (EnemyAttacks)
 import Arkham.Phase
 import Arkham.Timing qualified as Timing
 
@@ -28,14 +28,15 @@ boaConstrictor =
   enemy BoaConstrictor Cards.boaConstrictor (4, Static 4, 2) (1, 1)
 
 instance HasAbilities BoaConstrictor where
-  getAbilities (BoaConstrictor a) = withBaseAbilities
-    a
-    [ mkAbility a 1
-      $ ForcedAbility
-      $ EnemyAttacks Timing.After You AnyEnemyAttack
-      $ EnemyWithId
-      $ toId a
-    ]
+  getAbilities (BoaConstrictor a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            EnemyAttacks Timing.After You AnyEnemyAttack $
+              EnemyWithId $
+                toId a
+      ]
 
 instance RunMessage BoaConstrictor where
   runMessage msg e@(BoaConstrictor attrs) = case msg of
@@ -55,8 +56,8 @@ instance HasModifiersFor BoaConstrictorEffect where
   getModifiersFor target (BoaConstrictorEffect a) | effectTarget a == target =
     do
       phase <- getPhase
-      pure
-        $ toModifiers a [ ControlledAssetsCannotReady | phase == UpkeepPhase ]
+      pure $
+        toModifiers a [ControlledAssetsCannotReady | phase == UpkeepPhase]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BoaConstrictorEffect where

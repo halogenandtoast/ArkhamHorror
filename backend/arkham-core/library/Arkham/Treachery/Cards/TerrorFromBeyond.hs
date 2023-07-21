@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TerrorFromBeyond
-  ( TerrorFromBeyond(..)
-  , terrorFromBeyond
-  ) where
+module Arkham.Treachery.Cards.TerrorFromBeyond (
+  TerrorFromBeyond (..),
+  terrorFromBeyond,
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -32,39 +32,43 @@ instance RunMessage TerrorFromBeyond where
       let
         secondCopy =
           count (== toCardCode attrs) (historyTreacheriesDrawn phaseHistory) > 1
-      iidsWithAssets <- forToSnd iids
-        $ fieldMap
-          InvestigatorHand
-          (map toCardId . filter (`cardMatch` AssetCard))
-      iidsWithEvents <- forToSnd iids
-        $ fieldMap
-          InvestigatorHand
-          (map toCardId . filter (`cardMatch` EventCard))
-      iidsWithSkills <- forToSnd iids
-        $ fieldMap
-          InvestigatorHand
-          (map toCardId . filter (`cardMatch` SkillCard))
-      push $ chooseN
-        iid
-        (if secondCopy then 2 else 1)
-        [ Label
-          "Assets"
-          [ DiscardCard iid' (toSource attrs) aid
-          | (iid', assets) <- iidsWithAssets
-          , aid <- assets
+      iidsWithAssets <-
+        forToSnd iids $
+          fieldMap
+            InvestigatorHand
+            (map toCardId . filter (`cardMatch` AssetCard))
+      iidsWithEvents <-
+        forToSnd iids $
+          fieldMap
+            InvestigatorHand
+            (map toCardId . filter (`cardMatch` EventCard))
+      iidsWithSkills <-
+        forToSnd iids $
+          fieldMap
+            InvestigatorHand
+            (map toCardId . filter (`cardMatch` SkillCard))
+      push $
+        chooseN
+          iid
+          (if secondCopy then 2 else 1)
+          [ Label
+              "Assets"
+              [ DiscardCard iid' (toSource attrs) aid
+              | (iid', assets) <- iidsWithAssets
+              , aid <- assets
+              ]
+          , Label
+              "Events"
+              [ DiscardCard iid' (toSource attrs) eid
+              | (iid', events) <- iidsWithEvents
+              , eid <- events
+              ]
+          , Label
+              "Skills"
+              [ DiscardCard iid' (toSource attrs) sid
+              | (iid', skills) <- iidsWithSkills
+              , sid <- skills
+              ]
           ]
-        , Label
-          "Events"
-          [ DiscardCard iid' (toSource attrs) eid
-          | (iid', events) <- iidsWithEvents
-          , eid <- events
-          ]
-        , Label
-          "Skills"
-          [ DiscardCard iid' (toSource attrs) sid
-          | (iid', skills) <- iidsWithSkills
-          , sid <- skills
-          ]
-        ]
       pure t
     _ -> TerrorFromBeyond <$> runMessage msg attrs

@@ -1,7 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Direction
-  ( module Arkham.Direction
-  ) where
+
+module Arkham.Direction (
+  module Arkham.Direction,
+) where
 
 import Arkham.Prelude
 

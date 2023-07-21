@@ -3,10 +3,10 @@ module Arkham.Treachery.Cards.FinalRhapsody where
 import Arkham.Prelude
 
 import Arkham.ChaosBag.RevealStrategy
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.ChaosToken
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -25,17 +25,17 @@ instance RunMessage FinalRhapsody where
       let damageCount = count ((`elem` [Skull, AutoFail]) . chaosTokenFace) tokens
       pushAll
         [ chooseOne
-          iid
-          [ Label
-              ("Take " <> tshow damageCount <> " damage")
-              [ InvestigatorAssignDamage
-                  iid
-                  source
-                  DamageAny
-                  damageCount
-                  damageCount
-              ]
-          ]
+            iid
+            [ Label
+                ("Take " <> tshow damageCount <> " damage")
+                [ InvestigatorAssignDamage
+                    iid
+                    source
+                    DamageAny
+                    damageCount
+                    damageCount
+                ]
+            ]
         , ResetChaosTokens source
         ]
       pure t

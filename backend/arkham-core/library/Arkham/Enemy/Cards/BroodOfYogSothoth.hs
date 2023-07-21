@@ -1,11 +1,11 @@
-module Arkham.Enemy.Cards.BroodOfYogSothoth
-  ( BroodOfYogSothoth(..)
-  , broodOfYogSothoth
-  ) where
+module Arkham.Enemy.Cards.BroodOfYogSothoth (
+  BroodOfYogSothoth (..),
+  broodOfYogSothoth,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types (Field (..))
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.DamageEffect
@@ -16,7 +16,7 @@ import Arkham.Name
 import Arkham.Projection
 
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
@@ -26,20 +26,21 @@ broodOfYogSothoth =
 instance HasModifiersFor BroodOfYogSothoth where
   getModifiersFor target (BroodOfYogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 1)
-    pure $ toModifiers
-      a
-      [ HealthModifier healthModifier
-      , CanOnlyBeAttackedByAbilityOn (singleton $ CardCode "02219")
-      ]
+    pure $
+      toModifiers
+        a
+        [ HealthModifier healthModifier
+        , CanOnlyBeAttackedByAbilityOn (singleton $ CardCode "02219")
+        ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of
     Msg.EnemyDamage eid (damageAssignmentSource -> AssetSource aid)
       | eid == enemyId attrs -> do
-        name <- field AssetName aid
-        if name == mkName "Esoteric Formula"
-          then BroodOfYogSothoth <$> runMessage msg attrs
-          else pure e
+          name <- field AssetName aid
+          if name == mkName "Esoteric Formula"
+            then BroodOfYogSothoth <$> runMessage msg attrs
+            else pure e
     Msg.EnemyDamage eid _ | eid == enemyId attrs -> pure e
     _ -> BroodOfYogSothoth <$> runMessage msg attrs

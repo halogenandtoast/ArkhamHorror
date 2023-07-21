@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.TheTowerXVI
-  ( theTowerXVI
-  , TheTowerXVI(..)
-  )
+module Arkham.Asset.Cards.TheTowerXVI (
+  theTowerXVI,
+  TheTowerXVI (..),
+)
 where
 
 import Arkham.Prelude
@@ -20,8 +20,9 @@ theTowerXVI =
   asset TheTowerXVI Cards.theTowerXVI
 
 instance HasModifiersFor TheTowerXVI where
-  getModifiersFor (InvestigatorTarget _) (TheTowerXVI attrs) | assetPlacement attrs == Unplaced =
-    pure $ toModifiers attrs [CannotCommitCards AnyCard]
+  getModifiersFor (InvestigatorTarget _) (TheTowerXVI attrs)
+    | assetPlacement attrs == Unplaced =
+        pure $ toModifiers attrs [CannotCommitCards AnyCard]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheTowerXVI where

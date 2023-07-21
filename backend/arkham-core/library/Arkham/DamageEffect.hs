@@ -16,7 +16,7 @@ data DamageAssignment = DamageAssignment
   }
   deriving stock (Show, Eq, Ord)
 
-attack :: (Sourceable a) => a -> Int -> DamageAssignment
+attack :: Sourceable a => a -> Int -> DamageAssignment
 attack a n =
   DamageAssignment
     { damageAssignmentSource = toSource a
@@ -26,7 +26,7 @@ attack a n =
     , damageAssignmentDelayed = False
     }
 
-nonAttack :: (Sourceable a) => a -> Int -> DamageAssignment
+nonAttack :: Sourceable a => a -> Int -> DamageAssignment
 nonAttack a n =
   DamageAssignment
     { damageAssignmentSource = toSource a
@@ -36,7 +36,7 @@ nonAttack a n =
     , damageAssignmentDelayed = False
     }
 
-storyDamage :: (Sourceable a) => a -> Int -> DamageAssignment
+storyDamage :: Sourceable a => a -> Int -> DamageAssignment
 storyDamage a n =
   DamageAssignment
     { damageAssignmentSource = toSource a

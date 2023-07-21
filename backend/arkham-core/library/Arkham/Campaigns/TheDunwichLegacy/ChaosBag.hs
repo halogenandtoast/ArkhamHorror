@@ -1,7 +1,7 @@
 module Arkham.Campaigns.TheDunwichLegacy.ChaosBag where
 
-import Arkham.Difficulty
 import Arkham.ChaosToken
+import Arkham.Difficulty
 
 chaosBagContents :: Difficulty -> [ChaosTokenFace]
 chaosBagContents = \case

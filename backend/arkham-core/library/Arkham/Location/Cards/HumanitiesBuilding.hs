@@ -6,8 +6,8 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Types ( Field (..) )
-import Arkham.Location.Cards qualified as Cards ( humanitiesBuilding )
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Cards qualified as Cards (humanitiesBuilding)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Projection
@@ -23,21 +23,25 @@ humanitiesBuilding =
 
 instance HasAbilities HumanitiesBuilding where
   getAbilities (HumanitiesBuilding attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
+    withBaseAbilities attrs $
+      [ restrictedAbility attrs 1 Here $
+        ForcedAbility $
+          TurnEnds
             Timing.When
             You
-        | locationRevealed attrs
-        ]
+      | locationRevealed attrs
+      ]
 
 instance RunMessage HumanitiesBuilding where
   runMessage msg l@(HumanitiesBuilding attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       horror <- field InvestigatorHorror iid
-      when (horror > 0) $ push $ DiscardTopOfDeck
-        iid
-        horror
-        (toAbilitySource attrs 1)
-        Nothing
+      when (horror > 0) $
+        push $
+          DiscardTopOfDeck
+            iid
+            horror
+            (toAbilitySource attrs 1)
+            Nothing
       pure l
     _ -> HumanitiesBuilding <$> runMessage msg attrs

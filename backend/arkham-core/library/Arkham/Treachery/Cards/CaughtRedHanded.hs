@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.CaughtRedHanded
-  ( caughtRedHanded
-  , CaughtRedHanded(..)
-  ) where
+module Arkham.Treachery.Cards.CaughtRedHanded (
+  caughtRedHanded,
+  CaughtRedHanded (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,21 +22,26 @@ caughtRedHanded = treachery CaughtRedHanded Cards.caughtRedHanded
 instance RunMessage CaughtRedHanded where
   runMessage msg t@(CaughtRedHanded attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      enemies <- selectListMap EnemyTarget $ EnemyAt
-        $ LocationMatchAny
-          [ locationWithInvestigator iid
-          , ConnectedFrom (locationWithInvestigator iid)
-          ]
-      hunters <- selectListMap EnemyTarget $ HunterEnemy <> EnemyAt
-        (ConnectedFrom $ locationWithInvestigator iid)
-      pushAll
-        $ map Ready enemies
-        <> [ MoveToward target (locationWithInvestigator iid)
-           | target <- hunters
-           ]
-        <> [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-           | null hunters
-           ]
+      enemies <-
+        selectListMap EnemyTarget $
+          EnemyAt $
+            LocationMatchAny
+              [ locationWithInvestigator iid
+              , ConnectedFrom (locationWithInvestigator iid)
+              ]
+      hunters <-
+        selectListMap EnemyTarget $
+          HunterEnemy
+            <> EnemyAt
+              (ConnectedFrom $ locationWithInvestigator iid)
+      pushAll $
+        map Ready enemies
+          <> [ MoveToward target (locationWithInvestigator iid)
+             | target <- hunters
+             ]
+          <> [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
+             | null hunters
+             ]
 
       pure t
     _ -> CaughtRedHanded <$> runMessage msg attrs

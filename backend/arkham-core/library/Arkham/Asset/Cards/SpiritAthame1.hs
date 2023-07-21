@@ -1,13 +1,13 @@
-module Arkham.Asset.Cards.SpiritAthame1
-  ( spiritAthame1
-  , SpiritAthame1(..)
-  ) where
+module Arkham.Asset.Cards.SpiritAthame1 (
+  spiritAthame1,
+  SpiritAthame1 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.SkillType
@@ -25,25 +25,32 @@ instance HasAbilities SpiritAthame1 where
     [ restrictedAbility
         x
         1
-        (ControlsThis
-        <> DuringSkillTest (SkillTestSourceMatches $ SourceWithTrait Spell)
+        ( ControlsThis
+            <> DuringSkillTest (SkillTestSourceMatches $ SourceWithTrait Spell)
         )
-      $ FastAbility
-      $ ExhaustCost (toTarget x)
-    , restrictedAbility x 2 ControlsThis $ ActionAbility
-      (Just Action.Fight)
-      (Costs [ActionCost 1, ExhaustCost (toTarget x)])
+        $ FastAbility
+        $ ExhaustCost (toTarget x)
+    , restrictedAbility x 2 ControlsThis $
+        ActionAbility
+          (Just Action.Fight)
+          (Costs [ActionCost 1, ExhaustCost (toTarget x)])
     ]
 
 instance RunMessage SpiritAthame1 where
   runMessage msg a@(SpiritAthame1 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (skillTestModifier source (InvestigatorTarget iid) (AnySkillValue 2))
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> a <$ pushAll
-      [ skillTestModifier
-        source
-        (InvestigatorTarget iid)
-        (SkillModifier SkillCombat 2)
-      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
-      ]
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ push
+              (skillTestModifier source (InvestigatorTarget iid) (AnySkillValue 2))
+    UseCardAbility iid source 2 _ _
+      | isSource attrs source ->
+          a
+            <$ pushAll
+              [ skillTestModifier
+                  source
+                  (InvestigatorTarget iid)
+                  (SkillModifier SkillCombat 2)
+              , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+              ]
     _ -> SpiritAthame1 <$> runMessage msg attrs

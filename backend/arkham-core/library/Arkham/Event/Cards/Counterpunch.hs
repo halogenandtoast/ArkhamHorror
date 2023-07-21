@@ -1,18 +1,18 @@
-module Arkham.Event.Cards.Counterpunch
-  ( counterpunch
-  , Counterpunch(..)
-  ) where
+module Arkham.Event.Cards.Counterpunch (
+  counterpunch,
+  Counterpunch (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Id
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Window ( Window (..) )
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype Counterpunch = Counterpunch EventAttrs

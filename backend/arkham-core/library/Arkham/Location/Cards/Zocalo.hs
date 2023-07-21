@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Zocalo
-  ( zocalo
-  , Zocalo(..)
-  ) where
+module Arkham.Location.Cards.Zocalo (
+  zocalo,
+  Zocalo (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,21 +21,22 @@ zocalo :: LocationCard Zocalo
 zocalo = locationWith Zocalo Cards.zocalo 3 (Static 0) (labelL .~ "diamond")
 
 instance HasAbilities Zocalo where
-  getAbilities (Zocalo attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 Here
-      $ ActionAbility (Just Action.Explore)
-      $ ActionCost 1
-      <> DiscardCombinedCost 5
-    | locationRevealed attrs
-    ]
+  getAbilities (Zocalo attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 Here $
+        ActionAbility (Just Action.Explore) $
+          ActionCost 1
+            <> DiscardCombinedCost 5
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Zocalo where
   runMessage msg l@(Zocalo attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ Explore iid (toSource attrs)
-        $ CardWithPrintedLocationSymbol
-        $ locationSymbol attrs
+      push $
+        Explore iid (toSource attrs) $
+          CardWithPrintedLocationSymbol $
+            locationSymbol attrs
       pure l
     _ -> Zocalo <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.TakeTheInitiative
-  ( takeTheInitiative
-  , TakeTheInitiative(..)
-  ) where
+module Arkham.Skill.Cards.TakeTheInitiative (
+  takeTheInitiative,
+  TakeTheInitiative (..),
+) where
 
 import Arkham.Prelude
 
@@ -27,9 +27,10 @@ instance HasModifiersFor TakeTheInitiative where
     iids <- selectList Anyone
     histories <- traverse (getHistory PhaseHistory) iids
     let total = sum $ map historyActionsCompleted histories
-    pure $ toModifiers
-      a
-      [ RemoveSkillIcons $ replicate (min 3 total) WildIcon | total > 0 ]
+    pure $
+      toModifiers
+        a
+        [RemoveSkillIcons $ replicate (min 3 total) WildIcon | total > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TakeTheInitiative where

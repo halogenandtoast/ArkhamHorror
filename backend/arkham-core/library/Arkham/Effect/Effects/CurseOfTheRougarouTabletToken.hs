@@ -1,13 +1,13 @@
-module Arkham.Effect.Effects.CurseOfTheRougarouTabletToken
-  ( curseOfTheRougarouTabletToken
-  , CurseOfTheRougarouTabletToken(..)
-  ) where
+module Arkham.Effect.Effects.CurseOfTheRougarouTabletToken (
+  curseOfTheRougarouTabletToken,
+  CurseOfTheRougarouTabletToken (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
+import Arkham.Effect.Runner
 import Arkham.Message
 
 newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken EffectAttrs

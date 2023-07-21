@@ -214,7 +214,8 @@ instance RunMessage TheSecretName where
           , Acts.stoppingTheRitual
           ]
 
-      TheSecretName . (`with` meta)
+      TheSecretName
+        . (`with` meta)
         <$> runMessage
           msg
           ( attrs

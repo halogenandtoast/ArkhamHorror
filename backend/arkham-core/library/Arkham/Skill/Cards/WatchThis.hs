@@ -1,25 +1,26 @@
-module Arkham.Skill.Cards.WatchThis
-  ( watchThis
-  , WatchThis(..)
-  ) where
+module Arkham.Skill.Cards.WatchThis (
+  watchThis,
+  WatchThis (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Message
-import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
+import Arkham.Skill.Runner
 
 newtype WatchThis = WatchThis SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 watchThis :: SkillCard WatchThis
-watchThis = skillWith
-  WatchThis
-  Cards.watchThis
-  (additionalCostL ?~ UpTo 3 (ResourceCost 1))
+watchThis =
+  skillWith
+    WatchThis
+    Cards.watchThis
+    (additionalCostL ?~ UpTo 3 (ResourceCost 1))
 
 paymentAmount :: Payment -> Int
 paymentAmount (Payments xs) = sum $ map paymentAmount xs

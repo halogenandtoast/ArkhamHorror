@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.DeathApproaches
-  ( deathApproaches
-  , DeathApproaches(..)
-  )
+module Arkham.Treachery.Cards.DeathApproaches (
+  deathApproaches,
+  DeathApproaches (..),
+)
 where
 
 import Arkham.Prelude

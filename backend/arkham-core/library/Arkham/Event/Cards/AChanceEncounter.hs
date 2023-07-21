@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.AChanceEncounter
-  ( aChanceEncounter
-  , AChanceEncounter(..)
-  ) where
+module Arkham.Event.Cards.AChanceEncounter (
+  aChanceEncounter,
+  AChanceEncounter (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait
@@ -27,33 +27,34 @@ instance RunMessage AChanceEncounter where
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       investigatorIds <-
         filterM
-            (fmap (notElem CardsCannotLeaveYourDiscardPile)
-            . getModifiers
-            . InvestigatorTarget
-            )
+          ( fmap (notElem CardsCannotLeaveYourDiscardPile)
+              . getModifiers
+              . InvestigatorTarget
+          )
           =<< getInvestigatorIds
       discards <-
         concat
           <$> traverse
-                (fieldMap InvestigatorDiscard (map PlayerCard))
-                investigatorIds
+            (fieldMap InvestigatorDiscard (map PlayerCard))
+            investigatorIds
       let filteredDiscards = filter (elem Ally . toTraits) discards
-      e <$ pushAll
-        [ FocusCards filteredDiscards
-        , chooseOne
-          iid
-          [ TargetLabel
-              (CardIdTarget $ toCardId card)
-              [ PutCardIntoPlay iid card Nothing windows'
-              , RemoveFromDiscard iid (toCardId card)
-              , CreateEffect
-                "02270"
-                Nothing
-                (toSource attrs)
+      e
+        <$ pushAll
+          [ FocusCards filteredDiscards
+          , chooseOne
+              iid
+              [ TargetLabel
                 (CardIdTarget $ toCardId card)
+                [ PutCardIntoPlay iid card Nothing windows'
+                , RemoveFromDiscard iid (toCardId card)
+                , CreateEffect
+                    "02270"
+                    Nothing
+                    (toSource attrs)
+                    (CardIdTarget $ toCardId card)
+                ]
+              | card <- filteredDiscards
               ]
-          | card <- filteredDiscards
+          , UnfocusCards
           ]
-        , UnfocusCards
-        ]
     _ -> AChanceEncounter <$> runMessage msg attrs

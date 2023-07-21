@@ -20,6 +20,6 @@ instance RunMessage CrypticResearch4 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       iids <- selectList $ colocatedWith iid
       investigators <- forToSnd iids $ \iid' -> drawCards iid' attrs 3
-      push $ chooseOne iid $ [ targetLabel iid' [drawing] | (iid', drawing) <- investigators ]
+      push $ chooseOne iid $ [targetLabel iid' [drawing] | (iid', drawing) <- investigators]
       pure e
     _ -> CrypticResearch4 <$> runMessage msg attrs

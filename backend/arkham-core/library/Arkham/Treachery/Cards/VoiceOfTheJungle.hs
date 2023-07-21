@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.VoiceOfTheJungle
-  ( voiceOfTheJungle
-  , VoiceOfTheJungle(..)
-  ) where
+module Arkham.Treachery.Cards.VoiceOfTheJungle (
+  voiceOfTheJungle,
+  VoiceOfTheJungle (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,14 +26,14 @@ instance HasAbilities VoiceOfTheJungle where
     [ restrictedAbility
         x
         1
-        (InThreatAreaOf You
-        <> InvestigatorExists (You <> NoSuccessfulExploreThisTurn)
+        ( InThreatAreaOf You
+            <> InvestigatorExists (You <> NoSuccessfulExploreThisTurn)
         )
-      $ ForcedAbility
-      $ TurnEnds Timing.AtIf You
-    , restrictedAbility x 2 (InThreatAreaOf You)
-      $ ActionAbility Nothing
-      $ ActionCost 1
+        $ ForcedAbility
+        $ TurnEnds Timing.AtIf You
+    , restrictedAbility x 2 (InThreatAreaOf You) $
+        ActionAbility Nothing $
+          ActionCost 1
     ]
 
 instance RunMessage VoiceOfTheJungle where
@@ -43,15 +43,16 @@ instance RunMessage VoiceOfTheJungle where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ beginSkillTest
-        iid
-        source
-        (InvestigatorTarget iid)
-        SkillWillpower
-        3
+      push $
+        beginSkillTest
+          iid
+          source
+          (InvestigatorTarget iid)
+          SkillWillpower
+          3
       pure t
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
-        pure t
+          push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+          pure t
     _ -> VoiceOfTheJungle <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.SmokingPipe
-  ( smokingPipe
-  , SmokingPipe(..)
-  ) where
+module Arkham.Asset.Cards.SmokingPipe (
+  smokingPipe,
+  SmokingPipe (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
 import Arkham.Helpers.Investigator
-import Arkham.Matcher hiding ( FastPlayerWindow )
+import Arkham.Matcher hiding (FastPlayerWindow)
 
 newtype SmokingPipe = SmokingPipe AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,16 +24,17 @@ instance HasAbilities SmokingPipe where
     [ restrictedAbility
         a
         1
-        (ControlsThis <> InvestigatorExists
-          (HealableInvestigator (toSource a) HorrorType You)
+        ( ControlsThis
+            <> InvestigatorExists
+              (HealableInvestigator (toSource a) HorrorType You)
         )
-        (FastAbility
-          (Costs
-            [ UseCost (AssetWithId $ toId a) Supply 1
-            , ExhaustCost (toTarget a)
-            , DamageCost (toSource a) YouTarget 1
-            ]
-          )
+        ( FastAbility
+            ( Costs
+                [ UseCost (AssetWithId $ toId a) Supply 1
+                , ExhaustCost (toTarget a)
+                , DamageCost (toSource a) YouTarget 1
+                ]
+            )
         )
     ]
 

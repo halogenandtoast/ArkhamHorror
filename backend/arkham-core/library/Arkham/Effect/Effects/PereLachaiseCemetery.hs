@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.PereLachaiseCemetery
-  ( PereLachaiseCemetery(..)
-  , pereLachaiseCemetery
-  ) where
+module Arkham.Effect.Effects.PereLachaiseCemetery (
+  PereLachaiseCemetery (..),
+  pereLachaiseCemetery,
+) where
 
 import Arkham.Prelude
 

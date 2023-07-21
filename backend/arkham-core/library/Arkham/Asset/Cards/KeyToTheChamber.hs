@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.KeyToTheChamber
-  ( keyToTheChamber
-  , KeyToTheChamber(..)
-  ) where
+module Arkham.Asset.Cards.KeyToTheChamber (
+  keyToTheChamber,
+  KeyToTheChamber (..),
+) where
 
 import Arkham.Prelude
 
@@ -12,7 +12,7 @@ import Arkham.Exception
 import Arkham.Matcher
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keyToTheChamber :: AssetCard KeyToTheChamber
@@ -24,8 +24,9 @@ instance HasAbilities KeyToTheChamber where
     [ restrictedAbility
         attrs
         1
-        (ControlsThis <> LocationExists
-          (ConnectedLocation <> LocationWithTitle "The Hidden Chamber")
+        ( ControlsThis
+            <> LocationExists
+              (ConnectedLocation <> LocationWithTitle "The Hidden Chamber")
         )
         (FastAbility Free)
     ]
@@ -34,8 +35,9 @@ instance HasModifiersFor KeyToTheChamber
 
 instance RunMessage KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
-      a <$ push (TakeControlOfAsset iid $ toId a)
+    Revelation iid source
+      | isSource attrs source ->
+          a <$ push (TakeControlOfAsset iid $ toId a)
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       mHiddenChamberId <- selectOne (LocationWithTitle "The Hidden Chamber")
       case mHiddenChamberId of

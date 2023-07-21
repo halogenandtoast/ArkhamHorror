@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.SearchForTheStrangerV1
-  ( SearchForTheStrangerV1(..)
-  , searchForTheStrangerV1
-  ) where
+module Arkham.Act.Cards.SearchForTheStrangerV1 (
+  SearchForTheStrangerV1 (..),
+  searchForTheStrangerV1,
+) where
 
 import Arkham.Prelude
 
@@ -18,7 +18,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 newtype SearchForTheStrangerV1 = SearchForTheStrangerV1 ActAttrs
-  deriving anyclass IsAct
+  deriving anyclass (IsAct)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchForTheStrangerV1 :: ActCard SearchForTheStrangerV1
@@ -27,19 +27,22 @@ searchForTheStrangerV1 =
 
 instance HasModifiersFor SearchForTheStrangerV1 where
   getModifiersFor (EnemyTarget eid) (SearchForTheStrangerV1 a) = do
-    isManInThePallidMask <- eid
-      `isMatch` EnemyWithTitle "The Main in the Pallid Mask"
-    pure $ toModifiers a [ CannotBeDefeated | isManInThePallidMask ]
+    isManInThePallidMask <-
+      eid
+        `isMatch` EnemyWithTitle "The Main in the Pallid Mask"
+    pure $ toModifiers a [CannotBeDefeated | isManInThePallidMask]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SearchForTheStrangerV1 where
   getAbilities (SearchForTheStrangerV1 a) =
     [ restrictedAbility
-          a
-          1
-          (OnLocation $ LocationWithEnemy $ enemyIs
-            Enemies.theManInThePallidMask
-          )
+        a
+        1
+        ( OnLocation $
+            LocationWithEnemy $
+              enemyIs
+                Enemies.theManInThePallidMask
+        )
         $ Objective
         $ ActionAbility Nothing
         $ ActionCost 3

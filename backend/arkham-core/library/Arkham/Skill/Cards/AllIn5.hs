@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.AllIn5
-  ( allIn5
-  , AllIn5(..)
-  ) where
+module Arkham.Skill.Cards.AllIn5 (
+  allIn5,
+  AllIn5 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,8 +21,9 @@ allIn5 = skill AllIn5 Cards.allIn5
 instance RunMessage AllIn5 where
   runMessage msg s@(AllIn5 attrs) = case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      drawing <- withCardDrawRule ShuffleBackInEachWeakness
-        <$> newCardDraw iid attrs 5
+      drawing <-
+        withCardDrawRule ShuffleBackInEachWeakness
+          <$> newCardDraw iid attrs 5
       push $ DrawCards drawing
       pure s
     _ -> AllIn5 <$> runMessage msg attrs

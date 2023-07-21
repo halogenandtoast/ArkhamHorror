@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Encyclopedia2
-  ( Encyclopedia2(..)
-  , encyclopedia2
-  ) where
+module Arkham.Asset.Cards.Encyclopedia2 (
+  Encyclopedia2 (..),
+  encyclopedia2,
+) where
 
 import Arkham.Prelude
 
@@ -22,39 +22,42 @@ encyclopedia2 = asset Encyclopedia2 Cards.encyclopedia2
 
 instance HasAbilities Encyclopedia2 where
   getAbilities (Encyclopedia2 a) =
-    [ restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ Costs
-        [ActionCost 1, ExhaustCost $ toTarget a]
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility Nothing $
+          Costs
+            [ActionCost 1, ExhaustCost $ toTarget a]
     ]
 
 instance RunMessage Encyclopedia2 where
   runMessage msg a@(Encyclopedia2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget $ colocatedWith iid
-      push $ chooseOne
-        iid
-        [ TargetLabel
+      push $
+        chooseOne
+          iid
+          [ TargetLabel
             target
             [ chooseOne
                 iid
                 [ Label
-                    label
-                    [ CreateWindowModifierEffect
-                        EffectPhaseWindow
-                        (EffectModifiers
-                        $ toModifiers attrs [SkillModifier skill 2]
-                        )
-                        source
-                        target
-                    ]
-                | (label, skill) <-
-                  [ ("Willpower", SkillWillpower)
-                  , ("Intellect", SkillIntellect)
-                  , ("Combat", SkillCombat)
-                  , ("Agility", SkillAgility)
+                  label
+                  [ CreateWindowModifierEffect
+                      EffectPhaseWindow
+                      ( EffectModifiers $
+                          toModifiers attrs [SkillModifier skill 2]
+                      )
+                      source
+                      target
                   ]
+                | (label, skill) <-
+                    [ ("Willpower", SkillWillpower)
+                    , ("Intellect", SkillIntellect)
+                    , ("Combat", SkillCombat)
+                    , ("Agility", SkillAgility)
+                    ]
                 ]
             ]
-        | target <- targets
-        ]
+          | target <- targets
+          ]
       pure a
     _ -> Encyclopedia2 <$> runMessage msg attrs

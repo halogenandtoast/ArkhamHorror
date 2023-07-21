@@ -1,8 +1,8 @@
-module Arkham.Event.Cards.Backstab3
-  ( backstab3
-  , backstab3Effect
-  , Backstab3(..)
-  )
+module Arkham.Event.Cards.Backstab3 (
+  backstab3,
+  backstab3Effect,
+  Backstab3 (..),
+)
 where
 
 import Arkham.Prelude
@@ -31,7 +31,7 @@ instance HasModifiersFor Backstab3 where
     mSkillTestSource <- getSkillTestSource
     case mSkillTestSource of
       Just (SkillTestSource _ _ source (Just Fight)) ->
-        pure $ toModifiers attrs [ DamageDealt 2 | isSource attrs source ]
+        pure $ toModifiers attrs [DamageDealt 2 | isSource attrs source]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -40,16 +40,17 @@ instance RunMessage Backstab3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       pushAll
         [ ChooseFightEnemy
-          iid
-          (EventSource eid)
-          Nothing
-          SkillAgility
-          mempty
-          False
+            iid
+            (EventSource eid)
+            Nothing
+            SkillAgility
+            mempty
+            False
         ]
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n | n >= 2 -> do
-      push $ createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
+      push $
+        createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       pure e
     _ -> Backstab3 <$> runMessage msg attrs
 

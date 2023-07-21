@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.TheStrangerThePathIsMine
-  ( TheStrangerThePathIsMine(..)
-  , theStrangerThePathIsMine
-  ) where
+module Arkham.Effect.Effects.TheStrangerThePathIsMine (
+  TheStrangerThePathIsMine (..),
+  theStrangerThePathIsMine,
+) where
 
 import Arkham.Prelude
 
@@ -24,11 +24,11 @@ theStrangerThePathIsMine =
 instance HasAbilities TheStrangerThePathIsMine where
   getAbilities (TheStrangerThePathIsMine attrs) =
     [ mkAbility
-          (ProxySource
+        ( ProxySource
             (LocationMatcherSource LocationWithAnyHorror)
             (toSource attrs)
-          )
-          1
+        )
+        1
         $ ForcedAbility
         $ Leaves Timing.After You ThisLocation
     ]
@@ -39,6 +39,6 @@ instance RunMessage TheStrangerThePathIsMine where
       push $ beginSkillTest iid source (InvestigatorTarget iid) SkillAgility 4
       pure e
     FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
-      | isSource attrs source
-      -> e <$ push (InvestigatorAssignDamage iid source DamageAny 1 1)
+      | isSource attrs source ->
+          e <$ push (InvestigatorAssignDamage iid source DamageAny 1 1)
     _ -> TheStrangerThePathIsMine <$> runMessage msg attrs

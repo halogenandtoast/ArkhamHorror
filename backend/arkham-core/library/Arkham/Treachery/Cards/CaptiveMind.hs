@@ -1,14 +1,14 @@
-module Arkham.Treachery.Cards.CaptiveMind
-  ( captiveMind
-  , CaptiveMind(..)
-  ) where
+module Arkham.Treachery.Cards.CaptiveMind (
+  captiveMind,
+  CaptiveMind (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillTest.Runner
@@ -43,12 +43,12 @@ instance RunMessage CaptiveMind where
     Revelation iid (isSource attrs -> True) -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 0
       pure t
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         doDiscard iid (toSource attrs)
         pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         doDiscard iid (toSource attrs)
         pure t
     _ -> CaptiveMind <$> runMessage msg attrs

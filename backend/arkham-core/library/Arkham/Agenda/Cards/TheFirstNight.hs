@@ -1,14 +1,14 @@
-module Arkham.Agenda.Cards.TheFirstNight
-  ( TheFirstNight(..)
-  , theFirstNight
-  ) where
+module Arkham.Agenda.Cards.TheFirstNight (
+  TheFirstNight (..),
+  theFirstNight,
+) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
+import Arkham.Agenda.Types
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
@@ -24,7 +24,7 @@ theFirstNight = agenda (1, A) TheFirstNight Cards.theFirstNight (Static 6)
 instance HasModifiersFor TheFirstNight where
   getModifiersFor target (TheFirstNight a) | not (isTarget a target) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
-    pure $ toModifiers a $ [ DoomSubtracts | moreConvictionThanDoubt ]
+    pure $ toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheFirstNight where
@@ -36,7 +36,7 @@ instance RunMessage TheFirstNight where
     NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do
       organistMsg <- moveOrganistAwayFromNearestInvestigator
       pushAll
-        (organistMsg : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+        ( organistMsg : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
         )
       pure a
     _ -> TheFirstNight <$> runMessage msg attrs

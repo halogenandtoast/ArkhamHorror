@@ -1,14 +1,14 @@
-module Arkham.Effect.Effects.AlchemicalTransmutation
-  ( AlchemicalTransmutation(..)
-  , alchemicalTransmutation
-  ) where
+module Arkham.Effect.Effects.AlchemicalTransmutation (
+  AlchemicalTransmutation (..),
+  alchemicalTransmutation,
+) where
 
 import Arkham.Prelude
 
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.ChaosToken
 import Arkham.Window qualified as Window
 
 newtype AlchemicalTransmutation = AlchemicalTransmutation EffectAttrs
@@ -24,14 +24,14 @@ instance RunMessage AlchemicalTransmutation where
     case msg of
       RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
         when
-          (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+          ( chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
           )
-          (pushAll
-            [ If
-              (Window.RevealChaosTokenEffect iid token effectId)
-              [InvestigatorAssignDamage iid effectSource DamageAny 1 0]
-            , DisableEffect effectId
-            ]
+          ( pushAll
+              [ If
+                  (Window.RevealChaosTokenEffect iid token effectId)
+                  [InvestigatorAssignDamage iid effectSource DamageAny 1 0]
+              , DisableEffect effectId
+              ]
           )
         pure e
       SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)

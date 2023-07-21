@@ -112,7 +112,7 @@ instance RunMessage TheDepthsOfYoth where
         . TheDepthsOfYoth
         $ attrs
           & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+          .~ standaloneCampaignLog
     Setup -> do
       isStandalone <- getIsStandalone
       investigatorIds <- allInvestigatorIds

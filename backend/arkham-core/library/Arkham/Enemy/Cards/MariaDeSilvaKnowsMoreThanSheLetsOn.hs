@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn
-  ( mariaDeSilvaKnowsMoreThanSheLetsOn
-  , MariaDeSilvaKnowsMoreThanSheLetsOn(..)
-  ) where
+module Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn (
+  mariaDeSilvaKnowsMoreThanSheLetsOn,
+  MariaDeSilvaKnowsMoreThanSheLetsOn (..),
+) where
 
 import Arkham.Prelude
 
@@ -15,11 +15,12 @@ newtype MariaDeSilvaKnowsMoreThanSheLetsOn = MariaDeSilvaKnowsMoreThanSheLetsOn 
 
 mariaDeSilvaKnowsMoreThanSheLetsOn
   :: EnemyCard MariaDeSilvaKnowsMoreThanSheLetsOn
-mariaDeSilvaKnowsMoreThanSheLetsOn = enemy
-  MariaDeSilvaKnowsMoreThanSheLetsOn
-  Cards.mariaDeSilvaKnowsMoreThanSheLetsOn
-  (3, Static 4, 2)
-  (1, 1)
+mariaDeSilvaKnowsMoreThanSheLetsOn =
+  enemy
+    MariaDeSilvaKnowsMoreThanSheLetsOn
+    Cards.mariaDeSilvaKnowsMoreThanSheLetsOn
+    (3, Static 4, 2)
+    (1, 1)
 
 instance RunMessage MariaDeSilvaKnowsMoreThanSheLetsOn where
   runMessage msg (MariaDeSilvaKnowsMoreThanSheLetsOn attrs) =

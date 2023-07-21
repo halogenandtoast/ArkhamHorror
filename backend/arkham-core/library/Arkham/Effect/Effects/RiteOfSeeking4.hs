@@ -6,10 +6,10 @@ module Arkham.Effect.Effects.RiteOfSeeking4 (
 import Arkham.Prelude
 
 import Arkham.Action qualified as Action
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.ChaosToken
 import Arkham.Window qualified as Window
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 EffectAttrs

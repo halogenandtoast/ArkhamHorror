@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.MiskatonicRiver
-  ( miskatonicRiver
-  , MiskatonicRiver(..)
-  )
+module Arkham.Location.Cards.MiskatonicRiver (
+  miskatonicRiver,
+  MiskatonicRiver (..),
+)
 where
 
 import Arkham.Prelude
@@ -20,7 +20,8 @@ miskatonicRiver = location MiskatonicRiver Cards.miskatonicRiver 5 (Static 0)
 instance HasAbilities MiskatonicRiver where
   getAbilities (MiskatonicRiver attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage MiskatonicRiver where
   runMessage msg (MiskatonicRiver attrs) =

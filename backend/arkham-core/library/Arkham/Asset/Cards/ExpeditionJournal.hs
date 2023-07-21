@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.ExpeditionJournal
-  ( expeditionJournal
-  , ExpeditionJournal(..)
-  ) where
+module Arkham.Asset.Cards.ExpeditionJournal (
+  expeditionJournal,
+  ExpeditionJournal (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,18 +19,19 @@ expeditionJournal = asset ExpeditionJournal Cards.expeditionJournal
 
 instance HasModifiersFor ExpeditionJournal where
   getModifiersFor (InvestigatorTarget iid) (ExpeditionJournal a) =
-    pure $ toModifiers
-      a
-      [ GiveAdditionalAction $ ActionRestrictedAdditionalAction Action.Explore
-      | controlledBy a iid
-      ]
+    pure $
+      toModifiers
+        a
+        [ GiveAdditionalAction $ ActionRestrictedAdditionalAction Action.Explore
+        | controlledBy a iid
+        ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExpeditionJournal where
   runMessage msg a@(ExpeditionJournal attrs) = case msg of
     InvestigatorPlayAsset iid assetId | toId attrs == assetId -> do
-      push
-        $ GainAdditionalAction iid (toSource attrs)
-        $ ActionRestrictedAdditionalAction Action.Explore
+      push $
+        GainAdditionalAction iid (toSource attrs) $
+          ActionRestrictedAdditionalAction Action.Explore
       pure a
     _ -> ExpeditionJournal <$> runMessage msg attrs

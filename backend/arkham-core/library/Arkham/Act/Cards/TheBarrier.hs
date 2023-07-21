@@ -23,10 +23,10 @@ theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing
 
 instance HasAbilities TheBarrier where
   getAbilities (TheBarrier x) =
-    [ mkAbility x 1
-        $ Objective
-        $ ReactionAbility (RoundEnds Timing.When)
-        $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
+    [ mkAbility x 1 $
+        Objective $
+          ReactionAbility (RoundEnds Timing.When) $
+            GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
     ]
 
 instance RunMessage TheBarrier where

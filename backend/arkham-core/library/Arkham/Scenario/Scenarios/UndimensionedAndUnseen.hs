@@ -106,7 +106,7 @@ instance RunMessage UndimensionedAndUnseen where
         . UndimensionedAndUnseen
         $ attrs
           & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+          .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       lead <- getLead

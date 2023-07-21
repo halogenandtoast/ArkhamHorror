@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.SignMagick
-  ( signMagick
-  , SignMagick(..)
-  )
+module Arkham.Asset.Cards.SignMagick (
+  signMagick,
+  SignMagick (..),
+)
 where
 
 import Arkham.Prelude
@@ -23,6 +23,8 @@ signMagick =
 instance RunMessage SignMagick where
   runMessage msg (SignMagick attrs) = case msg of
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
-      push $ AddSlot iid ArcaneSlot $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) Nothing
+      push $
+        AddSlot iid ArcaneSlot $
+          RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) Nothing
       SignMagick <$> runMessage msg attrs
     _ -> SignMagick <$> runMessage msg attrs

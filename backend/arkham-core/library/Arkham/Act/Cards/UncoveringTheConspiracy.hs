@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.UncoveringTheConspiracy
-  ( UncoveringTheConspiracy(..)
-  , uncoveringTheConspiracy
-  ) where
+module Arkham.Act.Cards.UncoveringTheConspiracy (
+  UncoveringTheConspiracy (..),
+  uncoveringTheConspiracy,
+) where
 
 import Arkham.Prelude
 
@@ -25,34 +25,39 @@ uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
 instance HasAbilities UncoveringTheConspiracy where
-  getAbilities (UncoveringTheConspiracy a) | onSide A a =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck)
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> GroupClueCost (PerPlayer 2) Anywhere
-    , restrictedAbility
-        a
-        2
-        (InVictoryDisplay
-          (CardWithTrait Cultist <> CardIsUnique)
-          (EqualTo $ Static 6)
-        )
-      $ Objective
-      $ ForcedAbility AnyWindow
-    ]
+  getAbilities (UncoveringTheConspiracy a)
+    | onSide A a =
+        [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck) $
+            ActionAbility Nothing $
+              ActionCost 1
+                <> GroupClueCost (PerPlayer 2) Anywhere
+        , restrictedAbility
+            a
+            2
+            ( InVictoryDisplay
+                (CardWithTrait Cultist <> CardIsUnique)
+                (EqualTo $ Static 6)
+            )
+            $ Objective
+            $ ForcedAbility AnyWindow
+        ]
   getAbilities _ = []
 
 instance RunMessage UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       a <$ push (DrawFromScenarioDeck iid CultistDeck (toTarget attrs) 1)
-    DrewFromScenarioDeck iid CultistDeck target cards | isTarget attrs target ->
-      a <$ pushAll
-        (map (InvestigatorDrewEncounterCard iid)
-        $ mapMaybe (preview _EncounterCard) cards
-        )
-    UseCardAbility iid source 2 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
-      a <$ push (ScenarioResolution $ Resolution 1)
+    DrewFromScenarioDeck iid CultistDeck target cards
+      | isTarget attrs target ->
+          a
+            <$ pushAll
+              ( map (InvestigatorDrewEncounterCard iid) $
+                  mapMaybe (preview _EncounterCard) cards
+              )
+    UseCardAbility iid source 2 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
+    AdvanceAct aid _ _
+      | aid == toId attrs && onSide B attrs ->
+          a <$ push (ScenarioResolution $ Resolution 1)
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Yuggoth
-  ( yuggoth
-  , Yuggoth(..)
-  ) where
+module Arkham.Location.Cards.Yuggoth (
+  yuggoth,
+  Yuggoth (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,15 +21,16 @@ yuggoth :: LocationCard Yuggoth
 yuggoth = location Yuggoth Cards.yuggoth 2 (Static 3)
 
 instance HasAbilities Yuggoth where
-  getAbilities (Yuggoth a) = withBaseAbilities
-    a
-    [ restrictedAbility
-        a
-        1
-        (Here <> AnyCriterion [CluesOnThis (AtLeast $ Static 1), CanDrawCards])
-      $ ActionAbility Nothing
-      $ ActionCost 1
-    ]
+  getAbilities (Yuggoth a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility
+          a
+          1
+          (Here <> AnyCriterion [CluesOnThis (AtLeast $ Static 1), CanDrawCards])
+          $ ActionAbility Nothing
+          $ ActionCost 1
+      ]
 
 instance RunMessage Yuggoth where
   runMessage msg l@(Yuggoth attrs) = case msg of

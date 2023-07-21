@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Zone where
 
 import Arkham.Prelude
@@ -31,8 +32,9 @@ data ScenarioZone
   deriving stock (Show, Eq, Ord)
 
 pattern FromVoid :: ScenarioZone
-pattern FromVoid <- FromOutOfPlayArea VoidZone where
-  FromVoid = FromOutOfPlayArea VoidZone
+pattern FromVoid <- FromOutOfPlayArea VoidZone
+  where
+    FromVoid = FromOutOfPlayArea VoidZone
 
 allOutOfPlayZones :: [ScenarioZone]
 allOutOfPlayZones = map FromOutOfPlayArea [minBound .. maxBound]

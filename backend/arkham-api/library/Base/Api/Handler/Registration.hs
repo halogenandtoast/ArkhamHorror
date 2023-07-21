@@ -7,16 +7,20 @@ import Types
 
 registrationToUser :: Registration -> Handler User
 registrationToUser Registration {..} = do
-  mdigest <- liftIO $ hashPasswordUsingPolicy
-    slowerBcryptHashingPolicy
-    (TE.encodeUtf8 registrationPassword)
+  mdigest <-
+    liftIO $
+      hashPasswordUsingPolicy
+        slowerBcryptHashingPolicy
+        (TE.encodeUtf8 registrationPassword)
   case mdigest of
     Nothing -> error "could not hash password"
-    Just digest -> pure $ User
-      registrationUsername
-      registrationEmail
-      (TE.decodeUtf8 digest)
-      False
+    Just digest ->
+      pure $
+        User
+          registrationUsername
+          registrationEmail
+          (TE.decodeUtf8 digest)
+          False
 
 postApiV1RegistrationR :: Handler Token
 postApiV1RegistrationR = do

@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.Fieldwork
-  ( Fieldwork(..)
-  , fieldwork
-  ) where
+module Arkham.Effect.Effects.Fieldwork (
+  Fieldwork (..),
+  fieldwork,
+) where
 
 import Arkham.Prelude
 
@@ -20,8 +20,8 @@ fieldwork = Fieldwork . uncurry4 (baseAttrs "03024")
 instance HasModifiersFor Fieldwork where
   getModifiersFor target (Fieldwork a@EffectAttrs {..})
     | target == effectTarget = do
-      mSkillTestSource <- getSkillTestSource
-      pure [ toModifier a (AnySkillValue 2) | isJust mSkillTestSource ]
+        mSkillTestSource <- getSkillTestSource
+        pure [toModifier a (AnySkillValue 2) | isJust mSkillTestSource]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Fieldwork where

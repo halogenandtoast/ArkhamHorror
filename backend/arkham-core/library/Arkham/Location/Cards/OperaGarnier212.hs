@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.OperaGarnier212
-  ( operaGarnier212
-  , OperaGarnier212(..)
-  ) where
+module Arkham.Location.Cards.OperaGarnier212 (
+  operaGarnier212,
+  OperaGarnier212 (..),
+) where
 
 import Arkham.Prelude
 
@@ -13,7 +13,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 
 newtype OperaGarnier212 = OperaGarnier212 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 operaGarnier212 :: LocationCard OperaGarnier212
@@ -25,8 +25,9 @@ instance HasModifiersFor OperaGarnier212 where
     mtarget <- getSkillTestTarget
     mAction <- getSkillTestAction
     case (mAction, mtarget) of
-      (Just Action.Investigate, Just target) | isTarget attrs target ->
-        pure $ toModifiers attrs [DoubleSkillIcons]
+      (Just Action.Investigate, Just target)
+        | isTarget attrs target ->
+            pure $ toModifiers attrs [DoubleSkillIcons]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

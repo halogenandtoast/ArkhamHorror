@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MauserC96
-  ( mauserC96
-  , MauserC96(..)
-  )
+module Arkham.Asset.Cards.MauserC96 (
+  mauserC96,
+  MauserC96 (..),
+)
 where
 
 import Arkham.Prelude
@@ -22,9 +22,9 @@ mauserC96 = asset MauserC96 Cards.mauserC96
 
 instance HasAbilities MauserC96 where
   getAbilities (MauserC96 a) =
-    [ restrictedAbility a 1 ControlsThis
-      $ ActionAbility (Just Action.Fight)
-      $ ActionCost 1 <> ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          ActionCost 1 <> ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage MauserC96 where
@@ -35,15 +35,17 @@ instance RunMessage MauserC96 where
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ n | n >= 2 -> do
-      canReady <- andM
-        [ toId a <=~> AssetWithoutModifier CannotReady
-        , iid <=~> InvestigatorWithoutModifier ControlledAssetsCannotReady
-        ]
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
+      canReady <-
+        andM
+          [ toId a <=~> AssetWithoutModifier CannotReady
+          , iid <=~> InvestigatorWithoutModifier ControlledAssetsCannotReady
+          ]
       canGainResources <- iid <=~> InvestigatorWithoutModifier CannotGainResources
-      when (canReady || canGainResources) $ push
-        $ chooseOrRunOne iid
-        $ [Label "Ready Mauser C96" [Ready (toTarget attrs)] | canReady ]
-        <> [Label "Take 1 resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
+      when (canReady || canGainResources) $
+        push $
+          chooseOrRunOne iid $
+            [Label "Ready Mauser C96" [Ready (toTarget attrs)] | canReady]
+              <> [Label "Take 1 resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
       pure a
     _ -> MauserC96 <$> runMessage msg attrs

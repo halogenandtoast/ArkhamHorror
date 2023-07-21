@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.PitViper
-  ( pitViper
-  , PitViper(..)
-  ) where
+module Arkham.Enemy.Cards.PitViper (
+  pitViper,
+  PitViper (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,20 +23,23 @@ pitViper :: EnemyCard PitViper
 pitViper = enemy PitViper Cards.pitViper (3, Static 1, 3) (1, 0)
 
 instance HasAbilities PitViper where
-  getAbilities (PitViper a) = withBaseAbilities
-    a
-    [ restrictedAbility
-        a
-        1
-        (InvestigatorExists $ You <> NotInvestigator
-          (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
-        )
-      $ ForcedAbility
-      $ DealtDamage
-          Timing.After
-          (SourceIsEnemyAttack $ EnemyWithId $ toId a)
-          You
-    ]
+  getAbilities (PitViper a) =
+    withBaseAbilities
+      a
+      [ restrictedAbility
+          a
+          1
+          ( InvestigatorExists $
+              You
+                <> NotInvestigator
+                  (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
+          )
+          $ ForcedAbility
+          $ DealtDamage
+            Timing.After
+            (SourceIsEnemyAttack $ EnemyWithId $ toId a)
+            You
+      ]
 
 instance RunMessage PitViper where
   runMessage msg e@(PitViper attrs) = case msg of

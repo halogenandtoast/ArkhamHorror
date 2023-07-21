@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Glory
-  ( glory
-  , Glory(..)
-  ) where
+module Arkham.Event.Cards.Glory (
+  glory,
+  Glory (..),
+) where
 
 import Arkham.Prelude
 

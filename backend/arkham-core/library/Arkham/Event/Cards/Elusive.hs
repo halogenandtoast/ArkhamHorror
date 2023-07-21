@@ -21,15 +21,15 @@ instance RunMessage Elusive where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
       targets <- selectList $ EmptyLocation <> RevealedLocation
-      pushAll
-        $ [ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
-        <> [ chooseOrRunOne
-               iid
-               [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
-               | lid <- targets
-               ]
-           | notNull targets
-           ]
-        <> map EnemyCheckEngagement enemyIds
+      pushAll $
+        [DisengageEnemy iid enemyId | enemyId <- enemyIds]
+          <> [ chooseOrRunOne
+              iid
+              [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
+              | lid <- targets
+              ]
+             | notNull targets
+             ]
+          <> map EnemyCheckEngagement enemyIds
       pure e
     _ -> Elusive <$> runMessage msg attrs

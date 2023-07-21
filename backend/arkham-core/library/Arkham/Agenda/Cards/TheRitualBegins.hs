@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheRitualBegins
-  ( TheRitualBegins(..)
-  , theRitualBegins
-  ) where
+module Arkham.Agenda.Cards.TheRitualBegins (
+  TheRitualBegins (..),
+  theRitualBegins,
+) where
 
 import Arkham.Prelude
 
@@ -26,32 +26,33 @@ theRitualBegins =
 
 instance HasModifiersFor TheRitualBegins where
   getModifiersFor (EnemyTarget _) (TheRitualBegins attrs)
-    | agendaSequence attrs == Sequence 2 A = pure
-    $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
+    | agendaSequence attrs == Sequence 2 A =
+        pure $
+          toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       iids <- getInvestigatorIds
-      pushAll
-        $ [ beginSkillTest
-              iid
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              SkillWillpower
-              6
-          | iid <- iids
-          ]
-        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      pushAll $
+        [ beginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          SkillWillpower
+          6
+        | iid <- iids
+        ]
+          <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
       pure a
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push
-          $ SearchCollectionForRandom iid source
-          $ CardWithType PlayerTreacheryType
-          <> CardWithTrait Madness
-        pure a
+          push $
+            SearchCollectionForRandom iid source $
+              CardWithType PlayerTreacheryType
+                <> CardWithTrait Madness
+          pure a
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ push . addToHand iid . PlayerCard
       pure a

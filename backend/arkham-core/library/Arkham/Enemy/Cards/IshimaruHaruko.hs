@@ -1,13 +1,13 @@
-module Arkham.Enemy.Cards.IshimaruHaruko
-  ( ishimaruHaruko
-  , IshimaruHaruko(..)
-  ) where
+module Arkham.Enemy.Cards.IshimaruHaruko (
+  ishimaruHaruko,
+  IshimaruHaruko (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -22,17 +22,21 @@ ishimaruHaruko =
   enemy IshimaruHaruko Cards.ishimaruHaruko (6, Static 4, 3) (1, 1)
 
 instance HasAbilities IshimaruHaruko where
-  getAbilities (IshimaruHaruko a) = withBaseAbilities
-    a
-    [ mkAbility a 1 $ ForcedAbility $ EnemyDealtDamage
-        Timing.After
-        NonAttackDamageEffect
-        (EnemyWithId $ toId a)
-        AnySource
-    ]
+  getAbilities (IshimaruHaruko a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            EnemyDealtDamage
+              Timing.After
+              NonAttackDamageEffect
+              (EnemyWithId $ toId a)
+              AnySource
+      ]
 
 instance RunMessage IshimaruHaruko where
   runMessage msg e@(IshimaruHaruko attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      e <$ push (InvestigatorDrawEncounterCard iid)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          e <$ push (InvestigatorDrawEncounterCard iid)
     _ -> IshimaruHaruko <$> runMessage msg attrs

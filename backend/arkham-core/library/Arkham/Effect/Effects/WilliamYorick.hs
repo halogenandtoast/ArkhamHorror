@@ -1,16 +1,16 @@
-module Arkham.Effect.Effects.WilliamYorick
-  ( WilliamYorick(..)
-  , williamYorick
-  ) where
+module Arkham.Effect.Effects.WilliamYorick (
+  WilliamYorick (..),
+  williamYorick,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Helpers.Message
+import Arkham.Helpers.Modifiers
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 
@@ -23,21 +23,21 @@ williamYorick = WilliamYorick . uncurry4 (baseAttrs "03005")
 
 instance RunMessage WilliamYorick where
   runMessage msg e@(WilliamYorick attrs) = case msg of
-    PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ _ ->
+    PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ ->
       case effectTarget attrs of
         InvestigatorTarget iid -> do
           modifiers' <- getModifiers (InvestigatorTarget iid)
           unless (CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
             discards <- field InvestigatorDiscard iid
-            when (notNull discards)
-              $ push
-              $ chooseOne iid
-              $ Done "Do not return card to hand"
-              : [ targetLabel
-                    (toCardId card)
-                    [addToHand iid $ PlayerCard card]
-                | card <- discards
-                ]
+            when (notNull discards) $
+              push $
+                chooseOne iid $
+                  Done "Do not return card to hand"
+                    : [ targetLabel
+                        (toCardId card)
+                        [addToHand iid $ PlayerCard card]
+                      | card <- discards
+                      ]
           pure e
         _ -> pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)

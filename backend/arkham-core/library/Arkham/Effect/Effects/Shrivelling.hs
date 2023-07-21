@@ -1,15 +1,15 @@
-module Arkham.Effect.Effects.Shrivelling
-  ( shrivelling
-  , Shrivelling(..)
-  ) where
+module Arkham.Effect.Effects.Shrivelling (
+  shrivelling,
+  Shrivelling (..),
+) where
 
 import Arkham.Prelude
 
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Message
-import Arkham.ChaosToken
-import Arkham.Window ( Window )
+import Arkham.Window (Window)
 import Arkham.Window qualified as Window
 
 newtype Shrivelling = Shrivelling EffectAttrs
@@ -30,12 +30,12 @@ instance RunMessage Shrivelling where
       let damage = maybe 1 intFromMetadata effectMetadata
       when
         (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        (pushAll
-          [ If
-            (Window.RevealChaosTokenEffect iid token effectId)
-            [InvestigatorAssignDamage iid effectSource DamageAny 0 damage]
-          , DisableEffect effectId
-          ]
+        ( pushAll
+            [ If
+                (Window.RevealChaosTokenEffect iid token effectId)
+                [InvestigatorAssignDamage iid effectSource DamageAny 0 damage]
+            , DisableEffect effectId
+            ]
         )
       pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)

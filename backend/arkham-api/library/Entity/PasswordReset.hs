@@ -5,12 +5,12 @@
 
 module Entity.PasswordReset where
 
+import Data.Time.Clock
+import Data.UUID
 import Database.Persist.TH
 import Entity.User
-import Relude
-import Data.UUID
-import Data.Time.Clock
 import Orphans ()
+import Relude
 
 mkPersist
   sqlSettings

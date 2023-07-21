@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.DrHenryArmitage
-  ( DrHenryArmitage(..)
-  , drHenryArmitage
-  ) where
+module Arkham.Asset.Cards.DrHenryArmitage (
+  DrHenryArmitage (..),
+  drHenryArmitage,
+) where
 
 import Arkham.Prelude
 
@@ -21,9 +21,9 @@ drHenryArmitage = ally DrHenryArmitage Cards.drHenryArmitage (2, 2)
 instance HasAbilities DrHenryArmitage where
   getAbilities (DrHenryArmitage a) =
     [ restrictedAbility a 1 ControlsThis
-      $ ReactionAbility
+        $ ReactionAbility
           (DrawCard Timing.After You (BasicCardMatch AnyCard) (DeckOf You))
-      $ Costs [DiscardDrawnCardCost, ExhaustCost (toTarget a)]
+        $ Costs [DiscardDrawnCardCost, ExhaustCost (toTarget a)]
     ]
 
 instance RunMessage DrHenryArmitage where

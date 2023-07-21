@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.ThreadsOfTime
-  ( ThreadsOfTime(..)
-  , threadsOfTime
-  ) where
+module Arkham.Agenda.Cards.ThreadsOfTime (
+  ThreadsOfTime (..),
+  threadsOfTime,
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding ( InvestigatorEliminated )
+import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Timing qualified as Timing
 
 newtype ThreadsOfTime = ThreadsOfTime AgendaAttrs
@@ -27,17 +27,16 @@ threadsOfTime = agenda (1, A) ThreadsOfTime Cards.threadsOfTime (Static 6)
 instance HasAbilities ThreadsOfTime where
   getAbilities (ThreadsOfTime a) =
     let hasCard = HasCard (CardWithTitle "Relic of Ages")
-    in
-      [ mkAbility a 1
-        $ ForcedAbility
-        $ InvestigatorEliminated Timing.When
-        $ AnyInvestigator
-            [ HandWith hasCard
-            , DiscardWith hasCard
-            , DeckWith hasCard
-            , HasMatchingAsset (AssetWithTitle "Relic of Ages")
-            ]
-      ]
+    in  [ mkAbility a 1 $
+            ForcedAbility $
+              InvestigatorEliminated Timing.When $
+                AnyInvestigator
+                  [ HandWith hasCard
+                  , DiscardWith hasCard
+                  , DeckWith hasCard
+                  , HasMatchingAsset (AssetWithTitle "Relic of Ages")
+                  ]
+        ]
 
 instance RunMessage ThreadsOfTime where
   runMessage msg a@(ThreadsOfTime attrs) = case msg of

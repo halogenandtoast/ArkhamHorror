@@ -45,7 +45,7 @@ toChaosTokens (Resolved tokens') = tokens'
 toChaosTokens _ = []
 
 toGroups
-  :: (HasCallStack) => [ChaosBagStepState] -> [[ChaosToken]] -> [([ChaosBagStepState], [[ChaosToken]])]
+  :: HasCallStack => [ChaosBagStepState] -> [[ChaosToken]] -> [([ChaosBagStepState], [[ChaosToken]])]
 toGroups !steps !tokens' = go steps []
  where
   go [] _ = []
@@ -54,7 +54,7 @@ toGroups !steps !tokens' = go steps []
     _ -> error "must be resolved"
 
 replaceFirstChoice
-  :: (HasCallStack)
+  :: HasCallStack
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
@@ -101,7 +101,7 @@ replaceFirstChoice source iid strategy replacement = \case
               matchers
 
 replaceFirstChooseChoice
-  :: (HasCallStack)
+  :: HasCallStack
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
@@ -119,7 +119,7 @@ replaceFirstChooseChoice source iid strategy replacement = \case
     replaceFirstChoice source iid strategy replacement (Decided step) : rest
 
 resolveFirstUnresolved
-  :: (HasCallStack)
+  :: HasCallStack
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
@@ -205,7 +205,7 @@ resolveFirstUnresolved source iid strategy = \case
                     else do
                       let
                         groups = toGroups steps tokens'
-                        chooseFunction :: (Monad m) => (a -> m Bool) -> [a] -> m Bool
+                        chooseFunction :: Monad m => (a -> m Bool) -> [a] -> m Bool
                         chooseFunction = if tokenStrategy == ResolveChoice then anyM else allM
                         matcher' =
                           if tokenStrategy == ResolveChoice || null tokensThatCannotBeIgnored
@@ -292,7 +292,7 @@ resolveFirstUnresolved source iid strategy = \case
           pure (Decided $ ChooseMatchChoice steps' tokens' choices, msgs)
 
 resolveFirstChooseUnresolved
-  :: (HasCallStack)
+  :: HasCallStack
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
@@ -622,8 +622,11 @@ instance RunMessage ChaosBag where
     SealChaosToken token ->
       pure $
         c
-          & chaosTokensL %~ filter (/= token)
-          & setAsideChaosTokensL %~ filter (/= token)
-          & revealedChaosTokensL %~ filter (/= token)
+          & chaosTokensL
+          %~ filter (/= token)
+          & setAsideChaosTokensL
+          %~ filter (/= token)
+          & revealedChaosTokensL
+          %~ filter (/= token)
     UnsealChaosToken token -> pure $ c & chaosTokensL %~ (token :)
     _ -> pure c

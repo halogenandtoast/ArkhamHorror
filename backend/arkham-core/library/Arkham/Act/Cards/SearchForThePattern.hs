@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.SearchForThePattern
-  ( SearchForThePattern(..)
-  , searchForThePattern
-  ) where
+module Arkham.Act.Cards.SearchForThePattern (
+  SearchForThePattern (..),
+  searchForThePattern,
+) where
 
 import Arkham.Prelude
 
@@ -19,11 +19,12 @@ newtype SearchForThePattern = SearchForThePattern ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 searchForThePattern :: ActCard SearchForThePattern
-searchForThePattern = act
-  (1, A)
-  SearchForThePattern
-  Cards.searchForThePattern
-  (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+searchForThePattern =
+  act
+    (1, A)
+    SearchForThePattern
+    Cards.searchForThePattern
+    (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance RunMessage SearchForThePattern where
   runMessage msg a@(SearchForThePattern attrs) = case msg of

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Xochimilco
-  ( xochimilco
-  , Xochimilco(..)
-  ) where
+module Arkham.Location.Cards.Xochimilco (
+  xochimilco,
+  Xochimilco (..),
+) where
 
 import Arkham.Prelude
 
@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 
 newtype Xochimilco = Xochimilco LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 xochimilco :: LocationCard Xochimilco
@@ -24,25 +24,26 @@ xochimilco =
 instance HasModifiersFor Xochimilco where
   getModifiersFor (InvestigatorTarget iid) (Xochimilco a) = do
     atXochimilco <- iid <=~> InvestigatorAt (LocationWithId $ toId a)
-    pure $ toModifiers a [ CannotGainResources | atXochimilco ]
+    pure $ toModifiers a [CannotGainResources | atXochimilco]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Xochimilco where
-  getAbilities (Xochimilco attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 Here
-      $ ActionAbility (Just Action.Explore)
-      $ ActionCost 1
-      <> ResourceCost 3
-    | locationRevealed attrs
-    ]
+  getAbilities (Xochimilco attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 Here $
+        ActionAbility (Just Action.Explore) $
+          ActionCost 1
+            <> ResourceCost 3
+      | locationRevealed attrs
+      ]
 
 instance RunMessage Xochimilco where
   runMessage msg l@(Xochimilco attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ Explore iid (toSource attrs)
-        $ CardWithPrintedLocationSymbol
-        $ locationSymbol attrs
+      push $
+        Explore iid (toSource attrs) $
+          CardWithPrintedLocationSymbol $
+            locationSymbol attrs
       pure l
     _ -> Xochimilco <$> runMessage msg attrs

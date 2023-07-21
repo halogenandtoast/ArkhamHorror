@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.OvergrownRuins
-  ( overgrownRuins
-  , OvergrownRuins(..)
-  ) where
+module Arkham.Location.Cards.OvergrownRuins (
+  overgrownRuins,
+  OvergrownRuins (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,19 +24,19 @@ overgrownRuins = location OvergrownRuins Cards.overgrownRuins 5 (PerPlayer 1)
 
 instance HasAbilities OvergrownRuins where
   getAbilities (OvergrownRuins a) =
-    withBaseAbilities a
-      $ [ restrictedAbility
-            a
-            1
-            (TreacheryExists
-            $ treacheryIs Treacheries.poisoned
-            <> TreacheryInThreatAreaOf You
-            )
+    withBaseAbilities a $
+      [ restrictedAbility
+          a
+          1
+          ( TreacheryExists $
+              treacheryIs Treacheries.poisoned
+                <> TreacheryInThreatAreaOf You
+          )
           $ ForcedAbility
           $ Enters Timing.After You
           $ LocationWithId
           $ toId a
-        ]
+      ]
 
 instance RunMessage OvergrownRuins where
   runMessage msg l@(OvergrownRuins attrs) = case msg of

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TheSecretMustBeKept
-  ( theSecretMustBeKept
-  , TheSecretMustBeKept(..)
-  ) where
+module Arkham.Treachery.Cards.TheSecretMustBeKept (
+  theSecretMustBeKept,
+  TheSecretMustBeKept (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,15 +26,16 @@ instance RunMessage TheSecretMustBeKept where
       let n = 3 - deckCount
       push $ RevelationSkillTest iid source SkillWillpower (3 + n)
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         deckCount <- getActDecksInPlayCount
         let n = 3 - deckCount
-        push $ InvestigatorAssignDamage
-          iid
-          (toSource attrs)
-          DamageAny
-          (1 + n)
-          (1 + n)
+        push $
+          InvestigatorAssignDamage
+            iid
+            (toSource attrs)
+            DamageAny
+            (1 + n)
+            (1 + n)
         pure t
     _ -> TheSecretMustBeKept <$> runMessage msg attrs

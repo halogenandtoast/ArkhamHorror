@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.TheThirdAct
-  ( TheThirdAct(..)
-  , theThirdAct
-  ) where
+module Arkham.Agenda.Cards.TheThirdAct (
+  TheThirdAct (..),
+  theThirdAct,
+) where
 
 import Arkham.Prelude
 
@@ -24,13 +24,16 @@ theThirdAct = agenda (1, A) TheThirdAct Cards.theThirdAct (Static 6)
 instance RunMessage TheThirdAct where
   runMessage msg a@(TheThirdAct attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      royalEmissary <- selectJust $ ExtendedCardWithOneOf
-        [ SetAsideCardMatch $ cardIs Cards.royalEmissary
-        , VictoryDisplayCardMatch $ cardIs Cards.royalEmissary
-        ]
+      royalEmissary <-
+        selectJust $
+          ExtendedCardWithOneOf
+            [ SetAsideCardMatch $ cardIs Cards.royalEmissary
+            , VictoryDisplayCardMatch $ cardIs Cards.royalEmissary
+            ]
 
-      createRoyalEmissary <- createEnemyAtLocationMatching_ royalEmissary
-        $ locationIs Cards.theatre
+      createRoyalEmissary <-
+        createEnemyAtLocationMatching_ royalEmissary $
+          locationIs Cards.theatre
 
       pushAll
         [createRoyalEmissary, AdvanceAgendaDeck agendaDeckId (toSource attrs)]

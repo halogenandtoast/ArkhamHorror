@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.ExhibitHallNatureExhibit
-  ( exhibitHallNatureExhibit
-  , ExhibitHallNatureExhibit(..)
-  ) where
+module Arkham.Location.Cards.ExhibitHallNatureExhibit (
+  exhibitHallNatureExhibit,
+  ExhibitHallNatureExhibit (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( exhibitHallNatureExhibit )
+import Arkham.Location.Cards qualified as Cards (exhibitHallNatureExhibit)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -19,22 +19,24 @@ newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallNatureExhibit :: LocationCard ExhibitHallNatureExhibit
-exhibitHallNatureExhibit = location
-  ExhibitHallNatureExhibit
-  Cards.exhibitHallNatureExhibit
-  4
-  (PerPlayer 1)
+exhibitHallNatureExhibit =
+  location
+    ExhibitHallNatureExhibit
+    Cards.exhibitHallNatureExhibit
+    4
+    (PerPlayer 1)
 
 instance HasAbilities ExhibitHallNatureExhibit where
-  getAbilities (ExhibitHallNatureExhibit x) = withBaseAbilities
-    x
-    [ mkAbility x 1
-      $ ForcedAbility
-      $ Enters Timing.After You
-      $ LocationWithId
-      $ toId x
-    | locationRevealed x
-    ]
+  getAbilities (ExhibitHallNatureExhibit x) =
+    withBaseAbilities
+      x
+      [ mkAbility x 1 $
+        ForcedAbility $
+          Enters Timing.After You $
+            LocationWithId $
+              toId x
+      | locationRevealed x
+      ]
 
 instance RunMessage ExhibitHallNatureExhibit where
   runMessage msg l@(ExhibitHallNatureExhibit attrs) = case msg of

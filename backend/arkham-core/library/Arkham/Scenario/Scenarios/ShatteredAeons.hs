@@ -147,7 +147,7 @@ instance RunMessage ShatteredAeons where
         . ShatteredAeons
         $ attrs
           & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+          .~ standaloneCampaignLog
     Setup -> do
       braziersLit <- getHasRecord TheBraziersAreLit
       foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic

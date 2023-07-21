@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.SpiritSpeaker
-  ( spiritSpeaker
-  , SpiritSpeaker(..)
-  ) where
+module Arkham.Asset.Cards.SpiritSpeaker (
+  spiritSpeaker,
+  SpiritSpeaker (..),
+) where
 
 import Arkham.Prelude
 
@@ -31,27 +31,28 @@ instance RunMessage SpiritSpeaker where
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       assetIds <- selectList $ AssetControlledBy You <> AssetWithUseType Charge
-      discardableAssetIds <- selectList
-        $ AssetControlledBy You <> AssetWithUseType Charge <> DiscardableAsset
+      discardableAssetIds <-
+        selectList $
+          AssetControlledBy You <> AssetWithUseType Charge <> DiscardableAsset
       assetIdsWithChargeCounts <- forToSnd assetIds $ fmap useCount . field AssetUses
       push $
         chooseOne
           iid
           [ TargetLabel
-              target
-              [ chooseOne
-                  iid
-                  (Label "Return to hand" [ReturnToHand iid target]
-                  : [ Label
+            target
+            [ chooseOne
+                iid
+                ( Label "Return to hand" [ReturnToHand iid target]
+                    : [ Label
                         "Move all charges to your resource pool"
                         [ SpendUses target Charge n
                         , TakeResources iid n (toAbilitySource attrs 1) False
                         , Discard (toAbilitySource attrs 1) target
                         ]
-                    | aid `elem` discardableAssetIds
-                    ]
-                  )
-              ]
+                      | aid `elem` discardableAssetIds
+                      ]
+                )
+            ]
           | (aid, n) <- assetIdsWithChargeCounts
           , let target = AssetTarget aid
           ]

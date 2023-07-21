@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.PathOfThorns
-  ( pathOfThorns
-  , PathOfThorns(..)
-  ) where
+module Arkham.Location.Cards.PathOfThorns (
+  pathOfThorns,
+  PathOfThorns (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,18 +22,21 @@ pathOfThorns :: LocationCard PathOfThorns
 pathOfThorns = location PathOfThorns Cards.pathOfThorns 3 (PerPlayer 1)
 
 instance HasAbilities PathOfThorns where
-  getAbilities (PathOfThorns a) = withBaseAbilities
-    a
-    [ mkAbility a 1 $ ForcedAbility $ SkillTestResult
-      Timing.After
-      You
-      (WhileInvestigating $ LocationWithId $ toId a)
-      (FailureResult AnyValue)
-    , restrictedAbility a 2 Here
-    $ ForcedAbility
-    $ Explored Timing.After You
-    $ FailedExplore AnyCard
-    ]
+  getAbilities (PathOfThorns a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            SkillTestResult
+              Timing.After
+              You
+              (WhileInvestigating $ LocationWithId $ toId a)
+              (FailureResult AnyValue)
+      , restrictedAbility a 2 Here $
+          ForcedAbility $
+            Explored Timing.After You $
+              FailedExplore AnyCard
+      ]
 
 instance RunMessage PathOfThorns where
   runMessage msg l@(PathOfThorns attrs) = case msg of

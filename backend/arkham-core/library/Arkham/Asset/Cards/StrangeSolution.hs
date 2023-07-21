@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.StrangeSolution
-  ( strangeSolution
-  , StrangeSolution(..)
-  ) where
+module Arkham.Asset.Cards.StrangeSolution (
+  strangeSolution,
+  StrangeSolution (..),
+) where
 
 import Arkham.Prelude
 
@@ -24,21 +24,24 @@ instance HasAbilities StrangeSolution where
 
 instance RunMessage StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> a <$ push
-      (beginSkillTest
-        iid
-        source
-        (InvestigatorTarget iid)
-        SkillIntellect
-        4
-      )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          a
+            <$ push
+              ( beginSkillTest
+                  iid
+                  source
+                  (InvestigatorTarget iid)
+                  SkillIntellect
+                  4
+              )
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        drawing <- drawCards iid attrs 2
-        pushAll
-          [ Discard (toAbilitySource attrs 1) (toTarget attrs)
-          , drawing
-          , Record YouHaveIdentifiedTheSolution
-          ]
-        pure a
+          drawing <- drawCards iid attrs 2
+          pushAll
+            [ Discard (toAbilitySource attrs 1) (toTarget attrs)
+            , drawing
+            , Record YouHaveIdentifiedTheSolution
+            ]
+          pure a
     _ -> StrangeSolution <$> runMessage msg attrs

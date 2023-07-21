@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.EmergencyCache2
-  ( emergencyCache2
-  , EmergencyCache2(..)
-  ) where
+module Arkham.Event.Cards.EmergencyCache2 (
+  emergencyCache2,
+  EmergencyCache2 (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 

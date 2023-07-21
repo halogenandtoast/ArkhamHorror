@@ -41,7 +41,7 @@ lookupCard (toCardCode -> cardCode) cardId =
     (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId
 
 -- we prefer encounter cards over player cards to handle cases like straitjacket
-lookupCardDef :: (HasCardCode cardCode) => cardCode -> Maybe CardDef
+lookupCardDef :: HasCardCode cardCode => cardCode -> Maybe CardDef
 lookupCardDef (toCardCode -> cardCode) =
   lookup cardCode allEncounterCards <|> lookup cardCode allPlayerCards
 
@@ -77,13 +77,13 @@ defaultToCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
   ec -> ec
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
-  toCard :: (HasCallStack) => a -> Card
+  toCard :: HasCallStack => a -> Card
   toCardId :: a -> CardId
   toCardOwner :: a -> Maybe InvestigatorId
 
-class (MonadRandom m) => CardGen m where
-  genEncounterCard :: (HasCardDef a) => a -> m EncounterCard
-  genPlayerCard :: (HasCardDef a) => a -> m PlayerCard
+class MonadRandom m => CardGen m where
+  genEncounterCard :: HasCardDef a => a -> m EncounterCard
+  genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
 
 -- instance CardGen IO where
@@ -234,10 +234,10 @@ cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = isJust $ cdCardSubType (toCardDef pc)
 cardIsWeakness (VengeanceCard _) = False
 
-filterCardType :: (HasCardDef a) => CardType -> [a] -> [a]
+filterCardType :: HasCardDef a => CardType -> [a] -> [a]
 filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)
 
-filterLocations :: (HasCardDef a) => [a] -> [a]
+filterLocations :: HasCardDef a => [a] -> [a]
 filterLocations = filterCardType LocationType
 
 instance ToGameLoggerFormat Card where

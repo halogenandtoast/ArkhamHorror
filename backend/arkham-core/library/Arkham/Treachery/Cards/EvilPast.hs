@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.EvilPast
-  ( evilPast
-  , EvilPast(..)
-  ) where
+module Arkham.Treachery.Cards.EvilPast (
+  evilPast,
+  EvilPast (..),
+) where
 
 import Arkham.Prelude
 
@@ -22,19 +22,22 @@ evilPast = treachery EvilPast Cards.evilPast
 
 instance HasAbilities EvilPast where
   getAbilities (EvilPast a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility EncounterDeckRunsOutOfCards
+    [ restrictedAbility a 1 (InThreatAreaOf You) $
+        ForcedAbility EncounterDeckRunsOutOfCards
     ]
 
 instance RunMessage EvilPast where
   runMessage msg t@(EvilPast attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       hasEvilPast <-
-        selectAny $ treacheryIs Cards.evilPast <> TreacheryInThreatAreaOf
-          (InvestigatorWithId iid)
-      push $ if hasEvilPast
-        then gainSurge attrs
-        else AttachTreachery (toId attrs) (toTarget iid)
+        selectAny $
+          treacheryIs Cards.evilPast
+            <> TreacheryInThreatAreaOf
+              (InvestigatorWithId iid)
+      push $
+        if hasEvilPast
+          then gainSurge attrs
+          else AttachTreachery (toId attrs) (toTarget iid)
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
@@ -42,8 +45,8 @@ instance RunMessage EvilPast where
         , beginSkillTest iid attrs iid SkillWillpower 3
         ]
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
         pure t
     _ -> EvilPast <$> runMessage msg attrs

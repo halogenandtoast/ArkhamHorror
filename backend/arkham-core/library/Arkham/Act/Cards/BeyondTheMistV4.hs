@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.BeyondTheMistV4
-  ( BeyondTheMistV4(..)
-  , beyondTheMistV4
-  ) where
+module Arkham.Act.Cards.BeyondTheMistV4 (
+  BeyondTheMistV4 (..),
+  beyondTheMistV4,
+) where
 
 import Arkham.Prelude
 

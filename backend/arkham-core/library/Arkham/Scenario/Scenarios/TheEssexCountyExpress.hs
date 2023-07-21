@@ -79,7 +79,7 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-readInvestigatorDefeat :: (HasGame m) => m [Message]
+readInvestigatorDefeat :: HasGame m => m [Message]
 readInvestigatorDefeat = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation

@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Taunt3
-  ( taunt3
-  , Taunt3(..)
-  ) where
+module Arkham.Event.Cards.Taunt3 (
+  taunt3,
+  Taunt3 (..),
+) where
 
 import Arkham.Prelude
 
@@ -23,16 +23,17 @@ instance RunMessage Taunt3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid
       enemies <- forToSnd enemyIds $ \_ -> drawCards iid attrs 1
-      push $ chooseSome
-        iid
-        "Done engaging enemies"
-        [ targetLabel
+      push $
+        chooseSome
+          iid
+          "Done engaging enemies"
+          [ targetLabel
             enemyId
             [ EngageEnemy iid enemyId False
             , InvestigatorDamageEnemy iid enemyId (toSource attrs)
             , drawing
             ]
-        | (enemyId, drawing) <- enemies
-        ]
+          | (enemyId, drawing) <- enemies
+          ]
       pure e
     _ -> Taunt3 <$> runMessage msg attrs

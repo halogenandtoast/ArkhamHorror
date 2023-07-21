@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.AlmaHill
-  ( AlmaHill(..)
-  , almaHill
-  ) where
+module Arkham.Enemy.Cards.AlmaHill (
+  AlmaHill (..),
+  almaHill,
+) where
 
 import Arkham.Prelude
 
@@ -18,24 +18,29 @@ newtype AlmaHill = AlmaHill EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 almaHill :: EnemyCard AlmaHill
-almaHill = enemyWith
-  AlmaHill
-  Cards.almaHill
-  (3, Static 3, 3)
-  (0, 2)
-  (spawnAtL ?~ SpawnLocation (LocationWithTitle "Southside"))
+almaHill =
+  enemyWith
+    AlmaHill
+    Cards.almaHill
+    (3, Static 3, 3)
+    (0, 2)
+    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Southside"))
 
 instance HasAbilities AlmaHill where
-  getAbilities (AlmaHill attrs) = withBaseAbilities
-    attrs
-    [ restrictedAbility attrs 1 OnSameLocation
-        $ ActionAbility (Just Parley) (ActionCost 1)
-    ]
+  getAbilities (AlmaHill attrs) =
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 OnSameLocation $
+          ActionAbility (Just Parley) (ActionCost 1)
+      ]
 
 instance RunMessage AlmaHill where
   runMessage msg e@(AlmaHill attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> e <$ pushAll
-      (replicate 3 (InvestigatorDrawEncounterCard iid)
-      <> [AddToVictory (toTarget attrs)]
-      )
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          e
+            <$ pushAll
+              ( replicate 3 (InvestigatorDrawEncounterCard iid)
+                  <> [AddToVictory (toTarget attrs)]
+              )
     _ -> AlmaHill <$> runMessage msg attrs

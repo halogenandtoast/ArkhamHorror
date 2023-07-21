@@ -116,7 +116,7 @@ instance RunMessage WhereDoomAwaits where
         . WhereDoomAwaits
         $ attrs
           & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+          .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       lead <- getLead

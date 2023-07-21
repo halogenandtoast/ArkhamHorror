@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.MadameLabranche
-  ( madameLabranche
-  , MadameLabranche(..)
-  ) where
+module Arkham.Asset.Cards.MadameLabranche (
+  madameLabranche,
+  MadameLabranche (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,26 +21,28 @@ instance HasAbilities MadameLabranche where
   getAbilities (MadameLabranche attrs) =
     [ withTooltip
         "{fast} If you have no cards in your hand, exhaust Madame Labranche: Draw 1 card."
-      $ restrictedAbility
+        $ restrictedAbility
           attrs
           1
-          (ControlsThis <> InvestigatorExists
-            (You <> HandWith (LengthIs $ EqualTo $ Static 0))
+          ( ControlsThis
+              <> InvestigatorExists
+                (You <> HandWith (LengthIs $ EqualTo $ Static 0))
           )
-      $ FastAbility
-      $ ExhaustCost
-      $ toTarget attrs
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget attrs
     , withTooltip
         "{fast} If you have no resources, exhaust Madame Labranche: Gain 1 resource."
-      $ restrictedAbility
+        $ restrictedAbility
           attrs
           2
-          (ControlsThis <> InvestigatorExists
-            (You <> InvestigatorWithResources (EqualTo $ Static 0))
+          ( ControlsThis
+              <> InvestigatorExists
+                (You <> InvestigatorWithResources (EqualTo $ Static 0))
           )
-      $ FastAbility
-      $ ExhaustCost
-      $ toTarget attrs
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget attrs
     ]
 
 instance RunMessage MadameLabranche where

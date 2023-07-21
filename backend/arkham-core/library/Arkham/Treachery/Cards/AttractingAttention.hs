@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.AttractingAttention
-  ( attractingAttention
-  , AttractingAttention(..)
-  ) where
+module Arkham.Treachery.Cards.AttractingAttention (
+  attractingAttention,
+  AttractingAttention (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -30,12 +30,12 @@ instance RunMessage AttractingAttention where
 
         pushAll
           [ chooseOneAtATime
-              iid
-              [ targetLabel
-                  eid
-                  [MoveToward (EnemyTarget eid) (LocationWithId lid)]
-              | eid <- broodOfYogSothoth
-              ]
+            iid
+            [ targetLabel
+              eid
+              [MoveToward (EnemyTarget eid) (LocationWithId lid)]
+            | eid <- broodOfYogSothoth
+            ]
           | notNull broodOfYogSothoth
           ]
       pure t

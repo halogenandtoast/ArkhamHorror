@@ -1,12 +1,12 @@
-module Arkham.Event.Cards.PreposterousSketches
-  ( preposterousSketches
-  , PreposterousSketches(..)
-  ) where
+module Arkham.Event.Cards.PreposterousSketches (
+  preposterousSketches,
+  PreposterousSketches (..),
+) where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
 

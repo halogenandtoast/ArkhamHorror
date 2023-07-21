@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Campaign where
 
 import Arkham.Prelude
@@ -25,14 +26,15 @@ instance FromJSON Campaign where
       Just (SomeCampaign (_ :: Difficulty -> a)) ->
         Campaign <$> parseJSON @a (Object o)
 
-data SomeCampaign = forall a . IsCampaign a => SomeCampaign (Difficulty -> a)
+data SomeCampaign = forall a. IsCampaign a => SomeCampaign (Difficulty -> a)
 
 allCampaigns :: Map CampaignId SomeCampaign
-allCampaigns = mapFromList
-  [ ("01", SomeCampaign nightOfTheZealot)
-  , ("02", SomeCampaign theDunwichLegacy)
-  , ("03", SomeCampaign thePathToCarcosa)
-  , ("04", SomeCampaign theForgottenAge)
-  , ("05", SomeCampaign theCircleUndone)
-  , ("50", SomeCampaign returnToNightOfTheZealot)
-  ]
+allCampaigns =
+  mapFromList
+    [ ("01", SomeCampaign nightOfTheZealot)
+    , ("02", SomeCampaign theDunwichLegacy)
+    , ("03", SomeCampaign thePathToCarcosa)
+    , ("04", SomeCampaign theForgottenAge)
+    , ("05", SomeCampaign theCircleUndone)
+    , ("50", SomeCampaign returnToNightOfTheZealot)
+    ]

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.HypnoticTherapy
-  ( hypnoticTherapy
-  , HypnoticTherapy(..)
-  ) where
+module Arkham.Asset.Cards.HypnoticTherapy (
+  hypnoticTherapy,
+  HypnoticTherapy (..),
+) where
 
 import Arkham.Prelude
 
@@ -25,51 +25,54 @@ hypnoticTherapy = asset HypnoticTherapy Cards.hypnoticTherapy
 
 instance HasAbilities HypnoticTherapy where
   getAbilities (HypnoticTherapy a) =
-    [ restrictedAbility a 1 ControlsThis
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      <> ExhaustCost (toTarget a)
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility Nothing $
+          ActionCost 1
+            <> ExhaustCost (toTarget a)
     , restrictedAbility a 2 ControlsThis
-      $ ReactionAbility
-          (InvestigatorHealed Timing.After HorrorType Anyone
-          $ SourceOwnedBy You
-          <> NotSource (SourceIs (toSource a))
+        $ ReactionAbility
+          ( InvestigatorHealed Timing.After HorrorType Anyone $
+              SourceOwnedBy You
+                <> NotSource (SourceIs (toSource a))
           )
-      $ ExhaustCost (toTarget a)
+        $ ExhaustCost (toTarget a)
     ]
 
 instance RunMessage HypnoticTherapy where
   runMessage msg a@(HypnoticTherapy attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest
-        iid
-        (toAbilitySource attrs 1)
-        (InvestigatorTarget iid)
-        SkillIntellect
-        2
+      push $
+        beginSkillTest
+          iid
+          (toAbilitySource attrs 1)
+          (InvestigatorTarget iid)
+          SkillIntellect
+          2
       pure a
-    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget{} _ _
-      -> do
+    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
+      do
         targetsWithCardDrawAndHeal <- do
-          iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1
-            $ colocatedWith iid
+          iidsWithHeal <-
+            getInvestigatorsWithHealHorror attrs 1 $
+              colocatedWith iid
           for iidsWithHeal $ \(i, healHorror) -> do
             draw <- drawCards i (toSource attrs) 1
             pure (i, draw, healHorror)
         when (notNull targetsWithCardDrawAndHeal) $ do
-          push $ chooseOrRunOne
-            iid
-            [ targetLabel
+          push $
+            chooseOrRunOne
+              iid
+              [ targetLabel
                 target
                 [ heal
                 , chooseOne
-                  target
-                  [ Label "Do Not Draw" []
-                  , ComponentLabel (InvestigatorDeckComponent target) [drawing]
-                  ]
+                    target
+                    [ Label "Do Not Draw" []
+                    , ComponentLabel (InvestigatorDeckComponent target) [drawing]
+                    ]
                 ]
-            | (target, drawing, heal) <- targetsWithCardDrawAndHeal
-            ]
+              | (target, drawing, heal) <- targetsWithCardDrawAndHeal
+              ]
         pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws' _ -> do
       -- this is meant to heal additional so we'd directly heal one more
@@ -83,9 +86,12 @@ instance RunMessage HypnoticTherapy where
         getHealedTarget = \case
           Window _ (Healed HorrorType t _ _) -> Just t
           _ -> Nothing
-        healedTarget = fromJustNote "wrong call" $ getFirst $ foldMap
-          (First . getHealedTarget)
-          ws'
+        healedTarget =
+          fromJustNote "wrong call" $
+            getFirst $
+              foldMap
+                (First . getHealedTarget)
+                ws'
 
       replaceMessageMatching
         \case

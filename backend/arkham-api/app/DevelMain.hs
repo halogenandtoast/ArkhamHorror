@@ -1,12 +1,4 @@
--- | Running your app inside GHCi.
---
--- This option provides significantly faster code reload compared to
--- @yesod devel@. However, you do not get automatic code reload
--- (which may be a benefit, depending on your perspective). To use this:
---
--- 1. Start up GHCi
---
--- $ stack ghci arkham-horror-backend:lib --no-load --work-dir .stack-work-devel
+-- \$ stack ghci arkham-horror-backend:lib --no-load --work-dir .stack-work-devel
 --
 -- 2. Load this module
 --
@@ -34,6 +26,14 @@
 -- If you change a template, you'll need to either exit GHCi and reload,
 -- or manually @touch@ another Haskell module.
 
+{- | Running your app inside GHCi.
+
+This option provides significantly faster code reload compared to
+@yesod devel@. However, you do not get automatic code reload
+(which may be a benefit, depending on your perspective). To use this:
+
+1. Start up GHCi
+-}
 module DevelMain where
 
 import Application (getApplicationRepl, shutdownApp)
@@ -46,9 +46,10 @@ import Foreign.Store
 import GHC.Word
 import Network.Wai.Handler.Warp
 
--- | Start or restart the server.
--- newStore is from foreign-store.
--- A Store holds onto some data across ghci reloads
+{- | Start or restart the server.
+newStore is from foreign-store.
+A Store holds onto some data across ghci reloads
+-}
 update :: IO ()
 update = do
   mtidStore <- lookupStore tidStoreNum
@@ -72,18 +73,18 @@ update = do
     withStore doneStore takeMVar
     readStore doneStore >>= start
 
-
-  -- | Start the server in a separate thread.
+  -- \| Start the server in a separate thread.
   start
-    :: MVar () -- ^ Written to when the thread is killed.
+    :: MVar ()
+    -- \^ Written to when the thread is killed.
     -> IO ThreadId
   start done = do
     (port, site, app) <- getApplicationRepl
     forkFinally
       (runSettings (setPort port defaultSettings) app)
-        -- Note that this implies concurrency
-        -- between shutdownApp and the next app that is starting.
-        -- Normally this should be fine
+      -- Note that this implies concurrency
+      -- between shutdownApp and the next app that is starting.
+      -- Normally this should be fine
       (\_ -> putMVar done () >> shutdownApp site)
 
 -- | kill the server

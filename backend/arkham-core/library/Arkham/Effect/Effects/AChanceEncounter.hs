@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.AChanceEncounter
-  ( aChanceEncounter
-  , AChanceEncounter(..)
-  ) where
+module Arkham.Effect.Effects.AChanceEncounter (
+  aChanceEncounter,
+  AChanceEncounter (..),
+) where
 
 import Arkham.Prelude
 

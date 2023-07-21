@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.BerettaM19184
-  ( berettaM19184
-  , BerettaM19184(..)
-  ) where
+module Arkham.Asset.Cards.BerettaM19184 (
+  berettaM19184,
+  BerettaM19184 (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,11 +21,11 @@ berettaM19184 = asset BerettaM19184 Cards.berettaM19184
 
 instance HasAbilities BerettaM19184 where
   getAbilities (BerettaM19184 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis $
+        ActionAbility (Just Action.Fight) $
+          ActionCost 1
+            <> ExhaustCost (toTarget a)
+            <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage BerettaM19184 where
@@ -36,20 +36,23 @@ instance RunMessage BerettaM19184 where
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
         ]
       pure a
-    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source && n >= 2
-      -> do
-        if n >= 4
-          then pushAll
-            [ Ready (toTarget attrs)
-            , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-            ]
-          else push $ chooseOne
-            iid
-            [ Label "Ready Beretta M1918" [Ready (toTarget attrs)]
-            , Label
-              "Deal an additional +1 damage"
-              [skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)]
-            ]
-        pure a
+    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget {} _ n
+      | isSource attrs source && n >= 2 ->
+          do
+            if n >= 4
+              then
+                pushAll
+                  [ Ready (toTarget attrs)
+                  , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
+                  ]
+              else
+                push $
+                  chooseOne
+                    iid
+                    [ Label "Ready Beretta M1918" [Ready (toTarget attrs)]
+                    , Label
+                        "Deal an additional +1 damage"
+                        [skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)]
+                    ]
+            pure a
     _ -> BerettaM19184 <$> runMessage msg attrs

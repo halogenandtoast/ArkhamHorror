@@ -12,11 +12,12 @@ authenticationToUser Authentication {..} = do
     Nothing -> pure Nothing
     Just entity@(Entity _ user) ->
       if validatePassword
-          (p $ userPasswordDigest user)
-          (p authenticationPassword)
+        (p $ userPasswordDigest user)
+        (p authenticationPassword)
         then pure $ Just entity
         else pure Nothing
-  where p = TE.encodeUtf8
+ where
+  p = TE.encodeUtf8
 
 postApiV1AuthenticationR :: Handler Token
 postApiV1AuthenticationR = do

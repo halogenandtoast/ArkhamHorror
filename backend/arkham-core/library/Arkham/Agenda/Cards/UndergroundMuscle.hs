@@ -1,7 +1,7 @@
-module Arkham.Agenda.Cards.UndergroundMuscle
-  ( UndergroundMuscle(..)
-  , undergroundMuscle
-  ) where
+module Arkham.Agenda.Cards.UndergroundMuscle (
+  UndergroundMuscle (..),
+  undergroundMuscle,
+) where
 
 import Arkham.Prelude
 
@@ -13,12 +13,12 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
-import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
-import Arkham.Matcher hiding ( MoveAction )
+import Arkham.Matcher hiding (MoveAction)
 import Arkham.Message
 import Arkham.Projection
-import Data.Maybe ( fromJust )
+import Data.Maybe (fromJust)
 
 newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -39,40 +39,46 @@ instance RunMessage UndergroundMuscle where
         enemy = fromJust . headMay $ result
         rest = drop 1 result
       strikingFear <- gatherEncounterSet StrikingFear
-      laBellaLunaInvestigators <- selectList $ InvestigatorAt $ LocationWithId
-        laBellaLunaId
+      laBellaLunaInvestigators <-
+        selectList $
+          InvestigatorAt $
+            LocationWithId
+              laBellaLunaId
       laBellaLunaEnemies <- selectList $ EnemyAt $ LocationWithId laBellaLunaId
-      unEngagedEnemiesAtLaBellaLuna <- filterM
-        (fieldMap EnemyEngagedInvestigators null)
-        laBellaLunaEnemies
+      unEngagedEnemiesAtLaBellaLuna <-
+        filterM
+          (fieldMap EnemyEngagedInvestigators null)
+          laBellaLunaEnemies
 
-      enemyCreation <- createEnemyAt_
-        (EncounterCard enemy)
-        cloverClubLoungeId
-        Nothing
+      enemyCreation <-
+        createEnemyAt_
+          (EncounterCard enemy)
+          cloverClubLoungeId
+          Nothing
 
-      push $ chooseOne
-        lead
-        [ Label "Continue"
-          $ [ enemyCreation
-            , ShuffleEncounterDiscardBackIn
-            , ShuffleCardsIntoDeck Deck.EncounterDeck
-              $ map EncounterCard (rest <> strikingFear)
-            ]
-          <> [ MoveAction iid cloverClubLoungeId Free False
-             | iid <- laBellaLunaInvestigators
-             ]
-          <> [ EnemyMove eid cloverClubLoungeId
-             | eid <- unEngagedEnemiesAtLaBellaLuna
-             ]
-          <> [ RemoveLocation laBellaLunaId
-             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-             ]
-        ]
+      push $
+        chooseOne
+          lead
+          [ Label "Continue" $
+              [ enemyCreation
+              , ShuffleEncounterDiscardBackIn
+              , ShuffleCardsIntoDeck Deck.EncounterDeck $
+                  map EncounterCard (rest <> strikingFear)
+              ]
+                <> [ MoveAction iid cloverClubLoungeId Free False
+                   | iid <- laBellaLunaInvestigators
+                   ]
+                <> [ EnemyMove eid cloverClubLoungeId
+                   | eid <- unEngagedEnemiesAtLaBellaLuna
+                   ]
+                <> [ RemoveLocation laBellaLunaId
+                   , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+                   ]
+          ]
 
-      pure
-        $ UndergroundMuscle
-        $ attrs
-        & (sequenceL .~ Sequence 1 B)
-        & (flippedL .~ True)
+      pure $
+        UndergroundMuscle $
+          attrs
+            & (sequenceL .~ Sequence 1 B)
+            & (flippedL .~ True)
     _ -> UndergroundMuscle <$> runMessage msg attrs

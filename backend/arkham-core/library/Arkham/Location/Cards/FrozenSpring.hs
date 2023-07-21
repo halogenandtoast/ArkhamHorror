@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.FrozenSpring
-  ( frozenSpring
-  , FrozenSpring(..)
-  ) where
+module Arkham.Location.Cards.FrozenSpring (
+  frozenSpring,
+  FrozenSpring (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( frozenSpring )
+import Arkham.Location.Cards qualified as Cards (frozenSpring)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -23,14 +23,14 @@ frozenSpring = location FrozenSpring Cards.frozenSpring 3 (PerPlayer 1)
 
 instance HasAbilities FrozenSpring where
   getAbilities (FrozenSpring attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 $
+        ForcedAbility $
+          RevealLocation Timing.After You $
+            LocationWithId $
+              toId attrs
+      | locationRevealed attrs
+      ]
 
 instance RunMessage FrozenSpring where
   runMessage msg l@(FrozenSpring attrs) = case msg of

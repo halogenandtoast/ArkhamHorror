@@ -2,8 +2,8 @@ module Arkham.Event.Cards.MindWipe3 where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
@@ -20,14 +20,15 @@ instance RunMessage MindWipe3 where
   runMessage msg e@(MindWipe3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
-      unless (null enemyIds) $ pushAll
-        [ chooseOne
-          iid
-          [ TargetLabel
-              (EnemyTarget eid')
-              [CreateEffect "" Nothing (toSource attrs) (EnemyTarget eid')]
-          | eid' <- enemyIds
+      unless (null enemyIds) $
+        pushAll
+          [ chooseOne
+              iid
+              [ TargetLabel
+                (EnemyTarget eid')
+                [CreateEffect "" Nothing (toSource attrs) (EnemyTarget eid')]
+              | eid' <- enemyIds
+              ]
           ]
-        ]
       pure e
     _ -> MindWipe3 <$> runMessage msg attrs

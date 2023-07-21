@@ -1,14 +1,14 @@
-module Arkham.Asset.Cards.Bandolier2
-  ( Bandolier2(..)
-  , bandolier2
-  ) where
+module Arkham.Asset.Cards.Bandolier2 (
+  Bandolier2 (..),
+  bandolier2,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Trait
@@ -25,7 +25,8 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
 
 instance HasModifiersFor Bandolier2 where
   getModifiersFor (InvestigatorTarget iid) (Bandolier2 a) | controlledBy a iid = do
-    n <- fieldMap InvestigatorSlots (length . filter (not . isEmptySlot) . findWithDefault [] HandSlot) iid
+    n <-
+      fieldMap InvestigatorSlots (length . filter (not . isEmptySlot) . findWithDefault [] HandSlot) iid
     pure $ toModifiers a [SkillModifier SkillWillpower 1 | n >= 2]
   getModifiersFor _ _ = pure []
 

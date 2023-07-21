@@ -108,7 +108,7 @@ instance Sourceable StoryAttrs where
   isSource StoryAttrs {storyId} (StorySource sid) = storyId == sid
   isSource _ _ = False
 
-data Story = forall a. (IsStory a) => Story a
+data Story = forall a. IsStory a => Story a
 
 instance Eq Story where
   (Story (a :: a)) == (Story (b :: b)) = case eqT @a @b of
@@ -150,7 +150,7 @@ instance IsCard StoryAttrs where
   toCard a = lookupCard (unStoryId $ storyId a) (toCardId a)
   toCardOwner _ = Nothing
 
-data SomeStoryCard = forall a. (IsStory a) => SomeStoryCard (StoryCard a)
+data SomeStoryCard = forall a. IsStory a => SomeStoryCard (StoryCard a)
 
 liftSomeStoryCard :: (forall a. StoryCard a -> b) -> SomeStoryCard -> b
 liftSomeStoryCard f (SomeStoryCard a) = f a

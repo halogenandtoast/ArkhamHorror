@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Ability.Limit where
 
 import Arkham.Prelude
@@ -8,7 +9,7 @@ import Arkham.Trait
 import Data.Aeson.TH
 
 data CanIgnoreAbilityLimit = CanIgnoreAbilityLimit | CanNotIgnoreAbilityLimit
-  deriving stock Eq
+  deriving stock (Eq)
 
 data AbilityLimit
   = PerInvestigatorLimit AbilityLimitType Int

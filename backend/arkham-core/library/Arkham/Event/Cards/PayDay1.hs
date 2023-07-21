@@ -1,14 +1,14 @@
-module Arkham.Event.Cards.PayDay1
-  ( payDay1
-  , PayDay1(..)
-  ) where
+module Arkham.Event.Cards.PayDay1 (
+  payDay1,
+  PayDay1 (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 

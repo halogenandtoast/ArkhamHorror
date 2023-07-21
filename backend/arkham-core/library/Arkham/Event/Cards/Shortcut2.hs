@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.Shortcut2
-  ( shortcut2
-  , Shortcut2(..)
-  ) where
+module Arkham.Event.Cards.Shortcut2 (
+  shortcut2,
+  Shortcut2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -39,10 +39,11 @@ instance RunMessage Shortcut2 where
       e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
     UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
       connectingLocations <- selectList $ AccessibleLocation
-      push $ chooseOne
-        iid
-        [ targetLabel lid' [Move $ move (toSource attrs) iid lid']
-        | lid' <- connectingLocations
-        ]
+      push $
+        chooseOne
+          iid
+          [ targetLabel lid' [Move $ move (toSource attrs) iid lid']
+          | lid' <- connectingLocations
+          ]
       pure e
     _ -> Shortcut2 <$> runMessage msg attrs

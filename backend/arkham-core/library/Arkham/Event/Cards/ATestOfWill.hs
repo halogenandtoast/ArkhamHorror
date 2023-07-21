@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.ATestOfWill
-  ( aTestOfWill
-  , ATestOfWill(..)
-  ) where
+module Arkham.Event.Cards.ATestOfWill (
+  aTestOfWill,
+  ATestOfWill (..),
+) where
 
 import Arkham.Prelude
 
@@ -21,16 +21,17 @@ aTestOfWill = event ATestOfWill Cards.aTestOfWill
 instance RunMessage ATestOfWill where
   runMessage msg e@(ATestOfWill attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e <$ pushAll
-        [ beginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          SkillWillpower
-          3
-        ]
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      e
+        <$ pushAll
+          [ beginSkillTest
+              iid
+              (toSource attrs)
+              (InvestigatorTarget iid)
+              SkillWillpower
+              3
+          ]
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-        push $ CancelNext (toSource attrs) RevelationMessage
-        pure e
+          push $ CancelNext (toSource attrs) RevelationMessage
+          pure e
     _ -> ATestOfWill <$> runMessage msg attrs

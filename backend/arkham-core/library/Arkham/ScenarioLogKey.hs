@@ -1,62 +1,63 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.ScenarioLogKey where
 
 import Arkham.Prelude hiding (toLower)
 
+import Arkham.Classes.GameLogger
 import Arkham.Id
 import Arkham.Name
-import Arkham.Classes.GameLogger
 import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
 
 data ScenarioLogKey
   = HadADrink (Labeled InvestigatorId)
-  | Cheated
-  -- ^ The House Always Wins
+  | -- | The House Always Wins
+    Cheated
   | FoundAStrangeDoll
-  | FoundAnAncientBindingStone
-  -- ^ Curse of the Rougarou
-  | StolenAPassengersLuggage
-  -- ^ The Essex County Exress
-  | StoleFromTheBoxOffice
-  -- ^ Curtain Call
+  | -- | Curse of the Rougarou
+    FoundAnAncientBindingStone
+  | -- | The Essex County Exress
+    StolenAPassengersLuggage
+  | -- | Curtain Call
+    StoleFromTheBoxOffice
   | InterviewedConstance
   | InterviewedJordan
   | InterviewedHaruko
   | InterviewedSebastien
-  | InterviewedAshleigh
-  -- ^ The Last King
+  | -- | The Last King
+    InterviewedAshleigh
   | SetAFireInTheKitchen
   | IncitedAFightAmongstThePatients
   | DistractedTheGuards
   | ReleasedADangerousPatient
   | KnowTheGuardsPatrols
   | RecalledTheWayOut
-  | YouTookTheKeysByForce
-  -- ^ The Unspeakable Oath
-  | YouOpenedASecretPassageway
-  -- ^ The Pallid Mask
+  | -- | The Unspeakable Oath
+    YouTookTheKeysByForce
+  | -- | The Pallid Mask
+    YouOpenedASecretPassageway
   | FoundAGuide
-  | FoundTheTowerKey
-  -- ^ Black Stars Rise
-  | KnowTheSecret
-  -- ^ DimCarcosa
+  | -- | Black Stars Rise
+    FoundTheTowerKey
+  | -- | DimCarcosa
+    KnowTheSecret
   | IchtachaIsLeadingTheWay
-  | YouFoughtWithIchtaca
-  -- ^ The Untamed Wilds
+  | -- | The Untamed Wilds
+    YouFoughtWithIchtaca
   | YouListenedToIchtacasTale
   | IchtacaLeftWithoutYou
   | IchtacasPrey (Labeled EnemyId)
-  | IchtacasDestination (Labeled LocationId)
-  -- ^ Threads of Fate
+  | -- | Threads of Fate
+    IchtacasDestination (Labeled LocationId)
   | FoundTheProcess
   | DissectedAnOrgan
   | InterviewedASubject
   | RealizedWhatYearItIs
-  | ActivatedTheDevice
-  -- ^ The City of Archives
-  | CollectedAStrangeLiquid
-  -- ^ The Depths of Yoth
+  | -- | The City of Archives
+    ActivatedTheDevice
+  | -- | The Depths of Yoth
+    CollectedAStrangeLiquid
   | MeddledWithThePast (Labeled InvestigatorId)
   deriving stock (Eq, Show, Ord)
 
@@ -70,15 +71,15 @@ instance ToGameLoggerFormat ScenarioLogKey where
     HadADrink (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} had a drink"
     MeddledWithThePast (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} meddled with the past"
     other -> pack . go $ show other
-    where
-      go :: String -> String
-      go [] = []
-      go (x:xs) = toLower x : go' xs
+   where
+    go :: String -> String
+    go [] = []
+    go (x : xs) = toLower x : go' xs
 
-      go' :: String -> String
-      go' [] = []
-      go' (x:xs) | isUpper x = ' ' : toLower x : go' xs
-      go' (x:xs) = x : go' xs
+    go' :: String -> String
+    go' [] = []
+    go' (x : xs) | isUpper x = ' ' : toLower x : go' xs
+    go' (x : xs) = x : go' xs
 
 $(deriveJSON defaultOptions ''ScenarioLogKey)
 $(deriveJSON defaultOptions ''ScenarioCountKey)

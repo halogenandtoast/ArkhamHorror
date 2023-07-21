@@ -7,7 +7,7 @@ import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Id
-import Arkham.Location.Types ( Field (..) )
+import Arkham.Location.Types (Field (..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Projection
@@ -20,13 +20,15 @@ toConnections lid =
 getConnectedMatcher :: HasGame m => LocationId -> m LocationMatcher
 getConnectedMatcher l = do
   isRevealed <- field LocationRevealed l
-  directionalMatchers <- fieldMap
-    LocationConnectsTo
-    (map (`LocationInDirection` self) . setToList)
-    l
-  base <- if isRevealed
-    then field LocationRevealedConnectedMatchers l
-    else field LocationConnectedMatchers l
+  directionalMatchers <-
+    fieldMap
+      LocationConnectsTo
+      (map (`LocationInDirection` self) . setToList)
+      l
+  base <-
+    if isRevealed
+      then field LocationRevealedConnectedMatchers l
+      else field LocationConnectedMatchers l
 
   modifiers <- getModifiers (LocationTarget l)
   LocationMatchAny
@@ -34,6 +36,6 @@ getConnectedMatcher l = do
  where
   applyModifier current (ConnectedToWhen whenMatcher matcher) = do
     matches <- member l <$> select whenMatcher
-    pure $ current <> [ matcher | matches ]
+    pure $ current <> [matcher | matches]
   applyModifier current _ = pure current
   self = LocationWithId l

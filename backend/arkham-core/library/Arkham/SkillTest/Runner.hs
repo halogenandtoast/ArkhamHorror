@@ -35,7 +35,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
 
-calculateSkillTestResultsData :: (HasGame m) => SkillTest -> m SkillTestResultsData
+calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers SkillTestTarget
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
@@ -66,7 +66,7 @@ calculateSkillTestResultsData s = do
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       isSuccess
 
-autoFailSkillTestResultsData :: (HasGame m) => SkillTest -> m SkillTestResultsData
+autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
   chaosTokenValues <-
@@ -85,7 +85,7 @@ autoFailSkillTestResultsData s = do
       Nothing
       False
 
-getAlternateSkill :: (HasGame m) => SkillTest -> SkillType -> m SkillType
+getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
 getAlternateSkill st sType = do
   modifiers' <- getModifiers (skillTestInvestigator st)
   pure $ foldr applyModifier sType modifiers'
@@ -93,7 +93,7 @@ getAlternateSkill st sType = do
   applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
   applyModifier _ a = a
 
-getCurrentSkillValue :: (HasGame m) => SkillTest -> m Int
+getCurrentSkillValue :: HasGame m => SkillTest -> m Int
 getCurrentSkillValue st = do
   case skillTestBaseValue st of
     SkillBaseValue sType -> do
@@ -103,7 +103,7 @@ getCurrentSkillValue st = do
     HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
     StaticBaseValue n -> pure n
 
-skillIconCount :: (HasGame m) => SkillTest -> m Int
+skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
   totalIcons <-
     count matches
@@ -125,7 +125,7 @@ skillIconCount SkillTest {..} = do
     SkillSkillTest sType -> s == sType
     ResourceSkillTest -> False
 
-subtractSkillIconCount :: (HasGame m) => SkillTest -> m Int
+subtractSkillIconCount :: HasGame m => SkillTest -> m Int
 subtractSkillIconCount SkillTest {..} =
   count matches <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
  where
@@ -133,7 +133,7 @@ subtractSkillIconCount SkillTest {..} =
   matches WildIcon = False
   matches (SkillIcon _) = False
 
-getModifiedSkillTestDifficulty :: (HasGame m) => SkillTest -> m Int
+getModifiedSkillTestDifficulty :: HasGame m => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiers SkillTestTarget
   let
@@ -149,7 +149,7 @@ getModifiedSkillTestDifficulty s = do
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
-getModifiedChaosTokenValue :: (HasGame m) => SkillTest -> ChaosToken -> m Int
+getModifiedChaosTokenValue :: HasGame m => SkillTest -> ChaosToken -> m Int
 getModifiedChaosTokenValue s t = do
   tokenModifiers' <- getModifiers (ChaosTokenTarget t)
   modifiedChaosTokenFaces' <- getModifiedChaosTokenFaces [t]

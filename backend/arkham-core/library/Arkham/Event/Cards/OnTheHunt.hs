@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.OnTheHunt
-  ( onTheHunt
-  , OnTheHunt(..)
-  ) where
+module Arkham.Event.Cards.OnTheHunt (
+  onTheHunt,
+  OnTheHunt (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,13 +26,14 @@ instance RunMessage OnTheHunt where
       _ <- popMessageMatching $ \case
         InvestigatorDoDrawEncounterCard iid' -> iid == iid'
         _ -> False
-      push $ Search
-        iid
-        (toSource attrs)
-        EncounterDeckTarget
-        [(FromTopOfDeck 9, PutBack)]
-        AnyCard
-        (DeferSearchedToTarget $ toTarget attrs)
+      push $
+        Search
+          iid
+          (toSource attrs)
+          EncounterDeckTarget
+          [(FromTopOfDeck 9, PutBack)]
+          AnyCard
+          (DeferSearchedToTarget $ toTarget attrs)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
       push $ InvestigatorDrawEncounterCard iid
@@ -40,14 +41,15 @@ instance RunMessage OnTheHunt where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let
         enemyCards =
-          filter ((== EnemyType) . cdCardType . toCardDef)
-            $ mapMaybe (preview _EncounterCard) cards
-      push $ chooseOne
-        iid
-        [ TargetLabel
+          filter ((== EnemyType) . cdCardType . toCardDef) $
+            mapMaybe (preview _EncounterCard) cards
+      push $
+        chooseOne
+          iid
+          [ TargetLabel
             (CardIdTarget $ toCardId card)
             [InvestigatorDrewEncounterCard iid card]
-        | card <- enemyCards
-        ]
+          | card <- enemyCards
+          ]
       pure e
     _ -> OnTheHunt <$> runMessage msg attrs

@@ -16,7 +16,7 @@ import Arkham.Helpers.Campaign as X
 import Arkham.Matcher
 
 getHasRecordOrStandalone
-  :: (HasGame m)
+  :: HasGame m
   => CampaignLogKey
   -> Bool
   -> m Bool
@@ -24,16 +24,16 @@ getHasRecordOrStandalone key def = do
   standalone <- selectNone TheCampaign
   if standalone then pure def else getHasRecord key
 
-buildEncounterDeck :: (CardGen m) => [EncounterSet] -> m (Deck EncounterCard)
+buildEncounterDeck :: CardGen m => [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeck = buildEncounterDeckWith id
 
 buildEncounterDeckExcluding
-  :: (CardGen m) => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
+  :: CardGen m => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeckExcluding defs =
   buildEncounterDeckWith (filter ((`notElem` defs) . toCardDef))
 
 buildEncounterDeckExcludingMatching
-  :: (CardGen m)
+  :: CardGen m
   => CardMatcher
   -> [EncounterSet]
   -> m (Deck EncounterCard)
@@ -47,7 +47,7 @@ excludeBSides :: [EncounterCard] -> [EncounterCard]
 excludeBSides = filter (not . isSuffixOf "b" . unCardCode . toCardCode)
 
 buildEncounterDeckWith
-  :: (CardGen m)
+  :: CardGen m
   => ([EncounterCard] -> [EncounterCard])
   -> [EncounterSet]
   -> m (Deck EncounterCard)

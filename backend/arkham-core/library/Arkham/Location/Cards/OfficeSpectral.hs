@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.OfficeSpectral
-  ( officeSpectral
-  , OfficeSpectral(..)
-  ) where
+module Arkham.Location.Cards.OfficeSpectral (
+  officeSpectral,
+  OfficeSpectral (..),
+) where
 
 import Arkham.Prelude
 
@@ -19,9 +19,10 @@ officeSpectral :: LocationCard OfficeSpectral
 officeSpectral = location OfficeSpectral Cards.officeSpectral 4 (PerPlayer 2)
 
 instance HasAbilities OfficeSpectral where
-  getAbilities (OfficeSpectral attrs) = withBaseAbilities
-    attrs
-    [haunted "Choose and discard a card from your hand." attrs 1]
+  getAbilities (OfficeSpectral attrs) =
+    withBaseAbilities
+      attrs
+      [haunted "Choose and discard a card from your hand." attrs 1]
 
 instance RunMessage OfficeSpectral where
   runMessage msg l@(OfficeSpectral attrs) = case msg of

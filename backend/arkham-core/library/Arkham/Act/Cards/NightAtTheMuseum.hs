@@ -1,7 +1,7 @@
-module Arkham.Act.Cards.NightAtTheMuseum
-  ( NightAtTheMuseum(..)
-  , nightAtTheMuseum
-  ) where
+module Arkham.Act.Cards.NightAtTheMuseum (
+  NightAtTheMuseum (..),
+  nightAtTheMuseum,
+) where
 
 import Arkham.Prelude
 
@@ -27,14 +27,18 @@ nightAtTheMuseum = act (2, A) NightAtTheMuseum Cards.nightAtTheMuseum Nothing
 
 instance HasAbilities NightAtTheMuseum where
   getAbilities (NightAtTheMuseum x) =
-    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ locationIs
-        Cards.exhibitHallRestrictedHall
+    [ mkAbility x 1 $
+        ForcedAbility $
+          Enters Timing.When You $
+            locationIs
+              Cards.exhibitHallRestrictedHall
     ]
 
 instance RunMessage NightAtTheMuseum where
   runMessage msg a@(NightAtTheMuseum attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 1 _ _
+      | isSource attrs source ->
+          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       mHuntingHorror <- getHuntingHorror
@@ -46,11 +50,13 @@ instance RunMessage NightAtTheMuseum where
             , Ready (EnemyTarget eid)
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
-        Nothing -> push $ FindEncounterCard
-          leadInvestigatorId
-          (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard, FromVoid]
-          (cardIs Enemies.huntingHorror)
+        Nothing ->
+          push $
+            FindEncounterCard
+              leadInvestigatorId
+              (toTarget attrs)
+              [FromEncounterDeck, FromEncounterDiscard, FromVoid]
+              (cardIs Enemies.huntingHorror)
       pure a
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- getRestrictedHall

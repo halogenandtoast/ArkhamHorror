@@ -2,9 +2,9 @@ module Arkham.Skill.Cards.Guts where
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
 newtype Guts = Guts SkillAttrs

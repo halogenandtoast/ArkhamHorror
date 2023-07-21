@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.HarlanEarnstoneCrazedByTheCurse
-  ( harlanEarnstoneCrazedByTheCurse
-  , HarlanEarnstoneCrazedByTheCurse(..)
-  ) where
+module Arkham.Enemy.Cards.HarlanEarnstoneCrazedByTheCurse (
+  harlanEarnstoneCrazedByTheCurse,
+  HarlanEarnstoneCrazedByTheCurse (..),
+) where
 
 import Arkham.Prelude
 
@@ -18,21 +18,25 @@ newtype HarlanEarnstoneCrazedByTheCurse = HarlanEarnstoneCrazedByTheCurse EnemyA
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 harlanEarnstoneCrazedByTheCurse :: EnemyCard HarlanEarnstoneCrazedByTheCurse
-harlanEarnstoneCrazedByTheCurse = enemy
-  HarlanEarnstoneCrazedByTheCurse
-  Cards.harlanEarnstoneCrazedByTheCurse
-  (4, Static 2, 3)
-  (1, 1)
+harlanEarnstoneCrazedByTheCurse =
+  enemy
+    HarlanEarnstoneCrazedByTheCurse
+    Cards.harlanEarnstoneCrazedByTheCurse
+    (4, Static 2, 3)
+    (1, 1)
 
 instance HasAbilities HarlanEarnstoneCrazedByTheCurse where
-  getAbilities (HarlanEarnstoneCrazedByTheCurse a) = withBaseAbilities
-    a
-    [ mkAbility a 1 $ ForcedAbility $ SkillTestResult
-        Timing.After
-        You
-        (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-        (SuccessResult $ AtLeast $ Static 3)
-    ]
+  getAbilities (HarlanEarnstoneCrazedByTheCurse a) =
+    withBaseAbilities
+      a
+      [ mkAbility a 1 $
+          ForcedAbility $
+            SkillTestResult
+              Timing.After
+              You
+              (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
+              (SuccessResult $ AtLeast $ Static 3)
+      ]
 
 instance RunMessage HarlanEarnstoneCrazedByTheCurse where
   runMessage msg e@(HarlanEarnstoneCrazedByTheCurse attrs) = case msg of

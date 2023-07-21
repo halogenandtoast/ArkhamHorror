@@ -1,15 +1,15 @@
-module Arkham.Asset.Cards.FamiliarSpirit
-  ( familiarSpirit
-  , FamiliarSpirit(..)
-  )
+module Arkham.Asset.Cards.FamiliarSpirit (
+  familiarSpirit,
+  FamiliarSpirit (..),
+)
 where
 
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Trait
 import Arkham.Card
+import Arkham.Trait
 
 newtype FamiliarSpirit = FamiliarSpirit AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

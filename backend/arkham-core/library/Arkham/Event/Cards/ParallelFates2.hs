@@ -1,7 +1,7 @@
-module Arkham.Event.Cards.ParallelFates2
-  ( parallelFates2
-  , ParallelFates2(..)
-  ) where
+module Arkham.Event.Cards.ParallelFates2 (
+  parallelFates2,
+  ParallelFates2 (..),
+) where
 
 import Arkham.Prelude
 
@@ -10,11 +10,11 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Matcher
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Message
 
-newtype Metadata = Metadata { drawnCards :: [EncounterCard] }
+newtype Metadata = Metadata {drawnCards :: [EncounterCard]}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -29,11 +29,13 @@ parallelFates2 =
 instance RunMessage ParallelFates2 where
   runMessage msg e@(ParallelFates2 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <- selectTargets
-        $ InvestigatorWithoutModifier CannotManipulateDeck
-      push $ chooseOne
-        iid
-        [ TargetLabel
+      targets <-
+        selectTargets $
+          InvestigatorWithoutModifier CannotManipulateDeck
+      push $
+        chooseOne
+          iid
+          [ TargetLabel
             target
             [ Search
                 iid
@@ -43,28 +45,30 @@ instance RunMessage ParallelFates2 where
                 AnyCard
                 (DeferSearchedToTarget $ toTarget attrs)
             ]
-        | target <- EncounterDeckTarget : targets
-        ]
+          | target <- EncounterDeckTarget : targets
+          ]
       pure e
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
       pushAll
         [ FocusCards cards
         , chooseOne
-          iid
-          [ Label "Shuffle them in" [ShuffleCardsIntoDeck Deck.EncounterDeck cards]
-          , Label "Put back in any order"
-            [ chooseOneAtATime iid
-              [ targetLabel
-                  (toCardId card)
-                  [ PutCardOnTopOfDeck
-                      iid
-                      Deck.EncounterDeck
-                      (EncounterCard card)
-                  ]
-              | card <- mapMaybe (preview _EncounterCard) cards
-              ]
+            iid
+            [ Label "Shuffle them in" [ShuffleCardsIntoDeck Deck.EncounterDeck cards]
+            , Label
+                "Put back in any order"
+                [ chooseOneAtATime
+                    iid
+                    [ targetLabel
+                      (toCardId card)
+                      [ PutCardOnTopOfDeck
+                          iid
+                          Deck.EncounterDeck
+                          (EncounterCard card)
+                      ]
+                    | card <- mapMaybe (preview _EncounterCard) cards
+                    ]
+                ]
             ]
-          ]
         , UnfocusCards
         ]
       pure e
@@ -73,21 +77,23 @@ instance RunMessage ParallelFates2 where
       pushAll
         [ FocusCards cards
         , chooseOne
-          iid
-          [ Label "Shuffle them in" [ShuffleCardsIntoDeck deck cards]
-          , Label "Put back in any order"
-            [ chooseOneAtATime iid
-              [ targetLabel
-                  (toCardId card)
-                  [ PutCardOnTopOfDeck
-                      iid
-                      deck
-                      (PlayerCard card)
-                  ]
-              | card <- mapMaybe (preview _PlayerCard) cards
-              ]
+            iid
+            [ Label "Shuffle them in" [ShuffleCardsIntoDeck deck cards]
+            , Label
+                "Put back in any order"
+                [ chooseOneAtATime
+                    iid
+                    [ targetLabel
+                      (toCardId card)
+                      [ PutCardOnTopOfDeck
+                          iid
+                          deck
+                          (PlayerCard card)
+                      ]
+                    | card <- mapMaybe (preview _PlayerCard) cards
+                    ]
+                ]
             ]
-          ]
         , UnfocusCards
         , drawing
         ]

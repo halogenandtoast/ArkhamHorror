@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.AsylumHallsEasternPatientWing_171
-  ( asylumHallsEasternPatientWing_171
-  , AsylumHallsEasternPatientWing_171(..)
-  ) where
+module Arkham.Location.Cards.AsylumHallsEasternPatientWing_171 (
+  asylumHallsEasternPatientWing_171,
+  AsylumHallsEasternPatientWing_171 (..),
+) where
 
 import Arkham.Prelude
 
@@ -16,11 +16,12 @@ newtype AsylumHallsEasternPatientWing_171 = AsylumHallsEasternPatientWing_171 Lo
 
 asylumHallsEasternPatientWing_171
   :: LocationCard AsylumHallsEasternPatientWing_171
-asylumHallsEasternPatientWing_171 = location
-  AsylumHallsEasternPatientWing_171
-  Cards.asylumHallsEasternPatientWing_171
-  2
-  (PerPlayer 1)
+asylumHallsEasternPatientWing_171 =
+  location
+    AsylumHallsEasternPatientWing_171
+    Cards.asylumHallsEasternPatientWing_171
+    2
+    (PerPlayer 1)
 
 instance HasAbilities AsylumHallsEasternPatientWing_171 where
   getAbilities (AsylumHallsEasternPatientWing_171 attrs) = getAbilities attrs

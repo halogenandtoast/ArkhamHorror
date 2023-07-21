@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
@@ -26,15 +26,16 @@ instance RunMessage TheZealotsSeal where
       -- we must unshift this first for other effects happen before
       for_ investigatorIds $ \iid' -> do
         handCardCount <- fieldMap InvestigatorHand length iid'
-        push $ if handCardCount <= 3
-          then InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1
-          else RevelationSkillTest iid' source SkillWillpower 2
+        push $
+          if handCardCount <= 3
+            then InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1
+            else RevelationSkillTest iid' source SkillWillpower 2
       pure t
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ _
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ _
       | tid == treacheryId -> do
-        pushAll
-          [ toMessage $ randomDiscard iid attrs
-          , toMessage $ randomDiscard iid attrs
-          ]
-        pure t
+          pushAll
+            [ toMessage $ randomDiscard iid attrs
+            , toMessage $ randomDiscard iid attrs
+            ]
+          pure t
     _ -> TheZealotsSeal <$> runMessage msg attrs

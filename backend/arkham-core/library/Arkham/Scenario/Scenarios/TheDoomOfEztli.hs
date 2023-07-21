@@ -114,7 +114,7 @@ standaloneCampaignLog =
           [TheInvestigatorsClearedAPathToTheEztliRuins]
     }
 
-investigatorDefeat :: (HasGame m) => ScenarioAttrs -> m [Message]
+investigatorDefeat :: HasGame m => ScenarioAttrs -> m [Message]
 investigatorDefeat attrs = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds
@@ -161,7 +161,7 @@ instance RunMessage TheDoomOfEztli where
         . (`with` metadata)
         $ attrs
           & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+          .~ standaloneCampaignLog
     Setup -> do
       iids <- allInvestigatorIds
       -- \| Determine intro
@@ -249,7 +249,8 @@ instance RunMessage TheDoomOfEztli where
           [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
       agendas <- genCards [Agendas.somethingStirs, Agendas.theTempleWarden]
 
-      TheDoomOfEztli . (`with` metadata)
+      TheDoomOfEztli
+        . (`with` metadata)
         <$> runMessage
           msg
           ( attrs

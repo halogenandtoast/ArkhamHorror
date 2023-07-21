@@ -1,14 +1,14 @@
-module Arkham.Location.Cards.SlaughteredWoods
-  ( slaughteredWoods
-  , SlaughteredWoods(..)
-  ) where
+module Arkham.Location.Cards.SlaughteredWoods (
+  slaughteredWoods,
+  SlaughteredWoods (..),
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( slaughteredWoods )
+import Arkham.Location.Cards qualified as Cards (slaughteredWoods)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -24,18 +24,19 @@ slaughteredWoods =
 
 instance HasAbilities SlaughteredWoods where
   getAbilities (SlaughteredWoods attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility
-              attrs
-              1
-              (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-            $ ForcedAbility
-                (RevealLocation Timing.After You $ LocationWithId $ toId attrs)
-        | locationRevealed attrs
-        ]
+    withBaseAbilities attrs $
+      [ restrictedAbility
+        attrs
+        1
+        (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+        $ ForcedAbility
+          (RevealLocation Timing.After You $ LocationWithId $ toId attrs)
+      | locationRevealed attrs
+      ]
 
 instance RunMessage SlaughteredWoods where
   runMessage msg l@(SlaughteredWoods attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source ->
-      l <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
+    UseCardAbility iid source 1 _ _
+      | isSource attrs source ->
+          l <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
     _ -> SlaughteredWoods <$> runMessage msg attrs

@@ -1,15 +1,15 @@
-module Arkham.Act.Cards.TheYithianRelic
-  ( TheYithianRelic(..)
-  , theYithianRelic
-  , theYithianRelicEffect
-  ) where
+module Arkham.Act.Cards.TheYithianRelic (
+  TheYithianRelic (..),
+  theYithianRelic,
+  theYithianRelicEffect,
+) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
@@ -35,52 +35,61 @@ theYithianRelic :: ActCard TheYithianRelic
 theYithianRelic = act (3, A) TheYithianRelic Cards.theYithianRelic Nothing
 
 instance HasAbilities TheYithianRelic where
-  getAbilities (TheYithianRelic a) | onSide A a =
-    withBaseAbilities a
-      $ [ restrictedAbility
-          a
-          1
-          (InvestigatorExists $ You <> AnyInvestigator
-            [ DeckWith (HasCard $ CardWithTitle "Relic of Ages")
-            , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
-            ]
-          )
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        , restrictedAbility
-          a
-          2
-          (AssetExists $ AssetAt (YourLocation <> LocationWithoutClues) <> AssetWithTitle "Relic of Ages")
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        , restrictedAbility
-          a
-          3
-          (InvestigatorExists $ HasMatchingAsset $ AssetWithTitle
-            "Relic of Ages"
-          )
-        $ Objective
-        $ ForcedAbility AnyWindow
-        ]
+  getAbilities (TheYithianRelic a)
+    | onSide A a =
+        withBaseAbilities a $
+          [ restrictedAbility
+              a
+              1
+              ( InvestigatorExists $
+                  You
+                    <> AnyInvestigator
+                      [ DeckWith (HasCard $ CardWithTitle "Relic of Ages")
+                      , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
+                      ]
+              )
+              $ ActionAbility Nothing
+              $ ActionCost 1
+          , restrictedAbility
+              a
+              2
+              (AssetExists $ AssetAt (YourLocation <> LocationWithoutClues) <> AssetWithTitle "Relic of Ages")
+              $ ActionAbility Nothing
+              $ ActionCost 1
+          , restrictedAbility
+              a
+              3
+              ( InvestigatorExists $
+                  HasMatchingAsset $
+                    AssetWithTitle
+                      "Relic of Ages"
+              )
+              $ Objective
+              $ ForcedAbility AnyWindow
+          ]
   getAbilities _ = []
 
 instance RunMessage TheYithianRelic where
   runMessage msg a@(TheYithianRelic attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mDiscard <-
-        selectOne $ InDiscardOf (InvestigatorWithId iid) <> BasicCardMatch
-          (CardWithTitle "Relic of Ages")
+        selectOne $
+          InDiscardOf (InvestigatorWithId iid)
+            <> BasicCardMatch
+              (CardWithTitle "Relic of Ages")
       push $ case mDiscard of
-        Just relic -> chooseOne
-          iid
-          [TargetLabel (CardIdTarget $ toCardId relic) [addToHand iid relic]]
-        Nothing -> Search
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          [fromDeck]
-          (CardWithTitle "Relic of Ages")
-          (DrawFound iid 1)
+        Just relic ->
+          chooseOne
+            iid
+            [TargetLabel (CardIdTarget $ toCardId relic) [addToHand iid relic]]
+        Nothing ->
+          Search
+            iid
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            [fromDeck]
+            (CardWithTitle "Relic of Ages")
+            (DrawFound iid 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       relic <- selectJust $ AssetWithTitle "Relic of Ages"
@@ -99,11 +108,12 @@ instance RunMessage TheYithianRelic where
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         alejandro <- getSetAsideCard Enemies.alejandroVela
         pushM $ createEnemyAt_ alejandro aPocketInTime Nothing
-      push $ createCardEffect
-        Cards.theYithianRelic
-        Nothing
-        (toSource attrs)
-        ScenarioTarget
+      push $
+        createCardEffect
+          Cards.theYithianRelic
+          Nothing
+          (toSource attrs)
+          ScenarioTarget
 
       pure a
     _ -> TheYithianRelic <$> runMessage msg attrs
@@ -117,10 +127,10 @@ theYithianRelicEffect = cardEffect TheYithianRelicEffect Cards.theYithianRelic
 
 instance HasAbilities TheYithianRelicEffect where
   getAbilities (TheYithianRelicEffect a) =
-    [ mkAbility a 1
-        $ SilentForcedAbility
-        $ AssetLeavesPlay Timing.AtIf
-        $ AssetWithTitle "Relic of Ages"
+    [ mkAbility a 1 $
+        SilentForcedAbility $
+          AssetLeavesPlay Timing.AtIf $
+            AssetWithTitle "Relic of Ages"
     ]
 
 instance RunMessage TheYithianRelicEffect where

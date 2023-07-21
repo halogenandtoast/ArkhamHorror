@@ -5419,22 +5419,20 @@ preloadEntities g = do
           Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand (toId investigator')}) a
           Nothing -> a
         handEffectCards =
-          ( filter (cdCardInHandEffects . toCardDef) . investigatorHand $
-              toAttrs
-                investigator'
-          )
-            <> filter (cdCardInHandEffects . toCardDef) asIfInHandCards
-      if null handEffectCards
-        then pure entities
-        else
-          let
-            handEntities =
-              foldl'
-                (addCardEntityWith (toId investigator') setAssetPlacement)
-                defaultEntities
-                handEffectCards
-          in
-            pure $ insertMap (toId investigator') handEntities entities
+          filter (cdCardInHandEffects . toCardDef) $
+            investigatorHand (toAttrs investigator') <> asIfInHandCards
+      pure $
+        if null handEffectCards
+          then entities
+          else
+            let
+              handEntities =
+                foldl'
+                  (addCardEntityWith (toId investigator') setAssetPlacement)
+                  defaultEntities
+                  handEffectCards
+            in
+              insertMap (toId investigator') handEntities entities
     foundOfElems = concat . Map.elems . investigatorFoundCards . toAttrs
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef) $
@@ -5571,18 +5569,6 @@ delve = over depthLockL (+ 1)
 
 withoutCanModifiers :: Game -> Game
 withoutCanModifiers = set ignoreCanModifiersL True
-
-withCardEntity :: InvestigatorId -> Card -> Game -> Game
-withCardEntity controller c = over entitiesL (<> extraEntities)
- where
-  setAssetPlacement :: forall a. (Typeable a) => a -> a
-  setAssetPlacement a = case eqT @a @Asset of
-    Just Refl ->
-      overAttrs
-        (\attrs -> attrs {assetPlacement = StillInHand controller, assetController = Just controller})
-        a
-    Nothing -> a
-  extraEntities = addCardEntityWith controller setAssetPlacement defaultEntities c
 
 instance HasAbilities Game where
   getAbilities g =

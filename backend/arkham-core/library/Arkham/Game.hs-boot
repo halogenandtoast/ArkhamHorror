@@ -10,7 +10,6 @@ import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
-import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasChaosTokenValue
@@ -82,7 +81,6 @@ instance HasChaosTokenValue ()
 
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game
-withCardEntity :: InvestigatorId -> Card -> Game -> Game
 abilityMatches :: (HasGame m) => Ability -> AbilityMatcher -> m Bool
 
 instance HasDistance Game

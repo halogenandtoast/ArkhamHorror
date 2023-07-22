@@ -179,7 +179,7 @@ getCanPerformAbility !iid !window !ability = do
       AdditionalCost x -> Just x
       _ -> Nothing
     cost = abilityCost ability
-    criteria = (\c -> foldr setCriteria c abilityModifiers) <$> abilityCriteria ability
+    criteria = foldr setCriteria (abilityCriteria ability) abilityModifiers
     setCriteria :: ModifierType -> Criterion -> Criterion
     setCriteria = \case
       SetAbilityCriteria (CriteriaOverride c) -> const c
@@ -188,10 +188,7 @@ getCanPerformAbility !iid !window !ability = do
     [ getCanAffordCost iid (toSource ability) mAction [window] cost
     , meetsActionRestrictions iid window ability
     , windowMatches iid (toSource ability) window (abilityWindow ability)
-    , maybe
-        (pure True)
-        (passesCriteria iid Nothing (abilitySource ability) [window])
-        criteria
+    , passesCriteria iid Nothing (abilitySource ability) [window] criteria
     , allM
         (getCanAffordCost iid (abilitySource ability) mAction [window])
         additionalCosts

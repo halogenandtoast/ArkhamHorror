@@ -135,16 +135,13 @@ getWindowSkippable _ _ w@(Window _ (Window.ActivateAbility iid ab)) = do
     excludeOne (uab : xs) = uab : excludeOne xs
   andM
     [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
-    , maybe
-        (pure True)
-        ( withAlteredGame withoutCanModifiers
-            . passesCriteria
-              iid
-              Nothing
-              (abilitySource ab)
-              [w]
-        )
-        (abilityCriteria ab)
+    , withAlteredGame withoutCanModifiers $
+        passesCriteria
+          iid
+          Nothing
+          (abilitySource ab)
+          [w]
+          (abilityCriteria ab)
     ]
 getWindowSkippable _ _ _ = pure True
 

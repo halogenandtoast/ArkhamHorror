@@ -6,8 +6,8 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
-import Token from '@/arkham/components/Token';
-import ChaosBagChoice from '@/arkham/components/ChaosBagChoice';
+import Token from '@/arkham/components/Token.vue';
+import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 
 export interface Props {
   game: Game

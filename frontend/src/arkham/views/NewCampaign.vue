@@ -18,8 +18,8 @@ import {
   isForcedKey,
   anyForced
 } from '@/arkham/types/CampaignSettings'
-import NewDeck from '@/arkham/components/NewDeck'
-import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting'
+import NewDeck from '@/arkham/components/NewDeck.vue'
+import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting.vue'
 import { toCapitalizedWords } from '@/arkham/helpers'
 
 import campaignJSON from '@/arkham/data/campaigns.json'
@@ -74,13 +74,15 @@ const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
 const playerCount = ref(1)
 
+type MultiplayerVariant = 'WithFriends' | 'TrueSolo'
+
 const selectedDifficulty = ref<Difficulty>('Easy')
 const deckIds = ref<(string | null)[]>([null, null, null, null])
 const fullCampaign = ref(true)
 const selectedCampaign = ref('01')
 const selectedScenario = ref('81001')
 const campaignName = ref<string | null>(null)
-const multiplayerVariant = ref('WithFriends')
+const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
 
 const campaignScenarios = computed(() => selectedCampaign.value
@@ -462,13 +464,6 @@ const toggleRecordable = function(setting, value) {
   }
 
   filterSettings()
-}
-
-const inResolution = function (setting: CampaignScenario) {
-  if (setting.resolutions.length === 1) {
-    return true
-  }
-  return false
 }
 
 const toggleCrossOut = function (key: string, value: string) {

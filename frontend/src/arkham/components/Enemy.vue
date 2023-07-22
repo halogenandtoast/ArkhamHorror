@@ -10,8 +10,8 @@ import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
-import Token from '@/arkham/components/Token';
-import Story from '@/arkham/components/Story';
+import Token from '@/arkham/components/Token.vue';
+import Story from '@/arkham/components/Story.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 
 export interface Props {

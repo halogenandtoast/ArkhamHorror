@@ -51,7 +51,7 @@ function selectTabExtended(i: string) {
 watchEffect(() => selectedTab.value = props.investigatorId)
 </script>
 
-<template lang="html">
+<template>
   <div class="player-info">
     <ul class='tabs__header'>
       <li v-for='iid in playerOrder'

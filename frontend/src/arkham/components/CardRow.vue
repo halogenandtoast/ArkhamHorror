@@ -3,7 +3,7 @@ import { withDefaults } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
-import Draggable from '@/components/Draggable';
+import Draggable from '@/components/Draggable.vue';
 
 export interface Props {
   game: Game

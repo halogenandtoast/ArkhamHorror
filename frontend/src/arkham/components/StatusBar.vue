@@ -6,8 +6,8 @@ import type { Message } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
-import Draggable from '@/components/Draggable';
-import DropDown from '@/components/DropDown';
+import Draggable from '@/components/Draggable.vue';
+import DropDown from '@/components/DropDown.vue';
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 
 export interface Props {

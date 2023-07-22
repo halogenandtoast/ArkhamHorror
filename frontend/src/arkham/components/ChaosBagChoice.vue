@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import { ChaosBagStep } from '@/arkham/types/ChaosBag';
-import Token from '@/arkham/components/Token';
+import Token from '@/arkham/components/Token.vue';
 
 export interface Props {
   game: Game

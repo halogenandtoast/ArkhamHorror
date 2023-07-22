@@ -2156,7 +2156,6 @@ library
       Arkham.Treachery.Cards.LostSoul
       Arkham.Treachery.Cards.LowOnSupplies
       Arkham.Treachery.Cards.MarkedByTheSign
-      Arkham.Treachery.Cards.MarkedForDeath
       Arkham.Treachery.Cards.MarkOfTheOrder
       Arkham.Treachery.Cards.MaskedHorrors
       Arkham.Treachery.Cards.MaskOfUmordhoth
@@ -2167,7 +2166,6 @@ library
       Arkham.Treachery.Cards.MysteriousChanting
       Arkham.Treachery.Cards.Nihilism
       Arkham.Treachery.Cards.NobodysHome
-      Arkham.Treachery.Cards.NoTurningBack
       Arkham.Treachery.Cards.ObscuringFog
       Arkham.Treachery.Cards.Obsessive
       Arkham.Treachery.Cards.OfferOfPower

@@ -10,7 +10,7 @@ import Key from '@/arkham/components/Key.vue';
 import Event from '@/arkham/components/Event.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import Token from '@/arkham/components/Token';
+import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 
 export interface Props {

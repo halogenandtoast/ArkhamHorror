@@ -24,33 +24,25 @@ adamLynch =
 
 instance HasAbilities AdamLynch where
   getAbilities (AdamLynch x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          AssetLeavesPlay Timing.When $
-            AssetWithId $
-              toId x
+    [ forcedAbility
+        x
+        1
+        (AssetLeavesPlay Timing.When $ AssetWithId $ toId x)
+        NoRestriction
     ]
 
 instance HasModifiersFor AdamLynch where
-  getModifiersFor (InvestigatorTarget iid) (AdamLynch attrs)
-    | controlledBy attrs iid = do
-        mSecurityOffice <- selectOne (LocationWithTitle "Security Office")
-        case mSecurityOffice of
-          Just securityOffice ->
-            pure $
-              toModifiers
-                attrs
-                [ AbilityModifier
-                    (LocationTarget securityOffice)
-                    1
-                    (ActionCostSetToModifier 1)
-                ]
-          Nothing -> pure []
+  getModifiersFor (InvestigatorTarget iid) (AdamLynch attrs) | controlledBy attrs iid = do
+    mSecurityOffice <- selectOne (LocationWithTitle "Security Office")
+    case mSecurityOffice of
+      Just securityOffice ->
+        pure $ toModifiers attrs [AbilityModifier (toTarget securityOffice) 1 (ActionCostSetToModifier 1)]
+      Nothing -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          a <$ pushAll [AddChaosToken Tablet, RemoveFromGame $ toTarget attrs]
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      pushAll [AddChaosToken Tablet, RemoveFromGame $ toTarget attrs]
+      pure a
     _ -> AdamLynch <$> runMessage msg attrs

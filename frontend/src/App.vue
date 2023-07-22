@@ -24,17 +24,17 @@ onMounted(async () => await store.loadUserFromStorage())
 <style lang="scss">
 @font-face {
   font-family: "Arkham";
-  src: url("../public/fonts/arkham.ttf");
+  src: url("/fonts/arkham.ttf");
 }
 
 @font-face {
   font-family: "ArkhamIcons";
-  src: url("../public/fonts/arkhamicons.ttf");
+  src: url("/fonts/arkhamicons.ttf");
 }
 
 @font-face {
   font-family: "Teutonic";
-  src: url("../public/fonts/teutonic.ttf");
+  src: url("/fonts/teutonic.ttf");
 }
 
 body {

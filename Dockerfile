@@ -93,11 +93,11 @@ COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/packag
 COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/package.yaml
 COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.yaml
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
-RUN stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
+RUN --mount=type=cache,id=stack,target=/root/.stack stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 
 FROM base as api
 
-COPY --from=dependencies /root/.stack /root/.stack
+# COPY --from=dependencies /root/.stack /root/.stack
 
 RUN mkdir -p \
   /opt/arkham/src/backend \
@@ -106,11 +106,11 @@ RUN mkdir -p \
 COPY ./backend /opt/arkham/src/backend
 
 WORKDIR /opt/arkham/src/backend/cards-discover
-RUN stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
+RUN --mount=type=cache,id=stack,target=/root/.stack stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
 
 WORKDIR /opt/arkham/src/backend/arkham-api
-RUN stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'
-RUN stack --no-terminal --local-bin-path /opt/arkham/bin install
+RUN --mount=type=cache,id=stack,target=/root/.stack stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'
+RUN --mount=type=cache,id=stack,target=/root/.stack stack --no-terminal --local-bin-path /opt/arkham/bin install
 
 FROM ubuntu:22.04 as app
 

@@ -94,6 +94,12 @@ reactionAbility entity idx cost window criteria =
     { abilityCriteria = criteria
     }
 
+forcedAbility :: Sourceable a => a -> Int -> WindowMatcher -> Criterion -> Ability
+forcedAbility entity idx window criteria =
+  (mkAbility entity idx (ForcedAbility window))
+    { abilityCriteria = criteria
+    }
+
 restricted :: Criterion -> Ability -> Ability
 restricted criteria = abilityCriteriaL .~ criteria
 

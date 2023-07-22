@@ -22,9 +22,7 @@ abbessAllegriaDiBiase =
 
 instance HasAbilities AbbessAllegriaDiBiase where
   getAbilities (AbbessAllegriaDiBiase attrs) =
-    [ restrictedAbility
-        attrs
-        1
+    [ restricted
         ( AnyCriterion
             [ OnSameLocation <> LocationExists AccessibleLocation
             , LocationExists $
@@ -33,8 +31,10 @@ instance HasAbilities AbbessAllegriaDiBiase where
                     (locationWithAsset $ toId attrs)
             ]
         )
-        $ FastAbility
-        $ ExhaustCost (toTarget attrs)
+        $ fastAbility
+          attrs
+          1
+          (ExhaustCost $ toTarget attrs)
     ]
 
 instance RunMessage AbbessAllegriaDiBiase where

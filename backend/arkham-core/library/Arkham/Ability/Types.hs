@@ -22,7 +22,7 @@ data Ability = Ability
   , abilityLimit :: AbilityLimit
   , abilityWindow :: WindowMatcher
   , abilityMetadata :: Maybe AbilityMetadata
-  , abilityCriteria :: Maybe Criterion
+  , abilityCriteria :: Criterion
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
@@ -54,7 +54,7 @@ abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
 abilityTooltipL :: Lens' Ability (Maybe Text)
 abilityTooltipL = lens abilityTooltip $ \m x -> m {abilityTooltip = x}
 
-abilityCriteriaL :: Lens' Ability (Maybe Criterion)
+abilityCriteriaL :: Lens' Ability Criterion
 abilityCriteriaL = lens abilityCriteria $ \m x -> m {abilityCriteria = x}
 
 abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool

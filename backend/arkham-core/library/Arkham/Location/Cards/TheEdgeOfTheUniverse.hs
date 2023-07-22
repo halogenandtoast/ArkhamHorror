@@ -37,12 +37,9 @@ instance HasAbilities TheEdgeOfTheUniverse where
     flip map actions $ \action -> case abilityType action of
       ActionAbility (Just Action.Move) _ ->
         action
-          { abilityCriteria =
-              Just $
-                fromMaybe mempty (abilityCriteria action)
-                  <> InvestigatorExists
-                    (You <> InvestigatorWithClues (AtLeast $ Static 2))
-          }
+          & abilityCriteriaL
+          <>~ InvestigatorExists
+            (You <> InvestigatorWithClues (AtLeast $ Static 2))
       _ -> action
 
 instance RunMessage TheEdgeOfTheUniverse where

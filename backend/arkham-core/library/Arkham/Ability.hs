@@ -20,7 +20,7 @@ import Arkham.Source
 import Control.Lens (set)
 
 inHandAbility :: Ability -> Bool
-inHandAbility = maybe False inHandCriteria . abilityCriteria
+inHandAbility = inHandCriteria . abilityCriteria
  where
   inHandCriteria = \case
     InYourHand -> True
@@ -73,12 +73,16 @@ withTooltip t a = a & abilityTooltipL ?~ t
 restrictedAbility
   :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
-  (mkAbility entity idx type') {abilityCriteria = Just restriction}
+  (mkAbility entity idx type') {abilityCriteria = restriction}
+
+fastAbility :: Sourceable a => a -> Int -> Cost -> Ability
+fastAbility entity idx cost = mkAbility entity idx (FastAbility cost)
+
+restricted :: Criterion -> Ability -> Ability
+restricted criteria = abilityCriteriaL .~ criteria
 
 withCriteria :: Criterion -> Ability -> Ability
-withCriteria c ab = case abilityCriteria ab of
-  Nothing -> ab {abilityCriteria = Just c}
-  Just c' -> ab {abilityCriteria = Just (c <> c')}
+withCriteria c = abilityCriteriaL <>~ c
 
 haunted :: Sourceable a => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
@@ -102,7 +106,7 @@ mkAbility entity idx type' =
     , abilityLimit = defaultAbilityLimit type'
     , abilityWindow = defaultAbilityWindow type'
     , abilityMetadata = Nothing
-    , abilityCriteria = Nothing
+    , abilityCriteria = NoRestriction
     , abilityDoesNotProvokeAttacksOfOpportunity = False
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
@@ -114,7 +118,7 @@ applyAbilityModifiers a@Ability {abilityType} modifiers =
 
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
 overrideAbilityCriteria (CriteriaOverride override) ab =
-  ab {abilityCriteria = Just override}
+  ab {abilityCriteria = override}
 
 isSilentForcedAbility :: Ability -> Bool
 isSilentForcedAbility Ability {abilityType} =

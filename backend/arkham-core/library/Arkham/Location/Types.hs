@@ -276,25 +276,13 @@ locationResignAction attrs =
     (mkAbility attrs 99 $ ActionAbility (Just Action.Resign) (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
-toLocationAbility attrs ability =
-  ability
-    { abilityCriteria =
-        Just
-          ( fromMaybe mempty (abilityCriteria ability)
-              <> OnLocation (LocationWithId $ toId attrs)
-          )
-    }
+toLocationAbility attrs =
+  abilityCriteriaL <>~ OnLocation (LocationWithId $ toId attrs)
 
 locationAbility :: Ability -> Ability
 locationAbility ability = case abilitySource ability of
   LocationSource lid ->
-    ability
-      { abilityCriteria =
-          Just
-            ( fromMaybe mempty (abilityCriteria ability)
-                <> OnLocation (LocationWithId lid)
-            )
-      }
+    ability & abilityCriteriaL <>~ OnLocation (LocationWithId lid)
   _ -> ability
 
 on :: InvestigatorId -> LocationAttrs -> Bool

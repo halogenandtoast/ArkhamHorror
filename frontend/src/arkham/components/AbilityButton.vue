@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import type { ComputedRef } from 'vue';
 import type { Cost } from '@/arkham/types/Cost';
 import type { AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Message';
+import type { Ability } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
 
 export interface Props {
@@ -11,7 +11,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const ability: ComputedRef<AbilityLabel> = computed(() => props.ability.ability)
+const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
 const isAction = (action: string) => {
   if (props.ability.tag === MessageType.EVADE_LABEL) {
@@ -21,12 +21,16 @@ const isAction = (action: string) => {
     return action === "Fight"
   }
 
-  const {tag} = ability.value.type
-  if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
-    return false
+  if (ability.value) {
+    const {tag} = ability.value.type
+    if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
+      return false
+    }
+    const maction = ability.value.type.action
+    return maction === action
   }
-  const maction = ability.value.type.action
-  return maction === action
+
+  return false
 }
 
 function totalActionCost(cost: Cost) {
@@ -148,7 +152,7 @@ const abilityLabel = computed(() => {
     return ""
   }
 
-  if (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill") {
+  if (ability.value && (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill")) {
     const { action } = ability.value.type
     if (action) {
       return action
@@ -181,13 +185,13 @@ const classObject = computed(() => {
 </script>
 
 <template>
-    <button
-      v-if="display"
-      class="button"
-      :class="classObject"
-      @click="$emit('choose', ability)"
-      v-tooltip="tooltip"
-      >{{abilityLabel}}</button>
+  <button
+    v-if="display"
+    class="button"
+    :class="classObject"
+    @click="$emit('choose', ability)"
+    v-tooltip="tooltip"
+    >{{abilityLabel}}</button>
 </template>
 
 <style lang="scss" scoped>

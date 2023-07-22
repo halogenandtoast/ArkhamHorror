@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
-import { useUserStore } from '@/stores/user';
-import { useRouter } from 'vue-router';
-import type { User } from '@/types';
-import md5 from 'md5';
+import { computed } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
+import type { User } from '@/types'
+import md5 from 'md5'
 
 const router = useRouter()
 const store = useUserStore()
@@ -11,11 +11,11 @@ const currentUser = computed<User | null>(() => store.getCurrentUser)
 const gravatar = computed(() => {
   const user = currentUser.value
   if (user) {
-    const hash = md5(user.email.trim().toLowerCase());
-    return `https://www.gravatar.com/avatar/${hash}?d=retro&s=22`;
+    const hash = md5(user.email.trim().toLowerCase())
+    return `https://www.gravatar.com/avatar/${hash}?d=retro&s=22`
   }
 
-  return null
+  return "https://www.gravatar.com/avatar/?d=identicon"
 })
 
 async function logout() {

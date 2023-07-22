@@ -1,21 +1,23 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const posX = ref(0)
 const posY = ref(0)
 const width = ref(0)
 const height = ref(0)
 
-function drag(e) {
-  if (e.target.tagName === "HEADER") {
-    const parent = e.target.parentNode;
-    e.preventDefault()
-    posX.value = e.clientX
-    posY.value = e.clientY
-    width.value = parent.width
-    height.value = parent.height
-    document.onmouseup = stopDrag
-    document.onmousemove = elementDrag(parent)
+function drag(e: MouseEvent) {
+  if (e.target instanceof HTMLElement && e.target.tagName === "HEADER") {
+    const parent = e.target.parentElement
+    if(parent) {
+      e.preventDefault()
+      posX.value = e.clientX
+      posY.value = e.clientY
+      width.value = parent.offsetWidth
+      height.value = parent.offsetHeight
+      document.onmouseup = stopDrag
+      document.onmousemove = elementDrag(parent)
+    }
   }
 }
 
@@ -24,8 +26,8 @@ function stopDrag() {
   document.onmousemove = null
 }
 
-function elementDrag(el) {
-  return (e) => {
+function elementDrag(el: HTMLElement) {
+  return (e: MouseEvent) => {
     e.preventDefault()
     const x = posX.value - e.clientX
     const y = posY.value - e.clientY

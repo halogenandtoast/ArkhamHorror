@@ -75,8 +75,24 @@ restrictedAbility
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') {abilityCriteria = restriction}
 
-fastAbility :: Sourceable a => a -> Int -> Cost -> Ability
-fastAbility entity idx cost = mkAbility entity idx (FastAbility cost)
+fastAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+fastAbility entity idx cost criteria =
+  (mkAbility entity idx (FastAbility cost))
+    { abilityCriteria = criteria
+    }
+
+reactionAbility
+  :: Sourceable a
+  => a
+  -> Int
+  -> Cost
+  -> WindowMatcher
+  -> Criterion
+  -> Ability
+reactionAbility entity idx cost window criteria =
+  (mkAbility entity idx (ReactionAbility window cost))
+    { abilityCriteria = criteria
+    }
 
 restricted :: Criterion -> Ability -> Ability
 restricted criteria = abilityCriteriaL .~ criteria

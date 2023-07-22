@@ -1,10 +1,6 @@
 module Arkham.Campaigns.TheDunwichLegacy.CampaignSteps where
 
-import Arkham.Prelude
-
-import Arkham.Campaign.Types
 import Arkham.CampaignStep
-import Arkham.Resolution
 
 pattern ExtracurricularActivity :: CampaignStep
 pattern ExtracurricularActivity <- ScenarioStep "02041"

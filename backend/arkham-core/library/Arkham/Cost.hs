@@ -139,6 +139,9 @@ data Cost
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
   deriving stock (Show, Eq, Ord)
 
+exhaust :: Targetable a => a -> Cost
+exhaust = ExhaustCost . toTarget
+
 data DynamicUseCostValue = DrawnCardsValue
   deriving stock (Show, Eq, Ord)
 

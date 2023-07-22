@@ -37,15 +37,11 @@ instance RunMessage AceOfRods1 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ RemoveFromGame (toTarget attrs)
-        , createCardEffect
-            Cards.aceOfRods1
-            Nothing
-            (toSource attrs)
-            (InvestigatorTarget iid)
+        , createCardEffect Cards.aceOfRods1 Nothing attrs iid
         ]
       pure a
     InHand _ (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
-      push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
+      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
       pure a
     _ -> AceOfRods1 <$> runMessage msg attrs
 
@@ -63,13 +59,13 @@ aceOfRods1Effect =
 
 instance HasModifiersFor AceOfRods1Effect where
   getModifiersFor target (AceOfRods1Effect (a `With` meta))
-    | target == effectTarget a && active meta =
-        pure $
-          toModifiers a [SkillModifier sType 2 | sType <- allSkills]
+    | target == effectTarget a
+    , active meta =
+        pure $ toModifiers a [SkillModifier sType 2 | sType <- allSkills]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AceOfRods1Effect where
-  runMessage msg e@(AceOfRods1Effect (attrs@EffectAttrs {..} `With` meta)) =
+  runMessage msg e@(AceOfRods1Effect (attrs `With` meta)) =
     case msg of
       CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == toId attrs -> do
         push
@@ -78,13 +74,13 @@ instance RunMessage AceOfRods1Effect where
             "Use Ace of Rods (1) extra action with +2 to each skill"
           $ toId attrs
         pure e
-      UseEffectAction iid eid _ | eid == effectId -> do
+      UseEffectAction iid eid _ | eid == toId attrs -> do
         push $ GainActions iid (toSource attrs) 1
         pure $ AceOfRods1Effect (attrs `with` Meta True)
       FinishAction -> do
-        when (active meta) $ push $ DisableEffect effectId
+        pushWhen (active meta) $ disableEffect attrs
         pure e
-      EndTurn iid | InvestigatorTarget iid == effectTarget -> do
-        push $ DisableEffect effectId
+      EndTurn iid | toTarget iid == effectTarget attrs -> do
+        push $ disableEffect attrs
         pure e
       _ -> AceOfRods1Effect . (`with` meta) <$> runMessage msg attrs

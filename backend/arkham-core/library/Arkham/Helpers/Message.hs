@@ -21,7 +21,7 @@ import Arkham.Resolution
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), WindowType)
+import Arkham.Window (Window (..), WindowType, defaultWindows)
 import Arkham.Zone
 
 drawCards
@@ -201,3 +201,6 @@ placeLabeledLocations :: Text -> [CardDef] -> GameT ([LocationId], [Message])
 placeLabeledLocations lbl cards = fmap fold . concatForM (withIndex1 cards) $ \(idx, card) -> do
   (location, placement) <- placeLocationCard card
   pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
+
+putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
+putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing (defaultWindows iid)

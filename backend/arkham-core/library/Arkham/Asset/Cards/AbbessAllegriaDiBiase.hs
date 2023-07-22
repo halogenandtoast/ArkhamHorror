@@ -17,42 +17,29 @@ newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase
-abbessAllegriaDiBiase =
-  ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
+abbessAllegriaDiBiase = ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
 instance HasAbilities AbbessAllegriaDiBiase where
   getAbilities (AbbessAllegriaDiBiase attrs) =
-    [ restricted
-        ( AnyCriterion
-            [ OnSameLocation <> LocationExists AccessibleLocation
-            , LocationExists $
-                YourLocation
-                  <> ConnectedTo
-                    (locationWithAsset $ toId attrs)
-            ]
-        )
-        $ fastAbility
-          attrs
-          1
-          (ExhaustCost $ toTarget attrs)
+    [ fastAbility attrs 1 (exhaust attrs) $
+        AnyCriterion
+          [ OnSameLocation <> LocationExists AccessibleLocation
+          , LocationExists $ YourLocation <> ConnectedTo (locationWithAsset attrs)
+          ]
     ]
 
 instance RunMessage AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      locationId <- getJustLocation iid
-      abbessLocationId <- fieldJust AssetLocation (toId attrs)
-      if locationId == abbessLocationId
+      location <- getJustLocation iid
+      abbessLocation <- fieldJust AssetLocation attrs
+      if location == abbessLocation
         then do
-          connectedLocationIds <- selectList $ accessibleFrom locationId
-          push $
-            chooseOrRunOne
-              iid
-              [ targetLabel
-                connectedLocationId
-                [MoveAction iid connectedLocationId Free False]
-              | connectedLocationId <- connectedLocationIds
-              ]
-        else push $ MoveAction iid abbessLocationId Free False
+          connectedLocations <- selectList $ accessibleFrom location
+          push . chooseOrRunOne iid $
+            [ targetLabel connectedLocation [MoveAction iid connectedLocation Free False]
+            | connectedLocation <- connectedLocations
+            ]
+        else push $ MoveAction iid abbessLocation Free False
       pure a
     _ -> AbbessAllegriaDiBiase <$> runMessage msg attrs

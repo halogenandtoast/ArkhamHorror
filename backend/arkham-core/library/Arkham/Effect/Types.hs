@@ -42,6 +42,10 @@ data instance Field Effect :: Type -> Type where
 cardEffect :: (EffectAttrs -> a) -> CardDef -> EffectArgs -> a
 cardEffect f def = f . uncurry4 (baseAttrs (toCardCode def))
 
+instance AsId EffectAttrs where
+  type IdOf EffectAttrs = EffectId
+  asId = toId
+
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
   , effectCardCode :: CardCode
@@ -154,3 +158,6 @@ instance Sourceable Effect where
   isSource = isSource . toAttrs
 
 data SomeEffect = forall a. IsEffect a => SomeEffect (EffectArgs -> a)
+
+disableEffect :: (AsId a, IdOf a ~ EffectId) => a -> Message
+disableEffect = DisableEffect . asId

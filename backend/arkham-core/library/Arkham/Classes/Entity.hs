@@ -7,8 +7,6 @@ import Arkham.Prelude hiding (to)
 import Arkham.ChaosToken
 import Arkham.Target
 
-type family IdOf a
-
 class Entity a where
   type EntityId a
   type EntityAttrs a

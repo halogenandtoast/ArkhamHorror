@@ -30,11 +30,11 @@ instance HasModifiersFor AceOfSwords1 where
 
 instance HasAbilities AceOfSwords1 where
   getAbilities (AceOfSwords1 a) =
-    [restrictedAbility a 1 InYourHand $ ReactionAbility (GameBegins Timing.When) Free]
+    [reactionAbility a 1 Free (GameBegins Timing.When) InYourHand]
 
 instance RunMessage AceOfSwords1 where
   runMessage msg a@(AceOfSwords1 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> AceOfSwords1 <$> runMessage msg attrs

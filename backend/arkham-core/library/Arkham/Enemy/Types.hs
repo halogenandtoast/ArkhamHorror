@@ -228,8 +228,6 @@ instance Sourceable EnemyAttrs where
 
 data Enemy = forall a. IsEnemy a => Enemy a
 
-type instance IdOf EnemyId = Enemy
-
 instance Eq Enemy where
   Enemy (a :: a) == Enemy (b :: b) = case eqT @a @b of
     Just Refl -> a == b

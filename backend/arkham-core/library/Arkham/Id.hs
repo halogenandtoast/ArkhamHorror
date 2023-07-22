@@ -53,3 +53,39 @@ newtype TokenId = TokenId {unTokenId :: UUID}
 
 newtype CardDrawId = CardDrawId UUID
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
+
+class AsId a where
+  type IdOf a
+  asId :: a -> IdOf a
+
+instance AsId InvestigatorId where
+  type IdOf InvestigatorId = InvestigatorId
+  asId = id
+
+instance AsId AssetId where
+  type IdOf AssetId = AssetId
+  asId = id
+
+instance AsId EventId where
+  type IdOf EventId = EventId
+  asId = id
+
+instance AsId SkillId where
+  type IdOf SkillId = SkillId
+  asId = id
+
+instance AsId EnemyId where
+  type IdOf EnemyId = EnemyId
+  asId = id
+
+instance AsId LocationId where
+  type IdOf LocationId = LocationId
+  asId = id
+
+instance AsId TreacheryId where
+  type IdOf TreacheryId = TreacheryId
+  asId = id
+
+instance AsId EffectId where
+  type IdOf EffectId = EffectId
+  asId = id

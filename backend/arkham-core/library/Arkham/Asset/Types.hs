@@ -31,6 +31,14 @@ import Data.Typeable
 
 data Asset = forall a. IsAsset a => Asset a
 
+instance AsId Asset where
+  type IdOf Asset = AssetId
+  asId = toId
+
+instance AsId AssetAttrs where
+  type IdOf AssetAttrs = AssetId
+  asId = toId
+
 instance Eq Asset where
   Asset (a :: a) == Asset (b :: b) = case eqT @a @b of
     Just Refl -> a == b

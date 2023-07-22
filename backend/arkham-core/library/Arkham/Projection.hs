@@ -8,16 +8,17 @@ import Arkham.Prelude
 import Arkham.Classes.Entity
 import Arkham.Field as X
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 
 class Projection a where
   field :: (HasCallStack, HasGame m) => Field a typ -> EntityId a -> m typ
 
 fieldJust
-  :: (HasCallStack, Projection a, HasGame m, Show (Field a (Maybe typ)))
+  :: (HasCallStack, Projection a, HasGame m, Show (Field a (Maybe typ)), AsId b, IdOf b ~ EntityId a)
   => Field a (Maybe typ)
-  -> EntityId a
+  -> b
   -> m typ
-fieldJust fld entityId = fromJustNote missingField <$> field fld entityId
+fieldJust fld (asId -> entityId) = fromJustNote missingField <$> field fld entityId
  where
   missingField = "Maybe field " <> show fld <> " was Nothing"
 

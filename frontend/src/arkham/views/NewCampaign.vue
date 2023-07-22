@@ -7,7 +7,7 @@ import * as Arkham from '@/arkham/types/Deck'
 import { fetchDecks, newGame } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import type { Difficulty } from '@/arkham/types/Difficulty'
-import type { StandaloneSetting } from '@/types/StandaloneSetting'
+import type { StandaloneSetting } from '@/arkham/types/StandaloneSetting'
 import {
   CampaignLogSettings,
   CampaignOption,
@@ -79,8 +79,8 @@ type MultiplayerVariant = 'WithFriends' | 'TrueSolo'
 const selectedDifficulty = ref<Difficulty>('Easy')
 const deckIds = ref<(string | null)[]>([null, null, null, null])
 const fullCampaign = ref(true)
-const selectedCampaign = ref('01')
-const selectedScenario = ref('81001')
+const selectedCampaign = ref<string | null>(null)
+const selectedScenario = ref<string | null>(null)
 const campaignName = ref<string | null>(null)
 const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
@@ -90,7 +90,7 @@ const campaignScenarios = computed(() => selectedCampaign.value
   : []
 )
 
-const selectCampaign = (campaignId) => {
+const selectCampaign = (campaignId: string) => {
   selectedCampaign.value = campaignId,
   selectedScenario.value = null
 }
@@ -105,7 +105,7 @@ fetchDecks().then((result) => {
   ready.value = true;
 })
 
-async function addDeck(d) {
+async function addDeck(d: Arkham.Deck) {
   decks.value = [d]
   deckIds.value[0] = d.id
 }

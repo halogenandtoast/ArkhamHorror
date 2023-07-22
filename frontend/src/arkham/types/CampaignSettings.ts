@@ -1,5 +1,13 @@
 export type Resolution = { resolution: string, settings: CampaignOption[] }
-export type CampaignScenario = { key: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[], settings: CampaignSetting[], resolutions?: Resolution[] }
+
+export type CampaignScenario = {
+  key: string,
+  ifRecorded?: SettingCondition[],
+  anyRecorded?: SettingCondition[],
+  settings: CampaignSetting[],
+  resolutions?: Resolution[],
+  force?: { scenarioId: string }
+}
 
 type RecordableEntry =
   { tag: "Recorded", value: string } |
@@ -39,6 +47,7 @@ export type ForceKey = { type: "key", key: string, scope?: string } | { type: "o
 
 
 export type ChooseKey = { key: string, forceWhen?: ForceKey }
+export type ChooseOption = { key: string }
 
 export type CampaignSetting =
   { type: "CrossOut", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
@@ -47,6 +56,7 @@ export type CampaignSetting =
   { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
   { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "Option", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseOption", key: string, content: ChooseOption[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "SetRecordable", key: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "Record", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |

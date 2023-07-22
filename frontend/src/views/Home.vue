@@ -6,8 +6,8 @@ import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
 import Prompt from '@/components/Prompt.vue'
 import type { Game } from '@/arkham/types/Game';
 import type { User } from '@/types';
-import GameRow from '@/arkham/components/GameRow';
-import NewGame from '@/arkham/views/NewCampaign';
+import GameRow from '@/arkham/components/GameRow.vue';
+import NewGame from '@/arkham/views/NewCampaign.vue';
 
 const route = useRoute()
 const router = useRouter()

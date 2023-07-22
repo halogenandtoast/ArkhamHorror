@@ -15,7 +15,7 @@ const props = defineProps<Props>()
 const isActive = computed(() => props.selectedTab == props.index)
 </script>
 
-<template lang="html">
+<template>
   <div class='tab' v-show='isActive'>
     <slot></slot>
   </div>

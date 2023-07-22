@@ -3,13 +3,13 @@ import type { Game } from '@/arkham/types/Game';
 import type { PlayerCard } from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 
-export instance Props {
+export interface Props {
   game: Game
   investigatorId: string
   cards: PlayerCard[]
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 </script>
 
 <template>

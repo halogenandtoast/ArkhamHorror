@@ -1,3 +1,4 @@
+import './assets/main.scss'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import FloatingVue from 'floating-vue'

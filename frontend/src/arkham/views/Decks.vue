@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import * as Arkham from '@/arkham/types/Deck'
 import Prompt from '@/components/Prompt.vue'
 import { fetchDecks, deleteDeck, syncDeck } from '@/arkham/api'
-import NewDeck from '@/arkham/components/NewDeck';
+import NewDeck from '@/arkham/components/NewDeck.vue';
 import {imgsrc} from '@/arkham/helpers';
 import { useToast } from "vue-toastification";
 

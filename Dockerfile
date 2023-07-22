@@ -4,21 +4,20 @@ FROM node:lts as frontend
 
 ENV LC_ALL=C.UTF-8
 
-RUN npm install --location=global @vue/cli
+RUN npm install --location=global vite
 
 RUN mkdir -p /opt/arkham/src/frontend
 
-# ENV VUE_APP_API_HOST "https://arkham-horror-api.herokuapp.com"
-
 WORKDIR /opt/arkham/src/frontend
 COPY ./frontend/package.json /opt/arkham/src/frontend/package.json
-COPY ./frontend/babel.config.js /opt/arkham/src/frontend/babel.config.js
 COPY ./frontend/tsconfig.json /opt/arkham/src/frontend/tsconfig.json
+COPY ./frontend/vite.config.js /opt/arkham/src/frontend/vite.config.js
+COPY ./frontend/.eslintrc.cjs /opt/arkham/src/frontend/.eslintrc.cjs
 COPY ./frontend/package-lock.json /opt/arkham/src/frontend/package-lock.json
 RUN npm ci
 WORKDIR /opt/arkham/src/frontend
 COPY ./frontend /opt/arkham/src/frontend
-ENV VUE_APP_ASSET_HOST ${ASSET_HOST:-""}
+ENV VITE_ASSET_HOST ${ASSET_HOST:-""}
 RUN npm run build
 
 FROM ubuntu:22.04 as base

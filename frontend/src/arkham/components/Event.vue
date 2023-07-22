@@ -6,7 +6,7 @@ import { Message, MessageType } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import Token from '@/arkham/components/Token';
+import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Event';
 
 export interface Props {

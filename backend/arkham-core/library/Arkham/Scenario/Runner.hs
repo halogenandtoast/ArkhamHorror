@@ -99,9 +99,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     standalone <- getIsStandalone
     when standalone $ do
       lead <- getLead
-      pushAll $
-        map HandleOption (toList $ campaignLogOptions scenarioStandaloneCampaignLog)
-          <> [Ask lead PickScenarioSettings, StartScenario scenarioId]
+      pushAll [Ask lead PickScenarioSettings, StartScenario scenarioId]
     pure a
   InitDeck iid deck -> do
     standalone <- getIsStandalone
@@ -919,7 +917,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetCampaignLog newLog -> do
     isStandalone <- getIsStandalone
     if isStandalone
-      then pure $ a & standaloneCampaignLogL .~ newLog
+      then do
+        pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
+        pure $ a & standaloneCampaignLogL .~ newLog
       else pure a
   Record key -> do
     isStandalone <- getIsStandalone

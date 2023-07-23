@@ -30,8 +30,9 @@ import Data.Map.Strict qualified as Map
 defaultCampaignRunner :: IsCampaign a => Runner a
 defaultCampaignRunner msg a = case msg of
   StartCampaign -> do
+    lead <- getLead
     pushAll $
-      map HandleOption (toList $ campaignLogOptions $ campaignLog $ toAttrs a)
+      [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep]
         <> [CampaignStep $ campaignStep $ toAttrs a]
     pure a
   CampaignStep (ScenarioStep sid) -> do
@@ -208,6 +209,7 @@ defaultCampaignRunner msg a = case msg of
     pure $
       updateAttrs a $ \attrs ->
         attrs & (stepL %~ maybe id const mstep) & (completedStepsL %~ completeStep (campaignStep attrs))
-  SetCampaignLog log -> do
-    pure $ updateAttrs a $ logL .~ log
+  SetCampaignLog newLog -> do
+    pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
+    pure $ updateAttrs a $ logL .~ newLog
   _ -> pure a

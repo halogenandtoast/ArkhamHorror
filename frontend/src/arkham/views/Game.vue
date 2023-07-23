@@ -11,6 +11,7 @@ import Scenario from '@/arkham/components/Scenario.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
+import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
 import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
 
@@ -165,8 +166,16 @@ const { copy } = useClipboard({ source })
     </div>
     <template v-else>
       <div class="game-main">
+        <CampaignSettings
+          v-if="game.campaign && !gameOver && question.tag === 'PickCampaignSettings'"
+          :game="game"
+          :campaign="game.campaign"
+          :investigatorId="investigatorId"
+          @choose="choose"
+          @update="update"
+        />
         <Campaign
-          v-if="game.campaign"
+          v-else-if="game.campaign"
           :game="game"
           :gameLog="gameLog"
           :investigatorId="investigatorId"
@@ -174,12 +183,12 @@ const { copy } = useClipboard({ source })
           @update="update"
         />
         <ScenarioSettings
-            v-else-if="game.scenario && !gameOver && question.tag === 'PickScenarioSettings'"
-            :game="game"
-            :scenario="game.scenario"
-            :investigatorId="investigatorId"
-            @choose="choose"
-            @update="update"
+          v-else-if="game.scenario && !gameOver && question.tag === 'PickScenarioSettings'"
+          :game="game"
+          :scenario="game.scenario"
+          :investigatorId="investigatorId"
+          @choose="choose"
+          @update="update"
         />
         <Scenario
           v-else-if="game.scenario && !gameOver"

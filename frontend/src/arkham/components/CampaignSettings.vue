@@ -23,7 +23,6 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-defineEmits(['update', 'choose'])
 
 const campaignLog = ref<CampaignLogSettings>({
   keys: [],

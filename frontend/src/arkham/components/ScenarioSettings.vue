@@ -11,8 +11,6 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-defineEmits(['update', 'choose'])
-
 const standaloneSettings = ref<StandaloneSetting[]>([])
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value

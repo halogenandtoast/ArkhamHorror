@@ -5,8 +5,8 @@ import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
-import api from '@/api';
-import CardOverlay from '@/arkham/components/CardOverlay.vue';
+import api from '@/api'
+import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import Scenario from '@/arkham/components/Scenario.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
@@ -20,32 +20,38 @@ export interface Props {
   spectate?: boolean
 }
 
+const source = ref(`${window.location.href}/join`) // fix-syntax`
+
 const props = withDefaults(defineProps<Props>(), { spectate: false })
 
+const route = useRoute()
 const store = useCardStore()
+const { copy } = useClipboard({ source })
+
+const spectate = route.fullPath.endsWith('/spectate')
+const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
+const spectatePrefix = spectate ? "/spectate" : ""
+
+const socketError = ref(false)
+const onError = () => socketError.value = true
+const onConnected = () => socketError.value = false
+const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.
+  replace(/https/, 'wss').
+  replace(/http/, 'ws')
+const { data, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
+
+onBeforeRouteLeave(() => close())
+onUnmounted(() => close())
+
 store.fetchCards()
 const cards = computed(() => store.cards)
 
 const debug = ref(false)
-provide('debug', debug)
 const ready = ref(false)
 const solo = ref(false)
-const socketError = ref(false)
 const game = ref<Arkham.Game | null>(null)
 const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
-
-const route = useRoute()
-const spectate = route.fullPath.endsWith('/spectate')
-
-const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-const spectatePrefix = spectate ? "/spectate" : ""
-const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.replace(/https/, 'wss').replace(/http/, 'ws')
-
-const onError = () => socketError.value = true
-const onConnected = () => socketError.value = false
-
-const { data, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
 
 const question = computed(() => game.value.question[investigatorId.value])
 
@@ -59,7 +65,7 @@ watch(data, (newData) => {
   if (msg.tag === "GameUpdate") {
     Arkham.gameDecoder.decodeToPromise(msg.contents)
       .then((updatedGame) => {
-        game.value = updatedGame;
+        game.value = updatedGame
         gameLog.value = Object.freeze([...updatedGame.log])
         if (solo.value === true) {
           if (Object.keys(game.value.question).length == 1) {
@@ -69,21 +75,21 @@ watch(data, (newData) => {
           }
         }
 
-      });
+      })
   }
 }, [data])
 
 fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
-  game.value = newGame;
-  solo.value = multiplayerMode === "Solo";
-  gameLog.value = Object.freeze(newGame.log);
-  investigatorId.value = newInvestigatorId;
-  ready.value = true;
-});
+  game.value = newGame
+  solo.value = multiplayerMode === "Solo"
+  gameLog.value = Object.freeze(newGame.log)
+  investigatorId.value = newInvestigatorId
+  ready.value = true
+})
 
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !spectate) {
-    updateGame(props.gameId, idx, investigatorId.value);
+    updateGame(props.gameId, idx, investigatorId.value)
   }
 }
 
@@ -93,57 +99,49 @@ async function choosePaymentAmounts(amounts: Record<string, number>): Promise<vo
   }
 }
 
-provide('choosePaymentAmounts', choosePaymentAmounts)
-
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !spectate) {
     updateGameAmounts(props.gameId, amounts)
   }
 }
 
-provide('chooseAmounts', chooseAmounts)
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const debugChoose = async (message: any) => updateGameRaw(props.gameId, message)
-provide('debugChoose', debugChoose)
+async function debugChoose (message: any) { updateGameRaw(props.gameId, message) }
 
-const switchInvestigator = (newInvestigatorId: string) => investigatorId.value = newInvestigatorId
-provide('switchInvestigator', switchInvestigator)
-provide('solo', solo)
+function switchInvestigator (newInvestigatorId: string) { investigatorId.value = newInvestigatorId }
 
-async function update(state: Arkham.Game) {
-  game.value = state;
-}
+async function update(state: Arkham.Game) { game.value = state }
 
-onBeforeRouteLeave(() => close())
-onUnmounted(() => close())
+function toggleDebug() { debug.value = !debug.value }
 
-const toggleDebug = () => debug.value = !debug.value
-
-const debugExport = () => {
+function debugExport () {
   fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
   .then(resp => resp.blob())
   .then(blob => {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = url
     // the filename you want
-    a.download = 'arkham-debug.json';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
+    a.download = 'arkham-debug.json'
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
   })
   .catch((e) => {
     console.log(e)
     alert('Unable to download export')
-  });
+  })
 }
 
 const gameOver = computed(() => game.value.gameState.tag === "IsOver")
 
-const source = ref(`${window.location.href}/join`) // fix-syntax`
-const { copy } = useClipboard({ source })
+provide('debug', debug)
+provide('choosePaymentAmounts', choosePaymentAmounts)
+provide('chooseAmounts', chooseAmounts)
+provide('debugChoose', debugChoose)
+provide('switchInvestigator', switchInvestigator)
+provide('solo', solo)
 </script>
 
 <template>
@@ -171,8 +169,6 @@ const { copy } = useClipboard({ source })
           :game="game"
           :campaign="game.campaign"
           :investigatorId="investigatorId"
-          @choose="choose"
-          @update="update"
         />
         <Campaign
           v-else-if="game.campaign"
@@ -187,8 +183,6 @@ const { copy } = useClipboard({ source })
           :game="game"
           :scenario="game.scenario"
           :investigatorId="investigatorId"
-          @choose="choose"
-          @update="update"
         />
         <Scenario
           v-else-if="game.scenario && !gameOver"

@@ -275,7 +275,6 @@ data CreateGamePost = CreateGamePost
   , difficulty :: Difficulty
   , campaignName :: Text
   , multiplayerVariant :: MultiplayerVariant
-  , campaignLog :: Maybe CampaignSettings
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -357,10 +356,9 @@ postApiV1ArkhamGamesR = do
   now <- liftIO getCurrentTime
   case campaignId of
     Just cid -> do
-      let campaignLog' = makeCampaignLog <$> campaignLog
       (queueRef, game) <-
         liftIO $
-          newCampaign cid scenarioId newGameSeed playerCount decks difficulty campaignLog'
+          newCampaign cid scenarioId newGameSeed playerCount decks difficulty
       gameRef <- newIORef game
       runGameApp
         (GameApp gameRef queueRef genRef $ pure . const ())
@@ -382,7 +380,7 @@ postApiV1ArkhamGamesR = do
       Just sid -> do
         (queueRef, game) <-
           liftIO $
-            newScenario sid newGameSeed playerCount decks difficulty Nothing
+            newScenario sid newGameSeed playerCount decks difficulty
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
@@ -408,6 +406,7 @@ data Answer
   | PaymentAmountsAnswer PaymentAmountsResponse
   | AmountsAnswer AmountsResponse
   | StandaloneSettingsAnswer [StandaloneSetting]
+  | CampaignSettingsAnswer CampaignSettings
   deriving stock (Generic)
   deriving anyclass (FromJSON)
 
@@ -576,12 +575,16 @@ answerInvestigator = \case
   AmountsAnswer _ -> Nothing
   PaymentAmountsAnswer _ -> Nothing
   StandaloneSettingsAnswer _ -> Nothing
+  CampaignSettingsAnswer _ -> Nothing
 
 handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
 handleAnswer Game {..} investigatorId = \case
   StandaloneSettingsAnswer settings' ->
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
     in  [SetCampaignLog standaloneCampaignLog]
+  CampaignSettingsAnswer settings' ->
+    let campaignLog' = makeCampaignLog settings'
+    in  [SetCampaignLog campaignLog']
   AmountsAnswer response -> case Map.lookup investigatorId gameQuestion of
     Just (ChooseAmounts _ _ _ target) ->
       [ ResolveAmounts

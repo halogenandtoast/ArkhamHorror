@@ -37,11 +37,13 @@ export const epilogueStepDecoder = JsonDecoder.object<EpilogueStep>(
 
 export interface ScenarioStep {
   tag: 'ScenarioStep';
+  contents: string;
 }
 
 export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
   {
     tag: JsonDecoder.isExactly('ScenarioStep'),
+    contents: JsonDecoder.string
   },
   'ScenarioStep',
 );

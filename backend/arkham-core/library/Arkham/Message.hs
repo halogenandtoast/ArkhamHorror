@@ -20,6 +20,7 @@ import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
 import Arkham.Attack
 import Arkham.Campaign.Option
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -351,6 +352,7 @@ data Message
   | CreateWeaknessInThreatArea Card InvestigatorId
   | CreatedEffect EffectId (Maybe (EffectMetadata Window Message)) Source Target
   | CrossOutRecord CampaignLogKey
+  | SetCampaignLog CampaignLog
   | Damage Target Source Int
   | DeckHasNoCards InvestigatorId (Maybe Target)
   | DisableEffect EffectId

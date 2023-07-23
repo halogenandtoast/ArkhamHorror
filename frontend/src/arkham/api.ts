@@ -90,6 +90,9 @@ export const updateGameAmounts = (gameId: string, amounts: Record<string, number
 export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string): Promise<void> => api
   .put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId });
 
+export const updateStandaloneSettings = (gameId: string, settings: StandaloneSetting[]): Promise<void> => api
+  .put(`arkham/games/${gameId}`, {tag: 'StandaloneSettingsAnswer', contents: settings })
+
 export const deleteGame = (gameId: string): Promise<void> => api
   .delete(`arkham/games/${gameId}`);
 
@@ -106,7 +109,6 @@ export const newGame = (
   difficulty: Difficulty,
   campaignName: string,
   multiplayerVariant: string,
-  settings: StandaloneSetting[],
   campaignLog: CampaignLogSettings | null
 ): Promise<Game> => api
   .post('arkham/games', {
@@ -117,7 +119,6 @@ export const newGame = (
     difficulty,
     campaignName,
     multiplayerVariant,
-    settings,
     campaignLog: campaignLog !== null ? {...campaignLog, counts: Object.entries(campaignLog.counts), sets: Object.entries(campaignLog.sets), options: campaignLog.options.flatMap((o) => o.ckey ? [o.ckey] : []) } : null
   })
   .then((resp) => gameDecoder.decodeToPromise(resp.data));

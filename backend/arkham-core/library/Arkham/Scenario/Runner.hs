@@ -98,9 +98,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   StartCampaign -> do
     standalone <- getIsStandalone
     when standalone $ do
+      lead <- getLead
       pushAll $
         map HandleOption (toList $ campaignLogOptions scenarioStandaloneCampaignLog)
-          <> [StartScenario scenarioId]
+          <> [Ask lead PickScenarioSettings, StartScenario scenarioId]
     pure a
   InitDeck iid deck -> do
     standalone <- getIsStandalone
@@ -181,8 +182,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & actStackL
-        . at n
-        ?~ actStack'
+          . at n
+          ?~ actStack'
         & (completedActStackL . at n ?~ (oldAct : completedActStack))
   SetCurrentActDeck n stack@(current : _) -> do
     actIds <- selectList $ Matcher.ActWithDeckId n
@@ -313,7 +314,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & countsL
-        %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
+          %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveChaosToken _drawnToken token iid -> do
     ChaosTokenValue _ tokenModifier <- getChaosTokenValue iid token ()
     when (tokenModifier == AutoFailModifier) $ push FailSkillTest
@@ -431,7 +432,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & discardLens handler
-        %~ (ec :)
+          %~ (ec :)
         & (encounterDeckL %~ withDeck (filter (/= ec)))
         & (victoryDisplayL %~ filter (/= EncounterCard ec))
         & (setAsideCardsL %~ filter (/= EncounterCard ec))
@@ -570,10 +571,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure $
           a
             & storyCardsL
-            %~ insertWith
-              (<>)
-              iid
-              [card {pcOwner = Just iid}]
+              %~ insertWith
+                (<>)
+                iid
+                [card {pcOwner = Just iid}]
       else pure a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
@@ -915,6 +916,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetEncounterDeck encounterDeck -> pure $ a & encounterDeckL .~ encounterDeck
   RemoveAllCopiesOfCardFromGame _ cCode ->
     pure $ a & setAsideCardsL %~ filter ((/= cCode) . toCardCode)
+  SetCampaignLog newLog -> do
+    isStandalone <- getIsStandalone
+    if isStandalone
+      then pure $ a & standaloneCampaignLogL .~ newLog
+      else pure a
   Record key -> do
     isStandalone <- getIsStandalone
     pure $
@@ -936,11 +942,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & decksL
-        . at deckKey
-        ?~ deck'
+          . at deckKey
+          ?~ deck'
         & discardL
-        %~ filter
-          ((`notElem` cards) . EncounterCard)
+          %~ filter
+            ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do
     investigatorIds <-
       selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid

@@ -8,6 +8,7 @@ import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
+import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import { useCardStore } from '@/stores/cards'
@@ -44,6 +45,8 @@ const onError = () => socketError.value = true
 const onConnected = () => socketError.value = false
 
 const { data, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
+
+const question = computed(() => game.value.question[investigatorId.value])
 
 watch(data, (newData) => {
   const msg = JSON.parse(newData)
@@ -169,6 +172,14 @@ const { copy } = useClipboard({ source })
           :investigatorId="investigatorId"
           @choose="choose"
           @update="update"
+        />
+        <ScenarioSettings
+            v-else-if="game.scenario && !gameOver && question.tag === 'PickScenarioSettings'"
+            :game="game"
+            :scenario="game.scenario"
+            :investigatorId="investigatorId"
+            @choose="choose"
+            @update="update"
         />
         <Scenario
           v-else-if="game.scenario && !gameOver"

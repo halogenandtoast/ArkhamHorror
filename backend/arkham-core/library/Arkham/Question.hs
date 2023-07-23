@@ -94,6 +94,8 @@ data Question msg
   | Read {flavorText :: FlavorText, readChoices :: [UI msg]}
   | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg]}
   | DropDown {options :: [(Text, msg)]}
+  | PickScenarioSettings
+  | PickCampaignSettings
   deriving stock (Show, Eq)
 
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer

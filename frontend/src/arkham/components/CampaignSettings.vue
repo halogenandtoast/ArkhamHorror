@@ -169,7 +169,7 @@ const filterSettings = function() {
       (current, [setKey, value]) => {
         const currentSet = current[setKey]
         current[setKey] = currentSet
-          ? { ...currentSet, entries: [...currentSet.entries, ...value.entries] }
+          ? { ...currentSet, entries: [...currentSet.entries, ...value.entries].filter(onlyUnique) }
           : { recordable: t.recordable, entries: value.entries }
         return current
       },

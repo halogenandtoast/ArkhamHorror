@@ -117,7 +117,7 @@ const disabled = computed(() => {
 const defaultCampaignName = computed(() => {
   if (gameMode.value === 'Campaign' && campaign.value) {
     const returnToPrefix = returnTo.value ? "Return to " : ""
-    return `${returnToPrefix}${campaign.name}`;
+    return `${returnToPrefix}${campaign.value.name}`;
   }
 
   if (gameMode.value === 'Standalone' && scenario.value) {
@@ -131,11 +131,11 @@ const defaultCampaignName = computed(() => {
   return '';
 })
 
-const currentCampaignName = computed(() =>
-  campaignName.value !== '' && campaignName.value !== null
+const currentCampaignName = computed(() => {
+  return campaignName.value && campaignName.value !== ''
     ? campaignName.value
     : defaultCampaignName.value
-)
+})
 
 
 const scenario = computed(() =>

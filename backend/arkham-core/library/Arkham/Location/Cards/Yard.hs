@@ -25,15 +25,13 @@ yard = location Yard Cards.yard 1 (PerPlayer 1)
 
 instance HasModifiersFor Yard where
   getModifiersFor (LocationTarget lid) (Yard attrs) | lid == toId attrs = do
-    mskillTestSource <- getSkillTestSource
-    case mskillTestSource of
-      Just (SkillTestSource iid _ source (Just Action.Investigate))
-        | isSource attrs source -> do
-            horror <- field InvestigatorHorror iid
-            pure $
-              toModifiers
-                attrs
-                [ShroudModifier horror | locationRevealed attrs]
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    mInvestigator <- getSkillTestInvestigator
+    case (mAction, mSource, mInvestigator) of
+      (Just Action.Investigate, Just source, Just iid) | isSource attrs source -> do
+        horror <- field InvestigatorHorror iid
+        pure $ toModifiers attrs [ShroudModifier horror | locationRevealed attrs]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -49,7 +47,6 @@ instance HasAbilities Yard where
 
 instance RunMessage Yard where
   runMessage msg l@(Yard attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          l <$ push (Remember IncitedAFightAmongstThePatients)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      l <$ push (Remember IncitedAFightAmongstThePatients)
     _ -> Yard <$> runMessage msg attrs

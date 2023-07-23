@@ -28,20 +28,17 @@ jimCulver =
       }
 
 instance HasModifiersFor JimCulver where
-  getModifiersFor (ChaosTokenTarget token) (JimCulver attrs)
-    | chaosTokenFace token == Skull = do
-        mSkillTestSource <- getSkillTestSource
-        case mSkillTestSource of
-          Just (SkillTestSource iid _ _ _)
-            | iid == toId attrs ->
-                pure $ toModifiers attrs [ChangeChaosTokenModifier $ PositiveModifier 0]
-          _ -> pure []
+  getModifiersFor (ChaosTokenTarget (chaosTokenFace -> Skull)) (JimCulver attrs) = do
+    miid <- getSkillTestInvestigator
+    pure $ case miid of
+      Just iid | iid == toId attrs -> do
+        toModifiers attrs [ChangeChaosTokenModifier $ PositiveModifier 0]
+      _ -> []
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue JimCulver where
-  getChaosTokenValue iid ElderSign (JimCulver attrs)
-    | iid == investigatorId attrs =
-        pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
+  getChaosTokenValue iid ElderSign (JimCulver attrs) | iid == investigatorId attrs = do
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage JimCulver where

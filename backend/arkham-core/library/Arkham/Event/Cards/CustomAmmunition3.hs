@@ -25,10 +25,11 @@ customAmmunition3 = event CustomAmmunition3 Cards.customAmmunition3
 
 instance HasModifiersFor CustomAmmunition3 where
   getModifiersFor (InvestigatorTarget iid) (CustomAmmunition3 a) = do
-    mSkillTestSource <- getSkillTestSource
-    mSkillTestTarget <- getSkillTestTarget
-    case (mSkillTestSource, mSkillTestTarget) of
-      (Just (SkillTestSource _ _ (AssetSource aid) (Just Action.Fight)), Just (EnemyTarget eid))
+    mSource <- getSkillTestSource
+    mTarget <- getSkillTestTarget
+    mAction <- getSkillTestAction
+    case (mAction, mSource, mTarget) of
+      (Just Action.Fight, Just (AssetSource aid), Just (EnemyTarget eid))
         | Just (AssetTarget aid) == eventAttachedTarget a ->
             do
               isMonster <- eid <=~> EnemyWithTrait Monster

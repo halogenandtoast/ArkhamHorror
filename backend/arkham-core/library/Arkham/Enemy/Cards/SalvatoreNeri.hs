@@ -21,21 +21,20 @@ salvatoreNeri :: EnemyCard SalvatoreNeri
 salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)
 
 instance HasModifiersFor SalvatoreNeri where
-  getModifiersFor (EnemyTarget eid) (SalvatoreNeri attrs)
-    | eid == toId attrs =
-        do
-          mSkillTestSource <- getSkillTestSource
-          case mSkillTestSource of
-            Just (SkillTestSource iid _ _ (Just Action.Evade)) -> do
-              evadeValue <- getSkillValue SkillAgility iid
-              pure $ toModifiers attrs [Modifier.EnemyEvade evadeValue]
-            Just (SkillTestSource iid _ _ (Just Action.Fight)) -> do
-              fightValue <- getSkillValue SkillCombat iid
-              pure $
-                toModifiers
-                  attrs
-                  [Modifier.EnemyFight fightValue]
-            _ -> pure []
+  getModifiersFor (EnemyTarget eid) (SalvatoreNeri attrs) | eid == toId attrs = do
+    mAction <- getSkillTestAction
+    miid <- getSkillTestInvestigator
+    case (miid, mAction) of
+      (Just iid, Just Action.Evade) -> do
+        evadeValue <- getSkillValue SkillAgility iid
+        pure $ toModifiers attrs [Modifier.EnemyEvade evadeValue]
+      (Just iid, Just Action.Fight) -> do
+        fightValue <- getSkillValue SkillCombat iid
+        pure $
+          toModifiers
+            attrs
+            [Modifier.EnemyFight fightValue]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage SalvatoreNeri where

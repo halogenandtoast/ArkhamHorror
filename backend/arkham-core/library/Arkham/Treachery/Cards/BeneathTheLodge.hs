@@ -25,9 +25,10 @@ beneathTheLodge = treachery BeneathTheLodge Cards.beneathTheLodge
 
 instance HasModifiersFor BeneathTheLodge where
   getModifiersFor SkillTestTarget (BeneathTheLodge attrs) = do
-    mskillTestSource <- getSkillTestSource
-    case mskillTestSource of
-      Just (SkillTestSource iid _ (isSource attrs -> True) _) -> do
+    mSource <- getSkillTestSource
+    mInvestigator <- getSkillTestInvestigator
+    case (mSource, mInvestigator) of
+      (Just source, Just iid) | isSource attrs source -> do
         hasKey <- fieldMap InvestigatorKeys notNull iid
         pure $ toModifiers attrs [Difficulty 1 | hasKey]
       _ -> pure []
@@ -41,10 +42,9 @@ instance RunMessage BeneathTheLodge where
     Revelation iid (isSource attrs -> True) -> do
       push $ revelationSkillTest iid attrs SkillIntellect 3
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source ->
-          t
-            <$ push (HandlePointOfFailure iid (toTarget attrs) n)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
+      push $ HandlePointOfFailure iid (toTarget attrs) n
+      pure t
     HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
     HandlePointOfFailure iid target n | isTarget attrs target -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
@@ -53,12 +53,8 @@ instance RunMessage BeneathTheLodge where
           then
             [ chooseOne
                 iid
-                [ Label
-                    "Lose 1 clue"
-                    [RemoveClues (toSource attrs) (toTarget iid) 1]
-                , Label
-                    "Take 1 horror"
-                    [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
+                [ Label "Lose 1 clue" [RemoveClues (toSource attrs) (toTarget iid) 1]
+                , Label "Take 1 horror" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
                 ]
             , HandlePointOfFailure iid (toTarget attrs) (n - 1)
             ]

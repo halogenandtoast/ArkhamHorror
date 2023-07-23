@@ -27,11 +27,11 @@ wracked = treachery Wracked Cards.wracked
 
 instance HasModifiersFor Wracked where
   getModifiersFor (InvestigatorTarget iid) (Wracked attrs) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource iid' _ source _) | iid == iid' -> do
-        performed <-
-          historySkillTestsPerformed <$> getHistory RoundHistory iid
+    mSource <- getSkillTestSource
+    mInvestigator <- getSkillTestInvestigator
+    case (mSource, mInvestigator) of
+      (Just source, Just iid') | iid == iid' -> do
+        performed <- historySkillTestsPerformed <$> getHistory RoundHistory iid
         hasExhaustedWitch <-
           selectAny $
             ExhaustedEnemy
@@ -49,11 +49,7 @@ instance HasModifiersFor Wracked where
 
 instance HasAbilities Wracked where
   getAbilities (Wracked a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            1
-    ]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost 1]
 
 instance RunMessage Wracked where
   runMessage msg t@(Wracked attrs) = case msg of
@@ -63,8 +59,7 @@ instance RunMessage Wracked where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 3
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
-        pure t
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> Wracked <$> runMessage msg attrs

@@ -28,21 +28,18 @@ instance HasAbilities StrangeSolutionFreezingVariant4 where
     ]
 
 instance HasModifiersFor StrangeSolutionFreezingVariant4 where
-  getModifiersFor (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a)
-    | controlledBy a iid = do
-        mSkillTestSource <- getSkillTestSource
-        case mSkillTestSource of
-          Just (SkillTestSource _ _ source (Just Action.Evade))
-            | isSource a source ->
-                pure $
-                  toModifiers a [BaseSkillOf SkillAgility 6]
-          _ -> pure []
+  getModifiersFor (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a) | controlledBy a iid = do
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    case (mAction, mSource) of
+      (Just Action.Evade, Just source) | isSource a source -> do
+        pure $ toModifiers a [BaseSkillOf SkillAgility 6]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage StrangeSolutionFreezingVariant4 where
   runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a
-        <$ push
-          (ChooseEvadeEnemy iid source Nothing SkillAgility AnyEnemy False)
+      push $ ChooseEvadeEnemy iid source Nothing SkillAgility AnyEnemy False
+      pure a
     _ -> StrangeSolutionFreezingVariant4 <$> runMessage msg attrs

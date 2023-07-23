@@ -13,6 +13,7 @@ import Arkham.Cost as X
 import Arkham.Criteria as X
 
 import Arkham.Action hiding (Ability)
+import Arkham.Action qualified as Action
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
@@ -78,6 +79,12 @@ restrictedAbility entity idx restriction type' =
 fastAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
 fastAbility entity idx cost criteria =
   (mkAbility entity idx (FastAbility cost))
+    { abilityCriteria = criteria
+    }
+
+fightAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+fightAbility entity idx cost criteria =
+  (mkAbility entity idx (ActionAbility (Just Action.Fight) cost))
     { abilityCriteria = criteria
     }
 

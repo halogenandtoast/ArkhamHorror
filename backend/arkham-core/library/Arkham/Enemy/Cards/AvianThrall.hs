@@ -31,9 +31,10 @@ avianThrall =
 
 instance HasModifiersFor AvianThrall where
   getModifiersFor target (AvianThrall attrs) | isTarget attrs target = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource _ _ (AssetSource aid) (Just Action.Fight)) -> do
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    case (mSource, mAction) of
+      (Just (AssetSource aid), Just Action.Fight) -> do
         traits <- field AssetTraits aid
         pure $
           toModifiers

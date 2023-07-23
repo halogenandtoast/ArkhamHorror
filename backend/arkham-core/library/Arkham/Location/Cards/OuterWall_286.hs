@@ -25,9 +25,9 @@ outerWall_286 = location OuterWall_286 Cards.outerWall_286 4 (PerPlayer 1)
 
 instance HasModifiersFor OuterWall_286 where
   getModifiersFor (CardIdTarget _) (OuterWall_286 a) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource iid _ _ _) -> do
+    mInvestigator <- getSkillTestInvestigator
+    case mInvestigator of
+      Just iid -> do
         mAgendaA <- selectOne $ AgendaWithSide A
         mAgendaC <- selectOne $ AgendaWithSide C
         case (mAgendaA, mAgendaC) of
@@ -35,10 +35,7 @@ instance HasModifiersFor OuterWall_286 where
             aDoom <- field AgendaDoom agendaA
             cDoom <- field AgendaDoom agendaC
             let atOuterWall = iid `member` locationInvestigators a
-            pure $
-              toModifiers
-                a
-                [DoubleSkillIcons | atOuterWall && cDoom > aDoom]
+            pure $ toModifiers a [DoubleSkillIcons | atOuterWall && cDoom > aDoom]
           _ -> pure []
       _ -> pure []
   getModifiersFor _ _ = pure []

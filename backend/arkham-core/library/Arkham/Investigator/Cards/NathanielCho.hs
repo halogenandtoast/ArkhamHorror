@@ -55,16 +55,14 @@ instance HasChaosTokenValue NathanielCho where
 instance RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
     UseCardAbility _ source 1 [Window _ (Window.DealtDamage _ _ (EnemyTarget eid) _)] _
-      | isSource attrs source ->
-          a
-            <$ push
-              (CreateEffect "60101" Nothing (toSource attrs) (EnemyTarget eid))
+      | isSource attrs source -> do
+          push $ CreateEffect "60101" Nothing (toSource attrs) (EnemyTarget eid)
+          pure a
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      mSource <- getSkillTestSource
-      case mSource of
-        Just (SkillTestSource _ _ _ (Just Action.Fight)) ->
-          a
-            <$ push
-              (CreateEffect "60101" Nothing (toSource attrs) (toTarget attrs))
-        _ -> pure a
+      mAction <- getSkillTestAction
+      case mAction of
+        Just Action.Fight ->
+          push $ CreateEffect "60101" Nothing (toSource attrs) (toTarget attrs)
+        _ -> pure ()
+      pure a
     _ -> NathanielCho <$> runMessage msg attrs

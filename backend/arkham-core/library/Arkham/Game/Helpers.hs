@@ -335,7 +335,7 @@ filterDepthSpecificAbilities usedAbilities = do
     abilityLimitType (abilityLimit $ usedAbility ability)
       /= Just PerWindow
       || depth
-      <= usedDepth ability
+        <= usedDepth ability
 
 getAbilityLimit :: HasGame m => InvestigatorId -> Ability -> m AbilityLimit
 getAbilityLimit iid ability = do
@@ -750,7 +750,7 @@ targetToSource = \case
   PhaseTarget _ -> error "no need"
   LocationTarget lid -> LocationSource lid
   (SetAsideLocationsTarget _) -> error "can not convert"
-  SkillTestTarget -> error "can not convert"
+  SkillTestTarget -> SkillTestSource
   AfterSkillTestTarget -> AfterSkillTestSource
   TreacheryTarget tid -> TreacherySource tid
   EncounterDeckTarget -> error "can not covert"
@@ -792,7 +792,7 @@ sourceToTarget = \case
   ChaosTokenEffectSource _ -> error "not implemented"
   AgendaSource aid -> AgendaTarget aid
   LocationSource lid -> LocationTarget lid
-  SkillTestSource {} -> SkillTestTarget
+  SkillTestSource -> SkillTestTarget
   AfterSkillTestSource -> AfterSkillTestTarget
   TreacherySource tid -> TreacheryTarget tid
   EventSource eid -> EventTarget eid

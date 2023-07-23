@@ -20,18 +20,15 @@ knuckleduster :: AssetCard Knuckleduster
 knuckleduster = asset Knuckleduster Cards.knuckleduster
 
 instance HasAbilities Knuckleduster where
-  getAbilities (Knuckleduster a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
-    ]
+  getAbilities (Knuckleduster a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
 
 instance HasModifiersFor Knuckleduster where
   getModifiersFor (EnemyTarget eid) (Knuckleduster attrs) = do
     mTarget <- getSkillTestTarget
-    mSkillTestSource <- getSkillTestSource
-    case (mSkillTestSource, mTarget) of
-      (Just (SkillTestSource _ _ source (Just Action.Fight)), Just (EnemyTarget eid'))
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    case (mAction, mSource, mTarget) of
+      (Just Action.Fight, Just source, Just (EnemyTarget eid'))
         | eid == eid' && isSource attrs source ->
             pure $ toModifiers attrs [AddKeyword Keyword.Retaliate]
       _ -> pure []
@@ -40,9 +37,9 @@ instance HasModifiersFor Knuckleduster where
 instance RunMessage Knuckleduster where
   runMessage msg a@(Knuckleduster attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a
-        <$ pushAll
-          [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-          , ChooseFightEnemy iid source Nothing SkillCombat mempty False
-          ]
+      pushAll
+        [ skillTestModifier attrs iid (DamageDealt 1)
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+        ]
+      pure a
     _ -> Knuckleduster <$> runMessage msg attrs

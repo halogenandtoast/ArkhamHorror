@@ -257,12 +257,12 @@ instance RunMessage DimCarcosa where
           ( attrs
               & ( setAsideCardsL
                     .~ PlayerCard theManInThePallidMask
-                    : ( setAsideCards
-                          <> setAsideBleakPlains
-                          <> setAsideRuinsOfCarcosa
-                          <> setAsideDimStreets
-                          <> setAsideDepthsOfDemhe
-                      )
+                      : ( setAsideCards
+                            <> setAsideBleakPlains
+                            <> setAsideRuinsOfCarcosa
+                            <> setAsideDimStreets
+                            <> setAsideDepthsOfDemhe
+                        )
                 )
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
@@ -283,15 +283,15 @@ instance RunMessage DimCarcosa where
           for_ mlid $ \lid -> push $ PlaceTokens (toSource attrs) (LocationTarget lid) Clue 1
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      mskillTestSource <- getSkillTestSource
-      mskillTestTarget <- getSkillTestTarget
-      case (mskillTestSource, mskillTestTarget) of
-        (Just (SkillTestSource _ _ _ (Just action)), Just (EnemyTarget eid))
+      mAction <- getSkillTestAction
+      mTarget <- getSkillTestTarget
+      case (mAction, mTarget) of
+        (Just action, Just (EnemyTarget eid))
           | action `elem` [Action.Fight, Action.Evade] -> do
               isMonsterOrAncientOne <-
                 member eid <$> select (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
-              when isMonsterOrAncientOne $ do
-                push $ LoseActions iid (ChaosTokenEffectSource ElderThing) 1
+              pushWhen isMonsterOrAncientOne $
+                LoseActions iid (ChaosTokenEffectSource ElderThing) 1
         _ -> pure ()
       pure s
     ScenarioResolution res -> do

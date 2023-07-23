@@ -21,14 +21,12 @@ leadership :: SkillCard Leadership
 leadership = skill Leadership Cards.leadership
 
 instance HasModifiersFor Leadership where
-  getModifiersFor (CardIdTarget cid) (Leadership attrs)
-    | toCardId attrs == cid = do
-        mSkillTestSource <- getSkillTestSource
-        case mSkillTestSource of
-          Just (SkillTestSource iid' _ _ _)
-            | skillOwner attrs /= iid' ->
-                pure $ toModifiers attrs [AddSkillIcons [SkillIcon SkillWillpower, WildIcon]]
-          _ -> pure []
+  getModifiersFor (CardIdTarget cid) (Leadership attrs) | toCardId attrs == cid = do
+    mInvestigator <- getSkillTestInvestigator
+    pure $ case mInvestigator of
+      Just iid | skillOwner attrs /= iid -> do
+        toModifiers attrs [AddSkillIcons [SkillIcon SkillWillpower, WildIcon]]
+      _ -> []
   getModifiersFor _ _ = pure []
 
 instance RunMessage Leadership where

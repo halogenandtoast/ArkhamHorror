@@ -24,9 +24,10 @@ iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
 
 instance HasModifiersFor IveGotAPlan where
   getModifiersFor (InvestigatorTarget _) (IveGotAPlan attrs) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource iid _ _ (Just Fight)) -> do
+    mInvestigator <- getSkillTestInvestigator
+    mAction <- getSkillTestAction
+    case (mAction, mInvestigator) of
+      (Just Fight, Just iid) -> do
         clueCount <- field InvestigatorClues iid
         pure $ toModifiers attrs [DamageDealt (min clueCount 3)]
       _ -> pure []
@@ -35,14 +36,6 @@ instance HasModifiersFor IveGotAPlan where
 instance RunMessage IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      pushAll
-        [ ChooseFightEnemy
-            iid
-            (EventSource eid)
-            Nothing
-            SkillIntellect
-            mempty
-            False
-        ]
+      push $ ChooseFightEnemy iid (EventSource eid) Nothing SkillIntellect mempty False
       pure e
     _ -> IveGotAPlan <$> runMessage msg attrs

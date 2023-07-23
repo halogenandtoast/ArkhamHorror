@@ -25,12 +25,11 @@ dismalCurse = treachery DismalCurse Cards.dismalCurse
 
 instance HasModifiersFor DismalCurse where
   getModifiersFor (InvestigatorTarget iid') (DismalCurse a) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource iid _ source _)
-        | iid == iid' && isSource a source ->
-            pure $
-              toModifiers a [Difficulty 2]
+    mSource <- getSkillTestSource
+    mInvestigator <- getSkillTestInvestigator
+    case (mSource, mInvestigator) of
+      (Just source, Just iid) | iid == iid' && isSource a source -> do
+        pure $ toModifiers a [Difficulty 2]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -39,11 +38,10 @@ instance RunMessage DismalCurse where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid source SkillWillpower 3
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          horror <- field InvestigatorHorror iid
-          sanity <- field InvestigatorSanity iid
-          let damage = if horror > sanity * 2 then 4 else 2
-          push $ InvestigatorAssignDamage iid source DamageAny damage 0
-          pure t
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      horror <- field InvestigatorHorror iid
+      sanity <- field InvestigatorSanity iid
+      let damage = if horror > sanity * 2 then 4 else 2
+      push $ InvestigatorAssignDamage iid source DamageAny damage 0
+      pure t
     _ -> DismalCurse <$> runMessage msg attrs

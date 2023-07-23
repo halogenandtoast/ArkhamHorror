@@ -28,25 +28,18 @@ backstab3 = event Backstab3 Cards.backstab3
 
 instance HasModifiersFor Backstab3 where
   getModifiersFor (InvestigatorTarget _) (Backstab3 attrs) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource _ _ source (Just Fight)) ->
-        pure $ toModifiers attrs [DamageDealt 2 | isSource attrs source]
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    case (mAction, mSource) of
+      (Just Fight, Just source) | isSource attrs source -> do
+        pure $ toModifiers attrs [DamageDealt 2]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage Backstab3 where
   runMessage msg e@(Backstab3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      pushAll
-        [ ChooseFightEnemy
-            iid
-            (EventSource eid)
-            Nothing
-            SkillAgility
-            mempty
-            False
-        ]
+      push $ ChooseFightEnemy iid (EventSource eid) Nothing SkillAgility mempty False
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
       push $

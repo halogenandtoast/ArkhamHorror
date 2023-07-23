@@ -14,6 +14,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Strategy
+import Control.Monad.Trans.Maybe
 
 newtype HasturTheTatteredKing = HasturTheTatteredKing EnemyAttrs
   deriving anyclass (IsEnemy)
@@ -33,22 +34,23 @@ instance HasModifiersFor HasturTheTatteredKing where
     | ChaosToken.chaosTokenFace t
         `elem` [ChaosToken.PlusOne, ChaosToken.Zero, ChaosToken.MinusOne, ChaosToken.ElderSign] =
         do
-          mtarget <- getSkillTestTarget
-          mSkillTestSource <- getSkillTestSource
-          case mSkillTestSource of
-            Just (SkillTestSource iid _ _ maction) ->
-              if maybe False (isTarget a) mtarget
-                && (maction == Just Action.Fight || maction == Just Action.Evade)
-                then do
-                  noRemainingSanity <- fieldP InvestigatorRemainingSanity (== 0) iid
-                  pure
-                    [ toModifier
-                      a
-                      (ForcedChaosTokenChange (ChaosToken.chaosTokenFace t) [ChaosToken.AutoFail])
-                    | noRemainingSanity
-                    ]
-                else pure []
-            _ -> pure []
+          miid <- runMaybeT $ do
+            target <- MaybeT getSkillTestTarget
+            action <- MaybeT getSkillTestAction
+            guard $ isTarget a target
+            guard $ action `elem` [Action.Fight, Action.Evade]
+            MaybeT getSkillTestInvestigator
+
+          case miid of
+            Just iid -> do
+              noRemainingSanity <- fieldP InvestigatorRemainingSanity (== 0) iid
+              pure
+                [ toModifier
+                  a
+                  (ForcedChaosTokenChange (ChaosToken.chaosTokenFace t) [ChaosToken.AutoFail])
+                | noRemainingSanity
+                ]
+            Nothing -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage HasturTheTatteredKing where

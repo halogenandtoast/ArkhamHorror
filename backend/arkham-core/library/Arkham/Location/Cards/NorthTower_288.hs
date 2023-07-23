@@ -25,9 +25,9 @@ northTower_288 = location NorthTower_288 Cards.northTower_288 4 (PerPlayer 1)
 
 instance HasModifiersFor NorthTower_288 where
   getModifiersFor SkillTestTarget (NorthTower_288 a) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource iid _ _ _) -> do
+    mInvestigator <- getSkillTestInvestigator
+    case mInvestigator of
+      Just iid -> do
         mAgendaA <- selectOne $ AgendaWithSide A
         mAgendaC <- selectOne $ AgendaWithSide C
         case (mAgendaA, mAgendaC) of
@@ -35,10 +35,7 @@ instance HasModifiersFor NorthTower_288 where
             aDoom <- field AgendaDoom agendaA
             cDoom <- field AgendaDoom agendaC
             let atOuterWall = iid `member` locationInvestigators a
-            pure $
-              toModifiers
-                a
-                [Difficulty (-1) | atOuterWall && aDoom > cDoom]
+            pure $ toModifiers a [Difficulty (-1) | atOuterWall && aDoom > cDoom]
           _ -> pure []
       _ -> pure []
   getModifiersFor _ _ = pure []

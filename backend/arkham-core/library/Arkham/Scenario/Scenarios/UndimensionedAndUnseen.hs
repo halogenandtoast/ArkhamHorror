@@ -106,7 +106,7 @@ instance RunMessage UndimensionedAndUnseen where
         . UndimensionedAndUnseen
         $ attrs
           & standaloneCampaignLogL
-          .~ standaloneCampaignLog
+            .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       lead <- getLead
@@ -282,21 +282,16 @@ instance RunMessage UndimensionedAndUnseen where
           (ChaosTokenTarget drawnToken)
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      msource <- getSkillTestSource
-      case msource of
-        Just (SkillTestSource _ _ _ (Just action)) -> do
-          mtarget <- getSkillTestTarget
-          case mtarget of
+      mAction <- getSkillTestAction
+      case mAction of
+        Just action | action `elem` [Action.Evade, Action.Fight] -> do
+          mTarget <- getSkillTestTarget
+          case mTarget of
             Just (EnemyTarget eid) -> do
               enemyCardCode <- field EnemyCardCode eid
-              when
-                ( enemyCardCode
-                    == "02255"
-                    && (action `elem` [Action.Evade, Action.Fight])
-                )
-                $ push
-                $ EnemyAttack
-                $ enemyAttack eid attrs iid
+              pushWhen (enemyCardCode == "02255") $
+                EnemyAttack $
+                  enemyAttack eid attrs iid
             _ -> pure ()
         _ -> pure ()
       pure s

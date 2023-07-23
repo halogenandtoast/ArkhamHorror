@@ -32,24 +32,24 @@ getSkillTestTarget :: HasGame m => m (Maybe Target)
 getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
 
 getSkillTestSource :: HasGame m => m (Maybe Source)
-getSkillTestSource = fmap toSource <$> getSkillTest
+getSkillTestSource = getsSkillTest skillTestSource
+
+getsSkillTest :: HasGame m => (SkillTest -> a) -> m (Maybe a)
+getsSkillTest f = fmap f <$> getSkillTest
 
 getSkillTestAction :: HasGame m => m (Maybe Action)
-getSkillTestAction =
-  getSkillTestSource <&> \case
-    Just (SkillTestSource _ _ _ maction) -> maction
-    _ -> Nothing
+getSkillTestAction = join <$> getsSkillTest skillTestAction
 
 getSkillTestSkillTypes :: HasGame m => m [SkillType]
 getSkillTestSkillTypes =
-  getSkillTestSource <&> \case
-    Just (SkillTestSource _ (SkillSkillTest skillType) _ _) -> [skillType]
+  getsSkillTest skillTestType <&> \case
+    Just (SkillSkillTest skillType) -> [skillType]
     _ -> []
 
 getSkillTestMatchingSkillIcons :: HasGame m => m (Set SkillIcon)
 getSkillTestMatchingSkillIcons =
-  getSkillTestSource <&> \case
-    Just (SkillTestSource _ stType _ _) -> case stType of
+  getsSkillTest skillTestType <&> \case
+    Just stType -> case stType of
       SkillSkillTest skillType -> setFromList [#wildMinus, #wild, SkillIcon skillType]
       ResourceSkillTest -> setFromList [#wildMinus, #wild]
     _ -> mempty
@@ -140,15 +140,13 @@ getIsScenarioAbility :: HasGame m => m Bool
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   case source of
-    SkillTestSource _ _ source' _ -> case source' of
-      EnemySource _ -> pure True
-      AgendaSource _ -> pure True
-      LocationSource _ -> pure True
-      TreacherySource tid ->
-        -- If treachery has a subtype then it is a weakness not an encounter card
-        isNothing . cdCardSubType <$> field TreacheryCardDef tid
-      ActSource _ -> pure True
-      _ -> pure False
+    EnemySource _ -> pure True
+    AgendaSource _ -> pure True
+    LocationSource _ -> pure True
+    TreacherySource tid ->
+      -- If treachery has a subtype then it is a weakness not an encounter card
+      isNothing . cdCardSubType <$> field TreacheryCardDef tid
+    ActSource _ -> pure True
     _ -> pure False
 
 getAttackedEnemy :: HasGame m => m (Maybe EnemyId)

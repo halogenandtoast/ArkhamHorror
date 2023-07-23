@@ -19,32 +19,25 @@ baseballBat :: AssetCard BaseballBat
 baseballBat = asset BaseballBat Cards.baseballBat
 
 instance HasModifiersFor BaseballBat where
-  getModifiersFor (InvestigatorTarget iid) (BaseballBat a)
-    | controlledBy a iid = do
-        mSkillTestSource <- getSkillTestSource
-        case mSkillTestSource of
-          Just (SkillTestSource _ _ source (Just Action.Fight))
-            | isSource a source -> pure $ toModifiers a [DamageDealt 1]
-          _ -> pure []
+  getModifiersFor (InvestigatorTarget iid) (BaseballBat a) | controlledBy a iid = do
+    mAction <- getSkillTestAction
+    mSource <- getSkillTestSource
+    case (mAction, mSource) of
+      (Just Action.Fight, Just source)
+        | isSource a source -> pure $ toModifiers a [DamageDealt 1]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BaseballBat where
-  getAbilities (BaseballBat a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) (ActionCost 1)
-    ]
+  getAbilities (BaseballBat a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
 
 instance RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ pushAll
-              [ skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillCombat 2)
-              , CreateEffect "01074" Nothing source (InvestigatorTarget iid)
-              , ChooseFightEnemy iid source Nothing SkillCombat mempty False
-              ]
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      pushAll
+        [ skillTestModifier attrs iid (SkillModifier SkillCombat 2)
+        , CreateEffect "01074" Nothing source (toTarget iid)
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+        ]
+      pure a
     _ -> BaseballBat <$> runMessage msg attrs

@@ -23,42 +23,30 @@ fireAxe = asset FireAxe Cards.fireAxe
 
 instance HasModifiersFor FireAxe where
   getModifiersFor (InvestigatorTarget iid) (FireAxe a) | controlledBy a iid = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource _ _ source (Just Action.Fight))
-        | isSource a source -> do
-            resourceCount <- field InvestigatorResources iid
-            pure $ toModifiers a [DamageDealt 1 | resourceCount == 0]
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    case (mAction, mSource) of
+      (Just Action.Fight, Just source) | isSource a source -> do
+        resourceCount <- field InvestigatorResources iid
+        pure $ toModifiers a [DamageDealt 1 | resourceCount == 0]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FireAxe where
   getAbilities (FireAxe a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) (ActionCost 1)
-    , restrictedAbility
-        a
-        2
-        ( ControlsThis
+    [ fightAbility a 1 (ActionCost 1) ControlsThis
+    , limitedAbility (PlayerLimit PerTestOrAbility 3) $
+        fastAbility a 2 (ResourceCost 1) $
+          ControlsThis
             <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
-        )
-        (FastAbility (ResourceCost 1))
-        & abilityLimitL
-        .~ PlayerLimit PerTestOrAbility 3
     ]
 
 instance RunMessage FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillCombat 2)
-              )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ ChooseFightEnemy iid source Nothing SkillCombat mempty False
+      pure a
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      push $ skillTestModifier attrs iid (SkillModifier SkillCombat 2)
+      pure a
     _ -> FireAxe <$> runMessage msg attrs

@@ -34,9 +34,10 @@ instance HasAbilities PulledByTheStars where
 
 instance HasModifiersFor PulledByTheStars where
   getModifiersFor SkillTestTarget (PulledByTheStars attrs) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource iid _ source _) | isAbilitySource attrs 2 source -> do
+    mSource <- getSkillTestSource
+    mInvestigator <- getSkillTestInvestigator
+    case (mSource, mInvestigator) of
+      (Just source, Just iid) | isAbilitySource attrs 2 source -> do
         exhaustedWitch <-
           selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> EnemyAt (locationWithInvestigator iid)
         pure $ toModifiers attrs [SkillTestAutomaticallySucceeds | exhaustedWitch]
@@ -52,13 +53,7 @@ instance RunMessage PulledByTheStars where
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
       pure t
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $
-        beginSkillTest
-          iid
-          (toAbilitySource attrs 2)
-          iid
-          SkillWillpower
-          3
+      push $ beginSkillTest iid (toAbilitySource attrs 2) iid SkillWillpower 3
       pure t
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ Discard (toSource attrs) (toTarget attrs)

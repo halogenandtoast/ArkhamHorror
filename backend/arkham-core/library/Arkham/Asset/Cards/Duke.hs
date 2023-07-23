@@ -26,38 +26,24 @@ duke = allyWith Duke Cards.duke (2, 3) (slotsL .~ mempty)
 
 instance HasModifiersFor Duke where
   getModifiersFor (InvestigatorTarget iid) (Duke a) | controlledBy a iid = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource _ _ source (Just Action.Fight))
-        | isSource a source ->
-            pure $
-              toModifiers a [BaseSkillOf SkillCombat 4, DamageDealt 1]
-      Just (SkillTestSource _ _ source (Just Action.Investigate))
-        | isSource a source ->
-            pure $
-              toModifiers a [BaseSkillOf SkillIntellect 4]
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    case (mAction, mSource) of
+      (Just Action.Fight, Just source) | isSource a source -> do
+        pure $ toModifiers a [BaseSkillOf SkillCombat 4, DamageDealt 1]
+      (Just Action.Investigate, Just source) | isSource a source -> do
+        pure $ toModifiers a [BaseSkillOf SkillIntellect 4]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Duke where
   getAbilities (Duke a) =
-    [ restrictedAbility
-        a
-        1
-        ControlsThis
-        ( ActionAbility
-            (Just Action.Fight)
-            (Costs [ActionCost 1, ExhaustCost $ toTarget a])
-        )
-    , restrictedAbility
-        a
-        2
-        ControlsThis
-        ( ActionAbilityWithBefore
-            (Just Action.Investigate)
-            (Just Action.Move)
-            (Costs [ActionCost 1, ExhaustCost $ toTarget a])
-        )
+    [ fightAbility a 1 (ActionCost 1 <> exhaust a) ControlsThis
+    , restrictedAbility a 2 ControlsThis $
+        ActionAbilityWithBefore
+          (Just Action.Investigate)
+          (Just Action.Move)
+          (ActionCost 1 <> exhaust a)
     ]
 
 dukeInvestigate :: HasGame m => AssetAttrs -> InvestigatorId -> LocationId -> m Message
@@ -68,7 +54,8 @@ dukeInvestigate attrs iid lid = do
 instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
+      push $ ChooseFightEnemy iid source Nothing SkillCombat mempty False
+      pure a
     UseCardAbility iid source 2 windows' _ | isSource attrs source -> do
       lid <- getJustLocation iid
       accessibleLocationIds <-

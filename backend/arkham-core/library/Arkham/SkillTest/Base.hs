@@ -51,13 +51,8 @@ instance Targetable SkillTest where
   isTarget _ _ = False
 
 instance Sourceable SkillTest where
-  toSource SkillTest {..} =
-    SkillTestSource
-      skillTestInvestigator
-      skillTestType
-      skillTestSource
-      skillTestAction
-  isSource _ SkillTestSource {} = True
+  toSource _ = SkillTestSource
+  isSource _ SkillTestSource = True
   isSource _ _ = False
 
 data SkillTestResultsData = SkillTestResultsData

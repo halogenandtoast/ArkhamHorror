@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.OldHuntingRifle3 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
@@ -31,21 +30,14 @@ oldHuntingRifle3 =
 
 instance HasAbilities OldHuntingRifle3 where
   getAbilities (OldHuntingRifle3 (a `With` Metadata rifleStatus)) =
-    restrictedAbility
+    fightAbility
       a
       1
+      (ActionCost 1 <> UseCost (AssetWithId $ toId a) Ammo 1)
       (ControlsThis <> jammedRestriction)
-      ( ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> UseCost
-              (AssetWithId $ toId a)
-              Ammo
-              1
-      )
       : [ withTooltip "You clear the jam." $
           restrictedAbility a 2 ControlsThis $
-            ActionAbility Nothing $
-              ActionCost 1
+            ActionAbility Nothing (ActionCost 1)
         | rifleStatus == Jammed
         ]
    where
@@ -62,10 +54,11 @@ instance RunMessage OldHuntingRifle3 where
           , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat AnyEnemy False
           ]
         pure a
-      RevealChaosToken (isSkillTestSource attrs -> True) _ t
-        | chaosTokenFace t `elem` [Skull, AutoFail] -> do
-            push FailSkillTest
-            pure . OldHuntingRifle3 $ attrs `with` Metadata Jammed
+      RevealChaosToken SkillTestSource _ t | chaosTokenFace t `elem` [Skull, AutoFail] -> do
+        mSkillTestSource <- getSkillTestSource
+        for_ mSkillTestSource $ \skillTestSource ->
+          pushWhen (isSource attrs skillTestSource) FailSkillTest
+        pure . OldHuntingRifle3 $ attrs `with` Metadata Jammed
       UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
         pure . OldHuntingRifle3 $ attrs `with` Metadata NotJammed
       _ -> OldHuntingRifle3 . (`with` meta) <$> runMessage msg attrs

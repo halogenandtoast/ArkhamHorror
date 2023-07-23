@@ -22,21 +22,21 @@ strangeSolutionAcidicIchor4 =
 
 instance HasAbilities StrangeSolutionAcidicIchor4 where
   getAbilities (StrangeSolutionAcidicIchor4 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Supply 1]
+    [ fightAbility
+        attrs
+        1
+        (ActionCost 1 <> UseCost (AssetWithId $ toId attrs) Supply 1)
+        ControlsThis
     ]
 
 instance HasModifiersFor StrangeSolutionAcidicIchor4 where
-  getModifiersFor (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a)
-    | controlledBy a iid = do
-        mSkillTestSource <- getSkillTestSource
-        case mSkillTestSource of
-          Just (SkillTestSource _ _ source (Just Action.Fight))
-            | isSource a source ->
-                pure $
-                  toModifiers a [BaseSkillOf SkillCombat 6, DamageDealt 2]
-          _ -> pure []
+  getModifiersFor (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a) | controlledBy a iid = do
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    case (mAction, mSource) of
+      (Just Action.Fight, Just source) | isSource a source -> do
+        pure $ toModifiers a [BaseSkillOf SkillCombat 6, DamageDealt 2]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage StrangeSolutionAcidicIchor4 where

@@ -24,45 +24,35 @@ esotericFormula = asset EsotericFormula Cards.esotericFormula
 
 instance HasAbilities EsotericFormula where
   getAbilities (EsotericFormula x) =
-    [ restrictedAbility
-        x
-        1
-        ( ControlsThis
-            <> EnemyCriteria
-              (EnemyExists $ CanFightEnemy (toAbilitySource x 1) <> EnemyWithTrait Abomination)
-        )
-        (ActionAbility (Just Action.Fight) (ActionCost 1))
+    [ fightAbility x 1 (ActionCost 1) $
+        ControlsThis
+          <> enemyExists (CanFightEnemy (toAbilitySource x 1) <> EnemyWithTrait Abomination)
     ]
 
 instance HasModifiersFor EsotericFormula where
-  getModifiersFor (InvestigatorTarget iid) (EsotericFormula attrs)
-    | controlledBy attrs iid = do
-        mSkillTestTarget <- getSkillTestTarget
-        mSkillTestSource <- getSkillTestSource
-        case (mSkillTestSource, mSkillTestTarget) of
-          (Just (SkillTestSource iid' _ source (Just Action.Fight)), Just (EnemyTarget eid))
-            | isSource attrs source && iid == iid' ->
-                do
-                  clueCount <- field EnemyClues eid
-                  pure $
-                    toModifiers
-                      attrs
-                      [SkillModifier SkillWillpower (clueCount * 2)]
-          _ -> pure []
+  getModifiersFor (InvestigatorTarget iid) (EsotericFormula attrs) | controlledBy attrs iid = do
+    mTarget <- getSkillTestTarget
+    mSource <- getSkillTestSource
+    mAction <- getSkillTestAction
+    miid <- getSkillTestInvestigator
+    case (mAction, mSource, mTarget, miid) of
+      (Just Action.Fight, Just source, Just (EnemyTarget eid), Just iid')
+        | isSource attrs source && iid == iid' -> do
+            clueCount <- field EnemyClues eid
+            pure $ toModifiers attrs [SkillModifier SkillWillpower (clueCount * 2)]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( ChooseFightEnemy
-                  iid
-                  source
-                  Nothing
-                  SkillWillpower
-                  (EnemyWithTrait Abomination)
-                  False
-              )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $
+        ChooseFightEnemy
+          iid
+          source
+          Nothing
+          SkillWillpower
+          (EnemyWithTrait Abomination)
+          False
+      pure a
     _ -> EsotericFormula <$> runMessage msg attrs

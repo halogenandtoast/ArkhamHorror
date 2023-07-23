@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.ShardsOfTheVoid3 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
@@ -24,30 +23,32 @@ shardsOfTheVoid3 = asset ShardsOfTheVoid3 Cards.shardsOfTheVoid3
 
 instance HasAbilities ShardsOfTheVoid3 where
   getAbilities (ShardsOfTheVoid3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          OrCost [UseCost (AssetWithId $ toId a) Charge 1, ReleaseChaosTokensCost 1]
+    [ fightAbility
+        a
+        1
+        (OrCost [UseCost (AssetWithId $ toId a) Charge 1, ReleaseChaosTokensCost 1])
+        ControlsThis
     ]
 
 instance RunMessage ShardsOfTheVoid3 where
   runMessage msg a@(ShardsOfTheVoid3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      zeros <-
-        fieldMap
-          AssetSealedChaosTokens
-          (length . filter ((== Zero) . chaosTokenFace))
-          (toId attrs)
+      zeros <- fieldMap AssetSealedChaosTokens (count ((== Zero) . chaosTokenFace)) (toId attrs)
       pushAll
         [ skillTestModifiers attrs iid $
             DamageDealt 1 : [SkillModifier SkillWillpower (zeros * 2) | zeros > 0]
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillWillpower mempty False
         ]
       pure a
-    RevealChaosToken (SkillTestSource iid _ (isSource attrs -> True) _) _ token | chaosTokenFace token == Zero -> do
-      pushAll
-        [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-        , SealChaosToken token
-        , SealedChaosToken token (toCard attrs)
-        ]
+    RevealChaosToken SkillTestSource _ token | chaosTokenFace token == Zero -> do
+      mSource <- getSkillTestSource
+      mInvestigator <- getSkillTestInvestigator
+      for_ ((,) <$> mSource <*> mInvestigator) $ \(source, iid) -> do
+        when (isSource attrs source) $
+          pushAll
+            [ skillTestModifier attrs iid (DamageDealt 1)
+            , SealChaosToken token
+            , SealedChaosToken token (toCard attrs)
+            ]
       pure a
     _ -> ShardsOfTheVoid3 <$> runMessage msg attrs

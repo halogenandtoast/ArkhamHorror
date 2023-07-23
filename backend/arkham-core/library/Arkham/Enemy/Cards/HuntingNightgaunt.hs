@@ -20,10 +20,10 @@ huntingNightgaunt =
 
 instance HasModifiersFor HuntingNightgaunt where
   getModifiersFor (ChaosTokenTarget _) (HuntingNightgaunt a) = do
-    mtarget <- getSkillTestTarget
-    mSkillTestSource <- getSkillTestSource
-    case (mSkillTestSource, mtarget) of
-      (Just (SkillTestSource _ _ _ (Just Evade)), Just target) | isTarget a target -> do
+    mTarget <- getSkillTestTarget
+    mAction <- getSkillTestAction
+    case (mAction, mTarget) of
+      (Just Evade, Just target) | isTarget a target -> do
         pure $ toModifiers a [DoubleNegativeModifiersOnChaosTokens]
       _ -> pure []
   getModifiersFor _ _ = pure []

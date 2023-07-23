@@ -26,32 +26,19 @@ cursedSwamp = treachery CursedSwamp Cards.cursedSwamp
 
 instance HasModifiersFor CursedSwamp where
   getModifiersFor (InvestigatorTarget iid) (CursedSwamp attrs) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource _ _ source _) | isSource attrs source -> do
-        isBayou <-
-          selectAny $
-            LocationWithTrait Bayou
-              <> LocationWithInvestigator
-                (InvestigatorWithId iid)
+    mSource <- getSkillTestSource
+    case mSource of
+      Just source | isSource attrs source -> do
+        isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
         pure $ toModifiers attrs [CannotCommitCards AnyCard | isBayou]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillWillpower 3)
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n
-      | tid == treacheryId ->
-          t
-            <$ push
-              ( InvestigatorAssignDamage
-                  iid
-                  (TreacherySource treacheryId)
-                  DamageAny
-                  n
-                  0
-              )
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n | tid == treacheryId -> do
+      push $ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny n 0
+      pure t
     _ -> CursedSwamp <$> runMessage msg attrs

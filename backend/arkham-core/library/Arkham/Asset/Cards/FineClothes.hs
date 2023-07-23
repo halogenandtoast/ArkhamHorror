@@ -19,10 +19,11 @@ fineClothes =
 
 instance HasModifiersFor FineClothes where
   getModifiersFor SkillTestTarget (FineClothes a) = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
-      Just (SkillTestSource iid _ _ (Just Action.Parley))
-        | controlledBy a iid -> pure $ toModifiers a [Difficulty (-2)]
+    mAction <- getSkillTestAction
+    miid <- getSkillTestInvestigator
+    case (mAction, miid) of
+      (Just Action.Parley, Just iid) | controlledBy a iid -> do
+        pure $ toModifiers a [Difficulty (-2)]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

@@ -25,7 +25,8 @@ instance HasModifiersFor AgencyBackup5 where
     locationId <- field InvestigatorLocation iid
     assetLocationId <- field AssetLocation (toId a)
     pure $ do
-      guard $ locationId == assetLocationId && isJust locationId
+      guard $ isJust locationId
+      guard $ locationId == assetLocationId
       toModifiers a [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
   getModifiersFor _ _ = pure []
 

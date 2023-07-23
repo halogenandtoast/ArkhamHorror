@@ -47,7 +47,7 @@ data Source
   | ResourceSource
   | ScenarioSource
   | SkillSource SkillId
-  | SkillTestSource InvestigatorId SkillTestType Source (Maybe Action)
+  | SkillTestSource
   | StorySource StoryId
   | TestSource (Set Trait)
   | ChaosTokenSource ChaosToken
@@ -76,11 +76,6 @@ isProxySource _ _ = False
 
 toProxySource :: Sourceable a => a -> Source -> Source
 toProxySource a source = ProxySource source (toSource a)
-
-isSkillTestSource :: Sourceable a => a -> Source -> Bool
-isSkillTestSource a = \case
-  SkillTestSource _ _ source _ -> a `isSource` source
-  _ -> False
 
 instance Sourceable Source where
   toSource = id

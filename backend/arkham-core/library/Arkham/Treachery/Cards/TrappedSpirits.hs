@@ -27,8 +27,9 @@ trappedSpirits = treachery TrappedSpirits Cards.trappedSpirits
 instance HasModifiersFor TrappedSpirits where
   getModifiersFor (InvestigatorTarget _) (TrappedSpirits a) = do
     mSource <- getSkillTestSource
-    modifiers <- case mSource of
-      Just (SkillTestSource iid' _ source _) | isSource a source -> do
+    miid <- getSkillTestInvestigator
+    modifiers <- case (miid, mSource) of
+      (Just iid', Just source) | isSource a source -> do
         mlid <- field InvestigatorLocation iid'
         case mlid of
           Just lid -> do

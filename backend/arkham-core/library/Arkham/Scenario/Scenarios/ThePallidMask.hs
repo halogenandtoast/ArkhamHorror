@@ -149,7 +149,7 @@ instance RunMessage ThePallidMask where
         . ThePallidMask
         $ attrs
           & standaloneCampaignLogL
-          .~ standaloneCampaignLog
+            .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       didNotEscapeGazeOfThePhantom <-
@@ -249,39 +249,36 @@ instance RunMessage ThePallidMask where
               & (agendaStackL . at 1 ?~ agendas)
           )
     SetupStep (isTarget attrs -> True) 1 -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       catacombs <- selectList UnrevealedLocation
       youOpenedASecretPassageway <- remembered YouOpenedASecretPassageway
-      when youOpenedASecretPassageway $
-        push $
-          chooseOne
-            leadInvestigatorId
-            [ targetLabel
-              catacomb
-              [RevealLocation (Just leadInvestigatorId) catacomb]
-            | catacomb <- catacombs
-            ]
+      pushWhen youOpenedASecretPassageway $
+        chooseOne lead $
+          [ targetLabel
+            catacomb
+            [RevealLocation (Just lead) catacomb]
+          | catacomb <- catacombs
+          ]
       pure s
     ResolveChaosToken t token iid ->
       s <$ case token of
         Cultist -> do
-          mskillTestSource <- getSkillTestSource
-          case mskillTestSource of
-            Just (SkillTestSource _ _ _ (Just Action.Fight)) ->
-              push
-                ( CreateWindowModifierEffect
-                    EffectSkillTestWindow
-                    ( EffectModifiers $
-                        toModifiers
-                          attrs
-                          [ if isEasyStandard attrs
-                              then DamageDealt (-1)
-                              else NoDamageDealt
-                          ]
-                    )
-                    (ChaosTokenSource t)
-                    (InvestigatorTarget iid)
-                )
+          mAction <- getSkillTestAction
+          case mAction of
+            Just Action.Fight ->
+              push $
+                CreateWindowModifierEffect
+                  EffectSkillTestWindow
+                  ( EffectModifiers $
+                      toModifiers
+                        attrs
+                        [ if isEasyStandard attrs
+                            then DamageDealt (-1)
+                            else NoDamageDealt
+                        ]
+                  )
+                  (ChaosTokenSource t)
+                  (InvestigatorTarget iid)
             _ -> pure ()
         Tablet -> do
           if isEasyStandard attrs

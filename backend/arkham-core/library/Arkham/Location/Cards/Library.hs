@@ -23,18 +23,15 @@ library = location Library Cards.library 6 (PerPlayer 1)
 
 instance HasModifiersFor Library where
   getModifiersFor (LocationTarget lid) (Library attrs) | lid == toId attrs = do
-    mskillTestSource <- getSkillTestSource
-    case mskillTestSource of
-      Just (SkillTestSource iid _ source (Just Action.Investigate))
-        | isSource attrs source -> do
-            hasTabletKey <- iid <=~> InvestigatorWithKey TabletKey
-            pure $
-              toModifiers
-                attrs
-                [ShroudModifier (-3) | locationRevealed attrs && hasTabletKey]
+    mAction <- getSkillTestAction
+    mSource <- getSkillTestSource
+    mInvestigator <- getSkillTestInvestigator
+    case (mAction, mSource, mInvestigator) of
+      (Just Action.Investigate, Just source, Just iid) | isSource attrs source -> do
+        hasTabletKey <- iid <=~> InvestigatorWithKey TabletKey
+        pure $ toModifiers attrs [ShroudModifier (-3) | locationRevealed attrs && hasTabletKey]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage Library where
-  runMessage msg (Library attrs) =
-    Library <$> runMessage msg attrs
+  runMessage msg (Library attrs) = Library <$> runMessage msg attrs

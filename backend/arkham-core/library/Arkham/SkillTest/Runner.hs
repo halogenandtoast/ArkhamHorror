@@ -243,7 +243,7 @@ instance RunMessage SkillTest where
         , RunSkillTest iid
         ]
       pure $ s & (resolvedChaosTokensL %~ (<> skillTestRevealedChaosTokens))
-    RequestedChaosTokens (SkillTestSource siid skillType source maction) (Just iid) chaosTokenFaces ->
+    RequestedChaosTokens SkillTestSource (Just iid) chaosTokenFaces ->
       do
         skillTestModifiers' <- getModifiers SkillTestTarget
         windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
@@ -257,7 +257,7 @@ instance RunMessage SkillTest where
             else RevealSkillTestChaosTokens iid
         for_ chaosTokenFaces $ \chaosTokenFace -> do
           let
-            revealMsg = RevealChaosToken (SkillTestSource siid skillType source maction) iid chaosTokenFace
+            revealMsg = RevealChaosToken SkillTestSource iid chaosTokenFace
           pushAll
             [ When revealMsg
             , CheckWindow [iid] [Window Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]

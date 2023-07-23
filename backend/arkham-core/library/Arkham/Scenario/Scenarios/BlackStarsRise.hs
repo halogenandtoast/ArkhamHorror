@@ -64,16 +64,15 @@ instance HasChaosTokenValue BlackStarsRise where
       if isEasyStandard attrs
         then do
           modifier <- do
-            mSkillTestSource <- getSkillTestSource
-            case mSkillTestSource of
-              Just (SkillTestSource _ _ _ (Just action))
-                | action `elem` [Action.Evade, Action.Fight] -> do
-                    mtarget <- getSkillTestTarget
-                    case mtarget of
-                      Just (EnemyTarget eid) -> do
-                        hasDoom <- fieldP EnemyDoom (> 0) eid
-                        pure $ if hasDoom then AutoFailModifier else NoModifier
-                      _ -> pure NoModifier
+            mAction <- getSkillTestAction
+            case mAction of
+              Just action | action `elem` [Action.Evade, Action.Fight] -> do
+                mtarget <- getSkillTestTarget
+                case mtarget of
+                  Just (EnemyTarget eid) -> do
+                    hasDoom <- fieldP EnemyDoom (> 0) eid
+                    pure $ if hasDoom then AutoFailModifier else NoModifier
+                  _ -> pure NoModifier
               _ -> pure NoModifier
           pure $ ChaosTokenValue Cultist modifier
         else do

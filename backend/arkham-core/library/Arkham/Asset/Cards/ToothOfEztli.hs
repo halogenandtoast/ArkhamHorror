@@ -20,16 +20,12 @@ toothOfEztli :: AssetCard ToothOfEztli
 toothOfEztli = asset ToothOfEztli Cards.toothOfEztli
 
 instance HasModifiersFor ToothOfEztli where
-  getModifiersFor (InvestigatorTarget iid) (ToothOfEztli a)
-    | controlledBy a iid = do
-        mSkillTestSource <- getSkillTestSource
-        case mSkillTestSource of
-          Just (SkillTestSource _ _ (TreacherySource _) _) ->
-            pure $
-              toModifiers
-                a
-                [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
-          _ -> pure []
+  getModifiersFor (InvestigatorTarget iid) (ToothOfEztli a) | controlledBy a iid = do
+    mSource <- getSkillTestSource
+    pure $ case mSource of
+      Just (TreacherySource _) -> do
+        toModifiers a [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
+      _ -> []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ToothOfEztli where
@@ -48,7 +44,6 @@ instance HasAbilities ToothOfEztli where
 instance RunMessage ToothOfEztli where
   runMessage msg a@(ToothOfEztli attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+      pushM $ drawCards iid attrs 1
       pure a
     _ -> ToothOfEztli <$> runMessage msg attrs

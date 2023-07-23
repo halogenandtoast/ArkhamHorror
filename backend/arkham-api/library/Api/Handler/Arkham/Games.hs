@@ -129,12 +129,12 @@ getApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   games <- runDB $ select $ do
     (players :& games) <-
-      from $
-        table @ArkhamPlayer
+      from
+        $ table @ArkhamPlayer
           `InnerJoin` table @ArkhamGame
-            `on` ( \(players :& games) ->
-                    players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
-                 )
+        `on` ( \(players :& games) ->
+                players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
+             )
     where_ (players ^. ArkhamPlayerUserId ==. val userId)
     orderBy [desc $ games ^. ArkhamGameUpdatedAt]
     pure games
@@ -275,7 +275,6 @@ data CreateGamePost = CreateGamePost
   , difficulty :: Difficulty
   , campaignName :: Text
   , multiplayerVariant :: MultiplayerVariant
-  , settings :: [StandaloneSetting]
   , campaignLog :: Maybe CampaignSettings
   }
   deriving stock (Show, Generic)
@@ -381,10 +380,9 @@ postApiV1ArkhamGamesR = do
           mempty
     Nothing -> case scenarioId of
       Just sid -> do
-        let standaloneCampaignLog = makeStandaloneCampaignLog settings
         (queueRef, game) <-
           liftIO $
-            newScenario sid newGameSeed playerCount decks difficulty (Just standaloneCampaignLog)
+            newScenario sid newGameSeed playerCount decks difficulty Nothing
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
@@ -409,6 +407,7 @@ data Answer
   = Answer QuestionResponse
   | PaymentAmountsAnswer PaymentAmountsResponse
   | AmountsAnswer AmountsResponse
+  | StandaloneSettingsAnswer [StandaloneSetting]
   deriving stock (Generic)
   deriving anyclass (FromJSON)
 
@@ -576,9 +575,13 @@ answerInvestigator = \case
   Answer response -> qrInvestigatorId response
   AmountsAnswer _ -> Nothing
   PaymentAmountsAnswer _ -> Nothing
+  StandaloneSettingsAnswer _ -> Nothing
 
 handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
 handleAnswer Game {..} investigatorId = \case
+  StandaloneSettingsAnswer settings' ->
+    let standaloneCampaignLog = makeStandaloneCampaignLog settings'
+    in  [SetCampaignLog standaloneCampaignLog]
   AmountsAnswer response -> case Map.lookup investigatorId gameQuestion of
     Just (ChooseAmounts _ _ _ target) ->
       [ ResolveAmounts

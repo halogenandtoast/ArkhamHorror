@@ -61,9 +61,11 @@ const difficulties: Difficulty[] = computed(() => {
   if(gameMode.value === 'SideStory') {
     const sideStoryScenario = sideStories.value.find((c) => c.id === selectedScenario.value)
 
-    if (sideStoryScenario.standaloneDifficulties) {
+    if (sideStoryScenario && sideStoryScenario.standaloneDifficulties) {
       return sideStoryScenario.standaloneDifficulties
     }
+
+    return []
   }
 
   return ['Easy', 'Standard', 'Hard', 'Expert']
@@ -132,9 +134,7 @@ const disabled = computed(() => {
 })
 
 const defaultCampaignName = computed(() => {
-  const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
-
-  if (gameMode.value === 'Campaign') {
+  if (gameMode.value === 'Campaign' && campaign.value) {
     const returnToPrefix = returnTo.value ? "Return to " : ""
     return `${returnToPrefix}${campaign.name}`;
   }
@@ -180,7 +180,6 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        standaloneSettings.value,
         campaignLog.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
@@ -196,27 +195,11 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        standaloneSettings.value,
         campaignLog.value
       ).then((game) => router.push(`/games/${game.id}`));
     }
   }
 }
-
-const standaloneSettings = ref<StandaloneSetting[]>([])
-
-// computed standaloneSettings is a bit of a hack, because nested values change by value
-// when we change standaloneSettings they are "cached" so to avoid this we deep copy the
-// standaloneSettings in order to never alter its original value.
-const computedStandaloneSettings = computed<StandaloneSetting[]>(() =>
-  gameMode.value === 'Standalone'
-    ? JSON.parse(JSON.stringify(scenario.value?.settings || []))
-    : []
-)
-
-watch(computedStandaloneSettings, (newSettings) => {
-  standaloneSettings.value = newSettings
-}, { immediate: true })
 
 const campaignSettings = ref<CampaignScenario[]>([])
 
@@ -589,51 +572,6 @@ const toggleCrossOut = function (key: string, value: string) {
             <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
           </div>
 
-          <div v-if="standaloneSettings.length > 0">
-            <p>Standalone Settings</p>
-            <div v-for="setting in standaloneSettings" :key="setting.key">
-              <div v-if="setting.type === 'ToggleKey'" class="options">
-                <input type="checkbox" v-model="setting.content" :id="setting.key"/>
-                <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
-              </div>
-              <div v-else-if="setting.type === 'ToggleOption'" class="options">
-                <input type="checkbox" v-model="setting.content" :id="setting.key"/>
-                <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
-              </div>
-              <div v-else-if="setting.type === 'PickKey'" class="options">
-                <template v-for="key in setting.keys" :key="`${setting.key}${key}`">
-                  <input
-                    type="radio"
-                    v-model="setting.content"
-                    :value="key"
-                    :name="setting.key"
-                    :id="`${setting.key}${key}`"
-                    :checked="key === setting.content"
-                  />
-                  <label :for="`${setting.key}${key}`"> {{toCapitalizedWords(key)}}</label>
-                </template>
-              </div>
-              <div v-else-if="setting.type === 'ToggleCrossedOut'">
-                {{toCapitalizedWords(setting.key)}}
-                <div class="options">
-                  <template v-for="option in setting.content" :key="option.key">
-                    <input
-                      type="checkbox"
-                      v-model="option.content"
-                      :id="`${option.key}${option.value}`"
-                      class="invert"
-                      :checked="option.content"
-                    />
-                    <label :for="`${option.key}${option.value}`">
-                      <s v-if="option.content">{{option.label}}</s>
-                      <span v-else>{{option.label}}</span>
-                    </label>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div v-if="!fullCampaign && campaignSettings.length > 0">
             <p>Campaign Settings</p>
             <CampaignScenarioSetting
@@ -853,7 +791,6 @@ header {
 .scenarios {
   display: grid;
   grid-template-columns: repeat(auto-fill, calc(1 / 8 * 100%));
-  gap: 2px;
 
   img {
     width: 100%;

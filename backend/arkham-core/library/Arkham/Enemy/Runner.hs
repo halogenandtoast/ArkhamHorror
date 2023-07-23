@@ -92,6 +92,8 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
   ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
   choose@ChoosePaymentAmounts {} -> Just (Ask iid choose)
   choose@ChooseAmounts {} -> Just (Ask iid choose)
+  PickScenarioSettings -> Just (Ask iid PickScenarioSettings)
+  PickCampaignSettings -> Just (Ask iid PickCampaignSettings)
 filterOutEnemyMessages eid msg = case msg of
   InitiateEnemyAttack details | eid == attackEnemy details -> Nothing
   EnemyAttack details | eid == attackEnemy details -> Nothing
@@ -162,7 +164,7 @@ instance RunMessage EnemyAttrs where
           if Keyword.Aloof
             `notElem` keywords
             && Keyword.Massive
-            `notElem` keywords
+              `notElem` keywords
             && not enemyExhausted
             then do
               prey <- getPreyMatcher a
@@ -375,7 +377,7 @@ instance RunMessage EnemyAttrs where
             `notElem` keywords
             && (unengaged || Keyword.Massive `elem` keywords)
             && CannotBeEngaged
-            `notElem` modifiers'
+              `notElem` modifiers'
             && not enemyExhausted
         )
         $ if Keyword.Massive `elem` keywords
@@ -599,7 +601,7 @@ instance RunMessage EnemyAttrs where
                       `notElem` modifiers'
                    , not enemyExhausted
                       || CanRetaliateWhileExhausted
-                      `elem` modifiers'
+                        `elem` modifiers'
                    ]
             pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
@@ -850,7 +852,7 @@ instance RunMessage EnemyAttrs where
           pure $
             a
               & assignedDamageL
-              %~ insertWith combine source damageAssignment'
+                %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source -> do
       do

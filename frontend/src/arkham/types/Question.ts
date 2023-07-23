@@ -1,7 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -17,6 +17,16 @@ export enum QuestionType {
   READ = 'Read',
   PICK_SUPPLIES = 'PickSupplies',
   DROP_DOWN = 'DropDown',
+  PICK_SCENARIO_SETTINGS = 'PickScenarioSettings',
+  PICK_CAMPAIGN_SETTINGS = 'PickCampaignSettings',
+}
+
+export interface PickScenarioSettings {
+  tag: QuestionType.PICK_SCENARIO_SETTINGS;
+}
+
+export interface PickCampaignSettings {
+  tag: QuestionType.PICK_CAMPAIGN_SETTINGS;
 }
 
 export interface ChooseOne {
@@ -189,6 +199,20 @@ export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
   'ChooseUpgradeDeck',
 );
 
+export const pickScenarioSettingsDecoder = JsonDecoder.object<PickScenarioSettings>(
+  {
+    tag: JsonDecoder.isExactly(QuestionType.PICK_SCENARIO_SETTINGS),
+  },
+  'PickScenarioSettings',
+);
+
+export const pickCampaignSettingsDecoder = JsonDecoder.object<PickCampaignSettings>(
+  {
+    tag: JsonDecoder.isExactly(QuestionType.PICK_CAMPAIGN_SETTINGS),
+  },
+  'PickCampaignSettings',
+);
+
 export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDecoder.object<QuestionLabel>(
   {
     tag: JsonDecoder.isExactly(QuestionType.QUESTION_LABEL),
@@ -299,6 +323,8 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     readDecoder,
     pickSuppliesDecoder,
     dropDownDecoder,
+    pickScenarioSettingsDecoder,
+    pickCampaignSettingsDecoder,
   ],
   'Question',
 );

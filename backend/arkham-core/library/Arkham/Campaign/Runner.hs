@@ -50,24 +50,24 @@ defaultCampaignRunner msg a = case msg of
     pure $ updateAttrs a $ \attrs ->
       attrs
         & storyCardsL
-        %~ insertWith
-          (<>)
-          iid
-          [card {pcOwner = Just iid}]
+          %~ insertWith
+            (<>)
+            iid
+            [card {pcOwner = Just iid}]
   RemoveCampaignCard cardDef -> do
     pure $ updateAttrs a $ \attrs ->
       attrs
         & storyCardsL
-        %~ Map.map (filter ((/= cardDef) . toCardDef))
+          %~ Map.map (filter ((/= cardDef) . toCardDef))
         & decksL
-        %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
+          %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
   RemoveCampaignCardFromDeck iid cardDef ->
     pure $ updateAttrs a $ \attrs ->
       attrs
         & storyCardsL
-        %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
+          %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
         & decksL
-        %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
+          %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
   AddChaosToken token -> pure $ updateAttrs a (chaosBagL %~ (token :))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid deck -> do
@@ -208,4 +208,6 @@ defaultCampaignRunner msg a = case msg of
     pure $
       updateAttrs a $ \attrs ->
         attrs & (stepL %~ maybe id const mstep) & (completedStepsL %~ completeStep (campaignStep attrs))
+  SetCampaignLog log -> do
+    pure $ updateAttrs a $ logL .~ log
   _ -> pure a

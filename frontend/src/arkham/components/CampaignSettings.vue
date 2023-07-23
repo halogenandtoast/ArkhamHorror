@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue'
 import campaignJSON from '@/arkham/data/campaigns.json'
-import scenarioJSON from '@/arkham/data/scenarios.json'
-import {toCapitalizedWords} from '@/arkham/helpers'
 import {updateCampaignSettings} from '@/arkham/api'
 import {
   CampaignLogSettings,
@@ -32,8 +30,6 @@ const campaignLog = ref<CampaignLogSettings>({
 })
 
 const selectedScenario = computed(() => props.campaign.step.contents.replace(/^c/, ''))
-
-const scenario = computed(() => scenarioJSON.find((s) => s.id === selectedScenario.value))
 
 const campaignSettings = ref<CampaignScenario[]>([])
 
@@ -100,6 +96,9 @@ const filterSettings = function() {
         if (t.type === 'ChooseRecordable') {
           a.sets.push(t.ckey)
         }
+        if (t.type === 'CrossOut') {
+          a.sets.push(t.ckey)
+        }
         if (t.type === 'Record') {
           a.sets.push(t.key)
         }
@@ -156,6 +155,11 @@ const filterSettings = function() {
     return idx === index
   }
 
+  const onlyUniqueValues = (value, index, self) => {
+    const idx = self.findIndex((s) => s.value === value.value)
+    return idx === index
+  }
+
   const keys = [...campaignLog.value.keys, ...active.forcedKeys].
     filter((k) => active.keys.some((a) => a.key === k.key && a.scope == k.scope))
 
@@ -163,12 +167,13 @@ const filterSettings = function() {
     filter((k) => active.options.includes(k.key))
 
   const counts = {...Object.fromEntries(Object.entries(campaignLog.value.counts).filter(([k]) => active.counts.includes(k)))}
+
   const sets =
     Object.entries(active.forcedSets).reduce(
       (current, [setKey, value]) => {
         const currentSet = current[setKey]
         current[setKey] = currentSet
-          ? { ...currentSet, entries: [...currentSet.entries, ...value.entries].filter(onlyUnique) }
+          ? { ...currentSet, entries: [...currentSet.entries, ...value.entries].filter(onlyUniqueValues) }
           : { recordable: t.recordable, entries: value.entries }
         return current
       },
@@ -289,14 +294,25 @@ const toggleRecordable = function(setting, value) {
 }
 
 const toggleCrossOut = function (key: string, value: string) {
-  if (campaignLog.value.sets[key] === undefined) {
+  const current = campaignLog.value
+  if (current.sets[key] === undefined) {
     return
   }
 
-  const {entries} = campaignLog.value.sets[key]
+  const {entries} = current.sets[key]
 
   if (entries) {
-    entries.map((e) => e.tag = e.value === value ? (e.tag === "Recorded" ? "CrossedOut" : "Recorded") : e.tag)
+    const newEntries = entries.map((e) => e.value === value ? { value: e.value, tag: e.tag === "Recorded" ? "CrossedOut" : "Recorded" } : e)
+
+    campaignLog.value = {
+      ...current,
+      sets: {
+        ...current.sets,
+        [key]: { ...current.sets[key], entries: newEntries }
+      }
+    }
+
+    filterSettings()
   }
 
 }

@@ -12,6 +12,7 @@ data CampaignOption
   | -- | The Circle Undone
     TakeBlackBook
   | TakePuzzleBox
+  | ProceedToInterlude3
   | DebugOption
   deriving stock (Eq, Show, Ord)
 

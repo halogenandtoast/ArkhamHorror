@@ -271,6 +271,7 @@ instance RunMessage TheCircleUndone where
       case option of
         TakeBlackBook -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.theBlackBook
         TakePuzzleBox -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.puzzleBox
+        ProceedToInterlude3 -> pure ()
         _ -> error $ "Unhandled option: " <> show option
       pure c
     _ -> defaultCampaignRunner msg c

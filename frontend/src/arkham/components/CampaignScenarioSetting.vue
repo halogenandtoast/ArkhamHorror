@@ -16,13 +16,19 @@ const props = defineProps<{
   step: CampaignScenario,
   campaignLog: CampaignLogSettings
 }>()
-defineEmits(['toggle:key', 'toggle:option', 'toggle:set', 'set:key', 'set:option', 'toggle:crossout', 'set:num', 'set:record', 'toggle:record'])
 
-const activeSettings = computed(() => {
-  return props.step.settings.filter((s) => {
-    return settingActive(props.campaignLog, s)
-  })
-})
+defineEmits<{
+  'toggle:key': [step: CampaignScenario, setting: CampaignSetting],
+  'toggle:option': [setting: CampaignSetting],
+  'toggle:set': [setting: CampaignSetting],
+  'set:key': [step: CampaignScenario, setting: CampaignSetting, value: string],
+  'set:option': [setting: CampaignSetting, option: CampaignOption],
+  'toggle:crossout': [key: string, value: string],
+  'set:num': [setting: CampaignSetting, value: number],
+  'set:record': [setting: CampaignSetting, value: string]
+}>()
+
+const activeSettings = computed(() => props.step.settings.filter((s) => settingActive(props.campaignLog, s)))
 
 const isRecorded = (value: string) => props.campaignLog.keys.some((c) => c.key === value && c.scope === props.step.key)
 const isOption = (option: CampaignOption) => props.campaignLog.options.includes(option)
@@ -55,7 +61,13 @@ const forceDisabled = (setting: CampaignSetting, option: ChooseKey) => {
       </div>
       <div v-else-if="setting.type === 'Option'">
         <div class="options">
-          <input type="checkbox" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}`" @change.prevent="$emit('toggle:option', setting)" :checked="isOption(setting.ckey)" />
+          <input
+            type="checkbox"
+            :name="`${step.key}${setting.key}`"
+            :id="`${step.key}${setting.key}`"
+            @change.prevent="$emit('toggle:option', setting)"
+            :checked="isOption({ key: setting.key, ckey: setting.ckey })"
+          />
           <label :for="`${step.key}${setting.key}`">{{toCapitalizedWords(setting.key)}}</label>
         </div>
       </div>
@@ -92,12 +104,16 @@ const forceDisabled = (setting: CampaignSetting, option: ChooseKey) => {
       <div v-else-if="setting.type === 'Record'">
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
-          <template v-for="option in setting.content" :key="option.key">
-            <input type="checkbox" :name="`${step.key}${setting.key}${option.key}`" :id="`${step.key}${setting.key}${option.key}`" @change.prevent="$emit('toggle:record', setting, option.content)" :checked="inSet(setting.key, option.content)"/>
-            <label :for="`${step.key}${setting.key}${option.key}`">
-              {{toCapitalizedWords(option.key)}}
-            </label>
-          </template>
+          <input
+            type="checkbox"
+            :name="`${step.key}${setting.key}${setting.content.key}`"
+            :id="`${step.key}${setting.key}${setting.content.key}`"
+            @change.prevent="$emit('toggle:record', setting, setting.content.content)"
+            :checked="inSet(setting.key, setting.content.content)"
+          />
+          <label :for="`${step.key}${setting.key}${setting.content.key}`">
+            {{toCapitalizedWords(setting.content.key)}}
+          </label>
         </div>
       </div>
       <div v-else-if="setting.type === 'CrossOut'">
@@ -125,7 +141,13 @@ const forceDisabled = (setting: CampaignSetting, option: ChooseKey) => {
         />
       </div>
       <div v-else-if="setting.type === 'SetRecordable'" class="options">
-        <input type="checkbox" :name="`${step.key}${setting.key}`" :id="`${step.key}${setting.key}`" @change.prevent="$emit('toggle:set', setting)" :checked="inSet(setting.ckey, setting.content)" />
+        <input
+          type="checkbox"
+          :name="`${step.key}${setting.key}`"
+          :id="`${step.key}${setting.key}`"
+          @change.prevent="$emit('toggle:set', setting)"
+          :checked="inSet(setting.ckey, setting.content)"
+        />
         <label :for="`${step.key}${setting.key}`">{{toCapitalizedWords(setting.key)}}</label>
       </div>
       <div v-else-if="setting.type === 'ChooseRecordable'">

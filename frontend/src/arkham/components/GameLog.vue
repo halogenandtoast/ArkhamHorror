@@ -6,7 +6,7 @@ import GameMessage from '@/arkham/components/GameMessage.vue';
 
 const props = defineProps<{
   game: Game
-  gameLog: string[]
+  gameLog: readonly string[]
 }>()
 const messages = ref<Element | null>(null)
 const truncatedGameLog = computed(() => props.gameLog.slice(-10))

@@ -20,6 +20,22 @@ interface Filter {
   classes: string[]
 }
 
+interface CardSet {
+  name: string
+  min: number
+  max: number
+  playerCards: number
+  code: string
+  cycle: number
+  encounterDuplicates?: number
+}
+
+interface CardCycle {
+  name: string
+  cycle: number
+  code: string
+}
+
 enum View {
   Image = "IMAGE",
   List = "LIST",
@@ -42,12 +58,15 @@ watchEffect(() => {
   })
 })
 
-const cycleCount = (cycle) => {
+const cycleCount = (cycle: CardCycle) => {
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
-  return allCards.value.filter((c) => cycleSets.includes(cardSet(c))).length
+  return allCards.value.filter((c) => {
+    const cSet = cardSet(c)
+    return cSet ? cycleSets.includes(cSet) : false
+  }).length
 }
 
-const cycleCountText = (cycle) => {
+const cycleCountText = (cycle: CardCycle) => {
   const implementedCount = cycleCount(cycle)
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
   const total = cycleSets.reduce((acc, set) => acc + (includeEncounter.value ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards), 0)
@@ -59,11 +78,11 @@ const cycleCountText = (cycle) => {
   return ` (${implementedCount}/${total})`
 }
 
-const setCount = (set) => {
+const setCount = (set: CardSet) => {
   return allCards.value.filter((c) => cardSet(c) == set).length
 }
 
-const setCountText = (set) => {
+const setCountText = (set: CardSet) => {
   const implementedCount = setCount(set)
   const total = includeEncounter.value ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards
 
@@ -87,7 +106,10 @@ const cards = computed(() => {
 
   if (cycle) {
     const cycleSets = sets.filter((s) => s.cycle == cycle)
-    all = all.filter((c) => cycleSets.includes(cardSet(c)))
+    all = all.filter((c) => {
+      const cSet = cardSet(c)
+      return cSet ? cycleSets.includes(cSet) : false
+    })
   }
 
   if (set) {
@@ -120,7 +142,7 @@ const setFilter = () => {
   let level = null
   let cycle = null
   let set = null
-  let classes = []
+  let classes : string[] = []
 
   // const matchCardType = queryString.match(/t:("(?:[^"\\]|\\.)*"|[^ ]*)/)
   const matchCardType = queryString.match(/t:([^ ]*)/)
@@ -237,16 +259,16 @@ const cardSetText = (card: Arkham.CardDef) => {
   return "Unknown"
 }
 
-const cycleSets = (cycle) => {
+const cycleSets = (cycle: CardCycle) => {
   return sets.filter((s) => s.cycle == cycle.cycle)
 }
 
-const setCycle = (cycle) => {
+const setCycle = (cycle: CardCycle) => {
   query.value = `y:${cycle.cycle}`
   filter.value = { cardType: null, text: null, level: null, cycle: cycle.cycle, set: null, classes: [] }
 }
 
-const setSet = (set) => {
+const setSet = (set: CardSet) => {
   query.value = `e:${set.code}`
   filter.value = { cardType: null, text: null, level: null, cycle: null, set: set.code, classes: [] }
 }

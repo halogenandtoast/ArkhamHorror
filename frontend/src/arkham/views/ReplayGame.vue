@@ -20,7 +20,10 @@ const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
 const step = ref(1)
 const totalSteps = ref(0)
-const gameOver = computed(() => props.game.gameState.tag === "IsOver")
+const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
+const campaignLog = computed(() => game.value?.campaign?.log)
+const recorded = computed(() => campaignLog.value?.recorded ?? [])
+const recordedSets = computed(() => campaignLog.value?.recordedSets ?? [])
 
 watch(step, currentStep => {
   fetchGameReplay(props.gameId, currentStep).then(({ game: newGame, totalSteps: newTotalSteps }) => {
@@ -34,7 +37,7 @@ watch(step, currentStep => {
 </script>
 
 <template>
-  <div id="game" v-if="ready">
+  <div id="game" v-if="ready && game && investigatorId">
     <div class="game">
       <Campaign
         v-if="game.campaign"
@@ -56,15 +59,15 @@ watch(step, currentStep => {
         <button @click="step -= 1">Previous</button>
         <button @click="step += 1">Next</button>
       </div>
-      <div v-if="game.gameOver">
+      <div v-if="gameOver">
         <p>Game over</p>
 
-        <div v-for="entry in game.campaign.log.recorded" :key="entry">
+        <div v-for="entry in recorded" :key="entry">
           {{entry}}
         </div>
 
-        <div v-for="(entry, idx) in game.campaign.log.recordedSets" :key="idx">
-          {{entry[0]}}: {{entry[1].join(", ")}}
+        <div v-for="(entry, idx) in recordedSets" :key="idx">
+          {{(entry as any[])[0]}}: {{(entry as any[])[1].join(", ")}}
         </div>
       </div>
     </div>

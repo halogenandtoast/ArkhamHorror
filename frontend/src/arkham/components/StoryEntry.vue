@@ -14,6 +14,13 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 
+const readChoices = props.question.readChoices.reduce<{ label: string, index: number}[]>((acc, v, i) => {
+  if ("label" in v) {
+    return [...acc, { label: v.label, index: i }]
+  }
+  return acc
+}, [] as { label: string, index: number }[])
+
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 </script>
 <template>
@@ -27,7 +34,11 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
       >{{paragraph}}</p>
     </div>
     <div class="options">
-      <button v-for="(readButton, readIndex) in question.readChoices" @click="choose(readIndex)" :key="readIndex"><i class="option"></i>{{readButton.label}}</button>
+      <button
+        v-for="readChoice in readChoices"
+        @click="choose(readChoice.index)"
+        :key="readChoice.index"
+      ><i class="option"></i>{{readChoice.label}}</button>
     </div>
   </div>
 </template>

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import * as Investigator from '@/arkham/types/Investigator';
 import {imgsrc} from '@/arkham/helpers';
 import { fetchInvestigators, newDeck } from '@/arkham/api'
+import { CardDef } from '@/arkham/types/CardDef';
 
 const ready = ref(false)
 const emit = defineEmits(['newDeck'])
@@ -23,11 +23,10 @@ interface ArkhamDBCard {
   xp?: string
 }
 
-
 const errors = ref([])
 const investigatorError = ref<string | null>(null)
 const investigator = ref<string | null>(null)
-const investigators = ref<Investigator.Investigator[]>([])
+const investigators = ref<CardDef[]>([])
 const deck = ref<string | null>(null)
 const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)

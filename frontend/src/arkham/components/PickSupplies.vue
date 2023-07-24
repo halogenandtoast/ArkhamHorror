@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { Question } from '@/arkham/types/Question';
+import { PickSupplies  } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
-export interface Props {
-  question: Question
-}
 
-const props = defineProps<Props>()
+const props = defineProps<{
+  question: PickSupplies
+}>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 

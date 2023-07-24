@@ -2,11 +2,9 @@
 import { computed } from 'vue';
 import { type Investigator } from '@/arkham/types/Investigator'
 
-export interface Props {
+const props = defineProps<{
   player: Investigator
-}
-
-const props = defineProps<Props>()
+}>()
 
 const supplies = computed(() =>
   props.player.supplies.reduce((acc, supply) => acc.set(supply, (acc.get(supply) || 0) + 1), new Map<string, number>())

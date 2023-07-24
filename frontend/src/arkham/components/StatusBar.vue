@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import type { Message } from '@/arkham/types/Message';
+import type { CardLabel } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
@@ -38,7 +38,7 @@ const portraitLabelImage = (investigatorId: string) => {
   const player = props.game.investigators[investigatorId]
 
   if (player.isYithian) {
-    return imgsrc(`portraits/${investigatorId.value.replace('c', '')}.jpg`)
+    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
   }
 
   return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
@@ -46,8 +46,8 @@ const portraitLabelImage = (investigatorId: string) => {
 
 const cardLabels = computed(() =>
   choices.value.
-    flatMap<[Message, number][]>((choice, index) => {
-      return choice.tag === "CardLabel" ? [[choice, index]] : []
+    flatMap<[CardLabel, number][]>((choice, index) => {
+      return choice.tag === "CardLabel" ? [[choice as CardLabel, index]] : []
     }))
 
 const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsChaosTokensValue || 0) < 0 ? '-' : '+')
@@ -115,7 +115,7 @@ const title = computed(() => {
   return null
 })
 
-const replaceIcons = function(body) {
+const replaceIcons = function(body: string) {
   return body.
     replace('{action}', '<span class="action-icon"></span>').
     replace('{fast}', '<span class="fast-icon"></span>').
@@ -126,7 +126,7 @@ const replaceIcons = function(body) {
     replace('{wild}', '<span class="wild-icon"></span>')
 }
 
-const label = function(body) {
+const label = function(body: string) {
   return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
 }
 
@@ -138,7 +138,7 @@ const label = function(body) {
     <section class="status-bar">
       <div v-if="skillTestResults" class="skill-test-results">
         <CommittedSkills
-          v-if="(game.skillTest?.committedCards?.length || 0) > 0"
+          v-if="game.skillTest && game.skillTest.committedCards.length > 0"
           :game="game"
           :cards="game.skillTest.committedCards"
           :investigatorId="investigatorId"
@@ -158,7 +158,7 @@ const label = function(body) {
           <dd v-if="skillTestResults.skillTestResultsSuccess">
             Succeed by {{testResult}}
           </dd>
-          <dd v-else>
+          <dd v-else-if="testResult">
             Fail by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
           </dd>
         </dl>
@@ -167,7 +167,7 @@ const label = function(body) {
       <div v-if="skillTestResults" class="skill-test-results-break"></div>
 
       <div v-if="cardLabels.length > 0">
-        <template v-for="[choice, index] in cardLabels" :key="index">
+        <template v-for="[[choice, index]] in cardLabels" :key="index">
           <a href='#' @click.prevent="choose(index)">
             <img class="card" :src="cardLabelImage(choice.cardCode)"/>
           </a>
@@ -193,7 +193,7 @@ const label = function(body) {
       <div v-if="showChoices" class="choices">
         <template v-for="(choice, index) in choices" :key="index">
           <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-            <button @click="choose(index)" v-tooltip="choice.contents[1]">{{choice.contents[0]}}</button>
+            <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
           </template>
           <template v-if="choice.tag === 'PortraitLabel'">
             <a href='#' @click.prevent="choose(index)">
@@ -238,7 +238,6 @@ const label = function(body) {
 <style scoped lang="scss">
 i {
   font-family: 'Arkham';
-  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

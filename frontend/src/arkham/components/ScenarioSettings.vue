@@ -3,22 +3,24 @@ import { watch, ref, computed } from 'vue'
 import scenarioJSON from '@/arkham/data/scenarios.json'
 import {toCapitalizedWords} from '@/arkham/helpers'
 import {updateStandaloneSettings} from '@/arkham/api'
+import { Game } from '../types/Game'
+import { Scenario } from '../types/Scenario'
+import { StandaloneSetting } from '../types/StandaloneSetting'
 
-export interface Props {
+const props = defineProps<{
   game: Game
   scenario: Scenario
   investigatorId: string
-}
-
-const props = defineProps<Props>()
+}>()
 const standaloneSettings = ref<StandaloneSetting[]>([])
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
 // standaloneSettings in order to never alter its original value.
-const computedStandaloneSettings = computed<StandaloneSetting[]>(() =>
-  scenarioJSON.find((s) => s.id === props.scenario.id.replace(/^c/, ''))?.settings || []
-)
+const computedStandaloneSettings = computed<StandaloneSetting[]>(() => {
+  const s = scenarioJSON.find((s) => s.id === props.scenario.id.replace(/^c/, ''))
+  return s ? s.settings as StandaloneSetting[] : []
+})
 
 watch(computedStandaloneSettings, (newSettings) => {
   standaloneSettings.value = newSettings
@@ -59,11 +61,11 @@ const submit = () => updateStandaloneSettings(props.game.id, standaloneSettings.
             <input
               type="checkbox"
               v-model="option.content"
-              :id="`${option.key}${option.value}`"
+              :id="`${option.key}${option.label}`"
               class="invert"
               :checked="option.content"
             />
-            <label :for="`${option.key}${option.value}`">
+            <label :for="`${option.key}${option.label}`">
               <s v-if="option.content">{{option.label}}</s>
               <span v-else>{{option.label}}</span>
             </label>

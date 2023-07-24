@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
-import { MessageType } from '@/arkham/types/Message';
+import { CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
@@ -25,29 +25,47 @@ const portraitLabelImage = (investigatorId: string) => {
   const player = props.game.investigators[investigatorId]
 
   if (player.isYithian) {
-    return imgsrc(`portraits/${investigatorId.value.replace('c', '')}.jpg`)
+    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
   }
 
   return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
 }
 
 const portraitChoices = computed(() => {
-  if (!question.value) {
+  if (!question.value || question.value.tag !== 'QuestionLabel') {
     return []
   }
 
-  return question.value.question.choices.flatMap((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
+  if (question.value.question.tag !== 'ChooseOne') {
+    return []
+  }
+
+  return question.value.question.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
 })
 
 const labelChoices = computed(() => {
-  if (!question.value) {
+  if (!question.value || question.value.tag !== 'QuestionLabel') {
+    return []
+  }
+  
+  if (question.value.question.tag !== 'ChooseOne') {
     return []
   }
 
-  return question.value.question.choices.flatMap((c, idx) => c.tag !== MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
+  return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel, number]>((c, idx) => {
+    if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL) {
+      return [[c, idx]]
+    } else {
+      return []
+    }
+  })
 })
 
 const questionImage = computed(() => {
+
+  if (question.value.tag !== 'QuestionLabel') {
+    return null
+  }
 
   if(question.value.card) {
     return cardLabelImage(question.value.card)

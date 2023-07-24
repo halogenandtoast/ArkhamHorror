@@ -98,7 +98,6 @@ button {
 
 i.secret {
   font-family: 'Arkham';
-  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

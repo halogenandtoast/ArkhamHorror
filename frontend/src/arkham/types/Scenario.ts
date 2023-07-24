@@ -9,6 +9,7 @@ import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
 import { logContentsDecoder } from '@/arkham/types/Campaign';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import type { LogContents } from '@/arkham/types/Campaign';
+import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 
 export interface ScenarioName {
   title: string;
@@ -32,7 +33,7 @@ export interface Scenario {
   name: ScenarioName;
   id: string;
   reference: string;
-  difficulty: string;
+  difficulty: Difficulty;
   locationLayout: string[] | null;
   decksLayout: string[];
   decks: [string, Card[]][];
@@ -59,7 +60,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string,
   reference: JsonDecoder.string,
-  difficulty: JsonDecoder.string,
+  difficulty: difficultyDecoder,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),
   decksLayout: JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]'),
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),

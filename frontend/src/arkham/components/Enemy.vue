@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { withDefaults, computed, inject } from 'vue'
+import { computed } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game'
-import { Message, MessageType } from '@/arkham/types/Message'
+import { AbilityLabel, AbilityMessage, EvadeLabel, FightLabel, Message, MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -15,14 +15,16 @@ import Token from '@/arkham/components/Token.vue';
 import Story from '@/arkham/components/Story.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 
-export interface Props {
+const props = withDefaults(defineProps<{
   game: Game
   enemy: Arkham.Enemy
   investigatorId: string
   atLocation?: boolean
-}
+}>(), { atLocation: false })
 
-const props = withDefaults(defineProps<Props>(), { atLocation: false })
+const emits = defineEmits<{
+  choose: [value: number]
+}>()
 
 const enemyStory = computed(() => {
   const { stories } = props.game
@@ -47,7 +49,7 @@ function canInteract(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel | FightLabel | EvadeLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
     return true
   }
@@ -60,12 +62,14 @@ function isAbility(v: Message) {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
-  } else if (tag === 'EnemySource') {
-    return v.ability.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
+  } else if (source.tag === 'EnemySource') {
+    return source.contents === id.value
   }
 
   return false
@@ -74,9 +78,9 @@ function isAbility(v: Message) {
 const abilities = computed(() => {
   return choices
     .value
-    .reduce<number[]>((acc, v, i) => {
+    .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, i];
+        return [...acc, { contents: v, index: i }];
       }
 
       return acc;
@@ -95,11 +99,13 @@ const clues = computed(() => props.enemy.tokens[TokenType.Clue])
 const resources = computed(() => props.enemy.tokens[TokenType.Resource])
 const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
 
+const choose = (index: number) => emits('choose', index)
+
 </script>
 
 <template>
   <div class="enemy">
-    <Story v-if="enemyStory" :story="enemyStory" :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)"/>
+    <Story v-if="enemyStory" :story="enemyStory" :game="game" :investigatorId="investigatorId" @choose="choose"/>
     <template v-else>
       <img :src="image"
         :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
@@ -108,10 +114,10 @@ const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
       />
       <AbilityButton
         v-for="ability in abilities"
-        :key="ability"
-        :ability="choices[ability]"
+        :key="ability.index"
+        :ability="ability.contents"
         :data-image="image"
-        @click="$emit('choose', ability)"
+        @click="$emit('choose', ability.index)"
         />
     </template>
     <div class="pool">
@@ -119,11 +125,18 @@ const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
         <Key v-for="key in keys" :key="key" :name="key" />
       </div>
       <PoolItem type="health" :amount="enemyDamage" />
-      <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
-      <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
-      <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
-      <PoolItem v-if="lostSouls > 0" type="resource" :amount="lostSouls" />
-      <Token v-for="(sealedToken, index) in enemy.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+      <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+      <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+      <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+      <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
+      <Token
+        v-for="(sealedToken, index) in enemy.sealedChaosTokens"
+        :key="index"
+        :token="sealedToken"
+        :investigatorId="investigatorId"
+        :game="game"
+        @choose="choose"
+      />
     </div>
     <Treachery
       v-for="treacheryId in enemy.treacheries"

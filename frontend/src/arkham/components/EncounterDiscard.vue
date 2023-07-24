@@ -1,15 +1,14 @@
 <script lang="ts" setup>
 import type { Game } from '@/arkham/types/Game';
-import type { EncounterCardContents } from '@/arkham/types/Card';
+import type { CardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers'
 
-export interface Props {
+defineProps<{
   game: Game
-  cards: EncounterCardContents[]
-}
+  cards: CardContents[]
+}>()
 
-const props = defineProps<Props>()
-const image = (card: EncounterCardContents) => {
+const image = (card: CardContents) => {
   const { cardCode } = card;
   return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 }

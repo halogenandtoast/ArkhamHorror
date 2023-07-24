@@ -14,7 +14,7 @@ const props = defineProps<Props>()
 const waiting = ref(false)
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
-const solo = inject('solo')
+const solo = inject('solo', false)
 const investigator = computed(() => props.game.investigators[props.investigatorId])
 const xp = computed(() => investigator.value.xp)
 const skipping = ref(false)
@@ -47,7 +47,7 @@ function pasteDeck(evt: ClipboardEvent) {
 async function upgrade() {
   if (deckUrl.value) {
     upgradeDeck(props.game.id, props.investigatorId, deckUrl.value).then(() => {
-      if(!solo.value) {
+      if(!solo) {
         waiting.value = true
       }
     });
@@ -58,7 +58,7 @@ async function upgrade() {
 
 async function skip() {
   upgradeDeck(props.game.id, props.investigatorId).then(() => {
-    if(!solo.value) {
+    if(!solo) {
       waiting.value = true
     }
     skipping.value = false

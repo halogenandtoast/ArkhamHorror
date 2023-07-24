@@ -14,6 +14,7 @@ import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
 import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
+import { useDebug } from '@/arkham/debug'
 
 export interface Props {
   gameId: string
@@ -24,6 +25,7 @@ const source = ref(`${window.location.href}/join`) // fix-syntax`
 
 const props = withDefaults(defineProps<Props>(), { spectate: false })
 
+const debug = useDebug()
 const route = useRoute()
 const store = useCardStore()
 const { copy } = useClipboard({ source })
@@ -46,7 +48,6 @@ onUnmounted(() => close())
 store.fetchCards()
 const cards = computed(() => store.cards)
 
-const debug = ref(false)
 const ready = ref(false)
 const solo = ref(false)
 const game = ref<Arkham.Game | null>(null)
@@ -105,14 +106,9 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-async function debugChoose (message: any) { updateGameRaw(props.gameId, message) }
-
 function switchInvestigator (newInvestigatorId: string) { investigatorId.value = newInvestigatorId }
 
 async function update(state: Arkham.Game) { game.value = state }
-
-function toggleDebug() { debug.value = !debug.value }
 
 function debugExport () {
   fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
@@ -136,10 +132,8 @@ function debugExport () {
 
 const gameOver = computed(() => game.value.gameState.tag === "IsOver")
 
-provide('debug', debug)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
-provide('debugChoose', debugChoose)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
 </script>
@@ -200,7 +194,7 @@ provide('solo', solo)
   >
             <button :href="href" @click="navigate">View Log</button>
           </router-link>
-          <button @click="toggleDebug">Toggle Debug</button>
+          <button @click="debug.toggle">Toggle Debug</button>
           <button @click="debugExport">Debug Export</button>
         </div>
         <div class="game-over" v-if="gameOver">

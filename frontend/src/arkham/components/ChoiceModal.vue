@@ -4,16 +4,14 @@ import type { Game } from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { QuestionType } from '@/arkham/types/Question';
+import { AmountChoice, QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 
-export interface Props {
+const props = defineProps<{
   game: Game
   investigatorId: string
-}
-
-const props = defineProps<Props>()
+}>()
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 const focusedCards = computed(() => {
@@ -58,16 +56,22 @@ const question = computed(() => props.game.question[props.investigatorId])
 
 const investigatorName = (iid: string) => props.game.investigators[iid].name.title
 
-const amountsChoices = computed(() => {
+const paymentAmountsChoices = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     return question.value.paymentAmountChoices
-  } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
+  }
+
+  return []
+})
+
+const chooseAmountsChoices = computed<AmountChoice[]>(() => {
+  if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.value.amountChoices
   } else if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.value.question.amountChoices
   }
 
-  return null
+  return []
 })
 
 const amountSelections = ref<Record<string, number>>({})
@@ -201,7 +205,7 @@ const title = computed(() => {
   return null
 })
 
-const replaceIcons = function(body) {
+const replaceIcons = function(body: string) {
   return body.
     replace('{action}', '<span class="action-icon"></span>').
     replace('{fast}', '<span class="fast-icon"></span>').
@@ -240,7 +244,7 @@ const replaceIcons = function(body) {
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
           <legend>{{paymentAmountsLabel}}</legend>
-          <template v-for="amountChoice in amountsChoices" :key="amountChoice.investigatorId">
+          <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
             <div v-if="amountChoice.maxBound !== 0">
               {{investigatorName(amountChoice.investigatorId)}}
               <input
@@ -260,7 +264,7 @@ const replaceIcons = function(body) {
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
           <legend>{{paymentAmountsLabel}}</legend>
-          <template v-for="paymentChoice in amountsChoices" :key="paymentChoice.label">
+          <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.label">
             <div v-if="paymentChoice.maxBound !== 0">
               {{paymentChoice.label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.label]" onclick="this.select()" />
             </div>

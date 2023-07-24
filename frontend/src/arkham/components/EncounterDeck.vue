@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import { imgsrc } from '@/arkham/helpers';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { computed } from 'vue'
+import { Game } from '@/arkham/types/Game'
+import { imgsrc } from '@/arkham/helpers'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { MessageType } from '@/arkham/types/Message'
+import { useDebug } from '@/arkham/debug'
 
 export interface Props {
   game: Game
@@ -18,7 +19,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.investigator
 
 const usingSpectral = computed(() => {
   const { modifiers } = props.game.investigators[props.investigatorId]
-  return modifiers.some((m) => m.type.tag === "UseEncounterDeck" && m.type.contents === "SpectralEncounterDeck")
+  return modifiers ? modifiers.some((m) => m.type.tag === "UseEncounterDeck" && m.type.contents === "SpectralEncounterDeck") : false
 })
 
 const deckAction = computed(() => {
@@ -39,7 +40,7 @@ const investigatorPortrait = computed(() => {
   const player = props.game.investigators[props.investigatorId]
 
   if (player.isYithian) {
-    return imgsrc(`portraits/${props.investigatorId.value.replace('c', '')}.jpg`)
+    return imgsrc(`portraits/${props.investigatorId.replace('c', '')}.jpg`)
   }
 
   return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
@@ -52,8 +53,7 @@ const deckLabel = computed(() => {
   return null
 })
 
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 </script>
 
 <template>
@@ -73,9 +73,9 @@ const debugChoose = inject('debugChoose')
       class="portrait"
       :src="investigatorPortrait"
     />
-    <template v-if="debug">
-      <button @click="debugChoose({tag: 'InvestigatorDrawEncounterCard', contents: investigatorId})">Draw</button>
-      <button @click="debugChoose({tag: 'FindAndDrawEncounterCard', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, false]})">Select Draw</button>
+    <template v-if="debug.active">
+      <button @click="debug.send(game.id, {tag: 'InvestigatorDrawEncounterCard', contents: investigatorId})">Draw</button>
+      <button @click="debug.send(game.id, {tag: 'FindAndDrawEncounterCard', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, false]})">Select Draw</button>
     </template>
   </div>
 </template>

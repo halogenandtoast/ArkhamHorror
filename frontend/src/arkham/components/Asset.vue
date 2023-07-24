@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { ComputedRef, computed } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import type { Message } from '@/arkham/types/Message';
+import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
 import Event from '@/arkham/components/Event.vue';
@@ -12,15 +13,18 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
+import { Card } from '../types/Card';
 
-export interface Props {
+const props = defineProps<{
   game: Game
   asset: Arkham.Asset
   investigatorId: string
-}
+}>()
 
-const props = defineProps<Props>()
-const emit = defineEmits(['showCards', 'choose'])
+const emit = defineEmits<{
+  choose: [value: number]
+  showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+}>()
 
 const id = computed(() => props.asset.id)
 const hasPool = computed(() => {
@@ -51,14 +55,14 @@ function canInteract(c: Message): boolean {
 }
 
 function canAdjustHealth(c: Message): boolean {
-  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "DamageToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "AssetComponent" && c.component.tokenType === "DamageToken") {
     return c.component.assetId === id.value
   }
   return false
 }
 
 function canAdjustSanity(c: Message): boolean {
-  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "HorrorToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "AssetComponent" && c.component.tokenType === "HorrorToken") {
     return c.component.assetId === id.value
   }
   return false
@@ -68,17 +72,19 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
 const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability;
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
-  } else if (tag === 'AssetSource') {
-    return v.ability.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
+  } else if (source.tag === 'AssetSource') {
+    return source.contents === id.value
   }
 
   return false
@@ -87,9 +93,9 @@ function isAbility(v: Message) {
 const abilities = computed(() => {
   return choices
     .value
-    .reduce<number[]>((acc, v, i) => {
+    .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, i];
+        return [...acc, { contents: v, index: i }];
       }
 
       return acc;
@@ -103,8 +109,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
 
 const keys = computed(() => props.asset.keys)
 
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
@@ -135,14 +140,14 @@ const choose = (idx: number) => emit('choose', idx)
     <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
     <AbilityButton
       v-for="ability in abilities"
-      :key="ability"
-      :ability="choices[ability]"
+      :key="ability.index"
+      :ability="ability.contents"
       :data-image="image"
-      @click="choose(ability)"
+      @click="choose(ability.index)"
       />
-    <template v-if="debug">
-      <button v-if="!asset.investigator" @click="debugChoose({tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
-      <button v-if="asset.investigator" @click="debugChoose({tag: 'Discard', contents: { tag: 'AssetTarget', contents: id}})">Discard</button>
+    <template v-if="debug.active">
+      <button v-if="!asset.owner" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
+      <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: { tag: 'AssetTarget', contents: id}})">Discard</button>
     </template>
     <div v-if="hasPool" class="pool">
       <div class="keys" v-if="keys.length > 0">
@@ -167,9 +172,9 @@ const choose = (idx: number) => emit('choose', idx)
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="choose(sanityAction)"
       />
-      <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
-      <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
-      <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
+      <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+      <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+      <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
       <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
     <Asset

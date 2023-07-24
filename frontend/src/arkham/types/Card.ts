@@ -3,23 +3,53 @@ import { Tokens } from '@/arkham/types/Token';
 
 export type Card = PlayerCard | EncounterCard | VengeanceCard;
 
+function cardIsFlipped(card: Card) {
+  switch (card.tag) {
+    case 'PlayerCard':
+      return card.contents.isFlipped ?? false;
+    case 'EncounterCard':
+      return card.contents.isFlipped ?? false;
+    case 'VengeanceCard':
+      return cardIsFlipped(card.contents);
+  }
+}
+
+function cardArt(card: Card): string | undefined {
+  switch (card.tag) {
+    case 'PlayerCard':
+      return card.contents.art
+    case 'EncounterCard':
+      return card.contents.art
+    case 'VengeanceCard':
+      return cardArt(card.contents);
+  }
+}
+
+function asCardCode(card: Card): string {
+  switch (card.tag) {
+    case 'PlayerCard':
+      return card.contents.cardCode
+    case 'EncounterCard':
+      return card.contents.cardCode
+    case 'VengeanceCard':
+      return asCardCode(card.contents);
+  }
+}
+
+export function cardImage(card: Card) {
+  const side = cardIsFlipped(card) ? 'b' : ''
+  // TODO, send art with cards next to
+  const art = cardArt(card) || asCardCode(card).replace('c', '')
+  return `cards/${art}${side}.jpg`
+}
+
 export interface CardContents {
-  id: string;
-  cardCode: string;
-  isFlipped?: boolean;
-}
-
-export interface PlayerCardContents {
-  id: string;
-  cardCode: string;
-  isFlipped?: boolean;
-}
-
-export interface EncounterCardContents {
-  id: string;
-  cardCode: string;
-  isFlipped?: boolean;
-  tokens: Tokens;
+  tag: "CardContents"
+  id: string
+  cardCode: string
+  isFlipped?: boolean
+  tokens: Tokens
+  art?: string
 }
 
 export interface VengeanceCard {
@@ -29,37 +59,30 @@ export interface VengeanceCard {
 
 export interface PlayerCard {
   tag: 'PlayerCard';
-  contents: PlayerCardContents;
+  contents: CardContents;
 }
 
 export interface EncounterCard {
   tag: 'EncounterCard';
-  contents: EncounterCardContents;
+  contents: CardContents;
 }
 
-export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
+export const cardContentsDecoder = JsonDecoder.object<CardContents>(
   {
-    id: JsonDecoder.string,
-    cardCode: JsonDecoder.string,
-    isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
-  },
-  'PlayerCard',
-);
-
-export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardContents>(
-  {
+    tag: JsonDecoder.constant('CardContents'),
     id: JsonDecoder.string,
     cardCode: JsonDecoder.string,
     isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
     tokens: JsonDecoder.constant({}),
+    art: JsonDecoder.optional(JsonDecoder.string),
   },
-  'EncounterCard',
+  'CardContents',
 );
 
 export const playerCardDecoder = JsonDecoder.object<PlayerCard>(
   {
     tag: JsonDecoder.isExactly('PlayerCard'),
-    contents: playerCardContentsDecoder,
+    contents: cardContentsDecoder,
   },
   'PlayerCard',
 );
@@ -67,7 +90,7 @@ export const playerCardDecoder = JsonDecoder.object<PlayerCard>(
 export const encounterCardDecoder = JsonDecoder.object<EncounterCard>(
   {
     tag: JsonDecoder.isExactly('EncounterCard'),
-    contents: encounterCardContentsDecoder,
+    contents: cardContentsDecoder,
   },
   'EncounterCard',
 );

@@ -6,14 +6,15 @@ export type CampaignScenario = {
   anyRecorded?: SettingCondition[],
   settings: CampaignSetting[],
   resolutions?: Resolution[],
+  scenarioId?: string,
   force?: { scenarioId: string }
 }
 
-type RecordableEntry =
+export type RecordableEntry =
   { tag: "Recorded", value: string } |
   { tag: "CrossedOut", value: string }
 
-type RecordableSet = { recordable: string, entries: RecordableEntry[] }
+export type RecordableSet = { recordable: string, entries: RecordableEntry[] }
 
 export type CampaignOption = { key: string, ckey?: string }
 
@@ -49,17 +50,26 @@ export type ForceKey = { type: "key", key: string, scope?: string } | { type: "o
 export type ChooseKey = { key: string, forceWhen?: ForceKey }
 export type ChooseOption = { key: string }
 
-export type CampaignSetting =
-  { type: "CrossOut", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseNum", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ChooseKey", key: string, content: ChooseKey[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[], max?: number, min?: number } |
+export type CrossOutSetting = {
+  type: "CrossOut",
+  key: string,
+  ckey: string,
+  recordable: string,
+  content: Recordable,
+  ifRecorded?: SettingCondition[],
+  anyRecorded?: SettingCondition[]
+}
+
+export type CampaignSetting = CrossOutSetting |
+  { type: "Record", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseNum", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[], max?: number, min?: number } |
+  { type: "ChooseKey", key: string, content: ChooseKey[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
   { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
   { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "Option", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseOption", key: string, content: ChooseOption[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "SetRecordable", key: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "Record", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ForceRecorded", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
 
 const inactiveCondition = (campaignLog: CampaignLogSettings, condition: SettingCondition): boolean => {

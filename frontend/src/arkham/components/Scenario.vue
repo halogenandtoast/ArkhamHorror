@@ -115,9 +115,9 @@ function handleConnections() {
         const leftDivHeight = leftDivBottom - leftDivTop;
         const rightDivHeight = rightDivBottom - rightDivTop;
         const x1 = (leftDivLeft - bodyLeft) + (leftDivWidth/2)
-        const y1 = (leftDivTop - bodyTop) + (leftDivHeight/2)
+        const y1 = (leftDivTop - bodyTop)
         const x2 = (rightDivLeft - bodyLeft) + (rightDivWidth/2)
-        const y2 = (rightDivTop - bodyTop) + (rightDivHeight/2)
+        const y2 = (rightDivTop - bodyTop)
         const existingNode = document.querySelector(`[data-connection="${connection}"]`)
 
         if (existingNode) {

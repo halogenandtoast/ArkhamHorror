@@ -5,13 +5,15 @@ import StoryQuestion from '@/arkham/components/StoryQuestion.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 
-export interface Props {
+const props = defineProps<{
   game: Game
   investigatorId: string
-}
+}>()
 
-const props = defineProps<Props>()
-const emit = defineEmits(['update', 'choose'])
+const emit = defineEmits<{
+  update: [game: Game]
+  choose: [idx: number]
+}>()
 
 async function update(game: Game) {
   emit('update', game);

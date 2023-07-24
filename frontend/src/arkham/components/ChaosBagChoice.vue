@@ -5,14 +5,15 @@ import { imgsrc } from '@/arkham/helpers';
 import { ChaosBagStep } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 
-export interface Props {
+const props = defineProps<{
   game: Game
   investigatorId: string
   choice: ChaosBagStep
-}
+}>()
 
-const props = defineProps<Props>()
-const emit = defineEmits(['choose'])
+const emit = defineEmits<{
+  choose: [value: number]
+}>()
 
 const tokenChoices = computed(() => {
   switch (props.choice.tag) {
@@ -32,11 +33,12 @@ const tokenGroups = computed(() => {
   }
 })
 
+// The default of 1 has no purpose other than to make this value total
 const count = computed(() => {
   switch (props.choice.tag) {
     case 'ChooseMatch': return props.choice.amount
     case 'Choose': return props.choice.amount
-    default: return null
+    default: return 1
   }
 })
 
@@ -74,7 +76,7 @@ const allResolved = computed(() => {
   }
 })
 
-function pluralize(w, n) {
+function pluralize(w: string, n: number) {
   return `${n} ${w}${n == 1 ? '' : 's'}`
 }
 
@@ -98,12 +100,12 @@ function pluralize(w, n) {
         <template v-if="tokenChoice.tag ==='Resolved'">
           <Token v-for="(token, idx) in tokenChoice.tokens" :key="idx" :token="token" :game="game" :investigatorId="investigatorId" @choose="choose" />
         </template>
-        <template v-else-if="tokenChoice.step && tokenChoice.step.tag === 'Draw'">
+        <template v-else-if="'step' in tokenChoice && tokenChoice.step.tag === 'Draw'">
           <img :src="imgsrc('ct_blank.png')" class="token" v-if="tokenChoice.tag === 'Decided'" />
           <img :src="imgsrc('ct_blank.png')" class="token deciding" v-if="tokenChoice.tag === 'Deciding'" />
           <img :src="imgsrc('ct_choose.png')" class="token" v-if="tokenChoice.tag === 'Undecided'" />
         </template>
-        <template v-else-if="tokenChoice.step">
+        <template v-else-if="'step' in tokenChoice">
           <ChaosBagChoice :choice="tokenChoice.step" :game="game" :investigatorId="investigatorId" @choose="choose" />
         </template>
         <template v-else>

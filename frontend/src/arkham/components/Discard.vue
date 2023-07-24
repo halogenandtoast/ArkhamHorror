@@ -3,18 +3,20 @@ import type { Game } from '@/arkham/types/Game';
 import type { PlayerCard } from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 
-export interface Props {
+defineProps<{
   game: Game
   investigatorId: string
   cards: PlayerCard[]
-}
+}>()
 
-defineProps<Props>()
+defineEmits<{
+  choose: [value: number]
+}>()
 </script>
 
 <template>
   <div class="discards">
-    <div v-for="card in cards" :key="card.id" class="discard">
+    <div v-for="card in cards" :key="card.contents.id" class="discard">
       <Card :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     </div>
   </div>

@@ -1,14 +1,21 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { CampaignLogSettings, CampaignScenario, CampaignOption, settingActive, anyForced, isForcedKey } from '@/arkham/types/CampaignSettings'
+import {
+  type CampaignSetting,
+  type ChooseKey,
+  type CampaignLogSettings,
+  type CampaignScenario,
+  type CampaignOption,
+  settingActive,
+  anyForced,
+  isForcedKey
+} from '@/arkham/types/CampaignSettings'
 import { toCapitalizedWords } from '@/arkham/helpers'
 
-export interface Props {
+const props = defineProps<{
   step: CampaignScenario,
   campaignLog: CampaignLogSettings
-}
-
-const props = defineProps<Props>()
+}>()
 defineEmits(['toggle:key', 'toggle:option', 'toggle:set', 'set:key', 'set:option', 'toggle:crossout', 'set:num', 'set:record', 'toggle:record'])
 
 const activeSettings = computed(() => {
@@ -30,7 +37,7 @@ const inSet = function(key: string, value: string) {
   return false
 }
 
-const forceDisabled = (setting, option) => {
+const forceDisabled = (setting: CampaignSetting, option: ChooseKey) => {
   return anyForced(props.campaignLog, setting) && !isForcedKey(props.campaignLog, option)
 }
 
@@ -114,7 +121,7 @@ const forceDisabled = (setting, option) => {
           :min="setting.min ? setting.min : 0"
           :max="setting.max"
           :value="chosenNum(setting)"
-          @change.prevent="$emit('set:num', setting, parseInt($event.target.value))"
+          @change.prevent="$emit('set:num', setting, parseInt(($event.target as HTMLInputElement)?.value || '0'))"
         />
       </div>
       <div v-else-if="setting.type === 'SetRecordable'" class="options">
@@ -129,9 +136,6 @@ const forceDisabled = (setting, option) => {
             <label :for="`${step.key}${setting.key}${option.key}`">{{toCapitalizedWords(option.key)}}</label>
           </template>
         </div>
-      </div>
-      <div v-else>
-        {{setting.type}}
       </div>
     </div>
   </div>

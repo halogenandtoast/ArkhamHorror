@@ -23,6 +23,11 @@ export enum MessageType {
   EFFECT_ACTION_BUTTON = 'EffectActionButton'
 }
 
+export interface AbilityMessage {
+  contents: AbilityLabel | FightLabel | EvadeLabel
+  index: number
+} 
+
 export interface Done {
   tag: MessageType.DONE
   label: string

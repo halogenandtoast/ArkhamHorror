@@ -1,34 +1,35 @@
 <script lang="ts" setup>
-import { computed, inject, ref } from 'vue';
+import { ComputedRef, computed, ref } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import { imgsrc } from '@/arkham/helpers';
-import type { Game } from '@/arkham/types/Game';
-import type { Card } from '@/arkham/types/Card'
+import { type Game } from '@/arkham/types/Game';
+import { type Card, cardImage } from '@/arkham/types/Card'
 import * as ArkhamGame from '@/arkham/types/Game';
-import type { Message } from '@/arkham/types/Message';
+import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
-export interface Props {
+
+const props = defineProps<{
   agenda: Arkham.Agenda
   game: Game
   cardsUnder: Card[]
   cardsNextTo: Card[]
   investigatorId: string
-}
+}>()
 
-const props = defineProps<Props>()
-const emit = defineEmits(['show', 'choose'])
+const emit = defineEmits<{
+  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+  choose: [value: number]
+}>()
 
 const id = computed(() => props.agenda.id)
 const image = computed(() => {
-  if (props.agenda.flipped) {
-    return imgsrc(`cards/${id.value.replace('c', '')}b.jpg`);
-  }
-
-  return imgsrc(`cards/${id.value.replace('c', '')}.jpg`);
+  const suffix = props.agenda.flipped ? 'b' : ''
+  return imgsrc(`cards/${id.value.replace('c', '')}${suffix}.jpg`);
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
@@ -37,25 +38,26 @@ const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
 function canInteract(c: Message): boolean {
-  if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
-    return true
-  }
-  return false
+  return c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value
 }
 
 const interactAction = computed(() => choices.value.findIndex(canInteract));
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source && v.ability.source.source.contents === id.value
-  } else if (tag === 'AgendaSource') {
-    return v.ability.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
+  } else if (source.tag === 'AgendaSource') {
+    if ("contents" in source) {
+      return source.contents === id.value
+    }
   }
 
   return false
@@ -63,27 +65,23 @@ function isAbility(v: Message) {
 
 const abilities = computed(() => {
   return choices.value
-    .reduce<number[]>((acc, v, i) => {
+    .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, i];
+        return [...acc, { contents: v, index: i }]
       }
 
-      return acc;
+      return acc
     }, [])
 })
 
 const cardsUnder = computed(() => props.cardsUnder)
-const showCardsUnderAgenda = (e: Event) => emit('show', e, cardsUnder, 'Cards Under Agenda', false)
+const showCardsUnderAgenda = () => emit('show', cardsUnder, 'Cards Under Agenda', false)
 
 const imageForCard = (card: Card) => {
-  const side = card.contents.isFlipped ? 'b' : ''
-  // TODO, send art with cards next to
-  const art = card.contents.art || card.contents.cardCode.replace('c', '')
-  return imgsrc(`cards/${art}${side}.jpg`)
+  return imgsrc(cardImage(card))
 }
 
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 </script>
 
 <template>
@@ -102,10 +100,10 @@ const debugChoose = inject('debugChoose')
     />
     <AbilityButton
       v-for="ability in abilities"
-      :key="ability"
-      :ability="choices[ability]"
+      :key="ability.index"
+      :ability="ability.contents"
       :data-image="image"
-      @click="$emit('choose', ability)"
+      @click="$emit('choose', ability.index)"
       />
     <Treachery
       v-for="treacheryId in agenda.treacheries"
@@ -121,8 +119,8 @@ const debugChoose = inject('debugChoose')
         :amount="agenda.doom"
       />
 
-      <template v-if="debug">
-        <button @click="debugChoose({tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})">+</button>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})">+</button>
       </template>
     </div>
 

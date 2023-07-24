@@ -1,24 +1,28 @@
 <script lang="ts" setup>
-import { withDefaults, computed } from 'vue';
+import { computed } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import { TokenType } from '@/arkham/types/Token';
-import type { Card } from '@/arkham/types/Card';
+import type { Card, CardContents } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import type { Message } from '@/arkham/types/Message';
+import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 
-export interface Props {
+const props = withDefaults(defineProps<{
   game: Game
-  card: Card
+  card: Card | CardContents
   revealed?: boolean
   investigatorId: string
-}
+}>(), { revealed: false })
 
-const props = withDefaults(defineProps<Props>(), { revealed: false })
-const emit = defineEmits(['choose'])
+const emit = defineEmits<{
+  choose: [value: number]
+}>()
+
+const cardContents = computed<CardContents>(() => props.card.tag === "CardContents" ? props.card : (
+  props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents))
 
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
@@ -26,12 +30,12 @@ const image = computed(() => {
     return imgsrc(`${back}.jpg`);
   }
 
-  const { cardCode } = props.card.contents
-  const suffix = !props.revealed && props.card.contents.isFlipped ? 'b' : ''
+  const { cardCode, isFlipped } = cardContents.value
+  const suffix = !props.revealed && isFlipped ? 'b' : ''
   return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
 })
 
-const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : props.card.contents.id)
+const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : cardContents.value.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
@@ -47,33 +51,36 @@ const cardAction = computed(() => {
 })
 
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability;
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
   } else {
-    return v.ability.source.contents === id.value
+    return source.contents === id.value
   }
+
+  return false
 }
 
 const abilities = computed(() => {
-  return choices
-    .value
-    .reduce<number[]>((acc, v, i) => {
+  return choices.value
+    .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, i];
+        return [...acc, { contents: v, index: i }];
       }
 
       return acc;
     }, []);
 })
 
-const tokens = computed(() => props.card.tokens || {})
+const tokens = computed(() => cardContents.value.tokens || {})
 
 const doom = computed(() => tokens.value[TokenType.Doom])
 const clues = computed(() => tokens.value[TokenType.Clue])
@@ -107,10 +114,10 @@ const hasPool = computed(() => {
     </div>
     <AbilityButton
       v-for="ability in abilities"
-      :key="ability"
-      :ability="choices[ability]"
+      :key="ability.index"
+      :ability="ability.contents"
       :data-image="image"
-      @click="$emit('choose', ability)"
+      @click="$emit('choose', ability.index)"
       />
   </div>
 </template>

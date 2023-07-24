@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
+import { useDebug } from '@/arkham/debug'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { TokenType } from '@/arkham/types/Token'
@@ -24,8 +25,7 @@ const props = withDefaults(defineProps<Props>(), { portrait: false })
 const emit = defineEmits(['showCards', 'choose'])
 
 const id = computed(() => props.player.id)
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 
 function canActivateAbility(c: Message): boolean {
   if (c.tag  === MessageType.ABILITY_LABEL) {
@@ -229,9 +229,9 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
         :class="{ 'resource--can-take': takeResourceAction !== -1 }"
         @choose="$emit('choose', takeResourceAction)"
       />
-      <template v-if="debug">
-        <button @click="debugChoose({tag: 'TakeResources', contents: [id, 1, {tag: 'GameSource' }, false]})">+</button>
-        <button @click="debugChoose({tag: 'SpendResources', contents: [id, 1]})">-</button>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'TakeResources', contents: [id, 1, {tag: 'GameSource' }, false]})">+</button>
+        <button @click="debug.send(game.id, {tag: 'SpendResources', contents: [id, 1]})">-</button>
       </template>
       <PoolItem
         type="clue"
@@ -239,8 +239,8 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
         :class="{ 'resource--can-spend': spendCluesAction !== -1 }"
         @choose="$emit('choose', spendCluesAction)"
       />
-      <template v-if="debug">
-        <button @click="debugChoose({tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})">+</button>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})">+</button>
       </template>
       <PoolItem
         type="health"
@@ -248,9 +248,9 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="$emit('choose', healthAction)"
       />
-      <template v-if="debug">
-        <button @click="debugChoose({tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})">+</button>
-        <button @click="debugChoose({tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})">+</button>
+        <button @click="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
       </template>
       <PoolItem
         type="sanity"
@@ -258,9 +258,9 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="$emit('choose', sanityAction)"
       />
-      <template v-if="debug">
-        <button @click="debugChoose({tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
-        <button @click="debugChoose({tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
+        <button @click="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
       </template>
       <span><i class="action" v-for="n in player.remainingActions" :key="n"></i></span>
       <span v-if="player.additionalActions.length > 0">
@@ -271,8 +271,8 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
           <i v-else class="action" :class="`${player.class.toLowerCase()}Action`"></i>
         </template>
       </span>
-      <template v-if="debug">
-        <button @click="debugChoose({tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
       </template>
       <AbilityButton
         v-for="ability in abilities"

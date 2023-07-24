@@ -1,29 +1,26 @@
 <script lang="ts" setup>
-import { withDefaults } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 
-export interface Props {
+withDefaults(defineProps<{
   game: Game
   cards: CardContents[]
   investigatorId: string
   isDiscards?: boolean
   title: string
-}
-
-const props = withDefaults(defineProps<Props>(), { isDiscards: false })
+}>(), { isDiscards: false })
 </script>
 
 <template>
   <Draggable class="card-row">
     <template #handle>
-      <h2>{{props.title}}</h2>
+      <h2>{{title}}</h2>
     </template>
     <div class="card-row-cards">
-      <div v-for="card in props.cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
-        <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="$emit('choose', $event)" />
+      <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
+        <Card :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
       </div>
     </div>
     <button class="close" @click="$emit('close')">Close</button>

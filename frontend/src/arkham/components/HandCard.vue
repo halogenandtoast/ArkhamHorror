@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed, inject, Ref } from 'vue'
-import type { Card } from '@/arkham/types/Card'
+import { CardContents, type Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
-import type { Message } from '@/arkham/types/Message'
+import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType} from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -17,7 +17,10 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const id = computed(() => props.card.contents.id)
+const cardContents = computed<CardContents>(() => 
+  props.card.tag == 'VengeanceCard' ? props.card.contents.contents : props.card.contents)
+
+const id = computed(() => cardContents.value.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 const cardAction = computed(() => {
@@ -32,21 +35,23 @@ const cardAction = computed(() => {
 
 const solo = inject<Ref<boolean>>('solo')
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== 'AbilityLabel') {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability;
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
-  } else if (tag === 'CardIdSource') {
-    return v.ability.source.contents === id.value
-  } else if (tag === 'EventSource') {
-    return v.ability.source.contents === id.value
-  } else if (tag === 'AssetSource') {
-    return v.ability.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
+  } else if (source.tag === 'CardIdSource') {
+    return source.contents === id.value
+  } else if (source.tag === 'EventSource') {
+    return source.contents === id.value
+  } else if (source.tag === 'AssetSource') {
+    return source.contents === id.value
   }
 
   return false
@@ -55,9 +60,9 @@ function isAbility(v: Message) {
 const abilities = computed(() => {
   return choices
     .value
-    .reduce<number[]>((acc, v, i) => {
+    .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, i];
+        return [...acc, { contents: v, index: i}];
       }
 
       return acc;
@@ -76,7 +81,7 @@ const cardBack = computed(() => {
 })
 
 const image = computed(() => {
-  const { cardCode } = props.card.contents;
+  const { cardCode } = cardContents.value;
   return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 })
 </script>
@@ -92,10 +97,10 @@ const image = computed(() => {
 
     <AbilityButton
       v-for="ability in abilities"
-      :key="ability"
-      :ability="choices[ability]"
+      :key="ability.index"
+      :ability="ability.contents"
       :data-image="image"
-      @click="$emit('choose', ability)"
+      @click="$emit('choose', ability.index)"
       />
 
   </div>

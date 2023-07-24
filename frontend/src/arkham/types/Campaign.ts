@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 
 export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep | ResupplyPoint
 
@@ -93,7 +94,7 @@ export interface Campaign {
   id: string;
   log: LogContents;
   step: CampaignStep | null;
-  difficulty: string;
+  difficulty: Difficulty;
 }
 
 export interface SomeRecordable {
@@ -120,7 +121,7 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
 export const campaignDecoder = JsonDecoder.object<Campaign>({
   name: JsonDecoder.string,
   id: JsonDecoder.string,
-  difficulty: JsonDecoder.string,
+  difficulty: difficultyDecoder,
   log: logContentsDecoder,
   step: JsonDecoder.nullable(campaignStepDecoder)
 }, 'Campaign');

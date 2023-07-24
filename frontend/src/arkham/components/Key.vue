@@ -2,22 +2,22 @@
 
 import {computed} from 'vue'
 import {imgsrc} from '@/arkham/helpers'
+import { type ArkhamKey } from '@/arkham/types/Key'
 
-export interface Props {
-  name: string
-}
+const props = defineProps<{
+  name: ArkhamKey
+}>()
 
-const props = defineProps<Props>()
-
-const keyImage = computed(() => {
-  switch (props.name) {
+const keyToImage = (k: ArkhamKey): string => {
+  switch (k) {
     case "SkullKey": return imgsrc("ct_skull.png")
     case "CultistKey": return imgsrc("ct_cultist.png")
     case "TabletKey": return imgsrc("ct_tablet.png")
     case "ElderThingKey": return imgsrc("ct_elderthing.png")
-    default: return props.name satisfies never
   }
-})
+}
+
+const keyImage = computed<string>(() => keyToImage(props.name))
 
 </script>
 

@@ -6,7 +6,7 @@ import { imgsrc } from '@/arkham/helpers'
 import { TokenType } from '@/arkham/types/Token'
 import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
-import type { Message } from '@/arkham/types/Message'
+import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import type { Modifier } from '@/arkham/types/Modifier'
 import PoolItem from '@/arkham/components/PoolItem.vue'
@@ -29,7 +29,9 @@ const debug = useDebug()
 
 function canActivateAbility(c: Message): boolean {
   if (c.tag  === MessageType.ABILITY_LABEL) {
-    return c.ability.source.contents === id.value
+    if ("contents" in c.ability.source) {
+      return c.ability.source.contents === id.value
+    }
   }
   return false
 }
@@ -51,17 +53,19 @@ const investigatorAction = computed(() => {
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability;
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
-  } else if (tag === 'InvestigatorSource') {
-    return v.ability.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
+  } else if (source.tag === 'InvestigatorSource') {
+    return source.contents === id.value
   }
 
   return false
@@ -70,9 +74,9 @@ function isAbility(v: Message) {
 const abilities = computed(() => {
   return choices
     .value
-    .reduce<number[]>((acc, v, i) => {
+    .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, i];
+        return [...acc, { contents: v, index: i }];
       }
 
       return acc;
@@ -80,14 +84,14 @@ const abilities = computed(() => {
 })
 
 function canAdjustHealth(c: Message): boolean {
-  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "DamageToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent" && c.component.tokenType === "DamageToken") {
     return c.component.investigatorId === id.value
   }
   return false
 }
 
 function canAdjustSanity(c: Message): boolean {
-  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "HorrorToken") {
+  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent" && c.component.tokenType === "HorrorToken") {
     return c.component.investigatorId === id.value
   }
   return false
@@ -99,7 +103,7 @@ const sanityAction = computed(() => props.choices.findIndex(canAdjustSanity))
 const takeResourceAction = computed(() => {
   return props.choices
     .findIndex((c) => {
-      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "ResourceToken") {
+      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent" && c.component.tokenType === "ResourceToken") {
         return c.component.investigatorId === id.value
       }
       return false
@@ -109,7 +113,7 @@ const takeResourceAction = computed(() => {
 const spendCluesAction = computed(() => {
   return props.choices
     .findIndex((c) => {
-      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tokenType === "ClueToken") {
+      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent"  && c.component.tokenType === "ClueToken") {
         return c.component.investigatorId === id.value
       }
       return false
@@ -167,24 +171,24 @@ function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) 
   return modified
 }
 
-function useEffectAction(action) {
+function useEffectAction(action: { contents: string[] }) {
   const choice = choices.value.findIndex((c) => c.tag === 'EffectActionButton' && c.effectId == action.contents[1])
   if (choice !== -1) {
     emit('choose', choice)
   }
 }
 
-function isActiveEffectAction(action) {
+function isActiveEffectAction(action: { tag?: "EffectAction"; contents: any }) {
   const choice = choices.value.findIndex((c) => c.tag === 'EffectActionButton' && c.effectId == action.contents[1])
   return choice !== -1
 }
 
 const keys = computed(() => props.player.keys)
 
-const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWillpower", modifiers.value))
-const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value))
-const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value))
-const agility = computed(() => calculateSkill(props.player.agility, "SkillAgility", modifiers.value))
+const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWillpower", modifiers.value ?? []))
+const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value ?? []))
+const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value ?? []))
+const agility = computed(() => calculateSkill(props.player.agility, "SkillAgility", modifiers.value ?? []))
 
 
 // const doom = computed(() => props.player.tokens[TokenType.Doom])
@@ -276,9 +280,9 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
       </template>
       <AbilityButton
         v-for="ability in abilities"
-        :key="ability"
-        :ability="choices[ability]"
-        @click="$emit('choose', ability)"
+        :key="ability.index"
+        :ability="ability.contents"
+        @click="$emit('choose', ability.index)"
         />
       <button
         :disabled="endTurnAction === -1"
@@ -291,7 +295,6 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
 <style scoped lang="scss">
 i.action {
   font-family: 'Arkham';
-  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

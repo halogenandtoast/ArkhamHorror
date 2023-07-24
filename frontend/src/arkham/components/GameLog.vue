@@ -4,12 +4,10 @@ import { undoChoice } from '@/arkham/api'
 import { Game } from '@/arkham/types/Game';
 import GameMessage from '@/arkham/components/GameMessage.vue';
 
-export interface Props {
+const props = defineProps<{
   game: Game
   gameLog: string[]
-}
-
-const props = defineProps<Props>()
+}>()
 const messages = ref<Element | null>(null)
 const truncatedGameLog = computed(() => props.gameLog.slice(-10))
 

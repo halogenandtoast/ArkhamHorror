@@ -4,6 +4,7 @@
     "module": "es2022",
     "strict": true,
     "jsx": "preserve",
+    "strictNullChecks": true,
     "importHelpers": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,

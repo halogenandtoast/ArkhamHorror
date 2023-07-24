@@ -5,11 +5,9 @@ import type { AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Messag
 import type { Ability } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
 
-export interface Props {
+const props = defineProps<{
  ability: AbilityLabel | FightLabel | EvadeLabel
-}
-
-const props = defineProps<Props>()
+}>()
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 

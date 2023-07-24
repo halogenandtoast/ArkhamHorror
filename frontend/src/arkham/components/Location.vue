@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { ref, computed, inject } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -21,7 +22,10 @@ export interface Props {
   investigatorId: string
 }
 
+const showAbilities = ref<boolean>(false)
+
 const props = defineProps<Props>()
+const emits = defineEmits(['choose'])
 
 const image = computed(() => {
   const { cardCode, revealed } = props.location
@@ -33,7 +37,7 @@ const image = computed(() => {
 const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-function canInteract(c: Message): boolean {
+function isCardAction(c: Message): boolean {
   if (c.tag === "TargetLabel") {
      return c.target.contents === id.value
   }
@@ -46,7 +50,21 @@ function canInteract(c: Message): boolean {
   return false
 }
 
-const cardAction = computed(() => choices.value.findIndex(canInteract))
+const cardAction = computed(() => choices.value.findIndex(isCardAction))
+const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
+
+async function clicked() {
+  if(cardAction.value !== -1) {
+    emits('choose', cardAction.value)
+  } else {
+    showAbilities.value = !showAbilities.value
+  }
+}
+
+async function chooseAbility(ability) {
+  showAbilities.value = false
+  emits('choose', ability)
+}
 
 function isAbility(v: Message) {
   if (v.tag !== 'AbilityLabel') {
@@ -92,8 +110,7 @@ const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
 const horror = computed(() => props.location.tokens[TokenType.Horror])
 
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 </script>
 
 <template>
@@ -114,32 +131,38 @@ const debugChoose = inject('debugChoose')
       </div>
     </div>
     <div class="location-column">
-      <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
+      <div class="card-frame">
+        <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
-      <div
-        :class="{ 'location--can-interact': cardAction !== -1 }"
-        :data-id="id"
-        class="card-container"
-        @click="$emit('choose', cardAction)">
-        <div
-          class="card location-card"
-          :style="{ backgroundImage: `url(${image})` }"
-          ></div>
-        <div
-          class="card location-connections"
-          :style="{ backgroundImage: `url(${image})` }"
-          ></div>
-      </div>
-      <AbilityButton
-        v-for="ability in abilities"
-        :key="ability"
-        :ability="choices[ability]"
-        :data-image="image"
-        @click="$emit('choose', ability)"
+        <img
+          :data-id="id"
+          class="card"
+          :src="image"
+          :class="{ 'location--can-interact': canInteract }"
+          @click="clicked"
         />
-      <template v-if="debug">
-        <button v-if="!location.revealed" @click="debugChoose({tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
-      </template>
+
+        <div class="pool">
+          <Key v-for="key in keys" :key="key" :name="key" />
+          <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
+          <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
+          <PoolItem v-if="horror > 0" type="horror" :amount="horror" />
+          <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
+        </div>
+      </div>
+      <div v-if="showAbilities" class="abilities">
+        <AbilityButton
+          v-for="ability in abilities"
+          :key="ability"
+          :ability="choices[ability]"
+          :data-image="image"
+          @click="chooseAbility(ability)"
+          />
+        <template v-if="debug.active">
+          <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
+        </template>
+      </div>
       <Treachery
         v-for="treacheryId in location.treacheries"
         :key="treacheryId"
@@ -157,26 +180,6 @@ const debugChoose = inject('debugChoose')
         :key="eventId"
         @choose="$emit('choose', $event)"
       />
-      <div class="pool">
-        <div class="keys" v-if="keys.length > 0">
-          <Key v-for="key in keys" :key="key" :name="key" />
-        </div>
-        <div v-if="clues > 0" class="pool">
-          <PoolItem type="clue" :amount="clues" />
-        </div>
-        <div v-if="doom > 0" class="pool">
-          <PoolItem type="doom" :amount="doom" />
-        </div>
-        <div v-if="horror > 0" class="pool">
-          <PoolItem type="horror" :amount="horror" />
-        </div>
-        <div v-if="location.cardsUnderneath.length > 0" class="pool">
-          <PoolItem type="card" :amount="location.cardsUnderneath.length" />
-        </div>
-        <div v-if="resources > 0" class="pool">
-          <PoolItem type="resource" :amount="resources" />
-        </div>
-      </div>
     </div>
     <div class="location-asset-column">
       <Asset
@@ -202,13 +205,14 @@ const debugChoose = inject('debugChoose')
 
 <style scoped lang="scss">
 .location--can-interact {
-  border: 3px solid $select;
+  border: 2px solid $select;
   cursor: pointer;
 }
 
 .card {
-  width: $card-width;
+  width: calc($card-width + 4px);
   border-radius: 3px;
+  box-sizing: border-box;
 }
 
 .location-column :deep(.enemy) {
@@ -234,6 +238,7 @@ const debugChoose = inject('debugChoose')
   display: flex;
   margin: 0 5px;
   min-width: 187px;
+  position: relative;
 }
 
 .button{
@@ -241,7 +246,7 @@ const debugChoose = inject('debugChoose')
   border: 0;
   color: #fff;
   border-radius: 4px;
-  border: 1px solid #ff00ff;
+  padding: 5px 10px;
 }
 
 .location-column {
@@ -252,36 +257,19 @@ const debugChoose = inject('debugChoose')
 
 .pool {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-self: flex-start;
   height: 2em;
 }
 
 .status-icon {
-  align-self: center;
+  position: absolute;
+  top: 10%;
   background: rgba(255, 255, 255, 0.7);
   border-radius: 1.5em;
   font-size: 2.6em;
   color: rgba(0, 0, 0, 0.8);
-  position: absolute;
-  top: 19px;
   pointer-events: none;
-}
-
-.location-card {
-  height: $card-width * 1.07;
-  width: $card-width * 1.25;
-  background-size: 100%;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.location-connections {
-  height: $card-width * 0.27;
-  width: $card-width * 1.25;
-  background-size: 100%;
-  background-position: bottom;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
 }
 
 .card-container {
@@ -289,8 +277,8 @@ const debugChoose = inject('debugChoose')
 }
 
 .location-investigator-column {
-  min-width: $card-width * 0.6;
-  height: 100%;
+  position: absolute;
+  right: 100%;
   &:deep(.portrait) {
     height: 25%;
   }
@@ -305,8 +293,29 @@ const debugChoose = inject('debugChoose')
 }
 
 .pool {
+  position: absolute;
+  top: 50%;
+  align-items: center;
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
+  * {
+    transform: scale(0.6);
+  }
+}
+
+.card-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.abilities {
+  position: absolute;
+  bottom:100%;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 </style>

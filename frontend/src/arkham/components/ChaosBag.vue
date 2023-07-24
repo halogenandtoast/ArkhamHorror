@@ -1,24 +1,25 @@
 <script lang="ts" setup>
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
-import { MessageType } from '@/arkham/types/Message';
+import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 
-export interface Props {
+const props = defineProps<{
   game: Game
   skillTest?: SkillTest
   chaosBag: ChaosBag
   investigatorId: string
-}
+}>()
 
-const props = defineProps<Props>()
-
-const emit = defineEmits(['choose'])
+const emit = defineEmits<{
+  choose: [value: number]
+}>()
 
 function imageFor(tokenFace: string) {
   switch (tokenFace) {
@@ -64,11 +65,7 @@ const revealedChaosTokens = computed(() => {
     return props.game.focusedChaosTokens;
   }
 
-  if (props.game.skillTestChaosTokens !== []) {
-    return props.game.skillTestChaosTokens;
-  }
-
-  return [];
+  return props.game.skillTestChaosTokens;
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
@@ -76,7 +73,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.investigator
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
 
 const investigatorPortrait = computed(() => {
-  const choice = choices.value.find((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON)
+  const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON) 
   if (choice) {
     const player = props.game.investigators[choice.investigatorId]
 
@@ -100,8 +97,7 @@ const investigatorPortrait = computed(() => {
   return null;
 })
 
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 
 const tokenFaces = computed(() => [...new Set(props.chaosBag.chaosTokens.map(t => t.face))])
 
@@ -122,15 +118,15 @@ const choose = (idx: number) => emit('choose', idx)
       :src="imgsrc('ct_blank.png')"
       @click="choose(tokenAction)"
     />
-    <template v-if="debug && tokenAction !== -1">
-      <div class="token-debug" v-for="tokenFace in tokenFaces" :key="tokenFace" @click="debugChoose({tag: 'ForceChaosTokenDraw', contents: tokenFace})">
+    <template v-if="debug.active && tokenAction !== -1">
+      <div class="token-debug" v-for="tokenFace in tokenFaces" :key="tokenFace" @click="debug.send(game.id, {tag: 'ForceChaosTokenDraw', contents: tokenFace})">
         <img
           class="token"
           :src="imageFor(tokenFace)"
         />
         </div>
     </template>
-    <ChaosBagChoice v-if="chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice" :game="game" :investigatorId="investigatorId" @choose="choose" />
+    <ChaosBagChoice v-if="chaosBag.choice && 'step' in chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice.step" :game="game" :investigatorId="investigatorId" @choose="choose" />
   </div>
 </template>
 
@@ -148,21 +144,6 @@ const choose = (idx: number) => emit('choose', idx)
 
 .portrait {
   width: $card-width;
-}
-
-.active-token {
-  border: 5px solid #ff00ff;
-  border-radius: 500px;
-  cursor: pointer;
-}
-
-.ignored {
-  position: relative;
-  filter: sepia(1);
-}
-
-.token-container {
-  display: inline-block;
 }
 
 .token-debug {

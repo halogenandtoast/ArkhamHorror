@@ -4,13 +4,20 @@ import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 
-export interface Props {
+const props = defineProps<{
   game: Game
   cards: CardContents[]
   investigatorId: string
+}>()
+
+const emits = defineEmits<{
+  choose: [value: number]
+}>()
+
+const choose = (value: number) => {
+  emits('choose', value)
 }
 
-const props = defineProps<Props>()
 const cards = computed(() => props.cards.filter(c => c).reverse())
 </script>
 
@@ -18,7 +25,7 @@ const cards = computed(() => props.cards.filter(c => c).reverse())
   <div class="card-row-cards">
     <div class="card-row-cards--inner">
       <div v-for="card in cards" :key="card.id" class="card-row-card">
-        <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="$emit('choose', $event)" />
+        <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="choose" />
       </div>
     </div>
   </div>

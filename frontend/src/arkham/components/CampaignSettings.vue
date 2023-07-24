@@ -10,9 +10,14 @@ import {
   settingActive,
   completedCampaignScenarioSetting,
   isForcedKey,
-  anyForced
+  anyForced,
+  RecordableSet,
+  CrossOutSetting,
+RecordableEntry
 } from '@/arkham/types/CampaignSettings'
 import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting.vue'
+import { Campaign } from '@/arkham/types/Campaign'
+import { Game } from '@/arkham/types/Game'
 
 export interface Props {
   game: Game
@@ -29,7 +34,15 @@ const campaignLog = ref<CampaignLogSettings>({
   options: []
 })
 
-const selectedScenario = computed(() => props.campaign.step.contents.replace(/^c/, ''))
+const selectedScenario = computed(() => {
+  const { step } = props.campaign
+
+  if(step && step.tag === 'ScenarioStep') {
+    return step.contents.replace(/^c/, '')
+  }
+
+  return null
+})
 
 const campaignSettings = ref<CampaignScenario[]>([])
 
@@ -47,7 +60,7 @@ const activeSettings = computed(() => {
 // standaloneSettings in order to never alter its original value.
 const computedCampaignSettings = computed<CampaignScenario[]>(() => {
   const c = campaignJSON.find((c) => c.id == props.campaign.id)
-  return c.settings || []
+  return c ? c.settings as CampaignScenario[] : []
 })
 
 const completedCampaignSettings = computed(() => {
@@ -58,7 +71,7 @@ const completedCampaignSettings = computed(() => {
   )
 })
 
-const isForced = (s) => s.scenarioId == selectedScenario.value
+const isForced = (s: { scenarioId: string }) => s.scenarioId == selectedScenario.value
 
 watch(computedCampaignSettings, (newSettings) => {
   const idx = newSettings.
@@ -67,15 +80,15 @@ watch(computedCampaignSettings, (newSettings) => {
   const relevantSettings = newSettings.
     filter((s, i) => i < idx || s.force && isForced(s.force))
 
-  const crossOut = relevantSettings.
+  const crossOut: CrossOutSetting[] = relevantSettings.
     flatMap((s) => s.settings.
-    filter(s => s.type === "CrossOut"))
+    filter((s): s is CrossOutSetting => s.type === "CrossOut"))
 
   const sets = crossOut.reduce((a, s) => ({
     ...a,
     [s.key]: {
       recordable: s.recordable,
-      entries: s.content.map((c) => ({ tag: "Recorded", value: c.content }))
+      entries: [{ tag: "Recorded", value: s.content }]
     }
   }), {})
 
@@ -105,7 +118,7 @@ const filterSettings = function() {
         if (t.type === 'ForceRecorded') {
           a.sets.push(t.ckey)
           const current = a.forcedSets[t.ckey]
-          const entry = { tag: "Recorded", value: t.content }
+          const entry = { tag: "Recorded", value: t.content } as RecordableEntry
           a.forcedSets[t.ckey] = current
             ? { ...current, entries: [...current.entries, entry] }
             : { recordable: t.recordable, entries: [entry] }
@@ -144,10 +157,10 @@ const filterSettings = function() {
       }
     })
     return a
-  }, { keys: [], sets: [], options: [], counts: [], forcedKeys: [], forcedSets: {} })
+  }, { keys: [], sets: [], options: [], counts: [], forcedKeys: [], forcedSets: {} as Record<string,RecordableSet>})
 
-  const onlyUnique = (value, index, self) => {
-    const idx = self.findIndex((s) =>
+  const onlyUnique = (value: { scope: any; key: any }, index: any, self: any[]) => {
+    const idx = self.findIndex((s: { scope: any; key: any }) =>
       s.scope && value.scope
         ? s.key === value.key && s.scope === value.scope
         : s.key === value.key
@@ -155,8 +168,8 @@ const filterSettings = function() {
     return idx === index
   }
 
-  const onlyUniqueValues = (value, index, self) => {
-    const idx = self.findIndex((s) => s.value === value.value)
+  const onlyUniqueValues = (value: { value: any }, index: any, self: any[]) => {
+    const idx = self.findIndex((s: { value: any }) => s.value === value.value)
     return idx === index
   }
 
@@ -241,7 +254,7 @@ const toggleOption = function(setting: CampaignSetting) {
   filterSettings()
 }
 
-const toggleSet = function(setting) {
+const toggleSet = function(setting: { type: string; ckey: string | number; content: string; recordable: any }) {
   if(setting.type === 'SetRecordable') {
     const current = campaignLog.value
     const set = current.sets[setting.ckey]
@@ -261,12 +274,12 @@ const toggleSet = function(setting) {
   filterSettings()
 }
 
-const chooseRecordable = function(setting, value) {
+const chooseRecordable = function(setting: { type: string; ckey: string | number; content: any[]; recordable: any }, value: any) {
   if(setting.type === 'ChooseRecordable') {
     const current = campaignLog.value
     const set = current.sets[setting.ckey]
     if (set) {
-      const keysToRemove = setting.content.filter((k) => k.content !== value).map((k) => k.content)
+      const keysToRemove = setting.content.filter((k: { content: any }) => k.content !== value).map((k: { content: any }) => k.content)
       set.entries = [...set.entries.filter((e) => !keysToRemove.includes(e.value)), { tag: "Recorded", value }]
     } else {
       campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value }]}}}
@@ -276,7 +289,7 @@ const chooseRecordable = function(setting, value) {
   filterSettings()
 }
 
-const toggleRecordable = function(setting, value) {
+const toggleRecordable = function(setting: { type: string; key: string | number; recordable: any }, value: string) {
   if(setting.type === 'Record') {
     const current = campaignLog.value
     const set = current.sets[setting.key]

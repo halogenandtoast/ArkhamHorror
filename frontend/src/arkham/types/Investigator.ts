@@ -5,8 +5,8 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import {
   Card,
-  PlayerCardContents,
-  playerCardContentsDecoder,
+  CardContents,
+  cardContentsDecoder,
   cardDecoder,
 } from '@/arkham/types/Card';
 
@@ -59,9 +59,9 @@ export interface Investigator {
   engagedEnemies: string[];
   assets: string[];
   events: string[];
-  discard: PlayerCardContents[];
+  discard: CardContents[];
   hand: Card[];
-  deck: PlayerCardContents[];
+  deck: CardContents[];
   decks: [string, Card[]][];
   treacheries: string[];
   defeated: boolean;
@@ -72,7 +72,7 @@ export interface Investigator {
   xp: number;
   supplies: string[];
   keys: ArkhamKey[];
-  hunchDeck?: PlayerCardContents[];
+  hunchDeck?: CardContents[];
   revealedHunchCard?: string | null;
   isYithian: boolean;
 }
@@ -98,11 +98,11 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   // deck: Deck PlayerCard,
-  discard: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
+  discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
-  deck: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
+  deck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
-  hunchDeck: JsonDecoder.optional(JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]')),
+  hunchDeck: JsonDecoder.optional(JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]')),
   revealedHunchCard: JsonDecoder.optional(JsonDecoder.nullable(JsonDecoder.string)),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),

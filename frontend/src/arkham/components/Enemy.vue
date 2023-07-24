@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { withDefaults, computed, inject } from 'vue'
+import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
@@ -86,8 +87,7 @@ const isExhausted = computed(() => props.enemy.exhausted)
 
 const keys = computed(() => props.enemy.keys)
 
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 
 const enemyDamage = computed(() => (props.enemy.tokens[TokenType.Damage] || 0) + props.enemy.assignedDamage)
 const doom = computed(() => props.enemy.tokens[TokenType.Doom])
@@ -143,8 +143,8 @@ const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
-    <template v-if="debug">
-      <button @click="debugChoose({tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
+    <template v-if="debug.active">
+      <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
     </template>
   </div>
 </template>

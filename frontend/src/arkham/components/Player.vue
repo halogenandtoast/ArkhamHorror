@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref, inject, ComputedRef, reactive } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamCard from '@/arkham/types/Card';
@@ -125,8 +126,7 @@ const playerHand = computed(() => props.player.hand.filter((card) => !committedC
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.inFrontOf === props.player.id))
 
-const debug = inject('debug')
-const debugChoose = inject('debugChoose')
+const debug = useDebug()
 const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
 
 function beforeLeaveHand(el) {
@@ -261,8 +261,8 @@ function beforeLeaveHand(el) {
           <span class="deck-size">{{player.deckSize}}</span>
           <button v-if="playTopOfDeckAction !== -1" @click="$emit('choose', playTopOfDeckAction)">Play</button>
         </div>
-        <template v-if="debug">
-          <button @click="debugChoose({tag: 'Search', contents: [investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'AnyCard', contents: []}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
+        <template v-if="debug.active">
+          <button @click="debug.send(game.id, {tag: 'Search', contents: [investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'AnyCard', contents: []}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
         </template>
       </div>
       <transition-group name="hand" tag="section" class="hand" @before-leave="beforeLeaveHand">

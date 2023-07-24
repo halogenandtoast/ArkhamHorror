@@ -13,12 +13,12 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const campaignLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recodedSets: [] }
+const campaignLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
 const { recorded, recordedSets, recordedCounts } = campaignLog
 const hasSupplies = computed(() => Object.values(props.game.investigators).some((i) => i.supplies.length > 0))
 
 
-const findCard = (cardCode: string): CardDef => {
+const findCard = (cardCode: string): CardDef | undefined => {
   return props.cards.find((c) => c.cardCode == cardCode)
 }
 

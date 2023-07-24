@@ -2,8 +2,8 @@ import { JsonDecoder } from 'ts.data.json';
 import {
   Card,
   cardDecoder,
-  EncounterCardContents,
-  encounterCardContentsDecoder,
+  CardContents,
+  cardContentsDecoder,
 } from '@/arkham/types/Card';
 import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
 import { logContentsDecoder } from '@/arkham/types/Campaign';
@@ -43,11 +43,11 @@ export interface Scenario {
   setAsideCards: Card[];
   setAsideKeys: ArkhamKey[];
   chaosBag: ChaosBag;
-  discard: EncounterCardContents[];
+  discard: CardContents[];
   victoryDisplay: Card[];
   standaloneCampaignLog: LogContents | null;
   counts: Record<string, number>; // eslint-disable-line
-  encounterDecks: Record<string, [EncounterCardContents[], EncounterCardContents[]]>;
+  encounterDecks: Record<string, [CardContents[], CardContents[]]>;
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -70,7 +70,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
   chaosBag: chaosBagDecoder,
-  discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
+  discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   standaloneCampaignLog: logContentsDecoder,
   counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]').map<Record<string, number>>(res => {
@@ -79,16 +79,16 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
       return acc
     }, {})
   }),
-  encounterDecks: JsonDecoder.array<[string, [EncounterCardContents[], EncounterCardContents[]]]>(
+  encounterDecks: JsonDecoder.array<[string, [CardContents[], CardContents[]]]>(
     JsonDecoder.tuple([
       JsonDecoder.string,
       JsonDecoder.tuple([
-        JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
-        JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]')
+        JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
+        JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]')
       ], '[[EncounterCardContents[], EncounterCardContents[]]'),
     ], '[string, [EncounterCardContents[], EncounterCardContents[]]'),
-    '[string, [EncounterCardContents[], EncounterCardContents[]]][]').map<Record<string, [EncounterCardContents[], EncounterCardContents[]]>>(res => {
-      return res.reduce<Record<string, [EncounterCardContents[], EncounterCardContents[]]>>((acc, [k, v]) => {
+    '[string, [EncounterCardContents[], EncounterCardContents[]]][]').map<Record<string, [CardContents[], CardContents[]]>>(res => {
+      return res.reduce<Record<string, [CardContents[], CardContents[]]>>((acc, [k, v]) => {
         acc[k] = v
         return acc
       }, {})

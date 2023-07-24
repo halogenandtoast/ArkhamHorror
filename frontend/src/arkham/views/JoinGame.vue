@@ -108,8 +108,6 @@ const investigators = computed(() => Object.keys(game.value?.investigators || {}
     margin-bottom: 10px;
   }
   select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
     outline: 0;
     border: 1px solid #000;
     padding: 15px;

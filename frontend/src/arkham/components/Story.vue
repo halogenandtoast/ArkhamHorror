@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { withDefaults, computed } from 'vue'
+import { computed } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
-import { Message, MessageType } from '@/arkham/types/Message'
+import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as Arkham from '@/arkham/types/Story'
@@ -34,17 +34,19 @@ function canInteract(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability;
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
-  } else if (tag === 'StorySource') {
-    return v.ability.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
+  } else if (source.tag === 'StorySource') {
+    return source.contents === id.value
   }
 
   return false
@@ -53,9 +55,9 @@ function isAbility(v: Message) {
 const abilities = computed(() => {
   return choices
     .value
-    .reduce<number[]>((acc, v, i) => {
+    .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, i];
+        return [...acc, { contents: v, index: i}];
       }
 
       return acc;
@@ -72,10 +74,10 @@ const abilities = computed(() => {
     />
     <AbilityButton
       v-for="ability in abilities"
-      :key="ability"
-      :ability="choices[ability]"
+      :key="ability.index"
+      :ability="ability.contents"
       :data-image="image"
-      @click="$emit('choose', ability)"
+      @click="$emit('choose', ability.index)"
       />
   </div>
 </template>

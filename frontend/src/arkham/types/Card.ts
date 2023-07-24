@@ -43,6 +43,21 @@ export function cardImage(card: Card) {
   return `cards/${art}${side}.jpg`
 }
 
+export function toCardContents(card: Card | CardContents): CardContents {
+  if (card.tag === 'CardContents') {
+    return card
+  }
+
+  switch (card.tag) {
+    case 'PlayerCard':
+      return card.contents
+    case 'EncounterCard':
+      return card.contents
+    case 'VengeanceCard':
+      return toCardContents(card.contents);
+  }
+}
+
 export interface CardContents {
   tag: "CardContents"
   id: string

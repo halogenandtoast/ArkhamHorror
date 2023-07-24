@@ -7,9 +7,9 @@ import {
   ComputedRef,
   reactive,
 } from 'vue';
-import type { Game } from '@/arkham/types/Game';
-import type { Scenario } from '@/arkham/types/Scenario';
-import type { Card } from '@/arkham/types/Card';
+import { type Game } from '@/arkham/types/Game';
+import { type Scenario } from '@/arkham/types/Scenario';
+import { type Card, toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
@@ -34,11 +34,12 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 
-function beforeLeave(el) {
+function beforeLeave(e: Element) {
+  const el = e as HTMLElement
   const {marginLeft, marginTop, width, height} = window.getComputedStyle(el)
 
-  el.style.left = `${el.offsetLeft - parseFloat(marginLeft, 10)}px`
-  el.style.top = `${el.offsetTop - parseFloat(marginTop, 10)}px`
+  el.style.left = `${el.offsetLeft - parseFloat(marginLeft)}px`
+  el.style.top = `${el.offsetTop - parseFloat(marginTop)}px`
   el.style.width = width
   el.style.height = height
 }
@@ -52,6 +53,10 @@ function handleConnections() {
     const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
       const { id: div1Id } = a.dataset
       const { id: div2Id } = b.dataset
+
+      if(!div1Id || !div2Id) {
+        return 0
+      }
 
       if (div1Id < div2Id) {
         return -1;
@@ -76,6 +81,8 @@ function handleConnections() {
       const { id: div1Id } = a.dataset
       const { id: div2Id } = b.dataset
 
+      if (!div1Id || !div2Id) return 0
+
       if (div1Id < div2Id) {
         return -1;
       }
@@ -87,13 +94,13 @@ function handleConnections() {
       return 0;
     })
 
-    const closeEnough = (a, b) => {
+    const closeEnough = (a: string, b: number) => {
       return diff(a, b) < 0.5
     }
 
-    const diff = (a, b) => {
+    const diff = (a: string, b: number) => {
       const x = parseFloat(a)
-      const y = parseFloat(b)
+      const y = b
 
       return Math.abs(x - y)
     }
@@ -108,12 +115,10 @@ function handleConnections() {
       if(line && parentNode) {
         const connection = leftDivId + ":" + rightDivId
         const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
-        const {left: leftDivLeft, top: leftDivTop, right: leftDivRight, bottom: leftDivBottom } = leftDiv.getBoundingClientRect();
-        const {left: rightDivLeft, top: rightDivTop, right: rightDivRight, bottom: rightDivBottom } = rightDiv.getBoundingClientRect();
+        const {left: leftDivLeft, top: leftDivTop, right: leftDivRight } = leftDiv.getBoundingClientRect();
+        const {left: rightDivLeft, top: rightDivTop, right: rightDivRight } = rightDiv.getBoundingClientRect();
         const leftDivWidth = leftDivRight - leftDivLeft;
         const rightDivWidth = rightDivRight - rightDivLeft;
-        const leftDivHeight = leftDivBottom - leftDivTop;
-        const rightDivHeight = rightDivBottom - rightDivTop;
         const x1 = (leftDivLeft - bodyLeft) + (leftDivWidth/2)
         const y1 = (leftDivTop - bodyTop)
         const x2 = (rightDivLeft - bodyLeft) + (rightDivWidth/2)
@@ -121,7 +126,12 @@ function handleConnections() {
         const existingNode = document.querySelector(`[data-connection="${connection}"]`)
 
         if (existingNode) {
-          if (closeEnough(existingNode.getAttribute("x1"), x1) && closeEnough(existingNode.getAttribute("y1"), y1) && closeEnough(existingNode.getAttribute("x2"), x2) && closeEnough(existingNode.getAttribute("y2"), y2)) {
+          const ex1 = existingNode.getAttribute("x1") || "-1"
+          const ey1 = existingNode.getAttribute("y1") || "-1"
+          const ex2 = existingNode.getAttribute("x2") || "-1"
+          const ey2 = existingNode.getAttribute("y2") || "-1"
+
+          if (closeEnough(ex1, x1) && closeEnough(ey1, y1) && closeEnough(ex2, x2) && closeEnough(ey2, y2)) {
             return
           } else {
             parentNode.removeChild(existingNode);
@@ -148,7 +158,7 @@ function handleConnections() {
     }
   }
 
-  const allConnections = []
+  let allConnections: string[] = []
   for(const location of locations.value) {
     const id = location.id
     const connections = typeof location.connectedLocations == "object" ? Object.values(location.connectedLocations) : location.connectedLocations
@@ -156,13 +166,16 @@ function handleConnections() {
       const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
       const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
       if(start && end) {
-        allConnections.push(toConnection(start, end))
-        makeLine(start, end)
+        const conn = toConnection(start, end)
+        if (conn) {
+          allConnections.push(conn)
+          makeLine(start, end)
+        }
       }
     });
   }
 
-  document.querySelectorAll(".line:not(.original").forEach((node) => {
+  document.querySelectorAll<HTMLElement>(".line:not(.original").forEach((node) => {
     const con = node.dataset.connection
     if(con) {
       if(!allConnections.some((c) => c === con)) {
@@ -179,14 +192,14 @@ interface RefWrapper<T> {
 
 const locationMap = ref<Element | null>(null)
 
-const requestId = ref(undefined)
+const requestId = ref<number | undefined>(undefined)
 const drawHandler = () => {
   requestId.value = undefined
   handleConnections()
   requestId.value = window.requestAnimationFrame(drawHandler);
 }
 
-onBeforeUnmount(() => window.cancelAnimationFrame(requestId.value))
+onBeforeUnmount(() => { if (requestId.value) window.cancelAnimationFrame(requestId.value) })
 
 onMounted(() => requestId.value = window.requestAnimationFrame(drawHandler))
 
@@ -231,7 +244,7 @@ const scenarioDeckStyles = computed(() => {
 
 const activeCard = computed(() => {
   if (props.game.activeCard) {
-    const { cardCode } = props.game.activeCard.contents;
+    const { cardCode } = toCardContents(props.game.activeCard);
     return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
   }
 
@@ -254,15 +267,15 @@ const viewingDiscard = ref(false)
 const cardRowTitle = ref("")
 
 
-const doShowCards = (event: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
+const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
   cardRowTitle.value = title
   showCards.ref = cards
   viewingDiscard.value = isDiscards
 }
 
-const showOutOfPlay = (e: Event) => doShowCards(e, outOfPlay, 'Out of Play', true)
-const showRemovedFromPlay = (e: Event) => doShowCards(e, removedFromPlay, 'Removed from Play', true)
-const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
+const showOutOfPlay = () => doShowCards(outOfPlay, 'Out of Play', true)
+const showRemovedFromPlay = () => doShowCards(removedFromPlay, 'Removed from Play', true)
+const showDiscards = () => doShowCards(discards, 'Discards', true)
 const hideCards = () => showCards.ref = noCards
 
 const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
@@ -293,9 +306,13 @@ const topOfSpectralDiscard = computed(() => {
 const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 
-const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) => enemy.placement?.tag === "Pursuit"))
+const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) => 
+  enemy.placement.tag === 'OtherPlacement' && enemy.placement.contents === 'Pursuit'
+))
 
-const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.placement.tag === "Global" && enemy.asSelfLocation === null))
+const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) => 
+  enemy.placement.tag === "OtherPlacement" && enemy.placement.contents === "Global" && enemy.asSelfLocation === null
+))
 
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 

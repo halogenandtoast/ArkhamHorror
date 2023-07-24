@@ -12,7 +12,7 @@ import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 
 const props = defineProps<{
   game: Game
-  skillTest?: SkillTest
+  skillTest: SkillTest | null
   chaosBag: ChaosBag
   investigatorId: string
 }>()

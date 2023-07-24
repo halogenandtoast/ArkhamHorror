@@ -1,19 +1,17 @@
 <script lang="ts" setup>
 import { ChaosToken } from '@/arkham/types/ChaosToken';
-import { withDefaults, computed } from 'vue';
+import { computed } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 
-export interface Props {
+const props = withDefaults(defineProps<{
   game: Game
   token: ChaosToken
   investigatorId: string
   cancelled?: boolean
   selected?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), { cancelled: false, selected: false })
+}>(), { cancelled: false, selected: false })
 const emit = defineEmits(['choose'])
 
 const image = computed(() => {

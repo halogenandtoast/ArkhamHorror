@@ -1,14 +1,19 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
-import type { CardContents } from '@/arkham/types/Card';
-import Card from '@/arkham/components/Card.vue';
+import type { Card, CardContents } from '@/arkham/types/Card';
+import CardView from '@/arkham/components/Card.vue';
 
 const props = defineProps<{
   game: Game
-  cards: CardContents[]
+  cards: (Card | CardContents)[]
   investigatorId: string
 }>()
+
+const cardContents = computed<CardContents[]>(() => {
+  return props.cards.map<CardContents>(c => c.tag === 'CardContents' ? c : 
+    (c.tag === 'VengeanceCard' ? c.contents.contents : c.contents)).reverse()
+})
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -17,15 +22,13 @@ const emits = defineEmits<{
 const choose = (value: number) => {
   emits('choose', value)
 }
-
-const cards = computed(() => props.cards.filter(c => c).reverse())
 </script>
 
 <template>
   <div class="card-row-cards">
     <div class="card-row-cards--inner">
-      <div v-for="card in cards" :key="card.id" class="card-row-card">
-        <Card :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="choose" />
+      <div v-for="card in cardContents" :key="card.id" class="card-row-card">
+        <CardView :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="choose" />
       </div>
     </div>
   </div>

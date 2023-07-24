@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { ref, computed, inject } from 'vue';
+import { ref, computed } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { Message } from '@/arkham/types/Message';
+import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
@@ -43,7 +43,7 @@ function isCardAction(c: Message): boolean {
   }
 
   // we also allow the move action to cause card interaction
-  if (c.tag == "AbilityLabel") {
+  if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
     return c.ability.type.tag === "ActionAbility" && c.ability.type.action === "Move" && c.ability.source.contents === id.value
   }
 
@@ -61,22 +61,24 @@ async function clicked() {
   }
 }
 
-async function chooseAbility(ability) {
+async function chooseAbility(ability: number) {
   showAbilities.value = false
   emits('choose', ability)
 }
 
-function isAbility(v: Message) {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== 'AbilityLabel') {
     return false
   }
 
-  const { tag } = v.ability.source;
+  const { source } = v.ability;
 
-  if (tag === 'ProxySource') {
-    return v.ability.source.source.contents === id.value
-  } else if (tag === 'LocationSource') {
-    return v.ability.source.contents === id.value
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === id.value
+    }
+  } else if (source.tag === 'LocationSource') {
+    return source.contents === id.value
   }
 
   return false
@@ -85,9 +87,9 @@ function isAbility(v: Message) {
 const abilities = computed(() => {
    return choices
      .value
-     .reduce<number[]>((acc, v, i) => {
+     .reduce<AbilityMessage[]>((acc, v, i) => {
        if (isAbility(v)) {
-         return [...acc, i];
+         return [...acc, { contents: v, index: i}];
        }
 
        return acc;
@@ -100,8 +102,19 @@ const enemies = computed(() => {
     .filter((e) => props.game.enemies[e].engagedInvestigators.length === 0);
 })
 
-const blocked = computed(() => props.location.modifiers.some(modifier => modifier.type.tag == "Blocked")
-  || props.game.investigators[props.investigatorId].modifiers.some(modifier => modifier.type.tag == "CannotEnter" && modifier.type.contents == props.location.id))
+const blocked = computed(() => {
+  const { modifiers } = props.game.investigators[props.investigatorId]
+
+  if (modifiers) {
+    modifiers.some(modifier =>
+      (modifier.type.tag == "CannotEnter" && modifier.type.contents == props.location.id) ||
+        (modifier.type.tag === "OtherModifier" && modifier.type.contents === "Blocked")
+    )
+  }
+
+  return false
+})
+
 
 const keys = computed(() => props.location.keys)
 
@@ -144,20 +157,20 @@ const debug = useDebug()
 
         <div class="pool">
           <Key v-for="key in keys" :key="key" :name="key" />
-          <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
-          <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
-          <PoolItem v-if="horror > 0" type="horror" :amount="horror" />
-          <PoolItem v-if="resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+          <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+          <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
+          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
           <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
         </div>
       </div>
       <div v-if="showAbilities" class="abilities">
         <AbilityButton
           v-for="ability in abilities"
-          :key="ability"
-          :ability="choices[ability]"
+          :key="ability.index"
+          :ability="ability.contents"
           :data-image="image"
-          @click="chooseAbility(ability)"
+          @click="chooseAbility(ability.index)"
           />
         <template v-if="debug.active">
           <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>

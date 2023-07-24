@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { computed, ref, inject, ComputedRef, reactive } from 'vue';
+import { computed, ref, ComputedRef, reactive } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
+import { toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -31,13 +32,19 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const stories = computed(() => Object.values(props.game.stories).filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId && s.otherSide === null))
+const stories = computed(() =>
+  Object.
+    values(props.game.stories).
+    filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId && s.otherSide === null)
+)
 
 const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
 
 const topOfDiscard = computed(() => discards.value[0])
 
-const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.type.tag === "TopCardOfDeckIsRevealed"))
+const topOfDeckRevealed = computed(() =>
+  props.player.modifiers?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfDeckIsRevealed")
+)
 
 const topOfDeck = computed(() => {
   const topCard = props.player.deck[0]
@@ -58,8 +65,9 @@ const hunchDeck = computed(() => {
 
 const topOfHunchDeckRevealed = computed(() => {
   const { revealedHunchCard } = props.player
-  if (topOfHunchDeck.value) {
-    return topOfHunchDeck.value.contents.id === revealedHunchCard
+  const hunchCard = topOfHunchDeck.value
+  if (hunchCard) {
+    return toCardContents(hunchCard).id === revealedHunchCard
   }
 
   return false
@@ -121,7 +129,10 @@ const hideCards = () => {
 }
 
 const committedCards = computed(() => props.game.skillTest?.committedCards || [])
-const playerHand = computed(() => props.player.hand.filter((card) => !committedCards.value.some((cc) => card.contents.id == cc.contents.id)))
+const playerHand = computed(() => props.player.hand.
+  filter((card) =>
+    !committedCards.value.some((cc) => toCardContents(card).id == toCardContents(cc).id))
+)
 
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.inFrontOf === props.player.id))
@@ -129,11 +140,11 @@ const locations = computed(() => Object.values(props.game.locations).
 const debug = useDebug()
 const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
 
-function beforeLeaveHand(el) {
+function beforeLeaveHand(e: Element) {
+  const el = e as HTMLElement
   const {marginLeft, marginTop, width, height} = window.getComputedStyle(el)
-
-  el.style.left = `${el.offsetLeft - parseFloat(marginLeft, 10)}px`
-  el.style.top = `${el.offsetTop - parseFloat(marginTop, 10)}px`
+  el.style.left = `${el.offsetLeft - parseFloat(marginLeft)}px`
+  el.style.top = `${el.offsetTop - parseFloat(marginTop)}px`
   el.style.width = width
   el.style.height = height
 }
@@ -219,7 +230,7 @@ function beforeLeaveHand(el) {
     <div class="player">
       <div v-if="hunchDeck" class="top-of-deck hunch-deck">
         <HandCard
-          v-if="topOfHunchDeckRevealed"
+          v-if="topOfHunchDeck && topOfHunchDeckRevealed"
           :card="topOfHunchDeck"
           :game="game"
           :ownerId="player.id"
@@ -272,7 +283,7 @@ function beforeLeaveHand(el) {
           :game="game"
           :investigatorId="investigatorId"
           :ownerId="player.id"
-          :key="card.contents.id"
+          :key="toCardContents(card).id"
           @choose="$emit('choose', $event)"
         />
 

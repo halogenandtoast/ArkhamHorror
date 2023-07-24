@@ -7,7 +7,6 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as Arkham from '@/arkham/types/Treachery';
-import { setUncaughtExceptionCaptureCallback } from 'process';
 
 export interface Props {
   game: Game

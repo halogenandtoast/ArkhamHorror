@@ -26,11 +26,13 @@ const scenarios = computed(() => scenarioJSON.filter((s) =>
     : true
 ))
 
-const sideStories = computed(() => sideStoriesJSON.filter((s) =>
-  s.beta
-    ? currentUser.value && currentUser.value.beta
-    : true
-))
+// const sideStories = computed(() => sideStoriesJSON.filter((s) =>
+//   s.beta
+//     ? currentUser.value && currentUser.value.beta
+//     : true
+// ))
+
+const sideStories = computed(() => sideStoriesJSON)
 
 const campaigns = computed(() => campaignJSON.filter((c) =>
   c.beta
@@ -38,12 +40,12 @@ const campaigns = computed(() => campaignJSON.filter((c) =>
     : true
 ))
 
-const difficulties: Difficulty[] = computed(() => {
+const difficulties = computed<Difficulty[]>(() => {
   if(gameMode.value === 'SideStory') {
     const sideStoryScenario = sideStories.value.find((c) => c.id === selectedScenario.value)
 
     if (sideStoryScenario && sideStoryScenario.standaloneDifficulties) {
-      return sideStoryScenario.standaloneDifficulties
+      return sideStoryScenario.standaloneDifficulties as Difficulty[]
     }
 
     return []
@@ -110,7 +112,7 @@ const disabled = computed(() => {
   if (multiplayerVariant.value == 'WithFriends') {
     return !deckIds.value[0] || !validStandalone.value
   } else {
-    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n]) || !validStandalone.value || !completedCampaignSettings.value
+    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n]) || !validStandalone.value
   }
 })
 
@@ -341,8 +343,6 @@ async function start() {
     margin-bottom: 10px;
   }
   select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
     outline: 0;
     border: 1px solid #000;
     padding: 15px;

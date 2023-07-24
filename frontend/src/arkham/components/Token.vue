@@ -62,6 +62,9 @@ const revealedTokenAction = computed(() => {
 
   return choices.value.findIndex((c) => {
     if (c.tag === "TokenGroupChoice") {
+      if (c.step.tag === 'Draw') {
+        return false
+      }
       return c.step.tokenGroups.some((g) => g.some((t) => t.id === props.token.id))
     }
 
@@ -70,15 +73,15 @@ const revealedTokenAction = computed(() => {
         return props.token.face === c.target.contents
 
       }
-      if (c.target.tag === "TokenTarget") {
-        return props.token.id === c.target.contents.id
+      if (c.target.tag === "TokenTarget" && c.target.contents) {
+        return props.token.id === (c.target.contents as { face: string, id: string }).id
       }
     }
 
     return false
   })
 })
-const isIgnored = computed(() => props.token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreToken') || false)
+const isIgnored = computed(() => props.token.modifiers?.some(modifier => modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'IgnoreToken') || false)
 
 const choose = (idx: number) => emit('choose', idx)
 

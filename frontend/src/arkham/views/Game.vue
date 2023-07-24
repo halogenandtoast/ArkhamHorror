@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { useWebSocket, useClipboard } from '@vueuse/core'
-import { withDefaults, ref, computed, provide, onUnmounted, watch } from 'vue'
+import { ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
-import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
+import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
@@ -54,9 +54,9 @@ const game = ref<Arkham.Game | null>(null)
 const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
 
-const question = computed(() => game.value.question[investigatorId.value])
+const question = computed(() => investigatorId.value ? game.value?.question[investigatorId.value] : null)
 
-watch(data, (newData) => {
+watch(data, async (newData) => {
   const msg = JSON.parse(newData)
 
   if (msg.tag === "GameMessage") {
@@ -78,7 +78,7 @@ watch(data, (newData) => {
 
       })
   }
-}, [data])
+})
 
 fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
   game.value = newGame
@@ -130,7 +130,7 @@ function debugExport () {
   })
 }
 
-const gameOver = computed(() => game.value.gameState.tag === "IsOver")
+const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
@@ -139,7 +139,7 @@ provide('solo', solo)
 </script>
 
 <template>
-  <div id="game" v-if="ready">
+  <div id="game" v-if="ready && game && investigatorId">
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
     </div>
@@ -159,7 +159,7 @@ provide('solo', solo)
     <template v-else>
       <div class="game-main">
         <CampaignSettings
-          v-if="game.campaign && !gameOver && question.tag === 'PickCampaignSettings'"
+          v-if="game.campaign && !gameOver && question && question.tag === 'PickCampaignSettings'"
           :game="game"
           :campaign="game.campaign"
           :investigatorId="investigatorId"
@@ -173,7 +173,7 @@ provide('solo', solo)
           @update="update"
         />
         <ScenarioSettings
-          v-else-if="game.scenario && !gameOver && question.tag === 'PickScenarioSettings'"
+          v-else-if="game.scenario && !gameOver && question && question.tag === 'PickScenarioSettings'"
           :game="game"
           :scenario="game.scenario"
           :investigatorId="investigatorId"
@@ -187,7 +187,7 @@ provide('solo', solo)
           @choose="choose"
           @update="update"
         />
-        <div class="sidebar" v-if="game.scenario && game.gameState.tag !== 'IsPending'">
+        <div class="sidebar" v-if="game.scenario && game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver'">
           <CardOverlay />
           <GameLog :game="game" :gameLog="gameLog" />
           <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"

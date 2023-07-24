@@ -13,7 +13,8 @@ import {
   anyForced,
   RecordableSet,
   CrossOutSetting,
-RecordableEntry
+RecordableEntry,
+Key
 } from '@/arkham/types/CampaignSettings'
 import CampaignScenarioSetting from '@/arkham/components/CampaignScenarioSetting.vue'
 import { Campaign } from '@/arkham/types/Campaign'
@@ -88,7 +89,7 @@ watch(computedCampaignSettings, (newSettings) => {
     ...a,
     [s.key]: {
       recordable: s.recordable,
-      entries: [{ tag: "Recorded", value: s.content }]
+      entries: s.content.map((s) => ({ tag: "Recorded", value: s.content }))
     }
   }), {})
 
@@ -100,6 +101,11 @@ watch(computedCampaignSettings, (newSettings) => {
 
   campaignSettings.value = relevantSettings
 }, { immediate: true })
+
+interface Uniqueable {
+  key: string
+  scope?: string
+}
 
 // remove any associated recorded sets or keys for settings that are no longer valid
 const filterSettings = function() {
@@ -157,10 +163,17 @@ const filterSettings = function() {
       }
     })
     return a
-  }, { keys: [], sets: [], options: [], counts: [], forcedKeys: [], forcedSets: {} as Record<string,RecordableSet>})
+  }, {
+    keys: [] as Key[],
+    sets: [] as string[],
+    options: [] as string[],
+    counts: [] as string[],
+    forcedKeys: [] as Key[],
+    forcedSets: {} as Record<string,RecordableSet>
+  })
 
-  const onlyUnique = (value: { scope: any; key: any }, index: any, self: any[]) => {
-    const idx = self.findIndex((s: { scope: any; key: any }) =>
+  const onlyUnique = <T extends Uniqueable,>(value: T, index: number, self: T[]) => {
+    const idx = self.findIndex((s: T) =>
       s.scope && value.scope
         ? s.key === value.key && s.scope === value.scope
         : s.key === value.key
@@ -187,7 +200,7 @@ const filterSettings = function() {
         const currentSet = current[setKey]
         current[setKey] = currentSet
           ? { ...currentSet, entries: [...currentSet.entries, ...value.entries].filter(onlyUniqueValues) }
-          : { recordable: t.recordable, entries: value.entries }
+          : { recordable: value.recordable, entries: value.entries }
         return current
       },
       {...Object.fromEntries(Object.entries(campaignLog.value.sets).filter(([k]) => active.sets.includes(k)))}
@@ -202,8 +215,8 @@ const filterSettings = function() {
 }
 
 const setKey = function(step: CampaignScenario, setting: CampaignSetting, key: string) {
-  const current = campaignLog.value
   if (setting.type === 'ChooseKey') {
+    const current = campaignLog.value
     const keysToRemove = setting.content.filter((k) => k.key !== key).map((k) => k.key)
     campaignLog.value = { ...current, keys: [...current.keys.filter((k) => !keysToRemove.includes(k.key)), {key, scope: step.key }] }
     filterSettings()
@@ -211,8 +224,8 @@ const setKey = function(step: CampaignScenario, setting: CampaignSetting, key: s
 }
 
 const setOption = function(setting: CampaignSetting, option: CampaignOption) {
-  const current = campaignLog.value
   if (setting.type === 'ChooseOption') {
+    const current = campaignLog.value
     const keysToRemove = setting.content.filter((o) => o.key !== option.key).map((o) => o.key)
     campaignLog.value = { ...current, options: [...current.options.filter((o) => !keysToRemove.includes(o.key)), option] }
     filterSettings()
@@ -220,23 +233,24 @@ const setOption = function(setting: CampaignSetting, option: CampaignOption) {
 }
 
 const setNum = function(setting: CampaignSetting, value: number) {
-  const current = campaignLog.value
   if (setting.type === 'ChooseNum') {
+    const current = campaignLog.value
     campaignLog.value = { ...current, counts: {...current.counts, [setting.ckey]: value}}
+    filterSettings()
   }
-
-  filterSettings()
 }
 
 const toggleKey = function(step: CampaignScenario, setting: CampaignSetting) {
-  const current = campaignLog.value
-  if (current.keys.some((k) => k.key === setting.ckey)) {
-    current.keys = current.keys.filter((k) => k.key !== setting.ckey)
-  } else {
-    current.keys.push({ key: setting.ckey, scope: step.key })
-  }
+  if (setting.type === 'SetKey') {
+    const current = campaignLog.value
+    if (current.keys.some((k) => k.key === setting.ckey)) {
+      current.keys = current.keys.filter((k) => k.key !== setting.ckey)
+    } else {
+      current.keys.push({ key: setting.ckey, scope: step.key })
+    }
 
-  filterSettings()
+    filterSettings()
+  }
 }
 
 const toggleOption = function(setting: CampaignSetting) {
@@ -254,7 +268,7 @@ const toggleOption = function(setting: CampaignSetting) {
   filterSettings()
 }
 
-const toggleSet = function(setting: { type: string; ckey: string | number; content: string; recordable: any }) {
+const toggleSet = function(setting: CampaignSetting) {
   if(setting.type === 'SetRecordable') {
     const current = campaignLog.value
     const set = current.sets[setting.ckey]
@@ -267,14 +281,23 @@ const toggleSet = function(setting: { type: string; ckey: string | number; conte
       }
 
     } else {
-      campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value: setting.content }]}}}
+      campaignLog.value = {
+        ...current,
+        sets: {
+          ...current.sets,
+          [setting.ckey]: {
+            recordable: setting.recordable,
+            entries: [{ tag: "Recorded", value: setting.content } as RecordableEntry]
+          }
+        }
+      }
     }
   }
 
   filterSettings()
 }
 
-const chooseRecordable = function(setting: { type: string; ckey: string | number; content: any[]; recordable: any }, value: any) {
+const chooseRecordable = function(setting: CampaignSetting, value: any) {
   if(setting.type === 'ChooseRecordable') {
     const current = campaignLog.value
     const set = current.sets[setting.ckey]
@@ -282,7 +305,16 @@ const chooseRecordable = function(setting: { type: string; ckey: string | number
       const keysToRemove = setting.content.filter((k: { content: any }) => k.content !== value).map((k: { content: any }) => k.content)
       set.entries = [...set.entries.filter((e) => !keysToRemove.includes(e.value)), { tag: "Recorded", value }]
     } else {
-      campaignLog.value = { ...current, sets: {...current.sets, [setting.ckey]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value }]}}}
+      campaignLog.value = {
+        ...current,
+        sets: {
+          ...current.sets,
+          [setting.ckey]: {
+            recordable: setting.recordable,
+            entries: [{ tag: "Recorded", value } as RecordableEntry]
+          }
+        }
+      }
     }
   }
 
@@ -299,7 +331,16 @@ const toggleRecordable = function(setting: { type: string; key: string | number;
 
       campaignLog.value = { ...current, sets: {...current.sets, [setting.key]: set}}
     } else {
-      campaignLog.value = { ...current, sets: {...current.sets, [setting.key]: { recordable: setting.recordable, entries: [{ tag: "Recorded", value }]}}}
+      campaignLog.value = {
+        ...current,
+        sets: {
+          ...current.sets,
+          [setting.key]: {
+            recordable: setting.recordable,
+            entries: [{ tag: "Recorded", value } as RecordableEntry]
+          }
+        }
+      }
     }
   }
 
@@ -315,7 +356,10 @@ const toggleCrossOut = function (key: string, value: string) {
   const {entries} = current.sets[key]
 
   if (entries) {
-    const newEntries = entries.map((e) => e.value === value ? { value: e.value, tag: e.tag === "Recorded" ? "CrossedOut" : "Recorded" } : e)
+    const newEntries = entries.
+      map<RecordableEntry>((e) =>
+        e.value === value ? { value: e.value, tag: e.tag === "Recorded" ? "CrossedOut" : "Recorded" } : e
+      )
 
     campaignLog.value = {
       ...current,

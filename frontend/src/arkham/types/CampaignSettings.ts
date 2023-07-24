@@ -55,7 +55,7 @@ export type CrossOutSetting = {
   key: string,
   ckey: string,
   recordable: string,
-  content: Recordable,
+  content: Recordable[],
   ifRecorded?: SettingCondition[],
   anyRecorded?: SettingCondition[]
 }
@@ -68,9 +68,9 @@ export type CampaignSetting = CrossOutSetting |
   { type: "SetKey", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "Option", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseOption", key: string, content: ChooseOption[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "SetRecordable", key: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "SetRecordable", key: string, ckey: string,recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
-  { type: "ForceRecorded", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
+  { type: "ForceRecorded", key: string, ckey: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
 
 const inactiveCondition = (campaignLog: CampaignLogSettings, condition: SettingCondition): boolean => {
   if (condition.type === 'key') {

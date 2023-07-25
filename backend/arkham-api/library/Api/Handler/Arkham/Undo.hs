@@ -43,6 +43,7 @@ putApiV1ArkhamGameUndoR gameId = do
         case patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) of
           Error e -> error $ T.pack e
           Success ge -> do
+            -- TODO: We need to add back the gameActionDiff
             gameLog <- fmap (fmap unValue) . runDB $ select $ do
               entries <- from $ table @ArkhamLogEntry
               where_ $ entries.arkhamGameId ==. val gameId

@@ -330,5 +330,8 @@ const debug = useDebug()
   padding: 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 </style>

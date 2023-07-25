@@ -3592,6 +3592,7 @@ runGameMessage msg g = case msg of
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
   UndoAction -> do
     -- gameActionDiff contains a list of diffs, in order, to revert the game
+    -- The gameActionDiff will be empty after this so we do not need the diffs to store any data
     pure $ foldl' unsafePatch g (gameActionDiff g)
   EndOfGame mNextCampaignStep -> do
     window <- checkWindows [Window Timing.When Window.EndOfGame]

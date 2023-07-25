@@ -11,6 +11,7 @@ import Arkham.Decklist
 import Arkham.Game
 import Arkham.Id
 import Arkham.Investigator
+import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson
 import Data.Map.Strict qualified as Map
@@ -79,6 +80,6 @@ putApiV1ArkhamPendingGameR gameId = do
   runDB $ do
     replace gameId game'
     insert_ $
-      ArkhamStep gameId (Choice mempty updatedQueue) (arkhamGameStep + 1)
+      ArkhamStep gameId (Choice mempty updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL updatedGame)
 
   pure $ toPublicGame (Entity gameId game') mempty

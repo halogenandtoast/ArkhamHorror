@@ -1,6 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Entity.Arkham.Step (
   module Entity.Arkham.Step,
@@ -38,6 +39,20 @@ instance PersistField Choice where
     fmapLeft f (Left a) = Left (f a)
     fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
+newtype ActionDiff = ActionDiff [Patch]
+  deriving newtype (ToJSON, FromJSON, Show)
+
+instance PersistFieldSql ActionDiff where
+  sqlType _ = SqlString
+
+instance PersistField ActionDiff where
+  toPersistValue = toPersistValue . toJSON
+  fromPersistValue val =
+    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
+   where
+    fmapLeft f (Left a) = Left (f a)
+    fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
+
 share
   [mkPersist sqlSettings]
   [persistLowerCase|
@@ -46,6 +61,7 @@ ArkhamStep sql=arkham_steps
   arkhamGameId ArkhamGameId OnDeleteCascade
   choice Choice
   step Int
+  actionDiff ActionDiff
   UniqueStep arkhamGameId step
   deriving Generic Show
 |]

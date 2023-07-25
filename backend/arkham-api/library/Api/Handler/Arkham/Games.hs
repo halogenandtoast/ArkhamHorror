@@ -330,7 +330,7 @@ postApiV1ArkhamGamesImportR = do
         traverse_
           ( \s ->
               insert_ $
-                ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s)
+                ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
           )
           agedSteps
         pure gameId
@@ -370,7 +370,7 @@ postApiV1ArkhamGamesR = do
           insert $
             ArkhamGame campaignName ge 0 multiplayerVariant now now
         insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
-        insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0
+        insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
         pure gameId
       pure $
         toPublicGame
@@ -393,7 +393,7 @@ postApiV1ArkhamGamesR = do
             insert $
               ArkhamGame campaignName ge 0 multiplayerVariant now now
           insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
-          insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0
+          insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0 (ActionDiff [])
           pure gameId
         pure $
           toPublicGame
@@ -482,7 +482,7 @@ putApiV1ArkhamGameR gameId = do
         now
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
     insert_ $
-      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
+      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL ge)
     case arkhamGameMultiplayerVariant of
       Solo ->
         replace pid $
@@ -552,7 +552,7 @@ putApiV1ArkhamGameRawR gameId = do
       )
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
     insert $
-      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
+      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL ge)
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do

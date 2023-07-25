@@ -9,6 +9,7 @@ module Api.Handler.Arkham.Decks (
 
 import Import hiding (delete, on, update, (=.), (==.))
 
+import Control.Lens (view)
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
 import Arkham.Classes.HasQueue
@@ -130,7 +131,7 @@ putApiV1ArkhamGameDecksR gameId = do
         arkhamGameCreatedAt
         now
     insert_ $
-      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1)
+      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL ge)
 
 fromPostData
   :: MonadIO m => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

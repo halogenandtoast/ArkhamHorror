@@ -296,6 +296,21 @@ const debug = useDebug()
   }
 }
 
+@keyframes move-up {
+100% {
+  transform: translateY(-50%);
+  }
+}
+
+@keyframes move-down {
+0% {
+  transform: translateY(-50%);
+  }
+100% {
+  transform: translateY(0%);
+  }
+}
+
 .location-asset-column {
   display: flex;
   flex-direction: column;
@@ -308,13 +323,18 @@ const debug = useDebug()
   }
 
   &:hover {
+    animation: move-up 0.2s;
+    animation-fill-mode:forwards;
     div:not(:first-child) {
       margin-top: 0px;
     }
   }
 
+  animation: move-down 0.2s;
+  animation-fill-mode:fowards;
+
   div {
-    transition: margin-top 0.2s;
+    transition: all 0.2s;
     isolation: isolate;
   }
 

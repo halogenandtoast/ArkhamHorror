@@ -227,7 +227,8 @@ const locationStyles = computed(() => {
     return {
       display: 'grid',
       'grid-template-areas': locationLayout.map((row) => `"${row}"`).join(' '),
-      'grid-row-gap': '10px',
+      'grid-row-gap': '80px',
+      'gap': '80px',
     };
   }
   return null;
@@ -306,11 +307,11 @@ const topOfSpectralDiscard = computed(() => {
 const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 
-const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) => 
+const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) =>
   enemy.placement.tag === 'OtherPlacement' && enemy.placement.contents === 'Pursuit'
 ))
 
-const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) => 
+const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) =>
   enemy.placement.tag === "OtherPlacement" && enemy.placement.contents === "Global" && enemy.asSelfLocation === null
 ))
 
@@ -634,7 +635,6 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   justify-content: center;
   align-items: center;
   overflow: auto;
-  min-height: 350px;
 }
 
 .portrait {

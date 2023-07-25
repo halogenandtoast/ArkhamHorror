@@ -250,7 +250,6 @@ const debug = useDebug()
 .location-container {
   display: flex;
   margin: 0 5px;
-  min-width: 187px;
   position: relative;
 }
 
@@ -298,10 +297,29 @@ const debug = useDebug()
 }
 
 .location-asset-column {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 100%;
   min-width: $card-width * 0.6;
   height: 100%;
   &:deep(.card) {
     width: $card-width * 0.6 !important;
+  }
+
+  &:hover {
+    div:not(:first-child) {
+      margin-top: 0px;
+    }
+  }
+
+  div {
+    transition: margin-top 0.2s;
+    isolation: isolate;
+  }
+
+  div:not(:first-child) {
+    margin-top: -80px;
   }
 }
 

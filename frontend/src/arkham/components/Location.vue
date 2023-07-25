@@ -176,6 +176,8 @@ const debug = useDebug()
           <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
         </template>
       </div>
+    </div>
+    <div class="attachments">
       <Treachery
         v-for="treacheryId in location.treacheries"
         :key="treacheryId"
@@ -364,12 +366,18 @@ const debug = useDebug()
 
 .abilities {
   position: absolute;
-  bottom:100%;
   padding: 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  bottom:100%;
+  left: 0;
+}
+
+.attachments {
+  position: absolute;
+  top: 100%;
 }
 </style>

@@ -95,6 +95,8 @@ const abilities = computed(() => {
 const hasObjective = computed(() =>
   abilities.value.some((ability) => {
     const { contents } = ability
+    console.log(contents.ability.type.tag)
+    console.log("ability" in contents)
     return "ability" in contents ? contents.ability.type.tag === 'Objective' : false
   })
 )
@@ -188,24 +190,25 @@ async function chooseAbility(ability: AbilityMessage) {
   border-radius: inherit;
 }
 
-@property --gradient-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
 @keyframes rotation {
   0% { --gradient-angle: 0deg; }
   100% { --gradient-angle: 360deg; }
 }
 
 .card-container {
+  --gradient-angle: 0deg;
   margin: 4px;
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   position: relative;
   border-radius: 6px;
   height: $card-width;
+}
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
 .act--objective {

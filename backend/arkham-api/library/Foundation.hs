@@ -110,9 +110,9 @@ instance Yesod App where
     pure $
       appShouldLogAll (appSettings app)
         || level
-        == LevelWarn
+          == LevelWarn
         || level
-        == LevelError
+          == LevelError
 
   makeLogger :: App -> IO Logger
   makeLogger = pure . appLogger
@@ -120,17 +120,25 @@ instance Yesod App where
   maximumContentLength :: App -> Maybe (Route App) -> Maybe Word64
   maximumContentLength _ _ = Just $ 100 * 1024 * 1024
 
--- How to run database actions.
-instance YesodPersist App where
-  type YesodPersistBackend App = SqlBackend
-  runDB :: SqlPersistT Handler a -> Handler a
+class CanRunDB m where
+  runDB :: SqlPersistT m a -> m a
+
+instance CanRunDB (HandlerFor App) where
   runDB action = do
     master <- getYesod
     runSqlPool action $ appConnPool master
 
-instance YesodPersistRunner App where
-  getDBRunner :: Handler (DBRunner App, Handler ())
-  getDBRunner = defaultGetDBRunner appConnPool
+-- How to run database actions.
+-- instance YesodPersist App where
+--   type YesodPersistBackend App = SqlBackend
+--   runDB :: SqlPersistT Handler a -> Handler a
+--   runDB action = do
+--     master <- getYesod
+--     runSqlPool action $ appConnPool master
+--
+-- instance YesodPersistRunner App where
+--   getDBRunner :: Handler (DBRunner App, Handler ())
+--   getDBRunner = defaultGetDBRunner appConnPool
 
 -- Useful when writing code that is re-usable outside of the Handler context.
 -- An example is background jobs that send email.
@@ -169,3 +177,7 @@ getRequestUserId :: Handler (Maybe UserId)
 getRequestUserId = do
   mToken <- JWT.lookupToken
   liftHandler $ maybe (pure Nothing) tokenToUserId mToken
+
+getEntity404
+  :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) => Key record -> DB (Entity record)
+getEntity404 key = Entity key <$> get404 key

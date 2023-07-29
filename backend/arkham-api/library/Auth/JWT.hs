@@ -20,7 +20,9 @@ import Yesod.Core
 lookupToken :: MonadHandler m => m (Maybe Text)
 lookupToken = do
   mAuth <- lookupHeader "Authorization"
-  return $ extractToken . decodeUtf8 =<< mAuth
+  case mAuth of
+    Nothing -> lookupGetParam "token"
+    Just auth -> pure $ extractToken $ decodeUtf8 auth
 
 -- | Create a token out of a given JSON 'Value'
 jsonToToken :: Text -> Value -> Text

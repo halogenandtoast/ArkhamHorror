@@ -12,7 +12,7 @@ import Relude as Import
 import Settings as Import
 import Yesod.Core as Import
 import Yesod.Core.Types as Import (loggerSet)
-import Yesod.Persist.Core as Import
+import Yesod.Persist.Core as Import hiding (YesodPersist (..))
 
 import Data.Text qualified as T
 

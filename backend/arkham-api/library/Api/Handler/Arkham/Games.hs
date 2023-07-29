@@ -47,13 +47,14 @@ import Entity.Arkham.Player
 import Entity.Arkham.Step
 import Import hiding (delete, on, (==.))
 import Json
-import Network.WebSockets (ConnectionException)
+import Network.WebSockets (ConnectionException, WebSocketsData (..))
+import Network.WebSockets qualified as WS
 import Safe (fromJustNote)
 import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
-gameStream :: ArkhamGameId -> WebSocketsT Handler ()
-gameStream gameId = catchingConnectionException $ do
+gameStream :: Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
+gameStream mUserId gameId = catchingConnectionException $ do
   writeChannel <- lift $ getChannel gameId
   gameChannelClients <- appGameChannelClients <$> getYesod
   atomicModifyIORef' gameChannelClients $
@@ -62,8 +63,13 @@ gameStream gameId = catchingConnectionException $ do
     \readChannel ->
       race_
         (forever $ atomically (readTChan readChannel) >>= sendTextData)
-        (runConduit $ sourceWS .| mapM_C (atomically . writeTChan writeChannel))
+        (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
  where
+  handleData writeChannel dataPacket = do
+    for_ mUserId $ \userId ->
+      for_ (decode dataPacket) $ \answer -> do
+        lift $ updateGame answer gameId userId writeChannel
+
   closeConnection _ = do
     gameChannelsRef <- appGameChannels <$> lift getYesod
     gameChannelClientsRef <- appGameChannelClients <$> lift getYesod
@@ -90,8 +96,8 @@ data GetGameJson = GetGameJson
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
-  webSockets (gameStream gameId)
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  webSockets (gameStream (Just userId) gameId)
   ge <- runDB $ get404 gameId
   ArkhamPlayer {..} <-
     runDB $
@@ -112,7 +118,7 @@ getApiV1ArkhamGameR gameId = do
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
-  webSockets $ gameStream gameId
+  webSockets $ gameStream Nothing gameId
   ge <- runDB $ get404 gameId
   let
     Game {..} = arkhamGameCurrentData ge
@@ -407,22 +413,28 @@ data Answer
   | AmountsAnswer AmountsResponse
   | StandaloneSettingsAnswer [StandaloneSetting]
   | CampaignSettingsAnswer CampaignSettings
-  deriving stock (Generic)
+  deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
+
+instance WebSocketsData Answer where
+  fromDataMessage (WS.Text bs _) = fromLazyByteString bs
+  fromDataMessage (WS.Binary bs) = fromLazyByteString bs
+  fromLazyByteString = either (error . T.pack) id . eitherDecode
+  toLazyByteString = error "not for sending"
 
 data QuestionResponse = QuestionResponse
   { qrChoice :: Int
   , qrInvestigatorId :: Maybe InvestigatorId
   }
-  deriving stock (Generic)
+  deriving stock (Show, Generic)
 
 newtype PaymentAmountsResponse = PaymentAmountsResponse
   {parAmounts :: Map InvestigatorId Int}
-  deriving stock (Generic)
+  deriving stock (Show, Generic)
 
 newtype AmountsResponse = AmountsResponse
   {arAmounts :: Map Text Int}
-  deriving stock (Generic)
+  deriving stock (Show, Generic)
 
 instance FromJSON QuestionResponse where
   parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
@@ -439,13 +451,17 @@ extract n xs =
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
-  mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
-  Entity pid arkhamPlayer@ArkhamPlayer {..} <-
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  writeChannel <- getChannel gameId
+  updateGame response gameId userId writeChannel
+
+updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
+updateGame response gameId userId writeChannel = do
+  (Entity pid arkhamPlayer@ArkhamPlayer {..}, ArkhamGame {..}) <-
     runDB $
-      getBy404 (UniquePlayer userId gameId)
+      (,) <$> getBy404 (UniquePlayer userId gameId) <*> get404 gameId
+  mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   let
     gameJson@Game {..} = arkhamGameCurrentData
     investigatorId =
@@ -459,19 +475,21 @@ putApiV1ArkhamGameR gameId = do
   gameRef <- newIORef gameJson
   queueRef <- newQueue (messages <> currentQueue)
   logRef <- newIORef []
-  genRef <- newIORef (mkStdGen gameSeed)
-  writeChannel <- getChannel gameId
+  genRef <- newIORef $ mkStdGen gameSeed
+
   runGameApp
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
     (runMessages Nothing)
+
   ge <- readIORef gameRef
   let diffDown = diff ge arkhamGameCurrentData
 
-  updatedQueue <- readIORef (queueToRef queueRef)
   oldLog <- runDB $ getGameLog gameId Nothing
+  updatedQueue <- readIORef $ queueToRef queueRef
   updatedLog <- readIORef logRef
+
   now <- liftIO getCurrentTime
-  void $ runDB $ do
+  runDB $ do
     replace gameId $
       ArkhamGame
         arkhamGameName
@@ -482,22 +500,22 @@ putApiV1ArkhamGameR gameId = do
         now
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
     insert_ $
-      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL ge)
-    case arkhamGameMultiplayerVariant of
-      Solo ->
-        replace pid $
-          arkhamPlayer
-            { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
-            }
-      WithFriends -> pure ()
+      ArkhamStep
+        gameId
+        (Choice diffDown updatedQueue)
+        (arkhamGameStep + 1)
+        (ActionDiff $ view actionDiffL ge)
+    when (arkhamGameMultiplayerVariant == Solo) $
+      replace pid $
+        arkhamPlayer
+          { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+          }
 
   atomically $
-    writeTChan
-      writeChannel
-      ( encode $
-          GameUpdate $
-            PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
-      )
+    writeTChan writeChannel $
+      encode $
+        GameUpdate $
+          PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message
@@ -552,7 +570,11 @@ putApiV1ArkhamGameRawR gameId = do
       )
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
     insert $
-      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL ge)
+      ArkhamStep
+        gameId
+        (Choice diffDown updatedQueue)
+        (arkhamGameStep + 1)
+        (ActionDiff $ view actionDiffL ge)
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = void $ runDB $ do

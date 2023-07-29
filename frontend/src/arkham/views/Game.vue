@@ -2,6 +2,7 @@
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
@@ -34,13 +35,14 @@ const spectate = route.fullPath.endsWith('/spectate')
 const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
 const spectatePrefix = spectate ? "/spectate" : ""
 
+const userStore = useUserStore()
 const socketError = ref(false)
 const onError = () => socketError.value = true
 const onConnected = () => socketError.value = false
-const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.
+const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}?token=${userStore.token}`.
   replace(/https/, 'wss').
   replace(/http/, 'ws')
-const { data, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
+const { data, send, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
 
 onBeforeRouteLeave(() => close())
 onUnmounted(() => close())
@@ -90,7 +92,7 @@ fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInve
 
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !spectate) {
-    updateGame(props.gameId, idx, investigatorId.value)
+    send(JSON.stringify({tag: 'Answer', contents: { choice: idx , investigatorId: investigatorId.value } }))
   }
 }
 

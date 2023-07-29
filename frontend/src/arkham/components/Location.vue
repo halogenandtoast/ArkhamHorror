@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
@@ -94,6 +94,13 @@ const abilities = computed(() => {
 
        return acc;
      }, []);
+})
+
+watch(abilities, (abilities) => {
+  // ability is forced we must show
+  if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
+    showAbilities.value = true
+  }
 })
 
 const enemies = computed(() => {
@@ -355,6 +362,8 @@ const debug = useDebug()
   * {
     transform: scale(0.6);
   }
+
+  pointer-events: none;
 }
 
 .card-frame {

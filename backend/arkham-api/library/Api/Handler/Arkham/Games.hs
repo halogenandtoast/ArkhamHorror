@@ -37,12 +37,11 @@ import Data.Text qualified as T
 import Data.Time.Clock
 import Data.Traversable (for)
 import Database.Esqueleto.Experimental hiding (update)
-import Database.Persist qualified as P
 import Entity.Answer
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
-import Import hiding (delete, on, (==.))
+import Import hiding (delete, exists, on, (==.))
 import Json
 import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)
@@ -397,4 +396,12 @@ putApiV1ArkhamGameRawR gameId = do
         (ActionDiff $ view actionDiffL ge)
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
-deleteApiV1ArkhamGameR gameId = runDB $ P.delete gameId
+deleteApiV1ArkhamGameR gameId = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  runDB $ delete $ do
+    games <- from $ table @ArkhamGame
+    where_ $ games.id ==. val gameId
+    where_ $ exists $ do
+      players <- from $ table @ArkhamPlayer
+      where_ $ players.arkhamGameId ==. games.id
+      where_ $ players.userId ==. val userId

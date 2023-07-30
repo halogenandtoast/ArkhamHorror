@@ -111,10 +111,11 @@ const enemies = computed(() => {
 
 const blocked = computed(() => {
   const { modifiers } = props.game.investigators[props.investigatorId]
+  const allModifiers = [...modifiers || [], ...props.location.modifiers]
 
-  if (modifiers) {
-    modifiers.some(modifier =>
-      (modifier.type.tag == "CannotEnter" && modifier.type.contents == props.location.id) ||
+  if (allModifiers) {
+    return allModifiers.some(modifier =>
+      (modifier.type.tag === "CannotEnter" && modifier.type.contents === props.location.id) ||
         (modifier.type.tag === "OtherModifier" && modifier.type.contents === "Blocked")
     )
   }

@@ -21,6 +21,7 @@ import Safe (fromJustNote)
 
 data Answer
   = Answer QuestionResponse
+  | Raw Message
   | PaymentAmountsAnswer PaymentAmountsResponse
   | AmountsAnswer AmountsResponse
   | StandaloneSettingsAnswer [StandaloneSetting]
@@ -222,6 +223,7 @@ handleAnswer Game {..} investigatorId = \case
             )
             $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
+  Raw message -> [message]
   Answer response ->
     let
       q =

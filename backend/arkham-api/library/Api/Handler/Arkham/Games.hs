@@ -122,13 +122,10 @@ getApiV1ArkhamGamesR = do
   games <- runDB $ select $ do
     (players :& games) <-
       from
-        $ table @ArkhamPlayer
-          `InnerJoin` table @ArkhamGame
-        `on` ( \(players :& games) ->
-                players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
-             )
-    where_ (players ^. ArkhamPlayerUserId ==. val userId)
-    orderBy [desc $ games ^. ArkhamGameUpdatedAt]
+        $ table @ArkhamPlayer `innerJoin` table @ArkhamGame
+        `on` (\(players :& games) -> players.arkhamGameId ==. games.id)
+    where_ $ players.userId ==. val userId
+    orderBy [desc $ games.updatedAt]
     pure games
   pure $ map (`toPublicGame` mempty) games
 
@@ -204,8 +201,8 @@ postApiV1ArkhamGamesR = do
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
-  response <- requireCheckJsonBody
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  response <- requireCheckJsonBody
   writeChannel <- getChannel gameId
   updateGame response gameId userId writeChannel
 
@@ -282,52 +279,13 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
   atomicModifyIORef' logRef (\logs -> (logs <> [msg], ()))
   atomically $ writeTChan writeChannel (encode $ GameMessage msg)
 
+-- TODO: Make this a websocket message
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
-  void $ fromJustNote "Not authenticated" <$> getRequestUserId
-  ArkhamGame {..} <- runDB $ get404 gameId
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   response <- requireCheckJsonBody
-  mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
-  let
-    gameJson@Game {..} = arkhamGameCurrentData
-    message = gameMessage response
-    currentQueue =
-      maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
-  gameRef <- newIORef gameJson
-  queueRef <- newQueue (message : currentQueue)
-  logRef <- newIORef []
-  genRef <- newIORef (mkStdGen gameSeed)
   writeChannel <- getChannel gameId
-  runGameApp
-    (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
-    (runMessages Nothing)
-  ge <- readIORef gameRef
-  updatedQueue <- readIORef (queueToRef queueRef)
-  let diffDown = diff ge arkhamGameCurrentData
-  updatedLog <- readIORef logRef
-  atomically $
-    writeTChan
-      writeChannel
-      (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
-  now <- liftIO getCurrentTime
-  runDB $ do
-    replace
-      gameId
-      ( ArkhamGame
-          arkhamGameName
-          ge
-          (arkhamGameStep + 1)
-          arkhamGameMultiplayerVariant
-          arkhamGameCreatedAt
-          now
-      )
-    insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
-    insert_ $
-      ArkhamStep
-        gameId
-        (Choice diffDown updatedQueue)
-        (arkhamGameStep + 1)
-        (ActionDiff $ view actionDiffL ge)
+  updateGame (Raw $ gameMessage response) gameId userId writeChannel
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = do

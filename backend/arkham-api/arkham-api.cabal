@@ -25,6 +25,7 @@ library
       Api.Arkham.Types.MultiplayerVariant
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.Decks
+      Api.Handler.Arkham.Game.Debug
       Api.Handler.Arkham.Games
       Api.Handler.Arkham.Investigators
       Api.Handler.Arkham.PendingGames

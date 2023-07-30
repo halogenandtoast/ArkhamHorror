@@ -397,4 +397,4 @@ putApiV1ArkhamGameRawR gameId = do
         (ActionDiff $ view actionDiffL ge)
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
-deleteApiV1ArkhamGameR gameId = void $ runDB $ P.delete gameId
+deleteApiV1ArkhamGameR gameId = runDB $ P.delete gameId

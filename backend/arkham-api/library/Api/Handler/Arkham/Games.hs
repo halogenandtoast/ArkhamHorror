@@ -377,7 +377,7 @@ putApiV1ArkhamGameRawR gameId = do
       writeChannel
       (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   now <- liftIO getCurrentTime
-  void $ runDB $ do
+  runDB $ do
     replace
       gameId
       ( ArkhamGame
@@ -389,7 +389,7 @@ putApiV1ArkhamGameRawR gameId = do
           now
       )
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
-    insert $
+    insert_ $
       ArkhamStep
         gameId
         (Choice diffDown updatedQueue)

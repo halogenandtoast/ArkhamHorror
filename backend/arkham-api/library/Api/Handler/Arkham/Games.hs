@@ -37,6 +37,7 @@ import Data.Text qualified as T
 import Data.Time.Clock
 import Data.Traversable (for)
 import Database.Esqueleto.Experimental hiding (update)
+import Database.Persist qualified as P
 import Entity.Answer
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
@@ -152,24 +153,25 @@ data CreateGamePost = CreateGamePost
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
   _ <- fromJustNote "Not authenticated" <$> getRequestUserId
-  ge <- runDB $ get404 gameId
-  players <- runDB $ select $ do
-    players <- from $ table @ArkhamPlayer
-    where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
-    pure players
-  steps <- runDB $ select $ do
-    steps <- from $ table @ArkhamStep
-    where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
-    orderBy [desc $ steps ^. ArkhamStepStep]
-    pure steps
+  runDB $ do
+    ge <- get404 gameId
+    players <- select $ do
+      players <- from $ table @ArkhamPlayer
+      where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
+      pure players
+    steps <- select $ do
+      steps <- from $ table @ArkhamStep
+      where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
+      orderBy [desc $ steps ^. ArkhamStepStep]
+      pure steps
 
-  entries <- runDB $ getGameLogEntries gameId
+    entries <- getGameLogEntries gameId
 
-  pure $
-    ArkhamExport
-      { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-      , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
-      }
+    pure $
+      ArkhamExport
+        { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
+        , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
+        }
 
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do
@@ -236,15 +238,13 @@ postApiV1ArkhamGamesR = do
       ge <- readIORef gameRef
       updatedQueue <- readIORef (queueToRef queueRef)
       key <- runDB $ do
-        gameId <-
-          insert $
-            ArkhamGame campaignName ge 0 multiplayerVariant now now
+        gameId <- insert $ ArkhamGame campaignName ge 0 multiplayerVariant now now
         insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
         insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
         pure gameId
       pure $
         toPublicGame
-          (Entity key (ArkhamGame campaignName ge 0 multiplayerVariant now now))
+          (Entity key $ ArkhamGame campaignName ge 0 multiplayerVariant now now)
           mempty
     Nothing -> case scenarioId of
       Just sid -> do
@@ -259,15 +259,13 @@ postApiV1ArkhamGamesR = do
         let diffDown = diff ge game
         updatedQueue <- readIORef (queueToRef queueRef)
         key <- runDB $ do
-          gameId <-
-            insert $
-              ArkhamGame campaignName ge 0 multiplayerVariant now now
+          gameId <- insert $ ArkhamGame campaignName ge 0 multiplayerVariant now now
           insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
           insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0 (ActionDiff [])
           pure gameId
         pure $
           toPublicGame
-            (Entity key (ArkhamGame campaignName ge 0 multiplayerVariant now now))
+            (Entity key $ ArkhamGame campaignName ge 0 multiplayerVariant now now)
             mempty
       Nothing -> error "missing either campaign id or scenario id"
 
@@ -399,16 +397,4 @@ putApiV1ArkhamGameRawR gameId = do
         (ActionDiff $ view actionDiffL ge)
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
-deleteApiV1ArkhamGameR gameId = void $ runDB $ do
-  delete $ do
-    entries <- from $ table @ArkhamLogEntry
-    where_ $ entries.arkhamGameId ==. val gameId
-  delete $ do
-    steps <- from $ table @ArkhamStep
-    where_ $ steps.arkhamGameId ==. val gameId
-  delete $ do
-    players <- from $ table @ArkhamPlayer
-    where_ $ players.arkhamGameId ==. val gameId
-  delete $ do
-    games <- from $ table @ArkhamGame
-    where_ $ games.id ==. val gameId
+deleteApiV1ArkhamGameR gameId = void $ runDB $ P.delete gameId

@@ -3,6 +3,6 @@
 
 BEGIN;
 
-ALTER TABLE arkham_steps ADD COLUMN action_diff jsonb NOT NULL;
+ALTER TABLE arkham_steps ADD COLUMN IF NOT EXISTS action_diff jsonb NOT NULL;
 
 COMMIT;

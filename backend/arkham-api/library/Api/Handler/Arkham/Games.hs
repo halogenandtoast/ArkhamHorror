@@ -4,17 +4,14 @@
 
 module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameR,
-  getApiV1ArkhamGameExportR,
   getApiV1ArkhamGameSpectateR,
   getApiV1ArkhamGamesR,
   postApiV1ArkhamGamesR,
-  postApiV1ArkhamGamesImportR,
   putApiV1ArkhamGameR,
   deleteApiV1ArkhamGameR,
   putApiV1ArkhamGameRawR,
 ) where
 
-import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
@@ -33,12 +30,10 @@ import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
 import Data.List.NonEmpty qualified as NonEmpty
 import Data.Map.Strict qualified as Map
-import Data.Text qualified as T
 import Data.Time.Clock
 import Data.Traversable (for)
 import Database.Esqueleto.Experimental hiding (update)
 import Entity.Answer
-import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
@@ -92,7 +87,7 @@ data GetGameJson = GetGameJson
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  webSockets (gameStream (Just userId) gameId)
+  webSockets $ gameStream (Just userId) gameId
   ge <- runDB $ get404 gameId
   ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404 (UniquePlayer userId gameId)
   let
@@ -148,67 +143,6 @@ data CreateGamePost = CreateGamePost
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
-
-getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
-getApiV1ArkhamGameExportR gameId = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ do
-    ge <- get404 gameId
-    players <- select $ do
-      players <- from $ table @ArkhamPlayer
-      where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
-      pure players
-    steps <- select $ do
-      steps <- from $ table @ArkhamStep
-      where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
-      orderBy [desc $ steps ^. ArkhamStepStep]
-      pure steps
-
-    entries <- getGameLogEntries gameId
-
-    pure $
-      ArkhamExport
-        { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-        , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
-        }
-
-postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
-postApiV1ArkhamGamesImportR = do
-  -- Convert to multiplayer solitaire
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  eExportData :: Either String ArkhamExport <-
-    fmap eitherDecodeStrict'
-      . fileSourceByteString
-      . snd
-      . fromJustNote "No export file uploaded"
-      . headMay
-      . snd
-      =<< runRequestBody
-  now <- liftIO getCurrentTime
-
-  case eExportData of
-    Left err -> error $ T.pack err
-    Right export -> do
-      let
-        ArkhamGameExportData {..} = aeCampaignData export
-        investigatorIds = aeCampaignPlayers export
-      key <- runDB $ do
-        gameId <-
-          insert $
-            ArkhamGame agedName agedCurrentData agedStep Solo now now
-        insertMany_ $ map (\e -> e {arkhamLogEntryArkhamGameId = gameId}) agedLog
-        traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
-        traverse_
-          ( \s ->
-              insert_ $
-                ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
-          )
-          agedSteps
-        pure gameId
-      pure $
-        toPublicGame
-          (Entity key $ ArkhamGame agedName agedCurrentData agedStep Solo now now)
-          (GameLog $ map arkhamLogEntryBody agedLog)
 
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do

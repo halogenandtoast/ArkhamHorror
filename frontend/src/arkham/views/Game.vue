@@ -59,26 +59,26 @@ const gameLog = ref<readonly string[]>(Object.freeze([]))
 const question = computed(() => investigatorId.value ? game.value?.question[investigatorId.value] : null)
 
 watch(data, async (newData) => {
-  const msg = JSON.parse(newData)
+  const { tag, contents } = JSON.parse(newData)
 
-  if (msg.tag === "GameMessage") {
-    gameLog.value = Object.freeze([...gameLog.value, msg.contents])
-  }
-
-  if (msg.tag === "GameUpdate") {
-    Arkham.gameDecoder.decodeToPromise(msg.contents)
-      .then((updatedGame) => {
-        game.value = updatedGame
-        gameLog.value = Object.freeze([...updatedGame.log])
-        if (solo.value === true) {
-          if (Object.keys(game.value.question).length == 1) {
-            investigatorId.value = Object.keys(game.value.question)[0]
-          } else if (game.value.activeInvestigatorId !== investigatorId.value) {
-            investigatorId.value = Object.keys(game.value.question)[0]
+  switch(tag) {
+    case "GameMessage":
+      gameLog.value = Object.freeze([...gameLog.value, contents])
+      return
+    case "GameUpdate":
+      Arkham.gameDecoder.decodeToPromise(contents)
+        .then((updatedGame) => {
+          game.value = updatedGame
+          gameLog.value = Object.freeze([...updatedGame.log])
+          if (solo.value === true) {
+            if (Object.keys(game.value.question).length == 1) {
+              investigatorId.value = Object.keys(game.value.question)[0]
+            } else if (game.value.activeInvestigatorId !== investigatorId.value) {
+              investigatorId.value = Object.keys(game.value.question)[0]
+            }
           }
-        }
-
-      })
+        })
+      return
   }
 })
 

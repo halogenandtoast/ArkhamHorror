@@ -54,11 +54,7 @@ function imageForCard(card: Card) {
 }
 
 function canInteract(c: Message): boolean {
-  if (c.tag === MessageType.TARGET_LABEL) {
-    return c.target.contents === id.value
-  }
-
-  return false
+  return c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value
 }
 
 const interactAction = computed(() => choices.value.findIndex(canInteract));
@@ -83,22 +79,15 @@ function isAbility(v: Message): v is AbilityLabel {
 
 const abilities = computed(() => {
   return choices.value
-    .reduce<AbilityMessage[]>((acc, v, i) => {
-      if (isAbility(v)) {
-        return [...acc, { contents: v, index: i}];
-      }
-
-      return acc;
-    }, [])
+    .reduce<AbilityMessage[]>((acc, v, i) =>
+      isAbility(v) ? [...acc, { contents: v, index: i}] : acc
+    , [])
 })
 
 const hasObjective = computed(() =>
-  abilities.value.some((ability) => {
-    const { contents } = ability
-    console.log(contents.ability.type.tag)
-    console.log("ability" in contents)
-    return "ability" in contents ? contents.ability.type.tag === 'Objective' : false
-  })
+  abilities.value.some(({ contents }) =>
+    "ability" in contents && contents.ability.type.tag === 'Objective'
+  )
 )
 
 const cardsUnder = computed(() => props.cardsUnder)
@@ -215,7 +204,7 @@ async function chooseAbility(ability: AbilityMessage) {
   --clr-1: #198891;
   --clr-2: #2d8f85;
   --clr-3: #73fb22;
-  
+
   &::before, &::after {
     content: "";
     position: absolute;

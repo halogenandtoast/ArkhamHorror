@@ -4,7 +4,7 @@ import { ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
-import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts } from '@/arkham/api'
+import { fetchGame } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
@@ -98,13 +98,13 @@ async function choose(idx: number) {
 
 async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !spectate) {
-    updateGamePaymentAmounts(props.gameId, amounts)
+    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts } }))
   }
 }
 
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !spectate) {
-    updateGameAmounts(props.gameId, amounts)
+    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts } }))
   }
 }
 

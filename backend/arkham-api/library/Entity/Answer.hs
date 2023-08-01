@@ -182,6 +182,7 @@ makeCampaignLog settings =
 answerInvestigator :: Answer -> Maybe InvestigatorId
 answerInvestigator = \case
   Answer response -> qrInvestigatorId response
+  Raw _ -> Nothing
   AmountsAnswer _ -> Nothing
   PaymentAmountsAnswer _ -> Nothing
   StandaloneSettingsAnswer _ -> Nothing

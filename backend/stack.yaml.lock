@@ -3,39 +3,10 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages:
-- completed:
-    hackage: happy-1.20.1.1@sha256:a381633c5e8f9e9e5a8e1900930ce13172397b4677fcfcc08cd38eb3f73b61b1,5811
-    pantry-tree:
-      sha256: a5b8a3cd39ffabdf0deb31483eb97cc2c270083738ceeddff75a894a953f6b92
-      size: 8615
-  original:
-    hackage: happy-1.20.1.1
-- completed:
-    name: clientsession
-    pantry-tree:
-      sha256: e8f800c0c0fed1a148257f2d47361d1f08319092e38ab3ab5b11f0d9f74f8c9a
-      size: 699
-    sha256: 92f25a8aefb742124e8d6f9b83023f80a4f89e0a59e5e1516966151bbcc6e9d4
-    size: 11215
-    url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
-    version: 0.9.1.2
-  original:
-    url: https://github.com/jmazon/clientsession/archive/1221230770feff60f77ff676d52fc464cb77b2d9.tar.gz
-- completed:
-    name: monad-validate
-    pantry-tree:
-      sha256: 948419ea481c9606d59f2ca30faa32545924f99de89de55b053763e27ac1e347
-      size: 835
-    sha256: 536cf3bb960a55de94a1606f6c561cbc449195c8b22511cf9848e5ba204ae612
-    size: 17451
-    url: https://github.com/jul1u5/monad-validate/archive/0af25b99a2b874e14c2adc22f5805a4ae0f065cc.tar.gz
-    version: 1.2.0.1
-  original:
-    url: https://github.com/jul1u5/monad-validate/archive/0af25b99a2b874e14c2adc22f5805a4ae0f065cc.tar.gz
+packages: []
 snapshots:
 - completed:
-    sha256: df68a6720fa104c94823ee5e517d8d5bfdafc42693d3ccc50a599fd943326998
-    size: 639352
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/6/19.yaml
-  original: nightly-2023-06-19
+    sha256: 931b7f2190f1968c664b7cf4e40a17f9efc9869048bf08afe2751a5b2bc5e87f
+    size: 657383
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/8/9.yaml
+  original: nightly-2023-08-09

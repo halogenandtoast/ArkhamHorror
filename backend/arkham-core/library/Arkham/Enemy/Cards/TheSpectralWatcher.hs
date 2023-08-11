@@ -44,6 +44,6 @@ instance RunMessage TheSpectralWatcher where
         , roundModifier attrs attrs DoesNotReadyDuringUpkeep
         ]
       pure e
-    InOutOfPlay msg@(PlaceTokens _ (isTarget attrs -> True) LostSoul n) -> do
-      TheSpectralWatcher <$> runMessage msg attrs
+    InOutOfPlay outOfPlayMsg@(PlaceTokens _ (isTarget attrs -> True) LostSoul _) -> do
+      TheSpectralWatcher <$> runMessage outOfPlayMsg attrs
     _ -> TheSpectralWatcher <$> runMessage msg attrs

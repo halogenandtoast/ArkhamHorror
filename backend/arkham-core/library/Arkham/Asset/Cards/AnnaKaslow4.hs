@@ -19,7 +19,7 @@ newtype AnnaKaslow4 = AnnaKaslow4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 annaKaslow4 :: AssetCard AnnaKaslow4
-annaKaslow4 = asset AnnaKaslow4 Cards.annaKaslow4
+annaKaslow4 = ally AnnaKaslow4 Cards.annaKaslow4 (1, 1)
 
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing

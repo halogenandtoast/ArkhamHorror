@@ -8,11 +8,9 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Window (defaultWindows)
 
 newtype AceOfSwords1 = AceOfSwords1 AssetAttrs
   deriving anyclass (IsAsset)

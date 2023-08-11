@@ -1,8 +1,5 @@
 module Arkham.Campaigns.TheCircleUndone.CampaignSteps where
 
-import Arkham.Prelude
-
-import Arkham.Campaign.Types
 import Arkham.CampaignStep
 
 pattern DisappearanceAtTheTwilightEstate :: CampaignStep

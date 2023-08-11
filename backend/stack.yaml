@@ -33,3 +33,9 @@ packages:
   - arkham-core
   - arkham-api
   - validate
+
+allow-newer: true
+
+extra-deps:
+- github: halogenandtoast/monad-validate
+  commit: e5f36d4a82875c09c6000fed8f8ced50e21b75ce

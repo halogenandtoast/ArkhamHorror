@@ -351,6 +351,8 @@ ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
     , -- \^^
       "04132c"
     , -- \^^
+      "04133f"
+    , -- \^^
       "04134e"
     , -- \^^
       "04134f"
@@ -571,12 +573,12 @@ getValidationResults cards = runValidateT $ do
         Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
         Just CardJson {..} -> do
           when
-            (fromMaybe 0 shroud /= locationShroud attrs)
+            (max 0 (fromMaybe 0 shroud) /= locationShroud attrs)
             ( invariant $
                 ShroudMismatch
                   code
                   (cdName $ toCardDef attrs)
-                  (fromMaybe 0 shroud)
+                  (max 0 $ fromMaybe 0 shroud)
                   (locationShroud attrs)
             )
           when

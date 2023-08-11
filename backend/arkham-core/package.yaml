@@ -44,6 +44,7 @@ library:
     - mtl >= 2.3.1
     - parsec
     - pretty-simple
+    - process
     - random-shuffle
     - safe
     - template-haskell

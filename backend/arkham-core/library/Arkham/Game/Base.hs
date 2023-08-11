@@ -11,6 +11,7 @@ import Arkham.Campaign.Types (Campaign)
 import {-# SOURCE #-} Arkham.Card
 import Arkham.ChaosToken
 import {-# SOURCE #-} Arkham.Entities
+import Arkham.Git (GitSha)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
@@ -79,6 +80,8 @@ data Game = Game
   , gameCards :: Map CardId Card
   , -- handling costs
     gameActiveCost :: Map ActiveCostId ActiveCost
+  , -- track GitSha for debugging
+    gameGitRevision :: GitSha
   }
   deriving stock (Eq, Show)
 

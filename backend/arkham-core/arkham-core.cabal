@@ -1298,6 +1298,7 @@ library
       Arkham.Game.Json
       Arkham.GameEnv
       Arkham.GameValue
+      Arkham.Git
       Arkham.Helpers
       Arkham.Helpers.Ability
       Arkham.Helpers.Act
@@ -2322,6 +2323,7 @@ library
     , mtl >=2.3.1
     , parsec
     , pretty-simple
+    , process
     , random-shuffle
     , safe
     , template-haskell

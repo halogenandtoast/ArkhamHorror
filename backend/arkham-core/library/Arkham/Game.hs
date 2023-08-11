@@ -69,6 +69,7 @@ import Arkham.Game.Helpers hiding (
  )
 import Arkham.Game.Json ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Git (gitHash)
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.ChaosBag
@@ -287,6 +288,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty mCampai
         , gameActiveCost = mempty
         , gameInSetup = True
         , gameIgnoreCanModifiers = False -- only to be used with local
+        , gameGitRevision = gitHash
         }
 
   gameRef <- newIORef game
@@ -511,6 +513,7 @@ instance (ToJSON gid) => ToJSON (PublicGame gid) where
       [ "name" .= toJSON name
       , "id" .= toJSON gid
       , "log" .= toJSON glog
+      , "git" .= toJSON gameGitRevision
       , "mode" .= toJSON gameMode
       , "modifiers" .= toJSON gameModifiers
       , "encounterDeckSize"

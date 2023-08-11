@@ -1,8 +1,5 @@
 module Arkham.Campaigns.ThePathToCarcosa.CampaignSteps where
 
-import Arkham.Prelude
-
-import Arkham.Campaign.Types
 import Arkham.CampaignStep
 
 pattern CurtainCall :: CampaignStep

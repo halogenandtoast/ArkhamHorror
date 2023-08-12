@@ -3,7 +3,7 @@ import { computed, ref, ComputedRef, reactive } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, pluralize } from '@/arkham/helpers';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
@@ -90,7 +90,7 @@ const playTopOfDeckAction = computed(() => {
 })
 
 const viewingDiscard = ref(false)
-const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)
+const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : pluralize('Card', discards.value.length))
 
 const id = computed(() => props.player.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
@@ -330,6 +330,9 @@ function beforeLeaveHand(e: Element) {
 .discard {
   width: $card-width;
   margin-top: 10px;
+  button {
+    white-space: nowrap;
+  }
   &:deep(.card) {
     margin: 0;
     box-shadow: none;

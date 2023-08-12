@@ -308,13 +308,13 @@ const debug = useDebug()
 
 @keyframes move-up {
 100% {
-  transform: translateY(-50%);
+  transform: translateY(-25%);
   }
 }
 
 @keyframes move-down {
 0% {
-  transform: translateY(-50%);
+  transform: translateY(-25%);
   }
 100% {
   transform: translateY(0%);
@@ -326,13 +326,13 @@ const debug = useDebug()
   flex-direction: column;
   position: absolute;
   left: 100%;
-  min-width: $card-width * 0.6;
-  height: 100%;
+  min-width: $card-width * 0.8;
+  height: fit-content;
   &:deep(.card) {
-    width: $card-width * 0.6 !important;
+    width: $card-width * 0.8 !important;
   }
 
-  &:hover {
+  &:has(> :nth-child(2)):hover {
     animation: move-up 0.2s;
     animation-fill-mode:forwards;
     div:not(:first-child) {

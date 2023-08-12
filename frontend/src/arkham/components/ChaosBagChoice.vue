@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, pluralize } from '@/arkham/helpers';
 import { ChaosBagStep } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 
@@ -75,10 +75,6 @@ const allResolved = computed(() => {
     default: return false
   }
 })
-
-function pluralize(w: string, n: number) {
-  return `${n} ${w}${n == 1 ? '' : 's'}`
-}
 
 </script>
 

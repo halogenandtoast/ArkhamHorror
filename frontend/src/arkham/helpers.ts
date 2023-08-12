@@ -16,3 +16,7 @@ const baseUrl = import.meta.env.NODE_ENV == 'production' ? "https://assets.arkha
 export function imgsrc(src: string) {
   return `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
 }
+
+export function pluralize(w: string, n: number) {
+  return `${n} ${w}${n == 1 ? '' : 's'}`
+}

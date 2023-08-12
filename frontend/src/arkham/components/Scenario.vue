@@ -10,7 +10,7 @@ import {
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card, toCardContents } from '@/arkham/types/Card';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, pluralize } from '@/arkham/helpers';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -279,7 +279,7 @@ const showRemovedFromPlay = () => doShowCards(removedFromPlay, 'Removed from Pla
 const showDiscards = () => doShowCards(discards, 'Discards', true)
 const hideCards = () => showCards.ref = noCards
 
-const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
+const viewDiscardLabel = computed(() => pluralize('Card', discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (props.scenario.discard[0]) {
     const { cardCode } = props.scenario.discard[0];

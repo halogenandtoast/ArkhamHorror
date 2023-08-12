@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
@@ -21,6 +21,20 @@ const allCards = ref<Arkham.CardDef[]>([])
 const ready = ref(false)
 const deleting = ref(false)
 const deck = ref<Deck | null>(null)
+const deckRef = ref(null)
+
+onMounted(() => {
+  console.log(deckRef.value)
+  if (deckRef.value !== null) {
+    const el = deckRef.value
+    const observer = new IntersectionObserver(
+      ([e]) => e.target.classList.toggle("is-pinned", e.intersectionRatio < 1),
+      { threshold: [1] }
+    );
+
+    observer.observe(el);
+  }
+})
 
 enum View {
   Image = "IMAGE",
@@ -168,28 +182,30 @@ const deckUrlToPage = (url: string): string => {
 <template>
   <div class="container">
     <div class="results">
-      <header class="deck" v-if="deck">
-        <img class="portrait--decklist" :src="imgsrc(`cards/${deck.list.investigator_code.replace('c', '')}.jpg`)" />
-        <div class="deck--details">
-          <h1 class="deck-title">{{deck.name}}</h1>
-          <div class="deck--actions">
-            <div class="deck--view-options">
-              <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }"><font-awesome-icon icon="list" /></button>
-              <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }"><font-awesome-icon icon="image" /></button>
-            </div>
-            <div class="deck--non-view-options">
-              <div class="open-deck">
-                <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
+      <header class="deck" v-show="deck" ref="deckRef">
+        <template v-if="deck">
+          <img class="portrait--decklist" :src="imgsrc(`cards/${deck.list.investigator_code.replace('c', '')}.jpg`)" />
+          <div class="deck--details">
+            <h1 class="deck-title">{{deck.name}}</h1>
+            <div class="deck--actions">
+              <div class="deck--view-options">
+                <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }"><font-awesome-icon icon="list" /></button>
+                <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }"><font-awesome-icon icon="image" /></button>
               </div>
-              <div class="sync-deck">
-                <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
-              </div>
-              <div class="deck-delete">
-                <a href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+              <div class="deck--non-view-options">
+                <div class="open-deck">
+                  <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
+                </div>
+                <div class="sync-deck">
+                  <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
+                </div>
+                <div class="deck-delete">
+                  <a href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </template>
       </header>
       <div class="cards" v-if="view == View.Image">
         <img class="card" v-for="(card, idx) in cards" :key="idx" :src="image(card)" />
@@ -225,13 +241,13 @@ const deckUrlToPage = (url: string): string => {
 <style scoped lang="scss">
 .container {
   display: flex;
-  height: calc(100% - 40px);
+  margin-top: 0;
 }
 
 .results {
   flex: 1;
-  overflow-y: auto;
 }
+
 .card {
   width: calc(100% - 20px);
   margin: 10px;
@@ -364,6 +380,7 @@ thead tr th {
 .portrait--decklist {
   width: 300px;
   margin-right: 10px;
+  border-radius: 10px;
 }
 
 .deck-title {
@@ -378,7 +395,6 @@ thead tr th {
   background-color: #15192C;
   color: #f0f0f0;
   margin: 0 20px;
-  margin-bottom: 0;
   padding: 20px;
   a {
     color: #365488;
@@ -401,6 +417,14 @@ thead tr th {
 
   button {
     padding: 5px;
+  }
+
+  position: sticky;
+  position: -webkit-sticky;
+  top: -1px;
+
+  &.is-pinned {
+    background-color: rgba(28, 28, 41, 1) !important;
   }
 }
 

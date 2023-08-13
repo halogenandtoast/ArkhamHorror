@@ -34,8 +34,9 @@ import Arkham.Game as X hiding (addInvestigator, getAsset, newGame, runMessages)
 import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding (getCanAffordCost)
 import Arkham.GameValue as X
+import Arkham.Git
 import Arkham.Helpers as X
-import Arkham.Helpers.Message as X hiding (createEnemy)
+import Arkham.Helpers.Message as X hiding (createEnemy, putCardIntoPlay)
 import Arkham.Id as X
 import Arkham.Investigator as X hiding (allInvestigators)
 import Arkham.Investigator.Cards qualified as Investigators
@@ -516,6 +517,7 @@ newGame investigator = do
         , gameInSetup = False
         , gameIgnoreCanModifiers = False
         , gameEnemyEvading = Nothing
+        , gameGitRevision = gitHash
         }
 
   liftIO $ do

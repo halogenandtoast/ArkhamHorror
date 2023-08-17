@@ -36,7 +36,7 @@ onMounted(() => {
   }
 })
 
-enum View {
+const enum View {
   Image = "IMAGE",
   List = "LIST",
 }
@@ -189,8 +189,12 @@ const deckUrlToPage = (url: string): string => {
             <h1 class="deck-title">{{deck.name}}</h1>
             <div class="deck--actions">
               <div class="deck--view-options">
-                <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }"><font-awesome-icon icon="list" /></button>
-                <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }"><font-awesome-icon icon="image" /></button>
+                <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }">
+                  <font-awesome-icon icon="list" />
+                </button>
+                <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }">
+                  <font-awesome-icon icon="image" />
+                </button>
               </div>
               <div class="deck--non-view-options">
                 <div class="open-deck">

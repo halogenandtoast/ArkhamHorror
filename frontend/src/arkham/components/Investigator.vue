@@ -285,7 +285,7 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
         @click="$emit('choose', ability.index)"
         />
       <button
-        :disabled="endTurnAction === -1"
+        v-if="endTurnAction !== -1"
         @click="$emit('choose', endTurnAction)"
       >End turn</button>
     </div>

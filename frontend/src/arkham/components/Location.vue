@@ -172,12 +172,12 @@ const debug = useDebug()
           <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
         </div>
       </div>
-      <div v-if="showAbilities" class="abilities">
+      <div v-if="showAbilities" class="abilities" :data-image="image">
         <AbilityButton
           v-for="ability in abilities"
           :key="ability.index"
           :ability="ability.contents"
-          :data-image="image"
+          :data-target="location.id"
           @click="chooseAbility(ability.index)"
           />
         <template v-if="debug.active">
@@ -306,41 +306,25 @@ const debug = useDebug()
   }
 }
 
-@keyframes move-up {
-100% {
-  transform: translateY(-25%);
-  }
-}
-
-@keyframes move-down {
-0% {
-  transform: translateY(-25%);
-  }
-100% {
-  transform: translateY(0%);
-  }
-}
-
 .location-asset-column {
   display: flex;
   flex-direction: column;
   position: absolute;
   left: 100%;
+  padding: 0 10px;
   min-width: $card-width * 0.8;
   height: fit-content;
   &:deep(.card) {
     width: $card-width * 0.8 !important;
   }
 
-  &:has(> :nth-child(2)):hover {
-    animation: move-up 0.2s;
+  &:hover {
     animation-fill-mode:forwards;
     div:not(:first-child) {
       margin-top: 0px;
     }
   }
 
-  animation: move-down 0.2s;
   animation-fill-mode:fowards;
 
   div {

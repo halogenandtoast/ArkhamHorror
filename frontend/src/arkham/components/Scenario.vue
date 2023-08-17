@@ -634,7 +634,6 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   flex: 1;
   justify-content: center;
   align-items: center;
-  overflow: auto;
 }
 
 .portrait {

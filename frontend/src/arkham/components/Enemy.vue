@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { watch, computed, ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
@@ -40,14 +40,15 @@ const id = computed(() => props.enemy.id)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-function canInteract(c: Message): boolean {
+function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
     return true
   }
   return false
 }
 
-const cardAction = computed(() => choices.value.findIndex(canInteract))
+const cardAction = computed(() => choices.value.findIndex(isCardAction))
+const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 
 function isAbility(v: Message): v is AbilityLabel | FightLabel | EvadeLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
@@ -101,6 +102,32 @@ const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
 
 const choose = (index: number) => emits('choose', index)
 
+const showAbilities = ref<boolean>(false)
+
+async function clicked() {
+  if(cardAction.value !== -1) {
+    emits('choose', cardAction.value)
+  } else if (abilities.value.length > 0) {
+    showAbilities.value = !showAbilities.value
+  }
+}
+
+async function chooseAbility(ability: number) {
+  showAbilities.value = false
+  emits('choose', ability)
+}
+
+watch(abilities, (abilities) => {
+  // ability is forced we must show
+  if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
+    showAbilities.value = true
+  }
+
+  if (abilities.length === 0) {
+    showAbilities.value = false
+  }
+})
+
 </script>
 
 <template>
@@ -109,10 +136,10 @@ const choose = (index: number) => emits('choose', index)
     <template v-else>
       <div class="card-frame">
         <img :src="image"
-          :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
+          :class="{'enemy--can-interact': canInteract, exhausted: isExhausted }"
           class="card enemy"
           :data-id="id"
-          @click="$emit('choose', cardAction)"
+          @click="clicked"
         />
 
         <div class="pool">
@@ -133,14 +160,17 @@ const choose = (index: number) => emits('choose', index)
             @choose="choose"
           />
         </div>
+
+        <div v-if="showAbilities" class="abilities" :data-image="image">
+          <AbilityButton
+            v-for="ability in abilities"
+            :key="ability.index"
+            :ability="ability.contents"
+            @click="chooseAbility(ability.index)"
+            />
+        </div>
       </div>
-      <AbilityButton
-        v-for="ability in abilities"
-        :key="ability.index"
-        :ability="ability.contents"
-        :data-target="enemy.id"
-        @click="$emit('choose', ability.index)"
-        />
+
     </template>
     <Treachery
       v-for="treacheryId in enemy.treacheries"
@@ -235,5 +265,17 @@ const choose = (index: number) => emits('choose', index)
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.abilities {
+  position: absolute;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  display: grid;
+  gap: 5px;
+  bottom:100%;
+  left: 0;
+  z-index: 2000;
 }
 </style>

@@ -56,7 +56,7 @@ const canInteract = computed(() => abilities.value.length > 0 || cardAction.valu
 async function clicked() {
   if(cardAction.value !== -1) {
     emits('choose', cardAction.value)
-  } else {
+  } else if (abilities.value.length > 0) {
     showAbilities.value = !showAbilities.value
   }
 }
@@ -100,6 +100,10 @@ watch(abilities, (abilities) => {
   // ability is forced we must show
   if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
     showAbilities.value = true
+  }
+
+  if (abilities.length === 0) {
+    showAbilities.value = false
   }
 })
 
@@ -177,7 +181,6 @@ const debug = useDebug()
           v-for="ability in abilities"
           :key="ability.index"
           :ability="ability.contents"
-          :data-target="location.id"
           @click="chooseAbility(ability.index)"
           />
         <template v-if="debug.active">

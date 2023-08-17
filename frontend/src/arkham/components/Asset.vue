@@ -123,12 +123,43 @@ const choose = (idx: number) => emit('choose', idx)
 
 <template>
   <div class="asset">
-    <img
-      :src="image"
-      :class="{ 'asset--can-interact': cardAction !== -1, exhausted}"
-      class="card"
-      @click="choose(cardAction)"
-    />
+    <div class="card-frame">
+      <img
+        :data-id="id"
+        :src="image"
+        :class="{ 'asset--can-interact': cardAction !== -1, exhausted}"
+        class="card"
+        @click="choose(cardAction)"
+      />
+      <div v-if="hasPool" class="pool">
+        <div class="keys" v-if="keys.length > 0">
+          <Key v-for="key in keys" :key="key" :name="key" />
+        </div>
+        <PoolItem
+          v-if="asset.uses && asset.uses.amount > 0"
+          type="resource"
+          :amount="asset.uses.amount"
+        />
+        <PoolItem
+          v-if="asset.health !== null || (damage || 0) > 0"
+          type="health"
+          :amount="damage || 0"
+          :class="{ 'health--can-interact': healthAction !== -1 }"
+          @choose="choose(healthAction)"
+        />
+        <PoolItem
+          v-if="asset.sanity !== null || (horror || 0) > 0"
+          type="sanity"
+          :amount="horror || 0"
+          :class="{ 'sanity--can-interact': sanityAction !== -1 }"
+          @choose="choose(sanityAction)"
+        />
+        <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+        <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+        <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+        <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+      </div>
+    </div>
     <Event
       v-for="eventId in asset.events"
       :event="game.events[eventId]"
@@ -143,40 +174,13 @@ const choose = (idx: number) => emit('choose', idx)
       :key="ability.index"
       :ability="ability.contents"
       :data-image="image"
+      :data-target="asset.id"
       @click="choose(ability.index)"
       />
     <template v-if="debug.active">
       <button v-if="!asset.owner" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
       <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: { tag: 'AssetTarget', contents: id}})">Discard</button>
     </template>
-    <div v-if="hasPool" class="pool">
-      <div class="keys" v-if="keys.length > 0">
-        <Key v-for="key in keys" :key="key" :name="key" />
-      </div>
-      <PoolItem
-        v-if="asset.uses && asset.uses.amount > 0"
-        type="resource"
-        :amount="asset.uses.amount"
-      />
-      <PoolItem
-        v-if="asset.health !== null || (damage || 0) > 0"
-        type="health"
-        :amount="damage || 0"
-        :class="{ 'health--can-interact': healthAction !== -1 }"
-        @choose="choose(healthAction)"
-      />
-      <PoolItem
-        v-if="asset.sanity !== null || (horror || 0) > 0"
-        type="sanity"
-        :amount="horror || 0"
-        :class="{ 'sanity--can-interact': sanityAction !== -1 }"
-        @choose="choose(sanityAction)"
-      />
-      <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-      <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-      <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-      <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
-    </div>
     <Asset
       v-for="assetId in asset.assets"
       :asset="game.assets[assetId]"
@@ -214,10 +218,15 @@ const choose = (idx: number) => emit('choose', idx)
 }
 
 .pool {
+  position: absolute;
+  top: 50%;
+  align-items: center;
   display: flex;
-  flex-direction: row;
-  height: 2em;
-  justify-content: center;
+  * {
+    transform: scale(0.6);
+  }
+
+  pointer-events: none;
 }
 
 .button{
@@ -238,5 +247,12 @@ const choose = (idx: number) => emit('choose', idx)
   object-position: 0 -72px;
   height: 36px;
   margin-top: 2px;
+}
+
+.card-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

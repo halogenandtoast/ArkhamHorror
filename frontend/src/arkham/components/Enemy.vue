@@ -111,6 +111,7 @@ const choose = (index: number) => emits('choose', index)
         <img :src="image"
           :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
           class="card enemy"
+          :data-id="id"
           @click="$emit('choose', cardAction)"
         />
 
@@ -137,7 +138,7 @@ const choose = (index: number) => emits('choose', index)
         v-for="ability in abilities"
         :key="ability.index"
         :ability="ability.contents"
-        :data-image="image"
+        :data-target="enemy.id"
         @click="$emit('choose', ability.index)"
         />
     </template>
@@ -193,12 +194,6 @@ const choose = (index: number) => emits('choose', index)
   width: $card-width;
   max-width: $card-width;
   border-radius: 5px;
-}
-
-.pool {
-  display: flex;
-  flex-direction: row;
-  height: 2em;
 }
 
 .pool {

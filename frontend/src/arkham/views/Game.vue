@@ -142,6 +142,7 @@ provide('solo', solo)
 
 <template>
   <div id="game" v-if="ready && game && investigatorId">
+    <CardOverlay />
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
     </div>
@@ -190,7 +191,6 @@ provide('solo', solo)
           @update="update"
         />
         <div class="sidebar" v-if="game.scenario && game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver'">
-          <CardOverlay />
           <GameLog :game="game" :gameLog="gameLog" />
           <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
   >

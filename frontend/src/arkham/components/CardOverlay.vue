@@ -117,7 +117,7 @@ document.addEventListener('mouseover', (event) => {
 <style lang="scss">
 .card-overlay {
   position: absolute;
-  z-index: 10000000000;
+  z-index: 1000;
   width: 300px;
   height: fit-content;
   display: flex;

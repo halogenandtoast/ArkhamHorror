@@ -107,11 +107,32 @@ const choose = (index: number) => emits('choose', index)
   <div class="enemy">
     <Story v-if="enemyStory" :story="enemyStory" :game="game" :investigatorId="investigatorId" @choose="choose"/>
     <template v-else>
-      <img :src="image"
-        :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
-        class="card enemy"
-        @click="$emit('choose', cardAction)"
-      />
+      <div class="card-frame">
+        <img :src="image"
+          :class="{'enemy--can-interact': cardAction !== -1, exhausted: isExhausted }"
+          class="card enemy"
+          @click="$emit('choose', cardAction)"
+        />
+
+        <div class="pool">
+          <div class="keys" v-if="keys.length > 0">
+            <Key v-for="key in keys" :key="key" :name="key" />
+          </div>
+          <PoolItem type="health" :amount="enemyDamage" />
+          <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
+          <Token
+            v-for="(sealedToken, index) in enemy.sealedChaosTokens"
+            :key="index"
+            :token="sealedToken"
+            :investigatorId="investigatorId"
+            :game="game"
+            @choose="choose"
+          />
+        </div>
+      </div>
       <AbilityButton
         v-for="ability in abilities"
         :key="ability.index"
@@ -120,24 +141,6 @@ const choose = (index: number) => emits('choose', index)
         @click="$emit('choose', ability.index)"
         />
     </template>
-    <div class="pool">
-      <div class="keys" v-if="keys.length > 0">
-        <Key v-for="key in keys" :key="key" :name="key" />
-      </div>
-      <PoolItem type="health" :amount="enemyDamage" />
-      <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-      <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-      <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-      <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
-      <Token
-        v-for="(sealedToken, index) in enemy.sealedChaosTokens"
-        :key="index"
-        :token="sealedToken"
-        :investigatorId="investigatorId"
-        :game="game"
-        @choose="choose"
-      />
-    </div>
     <Treachery
       v-for="treacheryId in enemy.treacheries"
       :key="treacheryId"
@@ -198,6 +201,20 @@ const choose = (index: number) => emits('choose', index)
   height: 2em;
 }
 
+.pool {
+  position: absolute;
+  top: 10%;
+  align-items: center;
+  display: flex;
+  align-self: flex-start;
+  align-items: flex-end;
+  * {
+    transform: scale(0.6);
+  }
+
+  pointer-events: none;
+}
+
 .button{
   margin-top: 2px;
   border: 0;
@@ -216,5 +233,12 @@ const choose = (index: number) => emits('choose', index)
 
 :deep(.token) {
   width: 30px;
+}
+
+.card-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

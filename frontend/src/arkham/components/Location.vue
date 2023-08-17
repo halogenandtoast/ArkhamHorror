@@ -308,7 +308,7 @@ const debug = useDebug()
 
 .location-asset-column {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   position: absolute;
   left: 100%;
   padding: 0 10px;
@@ -320,8 +320,8 @@ const debug = useDebug()
 
   &:hover {
     animation-fill-mode:forwards;
-    div:not(:first-child) {
-      margin-top: 0px;
+    div:not(:last-child) {
+      margin-top: 10px;
     }
   }
 
@@ -332,8 +332,8 @@ const debug = useDebug()
     isolation: isolate;
   }
 
-  div:not(:first-child) {
-    margin-top: -80px;
+  div:not(:last-child) {
+    margin-top: -40px;
   }
 }
 

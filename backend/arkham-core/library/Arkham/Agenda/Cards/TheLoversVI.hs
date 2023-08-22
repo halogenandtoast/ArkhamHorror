@@ -36,12 +36,10 @@ instance RunMessage TheLoversVI where
         takenByTheWatcher <- length <$> getRecordSet WasTakenByTheWatcher
         if takenByTheWatcher > 0
           then do
-            card <- flipCard <$> genCard (toCardDef attrs)
-            mTheSpectralWatcher <-
-              liftA2
-                (<|>)
-                (selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
-                (selectOne $ enemyIs Enemies.theSpectralWatcher)
+            card <- genFlippedCard attrs
+            mTheSpectralWatcher <- (<|>)
+              <$> (selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
+              <*> (selectOne $ enemyIs Enemies.theSpectralWatcher)
             for_ mTheSpectralWatcher \theSpectralWatcher ->
               pushAll
                 [ PlaceTokens (toSource attrs) (toTarget theSpectralWatcher) LostSoul takenByTheWatcher
@@ -50,6 +48,7 @@ instance RunMessage TheLoversVI where
                 , advanceAgendaDeck attrs
                 ]
           else pushAll [advanceAgendaDeck attrs]
+        push ShuffleEncounterDiscardBackIn
         pure a
       _ -> TheLoversVI <$> runMessage msg attrs
 

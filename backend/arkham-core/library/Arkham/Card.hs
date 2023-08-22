@@ -101,6 +101,9 @@ genCard a =
  where
   def = toCardDef a
 
+genFlippedCard :: (HasCardDef a, CardGen m) => a -> m Card
+genFlippedCard a = flipCard <$> genCard a
+
 genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
 genCards = traverse genCard
 

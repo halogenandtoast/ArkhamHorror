@@ -37,9 +37,11 @@ instance RunMessage TheLoversVI where
         if takenByTheWatcher > 0
           then do
             card <- genFlippedCard attrs
-            mTheSpectralWatcher <- (<|>)
-              <$> (selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
-              <*> (selectOne $ enemyIs Enemies.theSpectralWatcher)
+            mTheSpectralWatcher <-
+              asum
+                [ selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher
+                , selectOne $ enemyIs Enemies.theSpectralWatcher
+                ]
             for_ mTheSpectralWatcher \theSpectralWatcher ->
               pushAll
                 [ PlaceTokens (toSource attrs) (toTarget theSpectralWatcher) LostSoul takenByTheWatcher

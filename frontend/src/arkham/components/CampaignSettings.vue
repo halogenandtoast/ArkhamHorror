@@ -115,6 +115,9 @@ const filterSettings = function() {
         if (t.type === 'ChooseRecordable') {
           a.sets.push(t.ckey)
         }
+        if (t.type === 'ChooseRecordables') {
+          a.sets.push(t.ckey)
+        }
         if (t.type === 'CrossOut') {
           a.sets.push(t.ckey)
         }

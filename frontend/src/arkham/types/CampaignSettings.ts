@@ -35,6 +35,7 @@ type Predicate =
 type SettingCondition =
   { type: "key", key: string } |
   { type: "inSet", key: string, recordable: string, content: string } |
+  { type: "crossedOut", key: string, recordable: string, content: string } |
   { type: "count", key: string, predicate: Predicate } |
   { type: "option", key: string } |
   { type: "and", content: SettingCondition[] } |
@@ -42,7 +43,7 @@ type SettingCondition =
   { type: "not", content: SettingCondition } |
   { type: "nor", content: SettingCondition[] }
 
-export type Recordable = { key: string, content: string }
+export type Recordable = { key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
 
 export type ForceKey = { type: "key", key: string, scope?: string } | { type: "or", content: ForceKey[] } | { type: "and", content: ForceKey[] } | { type: "always" }
 
@@ -70,6 +71,7 @@ export type CampaignSetting = CrossOutSetting |
   { type: "ChooseOption", key: string, content: ChooseOption[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "SetRecordable", key: string, ckey: string,recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseRecordable", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "ChooseRecordables", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ForceRecorded", key: string, ckey: string, recordable: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] }
 
 const inactiveCondition = (campaignLog: CampaignLogSettings, condition: SettingCondition): boolean => {
@@ -116,7 +118,7 @@ const inactiveCondition = (campaignLog: CampaignLogSettings, condition: SettingC
   throw new Error(`Unknown condition type ${condition}`)
 }
 
-export const settingActive = function(campaignLog: CampaignLogSettings, setting: CampaignSetting | CampaignScenario) {
+export const settingActive = function(campaignLog: CampaignLogSettings, setting: CampaignSetting | CampaignScenario | Recordable) {
   if (setting === undefined) {
     return false
   }

@@ -5,7 +5,7 @@ import {toCapitalizedWords} from '@/arkham/helpers'
 import {updateStandaloneSettings} from '@/arkham/api'
 import { Game } from '../types/Game'
 import { Scenario } from '../types/Scenario'
-import { StandaloneSetting } from '../types/StandaloneSetting'
+import { StandaloneSetting, Recordable } from '../types/StandaloneSetting'
 
 const props = defineProps<{
   game: Game
@@ -27,6 +27,30 @@ watch(computedStandaloneSettings, (newSettings) => {
 }, { immediate: true })
 
 const submit = () => updateStandaloneSettings(props.game.id, standaloneSettings.value)
+
+const inactive = (cond) => {
+  if (cond.type === 'inSet') {
+    const {key, content} = cond
+    const setting = standaloneSettings.value.find((s) => s.key === key)
+    if (!setting) return false
+
+    const check = setting.key !== 'ToggleCrossedOut'
+    return setting.content.some((c) => c.content === check && c.key == content)
+  }
+
+  throw new Error(`Unknown condition type ${cond}`)
+}
+
+const optionActive = (setting: StandaloneSetting, entry: Recordable) => {
+  const {ifRecorded} = entry
+  if (ifRecorded) {
+    if (ifRecorded.some((cond) => inactive(cond))) {
+      return false
+    }
+  }
+
+  return true
+}
 </script>
 
 <template>
@@ -69,6 +93,21 @@ const submit = () => updateStandaloneSettings(props.game.id, standaloneSettings.
               <s v-if="option.content">{{option.label}}</s>
               <span v-else>{{option.label}}</span>
             </label>
+          </template>
+        </div>
+      </div>
+      <div v-else-if="setting.type === 'ToggleRecords'">
+        {{toCapitalizedWords(setting.key)}}
+        <div class="options">
+          <template v-for="option in setting.content" :key="option.key">
+            <input
+              type="checkbox"
+              v-model="option.content"
+              :id="`${setting.key}${option.key}`"
+              :checked="option.content"
+              v-if="optionActive(setting, option)"
+            />
+            <label :for="`${setting.key}${option.key}`">{{option.label}}</label>
           </template>
         </div>
       </div>

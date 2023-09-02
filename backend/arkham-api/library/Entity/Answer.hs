@@ -61,6 +61,7 @@ data StandaloneSetting
 data SetRecordedEntry
   = SetAsCrossedOut Json.Value
   | SetAsRecorded Json.Value
+  | DoNotRecord Json.Value
   deriving stock (Show)
 
 makeStandaloneCampaignLog :: [StandaloneSetting] -> CampaignLog
@@ -74,18 +75,19 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting cl (SetRecorded k rt vs) =
     case rt of
       (SomeRecordableType RecordableCardCode) ->
-        let entries = map (toEntry @CardCode) vs
+        let entries = mapMaybe (toEntry @CardCode) vs
         in  setCampaignLogRecorded k entries cl
       (SomeRecordableType RecordableMemento) ->
-        let entries = map (toEntry @Memento) vs
+        let entries = mapMaybe (toEntry @Memento) vs
         in  setCampaignLogRecorded k entries cl
-  toEntry :: forall a. Recordable a => SetRecordedEntry -> SomeRecorded
+  toEntry :: forall a. Recordable a => SetRecordedEntry -> Maybe SomeRecorded
   toEntry (SetAsRecorded e) = case fromJSON @a e of
-    Success a -> recorded a
+    Success a -> Just (recorded a)
     Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
   toEntry (SetAsCrossedOut e) = case fromJSON @a e of
-    Success a -> crossedOut a
+    Success a -> Just (crossedOut a)
     Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
+  toEntry (DoNotRecord _) = Nothing
 
 instance FromJSON StandaloneSetting where
   parseJSON = withObject "StandaloneSetting" $ \o -> do
@@ -105,6 +107,11 @@ instance FromJSON StandaloneSetting where
       "ToggleCrossedOut" -> do
         k <- o .: "key"
         rt <- o .: "recordable"
+        CrossedOutResults v <- o .: "content"
+        pure $ SetRecorded k rt v
+      "ToggleRecords" -> do
+        k <- o .: "key"
+        rt <- o .: "recordable"
         v <- o .: "content"
         pure $ SetRecorded k rt v
       _ -> fail $ "No such standalone setting" <> t
@@ -114,8 +121,21 @@ instance FromJSON SetRecordedEntry where
     k <- o .: "key"
     v <- o .: "content"
     pure $ case v of
-      True -> SetAsCrossedOut k
-      False -> SetAsRecorded k
+      False -> DoNotRecord k -- SetAsCrossedOut k
+      True -> SetAsRecorded k
+
+newtype CrossedOutResults = CrossedOutResults [SetRecordedEntry]
+  deriving stock (Show)
+
+instance FromJSON CrossedOutResults where
+  parseJSON jdata = do
+    xs <- parseJSON @[SetRecordedEntry] jdata
+    let
+      toCrossedOutVersion = \case
+        DoNotRecord k -> SetAsCrossedOut k
+        SetAsCrossedOut a -> SetAsCrossedOut a
+        SetAsRecorded a -> SetAsRecorded a
+    pure $ CrossedOutResults $ map toCrossedOutVersion xs
 
 data CampaignRecorded = CampaignRecorded
   { recordable :: SomeRecordableType

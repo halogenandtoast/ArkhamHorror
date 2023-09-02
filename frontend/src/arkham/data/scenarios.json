@@ -76,6 +76,37 @@
         { "label": "Valentino Rivas", "key": "05048", "content": true },
         { "label": "Penny White", "key": "05049", "content": true }
       ] },
+      {
+        "type": "ToggleRecords",
+        "key": "WasTakenByTheWatcher",
+        "recordable": "RecordableCardCode",
+        "content": [
+          {
+            "label": "Gaveriella Mizrah",
+            "key": "05046",
+            "content": false,
+            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05046" } ]
+          },
+          {
+            "label": "Jerome Davids",
+            "key": "05047",
+            "content": false,
+            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05047" } ]
+          },
+          {
+            "label": "Valentino Rivas",
+            "key": "05048",
+            "content": false,
+            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05048" } ]
+          },
+          {
+            "label": "Penny White",
+            "key": "05049",
+            "content": false,
+            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05049" } ]
+          }
+        ]
+      },
       { "key": "TheInvestigatorsWereInductedIntoTheInnerCircle", "type": "ToggleKey", "content": false },
       { "key": "TheInvestigatorsAreDeceivingTheLodge", "type": "ToggleKey", "content": false },
       { "key": "JosefIsAliveAndWell", "type": "ToggleKey", "content": true }

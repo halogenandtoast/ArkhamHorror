@@ -72,14 +72,13 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
   applySetting cl (SetOption k True) = setCampaignLogOption k cl
   applySetting cl (SetOption _ False) = cl
-  applySetting cl (SetRecorded k rt vs) =
-    case rt of
-      (SomeRecordableType RecordableCardCode) ->
-        let entries = mapMaybe (toEntry @CardCode) vs
-        in  setCampaignLogRecorded k entries cl
-      (SomeRecordableType RecordableMemento) ->
-        let entries = mapMaybe (toEntry @Memento) vs
-        in  setCampaignLogRecorded k entries cl
+  applySetting cl (SetRecorded k rt vs) = case rt of
+    (SomeRecordableType RecordableCardCode) ->
+      let entries = mapMaybe (toEntry @CardCode) vs
+      in  setCampaignLogRecorded k entries cl
+    (SomeRecordableType RecordableMemento) ->
+      let entries = mapMaybe (toEntry @Memento) vs
+      in  setCampaignLogRecorded k entries cl
   toEntry :: forall a. Recordable a => SetRecordedEntry -> Maybe SomeRecorded
   toEntry (SetAsRecorded e) = case fromJSON @a e of
     Success a -> Just (recorded a)
@@ -93,36 +92,22 @@ instance FromJSON StandaloneSetting where
   parseJSON = withObject "StandaloneSetting" $ \o -> do
     t <- o .: "type"
     case t of
-      "ToggleKey" -> do
-        k <- o .: "key"
-        v <- o .: "content"
-        pure $ SetKey k v
-      "ToggleOption" -> do
-        k <- o .: "key"
-        v <- o .: "content"
-        pure $ SetOption k v
-      "PickKey" -> do
-        k <- o .: "content"
-        pure $ SetKey k True
+      "ToggleKey" -> SetKey <$> o .: "key" <*> o .: "content"
+      "ToggleOption" -> SetOption <$> o .: "key" <*> o .: "content"
+      "PickKey" -> (`SetKey` True) <$> o .: "content"
       "ToggleCrossedOut" -> do
         k <- o .: "key"
         rt <- o .: "recordable"
         CrossedOutResults v <- o .: "content"
         pure $ SetRecorded k rt v
-      "ToggleRecords" -> do
-        k <- o .: "key"
-        rt <- o .: "recordable"
-        v <- o .: "content"
-        pure $ SetRecorded k rt v
+      "ToggleRecords" -> SetRecorded <$> o .: "key" <*> o .: "recordable" <*> o .: "content"
       _ -> fail $ "No such standalone setting" <> t
 
 instance FromJSON SetRecordedEntry where
   parseJSON = withObject "SetRecordedEntry" $ \o -> do
     k <- o .: "key"
     v <- o .: "content"
-    pure $ case v of
-      False -> DoNotRecord k -- SetAsCrossedOut k
-      True -> SetAsRecorded k
+    pure $ if v then SetAsRecorded k else DoNotRecord k
 
 newtype CrossedOutResults = CrossedOutResults [SetRecordedEntry]
   deriving stock (Show)
@@ -143,7 +128,9 @@ data CampaignRecorded = CampaignRecorded
   }
   deriving stock (Show)
 
-data CampaignRecordedEntry = CampaignEntryRecorded Json.Value | CampaignEntryCrossedOut Json.Value
+data CampaignRecordedEntry
+  = CampaignEntryRecorded Json.Value
+  | CampaignEntryCrossedOut Json.Value
   deriving stock (Show)
 
 instance FromJSON CampaignRecordedEntry where
@@ -163,27 +150,27 @@ data CampaignSettings = CampaignSettings
   deriving stock (Show)
 
 instance FromJSON CampaignSettings where
-  parseJSON = withObject "CampaignSettings" $ \o -> do
-    keys <- o .: "keys"
-    counts <- o .: "counts"
-    sets <- o .: "sets"
-    options <- o .: "options"
-    pure $ CampaignSettings keys counts sets options
+  parseJSON = withObject "CampaignSettings" $ \o ->
+    CampaignSettings
+      <$> (o .: "keys")
+      <*> (o .: "counts")
+      <*> (o .: "sets")
+      <*> (o .: "options")
 
 instance FromJSON CampaignRecorded where
-  parseJSON = withObject "CampaignRecorded" $ \o -> do
-    rt <- o .: "recordable"
-    entries <- o .: "entries"
-    pure $ CampaignRecorded rt entries
+  parseJSON = withObject "CampaignRecorded" $ \o ->
+    CampaignRecorded
+      <$> (o .: "recordable")
+      <*> (o .: "entries")
 
 makeCampaignLog :: CampaignSettings -> CampaignLog
 makeCampaignLog settings =
   mkCampaignLog
-    { campaignLogRecorded = Set.fromList (keys settings)
+    { campaignLogRecorded = fromList (keys settings)
     , campaignLogRecordedCounts = counts settings
     , campaignLogRecordedSets = fmap toSomeRecorded $ sets settings
     , campaignLogOrderedKeys = keys settings
-    , campaignLogOptions = Set.fromList (options settings)
+    , campaignLogOptions = fromList (options settings)
     }
  where
   toSomeRecorded :: CampaignRecorded -> [SomeRecorded]

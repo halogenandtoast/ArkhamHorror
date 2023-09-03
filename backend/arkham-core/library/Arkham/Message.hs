@@ -760,6 +760,7 @@ data Message
   | -- The Circle Undone
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId
+  | PutLocationInCenter LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]
   | -- Commit

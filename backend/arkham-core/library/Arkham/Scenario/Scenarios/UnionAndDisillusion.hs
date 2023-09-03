@@ -50,9 +50,9 @@ unionAndDisillusion difficulty =
     "Union and Disillusion"
     difficulty
     [ ".              miskatonicRiver ."
-    , ".              forbiddingShore ."
+    , "unvisitedIsle3 forbiddingShore unvisitedIsle4"
     , "unvisitedIsle1 .               unvisitedIsle2"
-    , ".              theGeistTrap    ."
+    , "unvisitedIsle5 theGeistTrap    unvisitedIsle6"
     ]
 
 instance HasChaosTokenValue UnionAndDisillusion where

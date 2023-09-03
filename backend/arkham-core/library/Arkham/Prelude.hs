@@ -267,8 +267,11 @@ infixl 4 <$$>
 withIndex :: [a] -> [(Int, a)]
 withIndex = zip [0 ..]
 
+withIndexN :: Int -> [a] -> [(Int, a)]
+withIndexN n = zip [n ..]
+
 withIndex1 :: [a] -> [(Int, a)]
-withIndex1 = zip [1 ..]
+withIndex1 = withIndexN 1
 
 newtype Max0 a = Max0 {getMax0 :: a}
   deriving stock (Eq, Ord, Show, Read, Generic)

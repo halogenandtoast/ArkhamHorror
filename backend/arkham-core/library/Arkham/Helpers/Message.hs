@@ -6,6 +6,7 @@ import Arkham.Helpers.Message.Discard as X
 
 import Arkham.Card
 import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Creation
@@ -14,6 +15,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
+import Arkham.Label (mkLabel)
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
@@ -208,9 +210,15 @@ findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) 
   FindEncounterCard iid target zones cardMatcher
 
 placeLabeledLocations_ :: Text -> [CardDef] -> GameT [Message]
-placeLabeledLocations_ lbl cards = concatForM (withIndex1 cards) $ \(idx, card) -> do
-  (location, placement) <- placeLocationCard card
-  pure [placement, SetLocationLabel location (lbl <> tshow idx)]
+placeLabeledLocations_ lbl cards = do
+  startIndex <- getStartIndex 1
+  concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
+    (location, placement) <- placeLocationCard card
+    pure [placement, SetLocationLabel location (lbl <> tshow idx)]
+ where
+  getStartIndex n = do
+    alreadyTaken <- selectAny $ LocationWithLabel (mkLabel $ lbl <> tshow n)
+    if alreadyTaken then getStartIndex (n + 1) else pure n
 
 placeLabeledLocations :: Text -> [CardDef] -> GameT ([LocationId], [Message])
 placeLabeledLocations lbl cards = fmap fold . concatForM (withIndex1 cards) $ \(idx, card) -> do
@@ -219,3 +227,13 @@ placeLabeledLocations lbl cards = fmap fold . concatForM (withIndex1 cards) $ \(
 
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
 putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing (defaultWindows iid)
+
+placeLabeledLocation :: Text -> Card -> GameT (LocationId, Message)
+placeLabeledLocation lbl card = do
+  idx <- getStartIndex (1 :: Int)
+  (location, placement) <- placeLocation card
+  pure (location, Run [placement, SetLocationLabel location (lbl <> tshow idx)])
+ where
+  getStartIndex n = do
+    alreadyTaken <- selectAny $ LocationWithLabel (mkLabel $ lbl <> tshow n)
+    if alreadyTaken then getStartIndex (n + 1) else pure n

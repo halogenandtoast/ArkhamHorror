@@ -35,7 +35,7 @@ instance RunMessage TheUnvisitedIsle where
       paired <- zip investigators <$> selectShuffled (SetAsideCardMatch "Unvisited Isle")
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
       locationMessages <- flip concatMapM paired $ \(investigator, unvisitedIsle) -> do
-        (lid, placement) <- placeLocation unvisitedIsle
+        (lid, placement) <- placeLabeledLocation "unvisitedIsle" unvisitedIsle
         pure $
           placement
             : PutLocationInFrontOf investigator lid

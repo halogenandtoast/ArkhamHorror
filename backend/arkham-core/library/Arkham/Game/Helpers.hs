@@ -335,7 +335,7 @@ filterDepthSpecificAbilities usedAbilities = do
     abilityLimitType (abilityLimit $ usedAbility ability)
       /= Just PerWindow
       || depth
-        <= usedDepth ability
+      <= usedDepth ability
 
 getAbilityLimit :: HasGame m => InvestigatorId -> Ability -> m AbilityLimit
 getAbilityLimit iid ability = do
@@ -2798,6 +2798,9 @@ skillTestMatches iid source st = \case
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
   Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
+  Matcher.SkillTestForAction actionMatcher -> case skillTestAction st of
+    Just action -> action `actionMatches` actionMatcher
+    Nothing -> pure False
   Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
     Just Action.Investigate -> case skillTestTarget st of
       LocationTarget lid -> member lid <$> select locationMatcher

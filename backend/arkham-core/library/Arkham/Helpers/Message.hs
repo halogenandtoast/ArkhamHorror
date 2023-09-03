@@ -152,6 +152,21 @@ placeLocationCards_ = traverse placeLocationCard_
 scenarioResolution :: Int -> Message
 scenarioResolution = ScenarioResolution . Resolution
 
+pattern R1 :: Message
+pattern R1 = ScenarioResolution (Resolution 1)
+
+pattern R2 :: Message
+pattern R2 = ScenarioResolution (Resolution 2)
+
+pattern R3 :: Message
+pattern R3 = ScenarioResolution (Resolution 3)
+
+pattern R4 :: Message
+pattern R4 = ScenarioResolution (Resolution 4)
+
+pattern R5 :: Message
+pattern R5 = ScenarioResolution (Resolution 5)
+
 gainSurge :: (Sourceable a, Targetable a) => a -> Message
 gainSurge a = GainSurge (toSource a) (toTarget a)
 

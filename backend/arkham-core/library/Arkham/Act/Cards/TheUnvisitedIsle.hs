@@ -28,15 +28,17 @@ theUnvisitedIsle = act (1, A) TheUnvisitedIsle Cards.theUnvisitedIsle (Just $ Gr
 instance RunMessage TheUnvisitedIsle where
   runMessage msg a@(TheUnvisitedIsle attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      cards <- shuffleM =<< selectList (SetAsideCardMatch $ CardWithTitle "Unvisited Isle")
-      paired <- zip cards <$> getInvestigators
+      paired <- zip <$> selectShuffled (SetAsideCardMatch "Unvisited Isle") <*> getInvestigators
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
       for_ paired $ \(unvisitedIsle, investigator) -> do
         (lid, placement) <- placeLocation unvisitedIsle
         pushAll $
           placement
-            : [PutLocationInFrontOf investigator lid, MoveTo $ move attrs investigator lid]
+            : [PutLocationInFrontOf investigator lid, MoveTo $ uncancellableMove $ move attrs investigator lid]
               <> [UpdateLocation lid (LocationBrazier ?=. Lit) | sidedWithTheCoven]
+      -- TODO: Shuffle each of the story cards beneath the scenario reference
+      -- card and deal 1 at randomt o each investigator untill aof of them have
+      -- been dealt. In player order, resolve each of the dealt story cards.
 
       pure a
     _ -> TheUnvisitedIsle <$> runMessage msg attrs

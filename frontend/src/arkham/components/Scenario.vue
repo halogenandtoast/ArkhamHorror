@@ -279,6 +279,12 @@ const showRemovedFromPlay = () => doShowCards(removedFromPlay, 'Removed from Pla
 const showDiscards = () => doShowCards(discards, 'Discards', true)
 const hideCards = () => showCards.ref = noCards
 
+const showCardsUnderScenarioReference = () => {
+  doShowCards(cardsUnderScenarioReference, 'Cards Under Scenario Reference', false)
+}
+
+const viewUnderScenarioReference = computed(() => `${cardsUnderScenarioReference.value.length} Cards Underneath`)
+
 const viewDiscardLabel = computed(() => pluralize('Card', discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (props.scenario.discard[0]) {
@@ -317,6 +323,7 @@ const globalEnemies = computed(() => Object.values(props.game.enemies).filter((e
 
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 
+const cardsUnderScenarioReference = computed(() => props.scenario.cardsUnderScenarioReference)
 const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 
 const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
@@ -456,6 +463,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           <div class="keys" v-if="keys.length > 0">
             <Key v-for="key in keys" :key="key" :name="key" />
           </div>
+          <button v-if="cardsUnderScenarioReference.length > 0" class="view-cards-under-button" @click="showCardsUnderScenarioReference">{{viewUnderScenarioReference}}</button>
         </div>
         <ChaosBag
           :game="game"

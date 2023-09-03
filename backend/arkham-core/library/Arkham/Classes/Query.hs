@@ -23,6 +23,12 @@ selectList
   :: (HasCallStack, Query a, HasGame m) => a -> m [QueryElement a]
 selectList = selectListMap id
 
+selectShuffled
+  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
+  => a
+  -> m [QueryElement a]
+selectShuffled = shuffleM <=< selectList
+
 selectWithField
   :: ( EntityId rec ~ QueryElement a
      , Projection rec

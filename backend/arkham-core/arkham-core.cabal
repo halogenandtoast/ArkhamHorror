@@ -1914,6 +1914,7 @@ library
       Arkham.Scenarios.TurnBackTime.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Story
+      Arkham.Scenarios.UnionAndDisillusion.Helpers
       Arkham.Scenarios.UnionAndDisillusion.Story
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Skill

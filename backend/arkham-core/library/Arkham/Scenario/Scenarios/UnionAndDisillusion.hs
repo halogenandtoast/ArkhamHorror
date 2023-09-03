@@ -19,21 +19,19 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Field
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Arkham.Scenarios.UnionAndDisillusion.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Spectral))
@@ -189,10 +187,7 @@ instance RunMessage UnionAndDisillusion where
       (forbiddingShore, placeForbiddingShore) <- placeLocationCard Locations.forbiddingShore
       (unvisitedIsles, placeUnvisitedIsles) <- placeLabeledLocations "unvisitedIsle" unvisitedIsleCards
 
-      let lightBrazier location = UpdateLocation location (LocationBrazier ?=. Lit)
-
       theWatcher <- genCard Enemies.theSpectralWatcher
-
       placeTheWatcher <- createEnemyWithPlacement_ theWatcher (OutOfPlay SetAsideZone)
 
       pushAll $

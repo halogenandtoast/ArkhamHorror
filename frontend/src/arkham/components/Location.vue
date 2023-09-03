@@ -173,6 +173,7 @@ const debug = useDebug()
           <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
           <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
           <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
         </div>
       </div>

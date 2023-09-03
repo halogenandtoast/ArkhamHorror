@@ -166,6 +166,9 @@ instance RunMessage LocationAttrs where
     PutLocationInFrontOf iid lid
       | lid == locationId ->
           pure $ a & inFrontOfL ?~ iid
+    PutLocationInCenter lid
+      | lid == locationId ->
+          pure $ a & inFrontOfL .~ Nothing
     PlaceEvent _ eid placement -> case placement of
       AttachedToLocation lid
         | lid == locationId ->

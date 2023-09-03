@@ -4,6 +4,7 @@ import { imgsrc } from '@/arkham/helpers';
 import { TokenType } from '@/arkham/types/Token';
 import type { Card, CardContents } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
+import type { Enemy } from '@/arkham/types/Enemy';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
@@ -80,7 +81,16 @@ const abilities = computed(() => {
     }, []);
 })
 
-const tokens = computed(() => cardContents.value.tokens || {})
+const outOfPlayEnemy = computed<Enemy | null>(() => {
+  return Object.values(props.game.outOfPlayEnemies).find(e => e.cardId === id.value)
+})
+
+const tokens = computed(() => {
+  if (outOfPlayEnemy.value) {
+    return outOfPlayEnemy.value.tokens
+  }
+  return cardContents.value.tokens || {}
+})
 
 const doom = computed(() => tokens.value[TokenType.Doom])
 const clues = computed(() => tokens.value[TokenType.Clue])

@@ -19,7 +19,7 @@ import Arkham.Target
 
 data GameEnv
 
-newtype GameT a = GameT { unGameT :: ReaderT GameEnv IO a }
+newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
 
 instance Functor GameT
 instance Applicative GameT

@@ -660,6 +660,7 @@ data SkillTestMatcher
   = WhileInvestigating LocationMatcher
   | WhileAttackingAnEnemy EnemyMatcher
   | WhileEvadingAnEnemy EnemyMatcher
+  | SkillTestForAction ActionMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType
   | AnySkillTest

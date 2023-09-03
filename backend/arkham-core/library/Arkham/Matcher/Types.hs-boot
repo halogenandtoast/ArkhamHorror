@@ -73,3 +73,5 @@ instance FromJSON PreyMatcher
 instance Show PreyMatcher
 instance Eq PreyMatcher
 instance Ord PreyMatcher
+
+data ActionMatcher

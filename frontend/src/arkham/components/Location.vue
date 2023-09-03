@@ -283,7 +283,7 @@ const debug = useDebug()
 
 .pool {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-self: flex-start;
   height: 2em;
 }

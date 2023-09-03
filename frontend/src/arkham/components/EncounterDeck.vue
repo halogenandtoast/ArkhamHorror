@@ -100,6 +100,7 @@ const debug = useDebug()
 
 .top-of-deck {
   position: relative;
+  width: fit-content;
 }
 
 .deck-size {

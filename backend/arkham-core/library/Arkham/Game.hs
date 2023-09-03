@@ -127,6 +127,7 @@ import Arkham.Matcher hiding (
   PlayCard,
   RevealLocation,
   SkillCard,
+  StoryCard,
  )
 import Arkham.Matcher qualified as M
 import Arkham.Message hiding (
@@ -2887,7 +2888,7 @@ instance Query ExtendedCardMatcher where
                         && ( any (`member` skillIcons) (cdSkills (toCardDef card))
                               || ( null (cdSkills $ toCardDef card)
                                     && toCardType card
-                                      == SkillType
+                                    == SkillType
                                  )
                            )
                         && passesCommitRestrictions
@@ -3763,26 +3764,26 @@ runGameMessage msg g = case msg of
     pure $
       g
         & focusedCardsL
-          %~ filter (/= c)
+        %~ filter (/= c)
         & foundCardsL
-          . each
-          %~ filter (/= c)
+        . each
+        %~ filter (/= c)
         & entitiesL
-          . skillsL
-          %~ skillsF
+        . skillsL
+        %~ skillsF
   PutCardOnBottomOfDeck _ _ c -> do
     mSkillId <- selectOne $ SkillWithCardId (toCardId c)
     let skillsF = maybe id deleteMap mSkillId
     pure $
       g
         & focusedCardsL
-          %~ filter (/= c)
+        %~ filter (/= c)
         & foundCardsL
-          . each
-          %~ filter (/= c)
+        . each
+        %~ filter (/= c)
         & entitiesL
-          . skillsL
-          %~ skillsF
+        . skillsL
+        %~ skillsF
   ShuffleCardsIntoDeck _ cards ->
     pure $
       g & focusedCardsL %~ filter (`notElem` cards) & foundCardsL . each %~ filter (`notElem` cards)
@@ -3971,7 +3972,7 @@ runGameMessage msg g = case msg of
               mapToList $
                 g
                   ^. entitiesL
-                    . investigatorsL
+                  . investigatorsL
           )
           (\(iid, i) -> (iid,) <$> getSpendableClueCount (toAttrs i))
     case investigatorsWithClues of
@@ -4119,7 +4120,7 @@ runGameMessage msg g = case msg of
     pure $
       g
         & (focusedCardsL %~ filter (/= EncounterCard card))
-          . (foundCardsL . each %~ filter (/= EncounterCard card))
+        . (foundCardsL . each %~ filter (/= EncounterCard card))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
     push $ addToHand iid card
@@ -4221,7 +4222,7 @@ runGameMessage msg g = case msg of
         PlayerCard pc ->
           isJust (cdFastWindow $ toCardDef pc)
             || BecomesFast
-              `elem` allModifiers
+            `elem` allModifiers
         _ -> False
       isPlayAction = if isFast then NotPlayAction else IsPlayAction
       actions = case cdActions (toCardDef card) of
@@ -5355,8 +5356,8 @@ runGameMessage msg g = case msg of
     pure $
       g
         & inDiscardEntitiesL
-          . at iid
-          ?~ (dEntities & eventsL . at (toId event') ?~ event')
+        . at iid
+        ?~ (dEntities & eventsL . at (toId event') ?~ event')
   Discarded (TreacheryTarget aid) _ _ -> do
     push $ RemoveTreachery aid
     pure g
@@ -5401,8 +5402,8 @@ runGameMessage msg g = case msg of
     pure $
       g
         & entitiesL
-          . treacheriesL
-          %~ deleteMap tid
+        . treacheriesL
+        %~ deleteMap tid
   UpdateHistory iid historyItem -> do
     let
       turn = isJust $ view turnPlayerInvestigatorIdL g
@@ -5568,9 +5569,9 @@ instance RunMessage Game where
       >>= (skillTestL . traverse) (runMessage msg)
       >>= (activeCostL . traverse) (runMessage msg)
       >>= runGameMessage msg
-      <&> handleActionDiff g
-      <&> set enemyMovingL Nothing
-      <&> set enemyEvadingL Nothing
+        <&> handleActionDiff g
+        <&> set enemyMovingL Nothing
+        <&> set enemyEvadingL Nothing
 
 handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new

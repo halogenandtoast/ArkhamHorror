@@ -327,6 +327,11 @@ function beforeLeaveHand(e: Element) {
   cursor: pointer;
 }
 
+:deep(.location) {
+  margin-left: $card-width * 0.8;
+}
+
+
 .discard {
   width: $card-width;
   margin-top: 10px;
@@ -415,6 +420,7 @@ function beforeLeaveHand(e: Element) {
   position: relative;
   display: flex;
   flex-direction: column;
+  width: fit-content;
 }
 
 .deck-size {

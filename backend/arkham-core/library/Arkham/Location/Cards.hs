@@ -4585,7 +4585,7 @@ theGeistTrap =
   victory 1 $
     location
       "05257"
-      "Unvisited Isle"
+      "The Geist Trap"
       [Woods, Spectral]
       Plus
       [Squiggle]

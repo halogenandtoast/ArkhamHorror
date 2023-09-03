@@ -247,6 +247,9 @@ frequencies as =
         (`Map.singleton` (Sum 1))
         as
 
+groupOnKey :: Ord k => [(k, v)] -> Map k [v]
+groupOnKey = Map.fromListWith (++) . map (second pure)
+
 breakM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
 breakM _ xs@[] = pure (xs, xs)
 breakM p xs@(x : xs') = do

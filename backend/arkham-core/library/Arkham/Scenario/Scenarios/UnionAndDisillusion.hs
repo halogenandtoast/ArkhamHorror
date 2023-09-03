@@ -144,20 +144,31 @@ instance RunMessage UnionAndDisillusion where
 
       missingPersons <- getRecordedCardCodes MissingPersons
 
+      (unvisitedIsleCards, unplaceUnvisitedIsles) <-
+        splitAt 2
+          <$> shuffleM
+            [ Locations.unvisitedIsleStandingStones
+            , Locations.unvisitedIsleMistyClearing
+            , Locations.unvisitedIsleForsakenWoods
+            , Locations.unvisitedIsleMossCoveredSteps
+            , Locations.unvisitedIsleHauntedSpring
+            , Locations.unvisitedIsleDecayedWillow
+            ]
+
       setAsideCards <-
-        liftA2
-          (<>)
-          ( concatMapM
-              (fmap (map toCard) . gatherEncounterSet)
-              [EncounterSet.AnettesCoven, EncounterSet.SilverTwilightLodge, EncounterSet.TheWatcher]
-          )
-          ( genCards $
-              [Locations.theGeistTrap, Treacheries.watchersGaze, Enemies.anetteMason, Enemies.josefMeiger]
-                <> [Assets.gavriellaMizrah | "05046" `elem` missingPersons]
-                <> [Assets.jeromeDavids | "05047" `elem` missingPersons]
-                <> [Assets.valentinoRivas | "05048" `elem` missingPersons]
-                <> [Assets.pennyWhite | "05049" `elem` missingPersons]
-          )
+        mconcat
+          <$> sequence
+            [ concatMapM
+                (fmap (map toCard) . gatherEncounterSet)
+                [EncounterSet.AnettesCoven, EncounterSet.SilverTwilightLodge, EncounterSet.TheWatcher]
+            , genCards $
+                [Locations.theGeistTrap, Treacheries.watchersGaze, Enemies.anetteMason, Enemies.josefMeiger]
+                  <> [Assets.gavriellaMizrah | "05046" `elem` missingPersons]
+                  <> [Assets.jeromeDavids | "05047" `elem` missingPersons]
+                  <> [Assets.valentinoRivas | "05048" `elem` missingPersons]
+                  <> [Assets.pennyWhite | "05049" `elem` missingPersons]
+            , genCards unplaceUnvisitedIsles
+            ]
 
       storyCards <-
         genCards $
@@ -173,17 +184,6 @@ instance RunMessage UnionAndDisillusion where
       hidTheirKnowledge <- getHasRecord TheInvestigatorsHidTheirKnowledgeOfTheCoven
       keptMementosHidden <- getHasRecord TheInvestigatorsKeptsTheirMementosHidden
       hereticCount <- getRecordCount HereticsWereUnleashedUntoArkham
-
-      unvisitedIsleCards <-
-        sampleN
-          2
-          $ Locations.unvisitedIsleStandingStones
-            :| [ Locations.unvisitedIsleMistyClearing
-               , Locations.unvisitedIsleForsakenWoods
-               , Locations.unvisitedIsleMossCoveredSteps
-               , Locations.unvisitedIsleHauntedSpring
-               , Locations.unvisitedIsleDecayedWillow
-               ]
 
       (miskatonicRiver, placeMiskatonicRiver) <- placeLocationCard Locations.miskatonicRiver
       (forbiddingShore, placeForbiddingShore) <- placeLocationCard Locations.forbiddingShore
@@ -222,7 +222,11 @@ instance RunMessage UnionAndDisillusion where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ filter (`cardMatch` NotCard (cardIs Enemies.theSpectralWatcher)) setAsideCards)
+              & ( setAsideCardsL
+                    .~ filter
+                      (`cardMatch` NotCard (cardIs Enemies.theSpectralWatcher))
+                      setAsideCards
+                )
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
               & (cardsUnderScenarioReferenceL .~ storyCards)

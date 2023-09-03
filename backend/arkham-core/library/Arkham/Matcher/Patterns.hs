@@ -294,6 +294,11 @@ pattern NonPeril <- CardWithoutKeyword Keyword.Peril
   where
     NonPeril = CardWithoutKeyword Keyword.Peril
 
+pattern StoryCard :: CardMatcher
+pattern StoryCard <- CardWithType StoryType
+  where
+    StoryCard = CardWithType StoryType
+
 pattern EventCard :: CardMatcher
 pattern EventCard <- CardWithType EventType
   where

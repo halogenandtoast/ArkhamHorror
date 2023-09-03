@@ -10,7 +10,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (StoryCard)
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck

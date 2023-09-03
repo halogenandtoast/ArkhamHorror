@@ -113,7 +113,7 @@ newtype CrossedOutResults = CrossedOutResults [SetRecordedEntry]
 
 instance FromJSON CrossedOutResults where
   parseJSON jdata = do
-    xs <- parseJSON @[SetRecordedEntry] jdata
+    xs <- parseJSON jdata
     let
       toCrossedOutVersion = \case
         DoNotRecord k -> SetAsRecorded k

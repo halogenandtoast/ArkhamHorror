@@ -9,7 +9,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
 
 newtype CrossroadsOfFate = CrossroadsOfFate AgendaAttrs
@@ -23,11 +22,11 @@ instance RunMessage CrossroadsOfFate where
   runMessage msg a@(CrossroadsOfFate attrs) =
     case msg of
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        investigators <- selectList UneliminatedInvestigator
+        investigators <- getInvestigators
 
         pushAll $
           map (InvestigatorDefeated (toSource attrs)) investigators
             <> [SufferTrauma investigator 1 0 | investigator <- investigators]
-            <> [scenarioResolution 5]
+            <> [R5]
         pure a
       _ -> CrossroadsOfFate <$> runMessage msg attrs

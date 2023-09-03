@@ -14,7 +14,6 @@ import Arkham.Id
 import Arkham.Message
 import Data.Aeson
 import Data.Map.Strict qualified as Map
-import Data.Set qualified as Set
 import Data.Text qualified as T
 import Json
 import Safe (fromJustNote)
@@ -117,9 +116,9 @@ instance FromJSON CrossedOutResults where
     xs <- parseJSON @[SetRecordedEntry] jdata
     let
       toCrossedOutVersion = \case
-        DoNotRecord k -> SetAsCrossedOut k
+        DoNotRecord k -> SetAsRecorded k
         SetAsCrossedOut a -> SetAsCrossedOut a
-        SetAsRecorded a -> SetAsRecorded a
+        SetAsRecorded a -> SetAsCrossedOut a
     pure $ CrossedOutResults $ map toCrossedOutVersion xs
 
 data CampaignRecorded = CampaignRecorded

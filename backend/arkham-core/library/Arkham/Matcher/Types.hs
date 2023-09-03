@@ -490,6 +490,9 @@ data CardMatcher
   | CardOwnedBy InvestigatorId
   deriving stock (Show, Eq, Ord)
 
+instance IsString CardMatcher where
+  fromString = CardWithTitle . fromString
+
 instance Semigroup CardMatcher where
   AnyCard <> a = a
   a <> AnyCard = a

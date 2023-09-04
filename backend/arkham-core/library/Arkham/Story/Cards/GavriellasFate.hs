@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.GavriellasFate (
   GavriellasFate (..),
   gavriellasFate,
+  gavriellasFateEffect,
 ) where
 
 import Arkham.Prelude
@@ -8,12 +9,17 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.Effect.Runner ()
+import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Matcher
+import Arkham.SlotType
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
 
@@ -39,12 +45,18 @@ instance RunMessage GavriellasFate where
         then do
           gavriella <- getSetAsideCard Assets.gavriellaMizrah
           pushAll
-            [RemoveStory (toId attrs), TakeControlOfSetAsideAsset iid gavriella, Record GavriellaIsAlive]
+            [ RemoveStory (toId attrs)
+            , createCardEffect Cards.gavriellasFate Nothing attrs iid
+            , TakeControlOfSetAsideAsset iid gavriella
+            , Record GavriellaIsAlive
+            ]
         else when claimedBySpecters $ do
           gavriella <- genCard Enemies.gavriellaMizrah
           createGavriella <-
             createEnemy gavriella $
-              if onTrail then toEnemyCreationMethod location else toEnemyCreationMethod iid
+              if onTrail
+                then toEnemyCreationMethod location
+                else toEnemyCreationMethod iid
           pushAll
             [ RemoveStory (toId attrs)
             , toMessage $
@@ -55,3 +67,19 @@ instance RunMessage GavriellasFate where
 
       pure s
     _ -> GavriellasFate <$> runMessage msg attrs
+
+newtype GavriellasFateEffect = GavriellasFateEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+gavriellasFateEffect :: EffectArgs -> GavriellasFateEffect
+gavriellasFateEffect = cardEffect GavriellasFateEffect Cards.gavriellasFate
+
+instance HasModifiersFor GavriellasFateEffect where
+  getModifiersFor (AssetTarget aid) (GavriellasFateEffect a) = do
+    isGavriella <- member aid <$> select (assetIs Assets.gavriellaMizrah)
+    pure $ toModifiers a [DoNotTakeUpSlot AllySlot | isGavriella]
+  getModifiersFor _ _ = pure []
+
+instance RunMessage GavriellasFateEffect where
+  runMessage _ = pure

@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Projection
@@ -49,11 +48,6 @@ instance RunMessage ForbiddingShore where
             : [Label "Lose 2 resources" [LoseResources iid (toSource attrs) 2] | hasResources]
       pure l
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestTarget {} _ _ -> do
-      let
-        brazierChoice =
-          case locationBrazier attrs of
-            Just Lit -> Label "Unlight the brazier" [unlightBrazier (toId attrs)]
-            _unlit -> Label "Light the brazier" [lightBrazier (toId attrs)]
-      push $ chooseOne iid [brazierChoice, Label "Leave brazier alone" []]
+      passedCircleTest iid attrs
       pure l
     _ -> ForbiddingShore <$> runMessage msg attrs

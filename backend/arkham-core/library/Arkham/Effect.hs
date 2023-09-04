@@ -89,7 +89,11 @@ import Arkham.Investigator.Investigators (
   ritaYoungElderSignEffect,
   winifredHabbamockEffect,
  )
-import Arkham.Location.Locations (hereticsGravesSpectral_171Effect)
+import Arkham.Location.Locations (
+  hereticsGravesSpectral_171Effect,
+  unvisitedIsleMossCoveredStepsEffect,
+  unvisitedIsleStandingStonesEffect,
+ )
 import Arkham.Skill.Skills (
   copycat3Effect,
   defiance2Effect,
@@ -295,6 +299,8 @@ allEffects =
     , ("05201", SomeEffect infiltratingTheLodgeEffect)
     , ("05230", SomeEffect telescopicSight3Effect)
     , ("05239", SomeEffect theLoversVIEffect)
+    , ("05251", SomeEffect unvisitedIsleStandingStonesEffect)
+    , ("05255", SomeEffect unvisitedIsleMossCoveredStepsEffect)
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06279", SomeEffect oldBookOfLore3Effect)

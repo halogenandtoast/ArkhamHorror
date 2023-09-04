@@ -100,6 +100,12 @@ getCurrentSkillValue st = do
       sType' <- getAlternateSkill st sType
       stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
       pure $ statsSkillValue stats sType'
+    AndSkillBaseValue types -> do
+      values <- for types $ \sType -> do
+        sType' <- getAlternateSkill st sType
+        stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
+        pure $ statsSkillValue stats sType'
+      pure $ sum values
     HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
     StaticBaseValue n -> pure n
 

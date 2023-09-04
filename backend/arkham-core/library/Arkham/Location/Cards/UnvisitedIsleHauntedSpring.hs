@@ -47,7 +47,7 @@ instance HasAbilities UnvisitedIsleHauntedSpring where
 instance RunMessage UnvisitedIsleHauntedSpring where
   runMessage msg l@(UnvisitedIsleHauntedSpring attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs #intellect #agility 9
+      circleTest iid attrs attrs [#intellect, #agility] 9
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid

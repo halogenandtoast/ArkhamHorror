@@ -49,7 +49,7 @@ instance HasAbilities UnvisitedIsleDecayedWillow where
 instance RunMessage UnvisitedIsleDecayedWillow where
   runMessage msg l@(UnvisitedIsleDecayedWillow attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs #intellect #combat 9
+      circleTest iid attrs attrs [#intellect, #combat] 9
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ toMessage $ chooseAndDiscardCard iid attrs

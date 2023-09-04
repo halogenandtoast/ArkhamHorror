@@ -53,7 +53,7 @@ instance HasAbilities UnvisitedIsleStandingStones where
 instance RunMessage UnvisitedIsleStandingStones where
   runMessage msg l@(UnvisitedIsleStandingStones attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs #willpower #intellect 10
+      circleTest iid attrs attrs [#willpower, #intellect] 10
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs SkillTestTarget

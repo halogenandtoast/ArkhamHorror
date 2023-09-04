@@ -109,7 +109,8 @@
       },
       { "key": "TheInvestigatorsWereInductedIntoTheInnerCircle", "type": "ToggleKey", "content": false },
       { "key": "TheInvestigatorsAreDeceivingTheLodge", "type": "ToggleKey", "content": false },
-      { "key": "JosefIsAliveAndWell", "type": "ToggleKey", "content": true }
+      { "key": "JosefIsAliveAndWell", "type": "ToggleKey", "content": true },
+      { "key": "TheWitches'SpellWasCast", "type": "ToggleKey", "content": false }
     ]
   }
 ]

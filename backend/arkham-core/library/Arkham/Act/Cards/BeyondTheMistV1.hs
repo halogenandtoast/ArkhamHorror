@@ -8,7 +8,11 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.CampaignLogKey
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Location.Brazier
@@ -16,6 +20,7 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Trait (Trait (Witch))
 
 newtype BeyondTheMistV1 = BeyondTheMistV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -51,8 +56,28 @@ instance RunMessage BeyondTheMistV1 where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       geistTrap <- getJustLocationIdByName "The Geist-Trap"
       investigatorsAtUnvisitedIsles <- selectList $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
+      witchesSpellWasCast <- getHasRecord TheWitches'SpellWasCast
+      anetteMason <- getSetAsideCard Enemies.anetteMason
+      players <- getPlayerCount
+      covenInitiates <-
+        take (if players > 2 then 2 else 1) <$> getSetAsideCardsMatching (cardIs Enemies.covenInitiate)
+
+      creationMessages <-
+        if witchesSpellWasCast
+          then (: []) <$> createEnemyAt_ anetteMason geistTrap Nothing
+          else
+            traverse
+              (\covenInitiate -> createEnemyAt_ covenInitiate geistTrap Nothing)
+              covenInitiates
+
       pushAll $
         RevealLocation Nothing geistTrap
           : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
+            <> creationMessages
+            <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
+      pure a
+    NextAdvanceActStep aid 1 | aid == toId attrs -> do
+      witches <- getSetAsideCardsMatching (CardWithTrait Witch)
+      pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck witches, ShuffleEncounterDiscardBackIn]
       pure a
     _ -> BeyondTheMistV1 <$> runMessage msg attrs

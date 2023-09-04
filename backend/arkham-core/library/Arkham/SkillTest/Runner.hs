@@ -721,4 +721,13 @@ instance RunMessage SkillTest where
       pure $ s & valueModifierL .~ totaledChaosTokenValues & resultL .~ result
     ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->
       pure $ s & typeL .~ newSkillTestType & baseValueL .~ newSkillTestBaseValue
+    RemoveAllChaosTokens face -> do
+      pure $
+        s
+          & revealedChaosTokensL
+          %~ filter ((/= face) . chaosTokenFace)
+          & setAsideChaosTokensL
+          %~ filter ((/= face) . chaosTokenFace)
+          & resolvedChaosTokensL
+          %~ filter ((/= face) . chaosTokenFace)
     _ -> pure s

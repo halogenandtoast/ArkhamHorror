@@ -13,6 +13,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
@@ -59,6 +60,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   SealedChaosToken token card | toCardId card == toCardId a -> do
     pure $ a & sealedChaosTokensL %~ (token :)
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+  RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
   PlaceEvent _ eid placement | eid == eventId -> do
     pure $ a & placementL .~ placement
   FinishedEvent eid | eid == eventId -> do

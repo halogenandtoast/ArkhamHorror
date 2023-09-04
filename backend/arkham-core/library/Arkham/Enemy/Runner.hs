@@ -23,6 +23,7 @@ import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Damage
@@ -130,6 +131,7 @@ instance RunMessage EnemyAttrs where
       | toCardId card == toCardId a ->
           pure $ a & sealedChaosTokensL %~ (token :)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       prey <- getPreyMatcher a
       preyIds <- selectList prey
@@ -164,7 +166,7 @@ instance RunMessage EnemyAttrs where
           if Keyword.Aloof
             `notElem` keywords
             && Keyword.Massive
-              `notElem` keywords
+            `notElem` keywords
             && not enemyExhausted
             then do
               prey <- getPreyMatcher a
@@ -377,7 +379,7 @@ instance RunMessage EnemyAttrs where
             `notElem` keywords
             && (unengaged || Keyword.Massive `elem` keywords)
             && CannotBeEngaged
-              `notElem` modifiers'
+            `notElem` modifiers'
             && not enemyExhausted
         )
         $ if Keyword.Massive `elem` keywords
@@ -601,7 +603,7 @@ instance RunMessage EnemyAttrs where
                       `notElem` modifiers'
                    , not enemyExhausted
                       || CanRetaliateWhileExhausted
-                        `elem` modifiers'
+                      `elem` modifiers'
                    ]
             pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
@@ -852,7 +854,7 @@ instance RunMessage EnemyAttrs where
           pure $
             a
               & assignedDamageL
-                %~ insertWith combine source damageAssignment'
+              %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source -> do
       do

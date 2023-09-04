@@ -18,6 +18,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Damage
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
@@ -55,6 +56,8 @@ instance RunMessage AssetAttrs where
     SealedChaosToken token card | toCardId card == toCardId a -> do
       pure $ a & sealedChaosTokensL %~ (token :)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    RemoveAllChaosTokens face -> do
+      pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     ReadyExhausted -> case assetPlacement of
       InPlayArea iid -> do
         modifiers <- getModifiers (InvestigatorTarget iid)

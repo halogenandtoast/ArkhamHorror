@@ -102,6 +102,7 @@ import Arkham.Skill.Skills (
   prescientEffect,
  )
 import Arkham.Story.Stories (
+  gavriellasFateEffect,
   josefsPlanEffect,
   unfinishedBusiness_JEffect,
  )
@@ -301,6 +302,7 @@ allEffects =
     , ("05239", SomeEffect theLoversVIEffect)
     , ("05251", SomeEffect unvisitedIsleStandingStonesEffect)
     , ("05255", SomeEffect unvisitedIsleMossCoveredStepsEffect)
+    , ("05262", SomeEffect gavriellasFateEffect)
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06279", SomeEffect oldBookOfLore3Effect)

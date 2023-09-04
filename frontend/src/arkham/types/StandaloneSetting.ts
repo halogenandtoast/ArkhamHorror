@@ -16,8 +16,8 @@ type SettingCondition =
 export type Recordable = { key: string, content: string, ifRecorded?: SettingCondition}
 
 export type StandaloneSetting =
-  { type: "ToggleCrossedOut", key: string, recordable: RecordableType, content: CrossOutContent[] } |
-  { type: "ToggleRecords", key: string, recordable: RecordableType, content: Recordable[] } |
-  { type: "ToggleKey", key: string, content: boolean } |
-  { type: "ToggleOption", key: string, content: boolean } |
-  { type: "PickKey", key: string, keys: string[], content: string}
+  { type: "ToggleCrossedOut", key: string, recordable: RecordableType, content: CrossOutContent[], advanced?: boolean } |
+  { type: "ToggleRecords", key: string, recordable: RecordableType, content: Recordable[], advanced?: boolean } |
+  { type: "ToggleKey", key: string, content: boolean, advanced?: boolean } |
+  { type: "ToggleOption", key: string, content: boolean, advanced?: boolean } |
+  { type: "PickKey", key: string, keys: string[], content: string, advanced?: boolean}

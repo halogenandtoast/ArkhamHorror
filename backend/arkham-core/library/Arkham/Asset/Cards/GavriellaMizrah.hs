@@ -28,7 +28,10 @@ instance HasModifiersFor GavriellaMizrah where
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =
-    [ restrictedAbility a 1 (ControlsThis <> CanDiscoverCluesAt YourLocation) $
+    [ restrictedAbility
+        a
+        1
+        (ControlsThis <> CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues) $
         ReactionAbility (EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy) (exhaust a)
     ]
 

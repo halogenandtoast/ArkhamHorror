@@ -47,7 +47,7 @@ instance RunMessage ForbiddingShore where
           Label "Lose 1 action" [LoseActions iid (toSource attrs) 1]
             : [Label "Lose 2 resources" [LoseResources iid (toSource attrs) 2] | hasResources]
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestTarget {} _ _ -> do
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       passedCircleTest iid attrs
       pure l
     _ -> ForbiddingShore <$> runMessage msg attrs

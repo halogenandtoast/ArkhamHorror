@@ -38,6 +38,10 @@ const inactive = (cond) => {
     return setting.content.some((c) => c.content === check && c.key == content)
   }
 
+  if (cond.type === 'not') {
+    return inactive(cond.content)
+  }
+
   throw new Error(`Unknown condition type ${cond}`)
 }
 

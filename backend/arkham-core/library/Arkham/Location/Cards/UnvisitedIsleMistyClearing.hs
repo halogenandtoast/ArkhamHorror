@@ -31,9 +31,10 @@ instance HasModifiersFor UnvisitedIsleMistyClearing where
     , not (locationRevealed attrs) = do
         sidedWithLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
         isLit <- selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
-        if sidedWithLodge
-          then pure [toModifier attrs Blocked | isLit]
-          else pure [toModifier attrs Blocked | not isLit]
+        pure
+          [ toModifier attrs Blocked
+          | if sidedWithLodge then not isLit else isLit
+          ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities UnvisitedIsleMistyClearing where
@@ -57,7 +58,7 @@ instance RunMessage UnvisitedIsleMistyClearing where
           , Label "Take 1 damage and 1 horror" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]
           ]
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestTarget {} _ _ -> do
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       passedCircleTest iid attrs
       pure l
     _ -> UnvisitedIsleMistyClearing <$> runMessage msg attrs

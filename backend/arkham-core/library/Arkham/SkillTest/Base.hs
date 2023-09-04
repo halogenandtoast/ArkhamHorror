@@ -18,6 +18,7 @@ import Data.Aeson.TH
 
 data SkillTestBaseValue
   = SkillBaseValue SkillType
+  | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
   | StaticBaseValue Int
   deriving stock (Show, Eq, Ord)

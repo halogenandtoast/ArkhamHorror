@@ -9,7 +9,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher
+import Arkham.Movement
 import Arkham.Projection
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
@@ -44,7 +45,7 @@ instance RunMessage Pathfinder1 where
       push $
         chooseOne
           iid
-          [ targetLabel lid [MoveAction iid lid Free False]
+          [ targetLabel lid [Move $ move attrs iid lid]
           | lid <- accessibleLocationIds
           ]
       pure a

@@ -9,7 +9,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher
+import Arkham.Movement
 import Arkham.Projection
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
@@ -37,9 +38,9 @@ instance RunMessage AbbessAllegriaDiBiase where
         then do
           connectedLocations <- selectList $ accessibleFrom location
           push . chooseOrRunOne iid $
-            [ targetLabel connectedLocation [MoveAction iid connectedLocation Free False]
+            [ targetLabel connectedLocation [Move $ move attrs iid connectedLocation]
             | connectedLocation <- connectedLocations
             ]
-        else push $ MoveAction iid abbessLocation Free False
+        else push $ Move $ move attrs iid abbessLocation
       pure a
     _ -> AbbessAllegriaDiBiase <$> runMessage msg attrs

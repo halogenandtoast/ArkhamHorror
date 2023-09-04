@@ -25,10 +25,6 @@ import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
-instance Alternative GameT where
-  empty = GameT $ ReaderT $ const empty
-  GameT a <|> GameT b = GameT $ ReaderT $ \env -> runReaderT a env <|> runReaderT b env
-
 instance CardGen GameT where
   genEncounterCard a = do
     cardId <- unsafeMakeCardId <$> getRandom

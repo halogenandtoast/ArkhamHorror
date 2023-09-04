@@ -527,15 +527,28 @@ data Message
   | LoseResources InvestigatorId Source Int
   | LoseAllResources InvestigatorId
   | SpendActions InvestigatorId Source (Maybe Action) Int
-  | Move Movement
-  | MoveAction InvestigatorId LocationId Cost Bool
+  | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
+    Move Movement
+  | -- | When bool is True, This triggers the windows for PerformAction, as
+    -- well as BeginAction and Finish action brackets.
+    -- When bool is false it only triggers the after move action window, but
+    -- also the (When, After) messages
+    -- Eventually calls the Move message with a movement it built
+    MoveAction InvestigatorId LocationId Cost Bool
+  | -- | Only calls MoveTo for all investigators
+    MoveAllTo Source LocationId
+  | -- | Pretty useless, simply triggers Will/After variants that just push
+    -- windows, possibly we could inline this, the only benefit seems to be the
+    -- ability to cancel the batch easily
+    MoveFrom Source InvestigatorId LocationId
+  | -- | Actual movement, will add MovedBy, MovedBut, and after Entering windows
+    MoveTo Movement
+  | -- | Move target one location toward a matching location
+    MoveToward Target LocationMatcher
+  | -- | Move target one location at a time until arrive at location
+    MoveUntil LocationId Target
   | MoveAllCluesTo Source Target
-  | MoveAllTo Source LocationId
-  | MoveFrom Source InvestigatorId LocationId
-  | MoveTo Movement
-  | MoveToward Target LocationMatcher
   | MoveTopOfDeckToBottom Source DeckSignifier Int
-  | MoveUntil LocationId Target
   | NextCampaignStep (Maybe CampaignStep)
   | NextChaosBagStep Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | Noop

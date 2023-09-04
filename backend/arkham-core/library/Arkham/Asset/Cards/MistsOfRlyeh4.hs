@@ -16,7 +16,8 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher hiding (MoveAction, RevealChaosToken)
+import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Movement
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -81,7 +82,7 @@ instance RunMessage MistsOfRlyeh4Effect where
                 moveOptions =
                   chooseOrRunOne iid $
                     [Label "Do not move to a connecting location" []]
-                      <> [ targetLabel lid [MoveAction iid lid Free False]
+                      <> [ targetLabel lid [Move $ move attrs iid lid]
                          | lid <- unblockedConnectedLocationIds
                          ]
               pushAll [moveOptions, DisableEffect effectId]

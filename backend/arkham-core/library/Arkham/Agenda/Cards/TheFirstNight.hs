@@ -29,7 +29,7 @@ instance HasModifiersFor TheFirstNight where
 instance RunMessage TheFirstNight where
   runMessage msg a@(TheFirstNight attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      msgs <- disengageEachEnemyAndMoveToConnectingLocation
+      msgs <- disengageEachEnemyAndMoveToConnectingLocation attrs
       pushAll $ msgs <> [NextAdvanceAgendaStep (toId attrs) 2]
       pure a
     NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do

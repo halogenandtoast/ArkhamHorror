@@ -37,18 +37,19 @@ instance RunMessage TheLoversVI where
         if takenByTheWatcher > 0
           then do
             card <- genFlippedCard attrs
-            mTheSpectralWatcher <-
-              asum
-                [ selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher
-                , selectOne $ enemyIs Enemies.theSpectralWatcher
-                ]
-            for_ mTheSpectralWatcher \theSpectralWatcher ->
-              pushAll
-                [ PlaceTokens (toSource attrs) (toTarget theSpectralWatcher) LostSoul takenByTheWatcher
-                , PlaceNextTo AgendaDeckTarget [card]
-                , createCardEffect Cards.theLoversVI Nothing attrs ScenarioTarget
-                , advanceAgendaDeck attrs
-                ]
+            theSpectralWatcher <-
+              fromJustNote "missing the spectral watcher"
+                <$> ( liftA2
+                        (<|>)
+                        (selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
+                        (selectOne $ enemyIs Enemies.theSpectralWatcher)
+                    )
+            pushAll
+              [ PlaceTokens (toSource attrs) (toTarget theSpectralWatcher) LostSoul takenByTheWatcher
+              , PlaceNextTo AgendaDeckTarget [card]
+              , createCardEffect Cards.theLoversVI Nothing attrs ScenarioTarget
+              , advanceAgendaDeck attrs
+              ]
           else pushAll [advanceAgendaDeck attrs]
         push ShuffleEncounterDiscardBackIn
         pure a

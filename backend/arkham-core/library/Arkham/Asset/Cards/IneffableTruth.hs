@@ -14,7 +14,7 @@ import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.Matcher hiding (MoveAction, RevealChaosToken)
+import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.SkillType
 import Arkham.Window qualified as Window
 

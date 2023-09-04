@@ -92,6 +92,7 @@ createEnemy (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
       , enemyCreationEnemyId = enemyId
       , enemyCreationMethod = cMethod
       , enemyCreationAfter = []
+      , enemyCreationExhausted = False
       , enemyCreationTarget = Nothing
       , enemyCreationInvestigator = Nothing
       }

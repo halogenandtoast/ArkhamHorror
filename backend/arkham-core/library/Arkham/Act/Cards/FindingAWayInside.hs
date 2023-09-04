@@ -46,15 +46,15 @@ instance RunMessage FindingAWayInside where
       | aid == actId && onSide B attrs && isSource attrs source -> do
           leadInvestigatorId <- getLeadInvestigatorId
           investigatorIds <- getInvestigatorIds
-          adamLynch <- EncounterCard <$> genEncounterCard Assets.adamLynch
+          adamLynch <- genCard Assets.adamLynch
           museumHallsId <-
             fromJustNote "missing museum halls"
               <$> selectOne (LocationWithTitle "Museum Halls")
           pushAll
             [ chooseOne
                 leadInvestigatorId
-                [ TargetLabel
-                  (InvestigatorTarget iid)
+                [ targetLabel
+                  iid
                   [TakeControlOfSetAsideAsset iid adamLynch]
                 | iid <- investigatorIds
                 ]

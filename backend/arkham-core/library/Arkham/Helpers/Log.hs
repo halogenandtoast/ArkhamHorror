@@ -39,6 +39,11 @@ getRecordSet :: HasGame m => CampaignLogKey -> m [SomeRecorded]
 getRecordSet k =
   findWithDefault [] k . campaignLogRecordedSets <$> getCampaignLog
 
+inRecordSet :: (Recordable a, HasGame m) => a -> CampaignLogKey -> m Bool
+inRecordSet v k = do
+  recordSet <- getRecordSet k
+  pure $ recorded v `elem` recordSet
+
 getRecordedCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
 getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k
  where

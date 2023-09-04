@@ -40,6 +40,7 @@ data EnemyCreation msg = MkEnemyCreation
   , enemyCreationEnemyId :: EnemyId
   , enemyCreationMethod :: EnemyCreationMethod
   , enemyCreationTarget :: Maybe Target
+  , enemyCreationExhausted :: Bool
   , enemyCreationAfter :: [msg]
   , enemyCreationInvestigator :: Maybe InvestigatorId
   }

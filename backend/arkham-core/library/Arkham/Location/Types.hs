@@ -168,6 +168,7 @@ instance FromJSON (SomeField Location) where
     "LocationAbilities" -> pure $ SomeField LocationAbilities
     "LocationPrintedSymbol" -> pure $ SomeField LocationPrintedSymbol
     "LocationVengeance" -> pure $ SomeField LocationVengeance
+    "LocationBrazier" -> pure $ SomeField LocationBrazier
     _ -> error "no such field"
 
 instance Entity LocationAttrs where

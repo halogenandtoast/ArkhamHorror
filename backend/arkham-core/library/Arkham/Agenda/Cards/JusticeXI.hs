@@ -95,26 +95,22 @@ instance RunMessage JusticeXI where
       pushAll $
         msgs
           <> map (RemoveAllClues (toSource attrs) . toTarget) allLocations
-          <> [ story iids interlude1Gavriella
-             | toCardCode Investigators.gavriellaMizrah
-                `elem` missingPersons
-                && noCluesOnEntryHall
-             ]
-          <> [ story iids interlude1Jerome
-             | toCardCode Investigators.jeromeDavids
-                `elem` missingPersons
-                && noCluesOnOffice
-             ]
-          <> [ story iids interlude1Penny
-             | toCardCode Investigators.pennyWhite
-                `elem` missingPersons
-                && noCluesOnBalcony
-             ]
-          <> [ story iids interlude1Valentino
-             | toCardCode Investigators.valentinoRivas
-                `elem` missingPersons
-                && noCluesOnBilliardsRoom
-             ]
+          <> ( if toCardCode Investigators.gavriellaMizrah `elem` missingPersons && noCluesOnEntryHall
+                then [story iids interlude1Gavriella, Record TheInvestigatorsAreOnGavriella'sTrail]
+                else []
+             )
+          <> ( if toCardCode Investigators.jeromeDavids `elem` missingPersons && noCluesOnOffice
+                then [story iids interlude1Jerome, Record TheInvestigatorsAreOnJerome'sTrail]
+                else []
+             )
+          <> ( if toCardCode Investigators.pennyWhite `elem` missingPersons && noCluesOnBalcony
+                then [story iids interlude1Penny, Record TheInvestigatorsAreOnPenny'sTrail]
+                else []
+             )
+          <> ( if toCardCode Investigators.valentinoRivas `elem` missingPersons && noCluesOnBilliardsRoom
+                then [story iids interlude1Valentino, Record TheInvestigatorsAreOnValentino'sTrail]
+                else []
+             )
           <> [ AdvanceAct actId (toSource attrs) AdvancedWithOther
              , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
              ]

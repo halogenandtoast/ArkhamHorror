@@ -85,32 +85,209 @@
             "label": "Gaveriella Mizrah",
             "key": "05046",
             "content": false,
-            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05046" } ]
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
+            ]
           },
           {
             "label": "Jerome Davids",
             "key": "05047",
             "content": false,
-            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05047" } ]
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
+            ]
           },
           {
             "label": "Valentino Rivas",
             "key": "05048",
             "content": false,
-            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05048" } ]
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
+            ]
           },
           {
             "label": "Penny White",
             "key": "05049",
             "content": false,
-            "ifRecorded": [ {"type": "inSet", "key": "MissingPersons", "content": "05049" } ]
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ToggleRecords",
+        "key": "WasClaimedBySpecters",
+        "recordable": "RecordableCardCode",
+        "content": [
+          {
+            "label": "Gaveriella Mizrah",
+            "key": "05046",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
+            ]
+          },
+          {
+            "label": "Jerome Davids",
+            "key": "05047",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
+            ]
+          },
+          {
+            "label": "Valentino Rivas",
+            "key": "05048",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
+            ]
+          },
+          {
+            "label": "Penny White",
+            "key": "05049",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ToggleRecords",
+        "key": "DisappearedIntoTheMist",
+        "recordable": "RecordableCardCode",
+        "content": [
+          {
+            "label": "Gaveriella Mizrah",
+            "key": "05046",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
+            ]
+          },
+          {
+            "label": "Jerome Davids",
+            "key": "05047",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
+            ]
+          },
+          {
+            "label": "Valentino Rivas",
+            "key": "05048",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
+            ]
+          },
+          {
+            "label": "Penny White",
+            "key": "05049",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ToggleRecords",
+        "key": "WasPulledIntoTheSpectralRealm",
+        "recordable": "RecordableCardCode",
+        "content": [
+          {
+            "label": "Gaveriella Mizrah",
+            "key": "05046",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } }
+            ]
+          },
+          {
+            "label": "Jerome Davids",
+            "key": "05047",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } }
+            ]
+          },
+          {
+            "label": "Valentino Rivas",
+            "key": "05048",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } }
+            ]
+          },
+          {
+            "label": "Penny White",
+            "key": "05049",
+            "content": false,
+            "ifRecorded": [
+              {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+              {"type": "not", "content": { "type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
+              {"type": "not", "content": { "type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } }
+            ]
           }
         ]
       },
       { "key": "TheInvestigatorsWereInductedIntoTheInnerCircle", "type": "ToggleKey", "content": false },
       { "key": "TheInvestigatorsAreDeceivingTheLodge", "type": "ToggleKey", "content": false },
       { "key": "JosefIsAliveAndWell", "type": "ToggleKey", "content": true },
-      { "key": "TheWitches'SpellWasCast", "type": "ToggleKey", "content": false }
+      { "key": "TheWitches'SpellWasCast", "type": "ToggleKey", "content": false },
+      { "key": "TheInvestigatorsAreOnGavriella'sTrail", "type": "ToggleKey", "content": false },
+      { "key": "TheInvestigatorsAreOnJerome'sTrail", "type": "ToggleKey", "content": false },
+      { "key": "TheInvestigatorsAreOnPenny'sTrail", "type": "ToggleKey", "content": false },
+      { "key": "TheInvestigatorsAreOnValentino'sTrail", "type": "ToggleKey", "content": false }
     ]
   }
 ]

@@ -184,6 +184,7 @@ data CampaignLogKey
   | TheInvestigatorsWereInductedIntoTheInnerCircle
   | TheInvestigatorsSidedWithTheLodge
   | TheInvestigatorsSidedWithTheCoven
+  | GavriellaIsAlive
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

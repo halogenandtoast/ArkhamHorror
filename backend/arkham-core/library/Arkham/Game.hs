@@ -5005,10 +5005,16 @@ runGameMessage msg g = case msg of
           EncounterCard _ -> Nothing
           PlayerCard pc -> pcOwner pc
           VengeanceCard vc -> getBearer vc
-    enemy' <-
+    enemy'' <-
       runMessage
         (SetOriginalCardCode $ originalCardCode card)
         (createEnemy card enemyId)
+
+    let
+      enemy' =
+        if enemyCreationExhausted enemyCreation
+          then overAttrs (\attrs -> attrs {enemyExhausted = True}) enemy''
+          else enemy''
 
     enemy <- case getBearer card of
       Nothing -> pure enemy'

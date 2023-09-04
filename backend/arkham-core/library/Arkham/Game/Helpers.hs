@@ -2589,6 +2589,9 @@ skillTestValueMatches iid n maction skillTestType = \case
     SkillSkillTest skillType -> do
       baseSkill <- baseSkillValueFor skillType maction [] iid
       pure $ n > baseSkill
+    AndSkillTest types -> do
+      baseSkill <- sum <$> traverse (\skillType -> baseSkillValueFor skillType maction [] iid) types
+      pure $ n > baseSkill
     ResourceSkillTest -> do
       resources <- field InvestigatorResources iid
       pure $ n > resources
@@ -2824,6 +2827,7 @@ skillTestMatches iid source st = \case
   Matcher.SkillTestWithSkill sk -> selectAny sk
   Matcher.SkillTestWithSkillType sType -> pure $ case skillTestType st of
     SkillSkillTest sType' -> sType' == sType
+    AndSkillTest types -> sType `elem` types
     ResourceSkillTest -> False
   Matcher.SkillTestAtYourLocation -> do
     mlid1 <- field InvestigatorLocation iid

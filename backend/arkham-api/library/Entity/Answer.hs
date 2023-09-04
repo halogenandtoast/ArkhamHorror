@@ -55,6 +55,7 @@ data StandaloneSetting
   = SetKey CampaignLogKey Bool
   | SetRecorded CampaignLogKey SomeRecordableType [SetRecordedEntry]
   | SetOption CampaignOption Bool
+  | NoChooseRecord
   deriving stock (Show)
 
 data SetRecordedEntry
@@ -67,6 +68,7 @@ makeStandaloneCampaignLog :: [StandaloneSetting] -> CampaignLog
 makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
  where
   applySetting :: CampaignLog -> StandaloneSetting -> CampaignLog
+  applySetting cl NoChooseRecord = cl
   applySetting cl (SetKey k True) = setCampaignLogKey k cl
   applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
   applySetting cl (SetOption k True) = setCampaignLogOption k cl
@@ -91,6 +93,11 @@ instance FromJSON StandaloneSetting where
   parseJSON = withObject "StandaloneSetting" $ \o -> do
     t <- o .: "type"
     case t of
+      "ChooseRecord" -> do
+        mSelected <- o .: "selected"
+        case mSelected of
+          Nothing -> pure NoChooseRecord
+          Just selected -> SetRecorded selected <$> o .: "recordable" <*> ((: []) . SetAsRecorded <$> o .: "key")
       "ToggleKey" -> SetKey <$> o .: "key" <*> o .: "content"
       "ToggleOption" -> SetOption <$> o .: "key" <*> o .: "content"
       "PickKey" -> (`SetKey` True) <$> o .: "content"

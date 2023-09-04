@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
@@ -23,6 +23,15 @@ export interface Props {
 }
 
 const showAbilities = ref<boolean>(false)
+const abilitiesEl = ref<HTMLElement | null>(null)
+
+const handleFocus = () => {
+  showAbilities.value = true
+}
+
+const handleFocusOut = () => {
+  showAbilities.value = false
+}
 
 const props = defineProps<Props>()
 const emits = defineEmits(['choose'])
@@ -58,11 +67,17 @@ async function clicked() {
     emits('choose', cardAction.value)
   } else if (abilities.value.length > 0) {
     showAbilities.value = !showAbilities.value
+    await nextTick()
+    if (showAbilities.value === true) {
+      abilitiesEl.value?.focus()
+    } else {
+      abilitiesEl.value?.blur()
+    }
   }
 }
 
 async function chooseAbility(ability: number) {
-  showAbilities.value = false
+  abilitiesEl.value?.blur()
   emits('choose', ability)
 }
 
@@ -100,10 +115,12 @@ watch(abilities, (abilities) => {
   // ability is forced we must show
   if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
     showAbilities.value = true
+    abilitiesEl.value?.focus()
   }
 
   if (abilities.length === 0) {
     showAbilities.value = false
+    abilitiesEl.value?.blur()
   }
 })
 
@@ -177,7 +194,7 @@ const debug = useDebug()
           <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
         </div>
       </div>
-      <div v-if="showAbilities" class="abilities" :data-image="image">
+      <div v-if="showAbilities" class="abilities" :data-image="image" tabindex="-1" @focus="handleFocus" @focusout="handleFocusOut" ref="abilitiesEl">
         <AbilityButton
           v-for="ability in abilities"
           :key="ability.index"
@@ -372,6 +389,7 @@ const debug = useDebug()
   gap: 5px;
   bottom:100%;
   left: 0;
+  outline: 0;
 }
 
 .attachments {

@@ -49,19 +49,42 @@ const inactive = (cond) => {
 const optionActive = (setting: StandaloneSetting, entry: Recordable) => {
   const {ifRecorded} = entry
   if (ifRecorded) {
-    if (ifRecorded.some((cond) => inactive(cond))) {
-      return false
-    }
+    return !ifRecorded.some((cond) => inactive(cond))
   }
 
   return true
 }
+
+const activeSettings = computed(() => {
+  return standaloneSettings.value.filter((setting) => {
+    const {ifRecorded} = setting
+    if (ifRecorded) {
+      return !ifRecorded.some((cond) => inactive(cond))
+    }
+
+    return true
+  })
+})
 </script>
 
 <template>
   <div class="container">
     <p>Standalone Settings</p>
-    <div v-for="setting in standaloneSettings" :key="setting.key">
+    <div v-for="setting in activeSettings" :key="setting.key">
+      <div v-if="setting.type === 'ChooseRecord'" class="options">
+        <fieldset>
+          <legend>{{toCapitalizedWords(setting.label)}}</legend>
+          <template v-for="item in setting.content" :key="item.key">
+            <input
+              type="radio"
+              v-model="setting.selected"
+              :id="`${setting.key}${setting.label}${item.key}`"
+              :value="item.key"
+            />
+            <label :for="`${setting.key}${setting.label}${item.key}`"> {{toCapitalizedWords(item.key)}}</label>
+          </template>
+        </fieldset>
+      </div>
       <div v-if="setting.type === 'ToggleKey'" class="options">
         <input type="checkbox" v-model="setting.content" :id="setting.key"/>
         <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>

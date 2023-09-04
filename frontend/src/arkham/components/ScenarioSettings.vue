@@ -13,6 +13,7 @@ const props = defineProps<{
   investigatorId: string
 }>()
 const standaloneSettings = ref<StandaloneSetting[]>([])
+const showAdvanced = ref(false)
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the

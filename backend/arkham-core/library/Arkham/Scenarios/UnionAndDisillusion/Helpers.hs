@@ -12,6 +12,9 @@ import Arkham.Message
 lightBrazier :: LocationId -> Message
 lightBrazier locationId = UpdateLocation locationId (LocationBrazier ?=. Lit)
 
+unlightBrazier :: LocationId -> Message
+unlightBrazier locationId = UpdateLocation locationId (LocationBrazier ?=. Unlit)
+
 pattern DuringCircleAction :: Criterion
 pattern DuringCircleAction <- DuringSkillTest (SkillTestForAction (ActionIs Circle))
   where

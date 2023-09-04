@@ -2374,6 +2374,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                                 []
                                 (toId a)
                             pure $ (skillDifficulty - baseValue) >= n
+                          AndSkillTest types -> do
+                            baseValue <-
+                              sum
+                                <$> traverse
+                                  ( \skillType ->
+                                      baseSkillValueFor
+                                        skillType
+                                        Nothing
+                                        []
+                                        (toId a)
+                                  )
+                                  types
+                            pure $ (skillDifficulty - baseValue) >= n
                           ResourceSkillTest ->
                             pure $ (skillDifficulty - investigatorResources a) >= n
                     prevented = flip
@@ -2520,6 +2533,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                                     Nothing
                                     []
                                     (toId a)
+                                pure $ (skillDifficulty - baseValue) >= n
+                              AndSkillTest types -> do
+                                baseValue <-
+                                  sum
+                                    <$> traverse
+                                      ( \skillType ->
+                                          baseSkillValueFor
+                                            skillType
+                                            Nothing
+                                            []
+                                            (toId a)
+                                      )
+                                      types
                                 pure $ (skillDifficulty - baseValue) >= n
                               ResourceSkillTest ->
                                 pure $

@@ -19,9 +19,12 @@ miskatonicRiver = location MiskatonicRiver Cards.miskatonicRiver 5 (Static 0)
 
 instance HasAbilities MiskatonicRiver where
   getAbilities (MiskatonicRiver attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [ withTooltip
+          "You take your rowboat back to the shore of the Miskatonic River, leaving the mysterious island behind."
+          (locationResignAction attrs)
+      ]
 
 instance RunMessage MiskatonicRiver where
   runMessage msg (MiskatonicRiver attrs) =

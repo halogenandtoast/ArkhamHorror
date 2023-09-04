@@ -20,6 +20,7 @@ import Arkham.Criteria.Override
 import Arkham.Damage
 import Arkham.Deck
 import Arkham.Direction
+import Arkham.EncounterSet (EncounterSet)
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
@@ -488,6 +489,7 @@ data CardMatcher
   | CardFillsSlot SlotType
   | DiscardableCard
   | CardOwnedBy InvestigatorId
+  | CardFromEncounterSet EncounterSet
   deriving stock (Show, Eq, Ord)
 
 instance IsString CardMatcher where

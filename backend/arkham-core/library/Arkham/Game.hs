@@ -2865,6 +2865,9 @@ instance Query ExtendedCardMatcher where
                             SkillSkillTest skillType -> do
                               baseValue <- baseSkillValueFor skillType Nothing [] iid
                               pure $ (skillDifficulty - baseValue) >= n
+                            AndSkillTest types -> do
+                              baseValue <- sum <$> traverse (\skillType -> baseSkillValueFor skillType Nothing [] iid) types
+                              pure $ (skillDifficulty - baseValue) >= n
                             ResourceSkillTest ->
                               pure $ (skillDifficulty - resources) >= n
                       prevented = flip
@@ -4817,6 +4820,32 @@ runGameMessage msg g = case msg of
                       <> [ BeginSkillTestAfterFast $
                             skillTest
                               { skillTestType = SkillSkillTest skillType
+                              }
+                         ]
+                  | skillType' <- setToList availableSkills
+                  ]
+              ]
+      AndSkillTest types -> do
+        availableSkills <-
+          Set.unions
+            <$> traverse
+              ( \skillType ->
+                  getAvailableSkillsFor
+                    skillType
+                    (skillTestInvestigator skillTest)
+              )
+              types
+        pure $
+          if Set.size availableSkills < 2
+            then defaultCase
+            else
+              [ chooseOne
+                  (skillTestInvestigator skillTest)
+                  [ SkillLabel skillType' $
+                    windows'
+                      <> [ BeginSkillTestAfterFast $
+                            skillTest
+                              { skillTestType = AndSkillTest types
                               }
                          ]
                   | skillType' <- setToList availableSkills

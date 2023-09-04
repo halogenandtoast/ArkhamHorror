@@ -113,6 +113,8 @@ isCard (toCardCode -> a) (toCardCode -> b) = a == b
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True
+  CardFromEncounterSet encounterSet ->
+    cdEncounterSet (toCardDef a) == Just encounterSet
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
   CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'

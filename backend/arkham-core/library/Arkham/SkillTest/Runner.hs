@@ -117,12 +117,19 @@ skillIconCount SkillTest {..} = do
         if SkillCannotBeIncreased sType `elem` investigatorModifiers
           then 0
           else totalIcons
+    AndSkillTest types -> do
+      investigatorModifiers <- getModifiers skillTestInvestigator
+      pure $
+        if any (\sType -> SkillCannotBeIncreased sType `elem` investigatorModifiers) types
+          then 0
+          else totalIcons
     ResourceSkillTest -> pure totalIcons
  where
   matches WildMinusIcon = False
   matches WildIcon = True
   matches (SkillIcon s) = case skillTestType of
     SkillSkillTest sType -> s == sType
+    AndSkillTest types -> s `elem` types
     ResourceSkillTest -> False
 
 subtractSkillIconCount :: HasGame m => SkillTest -> m Int

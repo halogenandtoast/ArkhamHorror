@@ -23,6 +23,7 @@ getBaseValueForSkillTestType
   :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
 getBaseValueForSkillTestType iid mAction = \case
   SkillSkillTest skillType -> baseSkillValueFor skillType mAction [] iid
+  AndSkillTest types -> sum <$> traverse (\skillType -> baseSkillValueFor skillType mAction [] iid) types
   ResourceSkillTest -> field InvestigatorResources iid
 
 getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
@@ -51,6 +52,7 @@ getSkillTestMatchingSkillIcons =
   getsSkillTest skillTestType <&> \case
     Just stType -> case stType of
       SkillSkillTest skillType -> setFromList [#wildMinus, #wild, SkillIcon skillType]
+      AndSkillTest types -> setFromList $ #wildMinus : #wild : map SkillIcon types
       ResourceSkillTest -> setFromList [#wildMinus, #wild]
     _ -> mempty
 

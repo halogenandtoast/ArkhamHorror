@@ -7,7 +7,10 @@ import Arkham.Prelude
 import Arkham.SkillType
 import Data.Aeson.TH
 
-data SkillTestType = SkillSkillTest SkillType | ResourceSkillTest
+data SkillTestType
+  = SkillSkillTest SkillType
+  | AndSkillTest [SkillType]
+  | ResourceSkillTest
   deriving stock (Show, Eq, Ord)
 
 $(deriveJSON defaultOptions ''SkillTestType)

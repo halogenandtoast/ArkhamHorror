@@ -47,7 +47,7 @@ instance HasAbilities UnvisitedIsleMistyClearing where
 instance RunMessage UnvisitedIsleMistyClearing where
   runMessage msg l@(UnvisitedIsleMistyClearing attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs #willpower #agility 11
+      circleTest iid attrs attrs [#willpower, #agility] 11
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $

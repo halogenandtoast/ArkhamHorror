@@ -29,19 +29,18 @@ circleTest
   => InvestigatorId
   -> source
   -> target
-  -> SkillType
-  -> SkillType
+  -> [SkillType]
   -> Int
   -> m ()
-circleTest iid source target sType1 sType2 n =
+circleTest iid source target skillTypes n =
   push $
     BeginSkillTest $
       buildSkillTest
         iid
         source
         target
-        (AndSkillTest [sType1, sType2])
-        (AndSkillBaseValue [sType1, sType2])
+        (AndSkillTest skillTypes)
+        (AndSkillBaseValue skillTypes)
         n
 
 passedCircleTest :: HasQueue Message m => InvestigatorId -> LocationAttrs -> m ()

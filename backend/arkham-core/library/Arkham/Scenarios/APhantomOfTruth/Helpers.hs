@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 import Arkham.Classes
-import Arkham.Cost
 import Arkham.Distance
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Helpers

@@ -629,4 +629,13 @@ instance RunMessage ChaosBag where
           & revealedChaosTokensL
           %~ filter (/= token)
     UnsealChaosToken token -> pure $ c & chaosTokensL %~ (token :)
+    RemoveAllChaosTokens face ->
+      pure $
+        c
+          & chaosTokensL
+          %~ filter ((/= face) . chaosTokenFace)
+          & setAsideChaosTokensL
+          %~ filter ((/= face) . chaosTokenFace)
+          & revealedChaosTokensL
+          %~ filter ((/= face) . chaosTokenFace)
     _ -> pure c

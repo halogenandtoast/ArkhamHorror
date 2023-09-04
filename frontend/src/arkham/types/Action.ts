@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type Action = 'Ability' | 'Draw' | 'Engage' | 'Evade' | 'Fight' | 'Investigate' | 'Move' | 'Parley' | 'Play' | 'Resign' | 'Resource' | 'Explore'
+export type Action = 'Ability' | 'Draw' | 'Engage' | 'Evade' | 'Fight' | 'Investigate' | 'Move' | 'Parley' | 'Play' | 'Resign' | 'Resource' | 'Explore' | 'Circle'
 
 export const actionDecoder = JsonDecoder.oneOf<Action>([
   JsonDecoder.isExactly('Ability'),
@@ -14,5 +14,6 @@ export const actionDecoder = JsonDecoder.oneOf<Action>([
   JsonDecoder.isExactly('Play'),
   JsonDecoder.isExactly('Resign'),
   JsonDecoder.isExactly('Resource'),
-  JsonDecoder.isExactly('Explore')
+  JsonDecoder.isExactly('Explore'),
+  JsonDecoder.isExactly('Circle')
 ], 'Action')

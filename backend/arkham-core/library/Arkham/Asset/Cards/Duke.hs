@@ -13,7 +13,8 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillType
 
@@ -36,6 +37,9 @@ instance HasModifiersFor Duke where
       _ -> pure []
   getModifiersFor _ _ = pure []
 
+-- TODO: Duke's second ability doesn't bold Move so it is not a move action. I
+-- don't remember the specific logic around ActionAbilityWithBefore but this
+-- likely should change to just be an Investigate action
 instance HasAbilities Duke where
   getAbilities (Duke a) =
     [ fightAbility a 1 (ActionCost 1 <> exhaust a) ControlsThis
@@ -90,7 +94,7 @@ instance RunMessage Duke where
           investigateActions
             <> [ targetLabel
                 lid'
-                [ MoveAction iid lid' Free False
+                [ Move $ move attrs iid lid'
                 , CheckAdditionalActionCosts
                     iid
                     (LocationTarget lid')

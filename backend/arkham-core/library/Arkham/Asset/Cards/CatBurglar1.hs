@@ -9,7 +9,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillType
 
@@ -72,7 +73,7 @@ instance RunMessage CatBurglar1 where
         [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
           <> [ chooseOne
               iid
-              [ targetLabel lid [MoveAction iid lid Free False]
+              [ targetLabel lid [Move $ move attrs iid lid]
               | lid <- accessibleLocationIds
               ]
              | notNull accessibleLocationIds

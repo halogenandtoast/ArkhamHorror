@@ -10,9 +10,11 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Location.Brazier
-import Arkham.Matcher
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype BeyondTheMistV1 = BeyondTheMistV1 ActAttrs
@@ -47,5 +49,10 @@ instance RunMessage BeyondTheMistV1 where
       push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      geistTrap <- getJustLocationIdByName "The Geist-Trap"
+      investigatorsAtUnvisitedIsles <- selectList $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
+      pushAll $
+        RevealLocation Nothing geistTrap
+          : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
       pure a
     _ -> BeyondTheMistV1 <$> runMessage msg attrs

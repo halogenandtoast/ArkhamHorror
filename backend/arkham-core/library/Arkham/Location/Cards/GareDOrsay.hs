@@ -11,8 +11,8 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Matcher hiding (MoveAction)
-import Arkham.Message qualified as Msg
+import Arkham.Matcher
+import Arkham.Movement
 import Arkham.Trait
 
 newtype GareDOrsay = GareDOrsay LocationAttrs
@@ -35,7 +35,7 @@ instance RunMessage GareDOrsay where
       push $
         chooseOne
           iid
-          [ targetLabel lid [Msg.MoveAction iid lid Free False]
+          [ targetLabel lid [Move $ move attrs iid lid]
           | lid <- rails
           ]
       pure l

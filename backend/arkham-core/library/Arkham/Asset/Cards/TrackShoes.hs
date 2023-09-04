@@ -8,7 +8,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher
+import Arkham.Movement
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -45,7 +46,7 @@ instance RunMessage TrackShoes where
           push $
             chooseOne
               iid
-              [ TargetLabel (LocationTarget lid) [MoveAction iid lid Free False]
+              [ TargetLabel (LocationTarget lid) [Move $ move attrs iid lid]
               | lid <- accessibleLocationIds
               ]
           pure a

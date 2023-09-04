@@ -948,22 +948,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     afterWindowMsg <-
       checkWindows
         [Window Timing.After (Window.PerformAction iid Action.Move)]
-    a
-      <$ pushAll
-        [ BeginAction
-        , beforeWindowMsg
-        , TakeAction iid (Just Action.Move) cost
-        , MoveAction iid lid cost False
-        , afterWindowMsg
-        , FinishAction
-        ]
+    pushAll
+      [ BeginAction
+      , beforeWindowMsg
+      , TakeAction iid (Just Action.Move) cost
+      , MoveAction iid lid cost False
+      , afterWindowMsg
+      , FinishAction
+      ]
+    pure a
   MoveAction iid lid _cost False | iid == investigatorId -> do
     afterWindowMsg <-
       Helpers.checkWindows
         [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
-    a
-      <$ pushAll
-        (resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg])
+    pushAll $ resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg]
+    pure a
   Move movement | isTarget a (moveTarget movement) -> do
     case moveDestination movement of
       ToLocationMatching matcher -> do

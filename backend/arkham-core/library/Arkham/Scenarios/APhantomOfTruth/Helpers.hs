@@ -14,9 +14,11 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
+import Arkham.Source
 
 getTheOrganist :: HasGame m => m EnemyId
 getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
@@ -88,8 +90,8 @@ moveOrganistAwayFromNearestInvestigator = do
       [targetLabel lid [EnemyMove organist lid] | lid <- targets]
 
 disengageEachEnemyAndMoveToConnectingLocation
-  :: HasGame m => m [Message]
-disengageEachEnemyAndMoveToConnectingLocation = do
+  :: (HasGame m, Sourceable source) => source -> m [Message]
+disengageEachEnemyAndMoveToConnectingLocation source = do
   leadInvestigatorId <- getLeadInvestigatorId
   iids <- getInvestigatorIds
   enemyPairs <-
@@ -112,7 +114,7 @@ disengageEachEnemyAndMoveToConnectingLocation = do
               iid
               [ chooseOne
                   iid
-                  [ targetLabel lid [MoveAction iid lid Free False]
+                  [ targetLabel lid [Move $ move source iid lid]
                   | lid <- locations
                   ]
               ]

@@ -10,13 +10,13 @@ import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Projection
 import Data.Maybe (fromJust)
 
@@ -65,7 +65,7 @@ instance RunMessage UndergroundMuscle where
               , ShuffleCardsIntoDeck Deck.EncounterDeck $
                   map EncounterCard (rest <> strikingFear)
               ]
-                <> [ MoveAction iid cloverClubLoungeId Free False
+                <> [ Move $ move attrs iid cloverClubLoungeId
                    | iid <- laBellaLunaInvestigators
                    ]
                 <> [ EnemyMove eid cloverClubLoungeId

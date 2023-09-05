@@ -472,6 +472,10 @@ allLocations =
     , SomeLocationCard southChurch_299
     , SomeLocationCard merchantDistrict_300
     , SomeLocationCard merchantDistrict_301
+    , SomeLocationCard hangmansHillWhereItAllEnds
+    , SomeLocationCard silverTwilightLodgeShroudedInMystery
+    , SomeLocationCard hangmansHillShroudedInMystery
+    , SomeLocationCard silverTwilightLodgeWhereItAllEnds
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

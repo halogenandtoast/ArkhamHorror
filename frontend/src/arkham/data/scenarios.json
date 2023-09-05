@@ -177,5 +177,12 @@
         ]
       }
     ]
+  },
+  {
+    "id": "05284",
+    "name": "In the Clutches of Chaos",
+    "campaign": "05",
+    "beta": true,
+    "settings": []
   }
 ]

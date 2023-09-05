@@ -13,7 +13,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher.Types
 import Arkham.Message
 import Arkham.Modifier as X
-import Arkham.Phase
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window)

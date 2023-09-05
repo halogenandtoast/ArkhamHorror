@@ -110,17 +110,15 @@ instance RunMessage TheGathering where
         selectCount $
           EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
             <> EnemyWithTrait Trait.Ghoul
-      s
-        <$ when
-          (ghoulCount > 0)
-          ( push $
-              InvestigatorAssignDamage
-                iid
-                (ChaosTokenEffectSource Tablet)
-                DamageAny
-                1
-                (if isEasyStandard attrs then 0 else 1)
-          )
+      when (ghoulCount > 0) $
+        push $
+          InvestigatorAssignDamage
+            iid
+            (ChaosTokenEffectSource Tablet)
+            DamageAny
+            1
+            (if isEasyStandard attrs then 0 else 1)
+      pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Skull | isHardExpert attrs -> do

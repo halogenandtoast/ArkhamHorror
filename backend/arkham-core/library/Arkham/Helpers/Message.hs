@@ -196,6 +196,15 @@ pattern R4 = ScenarioResolution (Resolution 4)
 pattern R5 :: Message
 pattern R5 = ScenarioResolution (Resolution 5)
 
+pattern R6 :: Message
+pattern R6 = ScenarioResolution (Resolution 6)
+
+pattern R7 :: Message
+pattern R7 = ScenarioResolution (Resolution 7)
+
+pattern R8 :: Message
+pattern R8 = ScenarioResolution (Resolution 8)
+
 gainSurge :: (Sourceable a, Targetable a) => a -> Message
 gainSurge a = GainSurge (toSource a) (toTarget a)
 

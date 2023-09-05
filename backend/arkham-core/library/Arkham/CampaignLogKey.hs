@@ -188,6 +188,13 @@ data CampaignLogKey
   | JeromeIsAlive
   | PennyIsAlive
   | ValentinoIsAlive
+  | TheTrueWorkOfTheSilverTwilightLodgeHasBegun
+  | CarlSanfordPossessesTheSecretsOfTheUniverse
+  | AnetteMasonIsPossessedByEvil
+  | GavriellaIsDead
+  | JeromeIsDead
+  | PennyIsDead
+  | ValentinoIsDead
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

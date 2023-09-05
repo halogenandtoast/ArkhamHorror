@@ -267,6 +267,8 @@ allLocationCards =
       , foulSwamp
       , foyer
       , frankElwoodsRoom
+      , frenchHill_290
+      , frenchHill_291
       , frozenSpring
       , gallery
       , garden
@@ -342,6 +344,8 @@ allLocationCards =
       , mainPath
       , masterBedroom
       , masterBedroomSpectral
+      , merchantDistrict_300
+      , merchantDistrict_301
       , messHall
       , metropolitanCathedral
       , miskatonicQuad
@@ -404,9 +408,11 @@ allLocationCards =
       , rialtoBridge
       , ritualGrounds
       , ritualSite
+      , riverCanyon
       , rivertown
       , rivertownAbandonedWarehouse
-      , riverCanyon
+      , rivertown_292
+      , rivertown_293
       , ropeBridge
       , ruinsOfCarcosaAMomentsRest
       , ruinsOfCarcosaInhabitantOfCarcosa
@@ -433,8 +439,12 @@ allLocationCards =
       , siteOfTheSacrifice
       , slaughteredWoods
       , sleepingCar
+      , southChurch_298
+      , southChurch_299
       , southsideHistoricalSociety
       , southsideMasBoardingHouse
+      , southside_294
+      , southside_295
       , stMarysHospital
       , stepsOfYhagharl
       , stepsOfYoth
@@ -484,6 +494,8 @@ allLocationCards =
       , unvisitedIsleMossCoveredSteps
       , unvisitedIsleStandingStones
       , uprootedWoods
+      , uptown_296
+      , uptown_297
       , valusia
       , vastPassages
       , vault
@@ -4590,6 +4602,126 @@ theGeistTrap =
       Plus
       [Squiggle]
       UnionAndDisillusion
+
+frenchHill_290 :: CardDef
+frenchHill_290 =
+  location
+    "05290"
+    "French Hill"
+    [Arkham]
+    T
+    [Circle, Square, Star]
+    InTheClutchesOfChaos
+
+frenchHill_291 :: CardDef
+frenchHill_291 =
+  location
+    "05291"
+    "French Hill"
+    [Arkham]
+    T
+    [Circle, Square, Star]
+    InTheClutchesOfChaos
+
+rivertown_292 :: CardDef
+rivertown_292 =
+  location
+    "05292"
+    "Rivertown"
+    [Arkham]
+    Circle
+    [Square, Triangle, T]
+    InTheClutchesOfChaos
+
+rivertown_293 :: CardDef
+rivertown_293 =
+  location
+    "05293"
+    "Rivertown"
+    [Arkham]
+    Circle
+    [Square, Triangle, T]
+    InTheClutchesOfChaos
+
+southside_294 :: CardDef
+southside_294 =
+  location
+    "05294"
+    "Southside"
+    [Arkham, Central]
+    Square
+    [Circle, Triangle, Plus, T, Diamond]
+    InTheClutchesOfChaos
+
+southside_295 :: CardDef
+southside_295 =
+  location
+    "05295"
+    "Southside"
+    [Arkham, Central]
+    Square
+    [Circle, Triangle, Plus, T, Diamond]
+    InTheClutchesOfChaos
+
+uptown_296 :: CardDef
+uptown_296 =
+  location
+    "05296"
+    "Uptown"
+    [Arkham]
+    Plus
+    [Square, Triangle, Moon]
+    InTheClutchesOfChaos
+
+uptown_297 :: CardDef
+uptown_297 =
+  location
+    "05297"
+    "Uptown"
+    [Arkham]
+    Plus
+    [Square, Triangle, Moon]
+    InTheClutchesOfChaos
+
+southChurch_298 :: CardDef
+southChurch_298 =
+  location
+    "05298"
+    "South Church"
+    [Arkham]
+    Diamond
+    [Square]
+    InTheClutchesOfChaos
+
+southChurch_299 :: CardDef
+southChurch_299 =
+  location
+    "05299"
+    "South Church"
+    [Arkham]
+    Diamond
+    [Square]
+    InTheClutchesOfChaos
+
+merchantDistrict_300 :: CardDef
+merchantDistrict_300 =
+  location
+    "05300"
+    "Merchant District"
+    [Arkham]
+    Triangle
+    [Circle, Square, Plus]
+    InTheClutchesOfChaos
+
+merchantDistrict_301 :: CardDef
+merchantDistrict_301 =
+  location
+    "05301"
+    "Merchant District"
+    [Arkham]
+    Triangle
+    [Circle, Square, Plus]
+    InTheClutchesOfChaos
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

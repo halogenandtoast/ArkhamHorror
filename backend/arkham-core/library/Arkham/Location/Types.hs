@@ -77,6 +77,7 @@ data instance Field Location :: Type -> Type where
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   LocationCardId :: Field Location CardId
   LocationBrazier :: Field Location (Maybe Brazier)
+  LocationBreaches :: Field Location Int
   LocationLabel :: Field Location Text
   -- virtual
   LocationTraits :: Field Location (Set Trait)
@@ -115,6 +116,7 @@ fieldLens = \case
   LocationInFrontOf -> inFrontOfL
   LocationCardId -> cardIdL
   LocationBrazier -> brazierL
+  LocationBreaches -> breachesL
   LocationLabel -> labelL
   LocationTraits -> virtual
   LocationKeywords -> virtual
@@ -169,6 +171,7 @@ instance FromJSON (SomeField Location) where
     "LocationPrintedSymbol" -> pure $ SomeField LocationPrintedSymbol
     "LocationVengeance" -> pure $ SomeField LocationVengeance
     "LocationBrazier" -> pure $ SomeField LocationBrazier
+    "LocationBreaches" -> pure $ SomeField LocationBreaches
     _ -> error "no such field"
 
 instance Entity LocationAttrs where
@@ -267,6 +270,7 @@ locationWith f def shroud' revealClues g =
             , locationWithoutClues = False
             , locationKeys = mempty
             , locationBrazier = Nothing
+            , locationBreaches = 0
             }
     }
 

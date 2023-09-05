@@ -459,6 +459,19 @@ allLocations =
     , SomeLocationCard unvisitedIsleHauntedSpring
     , SomeLocationCard unvisitedIsleDecayedWillow
     , SomeLocationCard theGeistTrap
+    , -- In the Clutches of Chaos
+      SomeLocationCard frenchHill_290
+    , SomeLocationCard frenchHill_291
+    , SomeLocationCard rivertown_292
+    , SomeLocationCard rivertown_293
+    , SomeLocationCard southside_294
+    , SomeLocationCard southside_295
+    , SomeLocationCard uptown_296
+    , SomeLocationCard uptown_297
+    , SomeLocationCard southChurch_298
+    , SomeLocationCard southChurch_299
+    , SomeLocationCard merchantDistrict_300
+    , SomeLocationCard merchantDistrict_301
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

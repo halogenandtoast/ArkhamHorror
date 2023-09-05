@@ -1550,6 +1550,8 @@ library
       Arkham.Location.Cards.FoulSwamp
       Arkham.Location.Cards.Foyer
       Arkham.Location.Cards.FrankElwoodsRoom
+      Arkham.Location.Cards.FrenchHill_290
+      Arkham.Location.Cards.FrenchHill_291
       Arkham.Location.Cards.FrozenSpring
       Arkham.Location.Cards.Gallery
       Arkham.Location.Cards.Garden
@@ -1625,6 +1627,8 @@ library
       Arkham.Location.Cards.MainPath
       Arkham.Location.Cards.MasterBedroom
       Arkham.Location.Cards.MasterBedroomSpectral
+      Arkham.Location.Cards.MerchantDistrict_300
+      Arkham.Location.Cards.MerchantDistrict_301
       Arkham.Location.Cards.MessHall
       Arkham.Location.Cards.MetropolitanCathedral
       Arkham.Location.Cards.MiskatonicQuad
@@ -1689,6 +1693,8 @@ library
       Arkham.Location.Cards.RitualSite
       Arkham.Location.Cards.RiverCanyon
       Arkham.Location.Cards.Rivertown
+      Arkham.Location.Cards.Rivertown_292
+      Arkham.Location.Cards.Rivertown_293
       Arkham.Location.Cards.RivertownAbandonedWarehouse
       Arkham.Location.Cards.RopeBridge
       Arkham.Location.Cards.RuinsOfCarcosaAMomentsRest
@@ -1716,6 +1722,10 @@ library
       Arkham.Location.Cards.SiteOfTheSacrifice
       Arkham.Location.Cards.SlaughteredWoods
       Arkham.Location.Cards.SleepingCar
+      Arkham.Location.Cards.SouthChurch_298
+      Arkham.Location.Cards.SouthChurch_299
+      Arkham.Location.Cards.Southside_294
+      Arkham.Location.Cards.Southside_295
       Arkham.Location.Cards.SouthsideHistoricalSociety
       Arkham.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Location.Cards.StepsOfYhagharl
@@ -1767,6 +1777,8 @@ library
       Arkham.Location.Cards.UnvisitedIsleMossCoveredSteps
       Arkham.Location.Cards.UnvisitedIsleStandingStones
       Arkham.Location.Cards.UprootedWoods
+      Arkham.Location.Cards.Uptown_296
+      Arkham.Location.Cards.Uptown_297
       Arkham.Location.Cards.Valusia
       Arkham.Location.Cards.VastPassages
       Arkham.Location.Cards.Vault
@@ -1837,6 +1849,7 @@ library
       Arkham.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Scenario.Scenarios.ForTheGreaterGood
       Arkham.Scenario.Scenarios.HeartOfTheElders
+      Arkham.Scenario.Scenarios.InTheClutchesOfChaos
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheGathering
@@ -1885,6 +1898,7 @@ library
       Arkham.Scenarios.ForTheGreaterGood.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Story
       Arkham.Scenarios.HeartOfTheElders.Story
+      Arkham.Scenarios.InTheClutchesOfChaos.Story
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.ShatteredAeons.Story
       Arkham.Scenarios.TheBoundaryBeyond.Story

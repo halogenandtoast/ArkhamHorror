@@ -32,7 +32,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
-import Control.Lens (non, set)
+import Control.Lens (non, over, set)
 import Data.Text qualified as T
 import Data.Typeable
 
@@ -136,6 +136,8 @@ updateLocation updates attrs = foldr go attrs updates
  where
   go :: Update Location -> LocationAttrs -> LocationAttrs
   go (Update fld val) = set (fieldLens fld) val
+  go (IncrementBy fld val) = over (fieldLens fld) (max 0 . (+ val))
+  go (DecrementBy fld val) = over (fieldLens fld) (max 0 . subtract val)
 
 instance ToJSON (Field Location typ) where
   toJSON = toJSON . show

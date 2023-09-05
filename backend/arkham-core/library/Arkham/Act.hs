@@ -211,6 +211,9 @@ allActs =
     , SomeActCard beyondTheMistV4
     , SomeActCard theBindingRite
     , SomeActCard theBrokenRite
+    , -- In the Clutches of Chaos
+      SomeActCard darkKnowledgeV1
+    , SomeActCard darkKnowledgeV2
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

@@ -291,6 +291,8 @@ allLocationCards =
       , hallway
       , hangmansBrook
       , hangmansBrookSpectral
+      , hangmansHillShroudedInMystery
+      , hangmansHillWhereItAllEnds
       , hauntedFields
       , hauntedFieldsSpectral
       , hereticsGravesSpectral_171
@@ -436,6 +438,8 @@ allLocationCards =
       , shiveringPools
       , shoresOfHali
       , shoresOfRlyeh
+      , silverTwilightLodgeShroudedInMystery
+      , silverTwilightLodgeWhereItAllEnds
       , siteOfTheSacrifice
       , slaughteredWoods
       , sleepingCar
@@ -4721,6 +4725,48 @@ merchantDistrict_301 =
     [Arkham]
     Triangle
     [Circle, Square, Plus]
+    InTheClutchesOfChaos
+
+hangmansHillWhereItAllEnds :: CardDef
+hangmansHillWhereItAllEnds =
+  location
+    "05302"
+    ("Hangman's Hill" <:> "Where It All Ends")
+    [Arkham]
+    Moon
+    [Plus]
+    InTheClutchesOfChaos
+
+silverTwilightLodgeShroudedInMystery :: CardDef
+silverTwilightLodgeShroudedInMystery =
+  victory 1 $
+    location
+      "05303"
+      ("Silver Twilight Lodge" <:> "Shrouded in Mystery")
+      [Arkham]
+      Star
+      [T]
+      InTheClutchesOfChaos
+
+hangmansHillShroudedInMystery :: CardDef
+hangmansHillShroudedInMystery =
+  victory 1 $
+    location
+      "05304"
+      ("Hangman's Hill" <:> "Shrouded in Mystery")
+      [Arkham]
+      Moon
+      [Plus]
+      InTheClutchesOfChaos
+
+silverTwilightLodgeWhereItAllEnds :: CardDef
+silverTwilightLodgeWhereItAllEnds =
+  location
+    "05305"
+    ("Silver Twilight Lodge" <:> "Where It All Ends")
+    [Arkham]
+    Star
+    [T]
     InTheClutchesOfChaos
 
 studyAberrantGateway :: CardDef

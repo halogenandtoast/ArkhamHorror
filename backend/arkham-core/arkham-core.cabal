@@ -44,6 +44,8 @@ library
       Arkham.Act.Cards.CloseTheRift
       Arkham.Act.Cards.CrossingTheThreshold
       Arkham.Act.Cards.CurtainCall
+      Arkham.Act.Cards.DarkKnowledgeV1
+      Arkham.Act.Cards.DarkKnowledgeV2
       Arkham.Act.Cards.DescentIntoDark
       Arkham.Act.Cards.DiscoveringTheTruth
       Arkham.Act.Cards.DisruptingTheRitual
@@ -1574,6 +1576,8 @@ library
       Arkham.Location.Cards.Hallway
       Arkham.Location.Cards.HangmansBrook
       Arkham.Location.Cards.HangmansBrookSpectral
+      Arkham.Location.Cards.HangmansHillShroudedInMystery
+      Arkham.Location.Cards.HangmansHillWhereItAllEnds
       Arkham.Location.Cards.HauntedFields
       Arkham.Location.Cards.HauntedFieldsSpectral
       Arkham.Location.Cards.HereticsGraves_171
@@ -1719,6 +1723,8 @@ library
       Arkham.Location.Cards.ShiveringPools
       Arkham.Location.Cards.ShoresOfHali
       Arkham.Location.Cards.ShoresOfRlyeh
+      Arkham.Location.Cards.SilverTwilightLodgeShroudedInMystery
+      Arkham.Location.Cards.SilverTwilightLodgeWhereItAllEnds
       Arkham.Location.Cards.SiteOfTheSacrifice
       Arkham.Location.Cards.SlaughteredWoods
       Arkham.Location.Cards.SleepingCar
@@ -1898,6 +1904,7 @@ library
       Arkham.Scenarios.ForTheGreaterGood.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Story
       Arkham.Scenarios.HeartOfTheElders.Story
+      Arkham.Scenarios.InTheClutchesOfChaos.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Story
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.ShatteredAeons.Story

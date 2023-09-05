@@ -98,6 +98,8 @@ data EncounterSet
   | ForTheGreaterGood
   | UnionAndDisillusion
   | InTheClutchesOfChaos
+  | MusicOfTheDamned
+  | SecretsOfTheUniverse
   | BeforeTheBlackThrone
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks

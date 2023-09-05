@@ -90,6 +90,8 @@ allActCards =
       , closeTheRift
       , crossingTheThreshold
       , curtainCall
+      , darkKnowledgeV1
+      , darkKnowledgeV2
       , descentIntoDark
       , discoveringTheTruth
       , disruptingTheRitual
@@ -637,6 +639,12 @@ theBindingRite = act "05247" "The Binding Rite" 4 UnionAndDisillusion
 
 theBrokenRite :: CardDef
 theBrokenRite = act "05248" "The Broken Rite" 4 UnionAndDisillusion
+
+darkKnowledgeV1 :: CardDef
+darkKnowledgeV1 = act "05286" "Dark Knowledge (v. I)" 1 InTheClutchesOfChaos
+
+darkKnowledgeV2 :: CardDef
+darkKnowledgeV2 = act "05287" "Dark Knowledge (v. II)" 1 InTheClutchesOfChaos
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

@@ -5,11 +5,16 @@ module Arkham.Scenario.Scenarios.InTheClutchesOfChaos (
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.CampaignLogKey
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Field
+import Arkham.Helpers
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -19,7 +24,9 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Scenarios.InTheClutchesOfChaos.Story
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype InTheClutchesOfChaos = InTheClutchesOfChaos ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -32,7 +39,10 @@ inTheClutchesOfChaos difficulty =
     "05284"
     "In the Clutches of Chaos"
     difficulty
-    []
+    [ ".            .            .      merchantDistrict merchantDistrict rivertown   rivertown  .          .                   ."
+    , "hangmansHill hangmansHill uptown uptown           southside        southside   frenchHill frenchHill silverTwilightLodge silverTwilightLodge"
+    , ".            .            .      .                southChurch      southChurch .          .          .                   ."
+    ]
 
 instance HasChaosTokenValue InTheClutchesOfChaos where
   getChaosTokenValue iid tokenFace (InTheClutchesOfChaos attrs) = case tokenFace of
@@ -57,12 +67,49 @@ instance RunMessage InTheClutchesOfChaos where
           <> [story investigators intro4]
       pure s
     Setup -> do
-      encounterDeck <-
-        buildEncounterDeck
+      anetteMasonIsPossessedByEvil <- getHasRecord AnetteMasonIsPossessedByEvil
+      carlSanfordPossessesTheSecretsOfTheUniverse <-
+        getHasRecord CarlSanfordPossessesTheSecretsOfTheUniverse
+      gatheredCards <-
+        buildEncounterDeckExcluding [Enemies.piperOfAzathoth] $
           [ EncounterSet.InTheClutchesOfChaos
           , EncounterSet.AgentsOfAzathoth
           , EncounterSet.Nightgaunts
           ]
+            <> ( if anetteMasonIsPossessedByEvil
+                  then
+                    [ EncounterSet.MusicOfTheDamned
+                    , EncounterSet.AnettesCoven
+                    , EncounterSet.CityOfSins
+                    , EncounterSet.Witchcraft
+                    ]
+                  else []
+               )
+            <> ( if carlSanfordPossessesTheSecretsOfTheUniverse
+                  then
+                    [ EncounterSet.SecretsOfTheUniverse
+                    , EncounterSet.SilverTwilightLodge
+                    , EncounterSet.StrikingFear
+                    ]
+                  else []
+               )
+
+      midnightMasks <-
+        traverse
+          genEncounterCard
+          [ Treacheries.huntingShadow
+          , Treacheries.huntingShadow
+          , Treacheries.huntingShadow
+          , Treacheries.falseLead
+          , Treacheries.falseLead
+          ]
+
+      encounterDeck <-
+        Deck
+          <$> shuffleM
+            ( unDeck gatheredCards <> (if carlSanfordPossessesTheSecretsOfTheUniverse then midnightMasks else [])
+            )
+
       frenchHill <- sample $ Locations.frenchHill_290 :| [Locations.frenchHill_291]
       rivertown <- sample $ Locations.rivertown_292 :| [Locations.rivertown_293]
       southside <- sample $ Locations.southside_294 :| [Locations.southside_295]
@@ -73,13 +120,44 @@ instance RunMessage InTheClutchesOfChaos where
       (southsideId, placeSouthside) <- placeLocationCard southside
       placeRest <- placeLocationCards_ [frenchHill, rivertown, uptown, southChurch, merchantDistrict]
 
+      placeHangmansHill <-
+        placeLocationCard_ $
+          if anetteMasonIsPossessedByEvil
+            then Locations.hangmansHillWhereItAllEnds
+            else Locations.hangmansHillShroudedInMystery
+
+      placeSilverTwilightLodge <-
+        placeLocationCard_ $
+          if anetteMasonIsPossessedByEvil
+            then Locations.silverTwilightLodgeShroudedInMystery
+            else Locations.silverTwilightLodgeWhereItAllEnds
+
       pushAll $
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
         , placeSouthside
         , MoveAllTo (toSource attrs) southsideId
+        , placeHangmansHill
+        , placeSilverTwilightLodge
         ]
           <> placeRest
+          <> [SetupStep (toTarget attrs) 1]
+
+      let
+        act1 = if anetteMasonIsPossessedByEvil then Acts.darkKnowledgeV1 else Acts.darkKnowledgeV2
+      acts <- genCards [act1]
+
+      InTheClutchesOfChaos <$> runMessage msg (attrs & (actStackL . at 1 ?~ acts))
+    SetupStep (isTarget attrs -> True) 1 -> do
+      playerCount <- getPlayerCount
+      when (playerCount < 4) $
+        replicateM_ playerCount $ do
+          lids <- sampleLocations 2
+          pushAll [UpdateLocation lid (LocationBreaches `IncrementBy` 1) | lid <- lids]
+      when (playerCount == 4) $
+        replicateM_ 3 $ do
+          lids <- sampleLocations 3
+          pushAll [UpdateLocation lid (LocationBreaches `IncrementBy` 1) | lid <- lids]
       pure s
     _ -> InTheClutchesOfChaos <$> runMessage msg attrs

@@ -5,7 +5,7 @@ import {toCapitalizedWords} from '@/arkham/helpers'
 import {updateStandaloneSettings} from '@/arkham/api'
 import { Game } from '../types/Game'
 import { Scenario } from '../types/Scenario'
-import { StandaloneSetting, Recordable } from '../types/StandaloneSetting'
+import { StandaloneSetting, RecordedContent, SettingCondition } from '../types/StandaloneSetting'
 
 const props = defineProps<{
   game: Game
@@ -13,7 +13,6 @@ const props = defineProps<{
   investigatorId: string
 }>()
 const standaloneSettings = ref<StandaloneSetting[]>([])
-const showAdvanced = ref(false)
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
@@ -27,16 +26,43 @@ watch(computedStandaloneSettings, (newSettings) => {
   standaloneSettings.value = newSettings
 }, { immediate: true })
 
-const submit = () => updateStandaloneSettings(props.game.id, standaloneSettings.value)
+const submit = async () => {
+  // When we submit we want to remove any settings which won't be active
+  // because of how we set settings for standalone scenarios, the selected
+  // element is in the reactive data. So we create a deep copy and then remove
+  // anything that is inactive
+  let settings = JSON.parse(JSON.stringify(standaloneSettings.value))
 
-const inactive = (cond) => {
+  settings = settings.filter((setting: StandaloneSetting) => {
+    const {ifRecorded} = setting
+    if (ifRecorded) {
+      return !ifRecorded.some((cond) => inactive(cond))
+    }
+
+    return true
+  })
+
+  updateStandaloneSettings(props.game.id, settings)
+}
+
+const inactive = (cond: SettingCondition): boolean => {
   if (cond.type === 'inSet') {
     const {key, content} = cond
     const setting = standaloneSettings.value.find((s) => s.key === key)
     if (!setting) return false
 
     const check = setting.key !== 'ToggleCrossedOut'
-    return setting.content.some((c) => c.content === check && c.key == content)
+
+    if (setting.type === "ToggleCrossedOut") {
+      return setting.content.some((c) => c.content === check && c.key == content)
+    }
+
+    if (setting.type === "ToggleRecords") {
+      return setting.key == content
+    }
+
+
+    throw new Error(`Unhandled setting type ${setting.type}`)
   }
 
   if (cond.type === 'not') {
@@ -46,7 +72,7 @@ const inactive = (cond) => {
   throw new Error(`Unknown condition type ${cond}`)
 }
 
-const optionActive = (setting: StandaloneSetting, entry: Recordable) => {
+const optionActive = (entry: RecordedContent) => {
   const {ifRecorded} = entry
   if (ifRecorded) {
     return !ifRecorded.some((cond) => inactive(cond))
@@ -133,7 +159,7 @@ const activeSettings = computed(() => {
               v-model="option.content"
               :id="`${setting.key}${option.key}`"
               :checked="option.content"
-              v-if="optionActive(setting, option)"
+              v-if="optionActive(option)"
             />
             <label :for="`${setting.key}${option.key}`">{{option.label}}</label>
           </template>

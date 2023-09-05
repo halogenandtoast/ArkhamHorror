@@ -29,6 +29,7 @@ import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
@@ -256,5 +257,54 @@ instance RunMessage UnionAndDisillusion where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       mAction <- getSkillTestAction
       when (mAction == Just Circle) $ runHauntedAbilities iid
+      pure s
+    ScenarioResolution n -> do
+      investigators <- allInvestigatorIds
+      lead <- getLead
+      case n of
+        NoResolution -> pushAll [story investigators noResolution, R5]
+        Resolution 1 -> do
+          inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
+          deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
+
+          push $
+            storyWithChooseOne lead investigators resolution1 $
+              [Label "Yes" [R2] | inductedIntoTheInnerCircle && not deceivingTheLodge] <> [Label "No" [R3]]
+        Resolution 2 ->
+          pushAll
+            [story investigators resolution2, Record TheTrueWorkOfTheSilverTwilightLodgeHasBegun, GameOver]
+        Resolution 3 ->
+          pushAll [story investigators resolution3, Record CarlSanfordPossessesTheSecretsOfTheUniverse, R8]
+        Resolution 4 ->
+          pushAll [story investigators resolution4, Record AnetteMasonIsPossessedByEvil, R8]
+        Resolution 5 -> do
+          -- Right column is easier to check so we use that one
+          spellBroken <- getHasRecord TheWitches'SpellWasCast
+          josefDisappearedIntoTheMist <- getHasRecord JosefDisappearedIntoTheMist
+          hereticsUnleashed <- getRecordCount HereticsWereUnleashedUntoArkham
+          let total = count id [spellBroken, josefDisappearedIntoTheMist, hereticsUnleashed >= 2]
+          push $ if total >= 2 then R7 else R6
+        Resolution 6 ->
+          pushAll [story investigators resolution6, Record CarlSanfordPossessesTheSecretsOfTheUniverse, R8]
+        Resolution 7 -> pushAll [story investigators resolution7, Record AnetteMasonIsPossessedByEvil, R8]
+        Resolution 8 -> do
+          gainXp <- toGainXp (toSource attrs) getXp
+          gavriellaIsAlive <- getHasRecord GavriellaIsAlive
+          jeromeIsAlive <- getHasRecord JeromeIsAlive
+          pennyIsAlive <- getHasRecord PennyIsAlive
+          valentinoIsAlive <- getHasRecord ValentinoIsAlive
+          pushAll $
+            [story investigators resolution8, RemoveCampaignCard Assets.puzzleBox]
+              <> [addCampaignCardToDeckChoice lead investigators Assets.gavriellaMizrah | gavriellaIsAlive]
+              <> [Record GavriellaIsDead | not gavriellaIsAlive]
+              <> [addCampaignCardToDeckChoice lead investigators Assets.jeromeDavids | jeromeIsAlive]
+              <> [Record JeromeIsDead | not jeromeIsAlive]
+              <> [addCampaignCardToDeckChoice lead investigators Assets.pennyWhite | pennyIsAlive]
+              <> [Record PennyIsDead | not pennyIsAlive]
+              <> [addCampaignCardToDeckChoice lead investigators Assets.valentinoRivas | valentinoIsAlive]
+              <> [Record ValentinoIsDead | not valentinoIsAlive]
+              <> gainXp
+              <> [EndOfGame Nothing]
+        _ -> error "Invalid resolution"
       pure s
     _ -> UnionAndDisillusion <$> runMessage msg attrs

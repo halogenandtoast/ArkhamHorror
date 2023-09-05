@@ -2399,6 +2399,7 @@ instance Projection Location where
       LocationDoom -> pure $ locationDoom attrs
       LocationShroud -> pure locationShroud
       LocationBrazier -> pure locationBrazier
+      LocationBreaches -> pure locationBreaches
       LocationTraits -> do
         modifiers <- withDepthGuard 3 [] $ getModifiers (toTarget attrs)
         let

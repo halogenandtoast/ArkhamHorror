@@ -44,6 +44,7 @@ data LocationAttrs = LocationAttrs
   , locationInFrontOf :: Maybe InvestigatorId
   , locationKeys :: Set ArkhamKey
   , locationBrazier :: Maybe Brazier
+  , locationBreaches :: Int
   , -- We need to track if a location has no clues because timings will interact
     -- with the location being revealed and claim there are no clues before they
     -- are placed. TODO: this could be a hasBeenRevealed bool

@@ -5,23 +5,46 @@ import { imgsrc } from '@/arkham/helpers'
 const card = ref<string | null>(null);
 const cardOverlay = ref<HTMLElement | null>(null);
 
+const getRotated = (el: HTMLElement) => {
+  var st = window.getComputedStyle(el, null);
+  var tr = st.getPropertyValue("-webkit-transform") ||
+           st.getPropertyValue("-moz-transform") ||
+           st.getPropertyValue("-ms-transform") ||
+           st.getPropertyValue("-o-transform") ||
+           st.getPropertyValue("transform") ||
+           "none"
+
+  if (tr !== "none") {
+    const [a, b] = tr.split('(')[1].split(')')[0].split(',');
+
+    var angle = Math.round(Math.atan2(parseFloat(b), parseFloat(a)) * (180/Math.PI));
+
+    return angle == 90
+  }
+
+  return false
+}
+
 const getPosition = (el: HTMLElement) => {
   const rect = el.getBoundingClientRect()
 
   // we do not know the height of the overlay, BUT we can calculate it from the width and height of the target.
-  // since we know the overlay's width is 300px we get the ration and multiply the height
+  // since we know the overlay's width is 300px we get the ratio and multiply the height
   // afterwards we add this new height to it's top to figure out if we are off the screen. If we are we use the
   // bottom value instead
 
-  const ratio = rect.width / rect.height
-  const height = 300 / ratio
 
-  const top = rect.top + window.scrollY - 40
+  const ratio = rect.width > rect.height ? rect.height / rect.width : rect.width / rect.height
+
+  const rotated = getRotated(el)
+
+  const height = 300 / ratio
+  const top = rect.top + window.scrollY - 40;
 
   const bottom = top + height
 
   const newTop = bottom > window.innerHeight ?
-    (top + rect.height) - height - 10 :
+    (rotated ? rect.bottom - height + rect.height : rect.bottom - height) + window.scrollY - 40 :
     top
 
   return { top: newTop, left: rect.left + window.scrollX + rect.width + 10 }

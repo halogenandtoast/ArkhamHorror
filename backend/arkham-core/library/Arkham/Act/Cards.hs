@@ -79,6 +79,7 @@ allActCards =
       , atTheStationTrainTracks
       , awakening
       , beginnersLuck
+      , beyondTheGrave
       , beyondTheMistV1
       , beyondTheMistV2
       , beyondTheMistV3
@@ -134,6 +135,7 @@ allActCards =
       , mistakesOfThePast
       , momentOfDoom
       , mysteriousGateway
+      , newWorldOrder
       , nightAtTheMuseum
       , noAsylum
       , obtainingTheDevice
@@ -643,8 +645,14 @@ theBrokenRite = act "05248" "The Broken Rite" 4 UnionAndDisillusion
 darkKnowledgeV1 :: CardDef
 darkKnowledgeV1 = act "05286" "Dark Knowledge (v. I)" 1 InTheClutchesOfChaos
 
+beyondTheGrave :: CardDef
+beyondTheGrave = act "05287" "Beyond the Grave" 2 InTheClutchesOfChaos
+
 darkKnowledgeV2 :: CardDef
-darkKnowledgeV2 = act "05287" "Dark Knowledge (v. II)" 1 InTheClutchesOfChaos
+darkKnowledgeV2 = act "05288" "Dark Knowledge (v. II)" 1 InTheClutchesOfChaos
+
+newWorldOrder :: CardDef
+newWorldOrder = act "05289" "New World Order" 2 InTheClutchesOfChaos
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

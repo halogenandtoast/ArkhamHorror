@@ -774,6 +774,8 @@ data Message
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId
   | PutLocationInCenter LocationId
+  | PlaceBreach LocationId
+  | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]
   | -- Commit

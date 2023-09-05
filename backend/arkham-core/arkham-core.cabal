@@ -33,6 +33,7 @@ library
       Arkham.Act.Cards.AtTheStationTrainTracks
       Arkham.Act.Cards.Awakening
       Arkham.Act.Cards.BeginnersLuck
+      Arkham.Act.Cards.BeyondTheGrave
       Arkham.Act.Cards.BeyondTheMistV1
       Arkham.Act.Cards.BeyondTheMistV2
       Arkham.Act.Cards.BeyondTheMistV3
@@ -88,6 +89,7 @@ library
       Arkham.Act.Cards.MistakesOfThePast
       Arkham.Act.Cards.MomentOfDoom
       Arkham.Act.Cards.MysteriousGateway
+      Arkham.Act.Cards.NewWorldOrder
       Arkham.Act.Cards.NightAtTheMuseum
       Arkham.Act.Cards.NoAsylum
       Arkham.Act.Cards.ObtainingTheDevice
@@ -243,6 +245,7 @@ library
       Arkham.Agenda.Cards.TheBarrierIsThin
       Arkham.Agenda.Cards.TheBeastUnleashed
       Arkham.Agenda.Cards.TheBoundaryBroken
+      Arkham.Agenda.Cards.TheChariotVII
       Arkham.Agenda.Cards.TheCityFloods
       Arkham.Agenda.Cards.TheCloverClub
       Arkham.Agenda.Cards.TheCurseSpreads

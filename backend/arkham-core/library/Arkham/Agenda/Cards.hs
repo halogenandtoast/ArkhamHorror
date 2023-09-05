@@ -131,6 +131,7 @@ allAgendaCards =
       , theBarrierIsThin
       , theBeastUnleashed
       , theBoundaryBroken
+      , theChariotVII
       , theCityFloods
       , theCloverClub
       , theCurseSpreads
@@ -487,6 +488,9 @@ theLoversVI = agenda "05239" "THE LOVERS · VI" 1 UnionAndDisillusion
 
 crossroadsOfFate :: CardDef
 crossroadsOfFate = agenda "05240" "Crossroads of Fate" 2 UnionAndDisillusion
+
+theChariotVII :: CardDef
+theChariotVII = agenda "05285" "THE CHARIOT · VII" 1 InTheClutchesOfChaos
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

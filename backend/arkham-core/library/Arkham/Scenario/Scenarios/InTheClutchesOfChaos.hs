@@ -6,6 +6,7 @@ module Arkham.Scenario.Scenarios.InTheClutchesOfChaos (
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
@@ -144,11 +145,16 @@ instance RunMessage InTheClutchesOfChaos where
           <> placeRest
           <> [SetupStep (toTarget attrs) 1]
 
-      let
-        act1 = if anetteMasonIsPossessedByEvil then Acts.darkKnowledgeV1 else Acts.darkKnowledgeV2
-      acts <- genCards [act1]
+      agendas <- genCards [Agendas.theChariotVII]
 
-      InTheClutchesOfChaos <$> runMessage msg (attrs & (actStackL . at 1 ?~ acts))
+      acts <-
+        genCards $
+          if anetteMasonIsPossessedByEvil
+            then [Acts.darkKnowledgeV1, Acts.beyondTheGrave]
+            else [Acts.darkKnowledgeV2, Acts.newWorldOrder]
+
+      InTheClutchesOfChaos
+        <$> runMessage msg (attrs & (actStackL . at 1 ?~ acts) & (agendaStackL . at 1 ?~ agendas))
     SetupStep (isTarget attrs -> True) 1 -> do
       playerCount <- getPlayerCount
       when (playerCount < 4) $

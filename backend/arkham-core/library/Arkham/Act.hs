@@ -213,7 +213,9 @@ allActs =
     , SomeActCard theBrokenRite
     , -- In the Clutches of Chaos
       SomeActCard darkKnowledgeV1
+    , SomeActCard beyondTheGrave
     , SomeActCard darkKnowledgeV2
+    , SomeActCard newWorldOrder
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

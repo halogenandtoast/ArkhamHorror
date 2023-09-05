@@ -2218,6 +2218,14 @@ windowMatches iid source window' = \case
               , sourceMatches attackSource sourceMatcher
               ]
       _ -> pure False
+  Matcher.EnemyAttackedSuccessfully timingMatcher whoMatcher enemyMatcher ->
+    case window' of
+      Window t (Window.SuccessfulAttackEnemy who enemyId _) | t == timingMatcher -> do
+        andM
+          [ enemyMatches enemyId enemyMatcher
+          , matchWho iid who whoMatcher
+          ]
+      _ -> pure False
   Matcher.EnemyEvaded timingMatcher whoMatcher enemyMatcher -> case window' of
     Window t (Window.EnemyEvaded who enemyId)
       | timingMatcher == t ->

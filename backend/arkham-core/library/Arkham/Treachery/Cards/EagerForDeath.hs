@@ -24,9 +24,11 @@ instance RunMessage EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       difficulty <- fieldMap InvestigatorDamage (+ 2) iid
-      t <$ push (RevelationSkillTest iid source SkillWillpower difficulty)
+      push $ RevelationSkillTest iid source SkillWillpower difficulty
+      pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source ->
-          t
-            <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
+      | isSource attrs source -> do
+          push (InvestigatorAssignDamage iid source DamageAny 0 2)
+
+          pure t
     _ -> EagerForDeath <$> runMessage msg attrs

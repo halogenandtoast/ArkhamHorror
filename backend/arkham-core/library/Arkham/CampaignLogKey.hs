@@ -185,6 +185,9 @@ data CampaignLogKey
   | TheInvestigatorsSidedWithTheLodge
   | TheInvestigatorsSidedWithTheCoven
   | GavriellaIsAlive
+  | JeromeIsAlive
+  | PennyIsAlive
+  | ValentinoIsAlive
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

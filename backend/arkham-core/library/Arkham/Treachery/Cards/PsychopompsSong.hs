@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Message
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -33,9 +34,12 @@ instance HasAbilities PsychopompsSong where
 
 instance RunMessage PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
+    Revelation iid source | isSource attrs source -> do
+      investigators <- getInvestigators
+      push $
+        chooseOrRunOne iid $
+          [targetLabel iid' [AttachTreachery treacheryId $ InvestigatorTarget iid'] | iid' <- investigators]
+      pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       dealAdditionalDamage iid 2 [Discard (toAbilitySource attrs 1) (toTarget attrs)]
       pure t

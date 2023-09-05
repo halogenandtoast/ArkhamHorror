@@ -2,11 +2,14 @@ module Arkham.Effect.Window (
   module Arkham.Effect.Window,
 ) where
 
-import Arkham.Card.Id
 import Arkham.Prelude
+
+import Arkham.Card.Id
+import Arkham.Phase
 
 data EffectWindow
   = EffectPhaseWindow
+  | EffectPhaseWindowFor Phase
   | EffectCostWindow
   | EffectSkillTestWindow
   | EffectRoundWindow

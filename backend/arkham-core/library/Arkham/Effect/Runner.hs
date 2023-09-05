@@ -14,6 +14,7 @@ import Arkham.Target as X
 import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 
 instance RunMessage EffectAttrs where
@@ -22,6 +23,11 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndPhase | isEndOfWindow a EffectPhaseWindow -> do
       a <$ push (DisableEffect effectId)
+    EndPhase -> do
+      phase <- getPhase
+      when (isEndOfWindow a (EffectPhaseWindowFor phase)) $
+        push (DisableEffect effectId)
+      pure a
     EndTurn _ | isEndOfWindow a EffectTurnWindow -> do
       a <$ push (DisableEffect effectId)
     EndRound | isEndOfWindow a EffectRoundWindow -> do

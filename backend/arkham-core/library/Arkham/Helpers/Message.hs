@@ -79,6 +79,32 @@ dealAdditionalDamage iid amount additionalMessages = do
       replaceMessage damageMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No damage occured"
 
+dealAdditionalHorror :: InvestigatorId -> Int -> [Message] -> GameT ()
+dealAdditionalHorror iid amount additionalMessages = do
+  mMsg <- findFromQueue $ \case
+    InvestigatorDamage iid' _ _ n | iid' == iid -> n > 0
+    InvestigatorDoAssignDamage iid' _ _ _ _ n [] [] | iid' == iid -> n > 0
+    _ -> False
+  case mMsg of
+    Just horrorMsg -> do
+      let
+        newMsg = case horrorMsg of
+          InvestigatorDamage _ source' damage n ->
+            InvestigatorDamage iid source' damage (n + amount)
+          InvestigatorDoAssignDamage _ source' strategy matcher damage n [] [] ->
+            InvestigatorDoAssignDamage
+              iid
+              source'
+              strategy
+              matcher
+              damage
+              (n + amount)
+              []
+              []
+          _ -> error "impossible"
+      replaceMessage horrorMsg $ newMsg : additionalMessages
+    Nothing -> throwIO $ InvalidState "No horror occured"
+
 createEnemy
   :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
   => card

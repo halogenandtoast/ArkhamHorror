@@ -554,58 +554,57 @@ instance RunMessage EnemyAttrs where
           enemyFight'
       pure a
     PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n
-      | isActionTarget a target ->
-          do
-            whenWindow <-
-              checkWindows
-                [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
-            afterSuccessfulWindow <-
-              checkWindows
-                [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
-            afterWindow <-
-              checkWindows
-                [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
-            a
-              <$ pushAll
-                [ whenWindow
-                , Successful
-                    (Action.Fight, toProxyTarget target)
-                    iid
-                    source
-                    (toActionTarget target)
-                    n
-                , afterSuccessfulWindow
-                , afterWindow
-                ]
+      | isActionTarget a target -> do
+          whenWindow <-
+            checkWindows
+              [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
+          afterSuccessfulWindow <-
+            checkWindows
+              [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
+          afterWindow <-
+            checkWindows
+              [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
+          pushAll
+            [ whenWindow
+            , Successful
+                (Action.Fight, toProxyTarget target)
+                iid
+                source
+                (toActionTarget target)
+                n
+            , afterSuccessfulWindow
+            , afterWindow
+            ]
+
+          pure a
     Successful (Action.Fight, _) iid source target _ | isTarget a target -> do
       a <$ push (InvestigatorDamageEnemy iid enemyId source)
     FailedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n
-      | isTarget a target ->
-          do
-            keywords <- getModifiedKeywords a
-            modifiers' <- getModifiers iid
-            pushAll $
-              [ FailedAttackEnemy iid enemyId
-              , CheckWindow
-                  [iid]
-                  [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
-              , CheckWindow
-                  [iid]
-                  [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
-              ]
-                <> [ EnemyAttack $
-                    (enemyAttack enemyId a iid)
-                      { attackDamageStrategy = enemyDamageStrategy
-                      }
-                   | Keyword.Retaliate
-                      `elem` keywords
-                   , IgnoreRetaliate
-                      `notElem` modifiers'
-                   , not enemyExhausted
-                      || CanRetaliateWhileExhausted
-                      `elem` modifiers'
-                   ]
-            pure a
+      | isTarget a target -> do
+          keywords <- getModifiedKeywords a
+          modifiers' <- getModifiers iid
+          pushAll $
+            [ FailedAttackEnemy iid enemyId
+            , CheckWindow
+                [iid]
+                [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
+            , CheckWindow
+                [iid]
+                [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
+            ]
+              <> [ EnemyAttack $
+                  (enemyAttack enemyId a iid)
+                    { attackDamageStrategy = enemyDamageStrategy
+                    }
+                 | Keyword.Retaliate
+                    `elem` keywords
+                 , IgnoreRetaliate
+                    `notElem` modifiers'
+                 , not enemyExhausted
+                    || CanRetaliateWhileExhausted
+                    `elem` modifiers'
+                 ]
+          pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
       case miid of
         Just iid -> do

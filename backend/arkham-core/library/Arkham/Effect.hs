@@ -103,8 +103,11 @@ import Arkham.Skill.Skills (
  )
 import Arkham.Story.Stories (
   gavriellasFateEffect,
+  jeromesFateEffect,
   josefsPlanEffect,
+  pennysFateEffect,
   unfinishedBusiness_JEffect,
+  valentinosFateEffect,
  )
 import Arkham.Treachery.Treacheries (mysteriesOfTheLodgeEffect)
 
@@ -303,6 +306,9 @@ allEffects =
     , ("05251", SomeEffect unvisitedIsleStandingStonesEffect)
     , ("05255", SomeEffect unvisitedIsleMossCoveredStepsEffect)
     , ("05262", SomeEffect gavriellasFateEffect)
+    , ("05263", SomeEffect jeromesFateEffect)
+    , ("05264", SomeEffect pennysFateEffect)
+    , ("05265", SomeEffect valentinosFateEffect)
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06279", SomeEffect oldBookOfLore3Effect)

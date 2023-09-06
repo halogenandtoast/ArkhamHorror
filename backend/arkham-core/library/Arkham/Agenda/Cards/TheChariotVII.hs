@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (windowBatchId, windowType), getBatchId)
+import Arkham.Window (Window (windowType), getBatchId)
 import Arkham.Window qualified as Window
 
 newtype TheChariotVII = TheChariotVII AgendaAttrs
@@ -54,6 +54,6 @@ instance RunMessage TheChariotVII where
         pure a
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
         anetteMasonIsPossessedByEvil <- getHasRecord AnetteMasonIsPossessedByEvil
-        pushAll [advanceAgendaDeck attrs, if anetteMasonIsPossessedByEvil then R3 else R4]
+        push $ if anetteMasonIsPossessedByEvil then R3 else R4
         pure a
       _ -> TheChariotVII <$> runMessage msg attrs

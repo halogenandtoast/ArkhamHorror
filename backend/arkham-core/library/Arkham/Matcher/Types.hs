@@ -540,6 +540,8 @@ data WindowMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher
   | WouldPlaceDoomCounter Timing SourceMatcher TargetMatcher
   | PlacedDoomCounter Timing SourceMatcher TargetMatcher
+  | WouldPlaceBreach Timing TargetMatcher
+  | PlacedBreach Timing TargetMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher

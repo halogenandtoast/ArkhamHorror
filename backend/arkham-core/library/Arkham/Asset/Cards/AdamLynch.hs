@@ -24,11 +24,10 @@ adamLynch =
 
 instance HasAbilities AdamLynch where
   getAbilities (AdamLynch x) =
-    [ forcedAbility
-        x
-        1
-        (AssetLeavesPlay Timing.When $ AssetWithId $ toId x)
-        NoRestriction
+    [ forcedAbility x 1 $
+        AssetLeavesPlay Timing.When $
+          AssetWithId $
+            toId x
     ]
 
 instance HasModifiersFor AdamLynch where

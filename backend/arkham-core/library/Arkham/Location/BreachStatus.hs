@@ -2,6 +2,12 @@ module Arkham.Location.BreachStatus where
 
 import Arkham.Prelude
 
+-- The Logic for these are a little goofy because we want to make sure not to
+-- keep adding breaches from other incursion if an incursion has happened
+-- during the phase. We represent this with two constructors and reset during
+-- EndPhase. Logic for this is split amongst the Location runner and The
+-- Chariot VII
+
 data BreachStatus
   = Breaches Int
   | Incursion Int

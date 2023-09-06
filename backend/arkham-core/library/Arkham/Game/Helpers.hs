@@ -1839,6 +1839,16 @@ windowMatches iid source window' = \case
       | t == whenMatcher ->
           andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
+  Matcher.WouldPlaceBreach whenMatcher targetMatcher -> case window' of
+    Window t (Window.WouldPlaceBreach ' target _) _
+      | t == whenMatcher ->
+          andM [targetMatches target targetMatcher]
+    _ -> pure False
+  Matcher.PlacedBreach whenMatcher targetMatcher -> case window' of
+    Window t (Window.PlacedBreach target _) _
+      | t == whenMatcher ->
+          andM [targetMatches target targetMatcher]
+    _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
       Window t (Window.PlacedHorror source' (InvestigatorTarget iid') n) _

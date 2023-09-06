@@ -2,6 +2,7 @@ module Arkham.Helpers.Window where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
@@ -52,6 +53,13 @@ doFrame :: HasGame m => Message -> WindowType -> m [Message]
 doFrame msg window = do
   (before, atIf, after) <- frame window
   pure [before, atIf, Do msg, after]
+
+wouldDo
+  :: (MonadRandom m, HasGame m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
+wouldDo msg wouldWindow window = do
+  (batchId, wouldWindowsMsgs) <- wouldWindows wouldWindow
+  framed <- doFrame msg window
+  push $ Would batchId $ wouldWindowsMsgs <> framed
 
 splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do

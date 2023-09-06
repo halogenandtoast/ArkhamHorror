@@ -405,6 +405,9 @@ instance RunMessage LocationAttrs where
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
     PlaceBreach (isTarget a -> True) | locationBreaches /= Just Breach.Incursion -> do
+      wouldDo msg (Window.WouldPlaceBreach (toTarget a)) (Window.PlacedBreach (toTarget a))
+      pure a
+    Do (PlaceBreach (isTarget a -> True)) | locationBreaches /= Just Breach.Incursion -> do
       let breachCount = maybe 0 Breach.countBreaches locationBreaches
       if breachCount + 1 >= 4
         then do

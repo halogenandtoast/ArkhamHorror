@@ -2693,6 +2693,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
     Matcher.LocationWithBrazier _ -> locationId <=~> matcher
+    Matcher.LocationWithIncursion -> locationId <=~> matcher
     Matcher.LocationWithDefeatedEnemyThisRound -> locationId <=~> matcher
     Matcher.LocationWithDiscoverableCluesBy _ -> locationId <=~> matcher
     Matcher.LocationWithoutModifier _ -> locationId <=~> matcher

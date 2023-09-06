@@ -22,6 +22,11 @@ class Named a where
 
 toTitle :: Named a => a -> Text
 toTitle = nameTitle . toName
+{-# INLINE toTitle #-}
+
+hasTitle :: Named a => a -> Text -> Bool
+hasTitle a title = toTitle a == title
+{-# INLINE hasTitle #-}
 
 instance Named Name where
   toName = id

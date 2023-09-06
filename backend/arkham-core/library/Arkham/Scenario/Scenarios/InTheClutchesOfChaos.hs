@@ -14,11 +14,11 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Field
 import Arkham.Helpers
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Location.BreachStatus
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -49,7 +49,8 @@ instance HasChaosTokenValue InTheClutchesOfChaos where
   getChaosTokenValue iid tokenFace (InTheClutchesOfChaos attrs) = case tokenFace of
     Skull -> do
       doom <- getSum <$> selectAgg Sum LocationDoom (locationWithInvestigator iid)
-      breaches <- getSum <$> selectAgg Sum LocationBreaches (locationWithInvestigator iid)
+      breaches <-
+        sum . map (maybe 0 countBreaches) <$> selectFields LocationBreaches (locationWithInvestigator iid)
       pure $ toChaosTokenValue attrs Skull (doom + breaches) (doom + breaches + 1)
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
@@ -77,22 +78,18 @@ instance RunMessage InTheClutchesOfChaos where
           , EncounterSet.AgentsOfAzathoth
           , EncounterSet.Nightgaunts
           ]
-            <> ( if anetteMasonIsPossessedByEvil
-                  then
-                    [ EncounterSet.MusicOfTheDamned
-                    , EncounterSet.AnettesCoven
-                    , EncounterSet.CityOfSins
-                    , EncounterSet.Witchcraft
-                    ]
-                  else []
+            <> ( guard anetteMasonIsPossessedByEvil
+                  *> [ EncounterSet.MusicOfTheDamned
+                     , EncounterSet.AnettesCoven
+                     , EncounterSet.CityOfSins
+                     , EncounterSet.Witchcraft
+                     ]
                )
-            <> ( if carlSanfordPossessesTheSecretsOfTheUniverse
-                  then
-                    [ EncounterSet.SecretsOfTheUniverse
-                    , EncounterSet.SilverTwilightLodge
-                    , EncounterSet.StrikingFear
-                    ]
-                  else []
+            <> ( guard carlSanfordPossessesTheSecretsOfTheUniverse
+                  *> [ EncounterSet.SecretsOfTheUniverse
+                     , EncounterSet.SilverTwilightLodge
+                     , EncounterSet.StrikingFear
+                     ]
                )
 
       midnightMasks <-
@@ -108,7 +105,7 @@ instance RunMessage InTheClutchesOfChaos where
       encounterDeck <-
         Deck
           <$> shuffleM
-            ( unDeck gatheredCards <> (if carlSanfordPossessesTheSecretsOfTheUniverse then midnightMasks else [])
+            ( unDeck gatheredCards <> (guard carlSanfordPossessesTheSecretsOfTheUniverse *> midnightMasks)
             )
 
       frenchHill <- sample $ Locations.frenchHill_290 :| [Locations.frenchHill_291]
@@ -153,17 +150,24 @@ instance RunMessage InTheClutchesOfChaos where
             then [Acts.darkKnowledgeV1, Acts.beyondTheGrave]
             else [Acts.darkKnowledgeV2, Acts.newWorldOrder]
 
+      setAsideCards <- genCards [Enemies.piperOfAzathoth]
+
       InTheClutchesOfChaos
-        <$> runMessage msg (attrs & (actStackL . at 1 ?~ acts) & (agendaStackL . at 1 ?~ agendas))
+        <$> runMessage
+          msg
+          ( attrs
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+              & (setAsideCardsL .~ setAsideCards)
+          )
     SetupStep (isTarget attrs -> True) 1 -> do
       playerCount <- getPlayerCount
-      when (playerCount < 4) $
-        replicateM_ playerCount $ do
-          lids <- sampleLocations 2
-          pushAll [UpdateLocation lid (LocationBreaches `IncrementBy` 1) | lid <- lids]
-      when (playerCount == 4) $
-        replicateM_ 3 $ do
+      if playerCount == 4
+        then replicateM_ 3 $ do
           lids <- sampleLocations 3
-          pushAll [UpdateLocation lid (LocationBreaches `IncrementBy` 1) | lid <- lids]
+          pushAll $ map PlaceBreach lids
+        else replicateM_ playerCount $ do
+          lids <- sampleLocations 2
+          pushAll $ map PlaceBreach lids
       pure s
     _ -> InTheClutchesOfChaos <$> runMessage msg attrs

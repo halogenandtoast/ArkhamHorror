@@ -11,6 +11,13 @@ export const brazierDecoder: JsonDecoder.Decoder<Brazier> = JsonDecoder.oneOf<Br
   JsonDecoder.isExactly('Unlit'),
 ], 'Brazier');
 
+export type BreachStatus = { tag: "Breaches", contents: number } | { tag: "Incursion" }
+
+export const breachStatusDecoder: JsonDecoder.Decoder<BreachStatus> = JsonDecoder.oneOf<BreachStatus>([
+  JsonDecoder.object<BreachStatus>({ tag: JsonDecoder.isExactly("Breaches"), contents: JsonDecoder.number }, 'Breaches'),
+  JsonDecoder.isExactly({ tag: "Incursion" }),
+], 'BreachStatus');
+
 export interface Location {
   cardCode: string;
   label: string;
@@ -28,7 +35,7 @@ export interface Location {
   connectedLocations: string[];
   inFrontOf: string | null;
   brazier: Brazier | null;
-  breaches: number;
+  breaches: BreachStatus | null;
   keys: ArkhamKey[];
 }
 
@@ -50,7 +57,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
     inFrontOf: JsonDecoder.nullable(JsonDecoder.string),
     brazier: JsonDecoder.nullable(brazierDecoder),
-    breaches: JsonDecoder.number,
+    breaches: JsonDecoder.nullable(breachStatusDecoder),
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   },
   'Location',

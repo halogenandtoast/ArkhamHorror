@@ -52,7 +52,9 @@ hereticModifiers target (toAttrs -> a) | isTarget a target = do
   pure $
     toModifiers a $
       HealthModifier n
-        : if atSpectralLocation then [] else [AddKeyword Aloof, CannotBeDamaged, CannotBeEngaged]
+        : ( guard atSpectralLocation
+              *> [AddKeyword Aloof, CannotBeDamaged, CannotBeEngaged]
+          )
 hereticModifiers _ _ = pure []
 
 hereticAbilities
@@ -72,10 +74,7 @@ hereticAbilities (toAttrs -> a) =
     ]
 
 hereticRunner
-  :: ( Sourceable (EntityAttrs b)
-     , Targetable (EntityAttrs b)
-     , IsEnemy b
-     , RunMessage (EntityAttrs b)
+  :: ( IsEnemy b
      , HasCardCode storyCard
      )
   => storyCard

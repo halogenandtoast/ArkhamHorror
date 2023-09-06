@@ -643,16 +643,16 @@ theBrokenRite :: CardDef
 theBrokenRite = act "05248" "The Broken Rite" 4 UnionAndDisillusion
 
 darkKnowledgeV1 :: CardDef
-darkKnowledgeV1 = act "05286" "Dark Knowledge (v. I)" 1 InTheClutchesOfChaos
+darkKnowledgeV1 = act "05286" "Dark Knowledge (v. I)" 1 MusicOfTheDamned
 
 beyondTheGrave :: CardDef
-beyondTheGrave = act "05287" "Beyond the Grave" 2 InTheClutchesOfChaos
+beyondTheGrave = act "05287" "Beyond the Grave" 2 MusicOfTheDamned
 
 darkKnowledgeV2 :: CardDef
-darkKnowledgeV2 = act "05288" "Dark Knowledge (v. II)" 1 InTheClutchesOfChaos
+darkKnowledgeV2 = act "05288" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse
 
 newWorldOrder :: CardDef
-newWorldOrder = act "05289" "New World Order" 2 InTheClutchesOfChaos
+newWorldOrder = act "05289" "New World Order" 2 SecretsOfTheUniverse
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

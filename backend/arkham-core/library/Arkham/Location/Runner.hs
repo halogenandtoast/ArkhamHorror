@@ -35,6 +35,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
+import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.Helpers
 import Arkham.Matcher (
   InvestigatorMatcher (..),
@@ -403,6 +404,23 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
+    PlaceBreach lid
+      | lid == toId a
+      , locationBreaches /= Just Breach.Incursion -> do
+          let breachCount = maybe 0 Breach.countBreaches locationBreaches
+          if breachCount + 1 >= 4
+            then do
+              push $ Incursion (toId a)
+              pure a
+            else pure $ a & breachesL ?~ Breach.Breaches (breachCount + 1)
+    Incursion lid | lid == toId a -> do
+      -- Æ First, remove all breaches on that location.
+      -- Æ Second, place 1 doom on that location.
+      -- Æ Finally, place 1 breach on each connecting location. This can chain‐react and cause additional incursions to occur, so beware!
+      -- Æ Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.
+      targets <- selectList $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
+      pushAll $ PlaceDoom (toSource a) (toTarget a) 1 : map PlaceBreach targets
+      pure $ a & breachesL ?~ Breach.Incursion
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)

@@ -342,6 +342,7 @@ data LocationMatcher
     LocationIsInFrontOf InvestigatorMatcher
   | IsIchtacasDestination
   | LocationWithBrazier Brazier
+  | LocationWithIncursion
   deriving stock (Show, Eq, Ord)
 
 class IsLocationMatcher a where

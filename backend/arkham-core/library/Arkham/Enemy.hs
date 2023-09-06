@@ -275,6 +275,13 @@ allEnemies =
     , SomeEnemyCard valentinoRivas
     , SomeEnemyCard whippoorwillUnionAndDisillusion
     , SomeEnemyCard spectralRaven
+    , -- In the Clutches of Chaos
+      --- Music of the Damned
+      SomeEnemyCard anetteMasonReincarnatedEvil
+    , SomeEnemyCard witnessOfChaos
+    , --- Secrets of the Universe
+      SomeEnemyCard carlSanfordDeathlessFanatic
+    , SomeEnemyCard lodgeEnforcer
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

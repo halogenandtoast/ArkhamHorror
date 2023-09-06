@@ -23,6 +23,7 @@ import Arkham.Keyword
 import Arkham.Label qualified as L
 import Arkham.Location.Base as X
 import Arkham.Location.Brazier
+import Arkham.Location.BreachStatus
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (..))
@@ -77,7 +78,7 @@ data instance Field Location :: Type -> Type where
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   LocationCardId :: Field Location CardId
   LocationBrazier :: Field Location (Maybe Brazier)
-  LocationBreaches :: Field Location Int
+  LocationBreaches :: Field Location (Maybe BreachStatus)
   LocationLabel :: Field Location Text
   -- virtual
   LocationTraits :: Field Location (Set Trait)
@@ -272,7 +273,7 @@ locationWith f def shroud' revealClues g =
             , locationWithoutClues = False
             , locationKeys = mempty
             , locationBrazier = Nothing
-            , locationBreaches = 0
+            , locationBreaches = Nothing
             }
     }
 
@@ -297,6 +298,14 @@ on iid LocationAttrs {locationInvestigators} =
   iid `member` locationInvestigators
 
 data Location = forall a. IsLocation a => Location a
+
+instance HasCardDef Location where
+  toCardDef (Location l) = toCardDef (toAttrs l)
+
+instance IsCard Location where
+  toCard (Location l) = toCard (toAttrs l)
+  toCardId (Location l) = toCardId (toAttrs l)
+  toCardOwner (Location l) = toCardOwner (toAttrs l)
 
 instance Eq Location where
   Location (a :: a) == Location (b :: b) = case eqT @a @b of

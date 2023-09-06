@@ -227,6 +227,9 @@ is _ _ = False
 
 data Treachery = forall a. IsTreachery a => Treachery a
 
+instance Named Treachery where
+  toName (Treachery t) = toName (toAttrs t)
+
 instance Eq Treachery where
   Treachery (a :: a) == Treachery (b :: b) = case eqT @a @b of
     Just Refl -> a == b

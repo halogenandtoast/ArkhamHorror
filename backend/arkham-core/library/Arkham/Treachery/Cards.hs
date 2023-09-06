@@ -180,6 +180,7 @@ allEncounterTreacheryCards =
       , captiveMind
       , centuriesOfSecrets
       , chaosInTheWater
+      , chaosManifest
       , childrenOfValusia
       , chillFromBelow
       , clawsOfSteam
@@ -265,6 +266,7 @@ allEncounterTreacheryCards =
       , possessionMurderous
       , possessionTorturous
       , possessionTraitorous
+      , primordialGateway
       , psychopompsSong
       , psychopompsSongUnionAndDisillusion
       , pulledByTheStars
@@ -277,6 +279,7 @@ allEncounterTreacheryCards =
       , rottingRemains
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
+      , secretsOfTheBeyond
       , serpentsCall
       , serpentsIre
       , shadowSpawned
@@ -297,6 +300,7 @@ allEncounterTreacheryCards =
       , strangeSigns
       , terrorInTheNight
       , terrorFromBeyond
+      , terrorUnleashed
       , theCreaturesTracks
       , theCultsSearch
       , theFinalAct
@@ -308,6 +312,7 @@ allEncounterTreacheryCards =
       , theYellowSign
       , theZealotsSeal
       , timelineDestabilization
+      , toilAndTrouble
       , torturousChords
       , toughCrowd
       , toweringBeasts
@@ -1572,6 +1577,37 @@ watchersGazeUnionAndDisillusion :: CardDef
 watchersGazeUnionAndDisillusion =
   (treachery "05271" "Watcher's Gaze" UnionAndDisillusion 1)
     { cdCardTraits = singleton Curse
+    }
+
+chaosManifest :: CardDef
+chaosManifest =
+  (treachery "05306" "Chaos Manifest" InTheClutchesOfChaos 3)
+    { cdCardTraits = singleton Power
+    }
+
+primordialGateway :: CardDef
+primordialGateway =
+  (treachery "05307" "Primordial Gateway" InTheClutchesOfChaos 2)
+    { cdCardTraits = singleton Power
+    }
+
+terrorUnleashed :: CardDef
+terrorUnleashed =
+  (treachery "05308" "Terror Unleashed" InTheClutchesOfChaos 3)
+    { cdCardTraits = singleton Curse
+    }
+
+secretsOfTheBeyond :: CardDef
+secretsOfTheBeyond =
+  (treachery "05310" "Secrets of the Beyond" SecretsOfTheUniverse 2)
+    { cdCardTraits = singleton Hex
+    }
+
+toilAndTrouble :: CardDef
+toilAndTrouble =
+  (treachery "05312" "Toil and Trouble" MusicOfTheDamned 2)
+    { cdCardTraits = singleton Hex
+    , cdKeywords = singleton Keyword.Peril
     }
 
 theHarbinger :: CardDef

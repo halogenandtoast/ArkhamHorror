@@ -96,6 +96,7 @@ import Arkham.Investigator.Types (
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
+import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.Types (
   Field (..),
   LocationAttrs (..),
@@ -509,7 +510,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "modifiers" .= toJSON gameModifiers
       , "encounterDeckSize"
           .= toJSON
-            ( maybe 0 (length . scenarioEncounterDeck . toAttrs) $
+            ( maybe 0 (length . attr scenarioEncounterDeck) $
                 modeScenario gameMode
             )
       , "locations"
@@ -845,14 +846,13 @@ getInvestigatorsMatching matcher = do
         , pure $ not $ investigatorEndedTurn $ toAttrs i
         ]
     LeadInvestigator -> \i -> (== toId i) . gameLeadInvestigatorId <$> getGame
-    InvestigatorWithTitle title ->
-      pure . (== title) . nameTitle . toName . toAttrs
-    DefeatedInvestigator -> pure . investigatorDefeated . toAttrs
+    InvestigatorWithTitle title -> pure . (`hasTitle` title)
+    DefeatedInvestigator -> pure . attr investigatorDefeated
     InvestigatorAt locationMatcher -> \i ->
-      if investigatorLocation (toAttrs i) == LocationId nil
+      if attr investigatorLocation i == LocationId nil
         then pure False
         else
-          member (investigatorLocation $ toAttrs i)
+          member (attr investigatorLocation i)
             <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
     InvestigatorIs cardCode -> pure . (== cardCode) . toCardCode
@@ -867,9 +867,9 @@ getInvestigatorsMatching matcher = do
         UneliminatedInvestigator
         (getSkillValue skillType)
     InvestigatorWithClues gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . investigatorClues . toAttrs
+      (`gameValueMatches` gameValueMatcher) . attr investigatorClues
     InvestigatorWithResources gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . investigatorResources . toAttrs
+      (`gameValueMatches` gameValueMatcher) . attr investigatorResources
     InvestigatorWithSpendableResources gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) <=< getSpendableResources . toId
     InvestigatorWithActionsRemaining gameValueMatcher ->
@@ -877,11 +877,11 @@ getInvestigatorsMatching matcher = do
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . investigatorDoom . toAttrs
+      (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
     InvestigatorWithDamage gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . investigatorHealthDamage . toAttrs
+      (`gameValueMatches` gameValueMatcher) . attr investigatorHealthDamage
     InvestigatorWithHorror gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . investigatorSanityDamage . toAttrs
+      (`gameValueMatches` gameValueMatcher) . attr investigatorSanityDamage
     InvestigatorWithRemainingSanity gameValueMatcher ->
       field InvestigatorRemainingSanity
         . toId
@@ -893,18 +893,16 @@ getInvestigatorsMatching matcher = do
     InvestigatorMatches xs -> \i -> allM (`go` i) xs
     AnyInvestigator xs -> \i -> anyM (`go` i) xs
     HandWith cardListMatcher ->
-      (`cardListMatches` cardListMatcher) . investigatorHand . toAttrs
+      (`cardListMatches` cardListMatcher) . attr investigatorHand
     DiscardWith cardListMatcher ->
       (`cardListMatches` cardListMatcher)
         . map PlayerCard
-        . investigatorDiscard
-        . toAttrs
+        . attr investigatorDiscard
     DeckWith cardListMatcher ->
       (`cardListMatches` cardListMatcher)
         . map PlayerCard
         . unDeck
-        . investigatorDeck
-        . toAttrs
+        . attr investigatorDeck
     InvestigatorWithTrait t -> \i -> fieldMap InvestigatorTraits (member t) (toId i)
     InvestigatorWithClass t -> \i -> fieldMap InvestigatorClass (== t) (toId i)
     InvestigatorWithoutModifier modifierType -> \i -> do
@@ -914,9 +912,8 @@ getInvestigatorsMatching matcher = do
       pure
         . not
         . or
-        . sequence [investigatorDefeated, investigatorResigned]
-        . toAttrs
-    ResignedInvestigator -> pure . investigatorResigned . toAttrs
+        . sequence [attr investigatorDefeated, attr investigatorResigned]
+    ResignedInvestigator -> pure . attr investigatorResigned
     InvestigatorEngagedWith enemyMatcher -> \i -> do
       enemyIds <- select enemyMatcher
       pure $ any (`member` enemyIds) (investigatorEngagedEnemies $ toAttrs i)
@@ -924,7 +921,7 @@ getInvestigatorsMatching matcher = do
       pure $ case unDeck . investigatorDeck $ toAttrs i of
         [] -> False
         x : _ -> cardMatch (PlayerCard x) cardMatcher
-    UnengagedInvestigator -> pure . null . investigatorEngagedEnemies . toAttrs
+    UnengagedInvestigator -> pure . null . attr investigatorEngagedEnemies
     NoDamageDealtThisTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ null (historyDealtDamageTo history)
@@ -1010,10 +1007,10 @@ getAgendasMatching matcher = do
     AgendaWithTreachery treacheryMatcher -> \agenda -> do
       treacheries <- select treacheryMatcher
       pure $ any (`member` treacheries) (agendaTreacheries $ toAttrs agenda)
-    AgendaWithSequence s -> pure . (== s) . agendaSequence . toAttrs
+    AgendaWithSequence s -> pure . (== s) . attr agendaSequence
     AgendaWithSide s ->
-      pure . (== s) . AS.agendaSide . agendaSequence . toAttrs
-    AgendaWithDeckId n -> pure . (== n) . agendaDeckId . toAttrs
+      pure . (== s) . AS.agendaSide . attr agendaSequence
+    AgendaWithDeckId n -> pure . (== n) . attr agendaDeckId
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
     AgendaMatches ms -> \a -> allM (`matcherFilter` a) ms
 
@@ -1026,8 +1023,8 @@ getActsMatching matcher = do
     ActOneOf xs -> \a -> anyM (`matcherFilter` a) xs
     AnyAct -> pure . const True
     ActWithId actId -> pure . (== actId) . toId
-    ActWithSide side -> pure . (== side) . AC.actSide . actSequence . toAttrs
-    ActWithDeckId n -> pure . (== n) . actDeckId . toAttrs
+    ActWithSide side -> pure . (== side) . AC.actSide . attr actSequence
+    ActWithDeckId n -> pure . (== n) . attr actDeckId
     ActWithTreachery treacheryMatcher -> \act -> do
       treacheries <- select treacheryMatcher
       pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
@@ -1070,10 +1067,9 @@ getTreacheriesMatching matcher = do
     NotTreachery m -> fmap not . matcherFilter m
     TreacheryIsNonWeakness ->
       fieldMap TreacheryCard (`cardMatch` NonWeaknessTreachery) . toId
-    TreacheryWithTitle title ->
-      pure . (== title) . nameTitle . toName . toAttrs
+    TreacheryWithTitle title -> pure . (`hasTitle` title)
     TreacheryWithFullTitle title subtitle ->
-      pure . (== Name title (Just subtitle)) . toName . toAttrs
+      pure . (== (title <:> subtitle)) . toName
     TreacheryWithId treacheryId -> pure . (== treacheryId) . toId
     TreacheryWithTrait t -> fmap (member t) . field TreacheryTraits . toId
     TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
@@ -1092,11 +1088,11 @@ getTreacheriesMatching matcher = do
         _ -> False
     TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
       targets <- selectListMap (Just . InvestigatorTarget) investigatorMatcher
-      let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
+      let treacheryTarget = attr treacheryAttachedTarget treachery
       pure $ treacheryTarget `elem` targets
     TreacheryOwnedBy investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
-      pure $ case treacheryOwner (toAttrs treachery) of
+      pure $ case attr treacheryOwner treachery of
         Just iid -> iid `member` iids
         Nothing -> False
     TreacheryWithDoom gameValueMatcher -> \t -> do
@@ -1271,7 +1267,7 @@ getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
     LocationWithCardId cardId ->
-      pure $ filter ((== cardId) . toCardId . toAttrs) ls
+      pure $ filter ((== cardId) . toCardId) ls
     LocationIsInFrontOf investigatorMatcher -> do
       investigators <- select investigatorMatcher
       filterM
@@ -1331,11 +1327,11 @@ getLocationsMatching lmatcher = do
           xs
     LocationWithLabel label -> pure $ filter ((== label) . toLocationLabel) ls
     LocationWithTitle title ->
-      pure $ filter ((== title) . nameTitle . toName) ls
+      pure $ filter (`hasTitle` title) ls
     LocationWithFullTitle title subtitle ->
-      pure $ filter ((== Name title (Just subtitle)) . toName) ls
+      pure $ filter ((== (title <:> subtitle)) . toName) ls
     LocationWithUnrevealedTitle title ->
-      pure $ filter ((== title) . nameTitle . toName . Unrevealed) ls
+      pure $ filter ((`hasTitle` title) . Unrevealed) ls
     LocationWithId locationId -> pure $ filter ((== locationId) . toId) ls
     LocationWithSymbol locationSymbol ->
       pure $ filter ((== locationSymbol) . toLocationSymbol) ls
@@ -1360,7 +1356,7 @@ getLocationsMatching lmatcher = do
       enemies <- select enemyMatcher
       pure $
         filter
-          (notNull . intersection enemies . locationEnemies . toAttrs)
+          (notNull . intersection enemies . attr locationEnemies)
           ls
     LocationWithAsset assetMatcher -> do
       assets <- select assetMatcher
@@ -1371,7 +1367,7 @@ getLocationsMatching lmatcher = do
       investigators <- select whoMatcher
       pure $
         filter
-          (notNull . intersection investigators . locationInvestigators . toAttrs)
+          (notNull . intersection investigators . attr locationInvestigators)
           ls
     RevealedLocation ->
       filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
@@ -1390,24 +1386,24 @@ getLocationsMatching lmatcher = do
         ls
     LocationWithMostClues locationMatcher -> do
       matches' <- getLocationsMatching locationMatcher
-      maxes <$> forToSnd matches' (pure . locationClues . toAttrs)
+      maxes <$> forToSnd matches' (pure . attr locationClues)
     LocationWithoutTreachery matcher -> do
       treacheryIds <- select matcher
       pure $
         filter
-          (none (`elem` treacheryIds) . locationTreacheries . toAttrs)
+          (none (`elem` treacheryIds) . attr locationTreacheries)
           ls
     LocationWithTreachery matcher -> do
       treacheryIds <- select matcher
       pure $
         filter
-          (any (`elem` treacheryIds) . locationTreacheries . toAttrs)
+          (any (`elem` treacheryIds) . attr locationTreacheries)
           ls
     LocationInDirection direction matcher -> do
       starts <- getLocationsMatching matcher
       let
         matches' =
-          mapMaybe (lookup direction . locationDirections . toAttrs) starts
+          mapMaybe (lookup direction . attr locationDirections) starts
       pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher
@@ -1519,7 +1515,7 @@ getLocationsMatching lmatcher = do
       getLocationsMatching (ConnectedTo (Unblocked <> matcher))
     LocationWithResources valueMatcher ->
       filterM
-        ((`gameValueMatches` valueMatcher) . locationResources . toAttrs)
+        ((`gameValueMatches` valueMatcher) . attr locationResources)
         ls
     Nowhere -> pure []
     LocationCanBeFlipped -> do
@@ -1528,7 +1524,7 @@ getLocationsMatching lmatcher = do
         filter
           ( and
               . sequence
-                [locationCanBeFlipped . toAttrs, (`elem` flippable) . toId]
+                [attr locationCanBeFlipped, (`elem` flippable) . toId]
           )
           ls
     NotLocation matcher -> do
@@ -1577,7 +1573,7 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`member` matches') . toId) ls
     BlockedLocation ->
       flip filterM ls $ \l -> notElem Blocked <$> getModifiers (toTarget l)
-    LocationWithoutClues -> pure $ filter (locationWithoutClues . toAttrs) ls
+    LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
     LocationWithDefeatedEnemyThisRound -> do
       iids <- allInvestigatorIds
       enemiesDefeated <-
@@ -1589,8 +1585,9 @@ getLocationsMatching lmatcher = do
             _ -> Nothing
       pure $ filter ((`elem` validLids) . toId) ls
     LocationWithBrazier brazier -> do
-      pure $ filter ((== Just brazier) . locationBrazier . toAttrs) ls
+      pure $ filter ((== Just brazier) . attr locationBrazier) ls
     -- these can not be queried
+    LocationWithIncursion -> pure $ filter ((== Just Breach.Incursion) . attr locationBreaches) ls
     LocationLeavingPlay -> pure []
     SameLocation -> pure []
     ThisLocation -> pure []
@@ -1610,8 +1607,8 @@ getAssetsMatching matcher = do
   canBeDiscarded =
     and
       . sequence
-        [ assetCanLeavePlayByNormalMeans . toAttrs
-        , not . cdPermanent . toCardDef . toAttrs
+        [ attr assetCanLeavePlayByNormalMeans
+        , not . cdPermanent . toCardDef
         ]
   filterMatcher as = \case
     NotAsset matcher' -> do
@@ -1619,27 +1616,27 @@ getAssetsMatching matcher = do
       pure $ filter (`notElem` matches') as
     AnyAsset -> pure as
     AssetWithTitle title ->
-      pure $ filter ((== title) . nameTitle . toName . toAttrs) as
+      pure $ filter (`hasTitle` title) as
     AssetWithFullTitle title subtitle ->
-      pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
+      pure $ filter ((== (title <:> subtitle)) . toName) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
     AssetWithCardId cardId ->
-      pure $ filter ((== cardId) . toCardId . toAttrs) as
+      pure $ filter ((== cardId) . toCardId) as
     AssetWithClass role ->
-      pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
-    AssetWithHealth -> pure $ filter (isJust . assetHealth . toAttrs) as
+      pure $ filter (member role . cdClassSymbols . toCardDef) as
+    AssetWithHealth -> pure $ filter (isJust . attr assetHealth) as
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
     AssetWithDoom valueMatcher ->
-      filterM ((`gameValueMatches` valueMatcher) . assetDoom . toAttrs) as
+      filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
     AssetWithClues valueMatcher ->
-      filterM ((`gameValueMatches` valueMatcher) . assetClues . toAttrs) as
+      filterM ((`gameValueMatches` valueMatcher) . attr assetClues) as
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
-    AssetInSlot slot -> pure $ filter (elem slot . assetSlots . toAttrs) as
-    AssetInTwoHandSlots -> pure $ filter ((== 2) . count (== HandSlot) . assetSlots . toAttrs) as
+    AssetInSlot slot -> pure $ filter (elem slot . attr assetSlots) as
+    AssetInTwoHandSlots -> pure $ filter ((== 2) . count (== HandSlot) . attr assetSlots) as
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
     AssetWithPlacement placement ->
-      pure $ filter ((== placement) . assetPlacement . toAttrs) as
+      pure $ filter ((== placement) . attr assetPlacement) as
     AssetControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
@@ -1664,8 +1661,8 @@ getAssetsMatching matcher = do
         AttachedToLocation lid' -> pure $ lid == lid'
         _ -> pure False
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
-    AssetNonStory -> pure $ filter (not . assetIsStory . toAttrs) as
-    AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode . toAttrs) as
+    AssetNonStory -> pure $ filter (not . attr assetIsStory) as
+    AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     AssetWithMatchingSkillTestIcon -> do
       skillIcons <- getSkillTestMatchingSkillIcons
       valids <-
@@ -1678,19 +1675,19 @@ getAssetsMatching matcher = do
           )
       pure $ filter ((`member` valids) . toId) as
     AssetCardMatch cardMatcher ->
-      pure $ filter ((`cardMatch` cardMatcher) . toCard . toAttrs) as
+      pure $ filter ((`cardMatch` cardMatcher) . toCard) as
     UniqueAsset ->
-      pure $ filter ((`cardMatch` CardIsUnique) . toCard . toAttrs) as
+      pure $ filter ((`cardMatch` CardIsUnique) . toCard) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
     NonWeaknessAsset ->
-      pure $ filter (isNothing . cdCardSubType . toCardDef . toAttrs) as
+      pure $ filter (isNothing . cdCardSubType . toCardDef) as
     EnemyAsset eid ->
       filterM (fieldP AssetPlacement (== AttachedToEnemy eid) . toId) as
     AssetAt locationMatcher -> do
       locations <- map toId <$> getLocationsMatching locationMatcher
       filterM (fieldP AssetLocation (maybe False (`elem` locations)) . toId) as
-    AssetReady -> pure $ filter (not . assetExhausted . toAttrs) as
-    M.AssetExhausted -> pure $ filter (assetExhausted . toAttrs) as
+    AssetReady -> pure $ filter (not . attr assetExhausted) as
+    M.AssetExhausted -> pure $ filter (attr assetExhausted) as
     AssetWithoutModifier modifierType -> flip filterM as $ \a -> do
       modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `notElem` modifiers'
@@ -1704,7 +1701,7 @@ getAssetsMatching matcher = do
         atUseLimit (Uses {}) = False
         atUseLimit (NoUses {}) = True
       in
-        pure $ filter (atUseLimit . assetUses . toAttrs) as
+        pure $ filter (atUseLimit . attr assetUses) as
     AssetWithUseType uType ->
       filterM
         (fmap ((== Just uType) . useType) . field AssetStartingUses . toId)
@@ -1846,24 +1843,24 @@ getEventsMatching matcher = do
       matches' <- getEventsMatching matcher'
       pure $ filter (`notElem` matches') as
     EventWithTitle title ->
-      pure $ filter ((== title) . nameTitle . toName . toAttrs) as
+      pure $ filter (`hasTitle` title) as
     EventWithFullTitle title subtitle ->
-      pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
+      pure $ filter ((== (title <:> subtitle)) . toName) as
     EventWithId eventId -> pure $ filter ((== eventId) . toId) as
     EventIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     EventWithClass role ->
-      pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
+      pure $ filter (member role . cdClassSymbols . toCardDef) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
     EventCardMatch cardMatcher ->
       filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
     EventWithPlacement placement ->
-      pure $ filter ((== placement) . eventPlacement . toAttrs) as
+      pure $ filter ((== placement) . attr eventPlacement) as
     EventControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventWithDoom valueMatcher ->
-      filterM ((`gameValueMatches` valueMatcher) . eventDoom . toAttrs) as
-    EventReady -> pure $ filter (not . eventExhausted . toAttrs) as
+      filterM ((`gameValueMatches` valueMatcher) . attr eventDoom) as
+    EventReady -> pure $ filter (not . attr eventExhausted) as
     EventMatches ms -> foldM filterMatcher as ms
     AnyEvent -> pure as
     EventAt locationMatcher -> do
@@ -1878,8 +1875,7 @@ getEventsMatching matcher = do
       pure $
         filter
           ( or
-              . sequence [attached . eventPlacement, maybe False (`elem` assets) . eventAttachedTarget]
-              . toAttrs
+              . sequence [attached . attr eventPlacement, maybe False (`elem` assets) . attr eventAttachedTarget]
           )
           as
     EventWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
@@ -1890,9 +1886,9 @@ getSkillsMatching matcher = do
   filterMatcher skills matcher
  where
   filterMatcher as = \case
-    SkillWithTitle title -> pure $ filter ((== title) . nameTitle . toName) as
+    SkillWithTitle title -> pure $ filter (`hasTitle` title) as
     SkillWithFullTitle title subtitle ->
-      pure $ filter ((== Name title (Just subtitle)) . toName) as
+      pure $ filter ((== (title <:> subtitle)) . toName) as
     SkillWithId skillId -> pure $ filter ((== skillId) . toId) as
     SkillWithCardId cardId -> pure $ filter ((== cardId) . toCardId) as
     SkillWithClass role ->
@@ -1902,14 +1898,14 @@ getSkillsMatching matcher = do
     SkillWithTrait t -> filterM (fmap (member t) . field SkillTraits . toId) as
     SkillControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
-      pure $ filter ((`elem` iids) . skillOwner . toAttrs) as
+      pure $ filter ((`elem` iids) . attr skillOwner) as
     SkillWithPlacement placement ->
-      pure $ filter ((== placement) . skillPlacement . toAttrs) as
+      pure $ filter ((== placement) . attr skillPlacement) as
     SkillMatches ms -> foldM filterMatcher as ms
     AnySkill -> pure as
     YourSkill -> do
       iid <- view activeInvestigatorIdL <$> getGame
-      pure $ filter ((== iid) . skillOwner . toAttrs) as
+      pure $ filter ((== iid) . attr skillOwner) as
 
 getSkill :: (HasCallStack, HasGame m) => SkillId -> m Skill
 getSkill sid = do
@@ -1936,10 +1932,10 @@ getStoriesMatching matcher = do
   filterMatcher stories matcher
  where
   filterMatcher as = \case
-    StoryWithTitle title -> pure $ filter ((== title) . nameTitle . toName) as
+    StoryWithTitle title -> pure $ filter (`hasTitle` title) as
     StoryMatchAll ms -> foldM filterMatcher as ms
     StoryWithPlacement placement ->
-      pure $ filter ((== placement) . storyPlacement . toAttrs) as
+      pure $ filter ((== placement) . attr storyPlacement) as
 
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
 getEnemy eid =
@@ -1980,7 +1976,7 @@ getEnemiesMatching matcher = do
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
-  EnemyWithCardId cardId -> pure . (== cardId) . toCardId . toAttrs
+  EnemyWithCardId cardId -> pure . (== cardId) . toCardId
   EnemyCanBeDamagedBySource source -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
@@ -1995,11 +1991,7 @@ enemyMatcherFilter = \case
     lmAssets <- select $ EnemyAsset $ toId enemy
     pure . notNull $ intersection assets lmAssets
   FarthestEnemyFromAll enemyMatcher -> \enemy -> do
-    locations <-
-      select $
-        FarthestLocationFromAll $
-          LocationWithEnemy
-            enemyMatcher
+    locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
     pure $ case enemyLocation of
       Just lid -> lid `member` locations
@@ -2067,9 +2059,9 @@ enemyMatcherFilter = \case
           _ -> pure False
       else pure False
   NotEnemy m -> fmap not . enemyMatcherFilter m
-  EnemyWithTitle title -> pure . (== title) . nameTitle . toName . toAttrs
+  EnemyWithTitle title -> pure . (`hasTitle` title)
   EnemyWithFullTitle title subtitle ->
-    pure . (== Name title (Just subtitle)) . toName . toAttrs
+    pure . (== (title <:> subtitle)) . toName
   EnemyWithId enemyId -> pure . (== enemyId) . toId
   NonEliteEnemy -> fmap (notElem Elite) . field EnemyTraits . toId
   EnemyMatchAll ms -> \enemy -> allM (`enemyMatcherFilter` enemy) ms
@@ -2086,11 +2078,11 @@ enemyMatcherFilter = \case
   EnemyWithDamage gameValueMatcher -> \enemy -> do
     damage <- field EnemyDamage (toId enemy)
     damage `gameValueMatches` gameValueMatcher
-  ExhaustedEnemy -> pure . enemyExhausted . toAttrs
-  ReadyEnemy -> pure . not . enemyExhausted . toAttrs
+  ExhaustedEnemy -> pure . attr enemyExhausted
+  ReadyEnemy -> pure . not . attr enemyExhausted
   AnyEnemy -> pure . const True
-  EnemyIs cardCode -> pure . (== cardCode) . toCardCode . toAttrs
-  NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef . toAttrs
+  EnemyIs cardCode -> pure . (== cardCode) . toCardCode
+  NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
     iids <-
       setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
@@ -2114,7 +2106,7 @@ enemyMatcherFilter = \case
   EnemyWithEvade -> fieldP EnemyEvade isJust . toId
   EnemyWithPlacement p -> fieldP EnemyPlacement (== p) . toId
   UnengagedEnemy -> selectNone . InvestigatorEngagedWith . EnemyWithId . toId
-  UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
+  UniqueEnemy -> pure . cdUnique . toCardDef
   IsIchtacasPrey -> \enemy -> do
     allKeys <- toList <$> scenarioField ScenarioRemembered
     pure $ flip any allKeys $ \case
@@ -2965,18 +2957,16 @@ instance HasModifiersFor Entities where
   getModifiersFor target e =
     concat
       <$> sequence
-        [ concat <$> traverse (getModifiersFor target) (e ^. enemiesL . to toList)
-        , concat <$> traverse (getModifiersFor target) (e ^. assetsL . to toList)
-        , concat <$> traverse (getModifiersFor target) (e ^. agendasL . to toList)
-        , concat <$> traverse (getModifiersFor target) (e ^. actsL . to toList)
-        , concat <$> traverse (getModifiersFor target) (e ^. locationsL . to toList)
-        , concat <$> traverse (getModifiersFor target) (e ^. effectsL . to toList)
-        , concat <$> traverse (getModifiersFor target) (e ^. eventsL . to toList)
-        , concat <$> traverse (getModifiersFor target) (e ^. skillsL . to toList)
-        , concat
-            <$> traverse (getModifiersFor target) (e ^. treacheriesL . to toList)
-        , concat
-            <$> traverse (getModifiersFor target) (e ^. investigatorsL . to toList)
+        [ concatMapM (getModifiersFor target) (e ^. enemiesL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. assetsL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. agendasL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. actsL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. locationsL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. effectsL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. eventsL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. skillsL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. treacheriesL . to toList)
+        , concatMapM (getModifiersFor target) (e ^. investigatorsL . to toList)
         ]
 
 -- the results will have the initial location at 0, we need to drop
@@ -3365,11 +3355,10 @@ runMessages mLogger = do
             doneWithRound =
               or
                 . sequence
-                  [ investigatorEndedTurn
-                  , investigatorResigned
-                  , investigatorDefeated
+                  [ attr investigatorEndedTurn
+                  , attr investigatorResigned
+                  , attr investigatorDefeated
                   ]
-                . toAttrs
           if all doneWithRound mTurnInvestigator
             then do
               playingInvestigators <-
@@ -3644,7 +3633,7 @@ runGameMessage msg g = case msg of
       mCampaignLog =
         these
           (const Nothing)
-          (Just . scenarioStandaloneCampaignLog . toAttrs)
+          (Just . attr scenarioStandaloneCampaignLog)
           (\_ _ -> Nothing)
           (g ^. modeL)
       setCampaignLog = case mCampaignLog of
@@ -5543,7 +5532,7 @@ preloadModifiers g = case gameMode g of
       maybe [] allSkillTestChaosTokens (gameSkillTest g)
         <> maybe
           []
-          (allChaosBagChaosTokens . scenarioChaosBag . toAttrs)
+          (allChaosBagChaosTokens . attr scenarioChaosBag)
           (modeScenario $ gameMode g)
   toTargetModifiers target =
     foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)

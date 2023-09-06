@@ -4735,7 +4735,7 @@ hangmansHillWhereItAllEnds =
     [Arkham]
     Moon
     [Plus]
-    InTheClutchesOfChaos
+    MusicOfTheDamned
 
 silverTwilightLodgeShroudedInMystery :: CardDef
 silverTwilightLodgeShroudedInMystery =
@@ -4746,7 +4746,7 @@ silverTwilightLodgeShroudedInMystery =
       [Arkham]
       Star
       [T]
-      InTheClutchesOfChaos
+      MusicOfTheDamned
 
 hangmansHillShroudedInMystery :: CardDef
 hangmansHillShroudedInMystery =
@@ -4757,7 +4757,7 @@ hangmansHillShroudedInMystery =
       [Arkham]
       Moon
       [Plus]
-      InTheClutchesOfChaos
+      SecretsOfTheUniverse
 
 silverTwilightLodgeWhereItAllEnds :: CardDef
 silverTwilightLodgeWhereItAllEnds =
@@ -4767,7 +4767,7 @@ silverTwilightLodgeWhereItAllEnds =
     [Arkham]
     Star
     [T]
-    InTheClutchesOfChaos
+    SecretsOfTheUniverse
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

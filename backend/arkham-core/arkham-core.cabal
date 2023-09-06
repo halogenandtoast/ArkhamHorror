@@ -883,6 +883,7 @@ library
       Arkham.Enemy.Cards.AlejandroVela
       Arkham.Enemy.Cards.AlmaHill
       Arkham.Enemy.Cards.AnetteMason
+      Arkham.Enemy.Cards.AnetteMasonReincarnatedEvil
       Arkham.Enemy.Cards.ApexStrangleweed
       Arkham.Enemy.Cards.AshleighClarke
       Arkham.Enemy.Cards.AsylumGorger
@@ -897,6 +898,7 @@ library
       Arkham.Enemy.Cards.BroodOfYogSothoth
       Arkham.Enemy.Cards.BrotherhoodCultist
       Arkham.Enemy.Cards.BrownJenkin
+      Arkham.Enemy.Cards.CarlSanfordDeathlessFanatic
       Arkham.Enemy.Cards.CarnevaleSentinel
       Arkham.Enemy.Cards.CatacombsDocent
       Arkham.Enemy.Cards.CellKeeper
@@ -963,6 +965,7 @@ library
       Arkham.Enemy.Cards.KeeperOfTheGreatLibrary
       Arkham.Enemy.Cards.KnightOfTheInnerCircle
       Arkham.Enemy.Cards.KnightOfTheOuterVoid
+      Arkham.Enemy.Cards.LodgeEnforcer
       Arkham.Enemy.Cards.LodgeJailor
       Arkham.Enemy.Cards.LodgeNeophyte
       Arkham.Enemy.Cards.LupineThrall
@@ -1042,6 +1045,7 @@ library
       Arkham.Enemy.Cards.Whippoorwill
       Arkham.Enemy.Cards.WhippoorwillUnionAndDisillusion
       Arkham.Enemy.Cards.WingedOne
+      Arkham.Enemy.Cards.WitnessOfChaos
       Arkham.Enemy.Cards.WizardOfTheOrder
       Arkham.Enemy.Cards.WizardOfYogSothoth
       Arkham.Enemy.Cards.WolfManDrew
@@ -1388,6 +1392,7 @@ library
       Arkham.Location
       Arkham.Location.Base
       Arkham.Location.Brazier
+      Arkham.Location.BreachStatus
       Arkham.Location.Cards
       Arkham.Location.Cards.AbandonedChapel
       Arkham.Location.Cards.AbandonedChapelSpectral
@@ -2105,6 +2110,7 @@ library
       Arkham.Treachery.Cards.CaughtRedHanded
       Arkham.Treachery.Cards.CenturiesOfSecrets
       Arkham.Treachery.Cards.ChaosInTheWater
+      Arkham.Treachery.Cards.ChaosManifest
       Arkham.Treachery.Cards.ChildrenOfValusia
       Arkham.Treachery.Cards.ChillFromBelow
       Arkham.Treachery.Cards.Chronophobia
@@ -2211,6 +2217,7 @@ library
       Arkham.Treachery.Cards.PossessionMurderous
       Arkham.Treachery.Cards.PossessionTorturous
       Arkham.Treachery.Cards.PossessionTraitorous
+      Arkham.Treachery.Cards.PrimordialGateway
       Arkham.Treachery.Cards.PsychopompsSong
       Arkham.Treachery.Cards.PsychopompsSongUnionAndDisillusion
       Arkham.Treachery.Cards.Psychosis
@@ -2227,6 +2234,7 @@ library
       Arkham.Treachery.Cards.RottingRemainsBloodOnTheAltar
       Arkham.Treachery.Cards.RuinAndDestruction
       Arkham.Treachery.Cards.SearchingForIzzie
+      Arkham.Treachery.Cards.SecretsOfTheBeyond
       Arkham.Treachery.Cards.SelfDestructive
       Arkham.Treachery.Cards.SerpentsCall
       Arkham.Treachery.Cards.SerpentsIre
@@ -2252,6 +2260,7 @@ library
       Arkham.Treachery.Cards.TerribleSecret
       Arkham.Treachery.Cards.TerrorFromBeyond
       Arkham.Treachery.Cards.TerrorInTheNight
+      Arkham.Treachery.Cards.TerrorUnleashed
       Arkham.Treachery.Cards.The13thVision
       Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks
@@ -2268,6 +2277,7 @@ library
       Arkham.Treachery.Cards.TheZealotsSeal
       Arkham.Treachery.Cards.ThriceDamnedCuriosity
       Arkham.Treachery.Cards.TimelineDestabilization
+      Arkham.Treachery.Cards.ToilAndTrouble
       Arkham.Treachery.Cards.TorturousChords
       Arkham.Treachery.Cards.ToughCrowd
       Arkham.Treachery.Cards.ToweringBeasts

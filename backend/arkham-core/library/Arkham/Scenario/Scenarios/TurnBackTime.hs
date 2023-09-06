@@ -34,7 +34,7 @@ import Arkham.Scenarios.TurnBackTime.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 newtype TurnBackTime = TurnBackTime ScenarioAttrs
@@ -69,7 +69,7 @@ instance HasChaosTokenValue TurnBackTime where
 
 instance RunMessage TurnBackTime where
   runMessage msg s@(TurnBackTime attrs) = case msg of
-    CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid)] -> do
+    CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
       mRepossessThePast <-
         selectOne $
           InDeckOf (InvestigatorWithId iid)
@@ -203,7 +203,7 @@ instance RunMessage TurnBackTime where
         _ -> error "Unknown Resolution"
       pure s
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do

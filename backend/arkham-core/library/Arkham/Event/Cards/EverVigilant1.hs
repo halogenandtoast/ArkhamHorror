@@ -44,7 +44,7 @@ instance RunMessage EverVigilant1 where
         windows'' =
           nub $
             windows'
-              <> [Window Timing.When (DuringTurn iid), Window Timing.When NonFast]
+              <> [mkWindow Timing.When (DuringTurn iid), mkWindow Timing.When NonFast]
       cards <-
         fieldMap
           InvestigatorHand

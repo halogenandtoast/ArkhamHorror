@@ -38,7 +38,7 @@ instance HasAbilities WitchHauntedWoodsHermitsHouse where
 
 getCount :: [Window] -> Int
 getCount [] = error "wrong window"
-getCount (Window _ (Window.DiscoverClues _ _ _ n) : _) = n
+getCount ((windowType -> Window.DiscoverClues _ _ _ n) : _) = n
 getCount (_ : xs) = getCount xs
 
 instance RunMessage WitchHauntedWoodsHermitsHouse where

@@ -13,7 +13,7 @@ import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Montmartre209 = Montmartre209 EffectAttrs
@@ -38,7 +38,7 @@ instance RunMessage Montmartre209 where
                   iid
                   source
                   UnpaidCost
-                  [Window Timing.When (Window.DuringTurn iid)]
+                  [mkWindow Timing.When (Window.DuringTurn iid)]
               )
               =<< selectList (TopOfDeckOf UneliminatedInvestigator)
           pushAll

@@ -38,7 +38,7 @@ instance HasAbilities ShadowsDeepen where
 
 instance RunMessage ShadowsDeepen where
   runMessage msg a@(ShadowsDeepen attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.EnemySpawns eid _)] _
+    UseCardAbility _ source 1 [(windowType -> Window.EnemySpawns eid _)] _
       | isSource attrs source -> do
           mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
           shadowSpawned <- genCard Treacheries.shadowSpawned

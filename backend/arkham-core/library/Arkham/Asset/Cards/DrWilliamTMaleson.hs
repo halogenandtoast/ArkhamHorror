@@ -12,7 +12,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
@@ -43,7 +43,7 @@ instance RunMessage DrWilliamTMaleson where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       ignoreWindow <-
         checkWindows
-          [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
+          [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
       card <- withQueue $ \queue -> case dropUntilDraw queue of
         InvestigatorDrewEncounterCard _ card' : queue' -> (queue', card')
         _ -> error "unhandled"

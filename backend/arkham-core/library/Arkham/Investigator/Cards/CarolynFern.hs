@@ -67,9 +67,9 @@ data HealedThing = HealedAsset AssetId | HealedInvestigator InvestigatorId
 
 getHealed :: [Window] -> HealedThing
 getHealed [] = error "invalid call"
-getHealed (Window _ (Window.Healed _ (AssetTarget assetId) _ _) : _) =
+getHealed ((windowType -> Window.Healed _ (AssetTarget assetId) _ _) : _) =
   HealedAsset assetId
-getHealed (Window _ (Window.Healed _ (InvestigatorTarget investigatorId) _ _) : _) =
+getHealed ((windowType -> Window.Healed _ (InvestigatorTarget investigatorId) _ _) : _) =
   HealedInvestigator investigatorId
 getHealed (_ : xs) = getHealed xs
 

@@ -30,7 +30,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
@@ -84,10 +84,10 @@ instance RunMessage AssetAttrs where
       for_ mDefeated $ \defeatedBy -> do
         whenWindow <-
           checkWindows
-            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+            [mkWindow Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
         afterWindow <-
           checkWindows
-            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+            [mkWindow Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
         pushAll $
           [whenWindow]
             <> resolve (AssetDefeated assetId)
@@ -106,11 +106,11 @@ instance RunMessage AssetAttrs where
     MovedHorror _ (isTarget a -> True) n -> do
       pure $ a & tokensL %~ addTokens Horror n
     HealDamage (isTarget a -> True) source n -> do
-      afterWindow <- checkWindows [Window Timing.After (Window.Healed DamageType (toTarget a) source n)]
+      afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push afterWindow
       pure $ a & tokensL %~ subtractTokens Token.Damage n
     HealHorror (isTarget a -> True) source n -> do
-      afterWindow <- checkWindows [Window Timing.After (Window.Healed HorrorType (toTarget a) source n)]
+      afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed HorrorType (toTarget a) source n)]
       push afterWindow
       pure $ a & tokensL %~ subtractTokens Horror n
     HealHorrorDirectly target _ amount | isTarget a target -> do
@@ -171,7 +171,7 @@ instance RunMessage AssetAttrs where
     RemoveFromPlay source | isSource a source -> do
       windowMsg <-
         checkWindows
-          ( (`Window` Window.LeavePlay (toTarget a))
+          ( (`mkWindow` Window.LeavePlay (toTarget a))
               <$> [Timing.When, Timing.AtIf, Timing.After]
           )
       pushAll $
@@ -195,10 +195,10 @@ instance RunMessage AssetAttrs where
         applyModifier m _ = m
       whenEnterMsg <-
         checkWindows
-          [Window Timing.When (Window.EnterPlay $ toTarget a)]
+          [mkWindow Timing.When (Window.EnterPlay $ toTarget a)]
       afterEnterMsg <-
         checkWindows
-          [Window Timing.After (Window.EnterPlay $ toTarget a)]
+          [mkWindow Timing.After (Window.EnterPlay $ toTarget a)]
 
       pushAll $
         [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
@@ -215,7 +215,7 @@ instance RunMessage AssetAttrs where
     TakeControlOfAsset iid aid | aid == assetId -> do
       push
         =<< checkWindows
-          ( (`Window` Window.TookControlOfAsset iid aid)
+          ( (`mkWindow` Window.TookControlOfAsset iid aid)
               <$> [Timing.When, Timing.After]
           )
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid

@@ -36,7 +36,7 @@ instance HasAbilities Relentless where
 
 toExcessDamage :: [Window] -> Int
 toExcessDamage [] = error "invalid call"
-toExcessDamage (Window _ (Window.DealtExcessDamage _ _ _ n) : _) = n
+toExcessDamage ((windowType -> Window.DealtExcessDamage _ _ _ n) : _) = n
 toExcessDamage (_ : xs) = toExcessDamage xs
 
 instance RunMessage Relentless where

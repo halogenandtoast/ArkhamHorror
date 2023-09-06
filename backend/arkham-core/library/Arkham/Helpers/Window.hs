@@ -26,24 +26,49 @@ windows windows' = do
   iids <- selectList UneliminatedInvestigator
   pure $ do
     timing <- [Timing.When, Timing.AtIf, Timing.After]
-    [CheckWindow iids $ map (Window timing) windows']
+    [CheckWindow iids $ map (mkWindow timing) windows']
+
+wouldWindows :: (MonadRandom m, HasGame m) => WindowType -> m (BatchId, [Message])
+wouldWindows window = do
+  batchId <- getRandom
+  iids <- selectList UneliminatedInvestigator
+  pure
+    ( batchId
+    , [ CheckWindow iids [Window timing window (Just batchId)]
+      | timing <- [Timing.When, Timing.AtIf, Timing.After]
+      ]
+    )
+
+frame :: HasGame m => WindowType -> m (Message, Message, Message)
+frame window = do
+  iids <- selectList UneliminatedInvestigator
+  pure
+    ( CheckWindow iids [mkWindow Timing.When window]
+    , CheckWindow iids [mkWindow Timing.AtIf window]
+    , CheckWindow iids [mkWindow Timing.After window]
+    )
+
+doFrame :: HasGame m => Message -> WindowType -> m [Message]
+doFrame msg window = do
+  (before, atIf, after) <- frame window
+  pure [before, atIf, Do msg, after]
 
 splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do
   iids <- selectList UneliminatedInvestigator
   pure $
-    [CheckWindow iids $ map (Window Timing.When) windows']
+    [CheckWindow iids $ map (mkWindow Timing.When) windows']
       <> [msg]
-      <> [CheckWindow iids $ map (Window Timing.After) windows']
+      <> [CheckWindow iids $ map (mkWindow Timing.After) windows']
 
 defeatedEnemy :: [Window] -> EnemyId
 defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
-    Window _ (Window.EnemyDefeated _ _ eid) -> Just eid
+    (windowType -> Window.EnemyDefeated _ _ eid) -> Just eid
     _ -> Nothing
 
 evadedEnemy :: [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
-    Window _ (Window.EnemyEvaded _ eid) -> Just eid
+    (windowType -> Window.EnemyEvaded _ eid) -> Just eid
     _ -> Nothing

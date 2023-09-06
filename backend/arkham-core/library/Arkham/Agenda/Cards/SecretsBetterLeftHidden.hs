@@ -52,6 +52,6 @@ instance RunMessage SecretsBetterLeftHidden where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       push $ scenarioResolution 4
       pure a
-    UseCardAbility _ source 1 [Window _ (Window.PlacedClues _ target n)] _
+    UseCardAbility _ source 1 [(windowType -> Window.PlacedClues _ target n)] _
       | isSource attrs source -> a <$ pushAll [FlipClues target n]
     _ -> SecretsBetterLeftHidden <$> runMessage msg attrs

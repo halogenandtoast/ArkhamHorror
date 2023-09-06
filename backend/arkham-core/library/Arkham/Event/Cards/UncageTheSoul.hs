@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype UncageTheSoul = UncageTheSoul EventAttrs
@@ -33,7 +33,7 @@ instance RunMessage UncageTheSoul where
           nub $
             windows'
               <> map
-                (Window Timing.When)
+                (mkWindow Timing.When)
                 [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
       availableResources <- getSpendableResources iid
       results <-

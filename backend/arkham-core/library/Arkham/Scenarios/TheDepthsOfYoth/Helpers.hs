@@ -17,7 +17,7 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone
 import Data.Aeson (Result (..))
@@ -32,7 +32,7 @@ incrementDepth :: HasGame m => m [Message]
 incrementDepth = do
   addingToCurrentDepth <-
     checkWindows
-      [Window Timing.When Window.AddingToCurrentDepth]
+      [mkWindow Timing.When Window.AddingToCurrentDepth]
   pure [addingToCurrentDepth, ScenarioCountIncrementBy CurrentDepth 1]
 
 getCurrentDepth :: HasGame m => m Int

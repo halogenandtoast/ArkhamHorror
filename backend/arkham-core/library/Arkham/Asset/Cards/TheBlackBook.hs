@@ -53,7 +53,7 @@ toHorror = \case
 
 windowToCard :: [Window] -> Card
 windowToCard [] = error "invalid"
-windowToCard (Window _ (Window.PlayCard _ card) : _) = card
+windowToCard ((windowType -> Window.PlayCard _ card) : _) = card
 windowToCard (_ : xs) = windowToCard xs
 
 instance RunMessage TheBlackBook where

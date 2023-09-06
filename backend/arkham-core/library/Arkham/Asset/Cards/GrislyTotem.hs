@@ -32,7 +32,7 @@ instance HasAbilities GrislyTotem where
 
 getCard :: [Window] -> Card
 getCard [] = error "missing card"
-getCard (Window _ (Window.CommittedCard _ c) : _) = c
+getCard ((windowType -> Window.CommittedCard _ c) : _) = c
 getCard (_ : ws) = getCard ws
 
 toSkillLabel :: SkillIcon -> Text

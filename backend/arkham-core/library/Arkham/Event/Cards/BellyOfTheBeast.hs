@@ -23,7 +23,7 @@ bellyOfTheBeast = event BellyOfTheBeast Cards.bellyOfTheBeast
 
 toEnemyId :: [Window] -> EnemyId
 toEnemyId [] = error "Invalid window"
-toEnemyId (Window _ (Window.SuccessfulEvadeEnemy _ enemyId _) : _) = enemyId
+toEnemyId ((windowType -> Window.SuccessfulEvadeEnemy _ enemyId _) : _) = enemyId
 toEnemyId (_ : xs) = toEnemyId xs
 
 instance RunMessage BellyOfTheBeast where

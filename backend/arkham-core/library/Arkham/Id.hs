@@ -54,6 +54,9 @@ newtype TokenId = TokenId {unTokenId :: UUID}
 newtype CardDrawId = CardDrawId UUID
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
+newtype BatchId = BatchId {unBatchId :: UUID}
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
+
 class AsId a where
   type IdOf a
   asId :: a -> IdOf a

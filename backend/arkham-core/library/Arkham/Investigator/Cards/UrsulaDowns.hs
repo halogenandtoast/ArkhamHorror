@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {moveAfterTest :: Bool}
@@ -59,9 +59,9 @@ instance RunMessage UrsulaDowns where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         windows' =
-          [ Window Timing.When (Window.DuringTurn iid)
-          , Window Timing.When Window.FastPlayerWindow
-          , Window Timing.When Window.NonFast
+          [ mkWindow Timing.When (Window.DuringTurn iid)
+          , mkWindow Timing.When Window.FastPlayerWindow
+          , mkWindow Timing.When Window.NonFast
           ]
       let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
       actions <-

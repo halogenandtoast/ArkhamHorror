@@ -38,7 +38,7 @@ instance HasAbilities DelayTheInevitable where
 
 getDamageAndHorror :: [Window] -> (Int, Int)
 getDamageAndHorror [] = error "wrong window"
-getDamageAndHorror (Window _ (Window.WouldTakeDamageOrHorror _ _ damage horror) : _) =
+getDamageAndHorror ((windowType -> Window.WouldTakeDamageOrHorror _ _ damage horror) : _) =
   (damage, horror)
 getDamageAndHorror (_ : xs) = getDamageAndHorror xs
 

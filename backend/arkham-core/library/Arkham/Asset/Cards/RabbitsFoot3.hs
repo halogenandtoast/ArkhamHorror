@@ -25,21 +25,12 @@ instance HasAbilities RabbitsFoot3 where
     [ restrictedAbility a 1 ControlsThis $
         ReactionAbility
           (SkillTestResult Timing.After You AnySkillTest (FailureResult AnyValue))
-          (ExhaustCost $ toTarget a)
+          (exhaust a)
     ]
 
 instance RunMessage RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
-    UseCardAbility iid source 1 [Window _ (Window.FailSkillTest _ x)] _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( Search
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  [fromTopOfDeck x]
-                  AnyCard
-                  (DrawFound iid 1)
-              )
+    UseCardAbility iid source 1 [(windowType -> Window.FailSkillTest _ x)] _ | isSource attrs source -> do
+      push $ Search iid source (InvestigatorTarget iid) [fromTopOfDeck x] AnyCard (DrawFound iid 1)
+      pure a
     _ -> RabbitsFoot3 <$> runMessage msg attrs

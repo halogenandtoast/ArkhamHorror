@@ -26,7 +26,7 @@ eucatastrophe3 =
 
 toWindowChaosToken :: [Window] -> ChaosToken
 toWindowChaosToken [] = error "Missing window"
-toWindowChaosToken (Window _ (Window.RevealChaosToken _ token) : _) = token
+toWindowChaosToken ((windowType -> Window.RevealChaosToken _ token) : _) = token
 toWindowChaosToken (_ : xs) = toWindowChaosToken xs
 
 instance RunMessage Eucatastrophe3 where

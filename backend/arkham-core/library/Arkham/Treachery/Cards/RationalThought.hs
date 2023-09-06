@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Data.UUID qualified as UUID
 
@@ -78,7 +78,7 @@ instance RunMessage RationalThought where
           do
             afterWindow <-
               checkWindows
-                [ Window
+                [ mkWindow
                     Timing.After
                     ( Window.Healed
                         HorrorType

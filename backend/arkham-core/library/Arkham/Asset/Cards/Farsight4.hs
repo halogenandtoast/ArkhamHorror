@@ -13,7 +13,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Farsight4 = Farsight4 AssetAttrs
@@ -37,8 +37,7 @@ instance HasAbilities Farsight4 where
               (InHandOf You <> BasicCardMatch (CardWithType EventType))
         )
         $ FastAbility
-        $ ExhaustCost
-        $ toTarget a
+        $ exhaust a
     ]
 
 instance RunMessage Farsight4 where
@@ -50,8 +49,8 @@ instance RunMessage Farsight4 where
         windows'' =
           nub $
             windows'
-              <> [ Window Timing.When (Window.DuringTurn iid)
-                 , Window Timing.When Window.FastPlayerWindow
+              <> [ mkWindow Timing.When (Window.DuringTurn iid)
+                 , mkWindow Timing.When Window.FastPlayerWindow
                  ]
       playableEvents <-
         filterM

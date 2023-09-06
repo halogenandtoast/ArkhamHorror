@@ -60,7 +60,7 @@ instance HasModifiersFor OnYourOwn3 where
 
 getCardId :: [Window] -> CardId
 getCardId [] = error "missing play card window"
-getCardId (Window _ (Window.PlayCard _ c) : _) = toCardId c
+getCardId ((windowType -> Window.PlayCard _ c) : _) = toCardId c
 getCardId (_ : xs) = getCardId xs
 
 instance RunMessage OnYourOwn3 where

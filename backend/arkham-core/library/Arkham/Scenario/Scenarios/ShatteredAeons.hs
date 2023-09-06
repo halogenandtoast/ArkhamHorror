@@ -40,7 +40,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype ShatteredAeons = ShatteredAeons ScenarioAttrs
@@ -343,7 +343,7 @@ instance RunMessage ShatteredAeons where
       when (RevealAnotherChaosToken `elem` modifiers) $ push $ DrawAnotherChaosToken iid
       ShatteredAeons <$> runMessage msg attrs
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do

@@ -61,21 +61,18 @@ instance RunMessage PassengerCar_169 where
           iid
           (toSource attrs)
           Nothing
-          [Window Timing.When NonFast]
+          [mkWindow Timing.When NonFast]
           cost
-      l
-        <$ if hasSkills
-          then
-            push
-              ( chooseOne
-                  iid
-                  [ Label
-                      "Take 2 horror"
-                      [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
-                  , Label
-                      "Discard cards with at least 2 {willpower} icons"
-                      [PayForAbility (abilityEffect attrs cost) []]
-                  ]
-              )
-          else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2)
+      if hasSkills
+        then
+          push . chooseOne iid $
+            [ Label
+                "Take 2 horror"
+                [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
+            , Label
+                "Discard cards with at least 2 {willpower} icons"
+                [PayForAbility (abilityEffect attrs cost) []]
+            ]
+        else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2)
+      pure l
     _ -> PassengerCar_169 <$> runMessage msg attrs

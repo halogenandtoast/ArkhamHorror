@@ -22,10 +22,8 @@ closeCall2 = event CloseCall2 Cards.closeCall2
 
 instance RunMessage CloseCall2 where
   runMessage msg e@(CloseCall2 attrs) = case msg of
-    InvestigatorPlayEvent _iid eid _ [Window Timing.After (Window.EnemyEvaded _ enemyId)] _
-      | eid == toId attrs ->
-          e
-            <$ pushAll
-              [ ShuffleBackIntoEncounterDeck (EnemyTarget enemyId)
-              ]
+    InvestigatorPlayEvent _iid eid _ [Window Timing.After (Window.EnemyEvaded _ enemyId) _] _
+      | eid == toId attrs -> do
+          push $ ShuffleBackIntoEncounterDeck (EnemyTarget enemyId)
+          pure e
     _ -> CloseCall2 <$> runMessage msg attrs

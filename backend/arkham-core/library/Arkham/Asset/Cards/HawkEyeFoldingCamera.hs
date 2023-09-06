@@ -52,7 +52,7 @@ instance HasAbilities HawkEyeFoldingCamera where
 
 toLocation :: [Window] -> LocationId
 toLocation [] = error "invalid call"
-toLocation (Window _ (Window.DiscoveringLastClue _ lid) : _) = lid
+toLocation ((windowType -> Window.DiscoveringLastClue _ lid) : _) = lid
 toLocation (_ : xs) = toLocation xs
 
 instance RunMessage HawkEyeFoldingCamera where

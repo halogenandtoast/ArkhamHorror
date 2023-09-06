@@ -11,7 +11,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Window
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype IveHadWorse4 = IveHadWorse4 EventAttrs
@@ -52,7 +52,7 @@ instance RunMessage IveHadWorse4 where
         damageAmount = getChoiceAmount "Damage" choices
         horrorAmount = getChoiceAmount "Horror" choices
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll $
         [CancelDamage iid damageAmount | damageAmount > 0]
           <> [CancelHorror iid horrorAmount | horrorAmount > 0]

@@ -23,7 +23,7 @@ liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 
 instance RunMessage LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.SkillTestEnded st)] _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ [(windowType -> Window.SkillTestEnded st)] _ | eid == toId attrs -> do
       pushAll
         [ skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
         , BeginSkillTest $

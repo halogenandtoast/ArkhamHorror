@@ -11,7 +11,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
@@ -59,8 +59,8 @@ instance RunMessage WilliamYorick where
         windows'' =
           nub $
             windows'
-              <> [ Window Timing.When Window.NonFast
-                 , Window Timing.When (Window.DuringTurn iid)
+              <> [ mkWindow Timing.When Window.NonFast
+                 , mkWindow Timing.When (Window.DuringTurn iid)
                  ]
         targets =
           filter ((== AssetType) . toCardType) (investigatorDiscard attrs)

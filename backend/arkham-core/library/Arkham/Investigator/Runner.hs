@@ -72,7 +72,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each)
@@ -97,34 +97,32 @@ getAllAbilitiesSkippable attrs windows =
   allM (getWindowSkippable attrs windows) windows
 
 getWindowSkippable :: InvestigatorAttrs -> [Window] -> Window -> GameT Bool
-getWindowSkippable attrs ws (Window _ (Window.PlayCard iid card@(PlayerCard pc)))
-  | iid == toId attrs =
-      do
-        modifiers' <- getModifiers (CardIdTarget $ toCardId card)
-        modifiers'' <- getModifiers (CardTarget card)
-        cost <- getModifiedCardCost iid card
-        let
-          allModifiers = modifiers' <> modifiers''
-          isFast =
-            isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
-        andM
-          [ getCanAffordCost
-              (toId attrs)
-              (PlayerCardSource pc)
-              (Just Action.Play)
-              ws
-              (ResourceCost cost)
-          , if isFast
-              then pure True
-              else
-                getCanAffordCost
-                  (toId attrs)
-                  (PlayerCardSource pc)
-                  (Just Action.Play)
-                  ws
-                  (ActionCost 1)
-          ]
-getWindowSkippable _ _ w@(Window _ (Window.ActivateAbility iid ab)) = do
+getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard pc)) | iid == toId attrs = do
+  modifiers' <- getModifiers (CardIdTarget $ toCardId card)
+  modifiers'' <- getModifiers (CardTarget card)
+  cost <- getModifiedCardCost iid card
+  let
+    allModifiers = modifiers' <> modifiers''
+    isFast =
+      isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
+  andM
+    [ getCanAffordCost
+        (toId attrs)
+        (PlayerCardSource pc)
+        (Just Action.Play)
+        ws
+        (ResourceCost cost)
+    , if isFast
+        then pure True
+        else
+          getCanAffordCost
+            (toId attrs)
+            (PlayerCardSource pc)
+            (Just Action.Play)
+            ws
+            (ActionCost 1)
+    ]
+getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid ab) = do
   let
     excludeOne [] = []
     excludeOne (uab : xs)
@@ -269,7 +267,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         partition (cdPermanent . toCardDef) (unDeck deck')
     beforeDrawingStartingHand <-
       checkWindows
-        [Window Timing.When (Window.DrawingStartingHand investigatorId)]
+        [mkWindow Timing.When (Window.DrawingStartingHand investigatorId)]
     let
       deck''' =
         filter ((`notElem` investigatorStartsWithInHand) . toCardDef) deck''
@@ -338,7 +336,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               iid
               (toSource a)
               Nothing
-              [Window Timing.When Window.NonFast]
+              [mkWindow Timing.When Window.NonFast]
               (mconcat additionalCosts)
           when canPay $
             pushAll $
@@ -431,7 +429,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <-
       checkWindows
-        [Window Timing.After (Window.DrawingStartingHand iid)]
+        [mkWindow Timing.After (Window.DrawingStartingHand iid)]
     additionalHandCards <- traverse genCard investigatorStartsWithInHand
     pushAll [ShuffleDiscardBackIn iid, window]
     pure $
@@ -460,7 +458,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- a card effect defeats an investigator directly
     windowMsg <-
       checkWindows
-        ( ( `Window`
+        ( ( `mkWindow`
               Window.InvestigatorWouldBeDefeated
                 (DefeatedByOther source)
                 (toId a)
@@ -487,7 +485,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         if investigatorSanityDamage a >= modifiedSanity then 1 else 0
     windowMsg <-
       checkWindows
-        ( (`Window` Window.InvestigatorDefeated defeatedBy iid)
+        ( (`mkWindow` Window.InvestigatorDefeated defeatedBy iid)
             <$> [Timing.After]
         )
     killed <- hasModifier a KilledIfDefeated
@@ -648,10 +646,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           find ((== cardId) . toCardId) investigatorHand
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.Discarded iid source card)]
+        [mkWindow Timing.When (Window.Discarded iid source card)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.Discarded iid source card)]
+        [mkWindow Timing.After (Window.Discarded iid source card)]
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (DiscardCard iid _source cardId) | iid == investigatorId -> do
@@ -777,23 +775,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toTarget a)
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.PerformAction iid Action.Engage)]
+        [mkWindow Timing.When (Window.PerformAction iid Action.Engage)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.PerformAction iid Action.Engage)]
+        [mkWindow Timing.After (Window.PerformAction iid Action.Engage)]
 
-    a
-      <$ pushAll
-        ( [ BeginAction
-          , beforeWindowMsg
-          , TakeAction iid (Just Action.Engage) (ActionCost 1)
-          ]
-            <> [ CheckAttackOfOpportunity iid False
-               | ActionDoesNotCauseAttacksOfOpportunity Action.Engage
-                  `notElem` modifiers'
-               ]
-            <> [EngageEnemy iid eid False, afterWindowMsg, FinishAction]
-        )
+    pushAll $
+      [ BeginAction
+      , beforeWindowMsg
+      , TakeAction iid (Just Action.Engage) (ActionCost 1)
+      ]
+        <> [ CheckAttackOfOpportunity iid False
+           | ActionDoesNotCauseAttacksOfOpportunity Action.Engage
+              `notElem` modifiers'
+           ]
+        <> [EngageEnemy iid eid False, afterWindowMsg, FinishAction]
+    pure a
   EngageEnemy iid eid False
     | iid == investigatorId ->
         pure $ a & engagedEnemiesL %~ insertSet eid
@@ -804,10 +801,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toTarget a)
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.PerformAction iid Action.Fight)]
+        [mkWindow Timing.When (Window.PerformAction iid Action.Fight)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.PerformAction iid Action.Fight)]
+        [mkWindow Timing.After (Window.PerformAction iid Action.Fight)]
     let
       takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyFightCostModifiers :: Cost -> ModifierType -> Cost
@@ -866,7 +863,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (EnemyDamage eid $ attack source damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
     doNotDisengage <- hasModifier a DoNotDisengageEvaded
-    push =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]
+    push =<< checkWindows [mkWindow Timing.After (Window.EnemyEvaded iid eid)]
     let
       updateEngagedEnemies =
         if doNotDisengage then id else engagedEnemiesL %~ deleteSet eid
@@ -906,10 +903,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toTarget a)
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.PerformAction iid Action.Evade)]
+        [mkWindow Timing.When (Window.PerformAction iid Action.Evade)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.PerformAction iid Action.Evade)]
+        [mkWindow Timing.After (Window.PerformAction iid Action.Evade)]
     let
       takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
@@ -944,10 +941,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAction iid lid cost True | iid == investigatorId -> do
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.PerformAction iid Action.Move)]
+        [mkWindow Timing.When (Window.PerformAction iid Action.Move)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.PerformAction iid Action.Move)]
+        [mkWindow Timing.After (Window.PerformAction iid Action.Move)]
     pushAll
       [ BeginAction
       , beforeWindowMsg
@@ -960,7 +957,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAction iid lid _cost False | iid == investigatorId -> do
     afterWindowMsg <-
       Helpers.checkWindows
-        [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
+        [mkWindow Timing.After $ Window.MoveAction iid investigatorLocation lid]
     pushAll $ resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg]
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
@@ -994,13 +991,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == iid' && iid == investigatorId -> do
         window <-
           checkWindows
-            [Window Timing.When (Window.WouldPassSkillTest iid)]
+            [mkWindow Timing.When (Window.WouldPassSkillTest iid)]
         a <$ push window
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> do
         window <-
           checkWindows
-            [Window Timing.When (Window.WouldFailSkillTest iid)]
+            [mkWindow Timing.When (Window.WouldFailSkillTest iid)]
         a <$ push window
   CancelDamage iid n | iid == investigatorId -> do
     a <$ withQueue_ \queue -> flip
@@ -1046,7 +1043,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         do
           pushAll
             ( [ CheckWindow [iid] $
-                Window
+                mkWindow
                   Timing.When
                   ( Window.WouldTakeDamageOrHorror
                       source
@@ -1054,12 +1051,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       damage
                       horror
                   )
-                  : [ Window
+                  : [ mkWindow
                       Timing.When
                       (Window.WouldTakeDamage source (toTarget a) damage)
                     | damage > 0
                     ]
-                    <> [ Window
+                    <> [ mkWindow
                         Timing.When
                         (Window.WouldTakeHorror source (toTarget a) horror)
                        | horror > 0
@@ -1091,7 +1088,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             else
               pushAll
                 ( [ CheckWindow [iid] $
-                    Window
+                    mkWindow
                       Timing.When
                       ( Window.WouldTakeDamageOrHorror
                           source
@@ -1099,12 +1096,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                           damage
                           horror
                       )
-                      : [ Window
+                      : [ mkWindow
                           Timing.When
                           (Window.WouldTakeDamage source (toTarget a) damage)
                         | damage > 0
                         ]
-                        <> [ Window
+                        <> [ mkWindow
                             Timing.When
                             (Window.WouldTakeHorror source (toTarget a) horror)
                            | horror > 0
@@ -1143,39 +1140,39 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           placedWindowMsg <-
             checkWindows $
               ( concatMap
-                  (\t -> map (Window t) placedWindows)
+                  (\t -> map (mkWindow t) placedWindows)
                   [Timing.When, Timing.After]
               )
           pushAll $
             [ placedWindowMsg
             , CheckWindow [iid] $
-                [ Window
+                [ mkWindow
                   Timing.When
                   (Window.DealtDamage source damageEffect target damage)
                 | target <- nub damageTargets
                 , let damage = count (== target) damageTargets
                 ]
-                  <> [ Window Timing.When (Window.DealtHorror source target horror)
+                  <> [ mkWindow Timing.When (Window.DealtHorror source target horror)
                      | target <- nub horrorTargets
                      , let horror = count (== target) horrorTargets
                      ]
-                  <> [ Window
+                  <> [ mkWindow
                       Timing.When
                       (Window.AssignedHorror source iid horrorTargets)
                      | notNull horrorTargets
                      ]
             , CheckWindow [iid] $
-                [ Window
+                [ mkWindow
                   Timing.After
                   (Window.DealtDamage source damageEffect target damage)
                 | target <- nub damageTargets
                 , let damage = count (== target) damageTargets
                 ]
-                  <> [ Window Timing.After (Window.DealtHorror source target horror)
+                  <> [ mkWindow Timing.After (Window.DealtHorror source target horror)
                      | target <- nub horrorTargets
                      , let horror = count (== target) horrorTargets
                      ]
-                  <> [ Window
+                  <> [ mkWindow
                       Timing.After
                       (Window.AssignedHorror source iid horrorTargets)
                      | notNull horrorTargets
@@ -1496,10 +1493,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     do
       beforeWindowMsg <-
         checkWindows
-          [Window Timing.When (Window.PerformAction iid Action.Investigate)]
+          [mkWindow Timing.When (Window.PerformAction iid Action.Investigate)]
       afterWindowMsg <-
         checkWindows
-          [Window Timing.After (Window.PerformAction iid Action.Investigate)]
+          [mkWindow Timing.After (Window.PerformAction iid Action.Investigate)]
       modifiers <- getModifiers (LocationTarget lid)
       modifiers' <- getModifiers (toTarget a)
       let
@@ -1528,7 +1525,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     when canDiscoverClues $ do
       checkWindowMsg <-
         checkWindows
-          [Window Timing.When (Window.DiscoverClues iid lid source n)]
+          [mkWindow Timing.When (Window.DiscoverClues iid lid source n)]
       pushAll [checkWindowMsg, Do msg]
     pure a
   Do (InvestigatorDiscoverClues iid lid source n maction) | iid == investigatorId -> do
@@ -1539,7 +1536,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   GainClues iid source n | iid == investigatorId -> do
     window <-
       checkWindows
-        ((`Window` Window.GainsClues iid source n) <$> [Timing.When, Timing.After])
+        ((`mkWindow` Window.GainsClues iid source n) <$> [Timing.When, Timing.After])
     pushAll
       [window, PlaceTokens source (toTarget iid) Clue n, After (GainClues iid source n)]
     pure a
@@ -1615,10 +1612,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       unless shouldSkip $ do
         afterPlayCard <-
           checkWindows
-            [Window Timing.After (Window.PlayCard iid card)]
+            [mkWindow Timing.After (Window.PlayCard iid card)]
 
         pushAll
-          [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
+          [ CheckWindow [iid] [mkWindow Timing.When (Window.PlayCard iid card)]
           , PlayCard iid card mtarget windows' asAction
           , afterPlayCard
           ]
@@ -1745,7 +1742,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (False, False) -> DefeatedByOther source
         windowMsg <-
           checkWindows
-            ( ( `Window`
+            ( ( `mkWindow`
                   Window.InvestigatorWouldBeDefeated
                     defeatedBy
                     (toId a)
@@ -1779,7 +1776,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     do
       afterWindow <-
         checkWindows
-          [ Window
+          [ mkWindow
               Timing.After
               (Window.Healed DamageType (toTarget a) source amount)
           ]
@@ -1805,7 +1802,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else do
             afterWindow <-
               checkWindows
-                [ Window
+                [ mkWindow
                     Timing.After
                     ( Window.Healed
                         HorrorType
@@ -1829,7 +1826,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else do
           afterWindow <-
             checkWindows
-              [ Window
+              [ mkWindow
                   Timing.After
                   (Window.Healed HorrorType (toTarget a) source amount)
               ]
@@ -1858,7 +1855,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (False, False) -> DefeatedByOther source
     windowMsg <-
       checkWindows
-        ( (`Window` Window.InvestigatorDefeated defeatedBy iid)
+        ( (`mkWindow` Window.InvestigatorDefeated defeatedBy iid)
             <$> [Timing.When]
         )
     pushAll [windowMsg, InvestigatorIsDefeated source iid]
@@ -1889,10 +1886,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows
-            [Window Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]
+            [mkWindow Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]
         afterEnterWindow <-
           checkWindows
-            [Window Timing.After (Window.Entering iid lid)]
+            [mkWindow Timing.After (Window.Entering iid lid)]
         pushAll $
           movedByWindows
             <> [ WhenWillEnterLocation iid lid
@@ -1980,7 +1977,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         then
           pure
             <$> checkWindows
-              ((`Window` Window.DeckHasNoCards iid) <$> [Timing.When, Timing.After])
+              ((`mkWindow` Window.DeckHasNoCards iid) <$> [Timing.When, Timing.After])
         else pure []
     pushAll $
       windowMsgs
@@ -2029,10 +2026,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             n = cardDrawAmount cardDraw
           beforeWindowMsg <-
             checkWindows
-              [Window Timing.When (Window.PerformAction iid Action.Draw)]
+              [mkWindow Timing.When (Window.PerformAction iid Action.Draw)]
           afterWindowMsg <-
             checkWindows
-              [Window Timing.After (Window.PerformAction iid Action.Draw)]
+              [mkWindow Timing.After (Window.PerformAction iid Action.Draw)]
           drawing <- drawCards iid source n
           a
             <$ pushAll
@@ -2156,13 +2153,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       then
                         pure
                           <$> checkWindows
-                            ( (`Window` Window.DeckHasNoCards iid)
+                            ( (`mkWindow` Window.DeckHasNoCards iid)
                                 <$> [Timing.When, Timing.After]
                             )
                       else pure []
                   drawCardsWindowMsg <-
                     checkWindows
-                      [ Window Timing.When $
+                      [ mkWindow Timing.When $
                           Window.DrawCards iid $
                             map
                               PlayerCard
@@ -2183,7 +2180,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-
       checkWindows
-        [ Window
+        [ mkWindow
             Timing.After
             (Window.DrawCard iid (PlayerCard card) $ Deck.InvestigatorDeck iid)
         ]
@@ -2198,10 +2195,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   LoseResources iid source n | iid == investigatorId -> do
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.LostResources iid source n)]
+        [mkWindow Timing.When (Window.LostResources iid source n)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.LostResources iid source n)]
+        [mkWindow Timing.After (Window.LostResources iid source n)]
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (LoseResources iid _ n) | iid == investigatorId -> do
@@ -2210,10 +2207,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n source True | iid == investigatorId -> do
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.PerformAction iid Action.Resource)]
+        [mkWindow Timing.When (Window.PerformAction iid Action.Resource)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.PerformAction iid Action.Resource)]
+        [mkWindow Timing.After (Window.PerformAction iid Action.Resource)]
     unlessM (hasModifier a CannotGainResources) $
       pushAll
         [ BeginAction
@@ -2296,13 +2293,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           cards
     pure $ a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
   ChaosTokenCanceled iid _ token | iid == investigatorId -> do
-    whenWindow <- checkWindows [Window Timing.When (Window.CancelChaosToken iid token)]
-    afterWindow <- checkWindows [Window Timing.After (Window.CancelChaosToken iid token)]
+    whenWindow <- checkWindows [mkWindow Timing.When (Window.CancelChaosToken iid token)]
+    afterWindow <- checkWindows [mkWindow Timing.After (Window.CancelChaosToken iid token)]
     pushAll [whenWindow, afterWindow]
     pure a
   ChaosTokenIgnored iid _ token | iid == investigatorId -> do
-    whenWindow <- checkWindows [Window Timing.When (Window.IgnoreChaosToken iid token)]
-    afterWindow <- checkWindows [Window Timing.After (Window.IgnoreChaosToken iid token)]
+    whenWindow <- checkWindows [mkWindow Timing.When (Window.IgnoreChaosToken iid token)]
+    afterWindow <- checkWindows [mkWindow Timing.After (Window.IgnoreChaosToken iid token)]
     pushAll [whenWindow, afterWindow]
     pure a
   BeforeSkillTest skillTest | skillTestInvestigator skillTest == investigatorId -> do
@@ -2327,7 +2324,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           committedCardTitles = map toTitle allCommittedCards
         let
           window =
-            Window Timing.When (Window.SkillTest $ skillTestType skillTest)
+            mkWindow Timing.When (Window.SkillTest $ skillTestType skillTest)
         actions <- getActions iid window
         isScenarioAbility <- getIsScenarioAbility
         clueCount <- field LocationClues investigatorLocation
@@ -2684,10 +2681,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   LoseActions iid source n | iid == investigatorId -> do
     beforeWindowMsg <-
       checkWindows
-        [Window Timing.When (Window.LostActions iid source n)]
+        [mkWindow Timing.When (Window.LostActions iid source n)]
     afterWindowMsg <-
       checkWindows
-        [Window Timing.After (Window.LostActions iid source n)]
+        [mkWindow Timing.After (Window.LostActions iid source n)]
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (LoseActions iid source n) | iid == investigatorId -> do
@@ -2993,8 +2990,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             PlayFound who n -> do
               let
                 windows' =
-                  [ Window Timing.When Window.NonFast
-                  , Window Timing.When (Window.DuringTurn iid)
+                  [ mkWindow Timing.When Window.NonFast
+                  , mkWindow Timing.When (Window.DuringTurn iid)
                   ]
               playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
                 cards' <-
@@ -3017,8 +3014,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             PlayFoundNoCost who n -> do
               let
                 windows' =
-                  [ Window Timing.When Window.NonFast
-                  , Window Timing.When (Window.DuringTurn iid)
+                  [ mkWindow Timing.When Window.NonFast
+                  , mkWindow Timing.When (Window.DuringTurn iid)
                   ]
               playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
                 cards' <-
@@ -3056,7 +3053,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           push $
             CheckWindow
               [iid]
-              [Window Timing.When (Window.AmongSearchedCards iid)]
+              [mkWindow Timing.When (Window.AmongSearchedCards iid)]
           pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId
     | iid == investigatorId ->
@@ -3123,18 +3120,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ( \case
                   Action.Investigate -> case mTarget of
                     Just (LocationTarget lid) ->
-                      [ Window
+                      [ mkWindow
                           Timing.When
                           (Window.FailInvestigationSkillTest iid lid n)
-                      , Window
+                      , mkWindow
                           Timing.After
                           (Window.FailInvestigationSkillTest iid lid n)
                       ]
                     _ ->
-                      [ Window
+                      [ mkWindow
                           Timing.When
                           (Window.FailInvestigationSkillTest iid investigatorLocation n)
-                      , Window
+                      , mkWindow
                           Timing.After
                           (Window.FailInvestigationSkillTest iid investigatorLocation n)
                       ]
@@ -3143,8 +3140,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               mAction
         windowMsg <-
           checkWindows $
-            Window Timing.When (Window.FailSkillTest iid n)
-              : Window Timing.After (Window.FailSkillTest iid n)
+            mkWindow Timing.When (Window.FailSkillTest iid n)
+              : mkWindow Timing.After (Window.FailSkillTest iid n)
               : windows
         a <$ push windowMsg
   When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
@@ -3157,20 +3154,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ( \case
                   Action.Investigate -> case mTarget of
                     Just (ProxyTarget (LocationTarget lid) _) ->
-                      [ Window
+                      [ mkWindow
                           Timing.When
                           (Window.PassInvestigationSkillTest iid lid n)
                       ]
                     Just (LocationTarget lid) ->
-                      [ Window
+                      [ mkWindow
                           Timing.When
                           (Window.PassInvestigationSkillTest iid lid n)
                       ]
                     Just (BothTarget (LocationTarget lid1) (LocationTarget lid2)) ->
-                      [ Window
+                      [ mkWindow
                           Timing.When
                           (Window.PassInvestigationSkillTest iid lid1 n)
-                      , Window
+                      , mkWindow
                           Timing.When
                           (Window.PassInvestigationSkillTest iid lid2 n)
                       ]
@@ -3180,7 +3177,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               mAction
         window <-
           checkWindows
-            ( Window Timing.When (Window.PassSkillTest mAction source iid n)
+            ( mkWindow Timing.When (Window.PassSkillTest mAction source iid n)
                 : windows
             )
         a <$ push window
@@ -3194,20 +3191,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ( \case
                   Action.Investigate -> case mTarget of
                     Just (ProxyTarget (LocationTarget lid) _) ->
-                      [ Window
+                      [ mkWindow
                           Timing.After
                           (Window.PassInvestigationSkillTest iid lid n)
                       ]
                     Just (LocationTarget lid) ->
-                      [ Window
+                      [ mkWindow
                           Timing.After
                           (Window.PassInvestigationSkillTest iid lid n)
                       ]
                     Just (BothTarget (LocationTarget lid1) (LocationTarget lid2)) ->
-                      [ Window
+                      [ mkWindow
                           Timing.After
                           (Window.PassInvestigationSkillTest iid lid1 n)
-                      , Window
+                      , mkWindow
                           Timing.After
                           (Window.PassInvestigationSkillTest iid lid2 n)
                       ]
@@ -3217,16 +3214,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               mAction
         window <-
           checkWindows
-            ( Window Timing.After (Window.PassSkillTest mAction source iid n)
+            ( mkWindow Timing.After (Window.PassSkillTest mAction source iid n)
                 : windows
             )
         a <$ push window
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     let
       windows =
-        [ Window Timing.When (Window.DuringTurn iid)
-        , Window Timing.When Window.FastPlayerWindow
-        , Window Timing.When Window.NonFast
+        [ mkWindow Timing.When (Window.DuringTurn iid)
+        , mkWindow Timing.When Window.FastPlayerWindow
+        , mkWindow Timing.When Window.NonFast
         ]
     actions <- nub <$> concatMapM (getActions iid) windows
     anyForced <- anyM (isForcedAbility iid) actions
@@ -3309,8 +3306,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
     let
       windows =
-        [ Window Timing.When (Window.DuringTurn iid)
-        , Window Timing.When Window.FastPlayerWindow
+        [ mkWindow Timing.When (Window.DuringTurn iid)
+        , mkWindow Timing.When Window.FastPlayerWindow
         ]
     actions <- nub <$> concatMapM (getActions investigatorId) windows
     anyForced <- anyM (isForcedAbility investigatorId) actions

@@ -14,7 +14,7 @@ import Arkham.Keyword (Keyword (Retaliate))
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype FortyFiveAutomatic2 = FortyFiveAutomatic2 AssetAttrs
@@ -45,7 +45,7 @@ instance RunMessage FortyFiveAutomatic2 where
       pure a
     Successful (Action.Fight, EnemyTarget eid) _ _ (isTarget attrs -> True) _ -> do
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       ignored <- member eid <$> select (EnemyWithKeyword Retaliate)
       pushAll $ EnemyDamage eid (attack attrs 1) : [ignoreWindow | ignored]
       pure a

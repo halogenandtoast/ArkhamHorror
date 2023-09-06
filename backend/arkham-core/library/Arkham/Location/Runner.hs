@@ -48,7 +48,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
@@ -132,10 +132,10 @@ instance RunMessage LocationAttrs where
       clueAmount <- cluesToDiscover iid 1
       whenWindowMsg <-
         checkWindows
-          [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
+          [mkWindow Timing.When (Window.SuccessfulInvestigation iid lid)]
       afterWindowMsg <-
         checkWindows
-          [Window Timing.After (Window.SuccessfulInvestigation iid lid)]
+          [mkWindow Timing.After (Window.SuccessfulInvestigation iid lid)]
       unless (AlternateSuccessfullInvestigation `elem` modifiers') $
         pushAll
           [ whenWindowMsg
@@ -237,8 +237,8 @@ instance RunMessage LocationAttrs where
       let clueCount = max 0 $ subtract n $ locationClues a
       push
         =<< checkWindows
-          ( Window Timing.After (Window.DiscoverClues iid lid source n)
-              : [ Window Timing.After (Window.DiscoveringLastClue iid lid)
+          ( mkWindow Timing.After (Window.DiscoverClues iid lid source n)
+              : [ mkWindow Timing.After (Window.DiscoveringLastClue iid lid)
                 | lastClue
                 ]
           )
@@ -248,7 +248,7 @@ instance RunMessage LocationAttrs where
       | lid /= locationId && iid `elem` locationInvestigators ->
           pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
     EnterLocation iid lid | lid == locationId -> do
-      push =<< checkWindows [Window Timing.When $ Window.Entering iid lid]
+      push =<< checkWindows [mkWindow Timing.When $ Window.Entering iid lid]
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
     SetFlippable lid flippable
@@ -382,11 +382,11 @@ instance RunMessage LocationAttrs where
       revealer <- maybe getLeadInvestigatorId pure miid
       whenWindowMsg <-
         checkWindows
-          [Window Timing.When (Window.RevealLocation revealer lid)]
+          [mkWindow Timing.When (Window.RevealLocation revealer lid)]
 
       afterWindowMsg <-
         checkWindows
-          [Window Timing.After (Window.RevealLocation revealer lid)]
+          [mkWindow Timing.After (Window.RevealLocation revealer lid)]
       pushAll $
         [whenWindowMsg, afterWindowMsg]
           <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
@@ -404,21 +404,22 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
-    PlaceBreach lid
-      | lid == toId a
-      , locationBreaches /= Just Breach.Incursion -> do
-          let breachCount = maybe 0 Breach.countBreaches locationBreaches
-          if breachCount + 1 >= 4
-            then do
-              push $ Incursion (toId a)
-              pure a
-            else pure $ a & breachesL ?~ Breach.Breaches (breachCount + 1)
+    PlaceBreach (isTarget a -> True) | locationBreaches /= Just Breach.Incursion -> do
+      let breachCount = maybe 0 Breach.countBreaches locationBreaches
+      if breachCount + 1 >= 4
+        then do
+          push $ Incursion (toId a)
+          pure a
+        else pure $ a & breachesL ?~ Breach.Breaches (breachCount + 1)
+    RemoveBreach (isTarget a -> True) | locationBreaches /= Just Breach.Incursion -> do
+      let breachCount = maybe 0 Breach.countBreaches locationBreaches
+      pure $ a & breachesL ?~ Breach.Breaches (max 0 $ breachCount - 1)
     Incursion lid | lid == toId a -> do
       -- Æ First, remove all breaches on that location.
       -- Æ Second, place 1 doom on that location.
       -- Æ Finally, place 1 breach on each connecting location. This can chain‐react and cause additional incursions to occur, so beware!
       -- Æ Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.
-      targets <- selectList $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
+      targets <- selectTargets $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
       pushAll $ PlaceDoom (toSource a) (toTarget a) 1 : map PlaceBreach targets
       pure $ a & breachesL ?~ Breach.Incursion
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False

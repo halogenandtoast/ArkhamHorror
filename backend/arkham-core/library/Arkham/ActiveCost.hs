@@ -51,7 +51,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 activeCostActions :: ActiveCost -> [Action]
@@ -184,7 +184,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
       let action = fromMaybe Action.Ability $ mAction
       beforeWindowMsg <-
         checkWindows
-          [Window Timing.When (Window.PerformAction iid action)]
+          [mkWindow Timing.When (Window.PerformAction iid action)]
       if action
         `notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
         then
@@ -231,7 +231,7 @@ instance RunMessage ActiveCost where
               as -> as
           beforeWindowMsg <-
             checkWindows $
-              map (Window Timing.When . Window.PerformAction iid) actions
+              map (mkWindow Timing.When . Window.PerformAction iid) actions
           pushAll $
             [ BeginAction
             , beforeWindowMsg
@@ -260,7 +260,7 @@ instance RunMessage ActiveCost where
           startAbilityPayment
             c
             iid
-            (Window Timing.When Window.NonFast) -- TODO: a thing
+            (mkWindow Timing.When Window.NonFast) -- TODO: a thing
             abilityType
             abilitySource
             ( abilityDoesNotProvokeAttacksOfOpportunity
@@ -432,7 +432,7 @@ instance RunMessage ActiveCost where
           let
             getDrawnCard [] = error "can not find drawn card in windows"
             getDrawnCard (x : xs) = case x of
-              Window _ (Window.DrawCard _ card' _) -> card'
+              (windowType -> Window.DrawCard _ card' _) -> card'
               _ -> getDrawnCard xs
             card = getDrawnCard (activeCostWindows c)
           push $ toMessage $ discardCard iid (activeCostSource c) card
@@ -473,7 +473,7 @@ instance RunMessage ActiveCost where
           let
             getPlayedCard [] = error "can not find played card in windows"
             getPlayedCard (x : xs) = case x of
-              Window _ (Window.PlayCard _ card') -> card'
+              (windowType -> Window.PlayCard _ card') -> card'
               _ -> getPlayedCard xs
             card = getPlayedCard (activeCostWindows c)
           availableResources <- getSpendableResources iid
@@ -621,7 +621,7 @@ instance RunMessage ActiveCost where
             let
               getDrawnCards [] = error "can not find drawn card in windows"
               getDrawnCards (x : xs) = case x of
-                Window _ (Window.DrawCards _ cards) -> length cards
+                (windowType -> Window.DrawCards _ cards) -> length cards
                 _ -> getDrawnCards xs
               n = getDrawnCards (activeCostWindows c)
             assets <- selectList assetMatcher
@@ -918,16 +918,16 @@ instance RunMessage ActiveCost where
             iid = activeCostInvestigator c
           whenActivateAbilityWindow <-
             checkWindows
-              [Window Timing.When (Window.ActivateAbility iid ability)]
+              [mkWindow Timing.When (Window.ActivateAbility iid ability)]
           afterActivateAbilityWindow <-
             checkWindows
-              [Window Timing.After (Window.ActivateAbility iid ability)]
+              [mkWindow Timing.After (Window.ActivateAbility iid ability)]
           afterMsgs <-
             if isAction
               then do
                 afterWindowMsgs <-
                   checkWindows
-                    [Window Timing.After (Window.PerformAction iid action)]
+                    [mkWindow Timing.After (Window.PerformAction iid action)]
                 pure [afterWindowMsgs, FinishAction]
               else pure []
           -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport

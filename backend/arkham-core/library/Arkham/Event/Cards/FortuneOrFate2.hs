@@ -21,7 +21,7 @@ fortuneOrFate2 = event FortuneOrFate2 Cards.fortuneOrFate2
 
 getDoomTarget :: [Window] -> Target
 getDoomTarget [] = error "wrong window"
-getDoomTarget (Window _ (Window.PlacedDoom _ doomTarget _) : _) = doomTarget
+getDoomTarget ((windowType -> Window.PlacedDoom _ doomTarget _) : _) = doomTarget
 getDoomTarget (_ : xs) = getDoomTarget xs
 
 instance RunMessage FortuneOrFate2 where

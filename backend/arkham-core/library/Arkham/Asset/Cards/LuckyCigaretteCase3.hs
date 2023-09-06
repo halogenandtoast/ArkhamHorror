@@ -35,7 +35,7 @@ instance HasAbilities LuckyCigaretteCase3 where
 
 toSuccessResult :: [Window] -> Int
 toSuccessResult [] = error "invalid call"
-toSuccessResult (Window _ (Window.PassSkillTest _ _ _ n) : _) = n
+toSuccessResult ((windowType -> Window.PassSkillTest _ _ _ n) : _) = n
 toSuccessResult (_ : xs) = toSuccessResult xs
 
 instance RunMessage LuckyCigaretteCase3 where

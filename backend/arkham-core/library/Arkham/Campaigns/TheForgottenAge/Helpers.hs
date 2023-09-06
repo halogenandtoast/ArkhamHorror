@@ -24,7 +24,7 @@ import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Result (..), Window (..))
+import Arkham.Window (Result (..), Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 getHasSupply :: HasGame m => InvestigatorId -> Supply -> m Bool
@@ -142,10 +142,10 @@ explore iid source cardMatcher exploreRule matchCount = do
 
             afterPutIntoPlayWindow <-
               checkWindows
-                [Window Timing.After (Window.PutLocationIntoPlay iid lid)]
+                [mkWindow Timing.After (Window.PutLocationIntoPlay iid lid)]
             afterExploredWindow <-
               checkWindows
-                [Window Timing.After $ Window.Explored iid (Success lid)]
+                [mkWindow Timing.After $ Window.Explored iid (Success lid)]
 
             pure $
               locationAction
@@ -159,7 +159,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           else do
             windowMsg <-
               checkWindows
-                [Window Timing.After $ Window.Explored iid (Failure x)]
+                [mkWindow Timing.After $ Window.Explored iid (Failure x)]
             pure
               [ DrewTreachery iid (Just $ ScenarioDeckByKey ExplorationDeck) x
               , windowMsg
@@ -188,12 +188,12 @@ explore iid source cardMatcher exploreRule matchCount = do
 
         afterPutIntoPlayWindow <-
           checkWindows
-            [ Window Timing.After (Window.PutLocationIntoPlay iid lid)
+            [ mkWindow Timing.After (Window.PutLocationIntoPlay iid lid)
             | lid <- locationIds
             ]
         afterExploredWindow <-
           checkWindows
-            [ Window Timing.After $ Window.Explored iid (Success lid)
+            [ mkWindow Timing.After $ Window.Explored iid (Success lid)
             | lid <- locationIds
             ]
 

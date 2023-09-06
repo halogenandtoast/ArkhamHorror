@@ -21,7 +21,7 @@ import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
@@ -55,15 +55,13 @@ hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
 instance HasModifiersFor JoeDiamond where
   getModifiersFor (CardIdTarget cid) (JoeDiamond (a `With` Metadata _)) =
     case hunchDeck a of
-      x : _
-        | toCardId x == cid ->
-            pure $ toModifiers a [ReduceCostOf (CardWithId cid) 2]
+      x : _ | toCardId x == cid -> do
+        pure $ toModifiers a [ReduceCostOf (CardWithId cid) 2]
       _ -> pure []
   getModifiersFor target (JoeDiamond (a `With` Metadata (Just cid)))
     | isTarget a target = case hunchDeck a of
-        x : _
-          | toCardId x == cid ->
-              pure $ toModifiers a [AsIfInHand x]
+        x : _ | toCardId x == cid -> do
+          pure $ toModifiers a [AsIfInHand x]
         _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -139,13 +137,13 @@ instance RunMessage JoeDiamond where
           & decksL
           . at HunchDeck
           ?~ hunchDeck'
-    RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase)]
+    RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase) _]
       | iid == toId attrs -> do
           case hunchDeck attrs of
             x : _ | Just (toCardId x) == revealedHunchCard meta -> do
               wouldBeWindow <-
                 checkWindows
-                  [ Window
+                  [ mkWindow
                       Timing.When
                       (Window.WouldBeShuffledIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) x)
                   ]

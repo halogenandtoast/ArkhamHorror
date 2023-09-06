@@ -13,7 +13,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDamage, EnemyDefeated)
 import Arkham.Projection
-import Arkham.Resolution
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
@@ -55,12 +54,16 @@ instance HasAbilities HuntingTheRougarou where
 
 instance RunMessage HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.EnemyLeaves _ lid)] _
-      | isSource attrs source -> a <$ push (PlaceClues (toAbilitySource attrs 1) (toTarget lid) 1)
+    UseCardAbility _ source 1 [(windowType -> Window.EnemyLeaves _ lid)] _
+      | isSource attrs source -> do
+          push $ PlaceClues (toAbilitySource attrs 1) (toTarget lid) 1
+          pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      a <$ push (ScenarioResolution $ Resolution 2)
+      push R2
+      pure a
     UseCardAbility _ source 3 _ _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
@@ -91,20 +94,13 @@ instance RunMessage HuntingTheRougarou where
         , protectedOurselves
         , calmedItDown
         ]
-        then
-          push
-            ( chooseOne
-                leadInvestigatorId
-                [Label "Resolution 3" [ScenarioResolution $ Resolution 3]]
-            )
+        then push $ chooseOne leadInvestigatorId [Label "Resolution 3" [R3]]
         else
-          push
-            ( chooseOne
-                leadInvestigatorId
-                [Label "Flip back to a side" [RevertAct $ toId attrs]]
-            )
+          push $
+            chooseOne
+              leadInvestigatorId
+              [Label "Flip back to a side" [RevertAct $ toId attrs]]
       pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 B)
-    RevertAct aid
-      | aid == toId attrs && onSide B attrs ->
-          pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 A)
+    RevertAct aid | aid == toId attrs && onSide B attrs -> do
+      pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 A)
     _ -> HuntingTheRougarou <$> runMessage msg attrs

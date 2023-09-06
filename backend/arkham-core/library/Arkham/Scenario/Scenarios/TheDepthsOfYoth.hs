@@ -36,7 +36,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (Injury))
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone
 
@@ -250,7 +250,7 @@ instance RunMessage TheDepthsOfYoth where
             PlaceTokens (toSource attrs) (toTarget harbingerId) Token.Damage startingDamage
       pure s
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do

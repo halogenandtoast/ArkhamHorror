@@ -36,7 +36,7 @@ instance HasAbilities GuardDog where
 
 toEnemyId :: [Window] -> EnemyId
 toEnemyId [] = error "invalid"
-toEnemyId (Window _ (Window.DealtDamage source _ _ _) : ws) = case source of
+toEnemyId ((windowType -> Window.DealtDamage source _ _ _) : ws) = case source of
   EnemySource eid -> eid
   EnemyAttackSource eid -> eid
   _ -> toEnemyId ws

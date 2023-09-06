@@ -45,7 +45,7 @@ instance HasAbilities BaronSamedi where
 
 toDamagedInvestigator :: [Window] -> InvestigatorId
 toDamagedInvestigator [] = error "invalid state"
-toDamagedInvestigator (Window _ (Window.PlacedDamage _ (InvestigatorTarget iid) _) : _) = iid
+toDamagedInvestigator ((windowType -> Window.PlacedDamage _ (InvestigatorTarget iid) _) : _) = iid
 toDamagedInvestigator (_ : xs) = toDamagedInvestigator xs
 
 instance RunMessage BaronSamedi where

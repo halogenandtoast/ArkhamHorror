@@ -37,7 +37,7 @@ import Arkham.Scenarios.TheDoomOfEztli.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone
 
@@ -260,7 +260,7 @@ instance RunMessage TheDoomOfEztli where
               & (actStackL . at 1 ?~ acts)
           )
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do

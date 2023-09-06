@@ -51,6 +51,7 @@ data ActAttrs = ActAttrs
   , actClues :: Int
   , actTreacheries :: Set TreacheryId
   , actDeckId :: Int
+  , actBreaches :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -59,6 +60,9 @@ sequenceL = lens actSequence $ \m x -> m {actSequence = x}
 
 cluesL :: Lens' ActAttrs Int
 cluesL = lens actClues $ \m x -> m {actClues = x}
+
+breachesL :: Lens' ActAttrs (Maybe Int)
+breachesL = lens actBreaches $ \m x -> m {actBreaches = x}
 
 treacheriesL :: Lens' ActAttrs (Set TreacheryId)
 treacheriesL = lens actTreacheries $ \m x -> m {actTreacheries = x}
@@ -83,6 +87,7 @@ actWith (n, side) f cardDef mCost g =
             , actAdvanceCost = mCost
             , actTreacheries = mempty
             , actDeckId = deckId
+            , actBreaches = Nothing
             }
     }
 

@@ -11,7 +11,7 @@ import Arkham.Asset.Runner hiding (RevealChaosToken)
 import Arkham.ChaosToken
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype LuckyDice2 = LuckyDice2 AssetAttrs
@@ -33,7 +33,7 @@ instance RunMessage LuckyDice2 where
   runMessage msg a@(LuckyDice2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll
         [ CreateEffect "02230" Nothing (toSource attrs) (ChaosTokenTarget token)
         , DrawAnotherChaosToken iid

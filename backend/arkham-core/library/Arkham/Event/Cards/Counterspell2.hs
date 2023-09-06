@@ -22,7 +22,7 @@ counterspell2 = event Counterspell2 Cards.counterspell2
 
 instance RunMessage Counterspell2 where
   runMessage msg e@(Counterspell2 attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ [Window _ (Window.RevealChaosToken _ token)] _ | eid == toId attrs -> do
+    InvestigatorPlayEvent _ eid _ [(windowType -> Window.RevealChaosToken _ token)] _ | eid == toId attrs -> do
       cancelChaosToken token
       pushAll
         [ CancelEachNext (toSource attrs) [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]

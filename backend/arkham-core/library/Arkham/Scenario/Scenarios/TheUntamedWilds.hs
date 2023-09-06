@@ -31,7 +31,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUntamedWilds.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs
@@ -179,7 +179,7 @@ instance RunMessage TheUntamedWilds where
         pure s
       _ -> pure s
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do

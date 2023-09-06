@@ -20,7 +20,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype TelescopicSight3 = TelescopicSight3 EventAttrs
@@ -41,30 +41,25 @@ instance HasModifiersFor TelescopicSight3 where
               Nothing -> pure []
               Just lid -> do
                 engaged <- selectAny $ enemyEngagedWith iid
-                pure $
+                pure . toModifiers a $
                   if engaged
-                    then
-                      toModifiers
-                        a
-                        [EnemyFightActionCriteria $ CriteriaOverride Never]
+                    then [EnemyFightActionCriteria $ CriteriaOverride Never]
                     else
-                      toModifiers
-                        a
-                        [ CanModify $
-                            EnemyFightActionCriteria $
-                              CriteriaOverride $
-                                EnemyCriteria $
-                                  ThisEnemy $
-                                    EnemyWithoutModifier CannotBeAttacked
-                                      <> NonEliteEnemy
-                                      <> EnemyAt
-                                        ( LocationMatchAny
-                                            [ LocationWithId lid
-                                            , ConnectedTo $ LocationWithId lid
-                                            ]
-                                        )
-                                      <> NotEnemy (enemyEngagedWith $ eventOwner a)
-                        ]
+                      [ CanModify $
+                          EnemyFightActionCriteria $
+                            CriteriaOverride $
+                              EnemyCriteria $
+                                ThisEnemy $
+                                  EnemyWithoutModifier CannotBeAttacked
+                                    <> NonEliteEnemy
+                                    <> EnemyAt
+                                      ( LocationMatchAny
+                                          [ LocationWithId lid
+                                          , ConnectedTo $ LocationWithId lid
+                                          ]
+                                      )
+                                    <> NotEnemy (enemyEngagedWith $ eventOwner a)
+                      ]
           _ -> pure []
       _ -> pure []
   getModifiersFor _ _ = pure []
@@ -158,7 +153,7 @@ instance RunMessage TelescopicSight3Effect where
                 [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
         ignoreWindow <-
           checkWindows
-            [ Window
+            [ mkWindow
                 Timing.After
                 (Window.CancelledOrIgnoredCardOrGameEffect effectSource)
             ]

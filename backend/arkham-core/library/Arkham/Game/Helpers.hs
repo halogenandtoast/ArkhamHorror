@@ -68,7 +68,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Monad.Reader (local)
 import Data.List.Extra (nubOrdOn)
@@ -415,13 +415,13 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         -- This is difficult and based on the window, so we need to match out the
         -- relevant investigator ids from the window. If this becomes more prevalent
         -- we may want a method from `Window -> Maybe InvestigatorId`
-        case window of
-          Window _ (Window.CommittedCard iid' _) -> do
+        case windowType window of
+          Window.CommittedCard iid' _ -> do
             let
               matchingPerInvestigatorCount =
                 flip count usedAbilities $ \usedAbility' ->
                   flip any (usedAbilityWindows usedAbility') $ \case
-                    Window _ (Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
+                    (windowType -> Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
                     _ -> False
             pure $ matchingPerInvestigatorCount < n
           _ -> error "Unhandled per investigator limit"
@@ -481,7 +481,7 @@ getCanAffordCost iid source mAction windows' = \case
     DrawnCardsValue -> do
       let
         toDrawnCards = \case
-          Window _ (Window.DrawCards _ xs) -> length xs
+          (windowType -> Window.DrawCards _ xs) -> length xs
           _ -> 0
         drawnCardsValue = sum $ map toDrawnCards windows'
       assets <- selectList assetMatcher
@@ -911,7 +911,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       canAffordCost = modifiedCardCost <= (availableResources + additionalResources)
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
-      duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
+      duringTurnWindow = mkWindow Timing.When (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
       canBecomeFast =
         CannotPlay Matcher.FastCard
@@ -1253,7 +1253,7 @@ passesCriteria iid mcard source windows' = \case
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
         Just tIid ->
-          nub $ Window Timing.When (Window.DuringTurn tIid) : windows'
+          nub $ mkWindow Timing.When (Window.DuringTurn tIid) : windows'
     availableResources <- getSpendableResources iid
     results <- selectList cardMatcher
     anyM
@@ -1271,7 +1271,7 @@ passesCriteria iid mcard source windows' = \case
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
         Just tIid ->
-          nub $ Window Timing.When (Window.DuringTurn tIid) : windows'
+          nub $ mkWindow Timing.When (Window.DuringTurn tIid) : windows'
     results <- selectList cardMatcher
     anyM (getIsPlayable iid source costStatus updatedWindows) results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
@@ -1280,8 +1280,8 @@ passesCriteria iid mcard source windows' = \case
         Criteria.DiscardOf matcher -> matcher
         Criteria.AnyPlayerDiscard -> Matcher.Anyone
       windows'' =
-        [ Window Timing.When (Window.DuringTurn iid)
-        , Window Timing.When Window.FastPlayerWindow
+        [ mkWindow Timing.When (Window.DuringTurn iid)
+        , mkWindow Timing.When Window.FastPlayerWindow
         ]
     investigatorIds <-
       filterM
@@ -1429,7 +1429,7 @@ passesCriteria iid mcard source windows' = \case
 
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
-getWindowAsset (Window _ (Window.ActivateAbility _ ability) : xs) = case abilitySource ability of
+getWindowAsset ((windowType -> Window.ActivateAbility _ ability) : xs) = case abilitySource ability of
   AssetSource aid -> Just aid
   _ -> getWindowAsset xs
 getWindowAsset (_ : xs) = getWindowAsset xs
@@ -1464,7 +1464,7 @@ passesEnemyCriteria _iid source windows' criterion =
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
       let
         getAttackingEnemy = \case
-          Window _ (Window.EnemyAttacks details) -> Just $ attackEnemy details
+          Window _ (Window.EnemyAttacks details) _ -> Just $ attackEnemy details
           _ -> Nothing
       in
         case mapMaybe getAttackingEnemy windows' of
@@ -1552,12 +1552,12 @@ windowMatches
   -> Window
   -> Matcher.WindowMatcher
   -> m Bool
-windowMatches _ _ (Window _ Window.DoNotCheckWindow) = pure . const True
+windowMatches _ _ (Window _ Window.DoNotCheckWindow _) = pure . const True
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
   Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
     case window' of
-      Window timing' wType | timing' == Timing.AtIf -> case wType of
+      Window timing' wType _ | timing' == Timing.AtIf -> case wType of
         Window.RevealChaosTokenEffect who token effectId -> do
           cardCode <- field EffectCardCode effectId
           andM
@@ -1582,11 +1582,11 @@ windowMatches iid source window' = \case
         _ -> pure False
       _ -> pure False
   Matcher.GameBegins timing -> pure $ case window' of
-    Window timing' Window.GameBegins -> timing == timing'
+    Window timing' Window.GameBegins _ -> timing == timing'
     _ -> False
   Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher ->
     case window' of
-      Window timing' (Window.TakeDamage source' _ (InvestigatorTarget who)) ->
+      Window timing' (Window.TakeDamage source' _ (InvestigatorTarget who)) _ ->
         andM
           [ pure $ timing == timing'
           , sourceMatches source' sourceMatcher
@@ -1595,7 +1595,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.InvestigatorTakeHorror timing whoMatcher sourceMatcher ->
     case window' of
-      Window timing' (Window.TakeHorror source' (InvestigatorTarget who)) ->
+      Window timing' (Window.TakeHorror source' (InvestigatorTarget who)) _ ->
         andM
           [ pure $ timing == timing'
           , sourceMatches source' sourceMatcher
@@ -1604,13 +1604,13 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher ->
     case window' of
-      Window timing' (Window.WouldTakeDamage source' (InvestigatorTarget who) _) ->
+      Window timing' (Window.WouldTakeDamage source' (InvestigatorTarget who) _) _ ->
         andM
           [ pure $ timing == timing'
           , sourceMatches source' sourceMatcher
           , matchWho iid who whoMatcher
           ]
-      Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) n _)
+      Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) n _) _
         | n > 0 ->
             andM
               [ pure $ timing == timing'
@@ -1620,13 +1620,13 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.InvestigatorWouldTakeHorror timing whoMatcher sourceMatcher ->
     case window' of
-      Window timing' (Window.WouldTakeHorror source' (InvestigatorTarget who) _) ->
+      Window timing' (Window.WouldTakeHorror source' (InvestigatorTarget who) _) _ ->
         andM
           [ pure $ timing == timing'
           , sourceMatches source' sourceMatcher
           , matchWho iid who whoMatcher
           ]
-      Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) _ n)
+      Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) _ n) _
         | n > 0 ->
             andM
               [ pure $ timing == timing'
@@ -1635,7 +1635,7 @@ windowMatches iid source window' = \case
               ]
       _ -> pure False
   Matcher.LostActions timing whoMatcher sourceMatcher -> case window' of
-    Window timing' (Window.LostActions who source' _) ->
+    Window timing' (Window.LostActions who source' _) _ ->
       andM
         [ pure $ timing == timing'
         , sourceMatches source' sourceMatcher
@@ -1643,7 +1643,7 @@ windowMatches iid source window' = \case
         ]
     _ -> pure False
   Matcher.LostResources timing whoMatcher sourceMatcher -> case window' of
-    Window timing' (Window.LostResources who source' _) ->
+    Window timing' (Window.LostResources who source' _) _ ->
       andM
         [ pure $ timing == timing'
         , sourceMatches source' sourceMatcher
@@ -1651,28 +1651,28 @@ windowMatches iid source window' = \case
         ]
     _ -> pure False
   Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher -> case window' of
-    Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source') ->
+    Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source') _ ->
       sourceMatches source' sourceMatcher
     _ -> pure False
   Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case window' of
-    Window _ (Window.WouldBeShuffledIntoDeck deck card) ->
+    Window _ (Window.WouldBeShuffledIntoDeck deck card) _ ->
       andM [deckMatch iid deck deckMatcher, pure $ cardMatch card cardMatcher]
     _ -> pure False
   Matcher.AddingToCurrentDepth -> case window' of
-    Window _ Window.AddingToCurrentDepth -> pure True
+    Window _ Window.AddingToCurrentDepth _ -> pure True
     _ -> pure False
   Matcher.DrawingStartingHand timing whoMatcher -> case window' of
-    Window t (Window.DrawingStartingHand who)
+    Window t (Window.DrawingStartingHand who) _
       | t == timing ->
           matchWho iid who whoMatcher
     _ -> pure False
   Matcher.MovedFromHunter timing enemyMatcher -> case window' of
-    Window t (Window.MovedFromHunter eid)
+    Window t (Window.MovedFromHunter eid) _
       | t == timing ->
           member eid <$> select enemyMatcher
     _ -> pure False
   Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> case window' of
-    Window t (Window.PlaceUnderneath target' card)
+    Window t (Window.PlaceUnderneath target' card) _
       | t == timing ->
           liftA2
             (&&)
@@ -1680,7 +1680,7 @@ windowMatches iid source window' = \case
             (pure $ cardMatch card cardMatcher)
     _ -> pure False
   Matcher.ActivateAbility timing whoMatcher abilityMatcher -> case window' of
-    Window t (Window.ActivateAbility who ability)
+    Window t (Window.ActivateAbility who ability) _
       | t == timing ->
           liftA2
             (&&)
@@ -1688,7 +1688,7 @@ windowMatches iid source window' = \case
             (member ability <$> select abilityMatcher)
     _ -> pure False
   Matcher.CommittedCard timing whoMatcher cardMatcher -> case window' of
-    Window t (Window.CommittedCard who card)
+    Window t (Window.CommittedCard who card) _
       | t == timing ->
           liftA2
             (&&)
@@ -1696,7 +1696,7 @@ windowMatches iid source window' = \case
             (pure $ cardMatch card cardMatcher)
     _ -> pure False
   Matcher.CommittedCards timing whoMatcher cardListMatcher -> case window' of
-    Window t (Window.CommittedCards who cards)
+    Window t (Window.CommittedCards who cards) _
       | t == timing ->
           liftA2
             (&&)
@@ -1705,7 +1705,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.EnemyWouldSpawnAt enemyMatcher locationMatcher ->
     case window' of
-      Window _ (Window.EnemyWouldSpawnAt eid lid) -> do
+      Window _ (Window.EnemyWouldSpawnAt eid lid) _ -> do
         andM
           [ enemyMatches eid enemyMatcher
           , lid <=~> locationMatcher
@@ -1713,7 +1713,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyAttemptsToSpawnAt timing enemyMatcher locationMatcher ->
     case window' of
-      Window t (Window.EnemyAttemptsToSpawnAt eid locationMatcher')
+      Window t (Window.EnemyAttemptsToSpawnAt eid locationMatcher') _
         | t == timing -> do
             case locationMatcher of
               Matcher.LocationNotInPlay -> do
@@ -1724,7 +1724,7 @@ windowMatches iid source window' = \case
               _ -> pure False -- TODO: We may need more things here
       _ -> pure False
   Matcher.TookControlOfAsset timing whoMatcher assetMatcher -> case window' of
-    Window t (Window.TookControlOfAsset who aid)
+    Window t (Window.TookControlOfAsset who aid) _
       | t == timing ->
           liftA2
             (&&)
@@ -1733,7 +1733,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.AssetHealed timing damageType assetMatcher sourceMatcher ->
     case window' of
-      Window t (Window.Healed damageType' (AssetTarget assetId) source' _)
+      Window t (Window.Healed damageType' (AssetTarget assetId) source' _) _
         | t == timing && damageType == damageType' ->
             andM
               [ member assetId <$> select assetMatcher
@@ -1742,28 +1742,28 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.InvestigatorHealed timing damageType whoMatcher sourceMatcher ->
     case window' of
-      Window t (Window.Healed damageType' (InvestigatorTarget who) source' _)
+      Window t (Window.Healed damageType' (InvestigatorTarget who) source' _) _
         | t == timing && damageType == damageType' ->
             andM
               [matchWho iid who whoMatcher, sourceMatches source' sourceMatcher]
       _ -> pure False
   Matcher.WouldPerformRevelationSkillTest timing whoMatcher -> case window' of
-    Window t (Window.WouldPerformRevelationSkillTest who)
+    Window t (Window.WouldPerformRevelationSkillTest who) _
       | t == timing ->
           matchWho iid who whoMatcher
     _ -> pure False
   Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
     case window' of
-      Window t (Window.WouldDrawEncounterCard who p)
+      Window t (Window.WouldDrawEncounterCard who p) _
         | t == timing ->
             liftA2 (&&) (matchWho iid who whoMatcher) (matchPhase p phaseMatcher)
       _ -> pure False
   Matcher.AmongSearchedCards whoMatcher -> case window' of
-    Window _ (Window.AmongSearchedCards who) -> matchWho iid who whoMatcher
+    Window _ (Window.AmongSearchedCards who) _ -> matchWho iid who whoMatcher
     _ -> pure False
   Matcher.Discarded timing whoMatcher sourceMatcher cardMatcher ->
     case window' of
-      Window t (Window.Discarded who source' card)
+      Window t (Window.Discarded who source' card) _
         | t == timing ->
             andM
               [ pure $ cardMatch card cardMatcher
@@ -1772,22 +1772,22 @@ windowMatches iid source window' = \case
               ]
       _ -> pure False
   Matcher.AssetWouldBeDiscarded timing assetMatcher -> case window' of
-    Window t (Window.WouldBeDiscarded (AssetTarget aid))
+    Window t (Window.WouldBeDiscarded (AssetTarget aid)) _
       | t == timing ->
           elem aid <$> select assetMatcher
     _ -> pure False
   Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> case window' of
-    Window t (Window.WouldBeDiscarded (EnemyTarget eid))
+    Window t (Window.WouldBeDiscarded (EnemyTarget eid)) _
       | t == timing ->
           elem eid <$> select enemyMatcher
     _ -> pure False
   Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
-    Window t (Window.AgendaAdvance aid)
+    Window t (Window.AgendaAdvance aid) _
       | t == timingMatcher ->
           agendaMatches aid agendaMatcher
     _ -> pure False
   Matcher.MovedBy timingMatcher whoMatcher sourceMatcher -> case window' of
-    Window t (Window.MovedBy source' _ who)
+    Window t (Window.MovedBy source' _ who) _
       | t == timingMatcher ->
           liftA2
             (&&)
@@ -1796,7 +1796,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.MovedButBeforeEnemyEngagement timingMatcher whoMatcher whereMatcher ->
     case window' of
-      Window t (Window.MovedButBeforeEnemyEngagement who locationId)
+      Window t (Window.MovedButBeforeEnemyEngagement who locationId) _
         | t == timingMatcher ->
             liftA2
               (&&)
@@ -1805,7 +1805,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.InvestigatorDefeated timingMatcher defeatedByMatcher whoMatcher ->
     case window' of
-      Window t (Window.InvestigatorDefeated defeatedBy who)
+      Window t (Window.InvestigatorDefeated defeatedBy who) _
         | t == timingMatcher ->
             andM
               [ matchWho iid who whoMatcher
@@ -1814,7 +1814,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.InvestigatorWouldBeDefeated timingMatcher defeatedByMatcher whoMatcher ->
     case window' of
-      Window t (Window.InvestigatorWouldBeDefeated defeatedBy who)
+      Window t (Window.InvestigatorWouldBeDefeated defeatedBy who) _
         | t == timingMatcher ->
             andM
               [ matchWho iid who whoMatcher
@@ -1823,27 +1823,32 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.AgendaWouldAdvance timingMatcher advancementReason agendaMatcher ->
     case window' of
-      Window t (Window.AgendaWouldAdvance advancementReason' aid)
+      Window t (Window.AgendaWouldAdvance advancementReason' aid) _
         | t == timingMatcher && advancementReason == advancementReason' ->
             agendaMatches
               aid
               agendaMatcher
       _ -> pure False
+  Matcher.WouldPlaceDoomCounter whenMatcher sourceMatcher targetMatcher -> case window' of
+    Window t (Window.WouldPlaceDoom source' target _) _
+      | t == whenMatcher ->
+          andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
+    _ -> pure False
   Matcher.PlacedDoomCounter whenMatcher sourceMatcher targetMatcher -> case window' of
-    Window t (Window.PlacedDoom source' target _)
+    Window t (Window.PlacedDoom source' target _) _
       | t == whenMatcher ->
           andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedHorror source' (InvestigatorTarget iid') n)
+      Window t (Window.PlacedHorror source' (InvestigatorTarget iid') n) _
         | t == whenMatcher && counterMatcher == Matcher.HorrorCounter ->
             andM
               [ matchWho iid iid' whoMatcher
               , sourceMatches source' sourceMatcher
               , gameValueMatches n valueMatcher
               ]
-      Window t (Window.PlacedDamage source' (InvestigatorTarget iid') n)
+      Window t (Window.PlacedDamage source' (InvestigatorTarget iid') n) _
         | t == whenMatcher && counterMatcher == Matcher.DamageCounter ->
             andM
               [ matchWho iid iid' whoMatcher
@@ -1853,14 +1858,14 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.PlacedCounterOnLocation whenMatcher whereMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedClues source' (LocationTarget locationId) n)
+      Window t (Window.PlacedClues source' (LocationTarget locationId) n) _
         | t == whenMatcher && counterMatcher == Matcher.ClueCounter ->
             andM
               [ locationMatches iid source window' locationId whereMatcher
               , sourceMatches source' sourceMatcher
               , gameValueMatches n valueMatcher
               ]
-      Window t (Window.PlacedResources source' (LocationTarget locationId) n)
+      Window t (Window.PlacedResources source' (LocationTarget locationId) n) _
         | t == whenMatcher && counterMatcher == Matcher.ResourceCounter ->
             andM
               [ locationMatches iid source window' locationId whereMatcher
@@ -1870,14 +1875,14 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.PlacedCounterOnEnemy whenMatcher enemyMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedClues source' (EnemyTarget enemyId) n)
+      Window t (Window.PlacedClues source' (EnemyTarget enemyId) n) _
         | t == whenMatcher && counterMatcher == Matcher.ClueCounter ->
             andM
               [ enemyMatches enemyId enemyMatcher
               , sourceMatches source' sourceMatcher
               , gameValueMatches n valueMatcher
               ]
-      Window t (Window.PlacedDoom source' (EnemyTarget enemyId) n)
+      Window t (Window.PlacedDoom source' (EnemyTarget enemyId) n) _
         | t == whenMatcher && counterMatcher == Matcher.DoomCounter ->
             andM
               [ enemyMatches enemyId enemyMatcher
@@ -1887,7 +1892,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.PlacedCounterOnAgenda whenMatcher agendaMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
-      Window t (Window.PlacedDoom source' (AgendaTarget agendaId) n)
+      Window t (Window.PlacedDoom source' (AgendaTarget agendaId) n) _
         | t == whenMatcher && counterMatcher == Matcher.DoomCounter ->
             andM
               [ agendaMatches agendaId agendaMatcher
@@ -1897,7 +1902,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->
     case window' of
-      Window t (Window.RevealLocation who locationId)
+      Window t (Window.RevealLocation who locationId) _
         | t == timingMatcher ->
             liftA2
               (&&)
@@ -1906,7 +1911,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.FlipLocation timingMatcher whoMatcher locationMatcher ->
     case window' of
-      Window t (Window.FlipLocation who locationId)
+      Window t (Window.FlipLocation who locationId) _
         | t == timingMatcher ->
             liftA2
               (&&)
@@ -1914,16 +1919,16 @@ windowMatches iid source window' = \case
               (locationMatches iid source window' locationId locationMatcher)
       _ -> pure False
   Matcher.GameEnds timingMatcher -> case window' of
-    Window t Window.EndOfGame -> pure $ t == timingMatcher
+    Window t Window.EndOfGame _ -> pure $ t == timingMatcher
     _ -> pure False
   Matcher.InvestigatorEliminated timingMatcher whoMatcher -> case window' of
-    Window t (Window.InvestigatorEliminated who)
+    Window t (Window.InvestigatorEliminated who) _
       | t == timingMatcher ->
           matchWho iid who (Matcher.IncludeEliminated whoMatcher)
     _ -> pure False
   Matcher.PutLocationIntoPlay timingMatcher whoMatcher locationMatcher ->
     case window' of
-      Window t (Window.PutLocationIntoPlay who locationId)
+      Window t (Window.PutLocationIntoPlay who locationId) _
         | t == timingMatcher ->
             liftA2
               (&&)
@@ -1936,41 +1941,41 @@ windowMatches iid source window' = \case
     cards <- selectList cardMatcher
     anyM (getIsPlayable iid source UnpaidCost [window']) cards
   Matcher.PhaseBegins whenMatcher phaseMatcher -> case window' of
-    Window t Window.AnyPhaseBegins
+    Window t Window.AnyPhaseBegins _
       | whenMatcher == t ->
           pure $ phaseMatcher == Matcher.AnyPhase
-    Window t (Window.PhaseBegins p)
+    Window t (Window.PhaseBegins p) _
       | whenMatcher == t ->
           matchPhase p phaseMatcher
     _ -> pure False
   Matcher.PhaseEnds whenMatcher phaseMatcher -> case window' of
-    Window t (Window.PhaseEnds p)
+    Window t (Window.PhaseEnds p) _
       | whenMatcher == t ->
           matchPhase p phaseMatcher
     _ -> pure False
   Matcher.PhaseStep whenMatcher phaseStepMatcher -> case window' of
-    Window t Window.EnemiesAttackStep
+    Window t Window.EnemiesAttackStep _
       | whenMatcher == t ->
           pure $ phaseStepMatcher == Matcher.EnemiesAttackStep
-    Window t Window.HuntersMoveStep
+    Window t Window.HuntersMoveStep _
       | whenMatcher == t ->
           pure $ phaseStepMatcher == Matcher.HuntersMoveStep
     _ -> pure False
   Matcher.TurnBegins whenMatcher whoMatcher -> case window' of
-    Window t (Window.TurnBegins who)
+    Window t (Window.TurnBegins who) _
       | t == whenMatcher ->
           matchWho iid who whoMatcher
     _ -> pure False
   Matcher.TurnEnds whenMatcher whoMatcher -> case window' of
-    Window t (Window.TurnEnds who)
+    Window t (Window.TurnEnds who) _
       | t == whenMatcher ->
           matchWho iid who whoMatcher
     _ -> pure False
   Matcher.RoundEnds whenMatcher -> case window' of
-    Window t Window.AtEndOfRound -> pure $ t == whenMatcher
+    Window t Window.AtEndOfRound _ -> pure $ t == whenMatcher
     _ -> pure False
   Matcher.Enters whenMatcher whoMatcher whereMatcher -> case window' of
-    Window t (Window.Entering iid' lid)
+    Window t (Window.Entering iid' lid) _
       | whenMatcher == t ->
           liftA2
             (&&)
@@ -1978,7 +1983,7 @@ windowMatches iid source window' = \case
             (locationMatches iid source window' lid whereMatcher)
     _ -> pure False
   Matcher.Leaves whenMatcher whoMatcher whereMatcher -> case window' of
-    Window t (Window.Leaving iid' lid)
+    Window t (Window.Leaving iid' lid) _
       | whenMatcher == t ->
           liftA2
             (&&)
@@ -1987,7 +1992,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.Moves whenMatcher whoMatcher sourceMatcher fromMatcher toMatcher ->
     case window' of
-      Window t (Window.Moves iid' source' mFromLid toLid)
+      Window t (Window.Moves iid' source' mFromLid toLid) _
         | whenMatcher == t ->
             andM
               [ matchWho iid iid' whoMatcher
@@ -2002,7 +2007,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.MoveAction whenMatcher whoMatcher fromMatcher toMatcher ->
     case window' of
-      Window t (Window.MoveAction iid' fromLid toLid)
+      Window t (Window.MoveAction iid' fromLid toLid) _
         | whenMatcher == t ->
             andM
               [ matchWho iid iid' whoMatcher
@@ -2011,7 +2016,7 @@ windowMatches iid source window' = \case
               ]
       _ -> pure False
   Matcher.PerformAction whenMatcher whoMatcher actionMatcher -> case window' of
-    Window t (Window.PerformAction iid' action)
+    Window t (Window.PerformAction iid' action) _
       | whenMatcher == t ->
           andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
     _ -> pure False
@@ -2021,25 +2026,25 @@ windowMatches iid source window' = \case
         isWindowMatch = \case
           Matcher.ResultOneOf xs -> anyM isWindowMatch xs
           Matcher.FailureResult _ -> case window' of
-            Window t (Window.WouldFailSkillTest who)
+            Window t (Window.WouldFailSkillTest who) _
               | t == whenMatcher ->
                   matchWho iid who whoMatcher
             _ -> pure False
           Matcher.SuccessResult _ -> case window' of
-            Window t (Window.WouldPassSkillTest who)
+            Window t (Window.WouldPassSkillTest who) _
               | t == whenMatcher ->
                   matchWho iid who whoMatcher
             _ -> pure False
           Matcher.AnyResult -> case window' of
-            Window Timing.When (Window.WouldFailSkillTest who) ->
+            Window Timing.When (Window.WouldFailSkillTest who) _ ->
               matchWho iid who whoMatcher
-            Window Timing.When (Window.WouldPassSkillTest who) ->
+            Window Timing.When (Window.WouldPassSkillTest who) _ ->
               matchWho iid who whoMatcher
             _ -> pure False
       isWindowMatch skillTestResultMatcher
   Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher skillValueMatcher ->
     case window' of
-      Window t (Window.InitiatedSkillTest st) | t == whenMatcher ->
+      Window t (Window.InitiatedSkillTest st) _ | t == whenMatcher ->
         case skillTestType st of
           SkillSkillTest skillType
             | skillTypeMatches skillType skillTypeMatcher ->
@@ -2056,7 +2061,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.SkillTestEnded whenMatcher whoMatcher skillTestMatcher ->
     case window' of
-      Window t (Window.SkillTestEnded skillTest)
+      Window t (Window.SkillTestEnded skillTest) _
         | whenMatcher == t ->
             liftA2
               (&&)
@@ -2076,7 +2081,7 @@ windowMatches iid source window' = \case
             isWindowMatch = \case
               Matcher.ResultOneOf xs -> anyM isWindowMatch xs
               Matcher.FailureResult gameValueMatcher -> case window' of
-                Window t (Window.FailInvestigationSkillTest who lid n)
+                Window t (Window.FailInvestigationSkillTest who lid n) _
                   | whenMatcher == t -> case skillMatcher of
                       Matcher.WhileInvestigating whereMatcher ->
                         andM
@@ -2085,7 +2090,7 @@ windowMatches iid source window' = \case
                           , locationMatches iid source window' lid whereMatcher
                           ]
                       _ -> pure False
-                Window t (Window.FailAttackEnemy who enemyId n)
+                Window t (Window.FailAttackEnemy who enemyId n) _
                   | whenMatcher == t -> case skillMatcher of
                       Matcher.WhileAttackingAnEnemy enemyMatcher ->
                         andM
@@ -2094,7 +2099,7 @@ windowMatches iid source window' = \case
                           , enemyMatches enemyId enemyMatcher
                           ]
                       _ -> pure False
-                Window t (Window.FailEvadeEnemy who enemyId n)
+                Window t (Window.FailEvadeEnemy who enemyId n) _
                   | whenMatcher == t -> case skillMatcher of
                       Matcher.WhileEvadingAnEnemy enemyMatcher ->
                         andM
@@ -2103,7 +2108,7 @@ windowMatches iid source window' = \case
                           , enemyMatches enemyId enemyMatcher
                           ]
                       _ -> pure False
-                Window t (Window.FailSkillTest who n)
+                Window t (Window.FailSkillTest who n) _
                   | whenMatcher == t ->
                       andM
                         [ matchWho iid who whoMatcher
@@ -2111,7 +2116,7 @@ windowMatches iid source window' = \case
                         ]
                 _ -> pure False
               Matcher.SuccessResult gameValueMatcher -> case window' of
-                Window t (Window.PassInvestigationSkillTest who lid n)
+                Window t (Window.PassInvestigationSkillTest who lid n) _
                   | whenMatcher == t -> case skillMatcher of
                       Matcher.WhileInvestigating whereMatcher ->
                         andM
@@ -2120,7 +2125,7 @@ windowMatches iid source window' = \case
                           , locationMatches iid source window' lid whereMatcher
                           ]
                       _ -> pure False
-                Window t (Window.SuccessfulAttackEnemy who enemyId n)
+                Window t (Window.SuccessfulAttackEnemy who enemyId n) _
                   | whenMatcher == t -> case skillMatcher of
                       Matcher.WhileAttackingAnEnemy enemyMatcher ->
                         andM
@@ -2129,7 +2134,7 @@ windowMatches iid source window' = \case
                           , enemyMatches enemyId enemyMatcher
                           ]
                       _ -> pure False
-                Window t (Window.SuccessfulEvadeEnemy who enemyId n)
+                Window t (Window.SuccessfulEvadeEnemy who enemyId n) _
                   | whenMatcher == t -> case skillMatcher of
                       Matcher.WhileEvadingAnEnemy enemyMatcher ->
                         andM
@@ -2138,7 +2143,7 @@ windowMatches iid source window' = \case
                           , enemyMatches enemyId enemyMatcher
                           ]
                       _ -> pure False
-                Window t (Window.PassSkillTest _ _ who n)
+                Window t (Window.PassSkillTest _ _ who n) _
                   | whenMatcher == t ->
                       liftA2
                         (&&)
@@ -2146,18 +2151,18 @@ windowMatches iid source window' = \case
                         (gameValueMatches n gameValueMatcher)
                 _ -> pure False
               Matcher.AnyResult -> case window' of
-                Window t (Window.FailSkillTest who _)
+                Window t (Window.FailSkillTest who _) _
                   | whenMatcher == t ->
                       matchWho iid who whoMatcher
-                Window t (Window.PassSkillTest _ _ who _)
+                Window t (Window.PassSkillTest _ _ who _) _
                   | whenMatcher == t ->
                       matchWho iid who whoMatcher
                 _ -> pure False
           isWindowMatch skillTestResultMatcher
   Matcher.DuringTurn whoMatcher -> case window' of
-    Window Timing.When Window.NonFast -> matchWho iid iid whoMatcher
-    Window Timing.When (Window.DuringTurn who) -> matchWho iid who whoMatcher
-    Window Timing.When Window.FastPlayerWindow -> do
+    Window Timing.When Window.NonFast _ -> matchWho iid iid whoMatcher
+    Window Timing.When (Window.DuringTurn who) _ -> matchWho iid who whoMatcher
+    Window Timing.When Window.FastPlayerWindow _ -> do
       miid <- selectOne Matcher.TurnInvestigator
       pure $ Just iid == miid
     _ -> pure False
@@ -2165,7 +2170,7 @@ windowMatches iid source window' = \case
     anyM (windowMatches iid source window') matchers
   Matcher.EnemySpawns timingMatcher whereMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemySpawns enemyId locationId)
+      Window t (Window.EnemySpawns enemyId locationId) _
         | t == timingMatcher ->
             liftA2
               (&&)
@@ -2174,7 +2179,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyWouldAttack timingMatcher whoMatcher enemyAttackMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyWouldAttack details) | timingMatcher == t ->
+      Window t (Window.EnemyWouldAttack details) _ | timingMatcher == t ->
         case attackTarget details of
           InvestigatorTarget who ->
             andM
@@ -2186,7 +2191,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyAttacks timingMatcher whoMatcher enemyAttackMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyAttacks details) | timingMatcher == t ->
+      Window t (Window.EnemyAttacks details) _ | timingMatcher == t ->
         case attackTarget details of
           InvestigatorTarget who ->
             andM
@@ -2198,7 +2203,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyAttacksEvenIfCancelled timingMatcher whoMatcher enemyAttackMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyAttacksEvenIfCancelled details)
+      Window t (Window.EnemyAttacksEvenIfCancelled details) _
         | timingMatcher == t -> case attackTarget details of
             InvestigatorTarget who ->
               andM
@@ -2210,7 +2215,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyAttacked timingMatcher whoMatcher sourceMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyAttacked who attackSource enemyId)
+      Window t (Window.EnemyAttacked who attackSource enemyId) _
         | timingMatcher == t ->
             andM
               [ matchWho iid who whoMatcher
@@ -2220,14 +2225,14 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyAttackedSuccessfully timingMatcher whoMatcher enemyMatcher ->
     case window' of
-      Window t (Window.SuccessfulAttackEnemy who enemyId _) | t == timingMatcher -> do
+      Window t (Window.SuccessfulAttackEnemy who enemyId _) _ | t == timingMatcher -> do
         andM
           [ enemyMatches enemyId enemyMatcher
           , matchWho iid who whoMatcher
           ]
       _ -> pure False
   Matcher.EnemyEvaded timingMatcher whoMatcher enemyMatcher -> case window' of
-    Window t (Window.EnemyEvaded who enemyId)
+    Window t (Window.EnemyEvaded who enemyId) _
       | timingMatcher == t ->
           liftA2
             (&&)
@@ -2235,7 +2240,7 @@ windowMatches iid source window' = \case
             (matchWho iid who whoMatcher)
     _ -> pure False
   Matcher.EnemyEngaged timingMatcher whoMatcher enemyMatcher -> case window' of
-    Window t (Window.EnemyEngaged who enemyId)
+    Window t (Window.EnemyEngaged who enemyId) _
       | timingMatcher == t ->
           liftA2
             (&&)
@@ -2243,44 +2248,44 @@ windowMatches iid source window' = \case
             (matchWho iid who whoMatcher)
     _ -> pure False
   Matcher.MythosStep mythosStepMatcher -> case window' of
-    Window t Window.AllDrawEncounterCard
+    Window t Window.AllDrawEncounterCard _
       | t == Timing.When ->
           pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
-    Window t Window.AfterCheckDoomThreshold
+    Window t Window.AfterCheckDoomThreshold _
       | t == Timing.When ->
           pure $ mythosStepMatcher == Matcher.AfterCheckDoomThreshold
     _ -> pure False
   Matcher.WouldRevealChaosToken whenMatcher whoMatcher -> case window' of
-    Window t (Window.WouldRevealChaosToken _ who)
+    Window t (Window.WouldRevealChaosToken _ who) _
       | whenMatcher == t ->
           matchWho iid who whoMatcher
     _ -> pure False
   Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      Window t (Window.RevealChaosToken who token)
+      Window t (Window.RevealChaosToken who token) _
         | whenMatcher == t ->
             andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
       _ -> pure False
   Matcher.CancelChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      Window t (Window.CancelChaosToken who token)
+      Window t (Window.CancelChaosToken who token) _
         | whenMatcher == t ->
             andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
       _ -> pure False
   Matcher.IgnoreChaosToken whenMatcher whoMatcher tokenMatcher ->
     case window' of
-      Window t (Window.IgnoreChaosToken who token)
+      Window t (Window.IgnoreChaosToken who token) _
         | whenMatcher == t ->
             andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
       _ -> pure False
   Matcher.AddedToVictory timingMatcher cardMatcher -> case window' of
-    Window t (Window.AddedToVictory card)
+    Window t (Window.AddedToVictory card) _
       | timingMatcher == t ->
           pure $ cardMatch card cardMatcher
     _ -> pure False
   Matcher.AssetDefeated timingMatcher defeatedByMatcher assetMatcher ->
     case window' of
-      Window t (Window.AssetDefeated assetId defeatedBy)
+      Window t (Window.AssetDefeated assetId defeatedBy) _
         | timingMatcher == t ->
             andM
               [ member assetId <$> select assetMatcher
@@ -2289,14 +2294,14 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher defeatedByMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyDefeated (Just who) defeatedBy enemyId)
+      Window t (Window.EnemyDefeated (Just who) defeatedBy enemyId) _
         | timingMatcher == t ->
             andM
               [ enemyMatches enemyId enemyMatcher
               , matchWho iid who whoMatcher
               , defeatedByMatches defeatedBy defeatedByMatcher
               ]
-      Window t (Window.EnemyDefeated Nothing defeatedBy enemyId)
+      Window t (Window.EnemyDefeated Nothing defeatedBy enemyId) _
         | timingMatcher == t && whoMatcher == Matcher.Anyone ->
             andM
               [ enemyMatches
@@ -2307,7 +2312,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyEnters timingMatcher whereMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyEnters enemyId lid)
+      Window t (Window.EnemyEnters enemyId lid) _
         | timingMatcher == t ->
             liftA2
               (&&)
@@ -2316,7 +2321,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyLeaves timingMatcher whereMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyLeaves enemyId lid)
+      Window t (Window.EnemyLeaves enemyId lid) _
         | timingMatcher == t ->
             liftA2
               (&&)
@@ -2324,31 +2329,31 @@ windowMatches iid source window' = \case
               (locationMatches iid source window' lid whereMatcher)
       _ -> pure False
   Matcher.ChosenRandomLocation timingMatcher whereMatcher -> case window' of
-    Window t (Window.ChosenRandomLocation lid)
+    Window t (Window.ChosenRandomLocation lid) _
       | timingMatcher == t ->
           locationMatches iid source window' lid whereMatcher
     _ -> pure False
   Matcher.EnemyWouldBeDefeated timingMatcher enemyMatcher -> case window' of
-    Window t (Window.EnemyWouldBeDefeated enemyId)
+    Window t (Window.EnemyWouldBeDefeated enemyId) _
       | timingMatcher == t ->
           enemyMatches enemyId enemyMatcher
     _ -> pure False
   Matcher.EnemyWouldReady timingMatcher enemyMatcher -> case window' of
-    Window t (Window.WouldReady (EnemyTarget enemyId))
+    Window t (Window.WouldReady (EnemyTarget enemyId)) _
       | timingMatcher == t ->
           enemyMatches enemyId enemyMatcher
     _ -> pure False
   Matcher.FastPlayerWindow -> case window' of
-    Window Timing.When Window.FastPlayerWindow -> pure True
+    Window Timing.When Window.FastPlayerWindow _ -> pure True
     _ -> pure False
   Matcher.DealtDamageOrHorror whenMatcher sourceMatcher whoMatcher ->
     case whoMatcher of
       Matcher.You -> case window' of
-        Window t (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _)
+        Window t (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _) _
           | t == whenMatcher ->
               andM
                 [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-        Window t (Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _)
+        Window t (Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _) _
           | t == whenMatcher ->
               andM
                 [ member aid
@@ -2361,11 +2366,11 @@ windowMatches iid source window' = \case
         _ -> pure False
       _ -> pure False
   Matcher.DealtDamage whenMatcher sourceMatcher whoMatcher -> case window' of
-    Window t (Window.DealtDamage source' _ (InvestigatorTarget iid') _)
+    Window t (Window.DealtDamage source' _ (InvestigatorTarget iid') _) _
       | t == whenMatcher ->
           andM
             [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-    Window t (Window.DealtDamage source' _ (AssetTarget aid) _)
+    Window t (Window.DealtDamage source' _ (AssetTarget aid) _) _
       | t == whenMatcher ->
           andM
             [ member aid
@@ -2375,11 +2380,11 @@ windowMatches iid source window' = \case
             ]
     _ -> pure False
   Matcher.DealtHorror whenMatcher sourceMatcher whoMatcher -> case window' of
-    Window t (Window.DealtHorror source' (InvestigatorTarget iid') _)
+    Window t (Window.DealtHorror source' (InvestigatorTarget iid') _) _
       | t == whenMatcher ->
           andM
             [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-    Window t (Window.DealtHorror source' (AssetTarget aid) _)
+    Window t (Window.DealtHorror source' (AssetTarget aid) _) _
       | t == whenMatcher ->
           andM
             [ member aid
@@ -2390,7 +2395,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.AssignedHorror whenMatcher whoMatcher targetListMatcher ->
     case window' of
-      Window t (Window.AssignedHorror _ who targets)
+      Window t (Window.AssignedHorror _ who targets) _
         | t == whenMatcher ->
             liftA2
               (&&)
@@ -2399,7 +2404,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.AssetDealtDamage timingMatcher sourceMatcher assetMatcher ->
     case window' of
-      Window t (Window.DealtDamage source' _ (AssetTarget aid) _)
+      Window t (Window.DealtDamage source' _ (AssetTarget aid) _) _
         | t == timingMatcher ->
             andM
               [ member aid <$> select assetMatcher
@@ -2408,7 +2413,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
     case window' of
-      Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid) _)
+      Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid) _) _
         | t == timingMatcher ->
             andM
               [ damageEffectMatches damageEffect damageEffectMatcher
@@ -2418,7 +2423,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyDealtExcessDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
     case window' of
-      Window t (Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _)
+      Window t (Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _) _
         | t == timingMatcher ->
             andM
               [ damageEffectMatches damageEffect damageEffectMatcher
@@ -2428,7 +2433,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.EnemyTakeDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
     case window' of
-      Window t (Window.TakeDamage source' damageEffect (EnemyTarget eid))
+      Window t (Window.TakeDamage source' damageEffect (EnemyTarget eid)) _
         | t == timingMatcher ->
             andM
               [ damageEffectMatches damageEffect damageEffectMatcher
@@ -2438,7 +2443,7 @@ windowMatches iid source window' = \case
       _ -> pure False
   Matcher.DiscoverClues whenMatcher whoMatcher whereMatcher valueMatcher ->
     case window' of
-      Window t (Window.DiscoverClues who lid _ n)
+      Window t (Window.DiscoverClues who lid _ n) _
         | whenMatcher == t ->
             andM
               [ matchWho iid who whoMatcher
@@ -2447,13 +2452,13 @@ windowMatches iid source window' = \case
               ]
       _ -> pure False
   Matcher.GainsClues whenMatcher whoMatcher valueMatcher -> case window' of
-    Window t (Window.GainsClues who _ n)
+    Window t (Window.GainsClues who _ n) _
       | whenMatcher == t ->
           andM [matchWho iid who whoMatcher, gameValueMatches n valueMatcher]
     _ -> pure False
   Matcher.DiscoveringLastClue whenMatcher whoMatcher whereMatcher ->
     case window' of
-      Window t (Window.DiscoveringLastClue who lid)
+      Window t (Window.DiscoveringLastClue who lid) _
         | whenMatcher == t ->
             liftA2
               (&&)
@@ -2461,12 +2466,12 @@ windowMatches iid source window' = \case
               (locationMatches iid source window' lid whereMatcher)
       _ -> pure False
   Matcher.LastClueRemovedFromAsset whenMatcher assetMatcher -> case window' of
-    Window t (Window.LastClueRemovedFromAsset aid)
+    Window t (Window.LastClueRemovedFromAsset aid) _
       | whenMatcher == t ->
           member aid <$> select assetMatcher
     _ -> pure False
   Matcher.DrawsCards whenMatcher whoMatcher valueMatcher -> case window' of
-    Window t (Window.DrawCards who cards)
+    Window t (Window.DrawCards who cards) _
       | whenMatcher == t ->
           andM
             [ matchWho iid who whoMatcher
@@ -2475,7 +2480,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher deckMatcher ->
     case window' of
-      Window t (Window.DrawCard who card deck)
+      Window t (Window.DrawCard who card deck) _
         | whenMatcher == t ->
             andM
               [ matchWho iid who whoMatcher
@@ -2487,15 +2492,15 @@ windowMatches iid source window' = \case
               ]
       _ -> pure False
   Matcher.DeckHasNoCards whenMatcher whoMatcher -> case window' of
-    Window t (Window.DeckHasNoCards who)
+    Window t (Window.DeckHasNoCards who) _
       | whenMatcher == t ->
           matchWho iid who whoMatcher
     _ -> pure False
   Matcher.EncounterDeckRunsOutOfCards -> case window' of
-    Window _ Window.EncounterDeckRunsOutOfCards -> pure True
+    Window _ Window.EncounterDeckRunsOutOfCards _ -> pure True
     _ -> pure False
   Matcher.PlayCard whenMatcher whoMatcher cardMatcher -> case window' of
-    Window t (Window.PlayCard who card)
+    Window t (Window.PlayCard who card) _
       | whenMatcher == t ->
           liftA2
             (&&)
@@ -2503,27 +2508,27 @@ windowMatches iid source window' = \case
             (member card <$> select cardMatcher)
     _ -> pure False
   Matcher.AssetEntersPlay timingMatcher assetMatcher -> case window' of
-    Window t (Window.EnterPlay (AssetTarget aid))
+    Window t (Window.EnterPlay (AssetTarget aid)) _
       | t == timingMatcher ->
           member aid <$> select assetMatcher
     _ -> pure False
   Matcher.AssetLeavesPlay timingMatcher assetMatcher -> case window' of
-    Window t (Window.LeavePlay (AssetTarget aid))
+    Window t (Window.LeavePlay (AssetTarget aid)) _
       | t == timingMatcher ->
           member aid <$> select assetMatcher
     _ -> pure False
   Matcher.LocationLeavesPlay timingMatcher locationMatcher -> case window' of
-    Window t (Window.LeavePlay (LocationTarget aid))
+    Window t (Window.LeavePlay (LocationTarget aid)) _
       | t == timingMatcher ->
           member aid <$> select locationMatcher
     _ -> pure False
   Matcher.EnemyLeavesPlay timingMatcher enemyMatcher -> case window' of
-    Window t (Window.LeavePlay (EnemyTarget eid))
+    Window t (Window.LeavePlay (EnemyTarget eid)) _
       | t == timingMatcher ->
           member eid <$> select enemyMatcher
     _ -> pure False
   Matcher.Explored timingMatcher whoMatcher resultMatcher -> case window' of
-    Window t (Window.Explored who result)
+    Window t (Window.Explored who result) _
       | timingMatcher == t ->
           andM
             [ matchWho iid who whoMatcher
@@ -2537,7 +2542,7 @@ windowMatches iid source window' = \case
             ]
     _ -> pure False
   Matcher.AttemptExplore timingMatcher whoMatcher -> case window' of
-    Window t (Window.AttemptExplore who)
+    Window t (Window.AttemptExplore who) _
       | timingMatcher == t ->
           matchWho iid who whoMatcher
     _ -> pure False
@@ -2756,8 +2761,8 @@ locationMatches investigatorId source window locationId matcher' = do
         <$> select (Matcher.LocationWithMostClues locationMatcher)
     Matcher.LocationWithResources valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationResources locationId
-    Matcher.LocationLeavingPlay -> case window of
-      Window _ (Window.LeavePlay (LocationTarget lid)) ->
+    Matcher.LocationLeavingPlay -> case windowType window of
+      Window.LeavePlay (LocationTarget lid) ->
         pure $ locationId == lid
       _ -> error "invalid window for LocationLeavingPlay"
     Matcher.SameLocation -> do
@@ -2935,11 +2940,11 @@ spawnAtOneOf iid eid targetLids = do
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> push (Discard GameSource (EnemyTarget eid))
     [lid] -> do
-      windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+      windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid) Nothing]
       pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
     lids -> do
       windowPairs <- for lids $ \lid -> do
-        windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+        windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid) Nothing]
         pure (windows', lid)
 
       push $

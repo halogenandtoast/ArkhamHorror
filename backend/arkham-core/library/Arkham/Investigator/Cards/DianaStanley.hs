@@ -88,7 +88,7 @@ instance RunMessage DianaStanley where
       iid
       (isSource attrs -> True)
       1
-      [Window _ (Window.CancelledOrIgnoredCardOrGameEffect source)]
+      [(windowType -> Window.CancelledOrIgnoredCardOrGameEffect source)]
       _ ->
         do
           let

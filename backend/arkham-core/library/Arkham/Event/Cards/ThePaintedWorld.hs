@@ -35,7 +35,7 @@ instance RunMessage ThePaintedWorld where
           (filter (`cardMatch` (NonExceptional <> Matcher.EventCard)))
           iid
       let
-        playableWindows = nub $ Window Timing.When (DuringTurn iid) : windows'
+        playableWindows = nub $ mkWindow Timing.When (DuringTurn iid) : windows'
       playableCards <-
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)

@@ -61,7 +61,7 @@ instance HasModifiersFor Marksmanship1 where
                       iid
                       (InvestigatorSource iid)
                       UnpaidCost
-                      [Window Timing.When DoNotCheckWindow]
+                      [mkWindow Timing.When DoNotCheckWindow]
                       (toCard a)
                   pure $
                     toModifiers
@@ -135,7 +135,7 @@ instance RunMessage Marksmanship1Effect where
       ignored <-
         selectAny $ EnemyWithId eid <> EnemyOneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect effectSource)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect effectSource)]
       pushAll $
         skillTestModifiers
           (toSource attrs)

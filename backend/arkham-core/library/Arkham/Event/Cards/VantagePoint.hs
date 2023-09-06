@@ -26,34 +26,33 @@ vantagePoint = event VantagePoint Cards.vantagePoint
 
 vantagePointLocation :: [Window] -> LocationId
 vantagePointLocation [] = error "No vantage point found"
-vantagePointLocation (Window _ (PutLocationIntoPlay _ lid) : _) = lid
-vantagePointLocation (Window _ (RevealLocation _ lid) : _) = lid
+vantagePointLocation ((windowType -> PutLocationIntoPlay _ lid) : _) = lid
+vantagePointLocation ((windowType -> RevealLocation _ lid) : _) = lid
 vantagePointLocation (_ : xs) = vantagePointLocation xs
 
 instance RunMessage VantagePoint where
   runMessage msg e@(VantagePoint attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ (vantagePointLocation -> lid) _
-      | eid == toId attrs -> do
-          otherLocationsWithClues <-
-            selectList $ LocationWithAnyClues <> NotLocation (LocationWithId lid)
-          pushAll $
-            createCardEffect
-              Cards.vantagePoint
-              Nothing
-              (toSource attrs)
-              (LocationTarget lid)
-              : [ chooseOne iid $
-                  Label "Do not move a clue" []
-                    : [ targetLabel
-                        lid'
-                        [ RemoveClues (toSource attrs) (LocationTarget lid') 1
-                        , PlaceClues (toSource attrs) (LocationTarget lid) 1
-                        ]
-                      | lid' <- otherLocationsWithClues
-                      ]
-                | notNull otherLocationsWithClues
-                ]
-          pure e
+    InvestigatorPlayEvent iid eid _ (vantagePointLocation -> lid) _ | eid == toId attrs -> do
+      otherLocationsWithClues <-
+        selectList $ LocationWithAnyClues <> NotLocation (LocationWithId lid)
+      pushAll $
+        createCardEffect
+          Cards.vantagePoint
+          Nothing
+          attrs
+          lid
+          : [ chooseOne iid $
+              Label "Do not move a clue" []
+                : [ targetLabel
+                    lid'
+                    [ RemoveClues (toSource attrs) (LocationTarget lid') 1
+                    , PlaceClues (toSource attrs) (LocationTarget lid) 1
+                    ]
+                  | lid' <- otherLocationsWithClues
+                  ]
+            | notNull otherLocationsWithClues
+            ]
+      pure e
     _ -> VantagePoint <$> runMessage msg attrs
 
 newtype VantagePointEffect = VantagePointEffect EffectAttrs

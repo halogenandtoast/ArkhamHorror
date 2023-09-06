@@ -51,7 +51,7 @@ instance HasAbilities JusticeXI where
 
 toDrawnCard :: [Window] -> Card
 toDrawnCard [] = error "Missing DrawCard window"
-toDrawnCard (Window _ (Window.DrawCard _ card _) : _) = card
+toDrawnCard ((windowType -> Window.DrawCard _ card _) : _) = card
 toDrawnCard (_ : xs) = toDrawnCard xs
 
 instance RunMessage JusticeXI where

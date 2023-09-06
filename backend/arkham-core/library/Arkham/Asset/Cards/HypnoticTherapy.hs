@@ -41,13 +41,7 @@ instance HasAbilities HypnoticTherapy where
 instance RunMessage HypnoticTherapy where
   runMessage msg a@(HypnoticTherapy attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        beginSkillTest
-          iid
-          (toAbilitySource attrs 1)
-          (InvestigatorTarget iid)
-          SkillIntellect
-          2
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid SkillIntellect 2
       pure a
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do
@@ -80,11 +74,11 @@ instance RunMessage HypnoticTherapy where
       -- to heal for one more
       let
         updateHealed = \case
-          Window timing (Healed HorrorType t s n) ->
-            Window timing (Healed HorrorType t s (n + 1))
+          Window timing (Healed HorrorType t s n) mBatchId ->
+            Window timing (Healed HorrorType t s (n + 1)) mBatchId
           other -> other
         getHealedTarget = \case
-          Window _ (Healed HorrorType t _ _) -> Just t
+          (windowType -> Healed HorrorType t _ _) -> Just t
           _ -> Nothing
         healedTarget =
           fromJustNote "wrong call" $

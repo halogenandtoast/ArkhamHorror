@@ -44,7 +44,7 @@ instance HasAbilities WitchHauntedWoodsOvergrownBarn where
 
 instance RunMessage WitchHauntedWoodsOvergrownBarn where
   runMessage msg l@(WitchHauntedWoodsOvergrownBarn attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 [Window _ (Window.EnemyWouldSpawnAt enemyId _)] _ ->
+    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.EnemyWouldSpawnAt enemyId _)] _ ->
       do
         iids <- selectList $ investigatorAt $ toId attrs
         replaceMessageMatching

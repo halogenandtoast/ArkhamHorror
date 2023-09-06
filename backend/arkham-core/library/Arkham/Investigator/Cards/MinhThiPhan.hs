@@ -53,7 +53,7 @@ instance HasChaosTokenValue MinhThiPhan where
 -- TODO: Should we let card selection for ability
 instance RunMessage MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.CommittedCard _ card)] _ | isSource attrs source -> do
+    UseCardAbility _ source 1 [(windowType -> Window.CommittedCard _ card)] _ | isSource attrs source -> do
       push $
         CreateEffect
           (unInvestigatorId $ toId attrs)

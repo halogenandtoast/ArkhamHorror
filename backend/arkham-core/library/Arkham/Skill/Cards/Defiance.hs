@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Defiance = Defiance SkillAttrs
@@ -63,7 +63,7 @@ instance RunMessage DefianceEffect where
   runMessage msg e@(DefianceEffect attrs@EffectAttrs {..}) = case msg of
     ResolveChaosToken _drawnToken chaosTokenFace _ | not effectFinished && ChaosTokenFaceTarget chaosTokenFace == effectTarget -> do
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       push ignoreWindow
       pure $ DefianceEffect $ attrs & finishedL .~ True
     SkillTestEnds _ _ -> do

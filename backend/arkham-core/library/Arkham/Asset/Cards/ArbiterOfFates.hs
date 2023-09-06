@@ -41,7 +41,7 @@ instance HasAbilities ArbiterOfFates where
 
 getAbility :: [Window] -> Ability
 getAbility [] = error "invalid ability"
-getAbility (Window _ (Window.ActivateAbility _ ab) : _) = ab
+getAbility ((windowType -> Window.ActivateAbility _ ab) : _) = ab
 getAbility (_ : xs) = getAbility xs
 
 instance RunMessage ArbiterOfFates where

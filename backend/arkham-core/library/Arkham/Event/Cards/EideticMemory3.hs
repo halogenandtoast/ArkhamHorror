@@ -37,7 +37,7 @@ instance RunMessage EideticMemory3 where
           filter (`cardMatch` (CardWithTrait Insight <> Matcher.EventCard)) discards
         playableWindows =
           if null windows'
-            then [Window Timing.When (DuringTurn iid)]
+            then [mkWindow Timing.When (DuringTurn iid)]
             else windows'
       playableCards <-
         filterM

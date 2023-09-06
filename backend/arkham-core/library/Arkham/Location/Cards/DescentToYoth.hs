@@ -15,7 +15,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {flipDoom :: Bool}
@@ -83,10 +83,10 @@ instance RunMessage DescentToYoth where
           let lid = toId attrs
           whenWindowMsg <-
             checkWindows
-              [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
+              [mkWindow Timing.When (Window.SuccessfulInvestigation iid lid)]
           afterWindowMsg <-
             checkWindows
-              [Window Timing.After (Window.SuccessfulInvestigation iid lid)]
+              [mkWindow Timing.After (Window.SuccessfulInvestigation iid lid)]
           pushAll [whenWindowMsg, FlipDoom (toTarget attrs) 1, afterWindowMsg]
           pure $ DescentToYoth $ attrs `with` Metadata False
     _ -> DescentToYoth . (`with` metadata) <$> runMessage msg attrs

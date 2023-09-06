@@ -35,7 +35,7 @@ instance HasAbilities RelicOfAgesUnleashTheTimestream where
 
 getFailureCard :: [Window] -> Card
 getFailureCard [] = error "invalid window"
-getFailureCard (Window _ (Window.Explored _ (Window.Failure c)) : _) = c
+getFailureCard ((windowType -> Window.Explored _ (Window.Failure c)) : _) = c
 getFailureCard (_ : xs) = getFailureCard xs
 
 instance RunMessage RelicOfAgesUnleashTheTimestream where

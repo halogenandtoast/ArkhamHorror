@@ -53,10 +53,8 @@ instance HasAbilities LitaChantler where
 
 instance RunMessage LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
-    UseCardAbility _ source 1 [Window Timing.When (Window.SuccessfulAttackEnemy _ enemyId _)] _
-      | isSource attrs source ->
-          do
-            a
-              <$ push
-                (skillTestModifier attrs (EnemyTarget enemyId) (DamageTaken 1))
+    UseCardAbility _ source 1 [Window Timing.When (Window.SuccessfulAttackEnemy _ enemyId _) _] _
+      | isSource attrs source -> do
+          push $ skillTestModifier attrs enemyId (DamageTaken 1)
+          pure a
     _ -> LitaChantler <$> runMessage msg attrs

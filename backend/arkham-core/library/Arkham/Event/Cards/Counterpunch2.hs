@@ -25,7 +25,7 @@ counterpunch2 = event Counterpunch2 Cards.counterpunch2
 
 toEnemy :: [Window] -> EnemyId
 toEnemy [] = error "invalid call"
-toEnemy (Window _ (Window.EnemyAttacks details) : _) = attackEnemy details
+toEnemy ((windowType -> Window.EnemyAttacks details) : _) = attackEnemy details
 toEnemy (_ : xs) = toEnemy xs
 
 instance RunMessage Counterpunch2 where

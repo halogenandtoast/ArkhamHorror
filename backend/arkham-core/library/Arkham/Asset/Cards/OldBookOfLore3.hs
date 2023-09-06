@@ -15,7 +15,7 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype OldBookOfLore3 = OldBookOfLore3 AssetAttrs
@@ -62,7 +62,7 @@ instance RunMessage OldBookOfLore3 where
       pure a
     SearchFound iid (isTarget attrs -> True) (Deck.InvestigatorDeck iid') targetCards ->
       do
-        let windows' = [Window Timing.When (Window.DuringTurn iid)]
+        let windows' = [mkWindow Timing.When (Window.DuringTurn iid)]
         mEndSearch <- popMessageMatching $ \case
           EndSearch {} -> True
           _ -> False

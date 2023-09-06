@@ -50,7 +50,7 @@ instance HasAbilities DarkYoungHost where
 
 instance RunMessage DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.PlacedClues _ target n)] _ | isSource attrs source -> do
+    UseCardAbility _ source 1 [(windowType -> Window.PlacedClues _ target n)] _ | isSource attrs source -> do
       pushAll
         [ RemoveClues (toAbilitySource attrs 1) target n
         , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) n

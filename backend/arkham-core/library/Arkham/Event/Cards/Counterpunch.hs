@@ -24,14 +24,13 @@ counterpunch = event Counterpunch Cards.counterpunch
 
 toEnemy :: [Window] -> EnemyId
 toEnemy [] = error "invalid call"
-toEnemy (Window _ (Window.EnemyAttacksEvenIfCancelled details) : _) =
+toEnemy ((windowType -> Window.EnemyAttacksEvenIfCancelled details) : _) =
   attackEnemy details
 toEnemy (_ : xs) = toEnemy xs
 
 instance RunMessage Counterpunch where
   runMessage msg e@(Counterpunch attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ (toEnemy -> enemy) _ | eid == toId attrs ->
-      do
-        push $ FightEnemy iid enemy (toSource attrs) Nothing SkillCombat False
-        pure e
+    InvestigatorPlayEvent iid eid _ (toEnemy -> enemy) _ | eid == toId attrs -> do
+      push $ FightEnemy iid enemy (toSource attrs) Nothing SkillCombat False
+      pure e
     _ -> Counterpunch <$> runMessage msg attrs

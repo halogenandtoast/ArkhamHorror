@@ -20,7 +20,7 @@ import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 advanceAgendaDeck :: AgendaAttrs -> Message
@@ -31,8 +31,11 @@ instance RunMessage AgendaAttrs where
     PlaceUnderneath target cards | isTarget a target -> do
       pure $ a & cardsUnderneathL %~ (<> cards)
     PlaceDoom source (AgendaTarget aid) n | aid == agendaId -> do
-      windows' <- windows [Window.PlacedDoom source (toTarget a) n]
-      pushAll windows'
+      (batchId, wouldWindowsMsgs) <- wouldWindows $ Window.WouldPlaceDoom source (toTarget a) n
+      framed <- doFrame msg (Window.PlacedDoom source (toTarget a) n)
+      push $ Would batchId $ wouldWindowsMsgs <> framed
+      pure a
+    Do (PlaceDoom source (AgendaTarget aid) n) | aid == agendaId -> do
       pure $ a & doomL +~ n
     RemoveDoom _ (AgendaTarget aid) n | aid == agendaId -> do
       pure $ a & doomL %~ max 0 . subtract n
@@ -88,13 +91,13 @@ instance RunMessage AgendaAttrs where
             do
               whenMsg <-
                 checkWindows
-                  [ Window
+                  [ mkWindow
                       Timing.When
                       (Window.AgendaWouldAdvance DoomThreshold $ toId a)
                   ]
               afterMsg <-
                 checkWindows
-                  [ Window
+                  [ mkWindow
                       Timing.After
                       (Window.AgendaWouldAdvance DoomThreshold $ toId a)
                   ]
@@ -122,7 +125,7 @@ instance RunMessage AgendaAttrs where
             pushAll
               [ CheckWindow
                   [leadInvestigatorId]
-                  [Window Timing.When (Window.AgendaAdvance agendaId)]
+                  [mkWindow Timing.When (Window.AgendaAdvance agendaId)]
               , RemoveAllDoomFromPlay agendaRemoveDoomMatchers
               , AdvanceAgenda agendaId
               ]

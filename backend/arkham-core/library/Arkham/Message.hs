@@ -747,6 +747,8 @@ data Message
   | ResetMetadata Target
   | DoNotCountUseTowardsAbilityLimit InvestigatorId Ability
   | When Message
+  | Would BatchId [Message]
+  | IgnoreBatch BatchId
   | WhenWillEnterLocation InvestigatorId LocationId
   | EnterLocation InvestigatorId LocationId
   | SetLocationAsIf InvestigatorId LocationId
@@ -774,7 +776,8 @@ data Message
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId
   | PutLocationInCenter LocationId
-  | PlaceBreach LocationId
+  | PlaceBreach Target
+  | RemoveBreach Target
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]

@@ -30,11 +30,10 @@ instance HasAbilities WingedOne where
       [ restrictedAbility
           a
           1
-          ( EnemyCriteria $
-              EnemyExists $
-                EnemyWithId (toId a)
-                  <> ReadyEnemy
-                  <> UnengagedEnemy
+          ( enemyExists $
+              EnemyWithId (toId a)
+                <> ReadyEnemy
+                <> UnengagedEnemy
           )
           $ ForcedAbility
           $ Matcher.FlipLocation Timing.When Anyone Anywhere
@@ -42,7 +41,7 @@ instance HasAbilities WingedOne where
 
 instance RunMessage WingedOne where
   runMessage msg e@(WingedOne attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.FlipLocation _ lid)] _
+    UseCardAbility _ source 1 [(windowType -> Window.FlipLocation _ lid)] _
       | isSource attrs source -> do
           push $ MoveToward (toTarget attrs) (LocationWithId lid)
           pure e

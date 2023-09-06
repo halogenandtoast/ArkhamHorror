@@ -43,7 +43,7 @@ instance RunMessage StudyAberrantGateway where
       drawing <- drawCards iid attrs 3
       push drawing
       pure l
-    UseCardAbility _ source 2 [Window _ (Window.EnemyAttemptsToSpawnAt _ locationMatcher)] _
+    UseCardAbility _ source 2 [(windowType -> Window.EnemyAttemptsToSpawnAt _ locationMatcher)] _
       | isSource attrs source ->
           do
             case locationMatcher of

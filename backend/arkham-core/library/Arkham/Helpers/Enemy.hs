@@ -31,7 +31,7 @@ import Arkham.Spawn
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 spawned :: EnemyAttrs -> Bool
@@ -209,8 +209,8 @@ defeatEnemy :: (HasGame m, Sourceable source) => EnemyId -> InvestigatorId -> so
 defeatEnemy enemyId investigatorId (toSource -> source) = do
   whenMsg <-
     checkWindows
-      [Window Timing.When (Window.EnemyWouldBeDefeated enemyId)]
+      [mkWindow Timing.When (Window.EnemyWouldBeDefeated enemyId)]
   afterMsg <-
     checkWindows
-      [Window Timing.After (Window.EnemyWouldBeDefeated enemyId)]
+      [mkWindow Timing.After (Window.EnemyWouldBeDefeated enemyId)]
   pure [whenMsg, afterMsg, DefeatEnemy enemyId investigatorId source]

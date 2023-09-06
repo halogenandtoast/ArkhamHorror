@@ -39,13 +39,13 @@ instance HasAbilities GrimmsFairyTales where
               $ AtLeast
               $ Static 2
           )
-        $ ExhaustCost (toTarget a)
+        $ exhaust a
           <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 toInvestigator :: [Window] -> InvestigatorId
 toInvestigator [] = error "invalid call"
-toInvestigator (Window _ (Window.FailSkillTest iid _) : _) = iid
+toInvestigator ((windowType -> Window.FailSkillTest iid _) : _) = iid
 toInvestigator (_ : xs) = toInvestigator xs
 
 instance RunMessage GrimmsFairyTales where

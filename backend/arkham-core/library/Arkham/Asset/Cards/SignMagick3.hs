@@ -47,7 +47,7 @@ instance HasAbilities SignMagick3 where
 
 toOriginalAsset :: [Window] -> AssetId
 toOriginalAsset [] = error "invalid window"
-toOriginalAsset (Window _ (Window.ActivateAbility _ ability) : xs) = case abilitySource ability of
+toOriginalAsset ((windowType -> Window.ActivateAbility _ ability) : xs) = case abilitySource ability of
   AssetSource aid -> aid
   _ -> toOriginalAsset xs
 toOriginalAsset (_ : xs) = toOriginalAsset xs

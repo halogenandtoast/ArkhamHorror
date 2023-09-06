@@ -35,7 +35,7 @@ instance HasAbilities DoubleDouble4 where
 
 getCardPlayed :: [Window] -> Card
 getCardPlayed [] = error "missing play card window"
-getCardPlayed (Window _ (Window.PlayCard _ c) : _) = c
+getCardPlayed ((windowType -> Window.PlayCard _ c) : _) = c
 getCardPlayed (_ : xs) = getCardPlayed xs
 
 instance RunMessage DoubleDouble4 where

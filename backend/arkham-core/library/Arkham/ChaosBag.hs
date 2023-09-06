@@ -22,7 +22,7 @@ import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Monad.State hiding (filterM)
 
@@ -325,7 +325,7 @@ decideFirstUndecided source iid strategy f = \case
       ,
         [ CheckWindow
             [iid]
-            [Window Timing.When (Window.WouldRevealChaosToken source iid)]
+            [mkWindow Timing.When (Window.WouldRevealChaosToken source iid)]
         , NextChaosBagStep source (Just iid) strategy
         ]
       )
@@ -550,7 +550,7 @@ instance RunMessage ChaosBag where
         -- token message as it will still be on the stack even though that
         -- token draw is gone
         removeAllMessagesMatching $ \case
-          RunWindow _ [Window Timing.When (Window.WouldRevealChaosToken {})] -> True
+          RunWindow _ [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           _ -> False
 
         let
@@ -563,7 +563,7 @@ instance RunMessage ChaosBag where
         -- token message as it will still be on the stack even though that
         -- token draw is gone
         removeAllMessagesMatching $ \case
-          RunWindow _ [Window Timing.When (Window.WouldRevealChaosToken {})] -> True
+          RunWindow _ [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           _ -> False
 
         -- if we have not decided we can use const to replace
@@ -582,7 +582,7 @@ instance RunMessage ChaosBag where
             Just iid ->
               pure
                 <$> checkWindows
-                  [ Window Timing.When (Window.RevealChaosToken iid token)
+                  [ mkWindow Timing.When (Window.RevealChaosToken iid token)
                   | token <- chaosTokenFaces'
                   ]
           pushAll

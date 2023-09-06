@@ -23,7 +23,7 @@ import Arkham.Resolution
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), WindowType, defaultWindows)
+import Arkham.Window (WindowType, defaultWindows, mkWindow)
 import Arkham.Zone
 
 drawCards
@@ -48,9 +48,9 @@ drawCardsAction i source n = do
 
 resolveWithWindow :: HasGame m => Message -> WindowType -> m [Message]
 resolveWithWindow msg window' = do
-  whenWindow <- checkWindows [Window Timing.When window']
-  atIfWindow <- checkWindows [Window Timing.AtIf window']
-  afterWindow <- checkWindows [Window Timing.After window']
+  whenWindow <- checkWindows [mkWindow Timing.When window']
+  atIfWindow <- checkWindows [mkWindow Timing.AtIf window']
+  afterWindow <- checkWindows [mkWindow Timing.After window']
   pure [When msg, whenWindow, atIfWindow, msg, After msg, afterWindow]
 
 dealAdditionalDamage :: InvestigatorId -> Int -> [Message] -> GameT ()

@@ -53,7 +53,7 @@ import Arkham.Story.Types (Field (..))
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
@@ -180,8 +180,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & actStackL
-          . at n
-          ?~ actStack'
+        . at n
+        ?~ actStack'
         & (completedActStackL . at n ?~ (oldAct : completedActStack))
   SetCurrentActDeck n stack@(current : _) -> do
     actIds <- selectList $ Matcher.ActWithDeckId n
@@ -291,10 +291,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   InvestigatorWhenEliminated _ iid -> do
     whenMsg <-
       checkWindows
-        [Window Timing.When (Window.InvestigatorEliminated iid)]
+        [mkWindow Timing.When (Window.InvestigatorEliminated iid)]
     afterMsg <-
       checkWindows
-        [Window Timing.When (Window.InvestigatorEliminated iid)]
+        [mkWindow Timing.When (Window.InvestigatorEliminated iid)]
     pushAll
       [ whenMsg
       , InvestigatorPlaceAllCluesOnLocation iid (toSource a)
@@ -312,7 +312,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & countsL
-          %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
+        %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveChaosToken _drawnToken token iid -> do
     ChaosTokenValue _ tokenModifier <- getChaosTokenValue iid token ()
     when (tokenModifier == AutoFailModifier) $ push FailSkillTest
@@ -430,7 +430,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & discardLens handler
-          %~ (ec :)
+        %~ (ec :)
         & (encounterDeckL %~ withDeck (filter (/= ec)))
         & (victoryDisplayL %~ filter (/= EncounterCard ec))
         & (setAsideCardsL %~ filter (/= EncounterCard ec))
@@ -569,10 +569,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure $
           a
             & storyCardsL
-              %~ insertWith
-                (<>)
-                iid
-                [card {pcOwner = Just iid}]
+            %~ insertWith
+              (<>)
+              iid
+              [card {pcOwner = Just iid}]
       else pure a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
@@ -602,7 +602,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         when (null encounterDeck) $ do
           windows' <-
             checkWindows
-              [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+              [mkWindow Timing.When Window.EncounterDeckRunsOutOfCards]
           pushAll [windows', ShuffleEncounterDiscardBackIn]
         pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
         pure $ a & (deckLens handler .~ Deck encounterDeck)
@@ -866,7 +866,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards -> do
     windows' <-
       checkWindows
-        [Window Timing.When Window.EncounterDeckRunsOutOfCards]
+        [mkWindow Timing.When Window.EncounterDeckRunsOutOfCards]
     pushAll $
       [ DiscardedTopOfEncounterDeck iid cards source target
       | target <- maybeToList mtarget
@@ -888,8 +888,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             discardedCards
         pure a
       (card : cards) -> do
-        beforeWindow <- checkWindows [Window Timing.When (Window.Discarded iid source (EncounterCard card))]
-        afterWindow <- checkWindows [Window Timing.After (Window.Discarded iid source (EncounterCard card))]
+        beforeWindow <-
+          checkWindows [mkWindow Timing.When (Window.Discarded iid source (EncounterCard card))]
+        afterWindow <-
+          checkWindows [mkWindow Timing.After (Window.Discarded iid source (EncounterCard card))]
         pushAll
           [ beforeWindow
           , Discarded (CardIdTarget $ toCardId card) source (EncounterCard card)
@@ -942,17 +944,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $
       a
         & decksL
-          . at deckKey
-          ?~ deck'
+        . at deckKey
+        ?~ deck'
         & discardL
-          %~ filter
-            ((`notElem` cards) . EncounterCard)
+        %~ filter
+          ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do
     investigatorIds <-
       selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid
     windowMsgs <- for investigatorIds $ \iid ->
       checkWindows $
-        ( `Window`
+        ( `mkWindow`
             Window.InvestigatorWouldBeDefeated
               (DefeatedByOther $ LocationSource lid)
               iid

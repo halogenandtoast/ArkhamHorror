@@ -47,7 +47,7 @@ instance HasAbilities YourHouse where
 
 instance RunMessage YourHouse where
   runMessage msg l@(YourHouse attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.EnemySpawns _ _)] _
+    UseCardAbility _ source 1 [(windowType -> Window.EnemySpawns _ _)] _
       | isSource attrs source -> pure l
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       drawing <- drawCards iid attrs 1

@@ -20,7 +20,7 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {asset :: Maybe AssetId}
@@ -36,7 +36,7 @@ eatLead2 = event (EatLead2 . (`With` Metadata Nothing)) Cards.eatLead2
 
 instance RunMessage EatLead2 where
   runMessage msg e@(EatLead2 (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.ActivateAbility _ ability)] _
+    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ ability)] _
       | eid == toId attrs ->
           do
             case abilitySource ability of
@@ -57,7 +57,7 @@ instance RunMessage EatLead2 where
         aid = fromJustNote "asset must be set" (asset metadata)
       when (ammo > 0) $ do
         ignoreWindow <-
-          checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+          checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
         pushAll
           [ SpendUses (AssetTarget aid) Ammo ammo
           , CreateWindowModifierEffect

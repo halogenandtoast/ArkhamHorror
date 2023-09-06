@@ -46,22 +46,21 @@ instance RunMessage SnareTrap2 where
   runMessage msg e@(SnareTrap2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
-      e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
-    UseCardAbility iid source 1 [Window _ (Window.EnemyEnters enemyId _)] _
-      | isSource attrs source -> do
-          iids <- selectList $ InvestigatorEngagedWith (EnemyWithId enemyId)
-          pushAll $
-            Exhaust (EnemyTarget enemyId)
-              : map (`DisengageEnemy` enemyId) iids
-                <> [PlaceEvent iid (toId attrs) (AttachedToEnemy enemyId)]
-          pure e
-    UseCardAbility _ source 2 [Window _ (Window.WouldReady target)] _
-      | isSource attrs source ->
-          e
-            <$ replaceMessageMatching
-              ( \case
-                  Ready t -> t == target
-                  _ -> False
-              )
-              (const [Discard (toAbilitySource attrs 2) $ toTarget attrs])
+      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      pure e
+    UseCardAbility iid (isSource attrs -> True) 1 [(windowType -> Window.EnemyEnters enemyId _)] _ -> do
+      iids <- selectList $ InvestigatorEngagedWith (EnemyWithId enemyId)
+      pushAll $
+        Exhaust (EnemyTarget enemyId)
+          : map (`DisengageEnemy` enemyId) iids
+            <> [PlaceEvent iid (toId attrs) (AttachedToEnemy enemyId)]
+      pure e
+    UseCardAbility _ (isSource attrs -> True) 2 [(windowType -> Window.WouldReady target)] _ -> do
+      replaceMessageMatching
+        ( \case
+            Ready t -> t == target
+            _ -> False
+        )
+        (const [Discard (toAbilitySource attrs 2) $ toTarget attrs])
+      pure e
     _ -> SnareTrap2 <$> runMessage msg attrs

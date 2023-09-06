@@ -14,7 +14,7 @@ import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Insight, Spell))
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype DeVermisMysteriis2 = DeVermisMysteriis2 AssetAttrs
@@ -52,8 +52,8 @@ instance RunMessage DeVermisMysteriis2 where
         windows'' =
           nub $
             windows'
-              <> [ Window Timing.When (Window.DuringTurn iid)
-                 , Window Timing.When Window.FastPlayerWindow
+              <> [ mkWindow Timing.When (Window.DuringTurn iid)
+                 , mkWindow Timing.When Window.FastPlayerWindow
                  ]
       cards <-
         selectList $

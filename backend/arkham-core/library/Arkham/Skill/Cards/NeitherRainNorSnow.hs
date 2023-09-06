@@ -11,7 +11,7 @@ import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype NeitherRainNorSnow = NeitherRainNorSnow SkillAttrs
@@ -25,7 +25,7 @@ instance RunMessage NeitherRainNorSnow where
   runMessage msg s@(NeitherRainNorSnow attrs) = case msg of
     When (FailedSkillTest _ _ _ target _ _) | isTarget attrs target -> do
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       removeAllMessagesMatching \case
         FailedSkillTest {} -> True
         _ -> False

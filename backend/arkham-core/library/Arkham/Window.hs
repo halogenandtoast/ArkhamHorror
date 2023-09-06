@@ -31,24 +31,31 @@ data Result b a = Success a | Failure b
 data Window = Window
   { windowTiming :: Timing
   , windowType :: WindowType
+  , windowBatchId :: Maybe BatchId
   }
   deriving stock (Show, Eq, Ord)
 
+mkWindow :: Timing -> WindowType -> Window
+mkWindow timing windowType = Window timing windowType Nothing
+
+windowTypes :: [Window] -> [WindowType]
+windowTypes = map windowType
+
 defaultWindows :: InvestigatorId -> [Window]
 defaultWindows iid =
-  [ Window Timing.When (DuringTurn iid)
-  , Window Timing.When NonFast
-  , Window Timing.When FastPlayerWindow
+  [ Window Timing.When (DuringTurn iid) Nothing
+  , Window Timing.When NonFast Nothing
+  , Window Timing.When FastPlayerWindow Nothing
   ]
 
 hasEliminatedWindow :: [Window] -> Bool
 hasEliminatedWindow = any $ \case
-  Window _ (InvestigatorEliminated {}) -> True
+  (windowType -> InvestigatorEliminated {}) -> True
   _ -> False
 
 revealedChaosTokens :: [Window] -> [ChaosToken]
 revealedChaosTokens [] = []
-revealedChaosTokens (Window _ (RevealChaosToken _ token) : rest) = token : revealedChaosTokens rest
+revealedChaosTokens ((windowType -> RevealChaosToken _ token) : rest) = token : revealedChaosTokens rest
 revealedChaosTokens (_ : rest) = revealedChaosTokens rest
 
 data WindowType
@@ -136,6 +143,7 @@ data WindowType
   | PlacedDamage Source Target Int
   | PlacedHorror Source Target Int
   | PlacedDoom Source Target Int
+  | WouldPlaceDoom Source Target Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId
@@ -173,8 +181,8 @@ data WindowType
   | EnemiesAttackStep
   | AddingToCurrentDepth
   | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
-  -- used to avoid checking a window
-  | DoNotCheckWindow
+  | -- used to avoid checking a window
+    DoNotCheckWindow
   deriving stock (Show, Ord, Eq)
 
 $( do

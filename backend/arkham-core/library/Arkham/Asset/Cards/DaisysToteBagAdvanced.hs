@@ -51,7 +51,7 @@ instance RunMessage DaisysToteBagAdvanced where
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
-    UseCardAbility _ source 1 [Window Timing.When (Window.PlayCard _ card)] _
+    UseCardAbility _ source 1 [Window Timing.When (Window.PlayCard _ card) _] _
       | isSource attrs source ->
           a
             <$ push

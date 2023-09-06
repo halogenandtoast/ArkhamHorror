@@ -49,7 +49,7 @@ instance HasAbilities ChuckFergus2 where
 
 getWindowCard :: [Window] -> Card
 getWindowCard [] = error "missing play card window"
-getWindowCard (Window _ (Window.PlayCard _ c) : _) = c
+getWindowCard ((windowType -> Window.PlayCard _ c) : _) = c
 getWindowCard (_ : xs) = getWindowCard xs
 
 instance RunMessage ChuckFergus2 where

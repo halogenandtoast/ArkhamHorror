@@ -34,7 +34,7 @@ advanceActSideA attrs advanceMode = do
   pure
     [ CheckWindow
         [leadInvestigatorId]
-        [Window Timing.When (ActAdvance $ toId attrs)]
+        [mkWindow Timing.When (ActAdvance $ toId attrs)]
     , chooseOne
         leadInvestigatorId
         [TargetLabel (ActTarget $ toId attrs) [AdvanceAct (toId attrs) (toSource attrs) advanceMode]]
@@ -66,10 +66,10 @@ instance RunMessage ActAttrs where
       investigatorIds <- select UneliminatedInvestigator
       whenMsg <-
         checkWindows
-          [Window Timing.When AllUndefeatedInvestigatorsResigned]
+          [mkWindow Timing.When AllUndefeatedInvestigatorsResigned]
       afterMsg <-
         checkWindows
-          [Window Timing.When AllUndefeatedInvestigatorsResigned]
+          [mkWindow Timing.When AllUndefeatedInvestigatorsResigned]
       when
         (null investigatorIds)
         (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
@@ -81,4 +81,9 @@ instance RunMessage ActAttrs where
     PlaceClues _ (ActTarget aid) n | aid == actId -> do
       let totalClues = n + actClues
       pure $ a {actClues = totalClues}
+    PlaceBreach (isTarget a -> True) -> do
+      let total = maybe 0 (+ 1) actBreaches
+      pure $ a & breachesL ?~ total
+    PlaceBreach (isTarget a -> True) -> do
+      pure $ a & breachesL %~ fmap (max 0 . subtract 1)
     _ -> pure a

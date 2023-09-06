@@ -54,7 +54,7 @@ instance HasChaosTokenValue NathanielCho where
 
 instance RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.DealtDamage _ _ (EnemyTarget eid) _)] _
+    UseCardAbility _ source 1 [(windowType -> Window.DealtDamage _ _ (EnemyTarget eid) _)] _
       | isSource attrs source -> do
           push $ CreateEffect "60101" Nothing (toSource attrs) (EnemyTarget eid)
           pure a

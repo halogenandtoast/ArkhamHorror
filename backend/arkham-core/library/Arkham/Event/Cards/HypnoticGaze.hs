@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
@@ -45,7 +45,7 @@ instance RunMessage HypnoticGaze where
         _ -> error "unhandled"
       ignoreWindow <-
         checkWindows
-          [ Window
+          [ mkWindow
               Timing.After
               (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)
           ]

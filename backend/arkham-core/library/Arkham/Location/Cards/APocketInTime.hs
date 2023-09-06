@@ -56,9 +56,9 @@ instance HasAbilities APocketInTime where
 
 getShatteredLocation :: LocationAttrs -> [Window] -> LocationId
 getShatteredLocation _ [] = error "wrong window"
-getShatteredLocation attrs (Window _ (Window.Moves _ _ (Just lid) _) : _)
+getShatteredLocation attrs ((windowType -> Window.Moves _ _ (Just lid) _) : _)
   | lid /= toId attrs = lid
-getShatteredLocation attrs (Window _ (Window.Moves _ _ _ lid) : _)
+getShatteredLocation attrs ((windowType -> Window.Moves _ _ _ lid) : _)
   | lid /= toId attrs = lid
 getShatteredLocation attrs (_ : xs) = getShatteredLocation attrs xs
 

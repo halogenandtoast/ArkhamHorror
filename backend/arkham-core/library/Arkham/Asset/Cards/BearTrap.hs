@@ -55,7 +55,7 @@ instance RunMessage BearTrap where
           (fromJustNote "must be at a location")
           iid
       a <$ push (AttachAsset assetId (LocationTarget locationId))
-    UseCardAbility _ source 2 [Window _ (Window.EnemyEnters eid _)] _
+    UseCardAbility _ source 2 [(windowType -> Window.EnemyEnters eid _)] _
       | isSource attrs source -> do
           a <$ push (AttachAsset assetId (EnemyTarget eid))
     _ -> BearTrap <$> runMessage msg attrs

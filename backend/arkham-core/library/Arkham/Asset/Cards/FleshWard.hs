@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 newtype FleshWard = FleshWard AssetAttrs
@@ -25,18 +25,18 @@ instance HasAbilities FleshWard where
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
           (DealtDamageOrHorror Timing.When (SourceIsCancelable $ SourceIsEnemyAttack AnyEnemy) You)
-        $ ExhaustCost (toTarget a)
+        $ exhaust a
           <> UseCost (AssetWithId $ toId a) Charge 1
     ]
 
 dealtDamage :: [Window] -> Bool
 dealtDamage [] = False
-dealtDamage (Window _ (Window.WouldTakeDamageOrHorror _ _ n _) : _) = n > 0
+dealtDamage ((windowType -> Window.WouldTakeDamageOrHorror _ _ n _) : _) = n > 0
 dealtDamage (_ : xs) = dealtDamage xs
 
 dealtHorror :: [Window] -> Bool
 dealtHorror [] = False
-dealtHorror (Window _ (Window.WouldTakeDamageOrHorror _ _ _ n) : _) = n > 0
+dealtHorror ((windowType -> Window.WouldTakeDamageOrHorror _ _ _ n) : _) = n > 0
 dealtHorror (_ : xs) = dealtDamage xs
 
 instance RunMessage FleshWard where
@@ -44,7 +44,7 @@ instance RunMessage FleshWard where
     UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       ignoreWindow <-
         checkWindows
-          [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
+          [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
       push $
         chooseOrRunOne iid $
           [ Label "Cancel 1 damage" [CancelDamage iid 1, ignoreWindow]

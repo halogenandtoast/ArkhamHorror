@@ -51,6 +51,6 @@ instance RunMessage TheTruthIsHidden where
         , advanceAgendaDeck attrs
         ]
       pure a
-    UseCardAbility _ source 1 [Window _ (Window.PlacedClues _ target n)] _
+    UseCardAbility _ source 1 [(windowType -> Window.PlacedClues _ target n)] _
       | isSource attrs source -> a <$ pushAll [FlipClues target n]
     _ -> TheTruthIsHidden <$> runMessage msg attrs

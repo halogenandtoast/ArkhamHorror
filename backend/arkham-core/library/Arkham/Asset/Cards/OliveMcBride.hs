@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.ChaosBagStepState
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 newtype OliveMcBride = OliveMcBride AssetAttrs
@@ -34,21 +34,21 @@ instance RunMessage OliveMcBride where
       iid
       (isSource attrs -> True)
       1
-      [Window Timing.When (Window.WouldRevealChaosToken drawSource _)]
+      [Window Timing.When (Window.WouldRevealChaosToken drawSource _) _]
       _ ->
-      do
-        ignoreWindow <-
-          checkWindows
-            [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
-        pushAll
-          [ ReplaceCurrentDraw drawSource iid $
-              Choose
-                (toSource attrs)
-                2
-                ResolveChoice
-                [Undecided Draw, Undecided Draw, Undecided Draw]
-                []
-          , ignoreWindow
-          ]
-        pure a
+        do
+          ignoreWindow <-
+            checkWindows
+              [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
+          pushAll
+            [ ReplaceCurrentDraw drawSource iid $
+                Choose
+                  (toSource attrs)
+                  2
+                  ResolveChoice
+                  [Undecided Draw, Undecided Draw, Undecided Draw]
+                  []
+            , ignoreWindow
+            ]
+          pure a
     _ -> OliveMcBride <$> runMessage msg attrs

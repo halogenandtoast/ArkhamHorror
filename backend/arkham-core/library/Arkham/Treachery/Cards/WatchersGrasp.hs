@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype WatchersGrasp = WatchersGrasp TreacheryAttrs
@@ -49,7 +49,7 @@ instance RunMessage WatchersGrasp where
           <> ( guard unengaged
                 *> [ CheckWindow
                       [leadInvestigatorId]
-                      [ Window
+                      [ mkWindow
                           Timing.When
                           (Window.MovedFromHunter theSpectralWatcher)
                       ]

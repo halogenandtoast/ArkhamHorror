@@ -48,11 +48,11 @@ instance RunMessage HisDomain where
           ( SetNoRemainingInvestigatorsHandler (toTarget attrs)
               : map (InvestigatorDefeated (toSource attrs)) investigatorIds
           )
-    UseCardAbility _ source 1 [Window _ (Window.PlaceUnderneath _ card)] _
+    UseCardAbility _ source 1 [(windowType -> Window.PlaceUnderneath _ card)] _
       | isSource attrs source -> do
           removeAllMessagesMatching \case
             PlacedUnderneath ActDeckTarget card' -> card == card'
-            CheckWindow _ [Window _ (Window.PlaceUnderneath ActDeckTarget card')] ->
+            CheckWindow _ [(windowType -> Window.PlaceUnderneath ActDeckTarget card')] ->
               card == card'
             _ -> False
           push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]

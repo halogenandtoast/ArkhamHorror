@@ -30,7 +30,7 @@ import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
@@ -242,12 +242,12 @@ instance RunMessage SkillTest where
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
-        CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
+        CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] ->
           False
-        CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
+        CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] ->
           False
-        RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] -> False
-        RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] -> False
+        RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] -> False
+        RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] -> False
         Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResultsButton])
           | skillTestInvestigator == skillTestInvestigator' -> False
         _ -> True
@@ -259,7 +259,7 @@ instance RunMessage SkillTest where
     RequestedChaosTokens SkillTestSource (Just iid) chaosTokenFaces ->
       do
         skillTestModifiers' <- getModifiers SkillTestTarget
-        windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
+        windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
         push $
           if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
             then
@@ -273,14 +273,14 @@ instance RunMessage SkillTest where
             revealMsg = RevealChaosToken SkillTestSource iid chaosTokenFace
           pushAll
             [ When revealMsg
-            , CheckWindow [iid] [Window Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
+            , CheckWindow [iid] [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
             , revealMsg
             , After revealMsg
             ]
         pure $ s & (setAsideChaosTokensL %~ (chaosTokenFaces <>))
     RevealChaosToken SkillTestSource {} iid token -> do
       push
-        (CheckWindow [iid] [Window Timing.After (Window.RevealChaosToken iid token)])
+        (CheckWindow [iid] [mkWindow Timing.After (Window.RevealChaosToken iid token)])
       pure $ s & revealedChaosTokensL %~ (token :)
     RevealSkillTestChaosTokens iid -> do
       revealedChaosTokenFaces <- flip
@@ -341,7 +341,7 @@ instance RunMessage SkillTest where
                ]
       pure $ s & resultL .~ FailedBy Automatic difficulty
     StartSkillTest _ -> do
-      windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
+      windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
       pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]
       pure s
     CheckAllAdditionalCommitCosts -> do
@@ -366,7 +366,7 @@ instance RunMessage SkillTest where
               iid
               (toSource s)
               Nothing
-              [Window Timing.When Window.NonFast]
+              [mkWindow Timing.When Window.NonFast]
               (mconcat additionalCosts)
           iid' <- getActiveInvestigatorId
           when canPay $
@@ -683,13 +683,13 @@ instance RunMessage SkillTest where
         withQueue_ $ filter $ \case
           Will FailedSkillTest {} -> False
           Will PassedSkillTest {} -> False
-          CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
+          CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] ->
             False
-          CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
+          CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] ->
             False
-          RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
+          RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] ->
             False
-          RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
+          RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] ->
             False
           Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResultsButton])
             | skillTestInvestigator == skillTestInvestigator' -> False

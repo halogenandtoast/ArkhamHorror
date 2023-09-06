@@ -48,7 +48,7 @@ instance HasAbilities CityOfTheUnseen where
 
 getEnemyId :: [Window] -> EnemyId
 getEnemyId [] = error "invalid window"
-getEnemyId (Window _ (PlacedDoom _ (EnemyTarget eid) _) : _) = eid
+getEnemyId ((windowType -> PlacedDoom _ (EnemyTarget eid) _) : _) = eid
 getEnemyId (_ : xs) = getEnemyId xs
 
 instance RunMessage CityOfTheUnseen where

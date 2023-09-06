@@ -14,7 +14,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
 newtype JacquelineFine = JacquelineFine InvestigatorAttrs
@@ -50,10 +50,10 @@ instance RunMessage JacquelineFine where
       iid
       (isSource attrs -> True)
       1
-      [Window Timing.When (Window.WouldRevealChaosToken drawSource _)]
+      [Window Timing.When (Window.WouldRevealChaosToken drawSource _) _]
       _ -> do
         ignoreWindow <-
-          checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
+          checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
         pushAll
           [ ReplaceCurrentDraw drawSource iid $
               ChooseMatchChoice

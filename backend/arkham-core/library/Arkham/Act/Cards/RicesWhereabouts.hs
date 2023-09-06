@@ -56,18 +56,12 @@ instance RunMessage RicesWhereabouts where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
-      a
-        <$ push
-          ( DiscardTopOfEncounterDeck
-              iid
-              discardCount
-              (toAbilitySource attrs 1)
-              Nothing
-          )
+      push $ DiscardTopOfEncounterDeck iid discardCount (toAbilitySource attrs 1) Nothing
+      pure a
     UseCardAbility iid source 2 windows' _ | isSource attrs source -> do
       let
         mCard = flip firstJust windows' $ \case
-          Window _ (Window.Discarded _ _ card)
+          (windowType -> Window.Discarded _ _ card)
             | toCardDef card == Assets.jazzMulligan -> Just card
           _ -> Nothing
       case mCard of

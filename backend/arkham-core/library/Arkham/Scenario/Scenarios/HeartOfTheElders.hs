@@ -37,7 +37,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 data ScenarioStep = One | Two
@@ -417,7 +417,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 instance RunMessage HeartOfTheElders where
   runMessage msg s@(HeartOfTheElders (_ `With` metadata)) = case msg of
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
       pure s
     Do (Explore iid source locationMatcher) -> do

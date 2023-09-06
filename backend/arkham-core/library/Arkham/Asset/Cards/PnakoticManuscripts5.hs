@@ -41,7 +41,7 @@ instance HasAbilities PnakoticManuscripts5 where
 
 getInvestigator :: [Window] -> InvestigatorId
 getInvestigator [] = error "Invalid call"
-getInvestigator (Window _ (Window.WouldPerformRevelationSkillTest iid) : _) =
+getInvestigator ((windowType -> Window.WouldPerformRevelationSkillTest iid) : _) =
   iid
 getInvestigator (_ : xs) = getInvestigator xs
 

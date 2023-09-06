@@ -48,7 +48,7 @@ instance HasAbilities RobesOfEndlessNight2 where
 
 instance RunMessage RobesOfEndlessNight2 where
   runMessage msg a@(RobesOfEndlessNight2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 [Window Timing.When (Window.PlayCard _ card)] _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 [Window Timing.When (Window.PlayCard _ card) _] _ -> do
       push $
         CreateWindowModifierEffect
           EffectCostWindow

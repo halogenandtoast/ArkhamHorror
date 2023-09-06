@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype ArmorOfArdennes5 = ArmorOfArdennes5 AssetAttrs
@@ -35,7 +35,7 @@ instance RunMessage ArmorOfArdennes5 where
   runMessage msg (ArmorOfArdennes5 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       push ignoreWindow
       pure . ArmorOfArdennes5 $ attrs & tokensL %~ decrementTokens Token.Damage
     _ -> ArmorOfArdennes5 <$> runMessage msg attrs

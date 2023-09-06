@@ -13,7 +13,7 @@ import Arkham.Investigator.Types
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Perseverance = Perseverance EventAttrs
@@ -53,7 +53,7 @@ instance RunMessage Perseverance where
         damageAmount = getChoiceAmount "Damage" choices
         horrorAmount = getChoiceAmount "Horror" choices
       ignoreWindow <-
-        checkWindows [Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll $
         CancelAssignedDamage
           (InvestigatorTarget iid)

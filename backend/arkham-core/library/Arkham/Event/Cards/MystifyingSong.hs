@@ -26,7 +26,7 @@ mystifyingSong =
   event MystifyingSong Cards.mystifyingSong
 
 isAfterAgendaWouldAdvanceWindow :: Window -> Bool
-isAfterAgendaWouldAdvanceWindow (Window _ (Window.AgendaWouldAdvance _ _)) = True
+isAfterAgendaWouldAdvanceWindow ((windowType -> Window.AgendaWouldAdvance _ _)) = True
 isAfterAgendaWouldAdvanceWindow _ = False
 
 instance RunMessage MystifyingSong where

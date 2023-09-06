@@ -64,7 +64,7 @@ instance RunMessage RansackingTheManor where
           : [spawnSebastienMoreauMessages | spawnSebastienMoreau]
             <> [advanceAgendaDeck attrs]
       pure a
-    UseCardAbility _ source 1 [Window _ (Window.PlacedClues _ target n)] _
+    UseCardAbility _ source 1 [(windowType -> Window.PlacedClues _ target n)] _
       | isSource attrs source -> do
           pushAll [FlipClues target n]
           pure a

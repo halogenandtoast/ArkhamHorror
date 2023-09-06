@@ -13,7 +13,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {responseCard :: Maybe Card}
@@ -75,7 +75,7 @@ instance RunMessage LeoAnderson where
               source
               (spendableResources + 1)
               UnpaidCost
-              [Window Timing.When (Window.DuringTurn iid)]
+              [mkWindow Timing.When (Window.DuringTurn iid)]
           )
           results
       push $
@@ -96,7 +96,7 @@ instance RunMessage LeoAnderson where
       pure i
     UseCardAbilityChoiceTarget iid source 1 (CardTarget card) _ _
       | isSource attrs source -> do
-          let windows' = [Window Timing.When (Window.DuringTurn iid)]
+          let windows' = [mkWindow Timing.When (Window.DuringTurn iid)]
           pushAll [PayCardCost iid card windows', ResetMetadata (toTarget attrs)]
           pure . LeoAnderson $ attrs `with` Metadata (Just card)
     ResetMetadata (isTarget attrs -> True) ->

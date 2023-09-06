@@ -18,10 +18,9 @@ sureGamble3 = event SureGamble3 Cards.sureGamble3
 
 instance RunMessage SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid _ [Window Timing.When (RevealChaosToken _ token)] _
-      | eid == eventId -> do
-          pushAll
-            [ CreateEffect "01088" Nothing (toSource attrs) (ChaosTokenTarget token)
-            ]
-          pure e
+    InvestigatorPlayEvent _ eid _ [Window Timing.When (RevealChaosToken _ token) _] _ | eid == eventId -> do
+      pushAll
+        [ CreateEffect "01088" Nothing (toSource attrs) (ChaosTokenTarget token)
+        ]
+      pure e
     _ -> SureGamble3 <$> runMessage msg attrs

@@ -45,8 +45,8 @@ instance RunMessage JoeyTheRatVigil where
           windows'' =
             nub $
               windows'
-                <> [ Window Timing.When (DuringTurn iid)
-                   , Window Timing.When FastPlayerWindow
+                <> [ mkWindow Timing.When (DuringTurn iid)
+                   , mkWindow Timing.When FastPlayerWindow
                    ]
       playableItems <-
         filterM

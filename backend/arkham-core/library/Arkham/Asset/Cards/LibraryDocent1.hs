@@ -64,8 +64,8 @@ instance RunMessage LibraryDocent1 where
           windows'' =
             nub $
               windows'
-                <> [ Window Timing.When (DuringTurn iid)
-                   , Window Timing.When FastPlayerWindow
+                <> [ mkWindow Timing.When (DuringTurn iid)
+                   , mkWindow Timing.When FastPlayerWindow
                    ]
           targetCards =
             filterBy

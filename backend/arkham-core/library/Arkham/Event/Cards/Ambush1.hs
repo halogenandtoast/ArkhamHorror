@@ -51,15 +51,15 @@ instance RunMessage Ambush1 where
           InvestigatorLocation
           (fromJustNote "must be at a location")
           iid
-      e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
-    UseCardAbility _ source 2 [Window _ (Window.EnemySpawns enemyId _)] _
-      | isSource attrs source ->
-          e
-            <$ pushAll
-              [ EnemyDamage enemyId $ nonAttack source 2
-              , Discard (toAbilitySource attrs 2) $ toTarget attrs
-              ]
+      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      pure e
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure e
+    UseCardAbility _ source 2 [(windowType -> Window.EnemySpawns enemyId _)] _ | isSource attrs source -> do
+      pushAll
+        [ EnemyDamage enemyId $ nonAttack source 2
+        , Discard (toAbilitySource attrs 2) (toTarget attrs)
+        ]
+      pure e
     _ -> Ambush1 <$> runMessage msg attrs

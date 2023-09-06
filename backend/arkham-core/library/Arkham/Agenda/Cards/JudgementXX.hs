@@ -42,7 +42,7 @@ instance HasAbilities JudgementXX where
 
 toDefeatedInfo :: [Window] -> Source
 toDefeatedInfo [] = error "Invalid call"
-toDefeatedInfo (Window _ (Window.InvestigatorDefeated defeatedBy _) : _) = defeatedBySource defeatedBy
+toDefeatedInfo ((windowType -> Window.InvestigatorDefeated defeatedBy _) : _) = defeatedBySource defeatedBy
 toDefeatedInfo (_ : xs) = toDefeatedInfo xs
 
 instance RunMessage JudgementXX where

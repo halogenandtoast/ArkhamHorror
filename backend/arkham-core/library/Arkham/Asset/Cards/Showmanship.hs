@@ -34,7 +34,7 @@ instance HasAbilities Showmanship where
 
 toAsset :: [Window] -> AssetId
 toAsset [] = error "missing asset"
-toAsset (Window _ (EnterPlay (AssetTarget aid)) : _) = aid
+toAsset ((windowType -> EnterPlay (AssetTarget aid)) : _) = aid
 toAsset (_ : xs) = toAsset xs
 
 instance RunMessage Showmanship where

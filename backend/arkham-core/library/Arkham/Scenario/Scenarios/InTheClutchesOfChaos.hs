@@ -68,6 +68,18 @@ instance RunMessage InTheClutchesOfChaos where
           <> [story investigators intro3 | not neverSeenOrHeardFromAgain]
           <> [story investigators intro4]
       pure s
+    StandaloneSetup -> do
+      lead <- getLead
+      pushAll
+        [ chooseOne
+            lead
+            [ Label "Anette Mason is possessed by evil." [Record AnetteMasonIsPossessedByEvil]
+            , Label
+                "Carl Sanford possesses the secrets of the universe."
+                [Record CarlSanfordPossessesTheSecretsOfTheUniverse]
+            ]
+        ]
+      pure s
     Setup -> do
       anetteMasonIsPossessedByEvil <- getHasRecord AnetteMasonIsPossessedByEvil
       carlSanfordPossessesTheSecretsOfTheUniverse <-
@@ -165,9 +177,25 @@ instance RunMessage InTheClutchesOfChaos where
       if playerCount == 4
         then replicateM_ 3 $ do
           lids <- sampleLocations 3
-          pushAll $ map PlaceBreach lids
+          pushAll $ map (PlaceBreach . toTarget) lids
         else replicateM_ playerCount $ do
           lids <- sampleLocations 2
-          pushAll $ map PlaceBreach lids
+          pushAll $ map (PlaceBreach . toTarget) lids
+      pure s
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
+      mLocation <- selectOne $ locationWithInvestigator iid
+      for_ mLocation $ \location -> do
+        n <- getBreaches location
+        pushWhen (n < 3) $ PlaceBreach (toTarget location)
+      pure s
+    FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ n -> do
+      act <- selectJust AnyAct
+      case chaosTokenFace token of
+        Tablet -> pushAll $ replicate n $ RemoveBreach (toTarget act)
+        ElderThing -> do
+          lids <- sampleLocations 1
+          pushAll $ map (PlaceBreach . toTarget) lids
+        _ -> pure ()
       pure s
     _ -> InTheClutchesOfChaos <$> runMessage msg attrs

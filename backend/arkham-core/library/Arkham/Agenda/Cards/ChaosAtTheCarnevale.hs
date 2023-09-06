@@ -39,7 +39,7 @@ instance HasAbilities ChaosAtTheCarnevale where
 
 instance RunMessage ChaosAtTheCarnevale where
   runMessage msg a@(ChaosAtTheCarnevale attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility _ source 1 [Window _ (Window.EnemySpawns eid _)] _
+    UseCardAbility _ source 1 [(windowType -> Window.EnemySpawns eid _)] _
       | isSource attrs source -> a <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget eid) 2)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds

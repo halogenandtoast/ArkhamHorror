@@ -24,7 +24,7 @@ darkInsight =
 
 instance RunMessage DarkInsight where
   runMessage msg e@(DarkInsight attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ [Window _ (Window.DrawCard _ card _)] _ | eid == toId attrs -> do
+    InvestigatorPlayEvent _ eid _ [(windowType -> Window.DrawCard _ card _)] _ | eid == toId attrs -> do
       let
         cancelMsg = case toCardType card of
           TreacheryType -> CancelNext (toSource attrs) RevelationMessage

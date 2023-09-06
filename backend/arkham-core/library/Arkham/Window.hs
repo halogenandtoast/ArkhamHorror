@@ -41,6 +41,11 @@ mkWindow timing windowType = Window timing windowType Nothing
 windowTypes :: [Window] -> [WindowType]
 windowTypes = map windowType
 
+getBatchId :: [Window] -> BatchId
+getBatchId ((windowBatchId -> Just batchId) : _) = batchId
+getBatchId (_ : rest) = getBatchId rest
+getBatchId [] = error "No batch id found"
+
 defaultWindows :: InvestigatorId -> [Window]
 defaultWindows iid =
   [ Window Timing.When (DuringTurn iid) Nothing

@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (windowBatchId, windowType))
+import Arkham.Window (Window (windowBatchId, windowType), getBatchId)
 import Arkham.Window qualified as Window
 
 newtype TheChariotVII = TheChariotVII AgendaAttrs
@@ -29,19 +29,12 @@ theChariotVII = agenda (1, A) TheChariotVII Cards.theChariotVII (Static 7)
 instance HasAbilities TheChariotVII where
   getAbilities (TheChariotVII a)
     | onSide A a =
-        [ mkAbility a 1 $ ForcedAbility $ WouldPlaceDoomCounter Timing.When AnySource (TargetIs $ toTarget a)
-        , mkAbility a 2 $
-            ForcedAbility $
-              WouldPlaceBreach Timing.When $
-                LocationTargetMatches
-                  (LocationWithBreaches $ EqualTo $ Static 3)
+        [ forcedAbility a 1 $ WouldPlaceDoomCounter Timing.When AnySource (TargetIs $ toTarget a)
+        , forcedAbility a 2 $
+            WouldPlaceBreach Timing.When $
+              LocationTargetMatches (LocationWithBreaches $ EqualTo $ Static 3)
         ]
   getAbilities _ = []
-
-getBatchId :: [Window] -> BatchId
-getBatchId ((windowBatchId -> Just batchId) : _) = batchId
-getBatchId (_ : rest) = getBatchId rest
-getBatchId [] = error "No batch id found"
 
 getWindowLocation :: [Window] -> LocationId
 getWindowLocation ((windowType -> Window.WouldPlaceBreach (LocationTarget lid)) : _) = lid

@@ -152,7 +152,7 @@ const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
 const breaches = computed(() => {
   const {breaches} = props.location
-  if (breaches?.tag === "Breaches") {
+  if (breaches) {
     return breaches.contents
   }
 

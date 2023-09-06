@@ -200,6 +200,7 @@ replaceYourLocation iid (Just lid) = go
   go matcher = case matcher of
     LocationWithIncursion {} -> matcher
     LocationWithBrazier {} -> matcher
+    LocationWithBreaches {} -> matcher
     LocationIsInFrontOf {} -> matcher
     HauntedLocation {} -> matcher
     IsIchtacasDestination {} -> matcher

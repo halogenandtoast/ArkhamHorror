@@ -342,6 +342,7 @@ data LocationMatcher
     LocationIsInFrontOf InvestigatorMatcher
   | IsIchtacasDestination
   | LocationWithBrazier Brazier
+  | LocationWithBreaches ValueMatcher
   | LocationWithIncursion
   deriving stock (Show, Eq, Ord)
 
@@ -709,6 +710,7 @@ data TargetMatcher
   | TargetMatchesAny [TargetMatcher]
   | AnyTarget
   | TargetMatches [TargetMatcher]
+  | LocationTargetMatches LocationMatcher
   | ScenarioCardTarget
   deriving stock (Show, Eq, Ord)
 

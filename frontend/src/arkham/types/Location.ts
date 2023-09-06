@@ -11,11 +11,11 @@ export const brazierDecoder: JsonDecoder.Decoder<Brazier> = JsonDecoder.oneOf<Br
   JsonDecoder.isExactly('Unlit'),
 ], 'Brazier');
 
-export type BreachStatus = { tag: "Breaches", contents: number } | { tag: "Incursion" }
+export type BreachStatus = { tag: "Breaches", contents: number } | { tag: "Incursion", contents: number }
 
 export const breachStatusDecoder: JsonDecoder.Decoder<BreachStatus> = JsonDecoder.oneOf<BreachStatus>([
   JsonDecoder.object<BreachStatus>({ tag: JsonDecoder.isExactly("Breaches"), contents: JsonDecoder.number }, 'Breaches'),
-  JsonDecoder.isExactly({ tag: "Incursion" }),
+  JsonDecoder.object<BreachStatus>({ tag: JsonDecoder.isExactly("Incursion"), contents: JsonDecoder.number }, 'Incursion'),
 ], 'BreachStatus');
 
 export interface Location {

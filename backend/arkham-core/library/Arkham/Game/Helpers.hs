@@ -1840,14 +1840,12 @@ windowMatches iid source window' = \case
           andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
   Matcher.WouldPlaceBreach whenMatcher targetMatcher -> case window' of
-    Window t (Window.WouldPlaceBreach ' target _) _
-      | t == whenMatcher ->
-          andM [targetMatches target targetMatcher]
+    Window t (Window.WouldPlaceBreach target) _ | t == whenMatcher -> do
+      andM [targetMatches target targetMatcher]
     _ -> pure False
   Matcher.PlacedBreach whenMatcher targetMatcher -> case window' of
-    Window t (Window.PlacedBreach target _) _
-      | t == whenMatcher ->
-          andM [targetMatches target targetMatcher]
+    Window t (Window.PlacedBreach target) _ | t == whenMatcher -> do
+      andM [targetMatches target targetMatcher]
     _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher sourceMatcher counterMatcher valueMatcher ->
     case window' of
@@ -2669,6 +2667,15 @@ targetMatches s = \case
   Matcher.TargetIs s' -> pure $ s == s'
   Matcher.AnyTarget -> pure True
   Matcher.TargetMatches ms -> allM (targetMatches s) ms
+  Matcher.LocationTargetMatches locationMatcher -> case s of
+    LocationTarget lid -> lid <=~> locationMatcher
+    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (Matcher.LocationTargetMatches locationMatcher)
+    BothTarget left right ->
+      orM
+        [ targetMatches left (Matcher.LocationTargetMatches locationMatcher)
+        , targetMatches right (Matcher.LocationTargetMatches locationMatcher)
+        ]
+    _ -> pure False
   Matcher.ScenarioCardTarget -> case s of
     EnemyTarget _ -> pure True
     TreacheryTarget _ -> pure True
@@ -2707,6 +2714,7 @@ locationMatches investigatorId source window locationId matcher' = do
     -- special cases
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
+    Matcher.LocationWithBreaches _ -> locationId <=~> matcher
     Matcher.LocationWithBrazier _ -> locationId <=~> matcher
     Matcher.LocationWithIncursion -> locationId <=~> matcher
     Matcher.LocationWithDefeatedEnemyThisRound -> locationId <=~> matcher

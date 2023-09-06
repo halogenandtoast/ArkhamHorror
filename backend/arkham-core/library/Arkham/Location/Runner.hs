@@ -48,7 +48,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
@@ -404,19 +404,13 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
-    PlaceBreach (isTarget a -> True) | locationBreaches /= Just Breach.Incursion -> do
+    PlaceBreach (isTarget a -> True) -> do
       wouldDo msg (Window.WouldPlaceBreach (toTarget a)) (Window.PlacedBreach (toTarget a))
       pure a
-    Do (PlaceBreach (isTarget a -> True)) | locationBreaches /= Just Breach.Incursion -> do
-      let breachCount = maybe 0 Breach.countBreaches locationBreaches
-      if breachCount + 1 >= 4
-        then do
-          push $ Incursion (toId a)
-          pure a
-        else pure $ a & breachesL ?~ Breach.Breaches (breachCount + 1)
-    RemoveBreach (isTarget a -> True) | locationBreaches /= Just Breach.Incursion -> do
-      let breachCount = maybe 0 Breach.countBreaches locationBreaches
-      pure $ a & breachesL ?~ Breach.Breaches (max 0 $ breachCount - 1)
+    Do (PlaceBreach (isTarget a -> True)) -> do
+      pure $ a & breachesL %~ Breach.addBreach
+    RemoveBreach (isTarget a -> True) -> do
+      pure $ a & breachesL %~ Breach.removeBreach
     Incursion lid | lid == toId a -> do
       -- Æ First, remove all breaches on that location.
       -- Æ Second, place 1 doom on that location.
@@ -424,7 +418,9 @@ instance RunMessage LocationAttrs where
       -- Æ Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.
       targets <- selectTargets $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
       pushAll $ PlaceDoom (toSource a) (toTarget a) 1 : map PlaceBreach targets
-      pure $ a & breachesL ?~ Breach.Incursion
+      pure $ a & breachesL ?~ Breach.Incursion 0
+    EndPhase -> do
+      pure $ a & breachesL %~ fmap Breach.resetIncursion
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)

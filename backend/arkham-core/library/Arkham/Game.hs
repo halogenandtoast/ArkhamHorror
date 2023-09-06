@@ -1586,8 +1586,12 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`elem` validLids) . toId) ls
     LocationWithBrazier brazier -> do
       pure $ filter ((== Just brazier) . attr locationBrazier) ls
+    LocationWithBreaches valueMatcher -> do
+      filterM
+        ((`gameValueMatches` valueMatcher) . maybe 0 Breach.countBreaches . attr locationBreaches)
+        ls
     -- these can not be queried
-    LocationWithIncursion -> pure $ filter ((== Just Breach.Incursion) . attr locationBreaches) ls
+    LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
     LocationLeavingPlay -> pure []
     SameLocation -> pure []
     ThisLocation -> pure []

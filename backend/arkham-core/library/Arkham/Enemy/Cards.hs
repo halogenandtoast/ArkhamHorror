@@ -109,6 +109,7 @@ allEncounterEnemyCards =
       , alejandroVela
       , almaHill
       , anetteMason
+      , anetteMasonReincarnatedEvil
       , apexStrangleweed
       , ashleighClarke
       , asylumGorger
@@ -123,6 +124,7 @@ allEncounterEnemyCards =
       , broodOfYogSothoth
       , brotherhoodCultist
       , brownJenkin
+      , carlSanfordDeathlessFanatic
       , carnevaleSentinel
       , catacombsDocent
       , cellKeeper
@@ -186,6 +188,7 @@ allEncounterEnemyCards =
       , keeperOfTheGreatLibrary
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
+      , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
       , lupineThrall
@@ -1473,6 +1476,38 @@ spectralRaven =
   (enemy "05267" "Spectral Raven" UnionAndDisillusion 2)
     { cdCardTraits = setFromList [Creature, Spectral]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
+    }
+
+anetteMasonReincarnatedEvil :: CardDef
+anetteMasonReincarnatedEvil =
+  (enemy "05286b" ("Anette Mason" <:> "Reincarnated Evil") MusicOfTheDamned 1)
+    { cdCardTraits = setFromList [Humanoid, Witch, Servitor, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    , cdVictoryPoints = Just 2
+    }
+
+carlSanfordDeathlessFanatic :: CardDef
+carlSanfordDeathlessFanatic =
+  (enemy "05288b" ("Carl Sanford" <:> "Deathless Fanatic") SecretsOfTheUniverse 1)
+    { cdCardTraits = setFromList [Humanoid, SilverTwilight, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    }
+
+lodgeEnforcer :: CardDef
+lodgeEnforcer =
+  (enemy "05309" "Lodge Enforcer" SecretsOfTheUniverse 2)
+    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    , cdKeywords = singleton Keyword.Retaliate
+    , cdVictoryPoints = Just 1
+    }
+
+witnessOfChaos :: CardDef
+witnessOfChaos =
+  (enemy "05311" "Witness of Chaos" MusicOfTheDamned 2)
+    { cdCardTraits = setFromList [Humanoid, Witch]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 1
     }
 
 corpseHungryGhoul :: CardDef

@@ -329,6 +329,14 @@ allTreacheries =
     , SomeTreacheryCard deathApproaches
     , SomeTreacheryCard markedForDeath
     , SomeTreacheryCard watchersGazeUnionAndDisillusion
+    , -- In the Clutches of Chaos
+      SomeTreacheryCard chaosManifest
+    , SomeTreacheryCard primordialGateway
+    , SomeTreacheryCard terrorUnleashed
+    , --- Secrets of the Universe
+      SomeTreacheryCard secretsOfTheBeyond
+    , --- Music of the Damned
+      SomeTreacheryCard toilAndTrouble
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

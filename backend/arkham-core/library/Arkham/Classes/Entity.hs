@@ -14,6 +14,10 @@ class Entity a where
   toAttrs :: a -> EntityAttrs a
   overAttrs :: (EntityAttrs a -> EntityAttrs a) -> a -> a
 
+attr :: Entity a => (EntityAttrs a -> b) -> a -> b
+attr f = f . toAttrs
+{-# INLINE attr #-}
+
 updateAttrs :: Entity a => a -> (EntityAttrs a -> EntityAttrs a) -> a
 updateAttrs a f = overAttrs f a
 

@@ -21,9 +21,7 @@ newtype RolandBanks = RolandBanks InvestigatorAttrs
 
 rolandBanks :: InvestigatorCard RolandBanks
 rolandBanks =
-  investigator
-    RolandBanks
-    Cards.rolandBanks
+  investigator RolandBanks Cards.rolandBanks $
     Stats
       { health = 9
       , sanity = 5

@@ -39,6 +39,26 @@ instance AsId AssetAttrs where
   type IdOf AssetAttrs = AssetId
   asId = toId
 
+instance Named Asset where
+  toName (Asset a) = toName (toAttrs a)
+  {-# INLINE toName #-}
+
+instance HasCardDef Asset where
+  toCardDef (Asset a) = toCardDef (toAttrs a)
+  {-# INLINE toCardDef #-}
+
+instance HasCardCode Asset where
+  toCardCode (Asset a) = toCardCode (toAttrs a)
+  {-# INLINE toCardCode #-}
+
+instance IsCard Asset where
+  toCard (Asset a) = toCard (toAttrs a)
+  {-# INLINE toCard #-}
+  toCardId (Asset a) = toCardId (toAttrs a)
+  {-# INLINE toCardId #-}
+  toCardOwner (Asset a) = toCardOwner (toAttrs a)
+  {-# INLINE toCardOwner #-}
+
 instance Eq Asset where
   Asset (a :: a) == Asset (b :: b) = case eqT @a @b of
     Just Refl -> a == b

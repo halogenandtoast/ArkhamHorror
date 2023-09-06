@@ -12,10 +12,12 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Location.Brazier
+import Arkham.Location.BreachStatus
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (..))
 import Arkham.SkillType
 import Arkham.Token
+import Data.Aeson.TH
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
@@ -44,13 +46,13 @@ data LocationAttrs = LocationAttrs
   , locationInFrontOf :: Maybe InvestigatorId
   , locationKeys :: Set ArkhamKey
   , locationBrazier :: Maybe Brazier
-  , locationBreaches :: Int
+  , locationBreaches :: Maybe BreachStatus
   , -- We need to track if a location has no clues because timings will interact
     -- with the location being revealed and claim there are no clues before they
     -- are placed. TODO: this could be a hasBeenRevealed bool
     locationWithoutClues :: Bool
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 locationClues :: LocationAttrs -> Int
 locationClues = countTokens Clue . locationTokens
@@ -64,10 +66,6 @@ locationHorror = countTokens Horror . locationTokens
 locationResources :: LocationAttrs -> Int
 locationResources = countTokens Resource . locationTokens
 
-instance ToJSON LocationAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "location"
-
-instance FromJSON LocationAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "location"
-
 makeLensesWith suffixedFields ''LocationAttrs
+
+$(deriveJSON (aesonOptions $ Just "location") ''LocationAttrs)

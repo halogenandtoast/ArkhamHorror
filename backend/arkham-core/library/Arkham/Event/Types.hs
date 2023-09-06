@@ -153,6 +153,10 @@ instance Sourceable EventAttrs where
 
 data Event = forall a. IsEvent a => Event a
 
+instance Named Event where
+  toName (Event e) = toName (toAttrs e)
+  {-# INLINE toName #-}
+
 instance Eq Event where
   (Event (a :: a)) == (Event (b :: b)) = case eqT @a @b of
     Just Refl -> a == b

@@ -228,6 +228,26 @@ instance Sourceable EnemyAttrs where
 
 data Enemy = forall a. IsEnemy a => Enemy a
 
+instance HasCardDef Enemy where
+  toCardDef (Enemy a) = toCardDef (toAttrs a)
+  {-# INLINE toCardDef #-}
+
+instance HasCardCode Enemy where
+  toCardCode (Enemy a) = toCardCode (toAttrs a)
+  {-# INLINE toCardCode #-}
+
+instance IsCard Enemy where
+  toCard (Enemy a) = toCard (toAttrs a)
+  {-# INLINE toCard #-}
+  toCardId (Enemy a) = toCardId (toAttrs a)
+  {-# INLINE toCardId #-}
+  toCardOwner (Enemy a) = toCardOwner (toAttrs a)
+  {-# INLINE toCardOwner #-}
+
+instance Named Enemy where
+  toName (Enemy a) = toName (toAttrs a)
+  {-# INLINE toName #-}
+
 instance Eq Enemy where
   Enemy (a :: a) == Enemy (b :: b) = case eqT @a @b of
     Just Refl -> a == b

@@ -150,7 +150,14 @@ const keys = computed(() => props.location.keys)
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
-const breaches = computed(() => props.location.breaches)
+const breaches = computed(() => {
+  const {breaches} = props.location
+  if (breaches?.tag === "Breaches") {
+    return breaches.contents
+  }
+
+  return 0
+})
 const horror = computed(() => props.location.tokens[TokenType.Horror])
 
 const debug = useDebug()

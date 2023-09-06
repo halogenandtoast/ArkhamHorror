@@ -225,6 +225,9 @@ instance Sourceable InvestigatorAttrs where
 
 data Investigator = forall a. IsInvestigator a => Investigator a
 
+instance Named Investigator where
+  toName (Investigator a) = toName (toAttrs a)
+
 instance Eq Investigator where
   Investigator (a :: a) == Investigator (b :: b) = case eqT @a @b of
     Just Refl -> a == b

@@ -112,8 +112,8 @@ createEnemy
   -> m (EnemyCreation Message)
 createEnemy (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
   enemyId <- getRandom
-  pure $
-    MkEnemyCreation
+  pure
+    $ MkEnemyCreation
       { enemyCreationCard = card
       , enemyCreationEnemyId = enemyId
       , enemyCreationMethod = cMethod
@@ -226,7 +226,7 @@ removeMessageType msgType = withQueue_ $ \queue ->
   let
     (before, after) = break ((== Just msgType) . messageType) queue
     remaining = drop 1 after
-  in
+   in
     before <> remaining
 
 addToHand :: IsCard a => InvestigatorId -> a -> Message
@@ -273,3 +273,9 @@ placeLabeledLocation lbl card = do
   getStartIndex n = do
     alreadyTaken <- selectAny $ LocationWithLabel (mkLabel $ lbl <> tshow n)
     if alreadyTaken then getStartIndex (n + 1) else pure n
+
+assignDamage :: Sourceable source => InvestigatorId -> source -> Int -> UI Message
+assignDamage iid (toSource -> source) damage = DamageLabel iid [InvestigatorAssignDamage iid source DamageAny damage 0]
+
+assignHorror :: Sourceable source => InvestigatorId -> source -> Int -> UI Message
+assignHorror iid (toSource -> source) horror = HorrorLabel iid [InvestigatorAssignDamage iid source DamageAny 0 horror]

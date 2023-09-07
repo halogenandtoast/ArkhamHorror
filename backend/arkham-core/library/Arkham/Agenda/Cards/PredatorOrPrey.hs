@@ -34,9 +34,6 @@ instance RunMessage PredatorOrPrey where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       theMaskedHunter <- genCard Enemies.theMaskedHunter
       createTheMaskedHunter <- createEnemyEngagedWithPrey_ theMaskedHunter
-      pushAll
-        [ createTheMaskedHunter
-        , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-        ]
+      pushAll [createTheMaskedHunter, advanceAgendaDeck attrs]
       pure a
     _ -> PredatorOrPrey <$> runMessage msg attrs

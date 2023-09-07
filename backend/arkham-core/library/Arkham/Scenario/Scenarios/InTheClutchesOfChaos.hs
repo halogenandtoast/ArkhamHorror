@@ -62,8 +62,8 @@ instance RunMessage InTheClutchesOfChaos where
     PreScenarioSetup -> do
       investigators <- allInvestigators
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
-      pushAll $
-        [story investigators intro1]
+      pushAll
+        $ [story investigators intro1]
           <> [story investigators intro2 | neverSeenOrHeardFromAgain]
           <> [story investigators intro3 | not neverSeenOrHeardFromAgain]
           <> [story investigators intro4]
@@ -85,11 +85,11 @@ instance RunMessage InTheClutchesOfChaos where
       carlSanfordPossessesTheSecretsOfTheUniverse <-
         getHasRecord CarlSanfordPossessesTheSecretsOfTheUniverse
       gatheredCards <-
-        buildEncounterDeckExcluding [Enemies.piperOfAzathoth] $
-          [ EncounterSet.InTheClutchesOfChaos
-          , EncounterSet.AgentsOfAzathoth
-          , EncounterSet.Nightgaunts
-          ]
+        buildEncounterDeckExcluding [Enemies.piperOfAzathoth]
+          $ [ EncounterSet.InTheClutchesOfChaos
+            , EncounterSet.AgentsOfAzathoth
+            , EncounterSet.Nightgaunts
+            ]
             <> ( guard anetteMasonIsPossessedByEvil
                   *> [ EncounterSet.MusicOfTheDamned
                      , EncounterSet.AnettesCoven
@@ -131,34 +131,34 @@ instance RunMessage InTheClutchesOfChaos where
       placeRest <- placeLocationCards_ [frenchHill, rivertown, uptown, southChurch, merchantDistrict]
 
       placeHangmansHill <-
-        placeLocationCard_ $
-          if anetteMasonIsPossessedByEvil
+        placeLocationCard_
+          $ if anetteMasonIsPossessedByEvil
             then Locations.hangmansHillWhereItAllEnds
             else Locations.hangmansHillShroudedInMystery
 
       placeSilverTwilightLodge <-
-        placeLocationCard_ $
-          if anetteMasonIsPossessedByEvil
+        placeLocationCard_
+          $ if anetteMasonIsPossessedByEvil
             then Locations.silverTwilightLodgeShroudedInMystery
             else Locations.silverTwilightLodgeWhereItAllEnds
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeSouthside
-        , MoveAllTo (toSource attrs) southsideId
-        , placeHangmansHill
-        , placeSilverTwilightLodge
-        ]
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeSouthside
+          , MoveAllTo (toSource attrs) southsideId
+          , placeHangmansHill
+          , placeSilverTwilightLodge
+          ]
           <> placeRest
           <> [SetupStep (toTarget attrs) 1]
 
       agendas <- genCards [Agendas.theChariotVII]
 
       acts <-
-        genCards $
-          if anetteMasonIsPossessedByEvil
+        genCards
+          $ if anetteMasonIsPossessedByEvil
             then [Acts.darkKnowledgeV1, Acts.beyondTheGrave]
             else [Acts.darkKnowledgeV2, Acts.newWorldOrder]
 
@@ -177,25 +177,25 @@ instance RunMessage InTheClutchesOfChaos where
       if playerCount == 4
         then replicateM_ 3 $ do
           lids <- sampleLocations 3
-          pushAll $ map (PlaceBreach . toTarget) lids
+          pushAll [PlaceBreaches (toTarget lid) 1 | lid <- lids]
         else replicateM_ playerCount $ do
           lids <- sampleLocations 2
-          pushAll $ map (PlaceBreach . toTarget) lids
+          pushAll [PlaceBreaches (toTarget lid) 1 | lid <- lids]
       pure s
     ResolveChaosToken _ Cultist iid -> do
       push $ DrawAnotherChaosToken iid
       mLocation <- selectOne $ locationWithInvestigator iid
       for_ mLocation $ \location -> do
         n <- getBreaches location
-        pushWhen (n < 3) $ PlaceBreach (toTarget location)
+        pushWhen (n < 3) $ PlaceBreaches (toTarget location) 1
       pure s
     FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ n -> do
       act <- selectJust AnyAct
       case chaosTokenFace token of
-        Tablet -> pushAll $ replicate n $ RemoveBreach (toTarget act)
+        Tablet -> push $ RemoveBreaches (toTarget act) n
         ElderThing -> do
-          lids <- sampleLocations 1
-          pushAll $ map (PlaceBreach . toTarget) lids
+          lid <- sampleLocation
+          push $ PlaceBreaches (toTarget lid) 1
         _ -> pure ()
       pure s
     _ -> InTheClutchesOfChaos <$> runMessage msg attrs

@@ -25,7 +25,7 @@ southside_294 = location Southside_294 Cards.southside_294 1 (Static 0)
 instance HasAbilities Southside_294 where
   getAbilities (Southside_294 attrs) =
     let breachCount = countLocationBreaches attrs
-    in  withRevealedAbilities
+     in withRevealedAbilities
           attrs
           [fastAbility attrs 1 Free (Here <> mwhen (breachCount > 0) EncounterDeckIsNotEmpty)]
 
@@ -37,8 +37,8 @@ instance RunMessage Southside_294 where
     DiscardedTopOfEncounterDeck iid cards (isSource attrs -> True) (isTarget attrs -> True) -> do
       let powerTreacheries = filter ((`cardMatch` CardWithTrait Power) . toCard) cards
       act <- selectJust AnyAct
-      pushAll $
-        [RemoveBreach (toTarget attrs), PlaceBreach (toTarget act)]
+      pushAll
+        $ [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
           <> ( guard (notNull powerTreacheries)
                 *> [ FocusCards (toCard <$> cards)
                    , chooseOrRunOne

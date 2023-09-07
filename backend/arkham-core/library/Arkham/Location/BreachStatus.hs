@@ -26,12 +26,12 @@ resetIncursion :: BreachStatus -> BreachStatus
 resetIncursion (Incursion n) = Breaches n
 resetIncursion x = x
 
-addBreach :: Maybe BreachStatus -> Maybe BreachStatus
-addBreach Nothing = Just (Breaches 1)
-addBreach (Just (Breaches n)) = Just (Breaches (n + 1))
-addBreach (Just (Incursion n)) = Just (Incursion (n + 1))
+addBreaches :: Int -> Maybe BreachStatus -> Maybe BreachStatus
+addBreaches n Nothing = Just (Breaches n)
+addBreaches n (Just (Breaches m)) = Just (Breaches (n + m))
+addBreaches n (Just (Incursion m)) = Just (Incursion (n + m))
 
-removeBreach :: Maybe BreachStatus -> Maybe BreachStatus
-removeBreach Nothing = Just (Breaches 0)
-removeBreach (Just (Breaches n)) = Just (Breaches (max 0 (n - 1)))
-removeBreach (Just (Incursion n)) = Just (Incursion (max 0 (n - 1)))
+removeBreaches :: Int -> Maybe BreachStatus -> Maybe BreachStatus
+removeBreaches _ Nothing = Just (Breaches 0)
+removeBreaches n (Just (Breaches m)) = Just (Breaches (max 0 (m - n)))
+removeBreaches n (Just (Incursion m)) = Just (Incursion (max 0 (m - n)))

@@ -14,6 +14,7 @@ data EnemyCreationMethod
   | SpawnWithPlacement Placement
   | SpawnAtLocationMatching LocationMatcher
   | SpawnEngagedWithPrey
+  | SpawnViaSpawnInstruction
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

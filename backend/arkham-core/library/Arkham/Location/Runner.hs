@@ -83,22 +83,22 @@ instance RunMessage LocationAttrs where
       pure $ updateLocation [upd] a
     FlipClues target n | isTarget a target -> do
       let clueCount = max 0 $ subtract n $ locationClues a
-      pure $
-        a
-          & (tokensL %~ flipClues n)
-          & (withoutCluesL .~ (clueCount == 0))
+      pure
+        $ a
+        & (tokensL %~ flipClues n)
+        & (withoutCluesL .~ (clueCount == 0))
     FlipDoom target n | isTarget a target -> do
       let flipCount = min n $ locationDoom a
-      pure $
-        a
-          & (tokensL %~ flipDoom n)
-          & (withoutCluesL .~ (flipCount >= 0))
+      pure
+        $ a
+        & (tokensL %~ flipDoom n)
+        & (withoutCluesL .~ (flipCount >= 0))
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
         shroudValue' <- getModifiedShroudValueFor a
-        push $
-          investigate
+        push
+          $ investigate
             iid
             source
             ( maybe (LocationTarget lid) (ProxyTarget (LocationTarget lid)) mTarget
@@ -118,8 +118,8 @@ instance RunMessage LocationAttrs where
       n
         | isTarget a target ->
             do
-              push $
-                Successful
+              push
+                $ Successful
                   (Action.Investigate, toTarget a)
                   iid
                   source
@@ -136,8 +136,8 @@ instance RunMessage LocationAttrs where
       afterWindowMsg <-
         checkWindows
           [mkWindow Timing.After (Window.SuccessfulInvestigation iid lid)]
-      unless (AlternateSuccessfullInvestigation `elem` modifiers') $
-        pushAll
+      unless (AlternateSuccessfullInvestigation `elem` modifiers')
+        $ pushAll
           [ whenWindowMsg
           , InvestigatorDiscoverClues iid lid (toSource a) clueAmount (Just Action.Investigate)
           , afterWindowMsg
@@ -202,8 +202,8 @@ instance RunMessage LocationAttrs where
     RemoveFromGame (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     Discard source target | isTarget a target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
-      pushAll $
-        windows'
+      pushAll
+        $ windows'
           <> [Discarded (toTarget a) source (toCard a)]
           <> [RemovedFromPlay $ toSource a]
           <> resolve (RemoveLocation $ toId a)
@@ -219,15 +219,15 @@ instance RunMessage LocationAttrs where
       AtLocation lid | lid == locationId -> pure $ a & assetsL %~ insertSet aid
       _ -> pure $ a & assetsL %~ deleteSet aid
     SetConnections lid connections | lid == locationId -> do
-      pure $
-        a
-          & (connectedMatchersL .~ connections)
-          & (revealedConnectedMatchersL .~ connections)
+      pure
+        $ a
+        & (connectedMatchersL .~ connections)
+        & (revealedConnectedMatchersL .~ connections)
     AddDirectConnection fromLid toLid | fromLid == locationId -> do
-      pure $
-        a
-          & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
-          & (connectedMatchersL <>~ [LocationWithId toLid])
+      pure
+        $ a
+        & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
+        & (connectedMatchersL <>~ [LocationWithId toLid])
     DiscoverCluesAtLocation iid lid source n maction | lid == locationId -> do
       let discoveredClues = min n $ locationClues a
       push $ DiscoverClues iid lid source discoveredClues maction
@@ -296,10 +296,10 @@ instance RunMessage LocationAttrs where
         when (Elite `notElem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
           connectedLocationIds <-
-            selectList $
-              AccessibleFrom $
-                LocationWithId
-                  lid
+            selectList
+              $ AccessibleFrom
+              $ LocationWithId
+                lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
@@ -310,8 +310,8 @@ instance RunMessage LocationAttrs where
           if null availableLocationIds
             then push (Discard GameSource (EnemyTarget eid))
             else
-              push $
-                chooseOne
+              push
+                $ chooseOne
                   activeInvestigatorId
                   [ targetLabel
                     lid'
@@ -387,13 +387,13 @@ instance RunMessage LocationAttrs where
       afterWindowMsg <-
         checkWindows
           [mkWindow Timing.After (Window.RevealLocation revealer lid)]
-      pushAll $
-        [whenWindowMsg, afterWindowMsg]
+      pushAll
+        $ [whenWindowMsg, afterWindowMsg]
           <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
       pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount == 0)
     LookAtRevealed iid source target | isTarget a target -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [Label "Continue" [After (LookAtRevealed iid source $ toTarget a)]]
       pure $ a & revealedL .~ True
@@ -404,20 +404,30 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
-    PlaceBreach (isTarget a -> True) -> do
-      wouldDo msg (Window.WouldPlaceBreach (toTarget a)) (Window.PlacedBreach (toTarget a))
+    PlaceBreaches (isTarget a -> True) n -> do
+      wouldDoEach
+        n
+        (PlaceBreaches (toTarget a) 1)
+        (Window.WouldPlaceBreaches (toTarget a))
+        (Window.WouldPlaceBreach (toTarget a))
+        (Window.PlacedBreaches (toTarget a))
+        (Window.PlacedBreach (toTarget a))
       pure a
-    Do (PlaceBreach (isTarget a -> True)) -> do
-      pure $ a & breachesL %~ Breach.addBreach
-    RemoveBreach (isTarget a -> True) -> do
-      pure $ a & breachesL %~ Breach.removeBreach
+    Do (PlaceBreaches (isTarget a -> True) n) -> do
+      pure $ a & breachesL %~ Breach.addBreaches n
+    RemoveBreaches (isTarget a -> True) n -> do
+      pure $ a & breachesL %~ Breach.removeBreaches n
     Incursion lid | lid == toId a -> do
       -- Æ First, remove all breaches on that location.
       -- Æ Second, place 1 doom on that location.
       -- Æ Finally, place 1 breach on each connecting location. This can chain‐react and cause additional incursions to occur, so beware!
       -- Æ Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.
       targets <- selectTargets $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
-      pushAll $ PlaceDoom (toSource a) (toTarget a) 1 : map PlaceBreach targets
+      lead <- getLead
+      pushAll
+        [ PlaceDoom (toSource a) (toTarget a) 1
+        , chooseOrRunOneAtATime lead [targetLabel target [PlaceBreaches target 1] | target <- targets]
+        ]
       pure $ a & breachesL ?~ Breach.Incursion 0
     EndPhase -> do
       pure $ a & breachesL %~ fmap Breach.resetIncursion
@@ -430,18 +440,18 @@ instance RunMessage LocationAttrs where
           push (InvestigatorDrewEncounterCard iid card)
           pure $ a & cardsUnderneathL .~ rest
         _ ->
-          throwIO $
-            InvalidState $
-              "Not expecting a player card or empty set, but got "
-                <> tshow locationCardsUnderneath
+          throwIO
+            $ InvalidState
+            $ "Not expecting a player card or empty set, but got "
+              <> tshow locationCardsUnderneath
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid source 101 _ _ | isSource a source -> do
       let
         triggerSource = case source of
           ProxySource _ s -> s
           _ -> InvestigatorSource iid
-      push $
-        Investigate
+      push
+        $ Investigate
           iid
           (toId a)
           triggerSource
@@ -450,8 +460,8 @@ instance RunMessage LocationAttrs where
           False
       pure a
     UseCardAbility iid source 102 _ _ | isSource a source -> do
-      push $
-        MoveAction
+      push
+        $ MoveAction
           iid
           locationId
           Free -- already paid by using ability
@@ -474,8 +484,8 @@ locationInvestigatorsWithClues LocationAttrs {locationInvestigators} =
 getModifiedShroudValueFor :: LocationAttrs -> GameT Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
-  pure $
-    foldr
+  pure
+    $ foldr
       applyPostModifier
       (foldr applyModifier (locationShroud attrs) modifiers')
       modifiers'
@@ -526,8 +536,8 @@ withDrawCardUnderneathAction x =
 
 instance HasAbilities LocationAttrs where
   getAbilities l =
-    [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l) $
-        ActionAbility (Just Action.Investigate) (ActionCost 1)
+    [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
+        $ ActionAbility (Just Action.Investigate) (ActionCost 1)
     , restrictedAbility
         l
         102
@@ -540,9 +550,9 @@ instance HasAbilities LocationAttrs where
         )
         $ ActionAbility (Just Action.Move) moveCost
     ]
-      <> [ withTooltip ("Take " <> keyName k <> " key") $
-          restrictedAbility l (500 + idx) (OnLocation $ LocationWithId $ toId l) $
-            FastAbility Free
+      <> [ withTooltip ("Take " <> keyName k <> " key")
+          $ restrictedAbility l (500 + idx) (OnLocation $ LocationWithId $ toId l)
+          $ FastAbility Free
          | locationRevealed l
          , locationClues l == 0
          , (idx, k) <- withIndex (toList $ locationKeys l)

@@ -15,4 +15,7 @@ data SpawnAt
   | SpawnAtFirst [SpawnAt]
   deriving stock (Show, Eq)
 
+instance IsString SpawnAt where
+  fromString = SpawnLocation . fromString
+
 $(deriveJSON defaultOptions ''SpawnAt)

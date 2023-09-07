@@ -116,8 +116,8 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
     (possibleCards modifiers)
  where
   possibleCards modifiers =
-    map (PlayerCard . snd) $
-      filter
+    map (PlayerCard . snd)
+      $ filter
         (canPlayFromDiscard modifiers)
         (zip @_ @Int [0 ..] investigatorDiscard)
   canPlayFromDiscard modifiers (n, card) =
@@ -155,8 +155,8 @@ getAsIfInHandCards iid = do
       _ -> Nothing
   discard <- field InvestigatorDiscard iid
   deck <- fieldMap InvestigatorDeck unDeck iid
-  pure $
-    map
+  pure
+    $ map
       (PlayerCard . fst)
       (filter modifiersPermitPlayOfDiscard (zip discard [0 :: Int ..]))
       <> map
@@ -367,7 +367,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
   ignoreLimit <-
     or
       . sequence [(IgnoreLimit `elem`), (CanIgnoreLimit `elem`)]
-      <$> getModifiers (AbilityTarget iid ability)
+        <$> getModifiers (AbilityTarget iid ability)
   if ignoreLimit && canIgnoreAbilityLimit == CanIgnoreAbilityLimit
     then pure True
     else case limit of
@@ -398,8 +398,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
         pure $ usedCount < n
       PlayerLimit _ n ->
-        pure . (< n) . maybe 0 usedTimes $
-          find
+        pure
+          . (< n)
+          . maybe 0 usedTimes
+          $ find
             ((== ability) . usedAbility)
             usedAbilities
       PerCopyLimit cardDef _ n -> do
@@ -407,8 +409,11 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
           abilityCardDef = \case
             PerCopyLimit cDef _ _ -> Just cDef
             _ -> Nothing
-        pure . (< n) . getSum . foldMap (Sum . usedTimes) $
-          filter
+        pure
+          . (< n)
+          . getSum
+          . foldMap (Sum . usedTimes)
+          $ filter
             ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
             usedAbilities
       PerInvestigatorLimit _ n -> do
@@ -429,8 +434,8 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         usedAbilities' <-
           fmap (map usedAbility)
             . filterDepthSpecificAbilities
-            =<< concatMapM (field InvestigatorUsedAbilities)
-            =<< allInvestigatorIds
+              =<< concatMapM (field InvestigatorUsedAbilities)
+              =<< allInvestigatorIds
         let total = count (== ability) usedAbilities'
         pure $ total < n
 
@@ -445,14 +450,14 @@ applyActionCostModifier _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ n = n
 
 getCanAffordCost
-  :: HasGame m
+  :: (HasGame m, Sourceable source)
   => InvestigatorId
-  -> Source
+  -> source
   -> Maybe Action
   -> [Window]
   -> Cost
   -> m Bool
-getCanAffordCost iid source mAction windows' = \case
+getCanAffordCost iid (toSource -> source) mAction windows' = \case
   Free -> pure True
   UpTo {} -> pure True
   DiscardHandCost {} -> pure True
@@ -543,7 +548,7 @@ getCanAffordCost iid source mAction windows' = \case
         FromHandOf whoMatcher ->
           fmap (filter (`cardMatch` cardMatcher) . concat)
             . traverse (field InvestigatorHand)
-            =<< selectList whoMatcher
+              =<< selectList whoMatcher
         FromPlayAreaOf whoMatcher -> do
           assets <- selectList $ Matcher.AssetControlledBy whoMatcher
           traverse (field AssetCard) assets
@@ -565,8 +570,8 @@ getCanAffordCost iid source mAction windows' = \case
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     let
       total =
-        sum $
-          map
+        sum
+          $ map
             (count (`member` insertSet WildIcon skillTypes) . cdSkills . toCardDef)
             handCards
     pure $ total >= n
@@ -574,7 +579,7 @@ getCanAffordCost iid source mAction windows' = \case
     handCards <-
       mapMaybe (preview _PlayerCard)
         . filter (`cardMatch` Matcher.NonWeakness)
-        <$> field InvestigatorHand iid
+          <$> field InvestigatorHand iid
     let
       total = sum $ map (maybe 0 toPrintedCost . cdCost . toCardDef) handCards
     pure $ total >= n
@@ -649,26 +654,26 @@ getActionsWith iid window f = do
         case abilitySource action of
           ProxySource (AgendaMatcherSource m) base -> do
             sources <- selectListMap AgendaSource m
-            pure $
-              map
+            pure
+              $ map
                 (\source -> action {abilitySource = ProxySource source base})
                 sources
           ProxySource (AssetMatcherSource m) base -> do
             sources <- selectListMap AssetSource m
-            pure $
-              map
+            pure
+              $ map
                 (\source -> action {abilitySource = ProxySource source base})
                 sources
           ProxySource (LocationMatcherSource m) base -> do
             sources <- selectListMap LocationSource m
-            pure $
-              map
+            pure
+              $ map
                 (\source -> action {abilitySource = ProxySource source base})
                 sources
           ProxySource (EnemyMatcherSource m) base -> do
             sources <- selectListMap EnemySource m
-            pure $
-              map
+            pure
+              $ map
                 (\source -> action {abilitySource = ProxySource source base})
                 sources
           _ -> pure [action]
@@ -706,8 +711,8 @@ getActionsWith iid window f = do
                     || isForced
                     || isReactionAbility ability
                 )
-        pure $
-          if any prevents investigatorModifiers
+        pure
+          $ if any prevents investigatorModifiers
             || any blankPrevents modifiers'
             || needsToBeFast
             then Nothing
@@ -973,8 +978,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
           possibleSlots <- getPotentialSlots c iid
           pure $ null $ cdSlots pcDef \\ possibleSlots
 
-    pure $
-      (cdCardType pcDef /= SkillType)
+    pure
+      $ (cdCardType pcDef /= SkillType)
         && ((costStatus == PaidCost) || canAffordCost)
         && none prevents modifiers
         && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
@@ -1136,8 +1141,8 @@ passesCriteria iid mcard source windows' = \case
           InThreatArea iid' -> member iid' <$> select who
           _ -> pure False
       _ ->
-        error $
-          "Can not check if "
+        error
+          $ "Can not check if "
             <> show source
             <> " is in players threat area"
   Criteria.Self -> case source of
@@ -1367,8 +1372,8 @@ passesCriteria iid mcard source windows' = \case
     Nothing -> pure False
     Just aid -> do
       mlid <- field InvestigatorLocation iid
-      selectAny $
-        Matcher.NotAsset (Matcher.AssetWithId aid) <> Matcher.resolveAssetMatcher iid mlid matcher
+      selectAny
+        $ Matcher.NotAsset (Matcher.AssetWithId aid) <> Matcher.resolveAssetMatcher iid mlid matcher
   Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
@@ -1424,7 +1429,7 @@ passesCriteria iid mcard source windows' = \case
     n <-
       length
         . filter (`elem` logKeys)
-        <$> scenarioFieldMap ScenarioRemembered Set.toList
+          <$> scenarioFieldMap ScenarioRemembered Set.toList
     gameValueMatches n (Matcher.AtLeast value)
   Criteria.AtLeastNCriteriaMet n criteria -> do
     m <- countM (passesCriteria iid mcard source windows') criteria
@@ -1472,7 +1477,7 @@ passesEnemyCriteria _iid source windows' criterion =
         getAttackingEnemy = \case
           Window _ (Window.EnemyAttacks details) _ -> Just $ attackEnemy details
           _ -> Nothing
-      in
+       in
         case mapMaybe getAttackingEnemy windows' of
           [] -> error "can not be called without enemy source"
           xs -> pure $ Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
@@ -1809,6 +1814,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.WouldPlaceBreach timing targetMatcher -> guardTiming timing $ \case
       Window.WouldPlaceBreach target -> targetMatches target targetMatcher
+      _ -> noMatch
+    Matcher.PlacedBreaches timing targetMatcher -> guardTiming timing $ \case
+      Window.PlacedBreaches target -> targetMatches target targetMatcher
       _ -> noMatch
     Matcher.PlacedBreach timing targetMatcher -> guardTiming timing $ \case
       Window.PlacedBreach target -> targetMatches target targetMatcher
@@ -2245,8 +2253,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             andM
               [ member aid
                   <$> select
-                    ( Matcher.AssetControlledBy $
-                        Matcher.replaceYouMatcher iid whoMatcher
+                    ( Matcher.AssetControlledBy
+                        $ Matcher.replaceYouMatcher iid whoMatcher
                     )
               , sourceMatches source' sourceMatcher
               ]
@@ -2420,12 +2428,12 @@ matchWho iid who matcher =
   replaceMatchWhoLocations iid' = \case
     Matcher.InvestigatorAt matcher' -> do
       mlid <- field InvestigatorLocation iid'
-      pure $
-        Matcher.InvestigatorAt $
-          Matcher.replaceYourLocation
-            iid
-            mlid
-            matcher'
+      pure
+        $ Matcher.InvestigatorAt
+        $ Matcher.replaceYourLocation
+          iid
+          mlid
+          matcher'
     Matcher.HealableInvestigator source damageType inner -> do
       Matcher.HealableInvestigator source damageType
         <$> replaceMatchWhoLocations iid' inner
@@ -2810,8 +2818,8 @@ spawnAtOneOf iid eid targetLids = do
         windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid) Nothing]
         pure (windows', lid)
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel lid $ windows' : resolve (EnemySpawn Nothing lid eid)
           | (windows', lid) <- windowPairs
@@ -2844,14 +2852,14 @@ getDoomCount :: HasGame m => m Int
 getDoomCount =
   getSum
     . fold
-    <$> sequence
-      [ selectAgg Sum AssetDoom Matcher.AnyAsset
-      , selectAgg Sum EnemyDoom Matcher.AnyEnemy
-      , selectAgg Sum LocationDoom Matcher.Anywhere
-      , selectAgg Sum TreacheryDoom Matcher.AnyTreachery
-      , selectAgg Sum AgendaDoom Matcher.AnyAgenda
-      , selectAgg Sum InvestigatorDoom Matcher.UneliminatedInvestigator
-      ]
+      <$> sequence
+        [ selectAgg Sum AssetDoom Matcher.AnyAsset
+        , selectAgg Sum EnemyDoom Matcher.AnyEnemy
+        , selectAgg Sum LocationDoom Matcher.Anywhere
+        , selectAgg Sum TreacheryDoom Matcher.AnyTreachery
+        , selectAgg Sum AgendaDoom Matcher.AnyAgenda
+        , selectAgg Sum InvestigatorDoom Matcher.UneliminatedInvestigator
+        ]
 
 getPotentialSlots
   :: (HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]
@@ -2859,8 +2867,8 @@ getPotentialSlots card iid = do
   slots <- field InvestigatorSlots iid
   let
     slotTypesAndSlots :: [(SlotType, Slot)] =
-      concatMap (\(slotType, slots') -> map (slotType,) slots') $
-        mapToList slots
+      concatMap (\(slotType, slots') -> map (slotType,) slots')
+        $ mapToList slots
     passesRestriction = \case
       RestrictedSlot _ matcher _ -> cardMatch card matcher
       Slot {} -> True
@@ -2907,8 +2915,8 @@ isForcedAbilityType iid source = \case
 iconsForCard :: HasGame m => Card -> m [SkillIcon]
 iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
   modifiers' <- getModifiers (CardIdTarget pcId)
-  pure $
-    foldr
+  pure
+    $ foldr
       applyAfterSkillModifiers
       (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
       modifiers'
@@ -2961,7 +2969,7 @@ sourceMatches s = \case
           Nothing -> pure False
           Just iid -> member iid <$> select whoMatcher
         _ -> pure False
-    in
+     in
       checkSource s
   Matcher.SourceIsType t -> pure $ case t of
     AssetType -> case s of

@@ -27,6 +27,16 @@ data Component
 data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | DoomToken
   deriving stock (Show, Eq, Ord)
 
+pattern DamageLabel :: InvestigatorId -> [msg] -> UI msg
+pattern DamageLabel iid msgs <- ComponentLabel (InvestigatorComponent iid DamageToken) msgs
+  where
+    DamageLabel iid msgs = ComponentLabel (InvestigatorComponent iid DamageToken) msgs
+
+pattern HorrorLabel :: InvestigatorId -> [msg] -> UI msg
+pattern HorrorLabel iid msgs <- ComponentLabel (InvestigatorComponent iid HorrorToken) msgs
+  where
+    HorrorLabel iid msgs = ComponentLabel (InvestigatorComponent iid HorrorToken) msgs
+
 data UI msg
   = Label {label :: Text, messages :: [msg]}
   | TooltipLabel {label :: Text, tooltip :: Tooltip, messages :: [msg]}

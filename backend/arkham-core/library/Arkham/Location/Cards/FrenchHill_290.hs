@@ -26,9 +26,9 @@ instance HasAbilities FrenchHill_290 where
   getAbilities (FrenchHill_290 attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 (withBreaches attrs Here) $
-          ActionAbility Nothing $
-            ActionCost 1 <> HandDiscardCost 1 AnyCard
+      [ restrictedAbility attrs 1 (withBreaches attrs Here)
+          $ ActionAbility Nothing
+          $ ActionCost 1 <> HandDiscardCost 1 AnyCard
       ]
 
 getCardPayment :: Payment -> Card
@@ -42,8 +42,8 @@ instance RunMessage FrenchHill_290 where
   runMessage msg l@(FrenchHill_290 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ (getCardPayment -> card) -> do
       let icons = count (== #willpower) $ cdSkills $ toCardDef card
-          n = min (maybe 0 countBreaches $ locationBreaches attrs) icons
+          n = 1 + min (maybe 0 countBreaches $ locationBreaches attrs) icons
       act <- selectJust AnyAct
-      pushAll $ cycleN n [RemoveBreach (toTarget attrs), PlaceBreach (toTarget act)]
+      pushAll [RemoveBreaches (toTarget attrs) n, PlaceBreaches (toTarget act) n]
       pure l
     _ -> FrenchHill_290 <$> runMessage msg attrs

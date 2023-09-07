@@ -156,7 +156,7 @@ data AbilityRef = AbilityRef Source Int
 getChoiceAmount :: Text -> [(Text, Int)] -> Int
 getChoiceAmount key choices =
   let choicesMap = mapFromList @(Map Text Int) choices
-  in  findWithDefault 0 key choicesMap
+   in findWithDefault 0 key choicesMap
 
 class IsMessage msg where
   toMessage :: msg -> Message
@@ -776,8 +776,8 @@ data Message
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId
   | PutLocationInCenter LocationId
-  | PlaceBreach Target
-  | RemoveBreach Target
+  | PlaceBreaches Target Int
+  | RemoveBreaches Target Int
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]

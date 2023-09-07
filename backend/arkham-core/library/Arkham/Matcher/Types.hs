@@ -245,6 +245,15 @@ instance Semigroup EnemyMatcher where
 instance Monoid EnemyMatcher where
   mempty = AnyEnemy
 
+class IsEnemyMatcher a where
+  toEnemyMatcher :: a -> EnemyMatcher
+
+instance IsEnemyMatcher EnemyMatcher where
+  toEnemyMatcher = id
+
+instance IsEnemyMatcher EnemyId where
+  toEnemyMatcher = EnemyWithId
+
 data EventMatcher
   = EventWithTitle Text
   | EventWithFullTitle Text Text
@@ -345,6 +354,9 @@ data LocationMatcher
   | LocationWithBreaches ValueMatcher
   | LocationWithIncursion
   deriving stock (Show, Eq, Ord)
+
+instance IsString LocationMatcher where
+  fromString = LocationWithTitle . fromString
 
 class IsLocationMatcher a where
   toLocationMatcher :: a -> LocationMatcher
@@ -543,6 +555,7 @@ data WindowMatcher
   | PlacedDoomCounter Timing SourceMatcher TargetMatcher
   | WouldPlaceBreach Timing TargetMatcher
   | PlacedBreach Timing TargetMatcher
+  | PlacedBreaches Timing TargetMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher
@@ -960,8 +973,8 @@ $( do
     value <- deriveJSON defaultOptions ''ValueMatcher
     window <- deriveJSON defaultOptions ''WindowMatcher
     windowMythosStep <- deriveJSON defaultOptions ''WindowMythosStepMatcher
-    pure $
-      concat
+    pure
+      $ concat
         [ ability
         , act
         , action

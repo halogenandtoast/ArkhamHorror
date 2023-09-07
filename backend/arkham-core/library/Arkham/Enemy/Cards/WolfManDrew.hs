@@ -24,18 +24,12 @@ wolfManDrew =
     Cards.wolfManDrew
     (4, Static 4, 2)
     (2, 0)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Downtown"))
+    (spawnAtL ?~ "Downtown")
 
 instance HasAbilities WolfManDrew where
   getAbilities (WolfManDrew a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.When Anyone AnyEnemyAttack $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [forcedAbility a 1 $ EnemyAttacks Timing.When Anyone AnyEnemyAttack (toEnemyMatcher $ toId a)]
 
 instance RunMessage WolfManDrew where
   runMessage msg e@(WolfManDrew attrs) = case msg of

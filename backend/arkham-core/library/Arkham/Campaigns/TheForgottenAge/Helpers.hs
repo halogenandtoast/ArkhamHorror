@@ -24,7 +24,7 @@ import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Result (..), Window (..), mkWindow)
+import Arkham.Window (Result (..), mkWindow)
 import Arkham.Window qualified as Window
 
 getHasSupply :: HasGame m => InvestigatorId -> Supply -> m Bool
@@ -72,8 +72,8 @@ getExplorationDeck =
 getSetAsidePoisonedCount :: HasGame m => m Int
 getSetAsidePoisonedCount = do
   n <-
-    selectCount $
-      InDeckOf Anyone
+    selectCount
+      $ InDeckOf Anyone
         <> BasicCardMatch
           (cardIs Treacheries.poisoned)
   pure $ 4 - n
@@ -86,7 +86,7 @@ getSetAsidePoisoned :: HasGame m => m Card
 getSetAsidePoisoned =
   fromJustNote "not enough poison cards"
     . find ((== Treacheries.poisoned) . toCardDef)
-    <$> scenarioField ScenarioSetAsideCards
+      <$> scenarioField ScenarioSetAsideCards
 
 data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock (Eq)
@@ -105,7 +105,7 @@ explore iid source cardMatcher exploreRule matchCount = do
       foldr
         ( \_ (drawn', rest') ->
             let (drawn'', rest'') = splitAtMatch rest'
-            in  (drawn' <> drawn'', rest'')
+             in (drawn' <> drawn'', rest'')
         )
         ([], explorationDeck)
         [1 .. matchCount]
@@ -133,8 +133,8 @@ explore iid source cardMatcher exploreRule matchCount = do
               ReplaceExplored -> do
                 let
                   lSymbol =
-                    fromJustNote "no location symbol" $
-                      cdLocationRevealedSymbol (toCardDef x)
+                    fromJustNote "no location symbol"
+                      $ cdLocationRevealedSymbol (toCardDef x)
                 mLocationToReplace <- selectOne $ LocationWithSymbol lSymbol
                 case mLocationToReplace of
                   Just lid -> pure (lid, ReplaceLocation lid x DefaultReplace)
@@ -147,8 +147,8 @@ explore iid source cardMatcher exploreRule matchCount = do
               checkWindows
                 [mkWindow Timing.After $ Window.Explored iid (Success lid)]
 
-            pure $
-              locationAction
+            pure
+              $ locationAction
                 : [ Move $ move source iid lid
                   | canMove && exploreRule == PlaceExplored
                   ]
@@ -197,8 +197,8 @@ explore iid source cardMatcher exploreRule matchCount = do
             | lid <- locationIds
             ]
 
-        pure $
-          map snd placements
+        pure
+          $ map snd placements
             <> [ chooseOne
                 iid
                 [ targetLabel lid [Move $ move source iid lid]
@@ -214,15 +214,15 @@ explore iid source cardMatcher exploreRule matchCount = do
         if null notMatched
           then pure rest
           else shuffleM (rest <> notMatched)
-      pushAll $
-        [ FocusCards drawn
-        , chooseN
-            iid
-            (min matchCount $ length xs)
-            [targetLabel (toCardId x) [] | x <- xs]
-        , UnfocusCards
-        , SetScenarioDeck ExplorationDeck deck'
-        ]
+      pushAll
+        $ [ FocusCards drawn
+          , chooseN
+              iid
+              (min matchCount $ length xs)
+              [targetLabel (toCardId x) [] | x <- xs]
+          , UnfocusCards
+          , SetScenarioDeck ExplorationDeck deck'
+          ]
           <> msgs
 
 getVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)

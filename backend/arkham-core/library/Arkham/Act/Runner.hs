@@ -81,9 +81,9 @@ instance RunMessage ActAttrs where
     PlaceClues _ (ActTarget aid) n | aid == actId -> do
       let totalClues = n + actClues
       pure $ a {actClues = totalClues}
-    PlaceBreach (isTarget a -> True) -> do
-      let total = maybe 0 (+ 1) actBreaches
+    PlaceBreaches (isTarget a -> True) n -> do
+      let total = maybe 0 (+ n) actBreaches
       pure $ a & breachesL ?~ total
-    PlaceBreach (isTarget a -> True) -> do
-      pure $ a & breachesL %~ fmap (max 0 . subtract 1)
+    RemoveBreaches (isTarget a -> True) n -> do
+      pure $ a & breachesL %~ fmap (max 0 . subtract n)
     _ -> pure a

@@ -57,7 +57,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Data.List.Extra (firstJust)
 import Data.Monoid (First (..))
@@ -141,8 +141,8 @@ instance RunMessage EnemyAttrs where
           (selectJust . locationWithInvestigator)
       leadInvestigatorId <- getLeadInvestigatorId
       for_ (nonEmpty preyIdsWithLocation) $ \iids ->
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             leadInvestigatorId
             [ targetLabel
               lid
@@ -186,8 +186,8 @@ instance RunMessage EnemyAttrs where
                   pushAll
                     [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                 iids ->
-                  push $
-                    chooseOne
+                  push
+                    $ chooseOne
                       leadInvestigatorId
                       [ targetLabel
                         iid
@@ -195,22 +195,22 @@ instance RunMessage EnemyAttrs where
                       | iid <- iids
                       ]
             else
-              when (Keyword.Massive `notElem` keywords) $
-                push $
-                  EnemyEntered
-                    eid
-                    lid
+              when (Keyword.Massive `notElem` keywords)
+                $ push
+                $ EnemyEntered
+                  eid
+                  lid
 
           when
             (Keyword.Massive `elem` keywords)
             do
               investigatorIds <-
-                selectList $
-                  InvestigatorAt $
-                    LocationWithId
-                      lid
-              pushAll $
-                EnemyEntered eid lid
+                selectList
+                  $ InvestigatorAt
+                  $ LocationWithId
+                    lid
+              pushAll
+                $ EnemyEntered eid lid
                   : [EnemyEngageInvestigator eid iid | iid <- investigatorIds]
       pure a
     EnemySpawnedAt lid eid | eid == enemyId -> do
@@ -285,8 +285,8 @@ instance RunMessage EnemyAttrs where
               closestLocationIds <- selectList $ ClosestPathLocation loc lid
               if lid `elem` adjacentLocationIds
                 then
-                  push $
-                    chooseOne
+                  push
+                    $ chooseOne
                       leadInvestigatorId
                       [targetLabel lid [EnemyMove enemyId lid]]
                 else
@@ -308,10 +308,10 @@ instance RunMessage EnemyAttrs where
             else do
               leadInvestigatorId <- getLeadInvestigatorId
               adjacentLocationIds <-
-                selectList $
-                  AccessibleFrom $
-                    LocationWithId
-                      loc
+                selectList
+                  $ AccessibleFrom
+                  $ LocationWithId
+                    loc
               closestLocationIds <- selectList $ ClosestPathLocation loc lid
               if lid `elem` adjacentLocationIds
                 then
@@ -336,10 +336,10 @@ instance RunMessage EnemyAttrs where
       if willMove
         then do
           enemyLocation <- field EnemyLocation enemyId
-          leaveWindows <- for enemyLocation $
-            \oldId -> windows [Window.EnemyLeaves eid oldId]
-          pushAll $
-            fromMaybe [] leaveWindows
+          leaveWindows <- for enemyLocation
+            $ \oldId -> windows [Window.EnemyLeaves eid oldId]
+          pushAll
+            $ fromMaybe [] leaveWindows
               <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
           pure $ a & placementL .~ AtLocation lid
         else a <$ push (EnemyCheckEngagement eid)
@@ -356,8 +356,8 @@ instance RunMessage EnemyAttrs where
               canEngage <- flip allM investigatorModifiers $ \case
                 CannotBeEngagedBy matcher -> notElem eid <$> select matcher
                 _ -> pure True
-              pure $
-                canEngage && EnemyCannotEngage iid `notElem` modifiers' && CannotBeEngaged `notElem` modifiers'
+              pure
+                $ canEngage && EnemyCannotEngage iid `notElem` modifiers' && CannotBeEngaged `notElem` modifiers'
       investigatorIds' <-
         filterM modifiedFilter
           =<< getInvestigatorsAtSameLocation a
@@ -392,8 +392,8 @@ instance RunMessage EnemyAttrs where
             [] -> pure ()
             [x] -> push $ EnemyEngageInvestigator eid x
             xs ->
-              push $
-                chooseOne
+              push
+                $ chooseOne
                   leadInvestigatorId
                   [ targetLabel
                     investigatorId
@@ -408,8 +408,8 @@ instance RunMessage EnemyAttrs where
       when (unengaged && CannotMove `notElem` modifiers') $ do
         keywords <- getModifiedKeywords a
         leadInvestigatorId <- getLeadInvestigatorId
-        when (Keyword.Hunter `elem` keywords) $
-          pushAll
+        when (Keyword.Hunter `elem` keywords)
+          $ pushAll
             [ CheckWindow
                 [leadInvestigatorId]
                 [mkWindow Timing.When (Window.MovedFromHunter enemyId)]
@@ -439,9 +439,9 @@ instance RunMessage EnemyAttrs where
             Nothing -> pure []
             Just lid ->
               selectList
-                ( LocationWithEnemy $
-                    NearestEnemyToLocation lid $
-                      EnemyWithModifier CountsAsInvestigatorForHunterEnemies
+                ( LocationWithEnemy
+                    $ NearestEnemyToLocation lid
+                    $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
                 )
 
           -- The logic here is an artifact of doing this incorrect
@@ -455,28 +455,28 @@ instance RunMessage EnemyAttrs where
               -- Lure (1)
               selectList $ ClosestPathLocation loc forcedTargetLocationId
             (Nothing, BearerOf _) ->
-              selectList $
-                locationWithInvestigator $
-                  fromJustNote
-                    "must have bearer"
-                    enemyBearer
+              selectList
+                $ locationWithInvestigator
+                $ fromJustNote
+                  "must have bearer"
+                  enemyBearer
             (Nothing, OnlyPrey onlyPrey) ->
-              selectList $
-                LocationWithInvestigator $
-                  onlyPrey
-                    <> NearestToEnemy
-                      (EnemyWithId eid)
+              selectList
+                $ LocationWithInvestigator
+                $ onlyPrey
+                  <> NearestToEnemy
+                    (EnemyWithId eid)
             (Nothing, _prey) -> do
               investigatorLocations <-
-                selectList $
-                  LocationWithInvestigator $
-                    NearestToEnemy $
-                      EnemyWithId eid
+                selectList
+                  $ LocationWithInvestigator
+                  $ NearestToEnemy
+                  $ EnemyWithId eid
               case mLocation of
                 Nothing -> pure investigatorLocations
                 Just lid ->
-                  selectList $
-                    NearestLocationToLocation
+                  selectList
+                    $ NearestLocationToLocation
                       lid
                       (LocationMatchAny $ map LocationWithId (enemiesAsInvestigatorLocations <> investigatorLocations))
 
@@ -532,11 +532,11 @@ instance RunMessage EnemyAttrs where
       modifiers' <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` modifiers') $ do
         iids <- selectList $ investigatorEngagedWith enemyId
-        pushAll $
-          map
+        pushAll
+          $ map
             ( \iid ->
-                EnemyWillAttack $
-                  (enemyAttack enemyId a iid)
+                EnemyWillAttack
+                  $ (enemyAttack enemyId a iid)
                     { attackDamageStrategy = enemyDamageStrategy
                     , attackExhaustsEnemy = True
                     }
@@ -545,8 +545,8 @@ instance RunMessage EnemyAttrs where
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
       enemyFight' <- modifiedEnemyFight iid a
-      push $
-        fight
+      push
+        $ fight
           iid
           source
           (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
@@ -583,17 +583,17 @@ instance RunMessage EnemyAttrs where
       | isTarget a target -> do
           keywords <- getModifiedKeywords a
           modifiers' <- getModifiers iid
-          pushAll $
-            [ FailedAttackEnemy iid enemyId
-            , CheckWindow
-                [iid]
-                [mkWindow Timing.After (Window.FailAttackEnemy iid enemyId n)]
-            , CheckWindow
-                [iid]
-                [mkWindow Timing.After (Window.EnemyAttacked iid source enemyId)]
-            ]
-              <> [ EnemyAttack $
-                  (enemyAttack enemyId a iid)
+          pushAll
+            $ [ FailedAttackEnemy iid enemyId
+              , CheckWindow
+                  [iid]
+                  [mkWindow Timing.After (Window.FailAttackEnemy iid enemyId n)]
+              , CheckWindow
+                  [iid]
+                  [mkWindow Timing.After (Window.EnemyAttacked iid source enemyId)]
+              ]
+              <> [ EnemyAttack
+                  $ (enemyAttack enemyId a iid)
                     { attackDamageStrategy = enemyDamageStrategy
                     }
                  | Keyword.Retaliate
@@ -609,17 +609,17 @@ instance RunMessage EnemyAttrs where
       case miid of
         Just iid -> do
           shouldAttack <- member iid <$> select (investigatorEngagedWith eid)
-          when shouldAttack $
-            push $
-              EnemyAttack $
-                (enemyAttack enemyId a iid)
-                  { attackDamageStrategy = enemyDamageStrategy
-                  }
+          when shouldAttack
+            $ push
+            $ EnemyAttack
+            $ (enemyAttack enemyId a iid)
+              { attackDamageStrategy = enemyDamageStrategy
+              }
         Nothing -> do
           iids <- selectList $ investigatorEngagedWith eid
           pushAll
-            [ EnemyAttack $
-              (enemyAttack enemyId a iid)
+            [ EnemyAttack
+              $ (enemyAttack enemyId a iid)
                 { attackDamageStrategy = enemyDamageStrategy
                 }
             | iid <- iids
@@ -643,8 +643,8 @@ instance RunMessage EnemyAttrs where
       mEnemyEvade' <- modifiedEnemyEvade a
       case mEnemyEvade' of
         Just n ->
-          push $
-            evade
+          push
+            $ evade
               iid
               source
               (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
@@ -684,10 +684,10 @@ instance RunMessage EnemyAttrs where
             afterWindow <-
               checkWindows
                 [mkWindow Timing.After (Window.FailEvadeEnemy iid enemyId n)]
-            pushAll $
-              [whenWindow, afterWindow]
-                <> [ EnemyAttack $
-                    (enemyAttack enemyId a iid)
+            pushAll
+              $ [whenWindow, afterWindow]
+                <> [ EnemyAttack
+                    $ (enemyAttack enemyId a iid)
                       { attackDamageStrategy = enemyDamageStrategy
                       }
                    | Keyword.Alert `elem` keywords
@@ -721,8 +721,8 @@ instance RunMessage EnemyAttrs where
       let
         applyModifiers cards (CancelAttacksByEnemies c n) = do
           canceled <- member enemyId <$> select n
-          pure $
-            if canceled
+          pure
+            $ if canceled
               then c : cards
               else cards
         applyModifiers m _ = pure m
@@ -741,15 +741,15 @@ instance RunMessage EnemyAttrs where
 
       case attackTarget details of
         InvestigatorTarget iid ->
-          pushAll $
-            [ InvestigatorAssignDamage
-              iid
-              (EnemyAttackSource enemyId)
-              (attackDamageStrategy details)
-              enemyHealthDamage
-              enemySanityDamage
-            | allowAttack
-            ]
+          pushAll
+            $ [ InvestigatorAssignDamage
+                iid
+                (EnemyAttackSource enemyId)
+                (attackDamageStrategy details)
+                enemyHealthDamage
+                enemySanityDamage
+              | allowAttack
+              ]
               <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
               <> ignoreWindows
               <> [After (EnemyAttack details)]
@@ -843,16 +843,16 @@ instance RunMessage EnemyAttrs where
                           + damageAssignmentAmount r
                     }
                 else
-                  error $
-                    "mismatched damage assignments\n\nassignment: "
+                  error
+                    $ "mismatched damage assignments\n\nassignment: "
                       <> show l
                       <> "\nnew assignment: "
                       <> show r
-          unless (damageAssignmentDelayed damageAssignment') $
-            push $
-              CheckDefeated source
-          pure $
-            a
+          unless (damageAssignmentDelayed damageAssignment')
+            $ push
+            $ CheckDefeated source
+          pure
+            $ a
               & assignedDamageL
               %~ insertWith combine source damageAssignment'
         else pure a
@@ -938,13 +938,13 @@ instance RunMessage EnemyAttrs where
           canBeDefeated
             && maybe True (== source) mOnlyBeDefeatedByModifier
             && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
-      when validDefeat $
-        push $
-          EnemyDefeated
-            eid
-            (toCardId a)
-            source
-            (setToList $ toTraits a)
+      when validDefeat
+        $ push
+        $ EnemyDefeated
+          eid
+          (toCardId a)
+          source
+          (setToList $ toTraits a)
       pure a
     EnemyDefeated eid _ source _ | eid == toId a -> do
       modifiedHealth <- getModifiedHealth a
@@ -970,38 +970,38 @@ instance RunMessage EnemyAttrs where
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
-      pushAll $
-        [whenMsg, When msg, After msg]
+      pushAll
+        $ [whenMsg, When msg, After msg]
           <> victoryMsgs
           <> [afterMsg]
           <> defeatMsgs
       pure $ a & keysL .~ mempty
     Discard source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
-      pushAll $
-        windows'
+      pushAll
+        $ windows'
           <> [ RemovedFromPlay $ toSource a
              , Discarded (toTarget a) source (toCard a)
              ]
       pure $ a & keysL .~ mempty
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
-      pushAll $
-        resolve (RemoveEnemy $ toId a)
+      pushAll
+        $ resolve (RemoveEnemy $ toId a)
           <> [PutCardOnTopOfDeck iid deck (toCard a)]
       pure a
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
-      pushAll $
-        resolve (RemoveEnemy $ toId a)
+      pushAll
+        $ resolve (RemoveEnemy $ toId a)
           <> [PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     RemovedFromPlay source | isSource a source -> do
       enemyAssets <- selectList $ EnemyAsset enemyId
       windowMsg <-
-        checkWindows $
-          (`mkWindow` Window.LeavePlay (toTarget a))
+        checkWindows
+          $ (`mkWindow` Window.LeavePlay (toTarget a))
             <$> [Timing.When, Timing.After]
-      pushAll $
-        windowMsg
+      pushAll
+        $ windowMsg
           : map (Discard GameSource . AssetTarget) enemyAssets
             <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
@@ -1019,8 +1019,8 @@ instance RunMessage EnemyAttrs where
       when shouldRespoond $ do
         keywords <- getModifiedKeywords a
         willMove <- canEnterLocation enemyId lid
-        push $
-          if Keyword.Massive `notElem` keywords && willMove
+        push
+          $ if Keyword.Massive `notElem` keywords && willMove
             then EnemyEntered enemyId lid
             else DisengageEnemy iid enemyId
       pure a
@@ -1028,18 +1028,18 @@ instance RunMessage EnemyAttrs where
       willAttack <- member iid <$> select (investigatorEngagedWith enemyId)
       when willAttack $ do
         modifiers' <- getModifiers enemyId
-        unless (CannotMakeAttacksOfOpportunity `elem` modifiers') $
-          push $
-            EnemyWillAttack $
-              EnemyAttackDetails
-                { attackEnemy = enemyId
-                , attackTarget = InvestigatorTarget iid
-                , attackDamageStrategy = enemyDamageStrategy
-                , attackType = AttackOfOpportunity
-                , attackExhaustsEnemy = False
-                , attackSource = toSource a
-                , attackCanBeCanceled = True
-                }
+        unless (CannotMakeAttacksOfOpportunity `elem` modifiers')
+          $ push
+          $ EnemyWillAttack
+          $ EnemyAttackDetails
+            { attackEnemy = enemyId
+            , attackTarget = InvestigatorTarget iid
+            , attackDamageStrategy = enemyDamageStrategy
+            , attackType = AttackOfOpportunity
+            , attackExhaustsEnemy = False
+            , attackSource = toSource a
+            , attackCanBeCanceled = True
+            }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       lid <- getJustLocation iid
@@ -1072,8 +1072,8 @@ instance RunMessage EnemyAttrs where
       leadInvestigatorId <- getLeadInvestigatorId
       case lids of
         [] ->
-          pushAll $
-            Discard GameSource (EnemyTarget eid)
+          pushAll
+            $ Discard GameSource (EnemyTarget eid)
               : [ Surge iid (toSource a)
                 | enemySurgeIfUnableToSpawn
                 , iid <- maybeToList miid
@@ -1137,8 +1137,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & tokensL %~ flipClues n
     PlaceEnemyInVoid eid | eid == enemyId -> do
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
-      pure $
-        a
+      pure
+        $ a
           & (placementL .~ OutOfPlay VoidZone)
           & (exhaustedL .~ False)
           & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)

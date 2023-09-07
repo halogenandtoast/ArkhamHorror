@@ -101,7 +101,6 @@ getOriginalDeck iid = do
 getKnownRemainingOriginalDeckCards
   :: HasGame m => InvestigatorId -> m [PlayerCard]
 getKnownRemainingOriginalDeckCards iid = do
-  let onlyPlayerCards = mapMaybe (preview _PlayerCard)
   cards <- unDeck <$> getOriginalDeck iid
   inDiscard <- field InvestigatorDiscard iid
   inHand <- fieldMap InvestigatorHand onlyPlayerCards iid

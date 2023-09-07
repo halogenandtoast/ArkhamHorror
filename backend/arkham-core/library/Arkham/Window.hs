@@ -149,8 +149,10 @@ data WindowType
   | PlacedHorror Source Target Int
   | PlacedDoom Source Target Int
   | WouldPlaceDoom Source Target Int
+  | PlacedBreaches Target -- BEGIN Breaches
   | PlacedBreach Target
-  | WouldPlaceBreach Target
+  | WouldPlaceBreaches Target
+  | WouldPlaceBreach Target -- END Breaches
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId

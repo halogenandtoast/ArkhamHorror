@@ -184,7 +184,7 @@ instance RunMessage TheWagesOfSin where
         Tablet -> do
           heretics <- selectList $ EnemyWithTitle "Heretic"
           for_ heretics $ \heretic -> do
-            push $ createRoundModifier (ChaosTokenEffectSource Tablet) heretic [EnemyFight 1, EnemyEvade 1]
+            push $ roundModifiers (ChaosTokenEffectSource Tablet) heretic [EnemyFight 1, EnemyEvade 1]
         ElderThing | isHardExpert attrs -> do
           mAction <- getSkillTestAction
           when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do

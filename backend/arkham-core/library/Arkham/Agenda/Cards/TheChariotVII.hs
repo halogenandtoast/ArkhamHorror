@@ -30,9 +30,9 @@ instance HasAbilities TheChariotVII where
   getAbilities (TheChariotVII a)
     | onSide A a =
         [ forcedAbility a 1 $ WouldPlaceDoomCounter Timing.When AnySource (TargetIs $ toTarget a)
-        , forcedAbility a 2 $
-            WouldPlaceBreach Timing.When $
-              LocationTargetMatches (LocationWithBreaches $ EqualTo $ Static 3)
+        , forcedAbility a 2
+            $ WouldPlaceBreach Timing.When
+            $ LocationTargetMatches (LocationWithBreaches $ EqualTo $ Static 3)
         ]
   getAbilities _ = []
 
@@ -47,7 +47,12 @@ instance RunMessage TheChariotVII where
       UseCardAbility _ (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
         playerCount <- getPlayerCount
         locations <- sampleLocations (playerCount + 1)
-        pushAll $ IgnoreBatch batchId : map (PlaceBreach . toTarget) locations
+        lead <- getLead
+        pushAll
+          [ IgnoreBatch batchId
+          , chooseOneAtATime lead
+              $ [targetLabel location [PlaceBreaches (toTarget location) 1] | location <- locations]
+          ]
         pure a
       UseCardAbility _ (isSource attrs -> True) 2 (getBatchId &&& getWindowLocation -> (batchId, lid)) _ -> do
         pushAll [IgnoreBatch batchId, Incursion lid]

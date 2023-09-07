@@ -61,11 +61,35 @@ wouldDo msg wouldWindow window = do
   framed <- doFrame msg window
   push $ Would batchId $ wouldWindowsMsgs <> framed
 
+{- | Take a message which would operate on some value n and instead expand the
+windows to add a single one at a time
+-}
+wouldDoEach
+  :: (MonadRandom m, HasGame m, HasQueue Message m)
+  => Int
+  -> Message
+  -> WindowType -- outer would window
+  -> WindowType -- would window
+  -> WindowType -- outer window
+  -> WindowType -- window
+  -> m ()
+wouldDoEach n msg outerWouldWindow wouldWindow outerWindow window = do
+  (outerBatchId, outerWouldWindowsMsgs) <- wouldWindows outerWouldWindow
+  (outerBefore, outerAtIf, outerAfter) <- frame outerWindow
+  frames <- for [1 .. n] $ \_ -> do
+    (innerBatchId, innerWouldWindowsMsgs) <- wouldWindows wouldWindow
+    framed <- doFrame msg window
+    pure $ Would innerBatchId $ innerWouldWindowsMsgs <> framed
+
+  push
+    $ Would outerBatchId
+    $ outerWouldWindowsMsgs <> [outerBefore, outerAtIf] <> frames <> [outerAfter]
+
 splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do
   iids <- selectList UneliminatedInvestigator
-  pure $
-    [CheckWindow iids $ map (mkWindow Timing.When) windows']
+  pure
+    $ [CheckWindow iids $ map (mkWindow Timing.When) windows']
       <> [msg]
       <> [CheckWindow iids $ map (mkWindow Timing.After) windows']
 

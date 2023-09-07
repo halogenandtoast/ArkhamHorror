@@ -176,6 +176,9 @@ _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other
 
+onlyPlayerCards :: [Card] -> [PlayerCard]
+onlyPlayerCards = mapMaybe (preview _PlayerCard)
+
 _EncounterCard :: Traversal' Card EncounterCard
 _EncounterCard f (EncounterCard pc) = EncounterCard <$> f pc
 _EncounterCard _ other = pure other

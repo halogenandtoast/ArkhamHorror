@@ -38,7 +38,7 @@ instance RunMessage PrimordialGateway where
     Revelation _iid (isSource attrs -> True) -> do
       location <- sampleLocation
       breaches <- fieldMap LocationBreaches (maybe 0 countBreaches) location
-      let amount = min 0 (3 - breaches)
+      let amount = max 0 (3 - breaches)
       pushAll
         [ AttachTreachery (toId attrs) (toTarget location)
         , PlaceBreaches (toTarget location) amount

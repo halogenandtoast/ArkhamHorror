@@ -31,7 +31,7 @@ import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
-import Arkham.Classes
+import Arkham.Classes hiding (isMatch)
 import Arkham.Cost.FieldCost
 import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
@@ -588,6 +588,9 @@ getCanAffordCost iid source mAction windows' = \case
   HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
+  HandDiscardAnyNumberCost cardMatcher -> do
+    cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
+    pure $ length (filter (`cardMatch` cardMatcher) cards) > 0
   ReturnMatchingAssetToHandCost assetMatcher -> selectAny assetMatcher
   ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId
   SealCost tokenMatcher -> do
@@ -1076,6 +1079,9 @@ passesCriteria iid mcard source windows' = \case
     p <- getPhase
     matchPhase p phaseMatcher
   Criteria.ActionCanBeUndone -> getActionCanBeUndone
+  Criteria.EncounterDeckIsNotEmpty -> do
+    deck <- scenarioField ScenarioEncounterDeck
+    pure $ not $ null deck
   Criteria.DoomCountIs valueMatcher -> do
     doomCount <- getDoomCount
     gameValueMatches doomCount valueMatcher
@@ -1554,9 +1560,11 @@ windowMatches
   -> m Bool
 windowMatches _ _ (windowType -> Window.DoNotCheckWindow) _ = pure True
 windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType)) mtchr = do
-  let guardTiming t body = if timing' == t then body wType else pure False
+  let noMatch = pure False
+  let isMatch = pure True
+  let guardTiming t body = if timing' == t then body wType else noMatch
   case mtchr of
-    Matcher.AnyWindow -> pure True
+    Matcher.AnyWindow -> isMatch
     Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
       guardTiming Timing.AtIf $ \case
         Window.RevealChaosTokenEffect who token effectId -> do
@@ -1580,7 +1588,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
             , pure $ card `cardMatch` cardMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.GameBegins timing -> guardTiming timing $ pure . (== Window.GameBegins)
     Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
@@ -1589,7 +1597,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.InvestigatorTakeHorror timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.TakeHorror source' (InvestigatorTarget who) ->
@@ -1597,7 +1605,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.WouldTakeDamage source' (InvestigatorTarget who) _ ->
@@ -1610,7 +1618,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.InvestigatorWouldTakeHorror timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.WouldTakeHorror source' (InvestigatorTarget who) _ ->
@@ -1623,67 +1631,67 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.LostActions timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostActions who source' _ ->
         andM
           [ sourceMatches source' sourceMatcher
           , matchWho iid who whoMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.LostResources timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostResources who source' _ ->
         andM
           [ sourceMatches source' sourceMatcher
           , matchWho iid who whoMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher ->
       guardTiming Timing.After $ \case
         Window.CancelledOrIgnoredCardOrGameEffect source' ->
           sourceMatches source' sourceMatcher
-        _ -> pure False
+        _ -> noMatch
     Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case wType of
       Window.WouldBeShuffledIntoDeck deck card ->
         andM [deckMatch iid deck deckMatcher, pure $ cardMatch card cardMatcher]
-      _ -> pure False
+      _ -> noMatch
     Matcher.AddingToCurrentDepth -> case wType of
-      Window.AddingToCurrentDepth -> pure True
-      _ -> pure False
+      Window.AddingToCurrentDepth -> isMatch
+      _ -> noMatch
     Matcher.DrawingStartingHand timing whoMatcher -> guardTiming timing $ \case
       Window.DrawingStartingHand who -> matchWho iid who whoMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.MovedFromHunter timing enemyMatcher -> guardTiming timing $ \case
       Window.MovedFromHunter eid -> member eid <$> select enemyMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> guardTiming timing $ \case
       Window.PlaceUnderneath target' card ->
         andM
           [ targetMatches target' targetMatcher
           , pure $ cardMatch card cardMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.ActivateAbility timing whoMatcher abilityMatcher -> guardTiming timing $ \case
       Window.ActivateAbility who ability ->
         andM
           [ matchWho iid who whoMatcher
           , member ability <$> select abilityMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.CommittedCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
       Window.CommittedCard who card ->
         andM
           [ matchWho iid who whoMatcher
           , pure $ cardMatch card cardMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.CommittedCards timing whoMatcher cardListMatcher -> guardTiming timing $ \case
       Window.CommittedCards who cards ->
         andM
           [ matchWho iid who whoMatcher
           , cardListMatches cards cardListMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.EnemyWouldSpawnAt enemyMatcher locationMatcher ->
       case wType of
         Window.EnemyWouldSpawnAt eid lid -> do
@@ -1691,7 +1699,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ enemyMatches eid enemyMatcher
             , lid <=~> locationMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyAttemptsToSpawnAt timing enemyMatcher locationMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttemptsToSpawnAt eid locationMatcher' -> do
@@ -1701,8 +1709,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                 [ enemyMatches eid enemyMatcher
                 , selectNone locationMatcher'
                 ]
-            _ -> pure False -- TODO: We may need more things here
-        _ -> pure False
+            _ -> noMatch -- TODO: We may need more things here
+        _ -> noMatch
     Matcher.TookControlOfAsset timing whoMatcher assetMatcher ->
       guardTiming timing $ \case
         Window.TookControlOfAsset who aid ->
@@ -1710,7 +1718,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , member aid <$> select assetMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.AssetHealed timing damageType assetMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.Healed damageType' (AssetTarget assetId) source' _ | damageType == damageType' -> do
@@ -1718,25 +1726,25 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ member assetId <$> select assetMatcher
             , sourceMatches source' sourceMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.InvestigatorHealed timing damageType whoMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.Healed damageType' (InvestigatorTarget who) source' _ | damageType == damageType' -> do
           andM
             [matchWho iid who whoMatcher, sourceMatches source' sourceMatcher]
-        _ -> pure False
+        _ -> noMatch
     Matcher.WouldPerformRevelationSkillTest timing whoMatcher ->
       guardTiming timing $ \case
         Window.WouldPerformRevelationSkillTest who -> matchWho iid who whoMatcher
-        _ -> pure False
+        _ -> noMatch
     Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
       guardTiming timing $ \case
         Window.WouldDrawEncounterCard who p ->
           andM [matchWho iid who whoMatcher, matchPhase p phaseMatcher]
-        _ -> pure False
+        _ -> noMatch
     Matcher.AmongSearchedCards whoMatcher -> case wType of
       Window.AmongSearchedCards who -> matchWho iid who whoMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.Discarded timing whoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
         Window.Discarded who source' card ->
@@ -1745,23 +1753,23 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , matchWho iid who whoMatcher
             , sourceMatches source' sourceMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.AssetWouldBeDiscarded timing assetMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (AssetTarget aid) -> elem aid <$> select assetMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (EnemyTarget eid) -> elem eid <$> select enemyMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.AgendaAdvances timing agendaMatcher -> guardTiming timing $ \case
       Window.AgendaAdvance aid -> agendaMatches aid agendaMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.MovedBy timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.MovedBy source' _ who ->
         andM
           [ matchWho iid who whoMatcher
           , sourceMatches source' sourceMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.MovedButBeforeEnemyEngagement timing whoMatcher whereMatcher ->
       guardTiming timing $ \case
         Window.MovedButBeforeEnemyEngagement who locationId ->
@@ -1769,7 +1777,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' locationId whereMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.InvestigatorDefeated timing defeatedByMatcher whoMatcher ->
       guardTiming timing $ \case
         Window.InvestigatorDefeated defeatedBy who ->
@@ -1777,7 +1785,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.InvestigatorWouldBeDefeated timing defeatedByMatcher whoMatcher ->
       guardTiming timing $ \case
         Window.InvestigatorWouldBeDefeated defeatedBy who ->
@@ -1785,26 +1793,26 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.AgendaWouldAdvance timing advancementReason agendaMatcher ->
       guardTiming timing $ \case
         Window.AgendaWouldAdvance advancementReason' aid | advancementReason == advancementReason' -> do
           agendaMatches aid agendaMatcher
-        _ -> pure False
+        _ -> noMatch
     Matcher.WouldPlaceDoomCounter timing sourceMatcher targetMatcher -> guardTiming timing $ \case
       Window.WouldPlaceDoom source' target _ ->
         andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
-      _ -> pure False
+      _ -> noMatch
     Matcher.PlacedDoomCounter timing sourceMatcher targetMatcher -> guardTiming timing $ \case
       Window.PlacedDoom source' target _ ->
         andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
-      _ -> pure False
+      _ -> noMatch
     Matcher.WouldPlaceBreach timing targetMatcher -> guardTiming timing $ \case
       Window.WouldPlaceBreach target -> targetMatches target targetMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.PlacedBreach timing targetMatcher -> guardTiming timing $ \case
       Window.PlacedBreach target -> targetMatches target targetMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.PlacedCounter timing whoMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.PlacedHorror source' (InvestigatorTarget iid') n | counterMatcher == Matcher.HorrorCounter -> do
@@ -1819,7 +1827,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , sourceMatches source' sourceMatcher
             , gameValueMatches n valueMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.PlacedCounterOnLocation timing whereMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.PlacedClues source' (LocationTarget locationId) n | counterMatcher == Matcher.ClueCounter -> do
@@ -1834,7 +1842,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , sourceMatches source' sourceMatcher
             , gameValueMatches n valueMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.PlacedCounterOnEnemy timing enemyMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.PlacedClues source' (EnemyTarget enemyId) n | counterMatcher == Matcher.ClueCounter -> do
@@ -1849,7 +1857,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , sourceMatches source' sourceMatcher
             , gameValueMatches n valueMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.PlacedCounterOnAgenda timing agendaMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.PlacedDoom source' (AgendaTarget agendaId) n | counterMatcher == Matcher.DoomCounter -> do
@@ -1858,7 +1866,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , sourceMatches source' sourceMatcher
             , gameValueMatches n valueMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.RevealLocation timing whoMatcher locationMatcher ->
       guardTiming timing $ \case
         Window.RevealLocation who locationId ->
@@ -1866,7 +1874,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' locationId locationMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.FlipLocation timing whoMatcher locationMatcher ->
       guardTiming timing $ \case
         Window.FlipLocation who locationId ->
@@ -1874,11 +1882,11 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' locationId locationMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.GameEnds timing -> guardTiming timing (pure . (== Window.EndOfGame))
     Matcher.InvestigatorEliminated timing whoMatcher -> guardTiming timing $ \case
       Window.InvestigatorEliminated who -> matchWho iid who (Matcher.IncludeEliminated whoMatcher)
-      _ -> pure False
+      _ -> noMatch
     Matcher.PutLocationIntoPlay timing whoMatcher locationMatcher ->
       guardTiming timing $ \case
         Window.PutLocationIntoPlay who locationId ->
@@ -1886,7 +1894,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' locationId locationMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.PlayerHasPlayableCard cardMatcher -> do
       -- TODO: do we need to grab the card source?
       -- cards <- filter (/= c) <$> getList cardMatcher
@@ -1895,20 +1903,20 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.PhaseBegins timing phaseMatcher -> guardTiming timing $ \case
       Window.AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
       Window.PhaseBegins p -> matchPhase p phaseMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.PhaseEnds timing phaseMatcher -> guardTiming timing $ \case
       Window.PhaseEnds p -> matchPhase p phaseMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.PhaseStep timing phaseStepMatcher -> guardTiming timing $ \case
       Window.EnemiesAttackStep -> pure $ phaseStepMatcher == Matcher.EnemiesAttackStep
       Window.HuntersMoveStep -> pure $ phaseStepMatcher == Matcher.HuntersMoveStep
-      _ -> pure False
+      _ -> noMatch
     Matcher.TurnBegins timing whoMatcher -> guardTiming timing $ \case
       Window.TurnBegins who -> matchWho iid who whoMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.TurnEnds timing whoMatcher -> guardTiming timing $ \case
       Window.TurnEnds who -> matchWho iid who whoMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.RoundEnds timing -> guardTiming timing (pure . (== Window.AtEndOfRound))
     Matcher.Enters timing whoMatcher whereMatcher -> guardTiming timing $ \case
       Window.Entering iid' lid ->
@@ -1916,14 +1924,14 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           [ matchWho iid iid' whoMatcher
           , locationMatches iid source window' lid whereMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.Leaves timing whoMatcher whereMatcher -> guardTiming timing $ \case
       Window.Leaving iid' lid ->
         andM
           [ matchWho iid iid' whoMatcher
           , locationMatches iid source window' lid whereMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.Moves timing whoMatcher sourceMatcher fromMatcher toMatcher ->
       guardTiming timing $ \case
         Window.Moves iid' source' mFromLid toLid ->
@@ -1931,13 +1939,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid iid' whoMatcher
             , sourceMatches source' sourceMatcher
             , case (fromMatcher, mFromLid) of
-                (Matcher.Anywhere, _) -> pure True
+                (Matcher.Anywhere, _) -> isMatch
                 (_, Just fromLid) ->
                   locationMatches iid source window' fromLid fromMatcher
-                _ -> pure False
+                _ -> noMatch
             , locationMatches iid source window' toLid toMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.MoveAction timing whoMatcher fromMatcher toMatcher ->
       guardTiming timing $ \case
         Window.MoveAction iid' fromLid toLid ->
@@ -1946,11 +1954,11 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , locationMatches iid source window' fromLid fromMatcher
             , locationMatches iid source window' toLid toMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.PerformAction timing whoMatcher actionMatcher -> guardTiming timing $ \case
       Window.PerformAction iid' action ->
         andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
-      _ -> pure False
+      _ -> noMatch
     Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
       -- The Timing.When is questionable, but "Would" based timing really is
       -- only meant to have a When window
@@ -1959,14 +1967,14 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           Matcher.ResultOneOf xs -> anyM isWindowMatch xs
           Matcher.FailureResult _ -> guardTiming timing $ \case
             Window.WouldFailSkillTest who -> matchWho iid who whoMatcher
-            _ -> pure False
+            _ -> noMatch
           Matcher.SuccessResult _ -> guardTiming timing $ \case
             Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
-            _ -> pure False
+            _ -> noMatch
           Matcher.AnyResult -> guardTiming Timing.When $ \case
             Window.WouldFailSkillTest who -> matchWho iid who whoMatcher
             Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
-            _ -> pure False
+            _ -> noMatch
       isWindowMatch skillTestResultMatcher
     Matcher.InitiatedSkillTest timing whoMatcher skillTypeMatcher skillValueMatcher ->
       guardTiming timing $ \case
@@ -1981,23 +1989,23 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                   (skillTestType st)
                   skillValueMatcher
               ]
-          _ -> pure False
-        _ -> pure False
+          _ -> noMatch
+        _ -> noMatch
     Matcher.SkillTestEnded timing whoMatcher skillTestMatcher -> guardTiming timing $ \case
       Window.SkillTestEnded skillTest ->
         andM
           [ matchWho iid (skillTestInvestigator skillTest) whoMatcher
           , skillTestMatches iid source skillTest skillTestMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.SkillTestResult timing whoMatcher skillMatcher skillTestResultMatcher ->
       do
         mskillTest <- getSkillTest
         matchSkillTest <- case mskillTest of
-          Nothing -> pure False
+          Nothing -> noMatch
           Just st -> skillTestMatches iid source st skillMatcher
         if not matchSkillTest
-          then pure False
+          then noMatch
           else do
             let
               isWindowMatch = \case
@@ -2010,7 +2018,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , gameValueMatches n gameValueMatcher
                         , locationMatches iid source window' lid whereMatcher
                         ]
-                    _ -> pure False
+                    _ -> noMatch
                   Window.FailAttackEnemy who enemyId n -> case skillMatcher of
                     Matcher.WhileAttackingAnEnemy enemyMatcher ->
                       andM
@@ -2018,7 +2026,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , gameValueMatches n gameValueMatcher
                         , enemyMatches enemyId enemyMatcher
                         ]
-                    _ -> pure False
+                    _ -> noMatch
                   Window.FailEvadeEnemy who enemyId n -> case skillMatcher of
                     Matcher.WhileEvadingAnEnemy enemyMatcher ->
                       andM
@@ -2026,13 +2034,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , gameValueMatches n gameValueMatcher
                         , enemyMatches enemyId enemyMatcher
                         ]
-                    _ -> pure False
+                    _ -> noMatch
                   Window.FailSkillTest who n ->
                     andM
                       [ matchWho iid who whoMatcher
                       , gameValueMatches n gameValueMatcher
                       ]
-                  _ -> pure False
+                  _ -> noMatch
                 Matcher.SuccessResult gameValueMatcher -> guardTiming timing $ \case
                   Window.PassInvestigationSkillTest who lid n -> case skillMatcher of
                     Matcher.WhileInvestigating whereMatcher ->
@@ -2041,7 +2049,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , gameValueMatches n gameValueMatcher
                         , locationMatches iid source window' lid whereMatcher
                         ]
-                    _ -> pure False
+                    _ -> noMatch
                   Window.SuccessfulAttackEnemy who enemyId n -> case skillMatcher of
                     Matcher.WhileAttackingAnEnemy enemyMatcher ->
                       andM
@@ -2049,7 +2057,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , gameValueMatches n gameValueMatcher
                         , enemyMatches enemyId enemyMatcher
                         ]
-                    _ -> pure False
+                    _ -> noMatch
                   Window.SuccessfulEvadeEnemy who enemyId n -> case skillMatcher of
                     Matcher.WhileEvadingAnEnemy enemyMatcher ->
                       andM
@@ -2057,17 +2065,17 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , gameValueMatches n gameValueMatcher
                         , enemyMatches enemyId enemyMatcher
                         ]
-                    _ -> pure False
+                    _ -> noMatch
                   Window.PassSkillTest _ _ who n ->
                     andM
                       [ matchWho iid who whoMatcher
                       , gameValueMatches n gameValueMatcher
                       ]
-                  _ -> pure False
+                  _ -> noMatch
                 Matcher.AnyResult -> guardTiming timing $ \case
                   Window.FailSkillTest who _ -> matchWho iid who whoMatcher
                   Window.PassSkillTest _ _ who _ -> matchWho iid who whoMatcher
-                  _ -> pure False
+                  _ -> noMatch
             isWindowMatch skillTestResultMatcher
     Matcher.DuringTurn whoMatcher -> guardTiming Timing.When $ \case
       Window.NonFast -> matchWho iid iid whoMatcher
@@ -2075,7 +2083,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       Window.FastPlayerWindow -> do
         miid <- selectOne Matcher.TurnInvestigator
         pure $ Just iid == miid
-      _ -> pure False
+      _ -> noMatch
     Matcher.OrWindowMatcher matchers ->
       anyM (windowMatches iid source window') matchers
     Matcher.EnemySpawns timing whereMatcher enemyMatcher ->
@@ -2085,7 +2093,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ enemyMatches enemyId enemyMatcher
             , locationMatches iid source window' locationId whereMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyWouldAttack timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyWouldAttack details -> case attackTarget details of
@@ -2095,8 +2103,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               , enemyMatches (attackEnemy details) enemyMatcher
               , enemyAttackMatches details enemyAttackMatcher
               ]
-          _ -> pure False
-        _ -> pure False
+          _ -> noMatch
+        _ -> noMatch
     Matcher.EnemyAttacks timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttacks details -> case attackTarget details of
@@ -2106,8 +2114,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               , enemyMatches (attackEnemy details) enemyMatcher
               , enemyAttackMatches details enemyAttackMatcher
               ]
-          _ -> pure False
-        _ -> pure False
+          _ -> noMatch
+        _ -> noMatch
     Matcher.EnemyAttacksEvenIfCancelled timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttacksEvenIfCancelled details -> case attackTarget details of
@@ -2117,8 +2125,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               , enemyMatches (attackEnemy details) enemyMatcher
               , enemyAttackMatches details enemyAttackMatcher
               ]
-          _ -> pure False
-        _ -> pure False
+          _ -> noMatch
+        _ -> noMatch
     Matcher.EnemyAttacked timing whoMatcher sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttacked who attackSource enemyId ->
@@ -2127,7 +2135,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , enemyMatches enemyId enemyMatcher
             , sourceMatches attackSource sourceMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyAttackedSuccessfully timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.SuccessfulAttackEnemy who enemyId _ -> do
@@ -2135,7 +2143,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ enemyMatches enemyId enemyMatcher
             , matchWho iid who whoMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyEvaded timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyEvaded who enemyId ->
@@ -2143,7 +2151,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ enemyMatches enemyId enemyMatcher
             , matchWho iid who whoMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyEngaged timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyEngaged who enemyId ->
@@ -2151,33 +2159,33 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ enemyMatches enemyId enemyMatcher
             , matchWho iid who whoMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.MythosStep mythosStepMatcher -> guardTiming Timing.When $ \case
       Window.AllDrawEncounterCard ->
         pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
       Window.AfterCheckDoomThreshold ->
         pure $ mythosStepMatcher == Matcher.AfterCheckDoomThreshold
-      _ -> pure False
+      _ -> noMatch
     Matcher.WouldRevealChaosToken timing whoMatcher -> guardTiming timing $ \case
       Window.WouldRevealChaosToken _ who -> matchWho iid who whoMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.RevealChaosToken timing whoMatcher tokenMatcher -> guardTiming timing $ \case
       Window.RevealChaosToken who token ->
         andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
-      _ -> pure False
+      _ -> noMatch
     Matcher.CancelChaosToken timing whoMatcher tokenMatcher ->
       guardTiming timing $ \case
         Window.CancelChaosToken who token ->
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
-        _ -> pure False
+        _ -> noMatch
     Matcher.IgnoreChaosToken timing whoMatcher tokenMatcher ->
       guardTiming timing $ \case
         Window.IgnoreChaosToken who token ->
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
-        _ -> pure False
+        _ -> noMatch
     Matcher.AddedToVictory timing cardMatcher -> guardTiming timing $ \case
       Window.AddedToVictory card -> pure $ cardMatch card cardMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.AssetDefeated timing defeatedByMatcher assetMatcher ->
       guardTiming timing $ \case
         Window.AssetDefeated assetId defeatedBy ->
@@ -2185,7 +2193,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ member assetId <$> select assetMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyDefeated timing whoMatcher defeatedByMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyDefeated (Just who) defeatedBy enemyId ->
@@ -2201,7 +2209,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                 enemyMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyEnters timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyEnters enemyId lid ->
@@ -2209,7 +2217,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ enemyMatches enemyId enemyMatcher
             , locationMatches iid source window' lid whereMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyLeaves enemyId lid ->
@@ -2217,16 +2225,16 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ enemyMatches enemyId enemyMatcher
             , locationMatches iid source window' lid whereMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.ChosenRandomLocation timing whereMatcher -> guardTiming timing $ \case
       Window.ChosenRandomLocation lid -> locationMatches iid source window' lid whereMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.EnemyWouldBeDefeated timing enemyMatcher -> guardTiming timing $ \case
       Window.EnemyWouldBeDefeated enemyId -> enemyMatches enemyId enemyMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.EnemyWouldReady timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldReady (EnemyTarget enemyId) -> enemyMatches enemyId enemyMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.FastPlayerWindow -> guardTiming Timing.When (pure . (== Window.FastPlayerWindow))
     Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher ->
       case whoMatcher of
@@ -2242,8 +2250,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                     )
               , sourceMatches source' sourceMatcher
               ]
-          _ -> pure False
-        _ -> pure False
+          _ -> noMatch
+        _ -> noMatch
     Matcher.DealtDamage timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtDamage source' _ (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
@@ -2254,7 +2262,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                 (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
           , sourceMatches source' sourceMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.DealtHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtHorror source' (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
@@ -2265,7 +2273,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                 (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
           , sourceMatches source' sourceMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.AssignedHorror timing whoMatcher targetListMatcher ->
       guardTiming timing $ \case
         Window.AssignedHorror _ who targets ->
@@ -2273,7 +2281,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , targetListMatches targets targetListMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.AssetDealtDamage timing sourceMatcher assetMatcher ->
       guardTiming timing $ \case
         Window.DealtDamage source' _ (AssetTarget aid) _ ->
@@ -2281,7 +2289,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ member aid <$> select assetMatcher
             , sourceMatches source' sourceMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyDealtDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.DealtDamage source' damageEffect (EnemyTarget eid) _ ->
@@ -2290,7 +2298,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , member eid <$> select enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyDealtExcessDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _ ->
@@ -2299,7 +2307,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , member eid <$> select enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.EnemyTakeDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.TakeDamage source' damageEffect (EnemyTarget eid) ->
@@ -2308,7 +2316,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , member eid <$> select enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.DiscoverClues timing whoMatcher whereMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.DiscoverClues who lid _ n ->
@@ -2317,11 +2325,11 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , locationMatches iid source window' lid whereMatcher
             , gameValueMatches n valueMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.GainsClues timing whoMatcher valueMatcher -> guardTiming timing $ \case
       Window.GainsClues who _ n ->
         andM [matchWho iid who whoMatcher, gameValueMatches n valueMatcher]
-      _ -> pure False
+      _ -> noMatch
     Matcher.DiscoveringLastClue timing whoMatcher whereMatcher ->
       guardTiming timing $ \case
         Window.DiscoveringLastClue who lid ->
@@ -2329,17 +2337,17 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' lid whereMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.LastClueRemovedFromAsset timing assetMatcher -> guardTiming timing $ \case
       Window.LastClueRemovedFromAsset aid -> member aid <$> select assetMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.DrawsCards timing whoMatcher valueMatcher -> guardTiming timing $ \case
       Window.DrawCards who cards ->
         andM
           [ matchWho iid who whoMatcher
           , gameValueMatches (length cards) valueMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.DrawCard timing whoMatcher cardMatcher deckMatcher ->
       guardTiming timing $ \case
         Window.DrawCard who card deck ->
@@ -2351,10 +2359,10 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                 _ -> member card <$> select cardMatcher
             , deckMatch iid deck deckMatcher
             ]
-        _ -> pure False
+        _ -> noMatch
     Matcher.DeckHasNoCards timing whoMatcher -> guardTiming timing $ \case
       Window.DeckHasNoCards who -> matchWho iid who whoMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.EncounterDeckRunsOutOfCards -> pure $ wType == Window.EncounterDeckRunsOutOfCards
     Matcher.PlayCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
       Window.PlayCard who card ->
@@ -2362,19 +2370,19 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           [ matchWho iid who whoMatcher
           , member card <$> select cardMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.AssetEntersPlay timing assetMatcher -> guardTiming timing $ \case
       Window.EnterPlay (AssetTarget aid) -> member aid <$> select assetMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.AssetLeavesPlay timing assetMatcher -> guardTiming timing $ \case
       Window.LeavePlay (AssetTarget aid) -> member aid <$> select assetMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.LocationLeavesPlay timing locationMatcher -> guardTiming timing $ \case
       Window.LeavePlay (LocationTarget aid) -> member aid <$> select locationMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.EnemyLeavesPlay timing enemyMatcher -> guardTiming timing $ \case
       Window.LeavePlay (EnemyTarget eid) -> member eid <$> select enemyMatcher
-      _ -> pure False
+      _ -> noMatch
     Matcher.Explored timing whoMatcher resultMatcher -> guardTiming timing $ \case
       Window.Explored who result ->
         andM
@@ -2382,15 +2390,15 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           , case resultMatcher of
               Matcher.SuccessfulExplore locationMatcher -> case result of
                 Window.Success lid -> lid <=~> locationMatcher
-                Window.Failure _ -> pure False
+                Window.Failure _ -> noMatch
               Matcher.FailedExplore cardMatcher -> case result of
-                Window.Success _ -> pure False
+                Window.Success _ -> noMatch
                 Window.Failure card -> pure $ cardMatch card cardMatcher
           ]
-      _ -> pure False
+      _ -> noMatch
     Matcher.AttemptExplore timing whoMatcher -> guardTiming timing $ \case
       Window.AttemptExplore who -> matchWho iid who whoMatcher
-      _ -> pure False
+      _ -> noMatch
 
 matchWho
   :: HasGame m

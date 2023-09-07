@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Southside_295
-  ( southside_295
-  , Southside_295(..)
-  )
+module Arkham.Location.Cards.Southside_295 (
+  southside_295,
+  Southside_295 (..),
+)
 where
 
 import Arkham.Prelude
@@ -19,8 +19,7 @@ southside_295 = location Southside_295 Cards.southside_295 2 (Static 0)
 
 instance HasAbilities Southside_295 where
   getAbilities (Southside_295 attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities attrs []
 
 instance RunMessage Southside_295 where
   runMessage msg (Southside_295 attrs) =

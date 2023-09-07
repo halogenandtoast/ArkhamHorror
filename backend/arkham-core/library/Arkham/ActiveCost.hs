@@ -741,6 +741,33 @@ instance RunMessage ActiveCost where
               | card <- cards
               ]
           pure c
+        HandDiscardAnyNumberCost cardMatcher -> do
+          handCards <-
+            fieldMap
+              InvestigatorHand
+              (mapMaybe (preview _PlayerCard))
+              iid
+          let
+            notCostCard = case activeCostTarget c of
+              ForAbility {} -> const True
+              ForCard _ card' -> (/= card')
+              ForCost card' -> (/= card')
+            cards =
+              filter
+                ( and
+                    . sequence
+                      [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
+                )
+                handCards
+          push $
+            Ask iid $
+              ChoosePaymentAmounts
+                "Number of cards to pay"
+                Nothing
+                [ PaymentAmountChoice iid 1 (length cards) $
+                    PayCost acId iid skipAdditionalCosts (HandDiscardCost 1 cardMatcher)
+                ]
+          pure c
         ReturnMatchingAssetToHandCost assetMatcher -> do
           assets <- selectList assetMatcher
           push $

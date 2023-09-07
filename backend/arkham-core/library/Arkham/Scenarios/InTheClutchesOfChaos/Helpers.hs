@@ -36,3 +36,6 @@ withBreaches :: LocationAttrs -> Criterion -> Criterion
 withBreaches attrs =
   let breaches = maybe 0 countBreaches $ locationBreaches attrs
   in  if breaches > 0 then id else const Never
+
+countLocationBreaches :: LocationAttrs -> Int
+countLocationBreaches = maybe 0 countBreaches . locationBreaches

@@ -103,8 +103,9 @@ instance RunMessage TheGathering where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveChaosToken _ Cultist iid ->
-      s <$ when (isHardExpert attrs) (push $ DrawAnotherChaosToken iid)
+    ResolveChaosToken _ Cultist iid -> do
+      pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
+      pure s
     ResolveChaosToken _ Tablet iid -> do
       ghoulCount <-
         selectCount $

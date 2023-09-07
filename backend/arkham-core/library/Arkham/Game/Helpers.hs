@@ -1821,6 +1821,15 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.PlacedBreach timing targetMatcher -> guardTiming timing $ \case
       Window.PlacedBreach target -> targetMatches target targetMatcher
       _ -> noMatch
+    Matcher.WouldRemoveBreach timing targetMatcher -> guardTiming timing $ \case
+      Window.WouldRemoveBreach target -> targetMatches target targetMatcher
+      _ -> noMatch
+    Matcher.RemovedBreaches timing targetMatcher -> guardTiming timing $ \case
+      Window.RemovedBreaches target -> targetMatches target targetMatcher
+      _ -> noMatch
+    Matcher.RemovedBreach timing targetMatcher -> guardTiming timing $ \case
+      Window.RemovedBreach target -> targetMatches target targetMatcher
+      _ -> noMatch
     Matcher.PlacedCounter timing whoMatcher sourceMatcher counterMatcher valueMatcher ->
       guardTiming timing $ \case
         Window.PlacedHorror source' (InvestigatorTarget iid') n | counterMatcher == Matcher.HorrorCounter -> do
@@ -2527,6 +2536,15 @@ targetMatches s = \case
       orM
         [ targetMatches left (Matcher.LocationTargetMatches locationMatcher)
         , targetMatches right (Matcher.LocationTargetMatches locationMatcher)
+        ]
+    _ -> pure False
+  Matcher.ActTargetMatches actMatcher -> case s of
+    ActTarget aid -> aid <=~> actMatcher
+    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (Matcher.ActTargetMatches actMatcher)
+    BothTarget left right ->
+      orM
+        [ targetMatches left (Matcher.ActTargetMatches actMatcher)
+        , targetMatches right (Matcher.ActTargetMatches actMatcher)
         ]
     _ -> pure False
   Matcher.ScenarioCardTarget -> case s of

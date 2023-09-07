@@ -6,9 +6,13 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Trait (Trait (SilverTwilight))
 
 newtype SilverTwilightLodgeWhereItAllEnds = SilverTwilightLodgeWhereItAllEnds LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,10 +23,17 @@ silverTwilightLodgeWhereItAllEnds = location SilverTwilightLodgeWhereItAllEnds C
 
 instance HasAbilities SilverTwilightLodgeWhereItAllEnds where
   getAbilities (SilverTwilightLodgeWhereItAllEnds attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
 
 instance RunMessage SilverTwilightLodgeWhereItAllEnds where
-  runMessage msg (SilverTwilightLodgeWhereItAllEnds attrs) =
-    SilverTwilightLodgeWhereItAllEnds <$> runMessage msg attrs
+  runMessage msg l@(SilverTwilightLodgeWhereItAllEnds attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      let breaches = countLocationBreaches attrs
+      act <- selectJust AnyAct
+      pushAll
+        $ FindAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait SilverTwilight) True
+          : ( guard (breaches > 0)
+                *> [RemoveBreaches (toTarget attrs) breaches, PlaceBreaches (toTarget act) breaches]
+            )
+      pure l
+    _ -> SilverTwilightLodgeWhereItAllEnds <$> runMessage msg attrs

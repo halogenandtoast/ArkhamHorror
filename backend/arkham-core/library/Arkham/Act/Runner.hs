@@ -23,6 +23,7 @@ import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Window
+import Arkham.Window qualified as Window
 
 advanceActDeck :: ActAttrs -> Message
 advanceActDeck attrs = AdvanceActDeck (actDeckId attrs) (toSource attrs)
@@ -85,5 +86,14 @@ instance RunMessage ActAttrs where
       let total = maybe 0 (+ n) actBreaches
       pure $ a & breachesL ?~ total
     RemoveBreaches (isTarget a -> True) n -> do
+      wouldDoEach
+        n
+        (RemoveBreaches (toTarget a) 1)
+        (Window.WouldRemoveBreaches (toTarget a))
+        (Window.WouldRemoveBreach (toTarget a))
+        (Window.RemovedBreaches (toTarget a))
+        (Window.RemovedBreach (toTarget a))
+      pure a
+    Do (RemoveBreaches (isTarget a -> True) n) -> do
       pure $ a & breachesL %~ fmap (max 0 . subtract n)
     _ -> pure a

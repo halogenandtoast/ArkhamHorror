@@ -1552,12 +1552,13 @@ windowMatches
   -> Window
   -> Matcher.WindowMatcher
   -> m Bool
-windowMatches _ _ (Window _ Window.DoNotCheckWindow _) = pure . const True
-windowMatches iid source window' = \case
-  Matcher.AnyWindow -> pure True
-  Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
-    case window' of
-      Window timing' wType _ | timing' == Timing.AtIf -> case wType of
+windowMatches _ _ (windowType -> Window.DoNotCheckWindow) _ = pure True
+windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType)) mtchr = do
+  let guardTiming t body = if timing' == t then body wType else pure False
+  case mtchr of
+    Matcher.AnyWindow -> pure True
+    Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
+      guardTiming Timing.AtIf $ \case
         Window.RevealChaosTokenEffect who token effectId -> do
           cardCode <- field EffectCardCode effectId
           andM
@@ -1580,615 +1581,514 @@ windowMatches iid source window' = \case
             , pure $ card `cardMatch` cardMatcher
             ]
         _ -> pure False
-      _ -> pure False
-  Matcher.GameBegins timing -> pure $ case window' of
-    Window timing' Window.GameBegins _ -> timing == timing'
-    _ -> False
-  Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher ->
-    case window' of
-      Window timing' (Window.TakeDamage source' _ (InvestigatorTarget who)) _ ->
+    Matcher.GameBegins timing -> guardTiming timing $ pure . (== Window.GameBegins)
+    Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.TakeDamage source' _ (InvestigatorTarget who) ->
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> pure False
+    Matcher.InvestigatorTakeHorror timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.TakeHorror source' (InvestigatorTarget who) ->
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> pure False
+    Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.WouldTakeDamage source' (InvestigatorTarget who) _ ->
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) n _ | n > 0 -> do
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> pure False
+    Matcher.InvestigatorWouldTakeHorror timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.WouldTakeHorror source' (InvestigatorTarget who) _ ->
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) _ n | n > 0 -> do
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> pure False
+    Matcher.LostActions timing whoMatcher sourceMatcher -> guardTiming timing $ \case
+      Window.LostActions who source' _ ->
         andM
-          [ pure $ timing == timing'
-          , sourceMatches source' sourceMatcher
+          [ sourceMatches source' sourceMatcher
           , matchWho iid who whoMatcher
           ]
       _ -> pure False
-  Matcher.InvestigatorTakeHorror timing whoMatcher sourceMatcher ->
-    case window' of
-      Window timing' (Window.TakeHorror source' (InvestigatorTarget who)) _ ->
+    Matcher.LostResources timing whoMatcher sourceMatcher -> guardTiming timing $ \case
+      Window.LostResources who source' _ ->
         andM
-          [ pure $ timing == timing'
-          , sourceMatches source' sourceMatcher
+          [ sourceMatches source' sourceMatcher
           , matchWho iid who whoMatcher
           ]
       _ -> pure False
-  Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher ->
-    case window' of
-      Window timing' (Window.WouldTakeDamage source' (InvestigatorTarget who) _) _ ->
+    Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher ->
+      guardTiming Timing.After $ \case
+        Window.CancelledOrIgnoredCardOrGameEffect source' ->
+          sourceMatches source' sourceMatcher
+        _ -> pure False
+    Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case wType of
+      Window.WouldBeShuffledIntoDeck deck card ->
+        andM [deckMatch iid deck deckMatcher, pure $ cardMatch card cardMatcher]
+      _ -> pure False
+    Matcher.AddingToCurrentDepth -> case wType of
+      Window.AddingToCurrentDepth -> pure True
+      _ -> pure False
+    Matcher.DrawingStartingHand timing whoMatcher -> guardTiming timing $ \case
+      Window.DrawingStartingHand who -> matchWho iid who whoMatcher
+      _ -> pure False
+    Matcher.MovedFromHunter timing enemyMatcher -> guardTiming timing $ \case
+      Window.MovedFromHunter eid -> member eid <$> select enemyMatcher
+      _ -> pure False
+    Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> guardTiming timing $ \case
+      Window.PlaceUnderneath target' card ->
         andM
-          [ pure $ timing == timing'
+          [ targetMatches target' targetMatcher
+          , pure $ cardMatch card cardMatcher
+          ]
+      _ -> pure False
+    Matcher.ActivateAbility timing whoMatcher abilityMatcher -> guardTiming timing $ \case
+      Window.ActivateAbility who ability ->
+        andM
+          [ matchWho iid who whoMatcher
+          , member ability <$> select abilityMatcher
+          ]
+      _ -> pure False
+    Matcher.CommittedCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
+      Window.CommittedCard who card ->
+        andM
+          [ matchWho iid who whoMatcher
+          , pure $ cardMatch card cardMatcher
+          ]
+      _ -> pure False
+    Matcher.CommittedCards timing whoMatcher cardListMatcher -> guardTiming timing $ \case
+      Window.CommittedCards who cards ->
+        andM
+          [ matchWho iid who whoMatcher
+          , cardListMatches cards cardListMatcher
+          ]
+      _ -> pure False
+    Matcher.EnemyWouldSpawnAt enemyMatcher locationMatcher ->
+      case wType of
+        Window.EnemyWouldSpawnAt eid lid -> do
+          andM
+            [ enemyMatches eid enemyMatcher
+            , lid <=~> locationMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyAttemptsToSpawnAt timing enemyMatcher locationMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyAttemptsToSpawnAt eid locationMatcher' -> do
+          case locationMatcher of
+            Matcher.LocationNotInPlay -> do
+              andM
+                [ enemyMatches eid enemyMatcher
+                , selectNone locationMatcher'
+                ]
+            _ -> pure False -- TODO: We may need more things here
+        _ -> pure False
+    Matcher.TookControlOfAsset timing whoMatcher assetMatcher ->
+      guardTiming timing $ \case
+        Window.TookControlOfAsset who aid ->
+          andM
+            [ matchWho iid who whoMatcher
+            , member aid <$> select assetMatcher
+            ]
+        _ -> pure False
+    Matcher.AssetHealed timing damageType assetMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.Healed damageType' (AssetTarget assetId) source' _ | damageType == damageType' -> do
+          andM
+            [ member assetId <$> select assetMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> pure False
+    Matcher.InvestigatorHealed timing damageType whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.Healed damageType' (InvestigatorTarget who) source' _ | damageType == damageType' -> do
+          andM
+            [matchWho iid who whoMatcher, sourceMatches source' sourceMatcher]
+        _ -> pure False
+    Matcher.WouldPerformRevelationSkillTest timing whoMatcher ->
+      guardTiming timing $ \case
+        Window.WouldPerformRevelationSkillTest who -> matchWho iid who whoMatcher
+        _ -> pure False
+    Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
+      guardTiming timing $ \case
+        Window.WouldDrawEncounterCard who p ->
+          andM [matchWho iid who whoMatcher, matchPhase p phaseMatcher]
+        _ -> pure False
+    Matcher.AmongSearchedCards whoMatcher -> case wType of
+      Window.AmongSearchedCards who -> matchWho iid who whoMatcher
+      _ -> pure False
+    Matcher.Discarded timing whoMatcher sourceMatcher cardMatcher ->
+      guardTiming timing $ \case
+        Window.Discarded who source' card ->
+          andM
+            [ pure $ cardMatch card cardMatcher
+            , matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> pure False
+    Matcher.AssetWouldBeDiscarded timing assetMatcher -> guardTiming timing $ \case
+      Window.WouldBeDiscarded (AssetTarget aid) -> elem aid <$> select assetMatcher
+      _ -> pure False
+    Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> guardTiming timing $ \case
+      Window.WouldBeDiscarded (EnemyTarget eid) -> elem eid <$> select enemyMatcher
+      _ -> pure False
+    Matcher.AgendaAdvances timing agendaMatcher -> guardTiming timing $ \case
+      Window.AgendaAdvance aid -> agendaMatches aid agendaMatcher
+      _ -> pure False
+    Matcher.MovedBy timing whoMatcher sourceMatcher -> guardTiming timing $ \case
+      Window.MovedBy source' _ who ->
+        andM
+          [ matchWho iid who whoMatcher
           , sourceMatches source' sourceMatcher
-          , matchWho iid who whoMatcher
-          ]
-      Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) n _) _
-        | n > 0 ->
-            andM
-              [ pure $ timing == timing'
-              , sourceMatches source' sourceMatcher
-              , matchWho iid who whoMatcher
-              ]
-      _ -> pure False
-  Matcher.InvestigatorWouldTakeHorror timing whoMatcher sourceMatcher ->
-    case window' of
-      Window timing' (Window.WouldTakeHorror source' (InvestigatorTarget who) _) _ ->
-        andM
-          [ pure $ timing == timing'
-          , sourceMatches source' sourceMatcher
-          , matchWho iid who whoMatcher
-          ]
-      Window timing' (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) _ n) _
-        | n > 0 ->
-            andM
-              [ pure $ timing == timing'
-              , sourceMatches source' sourceMatcher
-              , matchWho iid who whoMatcher
-              ]
-      _ -> pure False
-  Matcher.LostActions timing whoMatcher sourceMatcher -> case window' of
-    Window timing' (Window.LostActions who source' _) _ ->
-      andM
-        [ pure $ timing == timing'
-        , sourceMatches source' sourceMatcher
-        , matchWho iid who whoMatcher
-        ]
-    _ -> pure False
-  Matcher.LostResources timing whoMatcher sourceMatcher -> case window' of
-    Window timing' (Window.LostResources who source' _) _ ->
-      andM
-        [ pure $ timing == timing'
-        , sourceMatches source' sourceMatcher
-        , matchWho iid who whoMatcher
-        ]
-    _ -> pure False
-  Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher -> case window' of
-    Window Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source') _ ->
-      sourceMatches source' sourceMatcher
-    _ -> pure False
-  Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case window' of
-    Window _ (Window.WouldBeShuffledIntoDeck deck card) _ ->
-      andM [deckMatch iid deck deckMatcher, pure $ cardMatch card cardMatcher]
-    _ -> pure False
-  Matcher.AddingToCurrentDepth -> case window' of
-    Window _ Window.AddingToCurrentDepth _ -> pure True
-    _ -> pure False
-  Matcher.DrawingStartingHand timing whoMatcher -> case window' of
-    Window t (Window.DrawingStartingHand who) _
-      | t == timing ->
-          matchWho iid who whoMatcher
-    _ -> pure False
-  Matcher.MovedFromHunter timing enemyMatcher -> case window' of
-    Window t (Window.MovedFromHunter eid) _
-      | t == timing ->
-          member eid <$> select enemyMatcher
-    _ -> pure False
-  Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> case window' of
-    Window t (Window.PlaceUnderneath target' card) _
-      | t == timing ->
-          liftA2
-            (&&)
-            (targetMatches target' targetMatcher)
-            (pure $ cardMatch card cardMatcher)
-    _ -> pure False
-  Matcher.ActivateAbility timing whoMatcher abilityMatcher -> case window' of
-    Window t (Window.ActivateAbility who ability) _
-      | t == timing ->
-          liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (member ability <$> select abilityMatcher)
-    _ -> pure False
-  Matcher.CommittedCard timing whoMatcher cardMatcher -> case window' of
-    Window t (Window.CommittedCard who card) _
-      | t == timing ->
-          liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (pure $ cardMatch card cardMatcher)
-    _ -> pure False
-  Matcher.CommittedCards timing whoMatcher cardListMatcher -> case window' of
-    Window t (Window.CommittedCards who cards) _
-      | t == timing ->
-          liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (cardListMatches cards cardListMatcher)
-    _ -> pure False
-  Matcher.EnemyWouldSpawnAt enemyMatcher locationMatcher ->
-    case window' of
-      Window _ (Window.EnemyWouldSpawnAt eid lid) _ -> do
-        andM
-          [ enemyMatches eid enemyMatcher
-          , lid <=~> locationMatcher
           ]
       _ -> pure False
-  Matcher.EnemyAttemptsToSpawnAt timing enemyMatcher locationMatcher ->
-    case window' of
-      Window t (Window.EnemyAttemptsToSpawnAt eid locationMatcher') _
-        | t == timing -> do
-            case locationMatcher of
-              Matcher.LocationNotInPlay -> do
-                liftA2
-                  (&&)
-                  (enemyMatches eid enemyMatcher)
-                  (selectNone locationMatcher')
-              _ -> pure False -- TODO: We may need more things here
-      _ -> pure False
-  Matcher.TookControlOfAsset timing whoMatcher assetMatcher -> case window' of
-    Window t (Window.TookControlOfAsset who aid) _
-      | t == timing ->
-          liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (member aid <$> select assetMatcher)
-    _ -> pure False
-  Matcher.AssetHealed timing damageType assetMatcher sourceMatcher ->
-    case window' of
-      Window t (Window.Healed damageType' (AssetTarget assetId) source' _) _
-        | t == timing && damageType == damageType' ->
-            andM
-              [ member assetId <$> select assetMatcher
-              , sourceMatches source' sourceMatcher
-              ]
-      _ -> pure False
-  Matcher.InvestigatorHealed timing damageType whoMatcher sourceMatcher ->
-    case window' of
-      Window t (Window.Healed damageType' (InvestigatorTarget who) source' _) _
-        | t == timing && damageType == damageType' ->
-            andM
-              [matchWho iid who whoMatcher, sourceMatches source' sourceMatcher]
-      _ -> pure False
-  Matcher.WouldPerformRevelationSkillTest timing whoMatcher -> case window' of
-    Window t (Window.WouldPerformRevelationSkillTest who) _
-      | t == timing ->
-          matchWho iid who whoMatcher
-    _ -> pure False
-  Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
-    case window' of
-      Window t (Window.WouldDrawEncounterCard who p) _
-        | t == timing ->
-            liftA2 (&&) (matchWho iid who whoMatcher) (matchPhase p phaseMatcher)
-      _ -> pure False
-  Matcher.AmongSearchedCards whoMatcher -> case window' of
-    Window _ (Window.AmongSearchedCards who) _ -> matchWho iid who whoMatcher
-    _ -> pure False
-  Matcher.Discarded timing whoMatcher sourceMatcher cardMatcher ->
-    case window' of
-      Window t (Window.Discarded who source' card) _
-        | t == timing ->
-            andM
-              [ pure $ cardMatch card cardMatcher
-              , matchWho iid who whoMatcher
-              , sourceMatches source' sourceMatcher
-              ]
-      _ -> pure False
-  Matcher.AssetWouldBeDiscarded timing assetMatcher -> case window' of
-    Window t (Window.WouldBeDiscarded (AssetTarget aid)) _
-      | t == timing ->
-          elem aid <$> select assetMatcher
-    _ -> pure False
-  Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> case window' of
-    Window t (Window.WouldBeDiscarded (EnemyTarget eid)) _
-      | t == timing ->
-          elem eid <$> select enemyMatcher
-    _ -> pure False
-  Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
-    Window t (Window.AgendaAdvance aid) _
-      | t == timingMatcher ->
+    Matcher.MovedButBeforeEnemyEngagement timing whoMatcher whereMatcher ->
+      guardTiming timing $ \case
+        Window.MovedButBeforeEnemyEngagement who locationId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , locationMatches iid source window' locationId whereMatcher
+            ]
+        _ -> pure False
+    Matcher.InvestigatorDefeated timing defeatedByMatcher whoMatcher ->
+      guardTiming timing $ \case
+        Window.InvestigatorDefeated defeatedBy who ->
+          andM
+            [ matchWho iid who whoMatcher
+            , defeatedByMatches defeatedBy defeatedByMatcher
+            ]
+        _ -> pure False
+    Matcher.InvestigatorWouldBeDefeated timing defeatedByMatcher whoMatcher ->
+      guardTiming timing $ \case
+        Window.InvestigatorWouldBeDefeated defeatedBy who ->
+          andM
+            [ matchWho iid who whoMatcher
+            , defeatedByMatches defeatedBy defeatedByMatcher
+            ]
+        _ -> pure False
+    Matcher.AgendaWouldAdvance timing advancementReason agendaMatcher ->
+      guardTiming timing $ \case
+        Window.AgendaWouldAdvance advancementReason' aid | advancementReason == advancementReason' -> do
           agendaMatches aid agendaMatcher
-    _ -> pure False
-  Matcher.MovedBy timingMatcher whoMatcher sourceMatcher -> case window' of
-    Window t (Window.MovedBy source' _ who) _
-      | t == timingMatcher ->
-          liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (sourceMatches source' sourceMatcher)
-    _ -> pure False
-  Matcher.MovedButBeforeEnemyEngagement timingMatcher whoMatcher whereMatcher ->
-    case window' of
-      Window t (Window.MovedButBeforeEnemyEngagement who locationId) _
-        | t == timingMatcher ->
-            liftA2
-              (&&)
-              (matchWho iid who whoMatcher)
-              (locationMatches iid source window' locationId whereMatcher)
+        _ -> pure False
+    Matcher.WouldPlaceDoomCounter timing sourceMatcher targetMatcher -> guardTiming timing $ \case
+      Window.WouldPlaceDoom source' target _ ->
+        andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
       _ -> pure False
-  Matcher.InvestigatorDefeated timingMatcher defeatedByMatcher whoMatcher ->
-    case window' of
-      Window t (Window.InvestigatorDefeated defeatedBy who) _
-        | t == timingMatcher ->
-            andM
-              [ matchWho iid who whoMatcher
-              , defeatedByMatches defeatedBy defeatedByMatcher
-              ]
+    Matcher.PlacedDoomCounter timing sourceMatcher targetMatcher -> guardTiming timing $ \case
+      Window.PlacedDoom source' target _ ->
+        andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
       _ -> pure False
-  Matcher.InvestigatorWouldBeDefeated timingMatcher defeatedByMatcher whoMatcher ->
-    case window' of
-      Window t (Window.InvestigatorWouldBeDefeated defeatedBy who) _
-        | t == timingMatcher ->
-            andM
-              [ matchWho iid who whoMatcher
-              , defeatedByMatches defeatedBy defeatedByMatcher
-              ]
+    Matcher.WouldPlaceBreach timing targetMatcher -> guardTiming timing $ \case
+      Window.WouldPlaceBreach target -> targetMatches target targetMatcher
       _ -> pure False
-  Matcher.AgendaWouldAdvance timingMatcher advancementReason agendaMatcher ->
-    case window' of
-      Window t (Window.AgendaWouldAdvance advancementReason' aid) _
-        | t == timingMatcher && advancementReason == advancementReason' ->
-            agendaMatches
-              aid
-              agendaMatcher
+    Matcher.PlacedBreach timing targetMatcher -> guardTiming timing $ \case
+      Window.PlacedBreach target -> targetMatches target targetMatcher
       _ -> pure False
-  Matcher.WouldPlaceDoomCounter whenMatcher sourceMatcher targetMatcher -> case window' of
-    Window t (Window.WouldPlaceDoom source' target _) _
-      | t == whenMatcher ->
-          andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
-    _ -> pure False
-  Matcher.PlacedDoomCounter whenMatcher sourceMatcher targetMatcher -> case window' of
-    Window t (Window.PlacedDoom source' target _) _
-      | t == whenMatcher ->
-          andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
-    _ -> pure False
-  Matcher.WouldPlaceBreach whenMatcher targetMatcher -> case window' of
-    Window t (Window.WouldPlaceBreach target) _ | t == whenMatcher -> do
-      andM [targetMatches target targetMatcher]
-    _ -> pure False
-  Matcher.PlacedBreach whenMatcher targetMatcher -> case window' of
-    Window t (Window.PlacedBreach target) _ | t == whenMatcher -> do
-      andM [targetMatches target targetMatcher]
-    _ -> pure False
-  Matcher.PlacedCounter whenMatcher whoMatcher sourceMatcher counterMatcher valueMatcher ->
-    case window' of
-      Window t (Window.PlacedHorror source' (InvestigatorTarget iid') n) _
-        | t == whenMatcher && counterMatcher == Matcher.HorrorCounter ->
-            andM
-              [ matchWho iid iid' whoMatcher
-              , sourceMatches source' sourceMatcher
-              , gameValueMatches n valueMatcher
-              ]
-      Window t (Window.PlacedDamage source' (InvestigatorTarget iid') n) _
-        | t == whenMatcher && counterMatcher == Matcher.DamageCounter ->
-            andM
-              [ matchWho iid iid' whoMatcher
-              , sourceMatches source' sourceMatcher
-              , gameValueMatches n valueMatcher
-              ]
+    Matcher.PlacedCounter timing whoMatcher sourceMatcher counterMatcher valueMatcher ->
+      guardTiming timing $ \case
+        Window.PlacedHorror source' (InvestigatorTarget iid') n | counterMatcher == Matcher.HorrorCounter -> do
+          andM
+            [ matchWho iid iid' whoMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        Window.PlacedDamage source' (InvestigatorTarget iid') n | counterMatcher == Matcher.DamageCounter -> do
+          andM
+            [ matchWho iid iid' whoMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        _ -> pure False
+    Matcher.PlacedCounterOnLocation timing whereMatcher sourceMatcher counterMatcher valueMatcher ->
+      guardTiming timing $ \case
+        Window.PlacedClues source' (LocationTarget locationId) n | counterMatcher == Matcher.ClueCounter -> do
+          andM
+            [ locationMatches iid source window' locationId whereMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        Window.PlacedResources source' (LocationTarget locationId) n | counterMatcher == Matcher.ResourceCounter -> do
+          andM
+            [ locationMatches iid source window' locationId whereMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        _ -> pure False
+    Matcher.PlacedCounterOnEnemy timing enemyMatcher sourceMatcher counterMatcher valueMatcher ->
+      guardTiming timing $ \case
+        Window.PlacedClues source' (EnemyTarget enemyId) n | counterMatcher == Matcher.ClueCounter -> do
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        Window.PlacedDoom source' (EnemyTarget enemyId) n | counterMatcher == Matcher.DoomCounter -> do
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        _ -> pure False
+    Matcher.PlacedCounterOnAgenda timing agendaMatcher sourceMatcher counterMatcher valueMatcher ->
+      guardTiming timing $ \case
+        Window.PlacedDoom source' (AgendaTarget agendaId) n | counterMatcher == Matcher.DoomCounter -> do
+          andM
+            [ agendaMatches agendaId agendaMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        _ -> pure False
+    Matcher.RevealLocation timing whoMatcher locationMatcher ->
+      guardTiming timing $ \case
+        Window.RevealLocation who locationId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            ]
+        _ -> pure False
+    Matcher.FlipLocation timing whoMatcher locationMatcher ->
+      guardTiming timing $ \case
+        Window.FlipLocation who locationId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            ]
+        _ -> pure False
+    Matcher.GameEnds timing -> guardTiming timing (pure . (== Window.EndOfGame))
+    Matcher.InvestigatorEliminated timing whoMatcher -> guardTiming timing $ \case
+      Window.InvestigatorEliminated who -> matchWho iid who (Matcher.IncludeEliminated whoMatcher)
       _ -> pure False
-  Matcher.PlacedCounterOnLocation whenMatcher whereMatcher sourceMatcher counterMatcher valueMatcher ->
-    case window' of
-      Window t (Window.PlacedClues source' (LocationTarget locationId) n) _
-        | t == whenMatcher && counterMatcher == Matcher.ClueCounter ->
-            andM
-              [ locationMatches iid source window' locationId whereMatcher
-              , sourceMatches source' sourceMatcher
-              , gameValueMatches n valueMatcher
-              ]
-      Window t (Window.PlacedResources source' (LocationTarget locationId) n) _
-        | t == whenMatcher && counterMatcher == Matcher.ResourceCounter ->
-            andM
-              [ locationMatches iid source window' locationId whereMatcher
-              , sourceMatches source' sourceMatcher
-              , gameValueMatches n valueMatcher
-              ]
+    Matcher.PutLocationIntoPlay timing whoMatcher locationMatcher ->
+      guardTiming timing $ \case
+        Window.PutLocationIntoPlay who locationId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            ]
+        _ -> pure False
+    Matcher.PlayerHasPlayableCard cardMatcher -> do
+      -- TODO: do we need to grab the card source?
+      -- cards <- filter (/= c) <$> getList cardMatcher
+      cards <- selectList cardMatcher
+      anyM (getIsPlayable iid source UnpaidCost [window']) cards
+    Matcher.PhaseBegins timing phaseMatcher -> guardTiming timing $ \case
+      Window.AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
+      Window.PhaseBegins p -> matchPhase p phaseMatcher
       _ -> pure False
-  Matcher.PlacedCounterOnEnemy whenMatcher enemyMatcher sourceMatcher counterMatcher valueMatcher ->
-    case window' of
-      Window t (Window.PlacedClues source' (EnemyTarget enemyId) n) _
-        | t == whenMatcher && counterMatcher == Matcher.ClueCounter ->
-            andM
-              [ enemyMatches enemyId enemyMatcher
-              , sourceMatches source' sourceMatcher
-              , gameValueMatches n valueMatcher
-              ]
-      Window t (Window.PlacedDoom source' (EnemyTarget enemyId) n) _
-        | t == whenMatcher && counterMatcher == Matcher.DoomCounter ->
-            andM
-              [ enemyMatches enemyId enemyMatcher
-              , sourceMatches source' sourceMatcher
-              , gameValueMatches n valueMatcher
-              ]
+    Matcher.PhaseEnds timing phaseMatcher -> guardTiming timing $ \case
+      Window.PhaseEnds p -> matchPhase p phaseMatcher
       _ -> pure False
-  Matcher.PlacedCounterOnAgenda whenMatcher agendaMatcher sourceMatcher counterMatcher valueMatcher ->
-    case window' of
-      Window t (Window.PlacedDoom source' (AgendaTarget agendaId) n) _
-        | t == whenMatcher && counterMatcher == Matcher.DoomCounter ->
-            andM
-              [ agendaMatches agendaId agendaMatcher
-              , sourceMatches source' sourceMatcher
-              , gameValueMatches n valueMatcher
-              ]
+    Matcher.PhaseStep timing phaseStepMatcher -> guardTiming timing $ \case
+      Window.EnemiesAttackStep -> pure $ phaseStepMatcher == Matcher.EnemiesAttackStep
+      Window.HuntersMoveStep -> pure $ phaseStepMatcher == Matcher.HuntersMoveStep
       _ -> pure False
-  Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->
-    case window' of
-      Window t (Window.RevealLocation who locationId) _
-        | t == timingMatcher ->
-            liftA2
-              (&&)
-              (matchWho iid who whoMatcher)
-              (locationMatches iid source window' locationId locationMatcher)
+    Matcher.TurnBegins timing whoMatcher -> guardTiming timing $ \case
+      Window.TurnBegins who -> matchWho iid who whoMatcher
       _ -> pure False
-  Matcher.FlipLocation timingMatcher whoMatcher locationMatcher ->
-    case window' of
-      Window t (Window.FlipLocation who locationId) _
-        | t == timingMatcher ->
-            liftA2
-              (&&)
-              (matchWho iid who whoMatcher)
-              (locationMatches iid source window' locationId locationMatcher)
+    Matcher.TurnEnds timing whoMatcher -> guardTiming timing $ \case
+      Window.TurnEnds who -> matchWho iid who whoMatcher
       _ -> pure False
-  Matcher.GameEnds timingMatcher -> case window' of
-    Window t Window.EndOfGame _ -> pure $ t == timingMatcher
-    _ -> pure False
-  Matcher.InvestigatorEliminated timingMatcher whoMatcher -> case window' of
-    Window t (Window.InvestigatorEliminated who) _
-      | t == timingMatcher ->
-          matchWho iid who (Matcher.IncludeEliminated whoMatcher)
-    _ -> pure False
-  Matcher.PutLocationIntoPlay timingMatcher whoMatcher locationMatcher ->
-    case window' of
-      Window t (Window.PutLocationIntoPlay who locationId) _
-        | t == timingMatcher ->
-            liftA2
-              (&&)
-              (matchWho iid who whoMatcher)
-              (locationMatches iid source window' locationId locationMatcher)
+    Matcher.RoundEnds timing -> guardTiming timing (pure . (== Window.AtEndOfRound))
+    Matcher.Enters timing whoMatcher whereMatcher -> guardTiming timing $ \case
+      Window.Entering iid' lid ->
+        andM
+          [ matchWho iid iid' whoMatcher
+          , locationMatches iid source window' lid whereMatcher
+          ]
       _ -> pure False
-  Matcher.PlayerHasPlayableCard cardMatcher -> do
-    -- TODO: do we need to grab the card source?
-    -- cards <- filter (/= c) <$> getList cardMatcher
-    cards <- selectList cardMatcher
-    anyM (getIsPlayable iid source UnpaidCost [window']) cards
-  Matcher.PhaseBegins whenMatcher phaseMatcher -> case window' of
-    Window t Window.AnyPhaseBegins _
-      | whenMatcher == t ->
-          pure $ phaseMatcher == Matcher.AnyPhase
-    Window t (Window.PhaseBegins p) _
-      | whenMatcher == t ->
-          matchPhase p phaseMatcher
-    _ -> pure False
-  Matcher.PhaseEnds whenMatcher phaseMatcher -> case window' of
-    Window t (Window.PhaseEnds p) _
-      | whenMatcher == t ->
-          matchPhase p phaseMatcher
-    _ -> pure False
-  Matcher.PhaseStep whenMatcher phaseStepMatcher -> case window' of
-    Window t Window.EnemiesAttackStep _
-      | whenMatcher == t ->
-          pure $ phaseStepMatcher == Matcher.EnemiesAttackStep
-    Window t Window.HuntersMoveStep _
-      | whenMatcher == t ->
-          pure $ phaseStepMatcher == Matcher.HuntersMoveStep
-    _ -> pure False
-  Matcher.TurnBegins whenMatcher whoMatcher -> case window' of
-    Window t (Window.TurnBegins who) _
-      | t == whenMatcher ->
-          matchWho iid who whoMatcher
-    _ -> pure False
-  Matcher.TurnEnds whenMatcher whoMatcher -> case window' of
-    Window t (Window.TurnEnds who) _
-      | t == whenMatcher ->
-          matchWho iid who whoMatcher
-    _ -> pure False
-  Matcher.RoundEnds whenMatcher -> case window' of
-    Window t Window.AtEndOfRound _ -> pure $ t == whenMatcher
-    _ -> pure False
-  Matcher.Enters whenMatcher whoMatcher whereMatcher -> case window' of
-    Window t (Window.Entering iid' lid) _
-      | whenMatcher == t ->
-          liftA2
-            (&&)
-            (matchWho iid iid' whoMatcher)
-            (locationMatches iid source window' lid whereMatcher)
-    _ -> pure False
-  Matcher.Leaves whenMatcher whoMatcher whereMatcher -> case window' of
-    Window t (Window.Leaving iid' lid) _
-      | whenMatcher == t ->
-          liftA2
-            (&&)
-            (matchWho iid iid' whoMatcher)
-            (locationMatches iid source window' lid whereMatcher)
-    _ -> pure False
-  Matcher.Moves whenMatcher whoMatcher sourceMatcher fromMatcher toMatcher ->
-    case window' of
-      Window t (Window.Moves iid' source' mFromLid toLid) _
-        | whenMatcher == t ->
-            andM
-              [ matchWho iid iid' whoMatcher
-              , sourceMatches source' sourceMatcher
-              , case (fromMatcher, mFromLid) of
-                  (Matcher.Anywhere, _) -> pure True
-                  (_, Just fromLid) ->
-                    locationMatches iid source window' fromLid fromMatcher
-                  _ -> pure False
-              , locationMatches iid source window' toLid toMatcher
-              ]
+    Matcher.Leaves timing whoMatcher whereMatcher -> guardTiming timing $ \case
+      Window.Leaving iid' lid ->
+        andM
+          [ matchWho iid iid' whoMatcher
+          , locationMatches iid source window' lid whereMatcher
+          ]
       _ -> pure False
-  Matcher.MoveAction whenMatcher whoMatcher fromMatcher toMatcher ->
-    case window' of
-      Window t (Window.MoveAction iid' fromLid toLid) _
-        | whenMatcher == t ->
-            andM
-              [ matchWho iid iid' whoMatcher
-              , locationMatches iid source window' fromLid fromMatcher
-              , locationMatches iid source window' toLid toMatcher
-              ]
+    Matcher.Moves timing whoMatcher sourceMatcher fromMatcher toMatcher ->
+      guardTiming timing $ \case
+        Window.Moves iid' source' mFromLid toLid ->
+          andM
+            [ matchWho iid iid' whoMatcher
+            , sourceMatches source' sourceMatcher
+            , case (fromMatcher, mFromLid) of
+                (Matcher.Anywhere, _) -> pure True
+                (_, Just fromLid) ->
+                  locationMatches iid source window' fromLid fromMatcher
+                _ -> pure False
+            , locationMatches iid source window' toLid toMatcher
+            ]
+        _ -> pure False
+    Matcher.MoveAction timing whoMatcher fromMatcher toMatcher ->
+      guardTiming timing $ \case
+        Window.MoveAction iid' fromLid toLid ->
+          andM
+            [ matchWho iid iid' whoMatcher
+            , locationMatches iid source window' fromLid fromMatcher
+            , locationMatches iid source window' toLid toMatcher
+            ]
+        _ -> pure False
+    Matcher.PerformAction timing whoMatcher actionMatcher -> guardTiming timing $ \case
+      Window.PerformAction iid' action ->
+        andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
       _ -> pure False
-  Matcher.PerformAction whenMatcher whoMatcher actionMatcher -> case window' of
-    Window t (Window.PerformAction iid' action) _
-      | whenMatcher == t ->
-          andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
-    _ -> pure False
-  Matcher.WouldHaveSkillTestResult whenMatcher whoMatcher _ skillTestResultMatcher ->
-    do
+    Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
+      -- The Timing.When is questionable, but "Would" based timing really is
+      -- only meant to have a When window
       let
         isWindowMatch = \case
           Matcher.ResultOneOf xs -> anyM isWindowMatch xs
-          Matcher.FailureResult _ -> case window' of
-            Window t (Window.WouldFailSkillTest who) _
-              | t == whenMatcher ->
-                  matchWho iid who whoMatcher
+          Matcher.FailureResult _ -> guardTiming timing $ \case
+            Window.WouldFailSkillTest who -> matchWho iid who whoMatcher
             _ -> pure False
-          Matcher.SuccessResult _ -> case window' of
-            Window t (Window.WouldPassSkillTest who) _
-              | t == whenMatcher ->
-                  matchWho iid who whoMatcher
+          Matcher.SuccessResult _ -> guardTiming timing $ \case
+            Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
             _ -> pure False
-          Matcher.AnyResult -> case window' of
-            Window Timing.When (Window.WouldFailSkillTest who) _ ->
-              matchWho iid who whoMatcher
-            Window Timing.When (Window.WouldPassSkillTest who) _ ->
-              matchWho iid who whoMatcher
+          Matcher.AnyResult -> guardTiming Timing.When $ \case
+            Window.WouldFailSkillTest who -> matchWho iid who whoMatcher
+            Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
             _ -> pure False
       isWindowMatch skillTestResultMatcher
-  Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher skillValueMatcher ->
-    case window' of
-      Window t (Window.InitiatedSkillTest st) _ | t == whenMatcher ->
-        case skillTestType st of
-          SkillSkillTest skillType
-            | skillTypeMatches skillType skillTypeMatcher ->
-                andM
-                  [ matchWho iid (skillTestInvestigator st) whoMatcher
-                  , skillTestValueMatches
-                      iid
-                      (skillTestDifficulty st)
-                      (skillTestAction st)
-                      (skillTestType st)
-                      skillValueMatcher
-                  ]
+    Matcher.InitiatedSkillTest timing whoMatcher skillTypeMatcher skillValueMatcher ->
+      guardTiming timing $ \case
+        Window.InitiatedSkillTest st -> case skillTestType st of
+          SkillSkillTest skillType | skillTypeMatches skillType skillTypeMatcher -> do
+            andM
+              [ matchWho iid (skillTestInvestigator st) whoMatcher
+              , skillTestValueMatches
+                  iid
+                  (skillTestDifficulty st)
+                  (skillTestAction st)
+                  (skillTestType st)
+                  skillValueMatcher
+              ]
           _ -> pure False
+        _ -> pure False
+    Matcher.SkillTestEnded timing whoMatcher skillTestMatcher -> guardTiming timing $ \case
+      Window.SkillTestEnded skillTest ->
+        andM
+          [ matchWho iid (skillTestInvestigator skillTest) whoMatcher
+          , skillTestMatches iid source skillTest skillTestMatcher
+          ]
       _ -> pure False
-  Matcher.SkillTestEnded whenMatcher whoMatcher skillTestMatcher ->
-    case window' of
-      Window t (Window.SkillTestEnded skillTest) _
-        | whenMatcher == t ->
-            liftA2
-              (&&)
-              (matchWho iid (skillTestInvestigator skillTest) whoMatcher)
-              (skillTestMatches iid source skillTest skillTestMatcher)
-      _ -> pure False
-  Matcher.SkillTestResult whenMatcher whoMatcher skillMatcher skillTestResultMatcher ->
-    do
-      mskillTest <- getSkillTest
-      matchSkillTest <- case mskillTest of
-        Nothing -> pure False
-        Just st -> skillTestMatches iid source st skillMatcher
-      if not matchSkillTest
-        then pure False
-        else do
-          let
-            isWindowMatch = \case
-              Matcher.ResultOneOf xs -> anyM isWindowMatch xs
-              Matcher.FailureResult gameValueMatcher -> case window' of
-                Window t (Window.FailInvestigationSkillTest who lid n) _
-                  | whenMatcher == t -> case skillMatcher of
-                      Matcher.WhileInvestigating whereMatcher ->
-                        andM
-                          [ matchWho iid who whoMatcher
-                          , gameValueMatches n gameValueMatcher
-                          , locationMatches iid source window' lid whereMatcher
-                          ]
-                      _ -> pure False
-                Window t (Window.FailAttackEnemy who enemyId n) _
-                  | whenMatcher == t -> case skillMatcher of
-                      Matcher.WhileAttackingAnEnemy enemyMatcher ->
-                        andM
-                          [ matchWho iid who whoMatcher
-                          , gameValueMatches n gameValueMatcher
-                          , enemyMatches enemyId enemyMatcher
-                          ]
-                      _ -> pure False
-                Window t (Window.FailEvadeEnemy who enemyId n) _
-                  | whenMatcher == t -> case skillMatcher of
-                      Matcher.WhileEvadingAnEnemy enemyMatcher ->
-                        andM
-                          [ matchWho iid who whoMatcher
-                          , gameValueMatches n gameValueMatcher
-                          , enemyMatches enemyId enemyMatcher
-                          ]
-                      _ -> pure False
-                Window t (Window.FailSkillTest who n) _
-                  | whenMatcher == t ->
+    Matcher.SkillTestResult timing whoMatcher skillMatcher skillTestResultMatcher ->
+      do
+        mskillTest <- getSkillTest
+        matchSkillTest <- case mskillTest of
+          Nothing -> pure False
+          Just st -> skillTestMatches iid source st skillMatcher
+        if not matchSkillTest
+          then pure False
+          else do
+            let
+              isWindowMatch = \case
+                Matcher.ResultOneOf xs -> anyM isWindowMatch xs
+                Matcher.FailureResult gameValueMatcher -> guardTiming timing $ \case
+                  Window.FailInvestigationSkillTest who lid n -> case skillMatcher of
+                    Matcher.WhileInvestigating whereMatcher ->
                       andM
                         [ matchWho iid who whoMatcher
                         , gameValueMatches n gameValueMatcher
+                        , locationMatches iid source window' lid whereMatcher
                         ]
-                _ -> pure False
-              Matcher.SuccessResult gameValueMatcher -> case window' of
-                Window t (Window.PassInvestigationSkillTest who lid n) _
-                  | whenMatcher == t -> case skillMatcher of
-                      Matcher.WhileInvestigating whereMatcher ->
-                        andM
-                          [ matchWho iid who whoMatcher
-                          , gameValueMatches n gameValueMatcher
-                          , locationMatches iid source window' lid whereMatcher
-                          ]
-                      _ -> pure False
-                Window t (Window.SuccessfulAttackEnemy who enemyId n) _
-                  | whenMatcher == t -> case skillMatcher of
-                      Matcher.WhileAttackingAnEnemy enemyMatcher ->
-                        andM
-                          [ matchWho iid who whoMatcher
-                          , gameValueMatches n gameValueMatcher
-                          , enemyMatches enemyId enemyMatcher
-                          ]
-                      _ -> pure False
-                Window t (Window.SuccessfulEvadeEnemy who enemyId n) _
-                  | whenMatcher == t -> case skillMatcher of
-                      Matcher.WhileEvadingAnEnemy enemyMatcher ->
-                        andM
-                          [ matchWho iid who whoMatcher
-                          , gameValueMatches n gameValueMatcher
-                          , enemyMatches enemyId enemyMatcher
-                          ]
-                      _ -> pure False
-                Window t (Window.PassSkillTest _ _ who n) _
-                  | whenMatcher == t ->
-                      liftA2
-                        (&&)
-                        (matchWho iid who whoMatcher)
-                        (gameValueMatches n gameValueMatcher)
-                _ -> pure False
-              Matcher.AnyResult -> case window' of
-                Window t (Window.FailSkillTest who _) _
-                  | whenMatcher == t ->
-                      matchWho iid who whoMatcher
-                Window t (Window.PassSkillTest _ _ who _) _
-                  | whenMatcher == t ->
-                      matchWho iid who whoMatcher
-                _ -> pure False
-          isWindowMatch skillTestResultMatcher
-  Matcher.DuringTurn whoMatcher -> case window' of
-    Window Timing.When Window.NonFast _ -> matchWho iid iid whoMatcher
-    Window Timing.When (Window.DuringTurn who) _ -> matchWho iid who whoMatcher
-    Window Timing.When Window.FastPlayerWindow _ -> do
-      miid <- selectOne Matcher.TurnInvestigator
-      pure $ Just iid == miid
-    _ -> pure False
-  Matcher.OrWindowMatcher matchers ->
-    anyM (windowMatches iid source window') matchers
-  Matcher.EnemySpawns timingMatcher whereMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemySpawns enemyId locationId) _
-        | t == timingMatcher ->
-            liftA2
-              (&&)
-              (enemyMatches enemyId enemyMatcher)
-              (locationMatches iid source window' locationId whereMatcher)
+                    _ -> pure False
+                  Window.FailAttackEnemy who enemyId n -> case skillMatcher of
+                    Matcher.WhileAttackingAnEnemy enemyMatcher ->
+                      andM
+                        [ matchWho iid who whoMatcher
+                        , gameValueMatches n gameValueMatcher
+                        , enemyMatches enemyId enemyMatcher
+                        ]
+                    _ -> pure False
+                  Window.FailEvadeEnemy who enemyId n -> case skillMatcher of
+                    Matcher.WhileEvadingAnEnemy enemyMatcher ->
+                      andM
+                        [ matchWho iid who whoMatcher
+                        , gameValueMatches n gameValueMatcher
+                        , enemyMatches enemyId enemyMatcher
+                        ]
+                    _ -> pure False
+                  Window.FailSkillTest who n ->
+                    andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      ]
+                  _ -> pure False
+                Matcher.SuccessResult gameValueMatcher -> guardTiming timing $ \case
+                  Window.PassInvestigationSkillTest who lid n -> case skillMatcher of
+                    Matcher.WhileInvestigating whereMatcher ->
+                      andM
+                        [ matchWho iid who whoMatcher
+                        , gameValueMatches n gameValueMatcher
+                        , locationMatches iid source window' lid whereMatcher
+                        ]
+                    _ -> pure False
+                  Window.SuccessfulAttackEnemy who enemyId n -> case skillMatcher of
+                    Matcher.WhileAttackingAnEnemy enemyMatcher ->
+                      andM
+                        [ matchWho iid who whoMatcher
+                        , gameValueMatches n gameValueMatcher
+                        , enemyMatches enemyId enemyMatcher
+                        ]
+                    _ -> pure False
+                  Window.SuccessfulEvadeEnemy who enemyId n -> case skillMatcher of
+                    Matcher.WhileEvadingAnEnemy enemyMatcher ->
+                      andM
+                        [ matchWho iid who whoMatcher
+                        , gameValueMatches n gameValueMatcher
+                        , enemyMatches enemyId enemyMatcher
+                        ]
+                    _ -> pure False
+                  Window.PassSkillTest _ _ who n ->
+                    andM
+                      [ matchWho iid who whoMatcher
+                      , gameValueMatches n gameValueMatcher
+                      ]
+                  _ -> pure False
+                Matcher.AnyResult -> guardTiming timing $ \case
+                  Window.FailSkillTest who _ -> matchWho iid who whoMatcher
+                  Window.PassSkillTest _ _ who _ -> matchWho iid who whoMatcher
+                  _ -> pure False
+            isWindowMatch skillTestResultMatcher
+    Matcher.DuringTurn whoMatcher -> guardTiming Timing.When $ \case
+      Window.NonFast -> matchWho iid iid whoMatcher
+      Window.DuringTurn who -> matchWho iid who whoMatcher
+      Window.FastPlayerWindow -> do
+        miid <- selectOne Matcher.TurnInvestigator
+        pure $ Just iid == miid
       _ -> pure False
-  Matcher.EnemyWouldAttack timingMatcher whoMatcher enemyAttackMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemyWouldAttack details) _ | timingMatcher == t ->
-        case attackTarget details of
+    Matcher.OrWindowMatcher matchers ->
+      anyM (windowMatches iid source window') matchers
+    Matcher.EnemySpawns timing whereMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemySpawns enemyId locationId ->
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , locationMatches iid source window' locationId whereMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyWouldAttack timing whoMatcher enemyAttackMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyWouldAttack details -> case attackTarget details of
           InvestigatorTarget who ->
             andM
               [ matchWho iid who whoMatcher
@@ -2196,11 +2096,10 @@ windowMatches iid source window' = \case
               , enemyAttackMatches details enemyAttackMatcher
               ]
           _ -> pure False
-      _ -> pure False
-  Matcher.EnemyAttacks timingMatcher whoMatcher enemyAttackMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemyAttacks details) _ | timingMatcher == t ->
-        case attackTarget details of
+        _ -> pure False
+    Matcher.EnemyAttacks timing whoMatcher enemyAttackMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyAttacks details -> case attackTarget details of
           InvestigatorTarget who ->
             andM
               [ matchWho iid who whoMatcher
@@ -2208,352 +2107,290 @@ windowMatches iid source window' = \case
               , enemyAttackMatches details enemyAttackMatcher
               ]
           _ -> pure False
-      _ -> pure False
-  Matcher.EnemyAttacksEvenIfCancelled timingMatcher whoMatcher enemyAttackMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemyAttacksEvenIfCancelled details) _
-        | timingMatcher == t -> case attackTarget details of
-            InvestigatorTarget who ->
-              andM
-                [ matchWho iid who whoMatcher
-                , enemyMatches (attackEnemy details) enemyMatcher
-                , enemyAttackMatches details enemyAttackMatcher
-                ]
-            _ -> pure False
-      _ -> pure False
-  Matcher.EnemyAttacked timingMatcher whoMatcher sourceMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemyAttacked who attackSource enemyId) _
-        | timingMatcher == t ->
+        _ -> pure False
+    Matcher.EnemyAttacksEvenIfCancelled timing whoMatcher enemyAttackMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyAttacksEvenIfCancelled details -> case attackTarget details of
+          InvestigatorTarget who ->
             andM
               [ matchWho iid who whoMatcher
-              , enemyMatches enemyId enemyMatcher
-              , sourceMatches attackSource sourceMatcher
+              , enemyMatches (attackEnemy details) enemyMatcher
+              , enemyAttackMatches details enemyAttackMatcher
               ]
+          _ -> pure False
+        _ -> pure False
+    Matcher.EnemyAttacked timing whoMatcher sourceMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyAttacked who attackSource enemyId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , enemyMatches enemyId enemyMatcher
+            , sourceMatches attackSource sourceMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyAttackedSuccessfully timing whoMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.SuccessfulAttackEnemy who enemyId _ -> do
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyEvaded timing whoMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyEvaded who enemyId ->
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyEngaged timing whoMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyEngaged who enemyId ->
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> pure False
+    Matcher.MythosStep mythosStepMatcher -> guardTiming Timing.When $ \case
+      Window.AllDrawEncounterCard ->
+        pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
+      Window.AfterCheckDoomThreshold ->
+        pure $ mythosStepMatcher == Matcher.AfterCheckDoomThreshold
       _ -> pure False
-  Matcher.EnemyAttackedSuccessfully timingMatcher whoMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.SuccessfulAttackEnemy who enemyId _) _ | t == timingMatcher -> do
+    Matcher.WouldRevealChaosToken timing whoMatcher -> guardTiming timing $ \case
+      Window.WouldRevealChaosToken _ who -> matchWho iid who whoMatcher
+      _ -> pure False
+    Matcher.RevealChaosToken timing whoMatcher tokenMatcher -> guardTiming timing $ \case
+      Window.RevealChaosToken who token ->
+        andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+      _ -> pure False
+    Matcher.CancelChaosToken timing whoMatcher tokenMatcher ->
+      guardTiming timing $ \case
+        Window.CancelChaosToken who token ->
+          andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+        _ -> pure False
+    Matcher.IgnoreChaosToken timing whoMatcher tokenMatcher ->
+      guardTiming timing $ \case
+        Window.IgnoreChaosToken who token ->
+          andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+        _ -> pure False
+    Matcher.AddedToVictory timing cardMatcher -> guardTiming timing $ \case
+      Window.AddedToVictory card -> pure $ cardMatch card cardMatcher
+      _ -> pure False
+    Matcher.AssetDefeated timing defeatedByMatcher assetMatcher ->
+      guardTiming timing $ \case
+        Window.AssetDefeated assetId defeatedBy ->
+          andM
+            [ member assetId <$> select assetMatcher
+            , defeatedByMatches defeatedBy defeatedByMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyDefeated timing whoMatcher defeatedByMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyDefeated (Just who) defeatedBy enemyId ->
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , matchWho iid who whoMatcher
+            , defeatedByMatches defeatedBy defeatedByMatcher
+            ]
+        Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.Anyone -> do
+          andM
+            [ enemyMatches
+                enemyId
+                enemyMatcher
+            , defeatedByMatches defeatedBy defeatedByMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyEnters timing whereMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyEnters enemyId lid ->
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , locationMatches iid source window' lid whereMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyLeaves enemyId lid ->
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , locationMatches iid source window' lid whereMatcher
+            ]
+        _ -> pure False
+    Matcher.ChosenRandomLocation timing whereMatcher -> guardTiming timing $ \case
+      Window.ChosenRandomLocation lid -> locationMatches iid source window' lid whereMatcher
+      _ -> pure False
+    Matcher.EnemyWouldBeDefeated timing enemyMatcher -> guardTiming timing $ \case
+      Window.EnemyWouldBeDefeated enemyId -> enemyMatches enemyId enemyMatcher
+      _ -> pure False
+    Matcher.EnemyWouldReady timing enemyMatcher -> guardTiming timing $ \case
+      Window.WouldReady (EnemyTarget enemyId) -> enemyMatches enemyId enemyMatcher
+      _ -> pure False
+    Matcher.FastPlayerWindow -> guardTiming Timing.When (pure . (== Window.FastPlayerWindow))
+    Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher ->
+      case whoMatcher of
+        Matcher.You -> guardTiming timing $ \case
+          Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _ ->
+            andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+          Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _ ->
+            andM
+              [ member aid
+                  <$> select
+                    ( Matcher.AssetControlledBy $
+                        Matcher.replaceYouMatcher iid whoMatcher
+                    )
+              , sourceMatches source' sourceMatcher
+              ]
+          _ -> pure False
+        _ -> pure False
+    Matcher.DealtDamage timing sourceMatcher whoMatcher -> guardTiming timing $ \case
+      Window.DealtDamage source' _ (InvestigatorTarget iid') _ ->
+        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.DealtDamage source' _ (AssetTarget aid) _ ->
         andM
-          [ enemyMatches enemyId enemyMatcher
-          , matchWho iid who whoMatcher
+          [ member aid
+              <$> select
+                (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+          , sourceMatches source' sourceMatcher
           ]
       _ -> pure False
-  Matcher.EnemyEvaded timingMatcher whoMatcher enemyMatcher -> case window' of
-    Window t (Window.EnemyEvaded who enemyId) _
-      | timingMatcher == t ->
-          liftA2
-            (&&)
-            (enemyMatches enemyId enemyMatcher)
-            (matchWho iid who whoMatcher)
-    _ -> pure False
-  Matcher.EnemyEngaged timingMatcher whoMatcher enemyMatcher -> case window' of
-    Window t (Window.EnemyEngaged who enemyId) _
-      | timingMatcher == t ->
-          liftA2
-            (&&)
-            (enemyMatches enemyId enemyMatcher)
-            (matchWho iid who whoMatcher)
-    _ -> pure False
-  Matcher.MythosStep mythosStepMatcher -> case window' of
-    Window t Window.AllDrawEncounterCard _
-      | t == Timing.When ->
-          pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
-    Window t Window.AfterCheckDoomThreshold _
-      | t == Timing.When ->
-          pure $ mythosStepMatcher == Matcher.AfterCheckDoomThreshold
-    _ -> pure False
-  Matcher.WouldRevealChaosToken whenMatcher whoMatcher -> case window' of
-    Window t (Window.WouldRevealChaosToken _ who) _
-      | whenMatcher == t ->
-          matchWho iid who whoMatcher
-    _ -> pure False
-  Matcher.RevealChaosToken whenMatcher whoMatcher tokenMatcher ->
-    case window' of
-      Window t (Window.RevealChaosToken who token) _
-        | whenMatcher == t ->
-            andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+    Matcher.DealtHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
+      Window.DealtHorror source' (InvestigatorTarget iid') _ ->
+        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.DealtHorror source' (AssetTarget aid) _ ->
+        andM
+          [ member aid
+              <$> select
+                (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+          , sourceMatches source' sourceMatcher
+          ]
       _ -> pure False
-  Matcher.CancelChaosToken whenMatcher whoMatcher tokenMatcher ->
-    case window' of
-      Window t (Window.CancelChaosToken who token) _
-        | whenMatcher == t ->
-            andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
-      _ -> pure False
-  Matcher.IgnoreChaosToken whenMatcher whoMatcher tokenMatcher ->
-    case window' of
-      Window t (Window.IgnoreChaosToken who token) _
-        | whenMatcher == t ->
-            andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
-      _ -> pure False
-  Matcher.AddedToVictory timingMatcher cardMatcher -> case window' of
-    Window t (Window.AddedToVictory card) _
-      | timingMatcher == t ->
-          pure $ cardMatch card cardMatcher
-    _ -> pure False
-  Matcher.AssetDefeated timingMatcher defeatedByMatcher assetMatcher ->
-    case window' of
-      Window t (Window.AssetDefeated assetId defeatedBy) _
-        | timingMatcher == t ->
-            andM
-              [ member assetId <$> select assetMatcher
-              , defeatedByMatches defeatedBy defeatedByMatcher
-              ]
-      _ -> pure False
-  Matcher.EnemyDefeated timingMatcher whoMatcher defeatedByMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemyDefeated (Just who) defeatedBy enemyId) _
-        | timingMatcher == t ->
-            andM
-              [ enemyMatches enemyId enemyMatcher
-              , matchWho iid who whoMatcher
-              , defeatedByMatches defeatedBy defeatedByMatcher
-              ]
-      Window t (Window.EnemyDefeated Nothing defeatedBy enemyId) _
-        | timingMatcher == t && whoMatcher == Matcher.Anyone ->
-            andM
-              [ enemyMatches
-                  enemyId
-                  enemyMatcher
-              , defeatedByMatches defeatedBy defeatedByMatcher
-              ]
-      _ -> pure False
-  Matcher.EnemyEnters timingMatcher whereMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemyEnters enemyId lid) _
-        | timingMatcher == t ->
-            liftA2
-              (&&)
-              (enemyMatches enemyId enemyMatcher)
-              (locationMatches iid source window' lid whereMatcher)
-      _ -> pure False
-  Matcher.EnemyLeaves timingMatcher whereMatcher enemyMatcher ->
-    case window' of
-      Window t (Window.EnemyLeaves enemyId lid) _
-        | timingMatcher == t ->
-            liftA2
-              (&&)
-              (enemyMatches enemyId enemyMatcher)
-              (locationMatches iid source window' lid whereMatcher)
-      _ -> pure False
-  Matcher.ChosenRandomLocation timingMatcher whereMatcher -> case window' of
-    Window t (Window.ChosenRandomLocation lid) _
-      | timingMatcher == t ->
-          locationMatches iid source window' lid whereMatcher
-    _ -> pure False
-  Matcher.EnemyWouldBeDefeated timingMatcher enemyMatcher -> case window' of
-    Window t (Window.EnemyWouldBeDefeated enemyId) _
-      | timingMatcher == t ->
-          enemyMatches enemyId enemyMatcher
-    _ -> pure False
-  Matcher.EnemyWouldReady timingMatcher enemyMatcher -> case window' of
-    Window t (Window.WouldReady (EnemyTarget enemyId)) _
-      | timingMatcher == t ->
-          enemyMatches enemyId enemyMatcher
-    _ -> pure False
-  Matcher.FastPlayerWindow -> case window' of
-    Window Timing.When Window.FastPlayerWindow _ -> pure True
-    _ -> pure False
-  Matcher.DealtDamageOrHorror whenMatcher sourceMatcher whoMatcher ->
-    case whoMatcher of
-      Matcher.You -> case window' of
-        Window t (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _) _
-          | t == whenMatcher ->
-              andM
-                [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-        Window t (Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _) _
-          | t == whenMatcher ->
-              andM
-                [ member aid
-                    <$> select
-                      ( Matcher.AssetControlledBy $
-                          Matcher.replaceYouMatcher iid whoMatcher
-                      )
-                , sourceMatches source' sourceMatcher
-                ]
+    Matcher.AssignedHorror timing whoMatcher targetListMatcher ->
+      guardTiming timing $ \case
+        Window.AssignedHorror _ who targets ->
+          andM
+            [ matchWho iid who whoMatcher
+            , targetListMatches targets targetListMatcher
+            ]
         _ -> pure False
-      _ -> pure False
-  Matcher.DealtDamage whenMatcher sourceMatcher whoMatcher -> case window' of
-    Window t (Window.DealtDamage source' _ (InvestigatorTarget iid') _) _
-      | t == whenMatcher ->
+    Matcher.AssetDealtDamage timing sourceMatcher assetMatcher ->
+      guardTiming timing $ \case
+        Window.DealtDamage source' _ (AssetTarget aid) _ ->
           andM
-            [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-    Window t (Window.DealtDamage source' _ (AssetTarget aid) _) _
-      | t == whenMatcher ->
-          andM
-            [ member aid
-                <$> select
-                  (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+            [ member aid <$> select assetMatcher
             , sourceMatches source' sourceMatcher
             ]
-    _ -> pure False
-  Matcher.DealtHorror whenMatcher sourceMatcher whoMatcher -> case window' of
-    Window t (Window.DealtHorror source' (InvestigatorTarget iid') _) _
-      | t == whenMatcher ->
+        _ -> pure False
+    Matcher.EnemyDealtDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.DealtDamage source' damageEffect (EnemyTarget eid) _ ->
           andM
-            [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-    Window t (Window.DealtHorror source' (AssetTarget aid) _) _
-      | t == whenMatcher ->
-          andM
-            [ member aid
-                <$> select
-                  (Matcher.AssetControlledBy $ Matcher.replaceYouMatcher iid whoMatcher)
+            [ damageEffectMatches damageEffect damageEffectMatcher
+            , member eid <$> select enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
-    _ -> pure False
-  Matcher.AssignedHorror whenMatcher whoMatcher targetListMatcher ->
-    case window' of
-      Window t (Window.AssignedHorror _ who targets) _
-        | t == whenMatcher ->
-            liftA2
-              (&&)
-              (matchWho iid who whoMatcher)
-              (targetListMatches targets targetListMatcher)
-      _ -> pure False
-  Matcher.AssetDealtDamage timingMatcher sourceMatcher assetMatcher ->
-    case window' of
-      Window t (Window.DealtDamage source' _ (AssetTarget aid) _) _
-        | t == timingMatcher ->
-            andM
-              [ member aid <$> select assetMatcher
-              , sourceMatches source' sourceMatcher
-              ]
-      _ -> pure False
-  Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
-    case window' of
-      Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid) _) _
-        | t == timingMatcher ->
-            andM
-              [ damageEffectMatches damageEffect damageEffectMatcher
-              , member eid <$> select enemyMatcher
-              , sourceMatches source' sourceMatcher
-              ]
-      _ -> pure False
-  Matcher.EnemyDealtExcessDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
-    case window' of
-      Window t (Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _) _
-        | t == timingMatcher ->
-            andM
-              [ damageEffectMatches damageEffect damageEffectMatcher
-              , member eid <$> select enemyMatcher
-              , sourceMatches source' sourceMatcher
-              ]
-      _ -> pure False
-  Matcher.EnemyTakeDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
-    case window' of
-      Window t (Window.TakeDamage source' damageEffect (EnemyTarget eid)) _
-        | t == timingMatcher ->
-            andM
-              [ damageEffectMatches damageEffect damageEffectMatcher
-              , member eid <$> select enemyMatcher
-              , sourceMatches source' sourceMatcher
-              ]
-      _ -> pure False
-  Matcher.DiscoverClues whenMatcher whoMatcher whereMatcher valueMatcher ->
-    case window' of
-      Window t (Window.DiscoverClues who lid _ n) _
-        | whenMatcher == t ->
-            andM
-              [ matchWho iid who whoMatcher
-              , locationMatches iid source window' lid whereMatcher
-              , gameValueMatches n valueMatcher
-              ]
-      _ -> pure False
-  Matcher.GainsClues whenMatcher whoMatcher valueMatcher -> case window' of
-    Window t (Window.GainsClues who _ n) _
-      | whenMatcher == t ->
-          andM [matchWho iid who whoMatcher, gameValueMatches n valueMatcher]
-    _ -> pure False
-  Matcher.DiscoveringLastClue whenMatcher whoMatcher whereMatcher ->
-    case window' of
-      Window t (Window.DiscoveringLastClue who lid) _
-        | whenMatcher == t ->
-            liftA2
-              (&&)
-              (matchWho iid who whoMatcher)
-              (locationMatches iid source window' lid whereMatcher)
-      _ -> pure False
-  Matcher.LastClueRemovedFromAsset whenMatcher assetMatcher -> case window' of
-    Window t (Window.LastClueRemovedFromAsset aid) _
-      | whenMatcher == t ->
-          member aid <$> select assetMatcher
-    _ -> pure False
-  Matcher.DrawsCards whenMatcher whoMatcher valueMatcher -> case window' of
-    Window t (Window.DrawCards who cards) _
-      | whenMatcher == t ->
+        _ -> pure False
+    Matcher.EnemyDealtExcessDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _ ->
+          andM
+            [ damageEffectMatches damageEffect damageEffectMatcher
+            , member eid <$> select enemyMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> pure False
+    Matcher.EnemyTakeDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.TakeDamage source' damageEffect (EnemyTarget eid) ->
+          andM
+            [ damageEffectMatches damageEffect damageEffectMatcher
+            , member eid <$> select enemyMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> pure False
+    Matcher.DiscoverClues timing whoMatcher whereMatcher valueMatcher ->
+      guardTiming timing $ \case
+        Window.DiscoverClues who lid _ n ->
           andM
             [ matchWho iid who whoMatcher
-            , gameValueMatches (length cards) valueMatcher
+            , locationMatches iid source window' lid whereMatcher
+            , gameValueMatches n valueMatcher
             ]
-    _ -> pure False
-  Matcher.DrawCard whenMatcher whoMatcher cardMatcher deckMatcher ->
-    case window' of
-      Window t (Window.DrawCard who card deck) _
-        | whenMatcher == t ->
-            andM
-              [ matchWho iid who whoMatcher
-              , case cardMatcher of
-                  Matcher.BasicCardMatch baseMatcher ->
-                    pure $ cardMatch card baseMatcher
-                  _ -> member card <$> select cardMatcher
-              , deckMatch iid deck deckMatcher
-              ]
+        _ -> pure False
+    Matcher.GainsClues timing whoMatcher valueMatcher -> guardTiming timing $ \case
+      Window.GainsClues who _ n ->
+        andM [matchWho iid who whoMatcher, gameValueMatches n valueMatcher]
       _ -> pure False
-  Matcher.DeckHasNoCards whenMatcher whoMatcher -> case window' of
-    Window t (Window.DeckHasNoCards who) _
-      | whenMatcher == t ->
-          matchWho iid who whoMatcher
-    _ -> pure False
-  Matcher.EncounterDeckRunsOutOfCards -> case window' of
-    Window _ Window.EncounterDeckRunsOutOfCards _ -> pure True
-    _ -> pure False
-  Matcher.PlayCard whenMatcher whoMatcher cardMatcher -> case window' of
-    Window t (Window.PlayCard who card) _
-      | whenMatcher == t ->
-          liftA2
-            (&&)
-            (matchWho iid who whoMatcher)
-            (member card <$> select cardMatcher)
-    _ -> pure False
-  Matcher.AssetEntersPlay timingMatcher assetMatcher -> case window' of
-    Window t (Window.EnterPlay (AssetTarget aid)) _
-      | t == timingMatcher ->
-          member aid <$> select assetMatcher
-    _ -> pure False
-  Matcher.AssetLeavesPlay timingMatcher assetMatcher -> case window' of
-    Window t (Window.LeavePlay (AssetTarget aid)) _
-      | t == timingMatcher ->
-          member aid <$> select assetMatcher
-    _ -> pure False
-  Matcher.LocationLeavesPlay timingMatcher locationMatcher -> case window' of
-    Window t (Window.LeavePlay (LocationTarget aid)) _
-      | t == timingMatcher ->
-          member aid <$> select locationMatcher
-    _ -> pure False
-  Matcher.EnemyLeavesPlay timingMatcher enemyMatcher -> case window' of
-    Window t (Window.LeavePlay (EnemyTarget eid)) _
-      | t == timingMatcher ->
-          member eid <$> select enemyMatcher
-    _ -> pure False
-  Matcher.Explored timingMatcher whoMatcher resultMatcher -> case window' of
-    Window t (Window.Explored who result) _
-      | timingMatcher == t ->
+    Matcher.DiscoveringLastClue timing whoMatcher whereMatcher ->
+      guardTiming timing $ \case
+        Window.DiscoveringLastClue who lid ->
           andM
             [ matchWho iid who whoMatcher
-            , case resultMatcher of
-                Matcher.SuccessfulExplore locationMatcher -> case result of
-                  Window.Success lid -> lid <=~> locationMatcher
-                  Window.Failure _ -> pure False
-                Matcher.FailedExplore cardMatcher -> case result of
-                  Window.Success _ -> pure False
-                  Window.Failure card -> pure $ cardMatch card cardMatcher
+            , locationMatches iid source window' lid whereMatcher
             ]
-    _ -> pure False
-  Matcher.AttemptExplore timingMatcher whoMatcher -> case window' of
-    Window t (Window.AttemptExplore who) _
-      | timingMatcher == t ->
-          matchWho iid who whoMatcher
-    _ -> pure False
+        _ -> pure False
+    Matcher.LastClueRemovedFromAsset timing assetMatcher -> guardTiming timing $ \case
+      Window.LastClueRemovedFromAsset aid -> member aid <$> select assetMatcher
+      _ -> pure False
+    Matcher.DrawsCards timing whoMatcher valueMatcher -> guardTiming timing $ \case
+      Window.DrawCards who cards ->
+        andM
+          [ matchWho iid who whoMatcher
+          , gameValueMatches (length cards) valueMatcher
+          ]
+      _ -> pure False
+    Matcher.DrawCard timing whoMatcher cardMatcher deckMatcher ->
+      guardTiming timing $ \case
+        Window.DrawCard who card deck ->
+          andM
+            [ matchWho iid who whoMatcher
+            , case cardMatcher of
+                Matcher.BasicCardMatch baseMatcher ->
+                  pure $ cardMatch card baseMatcher
+                _ -> member card <$> select cardMatcher
+            , deckMatch iid deck deckMatcher
+            ]
+        _ -> pure False
+    Matcher.DeckHasNoCards timing whoMatcher -> guardTiming timing $ \case
+      Window.DeckHasNoCards who -> matchWho iid who whoMatcher
+      _ -> pure False
+    Matcher.EncounterDeckRunsOutOfCards -> pure $ wType == Window.EncounterDeckRunsOutOfCards
+    Matcher.PlayCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
+      Window.PlayCard who card ->
+        andM
+          [ matchWho iid who whoMatcher
+          , member card <$> select cardMatcher
+          ]
+      _ -> pure False
+    Matcher.AssetEntersPlay timing assetMatcher -> guardTiming timing $ \case
+      Window.EnterPlay (AssetTarget aid) -> member aid <$> select assetMatcher
+      _ -> pure False
+    Matcher.AssetLeavesPlay timing assetMatcher -> guardTiming timing $ \case
+      Window.LeavePlay (AssetTarget aid) -> member aid <$> select assetMatcher
+      _ -> pure False
+    Matcher.LocationLeavesPlay timing locationMatcher -> guardTiming timing $ \case
+      Window.LeavePlay (LocationTarget aid) -> member aid <$> select locationMatcher
+      _ -> pure False
+    Matcher.EnemyLeavesPlay timing enemyMatcher -> guardTiming timing $ \case
+      Window.LeavePlay (EnemyTarget eid) -> member eid <$> select enemyMatcher
+      _ -> pure False
+    Matcher.Explored timing whoMatcher resultMatcher -> guardTiming timing $ \case
+      Window.Explored who result ->
+        andM
+          [ matchWho iid who whoMatcher
+          , case resultMatcher of
+              Matcher.SuccessfulExplore locationMatcher -> case result of
+                Window.Success lid -> lid <=~> locationMatcher
+                Window.Failure _ -> pure False
+              Matcher.FailedExplore cardMatcher -> case result of
+                Window.Success _ -> pure False
+                Window.Failure card -> pure $ cardMatch card cardMatcher
+          ]
+      _ -> pure False
+    Matcher.AttemptExplore timing whoMatcher -> guardTiming timing $ \case
+      Window.AttemptExplore who -> matchWho iid who whoMatcher
+      _ -> pure False
 
 matchWho
   :: HasGame m

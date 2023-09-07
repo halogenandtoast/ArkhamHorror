@@ -21,29 +21,24 @@ whatHaveYouDone = act (3, A) WhatHaveYouDone Cards.whatHaveYouDone Nothing
 
 instance HasAbilities WhatHaveYouDone where
   getAbilities (WhatHaveYouDone x) =
-    [ mkAbility x 1 $
-        Objective $
-          ForcedAbility $
-            EnemyDefeated Timing.After Anyone ByAny $
-              enemyIs Cards.ghoulPriest
+    [ mkAbility x 1
+        $ Objective
+        $ ForcedAbility
+        $ EnemyDefeated Timing.After Anyone ByAny
+        $ enemyIs Cards.ghoulPriest
     ]
 
 instance RunMessage WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       lead <- getLead
-      push $
-        chooseOne
-          lead
-          [ Label
-              "It was never much of a home. Burn it down! (→ _R1_)"
-              [scenarioResolution 1]
-          , Label
-              "This \"hell-pit\" is my home! No way we are burning it! (→ _R2_)"
-              [scenarioResolution 2]
+      push
+        $ chooseOne lead
+        $ [ Label "It was never much of a home. Burn it down! (→ _R1_)" [R1]
+          , Label "This \"hell-pit\" is my home! No way we are burning it! (→ _R2_)" [R2]
           ]
       pure $ WhatHaveYouDone $ attrs & sequenceL .~ Sequence 3 B
     _ -> WhatHaveYouDone <$> runMessage msg attrs

@@ -6,6 +6,7 @@ module Arkham.Act.Cards.DarkKnowledgeV1 (
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -13,6 +14,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Ability
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
@@ -51,8 +53,17 @@ instance RunMessage DarkKnowledgeV1 where
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithClues
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      -- NOTE: moving the breaches is a bit of a hack as we use the "known" act id
+      -- need to make sure this still works for the return to
       anetteMason <- genCard Enemies.anetteMasonReincarnatedEvil
       createAnetteMason <- createEnemy anetteMason SpawnViaSpawnInstruction
-      pushAll [toMessage createAnetteMason, advanceActDeck attrs]
+      let breaches = fromMaybe 0 (actBreaches attrs)
+      pushAll
+        $ [ toMessage createAnetteMason
+          , advanceActDeck attrs
+          ]
+          <> [ PlaceBreaches (ActTarget $ ActId $ toCardCode Acts.beyondTheGrave) breaches
+             | breaches > 0
+             ]
       pure a
     _ -> DarkKnowledgeV1 <$> runMessage msg attrs

@@ -353,6 +353,7 @@ data LocationMatcher
   | LocationWithBrazier Brazier
   | LocationWithBreaches ValueMatcher
   | LocationWithIncursion
+  | FewestBreaches
   deriving stock (Show, Eq, Ord)
 
 instance IsString LocationMatcher where

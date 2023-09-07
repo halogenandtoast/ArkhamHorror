@@ -358,10 +358,10 @@ addInvestigator i d = do
 
   putGame
     $ g'
-      & (gameStateL .~ gameState)
-      -- Adding players causes RNG split so we reset the initial seed on each player
-      -- being added so that choices can replay correctly
-      & (initialSeedL .~ gameSeed game)
+    & (gameStateL .~ gameState)
+    -- Adding players causes RNG split so we reset the initial seed on each player
+    -- being added so that choices can replay correctly
+    & (initialSeedL .~ gameSeed game)
 
 -- TODO: Rename this
 toExternalGame
@@ -590,7 +590,7 @@ getInvestigator
 getInvestigator iid =
   fromJustNote missingInvestigator
     . preview (entitiesL . investigatorsL . ix iid)
-    <$> getGame
+      <$> getGame
  where
   missingInvestigator = "Unknown investigator: " <> show iid
 
@@ -605,7 +605,7 @@ getLocation :: (HasCallStack, HasGame m) => LocationId -> m Location
 getLocation lid =
   fromMaybe missingLocation
     . preview (entitiesL . locationsL . ix lid)
-    <$> getGame
+      <$> getGame
  where
   missingLocation =
     throw $ MissingLocation ("Unknown location: " <> tshow lid) callStack
@@ -747,9 +747,9 @@ getInvestigatorsMatching matcher = do
             . fromJustNote "error"
             . minimumMay
             . keys
-            <$> evalStateT
-              (markDistances start (<=~> locationMatcher) mempty)
-              (LPState (pure start) (singleton start) mempty)
+              <$> evalStateT
+                (markDistances start (<=~> locationMatcher) mempty)
+                (LPState (pure start) (singleton start) mempty)
 
       mappings <-
         traverse (traverseToSnd (getLocationDistance <=< getJustLocation))
@@ -775,9 +775,9 @@ getInvestigatorsMatching matcher = do
             . fromJustNote "error"
             . minimumMay
             . keys
-            <$> evalStateT
-              (markDistances start hasMatchingEnemy mempty)
-              (LPState (pure start) (singleton start) mempty)
+              <$> evalStateT
+                (markDistances start hasMatchingEnemy mempty)
+                (LPState (pure start) (singleton start) mempty)
 
       mappings <-
         traverse (traverseToSnd (getEnemyDistance <=< getJustLocation))
@@ -876,7 +876,7 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithActionsRemaining gameValueMatcher ->
       field InvestigatorRemainingActions
         . toId
-        >=> (`gameValueMatches` gameValueMatcher)
+          >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
     InvestigatorWithDamage gameValueMatcher ->
@@ -886,7 +886,7 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithRemainingSanity gameValueMatcher ->
       field InvestigatorRemainingSanity
         . toId
-        >=> (`gameValueMatches` gameValueMatcher)
+          >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorThatMovedDuringTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ historyMoved history
@@ -1038,7 +1038,7 @@ getRemainingActsMatching matcher = do
       . fromJustNote "scenario has to be set"
       . modeScenario
       . view modeL
-      <$> getGame
+        <$> getGame
   activeActIds <- keys . view (entitiesL . actsL) <$> getGame
   let
     currentActId = case activeActIds of
@@ -1215,9 +1215,9 @@ getGameAbilities = do
   inHandEventAbilities <-
     filter inHandAbility
       . concatMap getAbilities
-      <$> filterM
-        unblanked
-        (toList $ g ^. inHandEntitiesL . each . eventsL)
+        <$> filterM
+          unblanked
+          (toList $ g ^. inHandEntitiesL . each . eventsL)
   concatMapM replaceMatcherSources
     $ enemyAbilities
       <> blankedEnemyAbilities
@@ -1317,15 +1317,15 @@ getLocationsMatching lmatcher = do
     FirstLocation xs ->
       fromMaybe []
         . getFirst
-        <$> foldM
-          ( \b a ->
-              (b <>)
-                . First
-                . (\s -> if null s then Nothing else Just s)
-                <$> getLocationsMatching a
-          )
-          (First Nothing)
-          xs
+          <$> foldM
+            ( \b a ->
+                (b <>)
+                  . First
+                  . (\s -> if null s then Nothing else Just s)
+                    <$> getLocationsMatching a
+            )
+            (First Nothing)
+            xs
     LocationWithLabel label -> pure $ filter ((== label) . toLocationLabel) ls
     LocationWithTitle title ->
       pure $ filter (`hasTitle` title) ls
@@ -1567,9 +1567,9 @@ getLocationsMatching lmatcher = do
                 connectedLocationIds
             pure
               $ setFromList @(Set LocationId)
-                . maybe [] (coerce . map fst)
-                . headMay
-                . groupOn snd
+              . maybe [] (coerce . map fst)
+              . headMay
+              . groupOn snd
               $ sortOn snd candidates
       pure $ filter ((`member` matches') . toId) ls
     BlockedLocation ->
@@ -1591,6 +1591,10 @@ getLocationsMatching lmatcher = do
       filterM
         ((`gameValueMatches` valueMatcher) . maybe 0 Breach.countBreaches . attr locationBreaches)
         ls
+    FewestBreaches -> do
+      fewestBreaches <-
+        getMin <$> foldMapM (fieldMap LocationBreaches (Min . maybe 0 Breach.countBreaches) . toId) ls
+      filterM (fieldMap LocationBreaches ((== fewestBreaches) . maybe 0 Breach.countBreaches) . toId) ls
     -- these can not be queried
     LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
     LocationLeavingPlay -> pure []
@@ -1814,7 +1818,7 @@ getAssetsMatching matcher = do
     AssetWithCardsUnderneath cardListMatcher ->
       flip filterM as
         $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher)
-          . toId
+        . toId
     HealableAsset _source damageType matcher' -> case damageType of
       DamageType -> filterMatcher as (matcher' <> AssetWithDamage)
       HorrorType -> do
@@ -1946,7 +1950,7 @@ getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
 getEnemy eid =
   fromJustNote missingEnemy
     . preview (entitiesL . enemiesL . ix eid)
-    <$> getGame
+      <$> getGame
  where
   missingEnemy = "Unknown enemy: " <> show eid
 
@@ -1954,7 +1958,7 @@ getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
 getOutOfPlayEnemy outOfPlayZone eid =
   fromJustNote missingEnemy
     . preview (outOfPlayEntitiesL . ix outOfPlayZone . enemiesL . ix eid)
-    <$> getGame
+      <$> getGame
  where
   missingEnemy = "Unknown out of play enemy: " <> show eid
 
@@ -1962,7 +1966,7 @@ getVoidEnemy :: HasGame m => EnemyId -> m Enemy
 getVoidEnemy eid =
   fromJustNote missingEnemy
     . preview (outOfPlayEntitiesL . ix VoidZone . enemiesL . ix eid)
-    <$> getGame
+      <$> getGame
  where
   missingEnemy = "Unknown out of playenemy: " <> show eid
 
@@ -2093,8 +2097,8 @@ enemyMatcherFilter = \case
       setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
     notNull
       . intersection iids
-      <$> select
-        (investigatorEngagedWith $ toId $ toAttrs enemy)
+        <$> select
+          (investigatorEngagedWith $ toId $ toAttrs enemy)
   EnemyEngagedWithYou -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     member iid <$> select (investigatorEngagedWith $ toId $ toAttrs enemy)
@@ -2313,7 +2317,7 @@ getAgenda :: HasGame m => AgendaId -> m Agenda
 getAgenda aid =
   fromJustNote missingAgenda
     . preview (entitiesL . agendasL . ix aid)
-    <$> getGame
+      <$> getGame
  where
   missingAgenda = "Unknown agenda: " <> show aid
 
@@ -2345,7 +2349,7 @@ getTreachery :: HasGame m => TreacheryId -> m Treachery
 getTreachery tid =
   fromJustNote missingTreachery
     . preview (entitiesL . treacheriesL . ix tid)
-    <$> getGame
+      <$> getGame
  where
   missingTreachery = "Unknown treachery: " <> show tid
 
@@ -2377,7 +2381,7 @@ getEffect :: HasGame m => EffectId -> m Effect
 getEffect eid =
   fromJustNote missingEffect
     . preview (entitiesL . effectsL . ix eid)
-    <$> getGame
+      <$> getGame
  where
   missingEffect = "Unknown effect: " <> show eid
 
@@ -2522,7 +2526,7 @@ instance Projection (DiscardedEntity Asset) where
         . mconcat
         . Map.elems
         . gameInDiscardEntities
-        <$> getGame
+          <$> getGame
     let attrs = toAttrs a
     case f of
       DiscardedAssetTraits -> pure . cdCardTraits $ toCardDef attrs
@@ -2535,7 +2539,7 @@ instance Projection (DiscardedEntity Treachery) where
         . lookup tid
         . entitiesTreacheries
         . gameEncounterDiscardEntities
-        <$> getGame
+          <$> getGame
     let attrs = toAttrs t
     case f of
       DiscardedTreacheryKeywords -> do
@@ -2991,11 +2995,11 @@ getShortestPath !initialLocation !target !extraConnectionsMap = do
       state'
   pure
     $ fromMaybe []
-      . headMay
-      . drop 1
-      . map snd
-      . sortOn fst
-      . mapToList
+    . headMay
+    . drop 1
+    . map snd
+    . sortOn fst
+    . mapToList
     $ result
 
 data LPState = LPState
@@ -3012,10 +3016,10 @@ getLongestPath !initialLocation !target = do
   !result <- evalStateT (markDistances initialLocation target mempty) state'
   pure
     $ fromMaybe []
-      . headMay
-      . map snd
-      . sortOn (Down . fst)
-      . mapToList
+    . headMay
+    . map snd
+    . sortOn (Down . fst)
+    . mapToList
     $ result
 
 markDistances
@@ -3038,8 +3042,8 @@ markDistances initialLocation target extraConnectionsMap = do
       adjacentCells <-
         nub
           . (<> extraConnections)
-          <$> lift
-            (fieldMap LocationConnectedLocations setToList nextLoc)
+            <$> lift
+              (fieldMap LocationConnectedLocations setToList nextLoc)
       let
         unvisitedNextCells = filter (`notMember` visitedSet) adjacentCells
         newSearchQueue =
@@ -3177,7 +3181,7 @@ instance Projection (InHandEntity Event) where
         . mconcat
         . Map.elems
         . gameInHandEntities
-        <$> getGame
+          <$> getGame
     let attrs = toAttrs e
     case f of
       InHandEventCardId -> pure $ toCardId attrs
@@ -3192,7 +3196,7 @@ instance Projection (InHandEntity Asset) where
         . mconcat
         . Map.elems
         . gameInHandEntities
-        <$> getGame
+          <$> getGame
     let attrs = toAttrs a
     case f of
       InHandAssetCardId -> pure $ toCardId attrs
@@ -3287,11 +3291,11 @@ instance HasDistance Game where
     result <- evalStateT (markDistances start (pure . (== fin)) mempty) state'
     pure
       $ fmap Distance
-        . headMay
-        . drop 1
-        . map fst
-        . sortOn fst
-        . mapToList
+      . headMay
+      . drop 1
+      . map fst
+      . sortOn fst
+      . mapToList
       $ result
 
 readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game
@@ -3440,9 +3444,9 @@ runPreGameMessage msg g = case msg of
   ResetInvestigators ->
     pure
       $ g
-        & (modifiersL .~ mempty)
-        & (entitiesL . investigatorsL %~ map returnToBody)
-        & (removedFromPlayL .~ [])
+      & (modifiersL .~ mempty)
+      & (entitiesL . investigatorsL %~ map returnToBody)
+      & (removedFromPlayL .~ [])
   Setup -> pure $ g & inSetupL .~ True
   StartScenario _ -> pure $ g & inSetupL .~ True
   EndSetup -> pure $ g & inSetupL .~ False
@@ -3472,7 +3476,7 @@ getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator =
   getGame
     >>= maybe (pure Nothing) (fmap Just . getInvestigator)
-      . gameTurnPlayerInvestigatorId
+    . gameTurnPlayerInvestigatorId
 
 createActiveCostForCard
   :: (MonadRandom m, HasGame m)
@@ -3570,9 +3574,9 @@ runGameMessage msg g = case msg of
   BeginAction ->
     pure
       $ g
-        & (inActionL .~ True)
-        & (actionCanBeUndoneL .~ True)
-        & (actionDiffL .~ [])
+      & (inActionL .~ True)
+      & (actionCanBeUndoneL .~ True)
+      & (actionDiffL .~ [])
   FinishAction -> do
     iid <- getActiveInvestigatorId
     let
@@ -3582,12 +3586,12 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure
       $ g
-        & (inActionL .~ False)
-        & (actionCanBeUndoneL .~ False)
-        & (actionDiffL .~ [])
-        & (inDiscardEntitiesL .~ mempty)
-        & (phaseHistoryL %~ insertHistory iid historyItem)
-        & setTurnHistory
+      & (inActionL .~ False)
+      & (actionCanBeUndoneL .~ False)
+      & (actionDiffL .~ [])
+      & (inDiscardEntitiesL .~ mempty)
+      & (phaseHistoryL %~ insertHistory iid historyItem)
+      & setTurnHistory
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
   UndoAction -> do
     -- gameActionDiff contains a list of diffs, in order, to revert the game
@@ -3604,27 +3608,27 @@ runGameMessage msg g = case msg of
   ResetGame ->
     pure
       $ g
-        & (encounterDiscardEntitiesL .~ defaultEntities)
-        & (outOfPlayEntitiesL .~ mempty)
-        & (skillTestL .~ Nothing)
-        & (skillTestResultsL .~ Nothing)
-        & (entitiesL . assetsL .~ mempty)
-        & (entitiesL . locationsL .~ mempty)
-        & (entitiesL . enemiesL .~ mempty)
-        & (entitiesL . actsL .~ mempty)
-        & (entitiesL . agendasL .~ mempty)
-        & (entitiesL . treacheriesL .~ mempty)
-        & (entitiesL . eventsL .~ mempty)
-        & (entitiesL . effectsL .~ mempty)
-        & (entitiesL . skillsL .~ mempty)
-        & (inDiscardEntitiesL .~ mempty)
-        & (gameStateL .~ IsActive)
-        & (turnPlayerInvestigatorIdL .~ Nothing)
-        & (focusedCardsL .~ mempty)
-        & (focusedChaosTokensL .~ mempty)
-        & (activeCardL .~ Nothing)
-        & (activeAbilitiesL .~ mempty)
-        & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
+      & (encounterDiscardEntitiesL .~ defaultEntities)
+      & (outOfPlayEntitiesL .~ mempty)
+      & (skillTestL .~ Nothing)
+      & (skillTestResultsL .~ Nothing)
+      & (entitiesL . assetsL .~ mempty)
+      & (entitiesL . locationsL .~ mempty)
+      & (entitiesL . enemiesL .~ mempty)
+      & (entitiesL . actsL .~ mempty)
+      & (entitiesL . agendasL .~ mempty)
+      & (entitiesL . treacheriesL .~ mempty)
+      & (entitiesL . eventsL .~ mempty)
+      & (entitiesL . effectsL .~ mempty)
+      & (entitiesL . skillsL .~ mempty)
+      & (inDiscardEntitiesL .~ mempty)
+      & (gameStateL .~ IsActive)
+      & (turnPlayerInvestigatorIdL .~ Nothing)
+      & (focusedCardsL .~ mempty)
+      & (focusedChaosTokensL .~ mempty)
+      & (activeCardL .~ Nothing)
+      & (activeAbilitiesL .~ mempty)
+      & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
   StartScenario sid -> do
     -- NOTE: The campaign log needs to be copied over for standalones because
     -- we effectively reset it here when we `setScenario`.
@@ -3658,8 +3662,8 @@ runGameMessage msg g = case msg of
              ]
     pure
       $ g
-        & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
-        & (phaseL .~ InvestigationPhase)
+      & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
+      & (phaseL .~ InvestigationPhase)
   RestartScenario -> do
     let standalone = isNothing $ modeCampaign $ g ^. modeL
     pushAll
@@ -3761,30 +3765,33 @@ runGameMessage msg g = case msg of
     let skillsF = maybe id deleteMap mSkillId
     pure
       $ g
-        & focusedCardsL
+      & focusedCardsL
         %~ filter (/= c)
-        & foundCardsL
-        . each
+      & foundCardsL
+      . each
         %~ filter (/= c)
-        & entitiesL
-        . skillsL
+      & entitiesL
+      . skillsL
         %~ skillsF
   PutCardOnBottomOfDeck _ _ c -> do
     mSkillId <- selectOne $ SkillWithCardId (toCardId c)
     let skillsF = maybe id deleteMap mSkillId
     pure
       $ g
-        & focusedCardsL
+      & focusedCardsL
         %~ filter (/= c)
-        & foundCardsL
-        . each
+      & foundCardsL
+      . each
         %~ filter (/= c)
-        & entitiesL
-        . skillsL
+      & entitiesL
+      . skillsL
         %~ skillsF
   ShuffleCardsIntoDeck _ cards ->
     pure
-      $ g & focusedCardsL %~ filter (`notElem` cards) & foundCardsL . each %~ filter (`notElem` cards)
+      $ g
+      & focusedCardsL %~ filter (`notElem` cards)
+      & foundCardsL
+      . each %~ filter (`notElem` cards)
   FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
   ChooseLeadInvestigator -> do
@@ -3970,7 +3977,7 @@ runGameMessage msg g = case msg of
               $ mapToList
               $ g
                 ^. entitiesL
-                . investigatorsL
+              . investigatorsL
           )
           (\(iid, i) -> (iid,) <$> getSpendableClueCount (toAttrs i))
     case investigatorsWithClues of
@@ -3998,7 +4005,7 @@ runGameMessage msg g = case msg of
       newAgenda = lookupAgenda newAgendaId agendaDeckId (toCardId card)
     pure
       $ g
-        & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda . deleteMap aid1)
+      & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda . deleteMap aid1)
   ReplaceAct aid1 card -> do
     actDeckId <- field ActDeckId aid1
     let
@@ -4006,7 +4013,7 @@ runGameMessage msg g = case msg of
       newAct = lookupAct newActId actDeckId (toCardId card)
     pure
       $ g
-        & (entitiesL . actsL %~ insertMap newActId newAct . deleteMap aid1)
+      & (entitiesL . actsL %~ insertMap newActId newAct . deleteMap aid1)
   AddAct deckNum card -> do
     let aid = ActId $ toCardCode card
     pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum (toCardId card)
@@ -4056,15 +4063,15 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure
       $ g
-        & ( entitiesL
-              . skillsL
+      & ( entitiesL
+            . skillsL
               %~ Map.filterWithKey
                 (\k _ -> k `notElem` skillsToRemove)
-          )
-        & (skillTestL .~ Nothing)
-        & (skillTestResultsL .~ Nothing)
-        & (phaseHistoryL %~ insertHistory iid historyItem)
-        & setTurnHistory
+        )
+      & (skillTestL .~ Nothing)
+      & (skillTestResultsL .~ Nothing)
+      & (phaseHistoryL %~ insertHistory iid historyItem)
+      & setTurnHistory
   EndSearch iid _ EncounterDeckTarget cardSources -> do
     let
       foundKey = \case
@@ -4117,8 +4124,8 @@ runGameMessage msg g = case msg of
   AddToEncounterDiscard card -> do
     pure
       $ g
-        & (focusedCardsL %~ filter (/= EncounterCard card))
-        . (foundCardsL . each %~ filter (/= EncounterCard card))
+      & (focusedCardsL %~ filter (/= EncounterCard card))
+      . (foundCardsL . each %~ filter (/= EncounterCard card))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
     push $ addToHand iid card
@@ -4159,8 +4166,8 @@ runGameMessage msg g = case msg of
           _ -> pure ()
         pure
           $ g
-            & (outOfPlayEntitiesL . each . enemiesL %~ deleteMap enemyId)
-            & (entitiesL . enemiesL . at enemyId ?~ enemy)
+          & (outOfPlayEntitiesL . each . enemiesL %~ deleteMap enemyId)
+          & (entitiesL . enemiesL . at enemyId ?~ enemy)
       _ -> pure g
   SetOutOfPlay outOfPlayZone target@(EnemyTarget enemyId) -> do
     pushAll [RemovedFromPlay (EnemySource enemyId), DoSetOutOfPlay outOfPlayZone target]
@@ -4169,8 +4176,8 @@ runGameMessage msg g = case msg of
     enemy <- getEnemy enemyId
     pure
       $ g
-        & (entitiesL . enemiesL %~ deleteMap enemyId)
-        & (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL . at enemyId ?~ enemy)
+      & (entitiesL . enemiesL %~ deleteMap enemyId)
+      & (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL . at enemyId ?~ enemy)
   RemovedFromPlay (AssetSource assetId) -> do
     asset <- getAsset assetId
     let
@@ -4183,7 +4190,7 @@ runGameMessage msg g = case msg of
            in
             inDiscardEntitiesL
               . at iid
-              ?~ (dEntities & assetsL . at assetId ?~ asset)
+                ?~ (dEntities & assetsL . at assetId ?~ asset)
     pure $ g & entitiesL . assetsL %~ deleteMap assetId & discardLens
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
@@ -4259,8 +4266,8 @@ runGameMessage msg g = case msg of
               <> [UnsetActiveCard]
           pure
             $ g
-              & (entitiesL . treacheriesL %~ insertMap tid treachery)
-              & (activeCardL ?~ card)
+            & (entitiesL . treacheriesL %~ insertMap tid treachery)
+            & (activeCardL ?~ card)
         AssetType -> do
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
@@ -4476,22 +4483,22 @@ runGameMessage msg g = case msg of
     card <- field AssetCard aid
     pure
       $ g
-        & (entitiesL . assetsL %~ deleteMap aid)
-        & (removedFromPlayL %~ (card :))
+      & (entitiesL . assetsL %~ deleteMap aid)
+      & (removedFromPlayL %~ (card :))
   RemoveFromGame (ActTarget aid) -> do
     pure $ g & (entitiesL . actsL %~ deleteMap aid)
   RemoveFromGame (SkillTarget sid) -> do
     card <- field SkillCard sid
     pure
       $ g
-        & (entitiesL . skillsL %~ deleteMap sid)
-        & (removedFromPlayL %~ (card :))
+      & (entitiesL . skillsL %~ deleteMap sid)
+      & (removedFromPlayL %~ (card :))
   RemoveFromGame (EventTarget eid) -> do
     card <- field EventCard eid
     pure
       $ g
-        & (entitiesL . eventsL %~ deleteMap eid)
-        & (removedFromPlayL %~ (card :))
+      & (entitiesL . eventsL %~ deleteMap eid)
+      & (removedFromPlayL %~ (card :))
   RemovedFromGame card -> pure $ g & removedFromPlayL %~ (card :)
   PlaceEnemyInVoid eid -> do
     let
@@ -4502,18 +4509,18 @@ runGameMessage msg g = case msg of
     enemy <- getEnemy eid
     pure
       $ g
-        & (entitiesL . enemiesL %~ deleteMap eid)
-        & (outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL %~ insertMap eid enemy)
+      & (entitiesL . enemiesL %~ deleteMap eid)
+      & (outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL %~ insertMap eid enemy)
   EnemySpawnFromVoid miid lid eid -> do
     pushAll (resolve $ EnemySpawn miid lid eid)
     case lookup eid (g ^. outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL) of
       Just enemy ->
         pure
           $ g
-            & (activeCardL .~ Nothing)
-            & (focusedCardsL .~ mempty)
-            & (outOfPlayEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
-            & (entitiesL . enemiesL %~ insertMap eid enemy)
+          & (activeCardL .~ Nothing)
+          & (focusedCardsL .~ mempty)
+          & (outOfPlayEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
+          & (entitiesL . enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
   Discard _ (SearchedCardTarget cardId) -> do
     investigator' <- getActiveInvestigator
@@ -4522,7 +4529,9 @@ runGameMessage msg g = case msg of
         fromJustNote "must exist"
           $ find ((== cardId) . toCardId)
           $ (g ^. focusedCardsL)
-            <> ( concat . Map.elems . investigatorFoundCards
+            <> ( concat
+                  . Map.elems
+                  . investigatorFoundCards
                   $ toAttrs
                     investigator'
                )
@@ -4663,8 +4672,8 @@ runGameMessage msg g = case msg of
       CampaignPhase -> error "should not be called in this situation"
     pure
       $ g
-        & (roundHistoryL %~ (<> view phaseHistoryL g))
-        & (phaseHistoryL %~ mempty)
+      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (phaseHistoryL %~ mempty)
   EndInvestigation -> do
     whenWindow <-
       checkWindows
@@ -4676,8 +4685,8 @@ runGameMessage msg g = case msg of
     pushAll [whenWindow, EndPhase, afterWindow, After EndPhase]
     pure
       $ g
-        & (phaseHistoryL .~ mempty)
-        & (turnPlayerInvestigatorIdL .~ Nothing)
+      & (phaseHistoryL .~ mempty)
+      & (turnPlayerInvestigatorIdL .~ Nothing)
   Begin EnemyPhase -> do
     phaseBeginsWindow <-
       checkWindows
@@ -4711,9 +4720,10 @@ runGameMessage msg g = case msg of
         }
     pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
   EndEnemy -> do
-    pushAll . (: [EndPhase, After EndPhase])
-      =<< checkWindows
-        [mkWindow Timing.When (Window.PhaseEnds EnemyPhase)]
+    pushAll
+      . (: [EndPhase, After EndPhase])
+        =<< checkWindows
+          [mkWindow Timing.When (Window.PhaseEnds EnemyPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   Begin UpkeepPhase -> do
     phaseBeginsWindow <-
@@ -4732,9 +4742,10 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & phaseL .~ UpkeepPhase
   EndUpkeep -> do
-    pushAll . (: [EndPhase, After EndPhase])
-      =<< checkWindows
-        [mkWindow Timing.When (Window.PhaseEnds UpkeepPhase)]
+    pushAll
+      . (: [EndPhase, After EndPhase])
+        =<< checkWindows
+          [mkWindow Timing.When (Window.PhaseEnds UpkeepPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   EndRoundWindow -> do
     windows' <-
@@ -4789,9 +4800,10 @@ runGameMessage msg g = case msg of
         <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
     pure g
   EndMythos -> do
-    pushAll . (: [EndPhase, After EndPhase])
-      =<< checkWindows
-        [mkWindow Timing.When (Window.PhaseEnds MythosPhase)]
+    pushAll
+      . (: [EndPhase, After EndPhase])
+        =<< checkWindows
+          [mkWindow Timing.When (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   BeginSkillTest skillTest -> do
     windows' <- windows [Window.InitiatedSkillTest skillTest]
@@ -4934,8 +4946,8 @@ runGameMessage msg g = case msg of
         pushAll [CreatedCost (activeCostId cost), PlaceAsset assetId placement]
         pure
           $ g
-            & (entitiesL . assetsL . at assetId ?~ asset)
-            & (activeCostL %~ insertMap (activeCostId cost) cost)
+          & (entitiesL . assetsL . at assetId ?~ asset)
+          & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateEventAt iid card placement -> do
     eventId <- getRandom
     let event' = createEvent card iid eventId
@@ -4949,8 +4961,8 @@ runGameMessage msg g = case msg of
           [CreatedCost (activeCostId cost), PlaceEvent iid eventId placement]
         pure
           $ g
-            & (entitiesL . eventsL . at eventId ?~ event')
-            & (activeCostL %~ insertMap (activeCostId cost) cost)
+          & (entitiesL . eventsL . at eventId ?~ event')
+          & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateWeaknessInThreatArea card iid -> do
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId
@@ -5237,8 +5249,8 @@ runGameMessage msg g = case msg of
             <> [UnsetActiveCard]
         pure
           $ g'
-            & (entitiesL . enemiesL . at enemyId ?~ enemy)
-            & (activeCardL ?~ EncounterCard card)
+          & (entitiesL . enemiesL . at enemyId ?~ enemy)
+          & (activeCardL ?~ EncounterCard card)
       TreacheryType -> do
         g
           <$ push
@@ -5280,11 +5292,11 @@ runGameMessage msg g = case msg of
 
     pure
       $ g
-        & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
-        & (activeCardL ?~ EncounterCard card)
-        & (resolvingCardL ?~ EncounterCard card)
-        & (phaseHistoryL %~ insertHistory iid historyItem)
-        & setTurnHistory
+      & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
+      & (activeCardL ?~ EncounterCard card)
+      & (resolvingCardL ?~ EncounterCard card)
+      & (phaseHistoryL %~ insertHistory iid historyItem)
+      & setTurnHistory
   ResolveTreachery iid treacheryId -> do
     treachery <- getTreachery treacheryId
     checkWindowMessage <-
@@ -5325,10 +5337,10 @@ runGameMessage msg g = case msg of
 
     pure
       $ g
-        & (entitiesL . treacheriesL %~ insertMap treacheryId treachery)
-        & (resolvingCardL ?~ PlayerCard card)
-        & (phaseHistoryL %~ insertHistory iid historyItem)
-        & setTurnHistory
+      & (entitiesL . treacheriesL %~ insertMap treacheryId treachery)
+      & (resolvingCardL ?~ PlayerCard card)
+      & (phaseHistoryL %~ insertHistory iid historyItem)
+      & setTurnHistory
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation {} -> pure $ g & activeCardL .~ Nothing
   AddCardEntity card -> do
@@ -5366,7 +5378,7 @@ runGameMessage msg g = case msg of
                    in
                     inDiscardEntitiesL
                       . at iid
-                      ?~ (dEntities & assetsL . at aid ?~ asset)
+                        ?~ (dEntities & assetsL . at aid ?~ asset)
               else id
         pure $ g & entitiesL . assetsL %~ deleteMap aid & discardLens
   DiscardedCost (AssetTarget aid) -> do
@@ -5381,10 +5393,10 @@ runGameMessage msg g = case msg of
             fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
         pure
           $ g
-            & ( inDiscardEntitiesL
-                  . at iid
+          & ( inDiscardEntitiesL
+                . at iid
                   ?~ (dEntities & assetsL . at aid ?~ asset)
-              )
+            )
   DiscardedCost (SearchedCardTarget cid) -> do
     -- There is only one card, Astounding Revelation, that does this so we just hard code for now
     iid <- getActiveInvestigatorId
@@ -5395,8 +5407,8 @@ runGameMessage msg g = case msg of
         fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
     pure
       $ g
-        & inDiscardEntitiesL
-        . at iid
+      & inDiscardEntitiesL
+      . at iid
         ?~ (dEntities & eventsL . at (toId event') ?~ event')
   Discarded (TreacheryTarget aid) _ _ -> do
     push $ RemoveTreachery aid
@@ -5441,8 +5453,8 @@ runGameMessage msg g = case msg of
       VengeanceCard _ -> error "Vengeance card"
     pure
       $ g
-        & entitiesL
-        . treacheriesL
+      & entitiesL
+      . treacheriesL
         %~ deleteMap tid
   UpdateHistory iid historyItem -> do
     let

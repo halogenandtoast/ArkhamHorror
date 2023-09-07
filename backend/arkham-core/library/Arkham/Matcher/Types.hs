@@ -196,6 +196,7 @@ data EnemyMatcher
   | EnemyWithClues ValueMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
+  | EnemyWithMostDoom EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyWithAsset AssetMatcher
   | NearestEnemy EnemyMatcher
@@ -354,6 +355,7 @@ data LocationMatcher
   | LocationWithBreaches ValueMatcher
   | LocationWithIncursion
   | FewestBreaches
+  | MostBreaches LocationMatcher
   deriving stock (Show, Eq, Ord)
 
 instance IsString LocationMatcher where
@@ -557,6 +559,9 @@ data WindowMatcher
   | WouldPlaceBreach Timing TargetMatcher
   | PlacedBreach Timing TargetMatcher
   | PlacedBreaches Timing TargetMatcher
+  | WouldRemoveBreach Timing TargetMatcher
+  | RemovedBreach Timing TargetMatcher
+  | RemovedBreaches Timing TargetMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher
@@ -725,6 +730,7 @@ data TargetMatcher
   | AnyTarget
   | TargetMatches [TargetMatcher]
   | LocationTargetMatches LocationMatcher
+  | ActTargetMatches ActMatcher
   | ScenarioCardTarget
   deriving stock (Show, Eq, Ord)
 

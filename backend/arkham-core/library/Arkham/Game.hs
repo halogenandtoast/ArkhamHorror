@@ -1595,6 +1595,16 @@ getLocationsMatching lmatcher = do
       fewestBreaches <-
         getMin <$> foldMapM (fieldMap LocationBreaches (Min . maybe 0 Breach.countBreaches) . toId) ls
       filterM (fieldMap LocationBreaches ((== fewestBreaches) . maybe 0 Breach.countBreaches) . toId) ls
+    MostBreaches matcher' -> do
+      ls' <-
+        filter (`elem` ls)
+          <$> getLocationsMatching (RevealedLocation <> matcher')
+      if null ls'
+        then pure []
+        else do
+          mostBreaches <-
+            getMax0 <$> foldMapM (fieldMap LocationBreaches (Max0 . maybe 0 Breach.countBreaches) . toId) ls'
+          filterM (fieldMap LocationBreaches ((== mostBreaches) . maybe 0 Breach.countBreaches) . toId) ls'
     -- these can not be queried
     LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
     LocationLeavingPlay -> pure []
@@ -2084,6 +2094,9 @@ enemyMatcherFilter = \case
   EnemyWithDoom gameValueMatcher -> \enemy -> do
     doom <- field EnemyDoom (toId enemy)
     doom `gameValueMatches` gameValueMatcher
+  EnemyWithMostDoom enemyMatcher -> \enemy -> do
+    matches' <- getEnemiesMatching enemyMatcher
+    elem enemy . maxes <$> forToSnd matches' (field EnemyDoom . toId)
   EnemyWithDamage gameValueMatcher -> \enemy -> do
     damage <- field EnemyDamage (toId enemy)
     damage `gameValueMatches` gameValueMatcher

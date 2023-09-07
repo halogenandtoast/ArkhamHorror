@@ -152,7 +152,11 @@ data WindowType
   | PlacedBreaches Target -- BEGIN Breaches
   | PlacedBreach Target
   | WouldPlaceBreaches Target
-  | WouldPlaceBreach Target -- END Breaches
+  | WouldPlaceBreach Target
+  | RemovedBreaches Target
+  | RemovedBreach Target
+  | WouldRemoveBreaches Target
+  | WouldRemoveBreach Target -- END Breaches
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId

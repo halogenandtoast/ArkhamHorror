@@ -1596,15 +1596,8 @@ getLocationsMatching lmatcher = do
         getMin <$> foldMapM (fieldMap LocationBreaches (Min . maybe 0 Breach.countBreaches) . toId) ls
       filterM (fieldMap LocationBreaches ((== fewestBreaches) . maybe 0 Breach.countBreaches) . toId) ls
     MostBreaches matcher' -> do
-      ls' <-
-        filter (`elem` ls)
-          <$> getLocationsMatching (RevealedLocation <> matcher')
-      if null ls'
-        then pure []
-        else do
-          mostBreaches <-
-            getMax0 <$> foldMapM (fieldMap LocationBreaches (Max0 . maybe 0 Breach.countBreaches) . toId) ls'
-          filterM (fieldMap LocationBreaches ((== mostBreaches) . maybe 0 Breach.countBreaches) . toId) ls'
+      ls' <- filter (`elem` ls) <$> getLocationsMatching matcher'
+      maxes <$> forToSnd ls' (fieldMap LocationBreaches (maybe 0 Breach.countBreaches) . toId)
     -- these can not be queried
     LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
     LocationLeavingPlay -> pure []

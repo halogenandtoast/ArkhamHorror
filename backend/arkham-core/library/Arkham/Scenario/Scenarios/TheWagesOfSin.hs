@@ -6,9 +6,11 @@ module Arkham.Scenario.Scenarios.TheWagesOfSin (
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.ChaosToken
@@ -22,9 +24,11 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -58,10 +62,12 @@ theWagesOfSin difficulty =
 
 instance HasChaosTokenValue TheWagesOfSin where
   getChaosTokenValue iid chaosTokenFace (TheWagesOfSin attrs) = case chaosTokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- selectCount $ VictoryDisplayCardMatch $ CardWithTitle "Unfinished Business"
+      pure $ toChaosTokenValue attrs Skull (n + 1) n
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 3 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 standaloneChaosTokens :: [ChaosTokenFace]
@@ -172,11 +178,39 @@ instance RunMessage TheWagesOfSin where
               & (actStackL . at 1 ?~ acts)
               & (encounterDecksL . at SpectralEncounterDeck ?~ (Deck spectralEncounterDeck, mempty))
           )
+    ResolveChaosToken _ tokenFace iid -> do
+      case tokenFace of
+        Skull | isHardExpert attrs -> push $ DrawAnotherChaosToken iid
+        Tablet -> do
+          heretics <- selectList $ EnemyWithTitle "Heretic"
+          for_ heretics $ \heretic -> do
+            push $ createRoundModifier (ChaosTokenEffectSource Tablet) heretic [EnemyFight 1, EnemyEvade 1]
+        ElderThing | isHardExpert attrs -> do
+          mAction <- getSkillTestAction
+          when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do
+            runHauntedAbilities iid
+        _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
+        Tablet -> do
+          abilities <-
+            selectList $
+              AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
+                <> AbilityIsForcedAbility
+          unless (null abilities) $ do
+            push $ chooseOne iid [AbilityLabel iid ability [] [] | ability <- abilities]
+        ElderThing | isEasyStandard attrs -> do
+          mAction <- getSkillTestAction
+          when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do
+            runHauntedAbilities iid
+        _ -> pure ()
+      pure s
     ScenarioResolution resolution -> do
       case resolution of
         NoResolution -> do
           anyResigned <- selectAny ResignedInvestigator
-          push $ scenarioResolution $ if anyResigned then 1 else 2
+          push $ if anyResigned then R1 else R2
         Resolution res | res `elem` [1, 2] -> do
           iids <- allInvestigatorIds
           step <- getCurrentActStep

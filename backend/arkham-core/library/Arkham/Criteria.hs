@@ -121,6 +121,7 @@ data Criterion
   | PlayableCardInDiscard DiscardSignifier CardMatcher
   | ScenarioCardHasResignAbility
   | ScenarioDeckWithCard ScenarioDeckKey
+  | EncounterDeckIsNotEmpty
   | Self
   | SetAsideCardExists CardMatcher
   | OutOfPlayEnemyExists OutOfPlayZone EnemyMatcher

@@ -117,6 +117,7 @@ data Cost
   | EnemyDoomCost Int EnemyMatcher
   | ExileCost Target
   | HandDiscardCost Int CardMatcher
+  | HandDiscardAnyNumberCost CardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
   | SkillIconCost Int (Set SkillIcon)
@@ -205,6 +206,7 @@ displayCostType = \case
   EnemyDoomCost n _ -> "Place " <> pluralize n "Doom" <> " on a matching enemy"
   ExileCost _ -> "Exile"
   HandDiscardCost n _ -> "Discard " <> tshow n <> " from Hand"
+  HandDiscardAnyNumberCost _ -> "Discard any number of cards from you hand"
   ReturnMatchingAssetToHandCost {} -> "Return matching asset to hand"
   ReturnAssetToHandCost {} -> "Return asset to hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"

@@ -23,10 +23,12 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Scenarios.InTheClutchesOfChaos.Story
+import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype InTheClutchesOfChaos = InTheClutchesOfChaos ScenarioAttrs
@@ -197,5 +199,75 @@ instance RunMessage InTheClutchesOfChaos where
           lid <- sampleLocation
           push $ PlaceBreaches (toTarget lid) 1
         _ -> pure ()
+      pure s
+    ScenarioResolution n -> do
+      investigators <- allInvestigatorIds
+      lead <- getLead
+      gainXp <- toGainXp (toSource attrs) getXp
+      anyDetectivePoliceOrAgency <-
+        selectAny
+          $ AnyInvestigator
+          $ map InvestigatorWithTrait [Trait.Detective, Trait.Police, Trait.Agency]
+      case n of
+        NoResolution -> do
+          anetteMasonIsPossessedByEvil <- getHasRecord AnetteMasonIsPossessedByEvil
+          push $ if anetteMasonIsPossessedByEvil then R3 else R4
+        Resolution 1 -> do
+          anySorcererMiskatonicOrScholar <-
+            selectAny
+              $ AnyInvestigator
+              $ map InvestigatorWithTrait [Trait.Sorcerer, Trait.Miskatonic, Trait.Scholar]
+          pushAll
+            $ [ story investigators resolution1
+              , chooseOne lead
+                  $ [ Label
+                        "“You’ve done enough harm. We’ll handle this from here.”"
+                        [Record TheInvestigatorsContinuedAlone]
+                    , Label "“We will need your help to fix this.” " [Record TheInvestigatorsAskedAnetteForAssistance]
+                    ]
+                    <> [ Label "“You are under arrest.”" [Record TheInvestigatorsArrestedAnette]
+                       | anyDetectivePoliceOrAgency
+                       ]
+                    <> [ Label "“Then teach me how to be stronger.”" [Record AnetteTaughtYouTheSpellsOfOld]
+                       | anySorcererMiskatonicOrScholar
+                       ]
+              ]
+              <> gainXp
+              <> [EndOfGame Nothing]
+        Resolution 2 -> do
+          anySorcererSilverTwilightOrCultist <-
+            selectAny
+              $ AnyInvestigator
+              $ map InvestigatorWithTrait [Trait.Sorcerer, Trait.SilverTwilight, Trait.Cultist]
+          pushAll
+            $ [ story investigators resolution2
+              , chooseOne lead
+                  $ [ Label
+                        "“You’ve done enough harm. We’ll handle this from here.”"
+                        [Record TheInvestigatorsContinuedAlone]
+                    , Label "“We will need your help to fix this.” " [Record TheInvestigatorsAskedSanfordForAssistance]
+                    ]
+                    <> [ Label "“You are under arrest.”" [Record TheInvestigatorsArrestedSanford]
+                       | anyDetectivePoliceOrAgency
+                       ]
+                    <> [ Label
+                        "“Then teach me how to be stronger.”"
+                        [Record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge]
+                       | anySorcererSilverTwilightOrCultist
+                       ]
+              ]
+              <> gainXp
+              <> [EndOfGame Nothing]
+        Resolution 3 ->
+          pushAll
+            $ [story investigators resolution3, Record DoomDrawsEverCloser]
+              <> gainXp
+              <> [EndOfGame Nothing]
+        Resolution 4 ->
+          pushAll
+            $ [story investigators resolution4, Record DoomDrawsEverCloser]
+              <> gainXp
+              <> [EndOfGame Nothing]
+        _ -> error "no such resolution"
       pure s
     _ -> InTheClutchesOfChaos <$> runMessage msg attrs

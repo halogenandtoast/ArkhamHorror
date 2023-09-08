@@ -195,6 +195,15 @@ data CampaignLogKey
   | JeromeIsDead
   | PennyIsDead
   | ValentinoIsDead
+  | TheInvestigatorsContinuedAlone
+  | TheInvestigatorsAskedAnetteForAssistance
+  | TheInvestigatorsArrestedAnette
+  | AnetteTaughtYouTheSpellsOfOld
+  | TheInvestigatorsAskedSanfordForAssistance
+  | TheInvestigatorsArrestedSanford
+  | TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
+  | DoomDrawsEverCloser
+  | ThePathWindsBeforeYou
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

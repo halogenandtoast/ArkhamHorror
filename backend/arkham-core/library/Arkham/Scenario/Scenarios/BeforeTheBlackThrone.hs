@@ -12,6 +12,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -19,6 +20,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -132,6 +134,9 @@ instance RunMessage BeforeTheBlackThrone where
         (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
         pure [placeEmptySpace, SetLocationLabel emptySpace' (tshow pos)]
 
+      azathoth <- genCard Enemies.azathoth
+      createAzathoth <- toMessage <$> createEnemy azathoth Global
+
       pushAll
         $ [ SetEncounterDeck encounterDeck
           , SetActDeck
@@ -143,6 +148,7 @@ instance RunMessage BeforeTheBlackThrone where
           , placeSecondCosmos
           , SetLocationLabel secondCosmos (tshow (Pos 2 (-1)))
           , MoveAllTo (toSource attrs) cosmicIngress
+          , createAzathoth
           ]
           <> map (ObtainCard . toCard) cards
           <> placeEmptySpaces

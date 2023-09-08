@@ -3,6 +3,7 @@ import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
 export interface Enemy {
   id: string;
@@ -18,6 +19,7 @@ export interface Enemy {
   sealedChaosTokens: ChaosToken[];
   placement: Placement;
   keys: ArkhamKey[];
+  modifiers: Modifier[];
 }
 
 type DamageAssignment = { damageAssignmentAmount: number }
@@ -44,5 +46,6 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   asSelfLocation: JsonDecoder.nullable(JsonDecoder.string),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   placement: placementDecoder,
-  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]')
+  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')
 }, 'Enemy');

@@ -106,6 +106,10 @@ pattern InvestigatorCanSpendClues :: GameValue -> InvestigatorMatcher
 pattern InvestigatorCanSpendClues value <-
   InvestigatorMatches
     [InvestigatorWithClues (AtLeast value), InvestigatorWithoutModifier CannotSpendClues]
+  where
+    InvestigatorCanSpendClues value =
+      InvestigatorMatches
+        [InvestigatorWithClues (AtLeast value), InvestigatorWithoutModifier CannotSpendClues]
 
 pattern InvestigatorCanDisengage :: InvestigatorMatcher
 pattern InvestigatorCanDisengage =

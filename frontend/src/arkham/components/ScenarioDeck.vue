@@ -15,6 +15,8 @@ const deckImage = computed(() => {
       return imgsrc("cards/05134b.jpg");
     case 'ExhibitDeck':
       return imgsrc("cards/02132b.jpg");
+    case 'CosmosDeck':
+      return imgsrc("cards/05333b.jpg");
     case 'CatacombsDeck':
       return imgsrc("cards/03247b.jpg");
     default:

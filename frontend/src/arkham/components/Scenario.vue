@@ -323,6 +323,15 @@ const globalEnemies = computed(() => Object.values(props.game.enemies).filter((e
 
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 
+const emptySpaceLocations = computed(() => {
+  const { locationLayout } = props.scenario;
+  if (locationLayout) {
+    return locationLayout.flatMap((row) => row.split(' ').filter((space) => space.startsWith("empty-")))
+  }
+
+  return []
+})
+
 const cardsUnderScenarioReference = computed(() => props.scenario.cardsUnderScenarioReference)
 const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 
@@ -488,27 +497,36 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         <line id="line" class="line original" stroke-dasharray="5, 5"/>
       </svg>
 
-      <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
-        <Location
-          v-for="(location, key) in locations"
-          class="location"
-          :key="key"
-          :game="game"
-          :investigatorId="investigatorId"
-          :location="location"
-          :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-          @choose="choose"
-        />
-        <Enemy
-          v-for="enemy in enemiesAsLocations"
-          :key="enemy.id"
-          :enemy="enemy"
-          :game="game"
-          :investigatorId="investigatorId"
-          :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center' }"
-          @choose="choose"
-        />
-      </transition-group>
+      <div class="location-cards-container">
+        <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
+          <Location
+            v-for="(location, key) in locations"
+            class="location"
+            :key="key"
+            :game="game"
+            :investigatorId="investigatorId"
+            :location="location"
+            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
+            @choose="choose"
+          />
+          <Enemy
+            v-for="enemy in enemiesAsLocations"
+            :key="enemy.id"
+            :enemy="enemy"
+            :game="game"
+            :investigatorId="investigatorId"
+            :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center' }"
+            @choose="choose"
+          />
+          <img
+            v-for="emptySpace in emptySpaceLocations"
+            :key="emptySpace"
+            :style="{ 'grid-area': emptySpace, 'justify-self': 'center' }"
+            :src="imgsrc('player_back.jpg')"
+            class="card"
+          />
+        </transition-group>
+      </div>
 
       <PlayerTabs
         :game="game"
@@ -639,9 +657,15 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 .location-cards {
   display: flex;
-  flex: 1;
   justify-content: center;
   align-items: center;
+  align-self: center;
+}
+
+.location-cards-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .portrait {

@@ -32,8 +32,8 @@ instance RunMessage Location where
 instance FromJSON Location where
   parseJSON = withObject "Location" $ \o -> do
     cCode <- o .: "cardCode"
-    withLocationCardCode cCode $
-      \(_ :: LocationCard a) -> Location <$> parseJSON @a (Object o)
+    withLocationCardCode cCode
+      $ \(_ :: LocationCard a) -> Location <$> parseJSON @a (Object o)
 
 withLocationCardCode
   :: CardCode -> (forall a. IsLocation a => LocationCard a -> r) -> r
@@ -409,7 +409,7 @@ allLocations =
     , SomeLocationCard witchHouseRuins
     , SomeLocationCard salemGaol1692
     , SomeLocationCard physicsClassroom
-    , SomeLocationCard courtOfTheGreatOldOnes
+    , SomeLocationCard courtOfTheGreatOldOnesANotTooDistantFuture
     , SomeLocationCard siteOfTheSacrifice
     , SomeLocationCard strangeGeometry
     , -- The Wages of Sin
@@ -476,6 +476,16 @@ allLocations =
     , SomeLocationCard silverTwilightLodgeShroudedInMystery
     , SomeLocationCard hangmansHillShroudedInMystery
     , SomeLocationCard silverTwilightLodgeWhereItAllEnds
+    , -- Before the Black Throne
+      SomeLocationCard cosmicIngress
+    , SomeLocationCard hideousPalace
+    , SomeLocationCard courtOfTheGreatOldOnes
+    , SomeLocationCard theBlackThrone
+    , SomeLocationCard dancersMist
+    , SomeLocationCard flightIntoOblivion
+    , SomeLocationCard infinityOfDarkness
+    , SomeLocationCard cosmicGate
+    , SomeLocationCard pathwayIntoVoid
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

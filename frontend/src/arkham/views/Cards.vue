@@ -334,6 +334,7 @@ const setSet = (set: CardSet) => {
 .container {
   display: flex;
   height: calc(100% - 40px);
+  max-width: unset;
 }
 
 .results {
@@ -495,5 +496,9 @@ header {
     margin: 0;
     box-sizing: content-box;
   }
+}
+
+#include-encounter {
+  display: inline;
 }
 </style>

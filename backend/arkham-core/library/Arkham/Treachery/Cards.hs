@@ -245,6 +245,7 @@ allEncounterTreacheryCards =
       , lowOnSupplies
       , markOfTheOrder
       , markedByTheSign
+      , markedForDeath
       , maskOfUmordhoth
       , maskedHorrors
       , massHysteria
@@ -1559,27 +1560,27 @@ eagerForDeathUnionAndDisillusion =
 
 psychopompsSongUnionAndDisillusion :: CardDef
 psychopompsSongUnionAndDisillusion =
-  (treachery "05268" "Psychopomp's Song" UnionAndDisillusion 2)
+  (treachery "05269" "Psychopomp's Song" UnionAndDisillusion 2)
     { cdCardTraits = singleton Omen
     , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril]
     }
 
 deathApproaches :: CardDef
 deathApproaches =
-  (treachery "05269" "Death Approaches" UnionAndDisillusion 2)
+  (treachery "05270" "Death Approaches" UnionAndDisillusion 2)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Surge, Keyword.Peril]
     }
 
 markedForDeath :: CardDef
 markedForDeath =
-  (treachery "05270" "Marked for Death" UnionAndDisillusion 2)
+  (treachery "05271" "Marked for Death" UnionAndDisillusion 2)
     { cdCardTraits = singleton Curse
     }
 
 watchersGazeUnionAndDisillusion :: CardDef
 watchersGazeUnionAndDisillusion =
-  (treachery "05271" "Watcher's Gaze" UnionAndDisillusion 1)
+  (treachery "05272" "Watcher's Gaze" UnionAndDisillusion 1)
     { cdCardTraits = singleton Curse
     }
 

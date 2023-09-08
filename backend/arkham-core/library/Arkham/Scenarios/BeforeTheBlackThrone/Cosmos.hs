@@ -13,6 +13,8 @@ nTimes 0 _ = id
 nTimes 1 f = f
 nTimes n f = f . nTimes (n - 1) f
 
+data GridDirection = GridUp | GridDown | GridLeft | GridRight
+
 data Pos = Pos Int Int
   deriving stock (Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -58,15 +60,9 @@ data Cosmos a b = Cosmos
 -- Then find the correct column to insert and change Nothing to Just
 insertCosmos :: CosmosLocation a b -> Cosmos a b -> Cosmos a b
 insertCosmos loc c =
-  let
-    pos@(Pos x y) = cosmosLocationToPosition loc
-    Cosmos above center below = extendCosmosForPosition pos c
-   in
-    case compare y 0 of
-      LT -> Cosmos above center (Seq.adjust (insertCosmosRow x loc) (abs y - 1) below)
-      GT ->
-        Cosmos (Seq.adjust (insertCosmosRow x loc) (Seq.length above - y) above) center below
-      EQ -> Cosmos above (insertCosmosRow x loc center) below
+  let pos = cosmosLocationToPosition loc
+      c' = extendCosmosForPosition pos c
+   in setCosmos (Just loc) pos c'
 
 viewCosmos :: Pos -> Cosmos a b -> Maybe (CosmosLocation a b)
 viewCosmos (Pos x y) (Cosmos above center below) =
@@ -107,12 +103,19 @@ extendCosmosForPosition (Pos x y) c =
         else c'
     EQ -> c'
 
-insertCosmosRow :: Int -> CosmosLocation a b -> CosmosRow a b -> CosmosRow a b
-insertCosmosRow x loc (CosmosRow left center right) =
+setCosmosRow :: Int -> Maybe (CosmosLocation a b) -> CosmosRow a b -> CosmosRow a b
+setCosmosRow x mloc (CosmosRow left center right) =
   case compare x 0 of
-    LT -> CosmosRow (Seq.adjust (const (Just loc)) (Seq.length left + x) left) center right
-    GT -> CosmosRow left center (Seq.adjust (const (Just loc)) (x - 1) right)
-    EQ -> CosmosRow left (Just loc) right
+    LT -> CosmosRow (Seq.adjust (const mloc) (Seq.length left + x) left) center right
+    GT -> CosmosRow left center (Seq.adjust (const mloc) (x - 1) right)
+    EQ -> CosmosRow left mloc right
+
+setCosmos :: Maybe (CosmosLocation a b) -> Pos -> Cosmos a b -> Cosmos a b
+setCosmos mloc (Pos x y) (Cosmos above center below) = case compare y 0 of
+  LT -> Cosmos above center (Seq.adjust (setCosmosRow x mloc) (abs y - 1) below)
+  GT ->
+    Cosmos (Seq.adjust (setCosmosRow x mloc) (Seq.length above - y) above) center below
+  EQ -> Cosmos above (setCosmosRow x mloc center) below
 
 cosmosLeftAmount :: Cosmos a b -> Int
 cosmosLeftAmount (Cosmos _ center _) = cosmosRowLeft center
@@ -181,3 +184,36 @@ cosmosRowToGrid (CosmosRow left center right) =
 cosmosCellToGrid :: CosmosLocation a b -> Text
 cosmosCellToGrid (EmptySpace pos _) = tshow pos
 cosmosCellToGrid (CosmosLocation pos _) = tshow pos
+
+clearCosmos :: Pos -> Cosmos a b -> Cosmos a b
+clearCosmos (Pos x y) (Cosmos above center below) =
+  case compare y 0 of
+    LT -> Cosmos above center (Seq.adjust (setCosmosRow x Nothing) (abs y - 1) below)
+    GT ->
+      Cosmos (Seq.adjust (setCosmosRow x Nothing) (Seq.length above - y) above) center below
+    EQ -> Cosmos above (setCosmosRow x Nothing center) below
+
+isEmpty :: Maybe (CosmosLocation a b) -> Bool
+isEmpty Nothing = True
+isEmpty (Just (EmptySpace _ _)) = True
+isEmpty (Just (CosmosLocation _ _)) = False
+
+updatePosition :: Pos -> GridDirection -> Pos
+updatePosition (Pos x y) dir = case dir of
+  GridLeft -> Pos (x - 1) y
+  GridRight -> Pos (x + 1) y
+  GridUp -> Pos x (y + 1)
+  GridDown -> Pos x (y - 1)
+
+{- | Slide a cosmos location and fill in the empty space with replacement
+This errors because we want to make sure we handle this correctly, the
+caller should know whether or not a slide is possible
+-}
+slide :: Pos -> GridDirection -> Maybe (CosmosLocation a b) -> Cosmos a b -> Cosmos a b
+slide p dir replacement c =
+  let newPos = updatePosition p dir
+      current = viewCosmos p c
+      target = viewCosmos newPos c
+   in if isEmpty target
+        then setCosmos current newPos (setCosmos replacement p c)
+        else error "Tried to slide in invalid location"

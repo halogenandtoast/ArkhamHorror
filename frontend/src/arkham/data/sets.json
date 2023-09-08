@@ -28,7 +28,7 @@
 
   { "name": "The Circle Undone", "min": 5001, "max": 5108, "playerCards": 42, "code": "tcu", "cycle": 5 },
   { "name": "The Secret Name", "min": 5109, "max": 5150, "playerCards": 11, "code": "tsn", "cycle": 5 },
-  { "name": "The Wages of Sin", "min": 5151, "max": 5185, "playerCards": 10, "code": "wos", "cycle": 5 },
+  { "name": "The Wages of Sin", "min": 5151, "max": 5185, "playerCards": 10, "code": "wos", "cycle": 5, "encounterDuplicates": 6 },
   { "name": "For the Greater Good", "min": 5186, "max": 5228, "playerCards": 11, "code": "fgg", "cycle": 5 },
   { "name": "Union and Disillusion", "min": 5229, "max": 5272, "playerCards": 9, "code": "uad", "cycle": 5 },
   { "name": "In the Clutches of Chaos", "min": 5273, "max": 5312, "playerCards": 11, "code": "icc", "cycle": 5 },

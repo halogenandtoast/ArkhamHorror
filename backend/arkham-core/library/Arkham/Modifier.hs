@@ -67,6 +67,8 @@ data ModifierType
   | BecomesFast
   | Blank
   | Blocked
+  | IsEmptySpace
+  | CanEnterEmptySpace
   | CannotEnter LocationId
   | CanAssignDamageToAsset AssetId
   | CanAssignHorrorToAsset AssetId

@@ -23,8 +23,8 @@ instance RunMessage Agenda where
 instance FromJSON Agenda where
   parseJSON = withObject "Agenda" $ \o -> do
     cCode <- o .: "id"
-    withAgendaCardCode cCode $
-      \(_ :: AgendaCard a) -> Agenda <$> parseJSON @a (Object o)
+    withAgendaCardCode cCode
+      $ \(_ :: AgendaCard a) -> Agenda <$> parseJSON @a (Object o)
 
 withAgendaCardCode
   :: CardCode -> (forall a. IsAgenda a => AgendaCard a -> r) -> r
@@ -181,6 +181,10 @@ allAgendas =
     , SomeAgendaCard crossroadsOfFate
     , -- In the Clutches of Chaos
       SomeAgendaCard theChariotVII
+    , -- Before the Black Throne
+      SomeAgendaCard wheelOfFortuneX
+    , SomeAgendaCard itAwaits
+    , SomeAgendaCard theFinalCountdown
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

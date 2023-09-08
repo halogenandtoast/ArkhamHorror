@@ -70,6 +70,7 @@ library
       Arkham.Act.Cards.HiddenAgendas
       Arkham.Act.Cards.HuntingTheRougarou
       Arkham.Act.Cards.HuntressOfTheEztli
+      Arkham.Act.Cards.InAzathothsDomain
       Arkham.Act.Cards.InfiltratingTheLodge
       Arkham.Act.Cards.InLostCarcosa
       Arkham.Act.Cards.InPursuitOfTheDead
@@ -134,6 +135,7 @@ library
       Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark
       Arkham.Act.Cards.TheChamberOfStillRemains
       Arkham.Act.Cards.TheChamberOfTheBeast
+      Arkham.Act.Cards.TheCosmosBeckons
       Arkham.Act.Cards.TheDisappearance
       Arkham.Act.Cards.TheFourKeys
       Arkham.Act.Cards.TheGateOpens
@@ -164,6 +166,7 @@ library
       Arkham.Act.Cards.UncoveringTheConspiracy
       Arkham.Act.Cards.WarmWelcome
       Arkham.Act.Cards.WhatHaveYouDone
+      Arkham.Act.Cards.WhatMustBeDone
       Arkham.Act.Cards.WitchHauntings
       Arkham.Act.Cards.WorldsBeyond
       Arkham.Act.Helpers
@@ -211,6 +214,7 @@ library
       Arkham.Agenda.Cards.HumanityFading
       Arkham.Agenda.Cards.InEveryShadow
       Arkham.Agenda.Cards.Intruders
+      Arkham.Agenda.Cards.ItAwaits
       Arkham.Agenda.Cards.JudgementXX
       Arkham.Agenda.Cards.JusticeXI
       Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
@@ -255,6 +259,7 @@ library
       Arkham.Agenda.Cards.TheEntityAboveTheVortexAbove
       Arkham.Agenda.Cards.TheFamiliar
       Arkham.Agenda.Cards.TheFestivitiesBegin
+      Arkham.Agenda.Cards.TheFinalCountdown
       Arkham.Agenda.Cards.TheFirstNight
       Arkham.Agenda.Cards.TheHangedManXII
       Arkham.Agenda.Cards.TheHermitIX
@@ -288,6 +293,7 @@ library
       Arkham.Agenda.Cards.Vengeance
       Arkham.Agenda.Cards.VengeanceAwaits
       Arkham.Agenda.Cards.WhatsGoingOn
+      Arkham.Agenda.Cards.WheelOfFortuneX
       Arkham.Agenda.Helpers
       Arkham.Agenda.Runner
       Arkham.Agenda.Sequence
@@ -888,6 +894,7 @@ library
       Arkham.Enemy.Cards.AshleighClarke
       Arkham.Enemy.Cards.AsylumGorger
       Arkham.Enemy.Cards.AvianThrall
+      Arkham.Enemy.Cards.Azathoth
       Arkham.Enemy.Cards.BalefulReveler
       Arkham.Enemy.Cards.Basilisk
       Arkham.Enemy.Cards.BeastOfAldebaran
@@ -974,6 +981,7 @@ library
       Arkham.Enemy.Cards.Maniac
       Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn
       Arkham.Enemy.Cards.MarshGug
+      Arkham.Enemy.Cards.MindlessDancer
       Arkham.Enemy.Cards.MobEnforcer
       Arkham.Enemy.Cards.Mobster
       Arkham.Enemy.Cards.Nahab
@@ -1537,6 +1545,7 @@ library
       Arkham.Location.Cards.Easttown
       Arkham.Location.Cards.EasttownArkhamPoliceStation
       Arkham.Location.Cards.EerieGlade
+      Arkham.Location.Cards.EmptySpace
       Arkham.Location.Cards.EndlessBridge
       Arkham.Location.Cards.EngineCar_175
       Arkham.Location.Cards.EngineCar_176
@@ -2104,6 +2113,7 @@ library
       Arkham.Treachery.Cards.ATearInTime
       Arkham.Treachery.Cards.AttractingAttention
       Arkham.Treachery.Cards.Atychiphobia
+      Arkham.Treachery.Cards.AWorldInDarkness
       Arkham.Treachery.Cards.BaneOfTheLiving
       Arkham.Treachery.Cards.Bathophobia
       Arkham.Treachery.Cards.BeastOfTheBayou
@@ -2277,6 +2287,7 @@ library
       Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks
       Arkham.Treachery.Cards.TheCultsSearch
+      Arkham.Treachery.Cards.TheEndIsNigh
       Arkham.Treachery.Cards.TheFinalAct
       Arkham.Treachery.Cards.TheHarbinger
       Arkham.Treachery.Cards.TheKingsEdict
@@ -2297,6 +2308,7 @@ library
       Arkham.Treachery.Cards.TwinSuns
       Arkham.Treachery.Cards.TwistedToHisWill
       Arkham.Treachery.Cards.TwistOfFate
+      Arkham.Treachery.Cards.UltimateChaos
       Arkham.Treachery.Cards.UmordhothsHunger
       Arkham.Treachery.Cards.UmordhothsWrath
       Arkham.Treachery.Cards.UnhallowedCountry
@@ -2310,6 +2322,7 @@ library
       Arkham.Treachery.Cards.WatchersGaze
       Arkham.Treachery.Cards.WatchersGazeUnionAndDisillusion
       Arkham.Treachery.Cards.WatchersGrasp
+      Arkham.Treachery.Cards.WhisperedBargain
       Arkham.Treachery.Cards.WhispersInTheDark
       Arkham.Treachery.Cards.WhispersInYourHeadAnxiety
       Arkham.Treachery.Cards.WhispersInYourHeadDismay

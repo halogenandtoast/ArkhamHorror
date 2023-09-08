@@ -5,6 +5,8 @@ module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (
 
 import Arkham.Prelude hiding ((<|))
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -61,7 +63,8 @@ instance RunMessage BeforeTheBlackThrone where
       pure s
     Setup -> do
       encounterDeck <-
-        buildEncounterDeck
+        buildEncounterDeckExcluding
+          [Enemies.piperOfAzathoth, Enemies.azathoth]
           [ EncounterSet.BeforeTheBlackThrone
           , EncounterSet.AgentsOfAzathoth
           , EncounterSet.InexorableFate
@@ -105,19 +108,29 @@ instance RunMessage BeforeTheBlackThrone where
       (secondCosmos, placeSecondCosmos) <- placeLocation secondCosmosCard
 
       let
+        emptySpaceLocations =
+          [ Pos 0 1
+          , Pos 0 (-1)
+          , Pos 1 1
+          , Pos 1 0
+          , Pos 1 (-1)
+          , Pos 2 0
+          ]
+        emptySpaces = zip emptySpaceLocations cards
+
+      let
         cosmos' =
-          case cards of
-            c1 : c2 : c3 : c4 : c5 : c6 : [] ->
-              insertCosmos (EmptySpace (Pos 0 1) c1)
-                $ insertCosmos (EmptySpace (Pos 0 (-1)) c2)
-                $ insertCosmos (EmptySpace (Pos 1 1) c3)
-                $ insertCosmos (EmptySpace (Pos 1 0) c4)
-                $ insertCosmos (EmptySpace (Pos 1 (-1)) c5)
-                $ insertCosmos (EmptySpace (Pos 2 0) c6)
-                $ insertCosmos (CosmosLocation (Pos 2 1) firstCosmos)
+          foldr
+            (insertCosmos . uncurry EmptySpace)
+            ( insertCosmos (CosmosLocation (Pos 2 1) firstCosmos)
                 $ insertCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
                 $ insertCosmos (CosmosLocation (Pos 0 0) cosmicIngress) cosmos
-            _ -> error "did not have enough cards"
+            )
+            emptySpaces
+
+      placeEmptySpaces <- concatForM emptySpaces $ \(pos, _) -> do
+        (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
+        pure [placeEmptySpace, SetLocationLabel emptySpace' (tshow pos)]
 
       pushAll
         $ [ SetEncounterDeck encounterDeck
@@ -132,9 +145,20 @@ instance RunMessage BeforeTheBlackThrone where
           , MoveAllTo (toSource attrs) cosmicIngress
           ]
           <> map (ObtainCard . toCard) cards
+          <> placeEmptySpaces
+
+      agendas <- genCards [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
+
+      acts <- genCards [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
+
       BeforeTheBlackThrone
         . (`with` cosmos')
           <$> runMessage
             msg
-            (attrs & (decksL . at CosmosDeck ?~ cosmosCards) & locationLayoutL .~ cosmosToGrid cosmos')
+            ( attrs
+                & (decksL . at CosmosDeck ?~ cosmosCards)
+                & locationLayoutL .~ cosmosToGrid cosmos'
+                & (actStackL . at 1 ?~ acts)
+                & (agendaStackL . at 1 ?~ agendas)
+            )
     _ -> BeforeTheBlackThrone . (`with` cosmos) <$> runMessage msg attrs

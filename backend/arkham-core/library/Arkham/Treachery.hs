@@ -25,8 +25,8 @@ lookupTreachery cardCode = case lookup cardCode allTreacheries of
 instance FromJSON Treachery where
   parseJSON = withObject "Treachery" $ \o -> do
     cCode <- o .: "cardCode"
-    withTreacheryCardCode cCode $
-      \(_ :: TreacheryCard a) -> Treachery <$> parseJSON @a (Object o)
+    withTreacheryCardCode cCode
+      $ \(_ :: TreacheryCard a) -> Treachery <$> parseJSON @a (Object o)
 
 withTreacheryCardCode
   :: CardCode -> (forall a. IsTreachery a => TreacheryCard a -> r) -> r
@@ -337,6 +337,11 @@ allTreacheries =
       SomeTreacheryCard secretsOfTheBeyond
     , --- Music of the Damned
       SomeTreacheryCard toilAndTrouble
+    , -- Before the Black Throne
+      SomeTreacheryCard ultimateChaos
+    , SomeTreacheryCard whisperedBargain
+    , SomeTreacheryCard theEndIsNigh
+    , SomeTreacheryCard aWorldInDarkness
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

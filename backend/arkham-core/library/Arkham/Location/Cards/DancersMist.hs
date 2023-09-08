@@ -1,13 +1,14 @@
-module Arkham.Location.Cards.DancersMist
-  ( dancersMist
-  , DancersMist(..)
-  )
+module Arkham.Location.Cards.DancersMist (
+  dancersMist,
+  DancersMist (..),
+)
 where
 
 import Arkham.Prelude
 
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
 
 newtype DancersMist = DancersMist LocationAttrs
@@ -15,12 +16,19 @@ newtype DancersMist = DancersMist LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dancersMist :: LocationCard DancersMist
-dancersMist = location DancersMist Cards.dancersMist 3 (Static 2)
+dancersMist =
+  locationWith
+    DancersMist
+    Cards.dancersMist
+    3
+    (Static 2)
+    (connectsToL .~ adjacentLocations)
 
 instance HasAbilities DancersMist where
   getAbilities (DancersMist attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage DancersMist where
   runMessage msg (DancersMist attrs) =

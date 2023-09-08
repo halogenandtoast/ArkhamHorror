@@ -179,5 +179,5 @@ cosmosRowToGrid (CosmosRow left center right) =
       <> toList (fmap (maybe "." cosmosCellToGrid) right)
 
 cosmosCellToGrid :: CosmosLocation a b -> Text
-cosmosCellToGrid (EmptySpace pos _) = "empty-" <> tshow pos
+cosmosCellToGrid (EmptySpace pos _) = tshow pos
 cosmosCellToGrid (CosmosLocation pos _) = tshow pos

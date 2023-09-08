@@ -38,8 +38,8 @@ lookupEnemy cardCode = case lookup cardCode allEnemies of
 instance FromJSON Enemy where
   parseJSON = withObject "Enemy" $ \o -> do
     cCode <- o .: "cardCode"
-    withEnemyCardCode cCode $
-      \(_ :: EnemyCard a) -> Enemy <$> parseJSON @a (Object o)
+    withEnemyCardCode cCode
+      $ \(_ :: EnemyCard a) -> Enemy <$> parseJSON @a (Object o)
 
 withEnemyCardCode
   :: CardCode -> (forall a. IsEnemy a => EnemyCard a -> r) -> r
@@ -282,6 +282,9 @@ allEnemies =
     , --- Secrets of the Universe
       SomeEnemyCard carlSanfordDeathlessFanatic
     , SomeEnemyCard lodgeEnforcer
+    , -- Before the Black Throne
+      SomeEnemyCard mindlessDancer
+    , SomeEnemyCard azathoth
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

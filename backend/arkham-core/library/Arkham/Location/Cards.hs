@@ -541,7 +541,7 @@ allLocationCards =
 
 allSpecialLocationCards :: Map CardCode CardDef
 allSpecialLocationCards =
-  mapFromList $ map (toCardCode &&& id) [betweenWorlds]
+  mapFromList $ map (toCardCode &&& id) [betweenWorlds, emptySpace]
 
 vengeance :: Int -> CardDef -> CardDef
 vengeance n def = def {cdVengeancePoints = Just n}
@@ -5328,3 +5328,7 @@ theGuardian =
 betweenWorlds :: CardDef
 betweenWorlds =
   location "xbetween" "Between Worlds" [Hex] NoSymbol [] ShatteredAeons
+
+emptySpace :: CardDef
+emptySpace =
+  location "xempty" "EmptySpace" [] NoSymbol [] BeforeTheBlackThrone

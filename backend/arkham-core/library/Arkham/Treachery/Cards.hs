@@ -98,8 +98,8 @@ allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
 allPlayerTreacheryCards :: Map CardCode CardDef
 allPlayerTreacheryCards =
-  mapFromList $
-    concatMap
+  mapFromList
+    $ concatMap
       toCardCodePairs
       [ abandonedAndAlone
       , accursedFate
@@ -152,10 +152,11 @@ allPlayerTreacheryCards =
 
 allEncounterTreacheryCards :: Map CardCode CardDef
 allEncounterTreacheryCards =
-  mapFromList $
-    map
+  mapFromList
+    $ map
       (toCardCode &&& id)
       [ aTearInTime
+      , aWorldInDarkness
       , abduction
       , acridMiasma
       , alteredBeast
@@ -303,6 +304,7 @@ allEncounterTreacheryCards =
       , terrorUnleashed
       , theCreaturesTracks
       , theCultsSearch
+      , theEndIsNigh
       , theFinalAct
       , theKingsEdict
       , thePaleMaskBeckons
@@ -320,6 +322,7 @@ allEncounterTreacheryCards =
       , twinSuns
       , twistOfFate
       , twistedToHisWill
+      , ultimateChaos
       , umordhothsHunger
       , umordhothsWrath
       , unhallowedCountry
@@ -332,6 +335,7 @@ allEncounterTreacheryCards =
       , watchersGaze
       , watchersGazeUnionAndDisillusion
       , watchersGrasp
+      , whisperedBargain
       , whispersInTheDark
       , whispersInYourHeadAnxiety
       , whispersInYourHeadDismay
@@ -1372,8 +1376,8 @@ watchersGrasp =
 
 daemonicPiping :: CardDef
 daemonicPiping =
-  surge $
-    (treachery "05089" "Daemonic Piping" AgentsOfAzathoth 3)
+  surge
+    $ (treachery "05089" "Daemonic Piping" AgentsOfAzathoth 3)
       { cdCardTraits = setFromList [Power, Terror]
       }
 
@@ -1433,8 +1437,8 @@ realmOfTorment =
 
 shapesInTheMist :: CardDef
 shapesInTheMist =
-  surge $
-    (treachery "05106" "Shapes in the Mist" RealmOfDeath 2)
+  surge
+    $ (treachery "05106" "Shapes in the Mist" RealmOfDeath 2)
       { cdCardTraits = setFromList [Terror, Spectral]
       }
 
@@ -1608,6 +1612,31 @@ toilAndTrouble =
   (treachery "05312" "Toil and Trouble" MusicOfTheDamned 2)
     { cdCardTraits = singleton Hex
     , cdKeywords = singleton Keyword.Peril
+    }
+
+ultimateChaos :: CardDef
+ultimateChaos =
+  (treachery "05342" "Ultimate Chaos" BeforeTheBlackThrone 2)
+    { cdCardTraits = singleton Power
+    }
+
+whisperedBargain :: CardDef
+whisperedBargain =
+  (treachery "05343" "Whispered Bargain" BeforeTheBlackThrone 2)
+    { cdCardTraits = singleton Pact
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+theEndIsNigh :: CardDef
+theEndIsNigh =
+  (treachery "05344" "The End is Night!" BeforeTheBlackThrone 2)
+    { cdCardTraits = singleton Endtimes
+    }
+
+aWorldInDarkness :: CardDef
+aWorldInDarkness =
+  (treachery "05345" "A World in Darkness" BeforeTheBlackThrone 2)
+    { cdCardTraits = singleton Endtimes
     }
 
 theHarbinger :: CardDef

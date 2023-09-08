@@ -61,8 +61,8 @@ act cardCode name stage encounterSet =
 
 allActCards :: Map CardCode CardDef
 allActCards =
-  mapFromList $
-    map
+  mapFromList
+    $ map
       (toCardCode &&& id)
       [ aCircleUnbroken
       , afterHours
@@ -116,6 +116,7 @@ allActCards =
       , hiddenAgendas
       , huntingTheRougarou
       , huntressOfTheEztli
+      , inAzathothsDomain
       , infiltratingTheLodge
       , intoTheBeyond
       , intoTheDarkness
@@ -178,6 +179,7 @@ allActCards =
       , theCaveOfDarknessTunnelsInTheDark
       , theChamberOfStillRemains
       , theChamberOfTheBeast
+      , theCosmosBeckons
       , theDisappearance
       , theFourKeys
       , theGateOpens
@@ -208,6 +210,7 @@ allActCards =
       , uncoveringTheConspiracy
       , warmWelcome
       , whatHaveYouDone
+      , whatMustBeDone
       , witchHauntings
       , worldsBeyond
       ]
@@ -653,6 +656,15 @@ darkKnowledgeV2 = act "05288" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse
 
 newWorldOrder :: CardDef
 newWorldOrder = act "05289" "New World Order" 2 SecretsOfTheUniverse
+
+theCosmosBeckons :: CardDef
+theCosmosBeckons = act "05329" "The Cosmos Beckons" 1 BeforeTheBlackThrone
+
+inAzathothsDomain :: CardDef
+inAzathothsDomain = act "05330" "In Azathoth's Domain" 2 BeforeTheBlackThrone
+
+whatMustBeDone :: CardDef
+whatMustBeDone = act "05331" "What Must Be Done" 3 BeforeTheBlackThrone
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

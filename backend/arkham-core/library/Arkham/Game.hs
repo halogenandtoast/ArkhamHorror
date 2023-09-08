@@ -1265,7 +1265,8 @@ replaceMatcherSources ability = case abilitySource ability of
 getLocationsMatching
   :: (HasCallStack, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
-  ls <- toList . view (entitiesL . locationsL) <$> getGame
+  let isEmptySpace = (== "xempty") . toCardCode
+  ls <- filter (not . isEmptySpace) . toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher of
     LocationWithCardId cardId ->
       pure $ filter ((== cardId) . toCardId) ls

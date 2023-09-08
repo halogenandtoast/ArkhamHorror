@@ -216,6 +216,10 @@ allActs =
     , SomeActCard beyondTheGrave
     , SomeActCard darkKnowledgeV2
     , SomeActCard newWorldOrder
+    , -- Before the Black Throne
+      SomeActCard theCosmosBeckons
+    , SomeActCard inAzathothsDomain
+    , SomeActCard whatMustBeDone
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

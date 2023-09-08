@@ -84,8 +84,8 @@ enemy cardCode name encounterSet encounterSetQuantity =
 
 allPlayerEnemyCards :: Map CardCode CardDef
 allPlayerEnemyCards =
-  mapFromList $
-    concatMap
+  mapFromList
+    $ concatMap
       toCardCodePairs
       [ mobEnforcer
       , silverTwilightAcolyte
@@ -100,8 +100,8 @@ allPlayerEnemyCards =
 
 allEncounterEnemyCards :: Map CardCode CardDef
 allEncounterEnemyCards =
-  mapFromList $
-    concatMap
+  mapFromList
+    $ concatMap
       toCardCodePairs
       [ acolyte
       , acolyteOfUmordhoth
@@ -114,6 +114,7 @@ allEncounterEnemyCards =
       , ashleighClarke
       , asylumGorger
       , avianThrall
+      , azathoth
       , balefulReveler
       , basilisk
       , beastOfAldebaran
@@ -197,6 +198,7 @@ allEncounterEnemyCards =
       , maniac
       , mariaDeSilvaKnowsMoreThanSheLetsOn
       , marshGug
+      , mindlessDancer
       , mobster
       , nahab
       , narogath
@@ -325,13 +327,13 @@ icyGhoul =
 
 theMaskedHunter :: CardDef
 theMaskedHunter =
-  unique $
-    ( enemy
-        "01121b"
-        ("The Masked Hunter" <:> "Silently Stalking")
-        TheMidnightMasks
-        1
-    )
+  unique
+    $ ( enemy
+          "01121b"
+          ("The Masked Hunter" <:> "Silently Stalking")
+          TheMidnightMasks
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 2
@@ -339,48 +341,48 @@ theMaskedHunter =
 
 wolfManDrew :: CardDef
 wolfManDrew =
-  unique $
-    (enemy "01137" ("\"Wolf-Man\" Drew" <:> "The Cannibal") CultOfUmordhoth 1)
+  unique
+    $ (enemy "01137" ("\"Wolf-Man\" Drew" <:> "The Cannibal") CultOfUmordhoth 1)
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 hermanCollins :: CardDef
 hermanCollins =
-  unique $
-    (enemy "01138" ("Herman Collins" <:> "The Undertaker") CultOfUmordhoth 1)
+  unique
+    $ (enemy "01138" ("Herman Collins" <:> "The Undertaker") CultOfUmordhoth 1)
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 peterWarren :: CardDef
 peterWarren =
-  unique $
-    (enemy "01139" ("Peter Warren" <:> "The Occult Professor") CultOfUmordhoth 1)
+  unique
+    $ (enemy "01139" ("Peter Warren" <:> "The Occult Professor") CultOfUmordhoth 1)
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 victoriaDevereux :: CardDef
 victoriaDevereux =
-  unique $
-    (enemy "01140" ("Victoria Devereux" <:> "The Collector") CultOfUmordhoth 1)
+  unique
+    $ (enemy "01140" ("Victoria Devereux" <:> "The Collector") CultOfUmordhoth 1)
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 ruthTurner :: CardDef
 ruthTurner =
-  unique $
-    (enemy "01141" ("Ruth Turner" <:> "The Mortician") CultOfUmordhoth 1)
+  unique
+    $ (enemy "01141" ("Ruth Turner" <:> "The Mortician") CultOfUmordhoth 1)
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 umordhoth :: CardDef
 umordhoth =
-  unique $
-    (enemy "01157" ("Umôrdhoth" <:> "The Devourer Below") TheDevourerBelow 1)
+  unique
+    $ (enemy "01157" ("Umôrdhoth" <:> "The Devourer Below") TheDevourerBelow 1)
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
       }
@@ -462,13 +464,13 @@ youngDeepOne =
 
 theExperiment :: CardDef
 theExperiment =
-  unique $
-    ( enemy
-        "02058"
-        ("The Experiment" <:> "Something Went Terribly Wrong")
-        ExtracurricularActivity
-        1
-    )
+  unique
+    $ ( enemy
+          "02058"
+          ("The Experiment" <:> "Something Went Terribly Wrong")
+          ExtracurricularActivity
+          1
+      )
       { cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Massive]
       , cdVictoryPoints = Just 2
@@ -574,8 +576,8 @@ emergentMonstrosity =
 
 silasBishop :: CardDef
 silasBishop =
-  unique $
-    (enemy "02216" ("Silas Bishop" <:> "Infused With Evil") BloodOnTheAltar 1)
+  unique
+    $ (enemy "02216" ("Silas Bishop" <:> "Infused With Evil") BloodOnTheAltar 1)
       { cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 2
@@ -599,8 +601,8 @@ broodOfYogSothoth =
 
 sethBishop :: CardDef
 sethBishop =
-  unique $
-    (enemy "02293" ("Seth Bishop" <:> "Sorcerer of Dunwich") WhereDoomAwaits 1)
+  unique
+    $ (enemy "02293" ("Seth Bishop" <:> "Sorcerer of Dunwich") WhereDoomAwaits 1)
       { cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords = setFromList [Keyword.Retaliate]
       , cdVictoryPoints = Just 1
@@ -621,13 +623,13 @@ crazedShoggoth =
 
 yogSothoth :: CardDef
 yogSothoth =
-  unique $
-    ( enemy
-        "02323"
-        ("Yog-Sothoth" <:> "The Lurker Beyond the Threshold")
-        LostInTimeAndSpace
-        1
-    )
+  unique
+    $ ( enemy
+          "02323"
+          ("Yog-Sothoth" <:> "The Lurker Beyond the Threshold")
+          LostInTimeAndSpace
+          1
+      )
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords =
           setFromList
@@ -657,16 +659,16 @@ graveyardGhouls =
 
 theThingThatFollows :: CardDef
 theThingThatFollows =
-  unique $
-    (basicWeakness "03042" "The Thing That Follows")
+  unique
+    $ (basicWeakness "03042" "The Thing That Follows")
       { cdCardTraits = setFromList [Monster, Curse]
       , cdKeywords = setFromList [Keyword.Hunter]
       }
 
 theManInThePallidMask :: CardDef
 theManInThePallidMask =
-  unique $
-    (weakness "03059" "The Man in the Pallid Mask")
+  unique
+    $ (weakness "03059" "The Man in the Pallid Mask")
       { cdCardTraits = setFromList [Humanoid, Elite]
       , cdKeywords = setFromList [Keyword.Aloof]
       , cdEncounterSet = Just CurtainCall
@@ -675,9 +677,9 @@ theManInThePallidMask =
 
 royalEmissary :: CardDef
 royalEmissary =
-  unique $
-    ( enemy "03060" ("Royal Emissary" <:> "Messenger from Aldebaran") CurtainCall 1
-    )
+  unique
+    $ ( enemy "03060" ("Royal Emissary" <:> "Messenger from Aldebaran") CurtainCall 1
+      )
       { cdCardTraits = setFromList [Monster, Elite]
       , cdKeywords =
           setFromList
@@ -687,13 +689,13 @@ royalEmissary =
 
 constanceDumaine :: CardDef
 constanceDumaine =
-  unique $
-    ( enemy
-        "03065b"
-        ("Constance Dumaine" <:> "A Little Too Sociable")
-        TheLastKing
-        1
-    )
+  unique
+    $ ( enemy
+          "03065b"
+          ("Constance Dumaine" <:> "A Little Too Sociable")
+          TheLastKing
+          1
+      )
       { cdCardTraits = setFromList [Monster, Lunatic, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -702,8 +704,8 @@ constanceDumaine =
 
 jordanPerry :: CardDef
 jordanPerry =
-  unique $
-    (enemy "03066b" ("Jordan Perry" <:> "An Imposing Presence") TheLastKing 1)
+  unique
+    $ (enemy "03066b" ("Jordan Perry" <:> "An Imposing Presence") TheLastKing 1)
       { cdCardTraits = setFromList [Monster, Lunatic, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -712,8 +714,8 @@ jordanPerry =
 
 ishimaruHaruko :: CardDef
 ishimaruHaruko =
-  unique $
-    (enemy "03067b" ("Ishimaru Haruku" <:> "Just Skin and Bones") TheLastKing 1)
+  unique
+    $ (enemy "03067b" ("Ishimaru Haruku" <:> "Just Skin and Bones") TheLastKing 1)
       { cdCardTraits = setFromList [Monster, Lunatic, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -722,8 +724,8 @@ ishimaruHaruko =
 
 sebastienMoreau :: CardDef
 sebastienMoreau =
-  unique $
-    (enemy "03068b" ("Sebastien Moreau" <:> "Savage Hysteria") TheLastKing 1)
+  unique
+    $ (enemy "03068b" ("Sebastien Moreau" <:> "Savage Hysteria") TheLastKing 1)
       { cdCardTraits = setFromList [Monster, Lunatic, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdDoubleSided = True
@@ -732,8 +734,8 @@ sebastienMoreau =
 
 ashleighClarke :: CardDef
 ashleighClarke =
-  unique $
-    (enemy "03069b" ("Ashleigh Clarke" <:> "Songs Die Unheard") TheLastKing 1)
+  unique
+    $ (enemy "03069b" ("Ashleigh Clarke" <:> "Songs Die Unheard") TheLastKing 1)
       { cdCardTraits = setFromList [Monster, Lunatic, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -742,9 +744,9 @@ ashleighClarke =
 
 dianneDevine :: CardDef
 dianneDevine =
-  unique $
-    ( enemy "03081" ("Dianne Devine" <:> "Mercurial and Mischevious") TheLastKing 1
-    )
+  unique
+    $ ( enemy "03081" ("Dianne Devine" <:> "Mercurial and Mischevious") TheLastKing 1
+      )
       { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
       , cdKeywords = singleton Keyword.Aloof
       }
@@ -831,15 +833,15 @@ seekerOfCarcosa =
 
 danielChesterfield :: CardDef
 danielChesterfield =
-  unique $
-    ( enemy
-        "03182b"
-        ( "Daniel Chesterfield"
-            <:> "...Or At Least, What's Left of Him"
-        )
-        TheUnspeakableOath
-        1
-    )
+  unique
+    $ ( enemy
+          "03182b"
+          ( "Daniel Chesterfield"
+              <:> "...Or At Least, What's Left of Him"
+          )
+          TheUnspeakableOath
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Lunatic, Elite]
       , cdVictoryPoints = Just 1
       , cdDoubleSided = True
@@ -860,13 +862,13 @@ madPatient =
 
 theOrganistHopelessIDefiedHim :: CardDef
 theOrganistHopelessIDefiedHim =
-  unique $
-    ( enemy
-        "03221a"
-        ("The Organist" <:> "Hopeless, I Defied Him")
-        APhantomOfTruth
-        1
-    )
+  unique
+    $ ( enemy
+          "03221a"
+          ("The Organist" <:> "Hopeless, I Defied Him")
+          APhantomOfTruth
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -874,8 +876,8 @@ theOrganistHopelessIDefiedHim =
 
 theOrganistDrapedInMystery :: CardDef
 theOrganistDrapedInMystery =
-  unique $
-    (enemy "03221b" ("The Organist" <:> "Draped in Mystery") APhantomOfTruth 1)
+  unique
+    $ (enemy "03221b" ("The Organist" <:> "Draped in Mystery") APhantomOfTruth 1)
       { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdDoubleSided = True
@@ -890,9 +892,9 @@ stealthyByakhee =
 
 specterOfDeath :: CardDef
 specterOfDeath =
-  unique $
-    ( enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1
-    )
+  unique
+    $ ( enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1
+      )
       { cdCardTraits = setFromList [Monster, Geist, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       }
@@ -925,23 +927,23 @@ riftSeeker =
 
 hasturTheKingInYellow :: CardDef
 hasturTheKingInYellow =
-  unique $
-    (enemy "03332" ("Hastur" <:> "The King in Yellow") DimCarcosa 1)
+  unique
+    $ (enemy "03332" ("Hastur" <:> "The King in Yellow") DimCarcosa 1)
       { cdCardTraits = setFromList [AncientOne, Elite]
       }
 
 hasturLordOfCarcosa :: CardDef
 hasturLordOfCarcosa =
-  unique $
-    (enemy "03333" ("Hastur" <:> "Lord of Carcosa") DimCarcosa 1)
+  unique
+    $ (enemy "03333" ("Hastur" <:> "Lord of Carcosa") DimCarcosa 1)
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
       }
 
 hasturTheTatteredKing :: CardDef
 hasturTheTatteredKing =
-  unique $
-    (enemy "03334" ("Hastur" <:> "The Tattered King") DimCarcosa 1)
+  unique
+    $ (enemy "03334" ("Hastur" <:> "The Tattered King") DimCarcosa 1)
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords = singleton Keyword.Hunter
       }
@@ -970,8 +972,8 @@ serpentsOfYig =
 
 ichtaca :: CardDef
 ichtaca =
-  unique $
-    (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1)
+  unique
+    $ (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1)
       { cdCardTraits = setFromList [Humanoid, Eztli, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
       , cdVictoryPoints = Just 1
@@ -979,13 +981,13 @@ ichtaca =
 
 harbingerOfValusia :: CardDef
 harbingerOfValusia =
-  unique $
-    ( enemy
-        "04062"
-        ("Harbinger of Valusia" <:> "The Sleeper Awakens")
-        TheDoomOfEztli
-        1
-    )
+  unique
+    $ ( enemy
+          "04062"
+          ("Harbinger of Valusia" <:> "The Sleeper Awakens")
+          TheDoomOfEztli
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Serpent, Monster, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
       , cdVengeancePoints = Just 5
@@ -1044,27 +1046,27 @@ fangOfYig =
 
 harlanEarnstoneCrazedByTheCurse :: CardDef
 harlanEarnstoneCrazedByTheCurse =
-  unique $
-    ( enemy "04122b" ("Harlan Earnstone" <:> "Crazed by the Curse") ThreadsOfFate 1
-    )
+  unique
+    $ ( enemy "04122b" ("Harlan Earnstone" <:> "Crazed by the Curse") ThreadsOfFate 1
+      )
       { cdCardTraits = setFromList [Humanoid, Cursed, Elite]
       , cdVictoryPoints = Just 1
       }
 
 henryDeveauAlejandrosKidnapper :: CardDef
 henryDeveauAlejandrosKidnapper =
-  unique $
-    ( enemy "04130d" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1
-    )
+  unique
+    $ ( enemy "04130d" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1
+      )
       { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
       , cdVictoryPoints = Just 1
       }
 
 mariaDeSilvaKnowsMoreThanSheLetsOn :: CardDef
 mariaDeSilvaKnowsMoreThanSheLetsOn =
-  unique $
-    ( enemy "04137b" ("Maria DeSilva" <:> "Knows More Than She Lets On") ThreadsOfFate 1
-    )
+  unique
+    $ ( enemy "04137b" ("Maria DeSilva" <:> "Knows More Than She Lets On") ThreadsOfFate 1
+      )
       { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
       , cdVictoryPoints = Just 1
       , cdKeywords = singleton Keyword.Retaliate
@@ -1072,9 +1074,9 @@ mariaDeSilvaKnowsMoreThanSheLetsOn =
 
 padmaAmrita :: CardDef
 padmaAmrita =
-  unique $
-    ( enemy "04186" ("Padma Amrita" <:> "Cold-Blooded Charmer") TheBoundaryBeyond 1
-    )
+  unique
+    $ ( enemy "04186" ("Padma Amrita" <:> "Cold-Blooded Charmer") TheBoundaryBeyond 1
+      )
       { cdCardTraits = setFromList [Humanoid, Serpent, Servitor, Elite]
       , cdVictoryPoints = Just 2
       , cdVengeancePoints = Just 2
@@ -1099,9 +1101,9 @@ handOfTheBrotherhood =
 
 theWingedSerpent :: CardDef
 theWingedSerpent =
-  unique $
-    ( enemy "04209b" ("The Winged Serpent" <:> "The Wrath of Yig") PillarsOfJudgement 1
-    )
+  unique
+    $ ( enemy "04209b" ("The Winged Serpent" <:> "The Wrath of Yig") PillarsOfJudgement 1
+      )
       { cdCardTraits = setFromList [Monster, Serpent, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive]
       }
@@ -1149,9 +1151,9 @@ scholarFromYith =
 
 yig :: CardDef
 yig =
-  unique $
-    ( enemy "04296" ("Yig" <:> "The Father of Serpents") TheDepthsOfYoth 1
-    )
+  unique
+    $ ( enemy "04296" ("Yig" <:> "The Father of Serpents") TheDepthsOfYoth 1
+      )
       { cdCardTraits = setFromList [AncientOne, Serpent, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
       , cdVictoryPoints = Just 5
@@ -1176,9 +1178,9 @@ eaterOfTheDepths =
 
 ichtacaScionOfYig :: CardDef
 ichtacaScionOfYig =
-  unique $
-    ( enemy "04325" ("Ichtaca" <:> "Scion of Yig") ShatteredAeons 1
-    )
+  unique
+    $ ( enemy "04325" ("Ichtaca" <:> "Scion of Yig") ShatteredAeons 1
+      )
       { cdCardTraits = setFromList [Humanoid, Monster, Serpent, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdVictoryPoints = Just 2
@@ -1186,9 +1188,9 @@ ichtacaScionOfYig =
 
 alejandroVela :: CardDef
 alejandroVela =
-  unique $
-    ( enemy "04326" ("Alejandro Vela" <:> "Or, Is He?") ShatteredAeons 1
-    )
+  unique
+    $ ( enemy "04326" ("Alejandro Vela" <:> "Or, Is He?") ShatteredAeons 1
+      )
       { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
       , cdVictoryPoints = Just 2
@@ -1220,8 +1222,8 @@ hoods =
 
 anetteMason :: CardDef
 anetteMason =
-  unique $
-    (enemy "05057" ("Anette Mason" <:> "The High Priestess") TheWitchingHour 1)
+  unique
+    $ (enemy "05057" ("Anette Mason" <:> "The High Priestess") TheWitchingHour 1)
       { cdCardTraits = setFromList [Humanoid, Witch, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       , cdVictoryPoints = Just 2
@@ -1229,8 +1231,8 @@ anetteMason =
 
 josefMeiger :: CardDef
 josefMeiger =
-  unique $
-    (enemy "05085" ("Josef Meiger" <:> "Lodge Host") AtDeathsDoorstep 1)
+  unique
+    $ (enemy "05085" ("Josef Meiger" <:> "Lodge Host") AtDeathsDoorstep 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       , cdDoubleSided = True
@@ -1239,8 +1241,8 @@ josefMeiger =
 
 theSpectralWatcher :: CardDef
 theSpectralWatcher =
-  unique $
-    (enemy "05086" ("The Spectral Watcher" <:> "You Are Its Prey") TheWatcher 1)
+  unique
+    $ (enemy "05086" ("The Spectral Watcher" <:> "You Are Its Prey") TheWatcher 1)
       { cdCardTraits = setFromList [AncientOne, Spectral, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
       }
@@ -1305,16 +1307,16 @@ wraith =
 
 brownJenkin :: CardDef
 brownJenkin =
-  unique $
-    (enemy "05148" ("Brown Jenkin" <:> "The Witch's Familiar") TheSecretName 1)
+  unique
+    $ (enemy "05148" ("Brown Jenkin" <:> "The Witch's Familiar") TheSecretName 1)
       { cdCardTraits = setFromList [Creature, Familiar, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
       }
 
 nahab :: CardDef
 nahab =
-  unique $
-    (enemy "05149" ("Nahab" <:> "She Who Signed the Black Book") TheSecretName 1)
+  unique
+    $ (enemy "05149" ("Nahab" <:> "She Who Signed the Black Book") TheSecretName 1)
       { cdCardTraits = setFromList [Monster, Geist, Witch, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       }
@@ -1370,8 +1372,8 @@ malevolentSpirit =
 
 nathanWickMasterOfInitiation :: CardDef
 nathanWickMasterOfInitiation =
-  unique $
-    (enemy "05217a" ("Nathan Wick" <:> "Master of Initiation") TheWagesOfSin 1)
+  unique
+    $ (enemy "05217a" ("Nathan Wick" <:> "Master of Initiation") TheWagesOfSin 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       , cdDoubleSided = True
@@ -1380,8 +1382,8 @@ nathanWickMasterOfInitiation =
 
 nathanWickMasterOfIndoctrination :: CardDef
 nathanWickMasterOfIndoctrination =
-  unique $
-    (enemy "05217b" ("Nathan Wick" <:> "Master of Indoctrination") TheWagesOfSin 1)
+  unique
+    $ (enemy "05217b" ("Nathan Wick" <:> "Master of Indoctrination") TheWagesOfSin 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Alert
       , cdDoubleSided = True
@@ -1426,8 +1428,8 @@ knightOfTheOuterVoid =
 
 gavriellaMizrah :: CardDef
 gavriellaMizrah =
-  unique $
-    (enemy "05262b" ("Gavriella Mizrah" <:> "You're Next") UnionAndDisillusion 1)
+  unique
+    $ (enemy "05262b" ("Gavriella Mizrah" <:> "You're Next") UnionAndDisillusion 1)
       { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
       , cdDoubleSided = True
@@ -1436,8 +1438,8 @@ gavriellaMizrah =
 
 jeromeDavids :: CardDef
 jeromeDavids =
-  unique $
-    (enemy "05263b" ("Jerome Davids" <:> "Starved for Answers") UnionAndDisillusion 1)
+  unique
+    $ (enemy "05263b" ("Jerome Davids" <:> "Starved for Answers") UnionAndDisillusion 1)
       { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -1446,8 +1448,8 @@ jeromeDavids =
 
 pennyWhite :: CardDef
 pennyWhite =
-  unique $
-    (enemy "05264b" ("Penny White" <:> "Tragic Loss") UnionAndDisillusion 1)
+  unique
+    $ (enemy "05264b" ("Penny White" <:> "Tragic Loss") UnionAndDisillusion 1)
       { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -1456,8 +1458,8 @@ pennyWhite =
 
 valentinoRivas :: CardDef
 valentinoRivas =
-  unique $
-    (enemy "05265b" ("Valentino Rivas" <:> "Ripped Asunder") UnionAndDisillusion 1)
+  unique
+    $ (enemy "05265b" ("Valentino Rivas" <:> "Ripped Asunder") UnionAndDisillusion 1)
       { cdCardTraits = setFromList [Humanoid, Geist, Spectral, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdDoubleSided = True
@@ -1510,6 +1512,19 @@ witnessOfChaos =
     , cdVictoryPoints = Just 1
     }
 
+mindlessDancer :: CardDef
+mindlessDancer =
+  (enemy "05341" "Mindless Dancer" BeforeTheBlackThrone 3)
+    { cdCardTraits = singleton Monster
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
+azathoth :: CardDef
+azathoth =
+  (enemy "05346" ("Azathoth" <:> "The Primal Chaos") BeforeTheBlackThrone 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    }
+
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul =
   ( enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1
@@ -1529,9 +1544,9 @@ ghoulFromTheDepths =
 
 narogath :: CardDef
 narogath =
-  unique $
-    ( enemy "50026b" ("Narôgath" <:> "The Charnel Lord") ReturnToTheMidnightMasks 1
-    )
+  unique
+    $ ( enemy "50026b" ("Narôgath" <:> "The Charnel Lord") ReturnToTheMidnightMasks 1
+      )
       { cdCardTraits = setFromList [Humanoid, Monster, Cultist, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 2
@@ -1563,42 +1578,42 @@ corpseTaker =
 
 jeremiahPierce :: CardDef
 jeremiahPierce =
-  unique $
-    ( enemy
-        "50044"
-        ("Jeremiah Pierce" <:> "Your Next-Door Neighbor")
-        ReturnCultOfUmordhoth
-        1
-    )
+  unique
+    $ ( enemy
+          "50044"
+          ("Jeremiah Pierce" <:> "Your Next-Door Neighbor")
+          ReturnCultOfUmordhoth
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 billyCooper :: CardDef
 billyCooper =
-  unique $
-    (enemy "50045" ("Billy Cooper" <:> "The Crooked Cop") ReturnCultOfUmordhoth 1)
+  unique
+    $ (enemy "50045" ("Billy Cooper" <:> "The Crooked Cop") ReturnCultOfUmordhoth 1)
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 almaHill :: CardDef
 almaHill =
-  unique $
-    ( enemy
-        "50046"
-        ("Alma Hill" <:> "The Inquisitive Historian")
-        ReturnCultOfUmordhoth
-        1
-    )
+  unique
+    $ ( enemy
+          "50046"
+          ("Alma Hill" <:> "The Inquisitive Historian")
+          ReturnCultOfUmordhoth
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
 
 tommyMalloy :: CardDef
 tommyMalloy =
-  unique $
-    (weakness "60103" "Tommy Malloy")
+  unique
+    $ (weakness "60103" "Tommy Malloy")
       { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
       , cdKeywords = setFromList [Keyword.Hunter]
       }
@@ -1617,8 +1632,8 @@ swampLeech =
 
 theRougarou :: CardDef
 theRougarou =
-  unique $
-    (enemy "81028" ("The Rougarou" <:> "Cursed Soul") CurseOfTheRougarou 1)
+  unique
+    $ (enemy "81028" ("The Rougarou" <:> "Cursed Soul") CurseOfTheRougarou 1)
       { cdCardTraits = setFromList [Monster, Creature, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
       }
@@ -1646,9 +1661,9 @@ darkYoungHost =
 
 balefulReveler :: CardDef
 balefulReveler =
-  unique $
-    ( enemy "82002b" ("Baleful Reveler" <:> "Spreading Chaos") CarnevaleOfHorrors 1
-    )
+  unique
+    $ ( enemy "82002b" ("Baleful Reveler" <:> "Spreading Chaos") CarnevaleOfHorrors 1
+      )
       { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdVictoryPoints = Just 2
@@ -1656,8 +1671,8 @@ balefulReveler =
 
 donLagorio :: CardDef
 donLagorio =
-  unique $
-    (enemy "82017" ("Don Lagorio" <:> "Secret Servant") CarnevaleOfHorrors 1)
+  unique
+    $ (enemy "82017" ("Don Lagorio" <:> "Secret Servant") CarnevaleOfHorrors 1)
       { cdCardTraits = setFromList [Humanoid, Servitor, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 1
@@ -1665,13 +1680,13 @@ donLagorio =
 
 elisabettaMagro :: CardDef
 elisabettaMagro =
-  unique $
-    ( enemy
-        "82018"
-        ("Elisabetta Magro" <:> "High Servant of the Order")
-        CarnevaleOfHorrors
-        1
-    )
+  unique
+    $ ( enemy
+          "82018"
+          ("Elisabetta Magro" <:> "High Servant of the Order")
+          CarnevaleOfHorrors
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Lodge, Elite]
       , cdKeywords = setFromList [Keyword.Aloof]
       , cdVictoryPoints = Just 1
@@ -1679,13 +1694,13 @@ elisabettaMagro =
 
 salvatoreNeri :: CardDef
 salvatoreNeri =
-  unique $
-    ( enemy
-        "82019"
-        ("Salvatore Neri" <:> "Master of Illusions")
-        CarnevaleOfHorrors
-        1
-    )
+  unique
+    $ ( enemy
+          "82019"
+          ("Salvatore Neri" <:> "Master of Illusions")
+          CarnevaleOfHorrors
+          1
+      )
       { cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords = setFromList [Keyword.Retaliate]
       , cdVictoryPoints = Just 1
@@ -1693,8 +1708,8 @@ salvatoreNeri =
 
 savioCorvi :: CardDef
 savioCorvi =
-  unique $
-    (enemy "82020" ("Savio Corvi" <:> "Dark Lurker") CarnevaleOfHorrors 1)
+  unique
+    $ (enemy "82020" ("Savio Corvi" <:> "Dark Lurker") CarnevaleOfHorrors 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 1
@@ -1702,8 +1717,8 @@ savioCorvi =
 
 cnidathqua :: CardDef
 cnidathqua =
-  unique $
-    (enemy "82027" ("Cnidathqua" <:> "The Many-armed Beast") CarnevaleOfHorrors 1)
+  unique
+    $ (enemy "82027" ("Cnidathqua" <:> "The Many-armed Beast") CarnevaleOfHorrors 1)
       { cdCardTraits = setFromList [Monster, AncientOne, Elite]
       }
 

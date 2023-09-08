@@ -486,6 +486,8 @@ allLocations =
     , SomeLocationCard infinityOfDarkness
     , SomeLocationCard cosmicGate
     , SomeLocationCard pathwayIntoVoid
+    , --- Special
+      SomeLocationCard emptySpace
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

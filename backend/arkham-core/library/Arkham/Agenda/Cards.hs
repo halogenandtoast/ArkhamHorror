@@ -61,8 +61,8 @@ agenda cardCode name stage encounterSet =
 
 allAgendaCards :: Map CardCode CardDef
 allAgendaCards =
-  mapFromList $
-    map
+  mapFromList
+    $ map
       (toCardCode &&& id)
       [ aCreatureOfTheBayou
       , aTearInReality
@@ -97,6 +97,7 @@ allAgendaCards =
       , humanityFading
       , intruders
       , inEveryShadow
+      , itAwaits
       , judgementXX
       , justiceXI
       , letTheStormRageTheFloodBelow
@@ -141,6 +142,7 @@ allAgendaCards =
       , theEntityAboveTheVortexAbove
       , theFamiliar
       , theFestivitiesBegin
+      , theFinalCountdown
       , theFirstNight
       , theHangedManXII
       , theHermitIX
@@ -174,6 +176,7 @@ allAgendaCards =
       , vengeance
       , vengeanceAwaits
       , whatsGoingOn
+      , wheelOfFortuneX
       ]
 
 whatsGoingOn :: CardDef
@@ -491,6 +494,15 @@ crossroadsOfFate = agenda "05240" "Crossroads of Fate" 2 UnionAndDisillusion
 
 theChariotVII :: CardDef
 theChariotVII = agenda "05285" "THE CHARIOT · VII" 1 InTheClutchesOfChaos
+
+wheelOfFortuneX :: CardDef
+wheelOfFortuneX = agenda "05326" "WHEEL OF FORTUNE · X" 1 BeforeTheBlackThrone
+
+itAwaits :: CardDef
+itAwaits = agenda "05327" "It Awaits" 2 BeforeTheBlackThrone
+
+theFinalCountdown :: CardDef
+theFinalCountdown = agenda "05328" "The Final Countdown" 3 BeforeTheBlackThrone
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

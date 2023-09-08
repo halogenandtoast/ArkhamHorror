@@ -262,6 +262,7 @@ allEncounterEnemyCards =
       , whippoorwill
       , whippoorwillUnionAndDisillusion
       , wingedOne
+      , witnessOfChaos
       , wizardOfTheOrder
       , wizardOfYogSothoth
       , wolfManDrew

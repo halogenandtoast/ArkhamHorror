@@ -46,6 +46,9 @@ getApiV1ArkhamCardsR = do
                 . sequence
                   [(not . T.isSuffixOf "d" . unCardCode), (`elem` safeDCodes)]
             , (not . T.isSuffixOf "f" . unCardCode)
+            , (not . T.isSuffixOf "h" . unCardCode)
+            , (not . T.isSuffixOf "j" . unCardCode)
+            , (not . T.isSuffixOf "l" . unCardCode)
             ]
           . toCardCode
       )

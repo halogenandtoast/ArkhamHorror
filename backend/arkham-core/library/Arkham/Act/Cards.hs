@@ -173,6 +173,8 @@ allActCards =
       , strangeRelicsMariaDeSilva
       , strangeRelicsMariasInformation
       , theBarrier
+      , theBindingRite
+      , theBrokenRite
       , theBrotherhoodIsRevealed
       , theCarnevaleConspiracy
       , theCaveOfDarknessEmbroiledInBattle

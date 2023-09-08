@@ -16,7 +16,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
@@ -27,21 +26,31 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Story
 
-newtype BeforeTheBlackThrone = BeforeTheBlackThrone (ScenarioAttrs `With` Cosmos Card LocationId)
+-- * Cosmos
+
+{- $cosmos
+The cosmos is an internal data structure that represents a grid which can
+grow in any direction. Additionally, we need to track if there is empty
+space or a card at a specific position. Finally, cards can slide around.
+Because this logic needs to be known by locations we store in the
+`scenarioMeta` field. That way it can be passed around and set accordingly.
+-}
+
+newtype BeforeTheBlackThrone = BeforeTheBlackThrone ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beforeTheBlackThrone :: Difficulty -> BeforeTheBlackThrone
 beforeTheBlackThrone difficulty =
   scenario
-    (BeforeTheBlackThrone . (`with` initCosmos))
+    BeforeTheBlackThrone
     "05325"
     "Before the Black Throne"
     difficulty
     []
 
 instance HasChaosTokenValue BeforeTheBlackThrone where
-  getChaosTokenValue iid tokenFace (BeforeTheBlackThrone (attrs `With` _)) = case tokenFace of
+  getChaosTokenValue iid tokenFace (BeforeTheBlackThrone attrs) = case tokenFace of
     Skull -> pure $ toChaosTokenValue attrs Skull 3 5
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ ChaosTokenValue Tablet NoModifier
@@ -58,7 +67,7 @@ instance HasChaosTokenValue BeforeTheBlackThrone where
 --
 --
 instance RunMessage BeforeTheBlackThrone where
-  runMessage msg s@(BeforeTheBlackThrone (attrs `With` cosmos)) = case msg of
+  runMessage msg s@(BeforeTheBlackThrone attrs) = case msg of
     PreScenarioSetup -> do
       investigators <- allInvestigators
       pushAll [story investigators intro]
@@ -121,12 +130,12 @@ instance RunMessage BeforeTheBlackThrone where
         emptySpaces = zip emptySpaceLocations cards
 
       let
-        cosmos' =
+        cosmos =
           foldr
             (insertCosmos . uncurry EmptySpace)
             ( insertCosmos (CosmosLocation (Pos 2 1) firstCosmos)
                 $ insertCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
-                $ insertCosmos (CosmosLocation (Pos 0 0) cosmicIngress) cosmos
+                $ insertCosmos (CosmosLocation (Pos 0 0) cosmicIngress) initCosmos
             )
             emptySpaces
 
@@ -158,13 +167,13 @@ instance RunMessage BeforeTheBlackThrone where
       acts <- genCards [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
 
       BeforeTheBlackThrone
-        . (`with` cosmos')
-          <$> runMessage
-            msg
-            ( attrs
-                & (decksL . at CosmosDeck ?~ cosmosCards)
-                & locationLayoutL .~ cosmosToGrid cosmos'
-                & (actStackL . at 1 ?~ acts)
-                & (agendaStackL . at 1 ?~ agendas)
-            )
-    _ -> BeforeTheBlackThrone . (`with` cosmos) <$> runMessage msg attrs
+        <$> runMessage
+          msg
+          ( attrs
+              & (decksL . at CosmosDeck ?~ cosmosCards)
+              & locationLayoutL .~ cosmosToGrid cosmos
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+              & (metaL .~ toJSON cosmos)
+          )
+    _ -> BeforeTheBlackThrone <$> runMessage msg attrs

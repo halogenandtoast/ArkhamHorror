@@ -181,6 +181,7 @@ data Trait
   | Upgrade
   | Venice
   | Veteran
+  | Void
   | Warden
   | Wayfarer
   | Weapon

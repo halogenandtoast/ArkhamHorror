@@ -58,8 +58,8 @@ instance HasChaosTokenValue TheSecretName where
     Skull -> do
       atExtradimensionalLocation <-
         selectAny $ locationWithInvestigator iid <> LocationWithTrait Extradimensional
-      pure $
-        if atExtradimensionalLocation
+      pure
+        $ if atExtradimensionalLocation
           then toChaosTokenValue attrs Skull 3 4
           else toChaosTokenValue attrs Skull 1 2
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
@@ -100,30 +100,30 @@ instance RunMessage TheSecretName where
       neverSeenOrHeardFromAgain <-
         getHasRecord
           TheInvestigatorsAreNeverSeenOrHeardFromAgain
-      pushAll $
-        [ storyWithChooseOne
-          lead
-          iids
-          intro1
-          [ Label
-              "Tell the Lodge of the witches in the woods."
-              [ story iids intro2
-              , Record TheInvestigatorsToldTheLodgeAboutTheCoven
-              , AddChaosToken Cultist
-              ]
-          , Label
-              "Tell him you know of no possible connection. (You are lying.)"
-              [ story
-                  iids
-                  ( intro3
-                      <> (if anyMystic then intro3Mystic else mempty)
-                      <> intro3Part2
-                  )
-              , Record TheInvestigatorsHidTheirKnowledgeOfTheCoven
-              ]
+      pushAll
+        $ [ storyWithChooseOne
+            lead
+            iids
+            intro1
+            [ Label
+                "Tell the Lodge of the witches in the woods."
+                [ story iids intro2
+                , Record TheInvestigatorsToldTheLodgeAboutTheCoven
+                , AddChaosToken Cultist
+                ]
+            , Label
+                "Tell him you know of no possible connection. (You are lying.)"
+                [ story
+                    iids
+                    ( intro3
+                        <> (if anyMystic then intro3Mystic else mempty)
+                        <> intro3Part2
+                    )
+                , Record TheInvestigatorsHidTheirKnowledgeOfTheCoven
+                ]
+            ]
+          | membersOfTheLodge
           ]
-        | membersOfTheLodge
-        ]
           <> [story iids intro4 | enemiesOfTheLodge]
           <> [story iids intro5 | learnedNothing]
           <> [story iids intro6 | neverSeenOrHeardFromAgain]
@@ -151,7 +151,7 @@ instance RunMessage TheSecretName where
             , Locations.cityOfElderThings
             , Locations.salemGaol1692
             , Locations.physicsClassroom
-            , Locations.courtOfTheGreatOldOnes
+            , Locations.courtOfTheGreatOldOnesANotTooDistantFuture
             ]
 
       (moldyHallsId, placeMoldyHalls) <- placeLocationCard Locations.moldyHalls
@@ -176,13 +176,13 @@ instance RunMessage TheSecretName where
       bottom' <- shuffleM $ witchHouseRuins : bottom
       let unknownPlacesDeck = top <> bottom'
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeMoldyHalls
-        , placeWalterGilmansRoom
-        ]
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeMoldyHalls
+          , placeWalterGilmansRoom
+          ]
           <> concat decrepitDoorPlacements
           <> [ RevealLocation Nothing moldyHallsId
              , MoveAllTo (toSource attrs) moldyHallsId
@@ -216,14 +216,14 @@ instance RunMessage TheSecretName where
 
       TheSecretName
         . (`with` meta)
-        <$> runMessage
-          msg
-          ( attrs
-              & (decksL . at UnknownPlacesDeck ?~ unknownPlacesDeck)
-              & (setAsideCardsL .~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+          <$> runMessage
+            msg
+            ( attrs
+                & (decksL . at UnknownPlacesDeck ?~ unknownPlacesDeck)
+                & (setAsideCardsL .~ setAsideCards)
+                & (actStackL . at 1 ?~ acts)
+                & (agendaStackL . at 1 ?~ agendas)
+            )
     ResolveChaosToken _ Cultist iid -> do
       push $ DrawAnotherChaosToken iid
       pure s
@@ -233,8 +233,8 @@ instance RunMessage TheSecretName where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Cultist ->
-          push $
-            DiscardTopOfEncounterDeck
+          push
+            $ DiscardTopOfEncounterDeck
               iid
               (if isEasyStandard attrs then 3 else 5)
               (toSource attrs)
@@ -253,8 +253,9 @@ instance RunMessage TheSecretName where
     EnemyDefeated _ cardId _ _ -> do
       isBrownJenkin <- selectAny $ cardIs Enemies.brownJenkin <> CardWithId cardId
       isNahab <- selectAny $ cardIs Enemies.nahab <> CardWithId cardId
-      pure . TheSecretName $
-        attrs
+      pure
+        . TheSecretName
+        $ attrs
           `with` meta
             { brownJenkinDefeated = brownJenkinDefeated meta || isBrownJenkin
             , nahabDefeated = nahabDefeated meta || isNahab
@@ -267,8 +268,8 @@ instance RunMessage TheSecretName where
         brownJenkinBonus = if brownJenkinDefeated meta then 1 else 0
         nahabBonus = if nahabDefeated meta then 1 else 0
         addTheBlackBook =
-          chooseOne lead $
-            Label "Do not add The Black Book" []
+          chooseOne lead
+            $ Label "Do not add The Black Book" []
               : [ targetLabel
                   iid
                   [ AddCampaignCardToDeck iid Assets.theBlackBook
@@ -280,8 +281,8 @@ instance RunMessage TheSecretName where
         NoResolution -> pushAll [story iids noResolution, scenarioResolution 1]
         Resolution 1 -> do
           gainXp <- toGainXp attrs $ getXpWithBonus (brownJenkinBonus + nahabBonus)
-          pushAll $
-            story iids resolution1
+          pushAll
+            $ story iids resolution1
               : gainXp
                 <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
                 <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
@@ -289,8 +290,8 @@ instance RunMessage TheSecretName where
                 <> [EndOfGame Nothing]
         Resolution 2 -> do
           gainXp <- toGainXp attrs $ getXpWithBonus 2
-          pushAll $
-            story iids resolution2
+          pushAll
+            $ story iids resolution2
               : gainXp
                 <> [ recordSetInsert
                       MementosDiscovered

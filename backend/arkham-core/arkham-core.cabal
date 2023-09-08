@@ -1498,7 +1498,10 @@ library
       Arkham.Location.Cards.ColdSpringGlen_245
       Arkham.Location.Cards.CongregationalChurch_208
       Arkham.Location.Cards.CongregationalChurch_209
+      Arkham.Location.Cards.CosmicGate
+      Arkham.Location.Cards.CosmicIngress
       Arkham.Location.Cards.CourtOfTheGreatOldOnes
+      Arkham.Location.Cards.CourtOfTheGreatOldOnesANotTooDistantFuture
       Arkham.Location.Cards.Courtyard
       Arkham.Location.Cards.Coyoacan
       Arkham.Location.Cards.CrumblingPrecipice
@@ -1506,6 +1509,7 @@ library
       Arkham.Location.Cards.CrystalPillars
       Arkham.Location.Cards.CuriositieShoppe
       Arkham.Location.Cards.CursedShores
+      Arkham.Location.Cards.DancersMist
       Arkham.Location.Cards.DarkenedHall
       Arkham.Location.Cards.DarkHollow
       Arkham.Location.Cards.DarkSpires
@@ -1553,6 +1557,7 @@ library
       Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung
       Arkham.Location.Cards.FarAboveYourHouse
       Arkham.Location.Cards.FaubourgMarigny
+      Arkham.Location.Cards.FlightIntoOblivion
       Arkham.Location.Cards.FloodedSquare
       Arkham.Location.Cards.ForbiddingShore
       Arkham.Location.Cards.ForgottenMarsh
@@ -1593,6 +1598,7 @@ library
       Arkham.Location.Cards.HereticsGravesSpectral_171
       Arkham.Location.Cards.HereticsGravesSpectral_172
       Arkham.Location.Cards.HiddenLibrary
+      Arkham.Location.Cards.HideousPalace
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_136
       Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_130
@@ -1606,6 +1612,7 @@ library
       Arkham.Location.Cards.HouseInTheReeds_210
       Arkham.Location.Cards.HouseInTheReeds_211
       Arkham.Location.Cards.HumanitiesBuilding
+      Arkham.Location.Cards.InfinityOfDarkness
       Arkham.Location.Cards.Infirmary
       Arkham.Location.Cards.InnerSanctum
       Arkham.Location.Cards.InterviewRoomArrivalChamber
@@ -1684,6 +1691,7 @@ library
       Arkham.Location.Cards.PassengerCar_170
       Arkham.Location.Cards.PassengerCar_171
       Arkham.Location.Cards.PathOfThorns
+      Arkham.Location.Cards.PathwayIntoVoid
       Arkham.Location.Cards.PatientConfinementDanielsCell
       Arkham.Location.Cards.PatientConfinementDrearyCell
       Arkham.Location.Cards.PatientConfinementFamiliarCell
@@ -1763,6 +1771,7 @@ library
       Arkham.Location.Cards.TenAcreMeadow_246
       Arkham.Location.Cards.TenAcreMeadow_247
       Arkham.Location.Cards.Theatre
+      Arkham.Location.Cards.TheBlackThrone
       Arkham.Location.Cards.TheEdgeOfTheUniverse
       Arkham.Location.Cards.TheGallows_169
       Arkham.Location.Cards.TheGallows_170
@@ -1852,6 +1861,7 @@ library
       Arkham.Scenario.Scenarios
       Arkham.Scenario.Scenarios.APhantomOfTruth
       Arkham.Scenario.Scenarios.AtDeathsDoorstep
+      Arkham.Scenario.Scenarios.BeforeTheBlackThrone
       Arkham.Scenario.Scenarios.BlackStarsRise
       Arkham.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
@@ -1896,6 +1906,8 @@ library
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story
       Arkham.Scenarios.AtDeathsDoorstep.Story
+      Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+      Arkham.Scenarios.BeforeTheBlackThrone.Story
       Arkham.Scenarios.BlackStarsRise.Story
       Arkham.Scenarios.BloodOnTheAltar.Story
       Arkham.Scenarios.CarnevaleOfHorrors.FlavorText

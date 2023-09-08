@@ -15,6 +15,7 @@ data ScenarioDeckKey
   | CatacombsDeck -- The Pallid Mask
   | ExplorationDeck -- The Untamed Wilds
   | UnknownPlacesDeck -- The Secret Name
+  | CosmosDeck -- Before the Black Throne
   deriving stock (Show, Ord, Eq)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

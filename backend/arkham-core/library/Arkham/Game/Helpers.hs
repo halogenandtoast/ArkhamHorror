@@ -2585,6 +2585,8 @@ locationMatches investigatorId source window locationId matcher' = do
     -- special cases
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
+    Matcher.MostBreaches _ -> locationId <=~> matcher
+    Matcher.FewestBreaches {} -> locationId <=~> matcher
     Matcher.LocationWithBreaches _ -> locationId <=~> matcher
     Matcher.LocationWithBrazier _ -> locationId <=~> matcher
     Matcher.LocationWithIncursion -> locationId <=~> matcher

@@ -497,3 +497,63 @@ whereAreTheFourMissingPeopleFromTheCharityGala =
 
 whyAreYouLookingAtMeLikeThat :: FlavorText
 whyAreYouLookingAtMeLikeThat = FlavorText Nothing ["Mr. Sanford clears his throat. “I... It is nothing,” he lies."]
+
+twistOfFate1 :: FlavorText
+twistOfFate1 =
+  FlavorText
+    (Just "Twist of Fate 1")
+    [ "You stand underneath the breach, in awe of its presence. Everything the\
+      \ soothsayer predicted has come to pass. “This is a matter of life and\
+      \ death,” she had told you. How right she was. Beyond the cosmic ingress, the\
+      \ nucleus of the cosmos awaits. Now you understand what dwells on the other\
+      \ side, gnawing hungrily at the fabric of reality: the doom of all humanity;\
+      \ no, not just humanity. The doom of all life in the universe."
+    , "There is a bitter taste in your mouth. Tears well in your eyes. You close your\
+      \ fist so hard your nails dig into your flesh. If you have to die, then die you\
+      \ will. But you’re not going to die sitting down."
+    ]
+
+twistOfFate2 :: FlavorText
+twistOfFate2 =
+  FlavorText
+    (Just "Twist of Fate 2")
+    [ "For almost an hour, you stare up into the empty abyss, pondering your options\
+      \ and your fate. A flock of faceless winged creatures circle the field where you\
+      \ sit. They almost move like vultures, waiting for your demise so as to feast on\
+      \ your corpse. They draw ever nearer, and you begin to wonder if they can read\
+      \ the thoughts that hover on the surface of your mind. Rising to your feet, you\
+      \ raise your arm and call out to one of them. This may be the most foolish thing\
+      \ you have ever done, you think to yourself. But your instinct proves to be the\
+      \ right move: the creatures descend on black leathery wings, landing on the wet\
+      \ grass in front of you. One lowers itself until it reaches the height of your\
+      \ shoulders, offering its back to you. Swallowing the very last of your doubts\
+      \ and your fear, you climb aboard the creature. With a swift flap of its wings,\
+      \ it carries you off into the void, beyond the limits of space...to the domain of\
+      \ Azathoth."
+    ]
+
+anette'sAssistance :: FlavorText
+anette'sAssistance =
+  FlavorText
+    Nothing
+    [ "“Keziah was beseeched to sign a book by the messenger of an ancient being.\
+      \ The Black Book of Azathoth.” Just the name of the thing shakes you to your\
+      \ core. Anette clenches her fist. “I was a fool to not have understood before.\
+      \ That was the source of her power. Not witchcraft, but a pact with a terrible,\
+      \ dark god. All of this, these incursions into our world, the broken bonds of\
+      \ death: it is what Keziah wanted all along. It was the silent will of\
+      \ Azathoth,” she says resentfully."
+    ]
+
+sanford'sAssistance :: FlavorText
+sanford'sAssistance =
+  FlavorText
+    Nothing
+    [ "“It is a gateway,” Sanford explains, “ joining our world and the greater\
+      \ Cosmos. According to some of the most heinous tomes I have read, at the\
+      \ center, there sleeps a creature known as Azathoth.” Just the name of the\
+      \ thing shakes you to your core. “I fear we have stirred it in its slumber. All\
+      \ of this, these breaches in space, these broken barriers between worlds: it is\
+      \ all because for just a brief moment, for one fragment of a second, we\
+      \ interrupted Azathoth’s dreaming. Do you understand?”"
+    ]

@@ -12,7 +12,6 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.Import
-import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
@@ -24,6 +23,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Trait (Trait (SilverTwilight))
+import Data.Monoid.Extra (mwhen)
 
 newtype Metadata = Metadata
   { prologueInvestigators :: Map InvestigatorId InvestigatorId
@@ -64,8 +64,8 @@ theCircleUndone difficulty =
     $ logL
       .~ mkCampaignLog
         { campaignLogRecordedSets =
-            singletonMap MissingPersons $
-              map (recorded . unInvestigatorId) allPrologueInvestigators
+            singletonMap MissingPersons
+              $ map (recorded . unInvestigatorId) allPrologueInvestigators
         }
 
 allPrologueInvestigators :: [InvestigatorId]
@@ -75,8 +75,8 @@ instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone (attrs `With` metadata)) = case msg of
     CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
-      pushAll $
-        story investigatorIds prologue
+      pushAll
+        $ story investigatorIds prologue
           : [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
             | iid <- investigatorIds
             ]
@@ -103,8 +103,9 @@ instance RunMessage TheCircleUndone where
           ]
       pure c
     BecomePrologueInvestigator iid pId -> do
-      pure . TheCircleUndone $
-        attrs
+      pure
+        . TheCircleUndone
+        $ attrs
           `With` metadata
             { prologueInvestigators =
                 insertMap
@@ -115,8 +116,8 @@ instance RunMessage TheCircleUndone where
     CampaignStep (PrologueStepPart 2) -> do
       let
         prologueInvestigatorsNotTaken =
-          map unInvestigatorId $
-            allPrologueInvestigators
+          map unInvestigatorId
+            $ allPrologueInvestigators
               \\ toList
                 (prologueInvestigators metadata)
         readingFor = \case
@@ -127,8 +128,8 @@ instance RunMessage TheCircleUndone where
           _ -> error "Invalid prologue investigator"
         readings = map readingFor $ toList (prologueInvestigators metadata)
       investigatorIds <- getInvestigatorIds
-      pushAll $
-        crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
+      pushAll
+        $ crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
           : map (story investigatorIds) readings
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
@@ -145,10 +146,10 @@ instance RunMessage TheCircleUndone where
           , Label "\"I agree\"" [CampaignStep (InterludeStepPart 2 mInterludeKey 8)]
           , Label "\"I agree\" (You are lying)" [CampaignStep (InterludeStepPart 2 mInterludeKey 9)]
           ]
-      pushAll $
-        [ story iids (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2)
-        , story iids thePriceOfProgress3
-        ]
+      pushAll
+        $ [ story iids (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2)
+          , story iids thePriceOfProgress3
+          ]
           <> ( guard showThePriceOfProgress4
                 *> [ story iids thePriceOfProgress4
                    , Record JosefDisappearedIntoTheMist
@@ -248,14 +249,47 @@ instance RunMessage TheCircleUndone where
         , NextCampaignStep Nothing
         ]
       pure c
+    CampaignStep (InterludeStep 4 _) -> do
+      acceptedYourFate <- getHasRecord YouHaveAcceptedYourFate
+      askedAnetteForAssistance <- getHasRecord TheInvestigatorsAskedAnetteForAssistance
+      askedSanfordForAssistance <- getHasRecord TheInvestigatorsAskedSanfordForAssistance
+      mementosDiscovered <- getMementosDiscoveredCount
+      doomDrawsEverCloser <- getHasRecord DoomDrawsEverCloser
+      hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
+      investigators <- allInvestigators
+      let
+        total =
+          getSum
+            $ mconcat
+              [ mwhen acceptedYourFate (Sum 1)
+              , mwhen askedAnetteForAssistance (Sum 2)
+              , mwhen askedSanfordForAssistance (Sum 2)
+              , mwhen (mementosDiscovered >= 3) (Sum 1)
+              , mwhen (mementosDiscovered >= 6) (Sum 1)
+              , mwhen (mementosDiscovered >= 9) (Sum 1)
+              , mwhen hasBlackBook (Sum 1)
+              , mwhen doomDrawsEverCloser (Sum 2)
+              ]
+      pushAll
+        $ [ story investigators twistOfFate1
+          , RecordCount ThePathWindsBeforeYou total
+          ]
+          <> [ AddChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix (campaignDifficulty attrs)
+             | askedAnetteForAssistance || askedSanfordForAssistance
+             ]
+          <> [ story investigators twistOfFate2
+             , NextCampaignStep Nothing
+             ]
+      pure c
     PreScenarioSetup -> do
       case mapToList (prologueInvestigators metadata) of
         [] -> pure ()
         xs -> pushAll $ map (uncurry BecomePrologueInvestigator) xs
       pure c
     EndOfScenario _ -> do
-      pure . TheCircleUndone $
-        attrs
+      pure
+        . TheCircleUndone
+        $ attrs
           `With` metadata
             { prologueInvestigators = mempty
             }

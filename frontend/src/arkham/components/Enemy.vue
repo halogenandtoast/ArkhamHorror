@@ -100,6 +100,14 @@ const clues = computed(() => props.enemy.tokens[TokenType.Clue])
 const resources = computed(() => props.enemy.tokens[TokenType.Resource])
 const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
 
+const omnipotent = computed(() => {
+  const {modifiers} = props.enemy
+
+  return modifiers.some(modifier =>
+    modifier.type.tag === "OtherModifier" && modifier.type.contents === "Omnipotent"
+  )
+})
+
 const choose = (index: number) => emits('choose', index)
 
 const showAbilities = ref<boolean>(false)
@@ -146,7 +154,7 @@ watch(abilities, (abilities) => {
           <div class="keys" v-if="keys.length > 0">
             <Key v-for="key in keys" :key="key" :name="key" />
           </div>
-          <PoolItem type="health" :amount="enemyDamage" />
+          <PoolItem v-if="!omnipotent" type="health" :amount="enemyDamage" />
           <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />

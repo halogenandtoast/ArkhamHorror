@@ -242,6 +242,7 @@ data ModifierType
   | CanModify ModifierType
   | NoSurge
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
+  | Omnipotent
   deriving stock (Show, Eq, Ord)
 
 data Modifier = Modifier

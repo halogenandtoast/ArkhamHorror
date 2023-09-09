@@ -25,6 +25,7 @@ data AbilityType
   | AbilityEffect {cost :: Cost}
   | Objective {abilityType :: AbilityType}
   | Haunted
+  | Cosmos
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
   deriving stock (Show, Ord, Eq)
 

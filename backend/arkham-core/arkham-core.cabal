@@ -1916,6 +1916,7 @@ library
       Arkham.Scenarios.APhantomOfTruth.Story
       Arkham.Scenarios.AtDeathsDoorstep.Story
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+      Arkham.Scenarios.BeforeTheBlackThrone.Helpers
       Arkham.Scenarios.BeforeTheBlackThrone.Story
       Arkham.Scenarios.BlackStarsRise.Story
       Arkham.Scenarios.BloodOnTheAltar.Story

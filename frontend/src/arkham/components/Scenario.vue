@@ -345,6 +345,16 @@ const keys = computed(() => props.scenario.setAsideKeys)
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.inFrontOf === null))
 
+const usedLabels = computed(() => locations.value.map((l) => l.label))
+const unusedLabels = computed(() => {
+  const { locationLayout } = props.scenario;
+  if (locationLayout) {
+    return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
+  }
+
+  return []
+})
+
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
@@ -518,13 +528,9 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center' }"
             @choose="choose"
           />
-          <img
-            v-for="emptySpace in emptySpaceLocations"
-            :key="emptySpace"
-            :style="{ 'grid-area': emptySpace, 'justify-self': 'center' }"
-            :src="imgsrc('player_back.jpg')"
-            class="card"
-          />
+
+          <div class="empty-grid-position card" v-for="u in unusedLabels" :key="u" :style="{ 'grid-area': u }">
+          </div>
         </transition-group>
       </div>
 
@@ -871,5 +877,12 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 .scenario-encounter-decks {
   display: grid;
   grid-template: "encounterDiscard encounterDeck" "spectralDiscard spectralDeck";
+}
+
+.empty-grid-position {
+  background: rgba(0, 0, 0, 0.5);
+  content: " ";
+  border: 1px solid #000;
+  aspect-ratio: 5 / 7;
 }
 </style>

@@ -187,7 +187,7 @@ data StoryMode = ResolveIt | DoNotResolveIt
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
-  | ResolvedAbility Ability -- INTERNAL
+  | ResolvedAbility Ability -- INTERNAL, Set Arbiter of Fates
   | -- Story Card Messages
     ReadStory InvestigatorId Card StoryMode (Maybe Target)
   | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement
@@ -554,9 +554,6 @@ data Message
   | Noop
   | PassSkillTest
   | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
-  | -- | Bool is to check if we should ignore additional costs
-    PayAbilityCost Source InvestigatorId (Maybe Action) Bool Cost
-  | PayAbilityCostFinished EffectId Source InvestigatorId
   | PaidAbilityCost InvestigatorId (Maybe Action) Payment
   | PayCardCost InvestigatorId Card [Window]
   | PaidForCardCost InvestigatorId Card Payment
@@ -778,6 +775,7 @@ data Message
   | PutLocationInCenter LocationId
   | PlaceBreaches Target Int
   | RemoveBreaches Target Int
+  | RunCosmos InvestigatorId LocationId
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]

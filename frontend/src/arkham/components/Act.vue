@@ -53,11 +53,13 @@ function imageForCard(card: Card) {
   return imgsrc(cardImage(card))
 }
 
-function canInteract(c: Message): boolean {
+function isCardAction(c: Message): boolean {
   return c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value
 }
 
-const interactAction = computed(() => choices.value.findIndex(canInteract));
+const interactAction = computed(() => choices.value.findIndex(isCardAction));
+
+const canInteract = computed(() => abilities.value.length > 0 || interactAction.value !== -1)
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {

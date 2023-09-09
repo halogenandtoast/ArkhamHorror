@@ -136,6 +136,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
     Haunted -> pure ()
+    Cosmos -> pure ()
     ForcedAbilityWithCost _ cost -> push (PayCost activeCostId iid False cost)
     AbilityEffect cost -> push (PayCost activeCostId iid False cost)
     FastAbility cost -> push (PayCost activeCostId iid False cost)
@@ -199,12 +200,12 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
                    ]
             )
         else
-          pushAll $
-            [ BeginAction
-            , beforeWindowMsg
-            , PayCost activeCostId iid False cost
-            , TakenAction iid action
-            ]
+          pushAll
+            $ [ BeginAction
+              , beforeWindowMsg
+              , PayCost activeCostId iid False cost
+              , TakenAction iid action
+              ]
 
 nonAttackOfOpportunityActions :: [Action]
 nonAttackOfOpportunityActions =
@@ -230,13 +231,13 @@ instance RunMessage ActiveCost where
               [] -> [Action.Play | isPlayAction == IsPlayAction]
               as -> as
           beforeWindowMsg <-
-            checkWindows $
-              map (mkWindow Timing.When . Window.PerformAction iid) actions
-          pushAll $
-            [ BeginAction
-            , beforeWindowMsg
-            , PayCost acId iid False (activeCostCosts c)
-            ]
+            checkWindows
+              $ map (mkWindow Timing.When . Window.PerformAction iid) actions
+          pushAll
+            $ [ BeginAction
+              , beforeWindowMsg
+              , PayCost acId iid False (activeCostCosts c)
+              ]
               <> map (TakenAction iid) actions
               <> [ CheckAttackOfOpportunity iid False
                  | not modifiersPreventAttackOfOpportunity
@@ -277,35 +278,35 @@ instance RunMessage ActiveCost where
       case cost of
         ResolveEachHauntedAbility lid -> do
           hauntedAbilities <-
-            selectList $
-              HauntedAbility
+            selectList
+              $ HauntedAbility
                 <> AbilityOnLocation
                   (LocationWithId lid)
-          when (notNull hauntedAbilities) $
-            push $
-              chooseOneAtATime
-                iid
-                [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+          when (notNull hauntedAbilities)
+            $ push
+            $ chooseOneAtATime
+              iid
+              [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
           -- No need to record payment... yet
           pure c
         OrCost xs -> do
-          push $
-            chooseOne iid $
-              map
-                ( \x ->
-                    Label
-                      (displayCostType x)
-                      [PayCost acId iid skipAdditionalCosts x]
-                )
-                xs
+          push
+            $ chooseOne iid
+            $ map
+              ( \x ->
+                  Label
+                    (displayCostType x)
+                    [PayCost acId iid skipAdditionalCosts x]
+              )
+              xs
           pure c
         Costs xs ->
           c <$ pushAll [PayCost acId iid skipAdditionalCosts x | x <- xs]
         UpTo 0 _ -> pure c
         UpTo n cost' -> do
           canAfford <-
-            andM $
-              map
+            andM
+              $ map
                 (\a -> getCanAffordCost iid source (Just a) [] cost')
                 actions
           maxUpTo <- case cost' of
@@ -313,15 +314,15 @@ instance RunMessage ActiveCost where
               availableResources <- getSpendableResources iid
               pure $ min n (availableResources `div` resources)
             _ -> pure n
-          when canAfford $
-            push $
-              Ask iid $
-                ChoosePaymentAmounts
-                  ("Pay " <> displayCostType cost)
-                  Nothing
-                  [ PaymentAmountChoice iid 0 maxUpTo $
-                      PayCost acId iid skipAdditionalCosts cost'
-                  ]
+          when canAfford
+            $ push
+            $ Ask iid
+            $ ChoosePaymentAmounts
+              ("Pay " <> displayCostType cost)
+              Nothing
+              [ PaymentAmountChoice iid 0 maxUpTo
+                  $ PayCost acId iid skipAdditionalCosts cost'
+              ]
           pure c
         DiscardTopOfDeckCost n -> do
           cards <-
@@ -332,8 +333,8 @@ instance RunMessage ActiveCost where
           push $ DiscardTopOfDeck iid n source Nothing
           withPayment $ DiscardCardPayment cards
         IncreaseCostOfThis cardId n -> do
-          push $
-            CreateWindowModifierEffect
+          push
+            $ CreateWindowModifierEffect
               (EffectCardCostWindow cardId)
               (EffectModifiers $ toModifiers source [IncreaseCostOf (CardWithId cardId) n])
               source
@@ -372,33 +373,33 @@ instance RunMessage ActiveCost where
           pure c
         SealChaosTokenCost token -> do
           push $ SealChaosToken token
-          pure $
-            c
-              & costPaymentsL
+          pure
+            $ c
+            & costPaymentsL
               <>~ SealChaosTokenPayment token
-              & costSealedChaosTokensL
+            & costSealedChaosTokensL
               %~ (token :)
         ReleaseChaosTokensCost n -> do
           case source of
             AssetSource aid -> do
               tokens <- field AssetSealedChaosTokens aid
-              pushAll $
-                [ FocusChaosTokens tokens
-                , chooseN
-                    iid
-                    n
-                    [ TargetLabel
-                      (ChaosTokenTarget t)
-                      [ PayCost
-                          acId
-                          iid
-                          skipAdditionalCosts
-                          (ReleaseChaosTokenCost t)
+              pushAll
+                $ [ FocusChaosTokens tokens
+                  , chooseN
+                      iid
+                      n
+                      [ TargetLabel
+                        (ChaosTokenTarget t)
+                        [ PayCost
+                            acId
+                            iid
+                            skipAdditionalCosts
+                            (ReleaseChaosTokenCost t)
+                        ]
+                      | t <- tokens
                       ]
-                    | t <- tokens
-                    ]
-                , UnfocusChaosTokens
-                ]
+                  , UnfocusChaosTokens
+                  ]
             _ -> error "Unhandled source for releasing tokens cost"
           pure c
         ReleaseChaosTokenCost t -> do
@@ -445,8 +446,8 @@ instance RunMessage ActiveCost where
           withPayment $ RemovePayment [target]
         EnemyDoomCost x matcher -> do
           enemies <- selectListMap EnemyTarget matcher
-          push $
-            chooseOrRunOne
+          push
+            $ chooseOrRunOne
               iid
               [TargetLabel target [PlaceDoom source target x] | target <- enemies]
           withPayment $ DoomPayment x
@@ -480,14 +481,14 @@ instance RunMessage ActiveCost where
           requiredResources <- getModifiedCardCost iid card
           let minimumHorror = max 1 (requiredResources - availableResources)
           sanity <- field InvestigatorRemainingSanity iid
-          push $
-            Ask iid $
-              ChoosePaymentAmounts
-                "Pay X Horror"
-                Nothing
-                [ PaymentAmountChoice iid minimumHorror sanity $
-                    PayCost acId iid skipAdditionalCosts (HorrorCost source' (InvestigatorTarget iid) 1)
-                ]
+          push
+            $ Ask iid
+            $ ChoosePaymentAmounts
+              "Pay X Horror"
+              Nothing
+              [ PaymentAmountChoice iid minimumHorror sanity
+                  $ PayCost acId iid skipAdditionalCosts (HorrorCost source' (InvestigatorTarget iid) 1)
+              ]
           pure c
         DamageCost _ target x -> case target of
           InvestigatorTarget iid' | iid' == iid -> do
@@ -510,8 +511,8 @@ instance RunMessage ActiveCost where
         InvestigatorDamageCost source' investigatorMatcher damageStrategy x ->
           do
             investigators <- selectList investigatorMatcher
-            push $
-              chooseOrRunOne
+            push
+              $ chooseOrRunOne
                 iid
                 [ targetLabel
                   iid'
@@ -607,8 +608,8 @@ instance RunMessage ActiveCost where
           withPayment $ ActionPayment x
         UseCost assetMatcher uType n -> do
           assets <- selectList assetMatcher
-          push $
-            chooseOrRunOne
+          push
+            $ chooseOrRunOne
               iid
               [ TargetLabel
                 (AssetTarget aid)
@@ -625,8 +626,8 @@ instance RunMessage ActiveCost where
                 _ -> getDrawnCards xs
               n = getDrawnCards (activeCostWindows c)
             assets <- selectList assetMatcher
-            push $
-              chooseOrRunOne
+            push
+              $ chooseOrRunOne
                 iid
                 [ TargetLabel
                   (AssetTarget aid)
@@ -640,23 +641,37 @@ instance RunMessage ActiveCost where
             sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
           let maxUses = min uses m
 
-          push $
-            Ask iid $
-              ChoosePaymentAmounts
-                ("Pay " <> displayCostType cost)
-                Nothing
-                [ PaymentAmountChoice iid n maxUses $
-                    PayCost
-                      acId
-                      iid
-                      skipAdditionalCosts
-                      (UseCost assetMatcher uType 1)
-                ]
+          push
+            $ Ask iid
+            $ ChoosePaymentAmounts
+              ("Pay " <> displayCostType cost)
+              Nothing
+              [ PaymentAmountChoice iid n maxUses
+                  $ PayCost
+                    acId
+                    iid
+                    skipAdditionalCosts
+                    (UseCost assetMatcher uType 1)
+              ]
           pure c
         ClueCost gv -> do
           totalClues <- getPlayerCountValue gv
           push $ InvestigatorSpendClues iid totalClues
           withPayment $ CluePayment iid totalClues
+        ClueCostX -> do
+          mVal <- getSpendableClueCount [iid]
+          if mVal == 1
+            then push $ PayCost acId iid skipAdditionalCosts (ClueCost (Static 1))
+            else
+              push
+                $ questionLabel
+                  ("Spend 1-" <> tshow mVal <> " clues, as a group")
+                  iid
+                $ DropDown
+                  [ (tshow n, PayCost acId iid skipAdditionalCosts (ClueCost (Static n)))
+                  | n <- [1 .. mVal]
+                  ]
+          pure c
         PlaceClueOnLocationCost x -> do
           push $ InvestigatorPlaceCluesOnLocation iid source x
           withPayment $ CluePayment iid x
@@ -677,8 +692,8 @@ instance RunMessage ActiveCost where
         GroupClueCost x locationMatcher -> do
           totalClues <- getPlayerCountValue x
           iids <-
-            selectList $
-              InvestigatorAt locationMatcher
+            selectList
+              $ InvestigatorAt locationMatcher
                 <> InvestigatorWithAnyClues
           iidsWithClues <-
             filter ((> 0) . snd)
@@ -699,12 +714,12 @@ instance RunMessage ActiveCost where
                     )
                     iidsWithClues
               leadInvestigatorId <- getLeadInvestigatorId
-              push $
-                Ask leadInvestigatorId $
-                  ChoosePaymentAmounts
-                    (displayCostType cost)
-                    (Just totalClues)
-                    paymentOptions
+              push
+                $ Ask leadInvestigatorId
+                $ ChoosePaymentAmounts
+                  (displayCostType cost)
+                  (Just totalClues)
+                  paymentOptions
               pure c
         -- push (SpendClues totalClues iids)
         -- withPayment $ CluePayment totalClues
@@ -726,8 +741,8 @@ instance RunMessage ActiveCost where
                       [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
                 )
                 handCards
-          push $
-            chooseN
+          push
+            $ chooseN
               iid
               x
               [ targetLabel
@@ -759,19 +774,19 @@ instance RunMessage ActiveCost where
                       [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
                 )
                 handCards
-          push $
-            Ask iid $
-              ChoosePaymentAmounts
-                "Number of cards to pay"
-                Nothing
-                [ PaymentAmountChoice iid 1 (length cards) $
-                    PayCost acId iid skipAdditionalCosts (HandDiscardCost 1 cardMatcher)
-                ]
+          push
+            $ Ask iid
+            $ ChoosePaymentAmounts
+              "Number of cards to pay"
+              Nothing
+              [ PaymentAmountChoice iid 1 (length cards)
+                  $ PayCost acId iid skipAdditionalCosts (HandDiscardCost 1 cardMatcher)
+              ]
           pure c
         ReturnMatchingAssetToHandCost assetMatcher -> do
           assets <- selectList assetMatcher
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ targetLabel
                 asset
@@ -812,7 +827,7 @@ instance RunMessage ActiveCost where
                 assets <- selectList $ AssetControlledBy whoMatcher
                 map (FromPlay,)
                   . filter (`cardMatch` cardMatcher)
-                  <$> traverse (field AssetCard) assets
+                    <$> traverse (field AssetCard) assets
               CostZones zs -> concatMapM getCards zs
           cards <- getCards zone
           c
@@ -839,8 +854,8 @@ instance RunMessage ActiveCost where
               iid
           let
             cards =
-              filter ((> 0) . fst) $
-                map
+              filter ((> 0) . fst)
+                $ map
                   ( toFst
                       ( count (`member` insertSet WildIcon skillTypes)
                           . cdSkills
@@ -895,17 +910,17 @@ instance RunMessage ActiveCost where
                         targetLabel
                           (toCardId card)
                           [ toMessage $ discardCard iid (activeCostSource c) card
-                          , PaidAbilityCost iid Nothing $
-                              DiscardCardPayment [PlayerCard card]
+                          , PaidAbilityCost iid Nothing
+                              $ DiscardCardPayment [PlayerCard card]
                           ]
                       else
                         targetLabel
                           (toCardId card)
                           [ toMessage $ discardCard iid (activeCostSource c) card
-                          , PaidAbilityCost iid Nothing $
-                              DiscardCardPayment [PlayerCard card]
-                          , PayCost acId iid skipAdditionalCosts $
-                              DiscardCombinedCost (x - n)
+                          , PaidAbilityCost iid Nothing
+                              $ DiscardCardPayment [PlayerCard card]
+                          , PayCost acId iid skipAdditionalCosts
+                              $ DiscardCombinedCost (x - n)
                           ]
                 )
                 cards
@@ -926,8 +941,8 @@ instance RunMessage ActiveCost where
                       [ RemoveFromDiscard iid (toCardId card)
                       , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
                       , PaidAbilityCost iid Nothing $ CardPayment card
-                      , PayCost acId iid skipAdditionalCosts $
-                          ShuffleDiscardCost (n - 1) cardMatcher
+                      , PayCost acId iid skipAdditionalCosts
+                          $ ShuffleDiscardCost (n - 1) cardMatcher
                       ]
                 )
                 cards
@@ -959,8 +974,8 @@ instance RunMessage ActiveCost where
               else pure []
           -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport
           isForced <- isForcedAbility iid ability
-          pushAll $
-            [whenActivateAbilityWindow | not isForced]
+          pushAll
+            $ [whenActivateAbilityWindow | not isForced]
               <> [ UseCardAbility
                     iid
                     (abilitySource ability)
@@ -972,10 +987,10 @@ instance RunMessage ActiveCost where
               <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do
           let iid = activeCostInvestigator c
-          pushAll $
-            [ PlayCard iid card Nothing (activeCostWindows c) False
-            , PaidForCardCost iid card (activeCostPayments c)
-            ]
+          pushAll
+            $ [ PlayCard iid card Nothing (activeCostWindows c) False
+              , PaidForCardCost iid card (activeCostPayments c)
+              ]
               <> [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
               <> [FinishAction | isPlayAction == IsPlayAction]
         ForCost card ->

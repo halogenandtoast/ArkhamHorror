@@ -1267,12 +1267,12 @@ getLocationsMatching
 getLocationsMatching lmatcher = do
   let
     (lmatcher', isEmptySpaceFilter) = case lmatcher of
-      FindEmptySpace inner -> (inner, const True)
+      IncludeEmptySpace inner -> (inner, const True)
       _ -> (lmatcher, (/= "xempty") . toCardCode)
 
   ls <- filter isEmptySpaceFilter . toList . view (entitiesL . locationsL) <$> getGame
   case lmatcher' of
-    FindEmptySpace _ -> error "should be unwrapped above"
+    IncludeEmptySpace _ -> error "should be unwrapped above"
     LocationWithCardId cardId ->
       pure $ filter ((== cardId) . toCardId) ls
     LocationIsInFrontOf investigatorMatcher -> do

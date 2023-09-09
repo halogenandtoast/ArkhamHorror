@@ -2,7 +2,7 @@ module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos where
 
 import Arkham.Prelude hiding ((<|))
 
-import Arkham.Scenario.Types
+import Arkham.Layout
 import Data.Sequence ((<|), (|>))
 import Data.Sequence qualified as Seq
 import Data.Text qualified as T
@@ -19,6 +19,7 @@ data Pos = Pos Int Int
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+-- Todo hardcode a and b, store location id for empty space
 data CosmosLocation a b = EmptySpace Pos a | CosmosLocation Pos b
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

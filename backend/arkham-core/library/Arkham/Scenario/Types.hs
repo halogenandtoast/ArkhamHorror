@@ -20,6 +20,7 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
+import Arkham.Layout
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenario.Deck as X
@@ -43,9 +44,6 @@ class
   , EntityAttrs a ~ ScenarioAttrs
   ) =>
   IsScenario a
-
-newtype GridTemplateRow = GridTemplateRow {unGridTemplateRow :: Text}
-  deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
 
 data instance Field Scenario :: Type -> Type where
   ScenarioCardsUnderActDeck :: Field Scenario [Card]

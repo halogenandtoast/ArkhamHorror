@@ -55,6 +55,7 @@ import Arkham.RequestedChaosTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult qualified as SkillTest
@@ -776,7 +777,7 @@ data Message
   | PlaceBreaches Target Int
   | RemoveBreaches Target Int
   | RunCosmos InvestigatorId LocationId [Message]
-  | PlaceCosmos InvestigatorId LocationId Int Int
+  | PlaceCosmos InvestigatorId LocationId (CosmosLocation Card LocationId)
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]

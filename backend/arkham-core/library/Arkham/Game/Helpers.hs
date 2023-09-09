@@ -223,6 +223,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
     Haunted -> pure False
+    Cosmos -> pure False
     Objective aType -> go aType
     ForcedWhen _ aType -> go aType
     ActionAbilityWithBefore _ mBeforeAction cost ->
@@ -310,6 +311,7 @@ getCanAffordAbilityCost iid a@Ability {..} = do
  where
   go f = \case
     Haunted -> pure True
+    Cosmos -> pure True
     ActionAbility mAction cost ->
       getCanAffordCost iid (toSource a) mAction [] (f cost)
     ActionAbilityWithSkill mAction _ cost ->
@@ -389,6 +391,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
             AbilityEffect _ -> pure True
             Objective {} -> pure True
             Haunted -> pure True
+            Cosmos -> pure True
         go (abilityType ability)
       PlayerLimit (PerSearch trait) n -> do
         traitMatchingUsedAbilities <-
@@ -2933,6 +2936,7 @@ isForcedAbilityType iid source = \case
   ActionAbilityWithBefore {} -> pure False
   AbilityEffect {} -> pure False
   Haunted {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
+  Cosmos {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   ForcedWhen c _ -> passesCriteria iid Nothing source [] c
 
 iconsForCard :: HasGame m => Card -> m [SkillIcon]

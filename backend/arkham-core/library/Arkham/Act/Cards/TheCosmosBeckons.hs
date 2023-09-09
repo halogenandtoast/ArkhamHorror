@@ -14,6 +14,8 @@ import Arkham.Helpers.Ability
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message qualified as Msg
+import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Deck
 
@@ -49,11 +51,19 @@ instance RunMessage TheCosmosBeckons where
       pure a
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
+      -- TODO the move should be passed into RunCosmos because we want to do this only on successful placement
       pushAll
         [ FocusCards $ map flipCard cards
         , chooseOrRunOne
             iid
-            [ targetLabel (toCardId card) [UnfocusCards, placement, RunCosmos iid lid]
+            [ targetLabel
+              (toCardId card)
+              [ UnfocusCards
+              , placement
+              , Msg.RevealLocation (Just iid) lid
+              , RunCosmos iid lid
+              , Move $ move (toAbilitySource attrs 1) lid lid
+              ]
             | (card, (lid, placement)) <- cardsWithMsgs
             ]
         ]

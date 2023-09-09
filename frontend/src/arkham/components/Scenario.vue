@@ -24,6 +24,7 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import Location from '@/arkham/components/Location.vue';
+import * as ArkhamGame from '@/arkham/types/Game';
 
 export interface Props {
   game: Game
@@ -323,15 +324,6 @@ const globalEnemies = computed(() => Object.values(props.game.enemies).filter((e
 
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 
-const emptySpaceLocations = computed(() => {
-  const { locationLayout } = props.scenario;
-  if (locationLayout) {
-    return locationLayout.flatMap((row) => row.split(' ').filter((space) => space.startsWith("empty-")))
-  }
-
-  return []
-})
-
 const cardsUnderScenarioReference = computed(() => props.scenario.cardsUnderScenarioReference)
 const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 
@@ -342,8 +334,9 @@ const cardsNextToAgenda = computed(() => props.scenario.cardsNextToAgendaDeck)
 
 const keys = computed(() => props.scenario.setAsideKeys)
 
+// TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
 const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.inFrontOf === null))
+  filter((a) => a.inFrontOf === null && a.label !== "cosmos"))
 
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
@@ -354,6 +347,22 @@ const unusedLabels = computed(() => {
 
   return []
 })
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const unusedCanInteract = (u) => {
+   const r = choices.value.findIndex((c) => {
+     if (c.tag === "GridLabel") {
+       console.log(c.gridLabel === u, u, c.gridLabel)
+       return c.gridLabel === u
+     }
+
+     return false
+   })
+
+   console.log(r)
+   return r
+}
 
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
@@ -529,7 +538,14 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             @choose="choose"
           />
 
-          <div class="empty-grid-position card" v-for="u in unusedLabels" :key="u" :style="{ 'grid-area': u }">
+          <div
+            class="empty-grid-position card"
+            v-for="u in unusedLabels"
+            :key="u"
+            :class="{ 'can-interact': unusedCanInteract(u) !== -1}"
+            :style="{ 'grid-area': u}"
+            @click="choose(unusedCanInteract(u))"
+            >
           </div>
         </transition-group>
       </div>
@@ -880,9 +896,14 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 }
 
 .empty-grid-position {
-  background: rgba(0, 0, 0, 0.5);
   content: " ";
-  border: 1px solid #000;
   aspect-ratio: 5 / 7;
+  box-shadow: unset;
+}
+
+.can-interact {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid $select;
+  cursor: pointer;
 }
 </style>

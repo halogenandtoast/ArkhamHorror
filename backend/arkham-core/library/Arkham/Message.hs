@@ -776,6 +776,7 @@ data Message
   | PlaceBreaches Target Int
   | RemoveBreaches Target Int
   | RunCosmos InvestigatorId LocationId
+  | PlaceCosmos InvestigatorId LocationId Int Int
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]
@@ -798,6 +799,7 @@ uiToRun = \case
   CardLabel _ msgs -> Run msgs
   PortraitLabel _ msgs -> Run msgs
   TargetLabel _ msgs -> Run msgs
+  GridLabel _ msgs -> Run msgs
   SkillLabel _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
   FightLabel _ msgs -> Run msgs

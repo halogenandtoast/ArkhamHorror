@@ -198,7 +198,8 @@ replaceYourLocation _ Nothing = id
 replaceYourLocation iid (Just lid) = go
  where
   go matcher = case matcher of
-    MostBreaches {} -> matcher
+    FindEmptySpace inner -> FindEmptySpace (go inner)
+    MostBreaches inner -> MostBreaches (go inner)
     FewestBreaches -> matcher
     LocationWithIncursion {} -> matcher
     LocationWithBrazier {} -> matcher

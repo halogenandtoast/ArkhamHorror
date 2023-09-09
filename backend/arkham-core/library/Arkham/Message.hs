@@ -775,7 +775,7 @@ data Message
   | PutLocationInCenter LocationId
   | PlaceBreaches Target Int
   | RemoveBreaches Target Int
-  | RunCosmos InvestigatorId LocationId
+  | RunCosmos InvestigatorId LocationId [Message]
   | PlaceCosmos InvestigatorId LocationId Int Int
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)

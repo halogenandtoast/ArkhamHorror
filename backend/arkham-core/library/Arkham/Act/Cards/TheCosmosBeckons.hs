@@ -10,11 +10,13 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Ability
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement
 import Arkham.Scenario.Deck
+import Data.List qualified as List
 
 newtype TheCosmosBeckons = TheCosmosBeckons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -55,6 +57,7 @@ instance RunMessage TheCosmosBeckons where
             [ targetLabel
               (toCardId card)
               [ UnfocusCards
+              , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
               , placement
               , Msg.RevealLocation (Just iid) lid
               , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]

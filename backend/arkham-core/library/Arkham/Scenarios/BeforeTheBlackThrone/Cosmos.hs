@@ -215,6 +215,9 @@ updatePosition (Pos x y) dir = case dir of
 adjacentPositions :: Pos -> [Pos]
 adjacentPositions pos = map (updatePosition pos) [GridLeft, GridRight, GridUp, GridDown]
 
+positionsInDirections :: Pos -> [GridDirection] -> [Pos]
+positionsInDirections pos dirs = map (updatePosition pos) dirs
+
 {- | Slide a cosmos location and fill in the empty space with replacement
 This errors because we want to make sure we handle this correctly, the
 caller should know whether or not a slide is possible

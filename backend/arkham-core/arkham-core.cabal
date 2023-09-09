@@ -1397,6 +1397,7 @@ library
       Arkham.Key
       Arkham.Keyword
       Arkham.Label
+      Arkham.Layout
       Arkham.Location
       Arkham.Location.Base
       Arkham.Location.Brazier

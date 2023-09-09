@@ -356,7 +356,7 @@ data LocationMatcher
   | LocationWithIncursion
   | FewestBreaches
   | MostBreaches LocationMatcher
-  | FindEmptySpace LocationMatcher
+  | IncludeEmptySpace LocationMatcher
   deriving stock (Show, Eq, Ord)
 
 instance IsString LocationMatcher where

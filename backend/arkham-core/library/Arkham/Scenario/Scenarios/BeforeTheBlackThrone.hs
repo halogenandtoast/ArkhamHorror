@@ -12,6 +12,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
+import Arkham.Direction
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
@@ -20,7 +21,9 @@ import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Label
+import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
@@ -135,19 +138,11 @@ instance RunMessage BeforeTheBlackThrone where
           ]
         emptySpaces = zip emptySpaceLocations cards
 
-      let
-        cosmos =
-          foldr
-            (insertCosmos . uncurry EmptySpace)
-            ( insertCosmos (CosmosLocation (Pos 2 1) firstCosmos)
-                $ insertCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
-                $ insertCosmos (CosmosLocation (Pos 0 0) cosmicIngress) initCosmos
-            )
-            emptySpaces
+      let cosmos = initCosmos @Card @LocationId
 
-      placeEmptySpaces <- concatForM emptySpaces $ \(pos, _) -> do
+      placeEmptySpaces <- concatForM emptySpaces $ \(pos, card) -> do
         (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
-        pure [placeEmptySpace, SetLocationLabel emptySpace' (cosmicLabel pos)]
+        pure [placeEmptySpace, PlaceCosmos lead emptySpace' (EmptySpace pos card)]
 
       azathoth <- genCard Enemies.azathoth
       createAzathoth <- toMessage <$> createEnemy azathoth Global
@@ -157,11 +152,11 @@ instance RunMessage BeforeTheBlackThrone where
           , SetActDeck
           , SetAgendaDeck
           , placeCosmicIngress
-          , SetLocationLabel cosmicIngress (cosmicLabel (Pos 0 0))
+          , PlaceCosmos lead cosmicIngress (CosmosLocation (Pos 0 0) cosmicIngress)
           , placeFirstCosmos
-          , SetLocationLabel firstCosmos (cosmicLabel (Pos 2 1))
+          , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 2 1) firstCosmos)
           , placeSecondCosmos
-          , SetLocationLabel secondCosmos (cosmicLabel (Pos 2 (-1)))
+          , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
           , MoveAllTo (toSource attrs) cosmicIngress
           , createAzathoth
           ]
@@ -186,17 +181,33 @@ instance RunMessage BeforeTheBlackThrone where
       case fromJSON @(Cosmos Card LocationId) meta of
         Error err -> error err
         Success cosmos -> pure $ BeforeTheBlackThrone $ attrs & metaL .~ meta & locationLayoutL .~ cosmosToGrid cosmos
-    PlaceCosmos _ lid x y -> do
+    PlaceCosmos _ lid cloc -> do
       cosmos' <- getCosmos
       let
-        pos = Pos x y
+        pos = cosmosLocationToPosition cloc
         current = viewCosmos pos cosmos'
-        cosmos'' = insertCosmos (CosmosLocation pos lid) cosmos'
+        cosmos'' = insertCosmos cloc cosmos'
+      mTopLocation <-
+        selectOne
+          $ IncludeEmptySpace
+          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridUp)
+      mBottomLocation <-
+        selectOne
+          $ IncludeEmptySpace
+          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridDown)
+      mLeftLocation <-
+        selectOne
+          $ IncludeEmptySpace
+          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridLeft)
+      mRightLocation <-
+        selectOne
+          $ IncludeEmptySpace
+          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridRight)
       currentMsgs <- case current of
         Just (EmptySpace _ c) -> case toCardOwner c of
           Nothing -> error "Unhandled"
           Just iid -> do
-            emptySpace <- selectJust $ FindEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
+            emptySpace <- selectJust $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
             pure [RemoveFromGame (toTarget emptySpace), ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [c]]
         _ -> pure []
       pushAll
@@ -204,6 +215,10 @@ instance RunMessage BeforeTheBlackThrone where
           <> [ SetLocationLabel lid (cosmicLabel pos)
              , SetScenarioMeta (toJSON cosmos'')
              ]
+          <> [PlacedLocationDirection lid Below topLocation | topLocation <- maybeToList mTopLocation]
+          <> [PlacedLocationDirection lid Above bottomLocation | bottomLocation <- maybeToList mBottomLocation]
+          <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
+          <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
 
       pure s
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

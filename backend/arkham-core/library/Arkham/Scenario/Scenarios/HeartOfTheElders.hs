@@ -24,6 +24,7 @@ import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -142,14 +143,14 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     let
       introMessages =
         [ story iids intro1
-        , chooseOrRunOne leadInvestigatorId $
-            [ Label
-              "Let’s consult with Ichtaca."
-              [ story iids intro2
-              , PutCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
+        , chooseOrRunOne leadInvestigatorId
+            $ [ Label
+                "Let’s consult with Ichtaca."
+                [ story iids intro2
+                , PutCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
+                ]
+              | iid <- maybeToList mIchtacaInvestigator
               ]
-            | iid <- maybeToList mIchtacaInvestigator
-            ]
               <> [ Label
                   "Let’s consult with Alejandro."
                   [ story iids intro3
@@ -219,8 +220,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         explorationDeck <-
           shuffleM
             . (<> [ruinsLocation | not mappedOutTheWayForward])
-            =<< genCards
-              (explorationDeckLocations <> explorationDeckTreacheries)
+              =<< genCards
+                (explorationDeckLocations <> explorationDeckTreacheries)
 
         setAsidePoisonedCount <- getSetAsidePoisonedCount
 
@@ -234,8 +235,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             mouthOfKnYanTheCavernsMawId
             Nothing
 
-        pushAll $
-          introMessages
+        pushAll
+          $ introMessages
             <> [ SetEncounterDeck encounterDeck
                , SetAgendaDeck
                , SetActDeck
@@ -255,14 +256,14 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
         HeartOfTheElders
           . (`with` metadata)
-          <$> runMessage
-            msg
-            ( attrs
-                & (decksL . at ExplorationDeck ?~ explorationDeck)
-                & (setAsideCardsL .~ setAsideCards)
-                & (agendaStackL . at 1 ?~ agendas)
-                & (actStackL . at 1 ?~ acts)
-            )
+            <$> runMessage
+              msg
+              ( attrs
+                  & (decksL . at ExplorationDeck ?~ explorationDeck)
+                  & (setAsideCardsL .~ setAsideCards)
+                  & (agendaStackL . at 1 ?~ agendas)
+                  & (actStackL . at 1 ?~ acts)
+              )
   ScenarioResolution r -> case r of
     NoResolution -> do
       pathsKnown <- getRecordCount PathsAreKnownToYou
@@ -273,13 +274,13 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             LocationResources
             (locationIs Locations.mouthOfKnYanTheCavernsMaw)
       actStep <- getCurrentActStep
-      pushAll $
-        [ RecordCount PathsAreKnownToYou pillarTokens
-        | pillarTokens > pathsKnown
-        ]
+      pushAll
+        $ [ RecordCount PathsAreKnownToYou pillarTokens
+          | pillarTokens > pathsKnown
+          ]
           <> [RestartScenario]
-      pure $
-        HeartOfTheElders
+      pure
+        $ HeartOfTheElders
           ( attrs
               `With` metadata
                 { reachedAct2 = reachedAct2 metadata || actStep >= 2
@@ -290,8 +291,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         filter (isJust . cdVengeancePoints . toCardDef)
           <$> scenarioField ScenarioVictoryDisplay
       gainXP <- toGainXp attrs getXp
-      pushAll $
-        recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
+      pushAll
+        $ recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
           : gainXP
             <> [RestartScenario]
       pure $ HeartOfTheElders (attrs `With` metadata {scenarioStep = Two})
@@ -369,25 +370,25 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
     HeartOfTheElders
       . (`with` metadata)
-      <$> runMessage
-        msg
-        ( attrs
-            & (locationLayoutL .~ part2Locations)
-            & (decksL . at ExplorationDeck ?~ explorationDeck)
-            & (setAsideCardsL .~ setAsideCards)
-            & (victoryDisplayL .~ theJungleWatchesCards)
-            & (agendaStackL . at 1 ?~ agendas)
-            & (actStackL . at 1 ?~ acts)
-        )
+        <$> runMessage
+          msg
+          ( attrs
+              & (locationLayoutL .~ part2Locations)
+              & (decksL . at ExplorationDeck ?~ explorationDeck)
+              & (setAsideCardsL .~ setAsideCards)
+              & (victoryDisplayL .~ theJungleWatchesCards)
+              & (agendaStackL . at 1 ?~ agendas)
+              & (actStackL . at 1 ?~ acts)
+          )
   ScenarioResolution r -> do
     iids <- allInvestigatorIds
     vengeance <- getVengeanceInVictoryDisplay
     yigsFury <- getRecordCount YigsFury
     inVictory <-
-      selectAny $
-        VictoryDisplayCardMatch $
-          cardIs
-            Enemies.harbingerOfValusia
+      selectAny
+        $ VictoryDisplayCardMatch
+        $ cardIs
+          Enemies.harbingerOfValusia
     inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
     damage <- case inPlayHarbinger of
       Just eid -> field EnemyDamage eid
@@ -404,8 +405,8 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             2 -> resolution2B
             _ -> error "invalid resolution"
         gainXp <- toGainXp attrs getXp
-        pushAll $
-          story iids resolutionStory
+        pushAll
+          $ story iids resolutionStory
             : RecordCount YigsFury (yigsFury + vengeance)
             : [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
               <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]

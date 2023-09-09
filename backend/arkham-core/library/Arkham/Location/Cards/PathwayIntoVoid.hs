@@ -40,6 +40,8 @@ instance RunMessage PathwayIntoVoid where
           push
             $ chooseOne
               iid
-              [GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) x y : msgs) | pos'@(Pos x y) <- valids]
+              [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
+              | pos'@(Pos x y) <- valids
+              ]
       pure l
     _ -> PathwayIntoVoid <$> runMessage msg attrs

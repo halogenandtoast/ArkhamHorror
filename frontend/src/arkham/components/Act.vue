@@ -119,9 +119,9 @@ async function chooseAbility(ability: AbilityMessage) {
 
 <template>
   <div class="act-container">
-    <div class="card-container" :class="{ 'act--objective': hasObjective, 'act--can-interact': canInteract }">
+    <div class="card-container" :class="{ 'act--objective': hasObjective }">
       <img
-        :class="{ 'act--can-progress': interactAction !== -1 }"
+        :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract }"
         class="card card--sideways"
         @click="clicked"
         :src="image"
@@ -270,8 +270,11 @@ async function chooseAbility(ability: AbilityMessage) {
   border-radius: 10px;
 }
 
-.act--can-interact {
-  border: 2px solid $select;
-  cursor: pointer;
+
+.card-container:not(.act--objective) {
+  .act--can-interact {
+    border: 2px solid $select;
+    cursor: pointer;
+  }
 }
 </style>

@@ -106,6 +106,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDecksLayout :: [GridTemplateRow]
   , scenarioSetAsideKeys :: Set ArkhamKey
   , scenarioMeta :: Value
+  , scenarioUsesGrid :: Bool
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -137,8 +138,8 @@ scenario
   -> [GridTemplateRow]
   -> a
 scenario f cardCode name difficulty layout =
-  f $
-    ScenarioAttrs
+  f
+    $ ScenarioAttrs
       { scenarioId = ScenarioId cardCode
       , scenarioReference = cardCode
       , scenarioName = name
@@ -171,6 +172,7 @@ scenario f cardCode name difficulty layout =
       , scenarioDecksLayout = ["agenda1 act1"]
       , scenarioSetAsideKeys = mempty
       , scenarioMeta = Null
+      , scenarioUsesGrid = False
       , scenarioStoryCards = mempty
       , scenarioPlayerDecks = mempty
       }

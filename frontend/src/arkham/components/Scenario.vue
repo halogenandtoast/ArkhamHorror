@@ -532,7 +532,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             @choose="choose"
           />
 
-          <template v-if="scenario.useGrid">
+          <template v-if="scenario.usesGrid">
             <div
               class="empty-grid-position card"
               v-for="u in unusedLabels"

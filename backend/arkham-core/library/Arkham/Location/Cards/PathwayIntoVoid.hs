@@ -6,13 +6,10 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Scenario.Deck
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 
@@ -36,16 +33,9 @@ instance HasAbilities PathwayIntoVoid where
 instance RunMessage PathwayIntoVoid where
   runMessage msg l@(PathwayIntoVoid attrs) = case msg of
     RunCosmos iid lid msgs | lid == toId attrs -> do
-      cosmos' <- getCosmos
-      pos <- findCosmosPosition iid
-      let adjacents = adjacentPositions pos
-          valids = filter (\adj -> isEmpty $ viewCosmos adj cosmos') adjacents
+      valids <- getEmptyPositionsInDirections iid [GridUp, GridDown, GridLeft, GridRight]
       if null valids
-        then
-          pushAll
-            [ RemoveFromGame (toTarget lid)
-            , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) [toCard attrs]
-            ]
+        then cosmosFail attrs
         else
           push
             $ chooseOne

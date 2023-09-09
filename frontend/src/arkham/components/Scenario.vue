@@ -350,19 +350,13 @@ const unusedLabels = computed(() => {
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const unusedCanInteract = (u) => {
-   const r = choices.value.findIndex((c) => {
+const unusedCanInteract = (u: string) => choices.value.findIndex((c) => {
      if (c.tag === "GridLabel") {
-       console.log(c.gridLabel === u, u, c.gridLabel)
        return c.gridLabel === u
      }
 
      return false
-   })
-
-   console.log(r)
-   return r
-}
+})
 
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
@@ -519,9 +513,9 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
       <div class="location-cards-container">
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
           <Location
-            v-for="(location, key) in locations"
+            v-for="location in locations"
             class="location"
-            :key="key"
+            :key="location.label"
             :game="game"
             :investigatorId="investigatorId"
             :location="location"

@@ -1265,9 +1265,14 @@ replaceMatcherSources ability = case abilitySource ability of
 getLocationsMatching
   :: (HasCallStack, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
-  let isEmptySpace = (== "xempty") . toCardCode
-  ls <- filter (not . isEmptySpace) . toList . view (entitiesL . locationsL) <$> getGame
-  case lmatcher of
+  let
+    (lmatcher', isEmptySpaceFilter) = case lmatcher of
+      FindEmptySpace inner -> (inner, const True)
+      _ -> (lmatcher, (/= "xempty") . toCardCode)
+
+  ls <- filter isEmptySpaceFilter . toList . view (entitiesL . locationsL) <$> getGame
+  case lmatcher' of
+    FindEmptySpace _ -> error "should be unwrapped above"
     LocationWithCardId cardId ->
       pure $ filter ((== cardId) . toCardId) ls
     LocationIsInFrontOf investigatorMatcher -> do
@@ -4492,6 +4497,8 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . assetsL %~ deleteMap aid)
       & (removedFromPlayL %~ (card :))
+  RemoveFromGame (LocationTarget lid) -> do
+    pure $ g & (entitiesL . locationsL %~ deleteMap lid)
   RemoveFromGame (ActTarget aid) -> do
     pure $ g & (entitiesL . actsL %~ deleteMap aid)
   RemoveFromGame (SkillTarget sid) -> do

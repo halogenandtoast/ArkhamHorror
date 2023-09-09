@@ -18,6 +18,7 @@ export enum MessageType {
   SKILL_TEST_APPLY_RESULTS_BUTTON = 'SkillTestApplyResultsButton',
   FIGHT_LABEL = 'FightLabel',
   EVADE_LABEL = 'EvadeLabel',
+  GRID_LABEL = 'GridLabel',
   DONE = 'Done',
   TOKEN_GROUP_CHOICE = 'TokenGroupChoice',
   EFFECT_ACTION_BUTTON = 'EffectActionButton'
@@ -26,7 +27,7 @@ export enum MessageType {
 export interface AbilityMessage {
   contents: AbilityLabel | FightLabel | EvadeLabel
   index: number
-} 
+}
 
 export interface Done {
   tag: MessageType.DONE
@@ -143,6 +144,17 @@ export const evadeLabelDecoder = JsonDecoder.object<EvadeLabel>(
     enemyId: JsonDecoder.string,
   }, 'EvadeLabel')
 
+export interface GridLabel {
+  tag: MessageType.GRID_LABEL
+  gridLabel: string
+}
+
+export const gridLabelDecoder = JsonDecoder.object<GridLabel>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.GRID_LABEL),
+    gridLabel: JsonDecoder.string,
+  }, 'GridLabel')
+
 export interface CardLabel {
   tag: MessageType.CARD_LABEL
   cardCode: string
@@ -198,7 +210,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done | TokenGroupChoice | EffectActionButton;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | GridLabel | Done | TokenGroupChoice | EffectActionButton;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -285,6 +297,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     skillTestApplyResultsButtonDecoder,
     fightLabelDecoder,
     evadeLabelDecoder,
+    gridLabelDecoder,
     doneDecoder,
     tokenGroupChoiceDecoder,
     effectActionButtonDecoder,

@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
@@ -18,13 +19,16 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Scenarios.BeforeTheBlackThrone.Story
 import Data.Aeson (Result (..))
 
@@ -181,4 +185,24 @@ instance RunMessage BeforeTheBlackThrone where
       case fromJSON @(Cosmos Card LocationId) meta of
         Error err -> error err
         Success cosmos -> pure $ BeforeTheBlackThrone $ attrs & metaL .~ meta & locationLayoutL .~ cosmosToGrid cosmos
+    PlaceCosmos _ lid x y -> do
+      cosmos' <- getCosmos
+      let
+        pos = Pos x y
+        current = viewCosmos pos cosmos'
+        cosmos'' = insertCosmos (CosmosLocation pos lid) cosmos'
+      currentMsgs <- case current of
+        Just (EmptySpace _ c) -> case toCardOwner c of
+          Nothing -> error "Unhandled"
+          Just iid -> do
+            emptySpace <- selectJust $ FindEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
+            pure [RemoveFromGame (toTarget emptySpace), ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [c]]
+        _ -> pure []
+      pushAll
+        $ currentMsgs
+          <> [ SetLocationLabel lid (cosmicLabel pos)
+             , SetScenarioMeta (toJSON cosmos'')
+             ]
+
+      pure s
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

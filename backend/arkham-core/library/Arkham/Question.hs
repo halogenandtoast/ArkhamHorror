@@ -46,6 +46,7 @@ data UI msg
   | SkillLabel {skillType :: SkillType, messages :: [msg]}
   | EvadeLabel {enemyId :: EnemyId, messages :: [msg]}
   | FightLabel {enemyId :: EnemyId, messages :: [msg]}
+  | GridLabel {gridLabel :: Text, messages :: [msg]}
   | AbilityLabel
       {investigatorId :: InvestigatorId, ability :: Ability, windows :: [Window], messages :: [msg]}
   | ComponentLabel {component :: Component, messages :: [msg]}

@@ -51,6 +51,10 @@ function isCardAction(c: Message): boolean {
      return c.target.contents === id.value
   }
 
+  if (c.tag === "GridLabel") {
+     return c.gridLabel === props.location.label
+  }
+
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
     return c.ability.type.tag === "ActionAbility" && c.ability.type.action === "Move" && c.ability.source.contents === id.value

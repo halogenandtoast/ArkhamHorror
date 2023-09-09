@@ -37,9 +37,15 @@ instance RunMessage PathwayIntoVoid where
       pos <- findCosmosPosition iid
       let adjacents = adjacentPositions pos
           valids = filter (\adj -> isEmpty $ viewCosmos adj cosmos') adjacents
-      push $ chooseOne iid []
+      if null valids
+        then error "Unhandled"
+        else
+          push
+            $ chooseOne
+              iid
+              [GridLabel (cosmicLabel pos) [PlaceCosmos iid (toId attrs) x y] | pos@(Pos x y) <- valids]
       pure l
-    RunCosmos iid lid -> do
+    RunCosmos iid lid | lid == toId attrs -> do
       push $ UseCardAbility iid (toSource attrs) 1 [] NoPayment
       pure l
     _ -> PathwayIntoVoid <$> runMessage msg attrs

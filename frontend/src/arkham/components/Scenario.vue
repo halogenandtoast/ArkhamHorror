@@ -682,8 +682,8 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 .location-cards-container {
   flex: 1;
-  display: flex;
   justify-content: center;
+  overflow-y: auto;
 }
 
 .portrait {
@@ -893,11 +893,11 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 .empty-grid-position {
   content: " ";
-  aspect-ratio: 5 / 7;
   box-shadow: unset;
 }
 
 .can-interact {
+  aspect-ratio: 5 / 7;
   background: rgba(0, 0, 0, 0.5);
   border: 2px solid $select;
   cursor: pointer;

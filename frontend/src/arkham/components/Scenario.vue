@@ -340,8 +340,8 @@ const locations = computed(() => Object.values(props.game.locations).
 
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
-  const { locationLayout } = props.scenario;
-  if (locationLayout) {
+  const { locationLayout, usesGrid } = props.scenario;
+  if (locationLayout && usesGrid) {
     return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
   }
 
@@ -532,15 +532,17 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             @choose="choose"
           />
 
-          <div
-            class="empty-grid-position card"
-            v-for="u in unusedLabels"
-            :key="u"
-            :class="{ 'can-interact': unusedCanInteract(u) !== -1}"
-            :style="{ 'grid-area': u}"
-            @click="choose(unusedCanInteract(u))"
-            >
-          </div>
+          <template v-if="scenario.useGrid">
+            <div
+              class="empty-grid-position card"
+              v-for="u in unusedLabels"
+              :key="u"
+              :class="{ 'can-interact': unusedCanInteract(u) !== -1}"
+              :style="{ 'grid-area': u}"
+              @click="choose(unusedCanInteract(u))"
+              >
+            </div>
+          </template>
         </transition-group>
       </div>
 

@@ -180,6 +180,7 @@ instance RunMessage BeforeTheBlackThrone where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
               & (metaL .~ toJSON cosmos)
+              & (usesGridL .~ True)
           )
     SetScenarioMeta meta -> do
       case fromJSON @(Cosmos Card LocationId) meta of

@@ -16,11 +16,8 @@ nTimes n f = f . nTimes (n - 1) f
 data GridDirection = GridUp | GridDown | GridLeft | GridRight
 
 data Pos = Pos Int Int
-  deriving stock (Eq, Generic)
+  deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
-
-instance Show Pos where
-  show (Pos x y) = printf "pos%02d%02d" x y
 
 data CosmosLocation a b = EmptySpace Pos a | CosmosLocation Pos b
   deriving stock (Show, Eq, Generic)
@@ -182,8 +179,8 @@ cosmosRowToGrid (CosmosRow left center right) =
       <> toList (fmap (maybe "." cosmosCellToGrid) right)
 
 cosmosCellToGrid :: CosmosLocation a b -> Text
-cosmosCellToGrid (EmptySpace pos _) = tshow pos
-cosmosCellToGrid (CosmosLocation pos _) = tshow pos
+cosmosCellToGrid (EmptySpace pos _) = cosmicLabel pos
+cosmosCellToGrid (CosmosLocation pos _) = cosmicLabel pos
 
 clearCosmos :: Pos -> Cosmos a b -> Cosmos a b
 clearCosmos (Pos x y) (Cosmos above center below) =
@@ -217,3 +214,6 @@ slide p dir replacement c =
    in if isEmpty target
         then setCosmos current newPos (setCosmos replacement p c)
         else error "Tried to slide in invalid location"
+
+cosmicLabel :: Pos -> Text
+cosmicLabel (Pos x y) = T.pack $ printf "pos%02d%02d" x y

@@ -16,6 +16,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
@@ -25,6 +26,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Story
+import Data.Aeson (Result (..))
 
 -- * Cosmos
 
@@ -151,11 +153,11 @@ instance RunMessage BeforeTheBlackThrone where
           , SetActDeck
           , SetAgendaDeck
           , placeCosmicIngress
-          , SetLocationLabel cosmicIngress (tshow (Pos 0 0))
+          , SetLocationLabel cosmicIngress (cosmicLabel (Pos 0 0))
           , placeFirstCosmos
-          , SetLocationLabel firstCosmos (tshow (Pos 2 1))
+          , SetLocationLabel firstCosmos (cosmicLabel (Pos 2 1))
           , placeSecondCosmos
-          , SetLocationLabel secondCosmos (tshow (Pos 2 (-1)))
+          , SetLocationLabel secondCosmos (cosmicLabel (Pos 2 (-1)))
           , MoveAllTo (toSource attrs) cosmicIngress
           , createAzathoth
           ]
@@ -163,7 +165,6 @@ instance RunMessage BeforeTheBlackThrone where
           <> placeEmptySpaces
 
       agendas <- genCards [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
-
       acts <- genCards [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
 
       BeforeTheBlackThrone
@@ -176,4 +177,8 @@ instance RunMessage BeforeTheBlackThrone where
               & (agendaStackL . at 1 ?~ agendas)
               & (metaL .~ toJSON cosmos)
           )
+    SetScenarioMeta meta -> do
+      case fromJSON @(Cosmos Card LocationId) meta of
+        Error err -> error err
+        Success cosmos -> pure $ BeforeTheBlackThrone $ attrs & metaL .~ meta & locationLayoutL .~ cosmosToGrid cosmos
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

@@ -30,7 +30,7 @@ instance HasAbilities TheCosmosBeckons where
       $ [ restrictedAbility
             attrs
             1
-            (InvestigatorExists $ You <> InvestigatorCanSpendClues (Static 1))
+            (InvestigatorExists $ You <> InvestigatorCanSpendClues)
             $ ActionAbility Nothing
             $ ActionCost 1
         ]

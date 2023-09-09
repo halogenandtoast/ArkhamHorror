@@ -33,8 +33,8 @@ instance HasModifiersFor ArbiterOfFates where
 
 instance HasAbilities ArbiterOfFates where
   getAbilities (ArbiterOfFates a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (ActivateAbility Timing.When You $ AbilityIs (InvestigatorSource "60401") 1)
           (ExhaustCost $ toTarget a)
     ]
@@ -66,6 +66,9 @@ instance HasModifiersFor ArbiterOfFatesEffect where
     | abilityIndex ab == 1 && abilitySource ab == InvestigatorSource "60401" = do
         pure $ toModifiers a [IgnoreLimit | not (effectFinished a)]
   getModifiersFor _ _ = pure []
+
+-- > When you use Jacqueline Fine's  ability, exhaust Arbiter of Fates: This use of her ability does not count towards its limit.
+-- We basically track if the ability is done being used and then disable this effect
 
 instance RunMessage ArbiterOfFatesEffect where
   runMessage msg e@(ArbiterOfFatesEffect attrs@EffectAttrs {..}) = case msg of

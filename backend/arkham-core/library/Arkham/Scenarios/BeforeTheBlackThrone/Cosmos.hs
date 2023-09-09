@@ -36,7 +36,9 @@ data CosmosRow a b
   deriving anyclass (ToJSON, FromJSON)
 
 initCosmos :: Cosmos a b
-initCosmos = Cosmos mempty (CosmosRow mempty Nothing mempty) mempty
+initCosmos = Cosmos (Seq.singleton initRow) initRow (Seq.singleton initRow)
+ where
+  initRow = CosmosRow (Seq.singleton Nothing) Nothing (Seq.singleton Nothing)
 
 cosmosRowLeft :: CosmosRow a b -> Int
 cosmosRowLeft (CosmosRow left _ _) = Seq.length left
@@ -74,14 +76,16 @@ viewCosmos (Pos x y) (Cosmos above center below) =
       GT -> join $ Seq.lookup (x - 1) right
       EQ -> middle
 
+-- We always want the cosmos 1 bigger than the total space needed in each
+-- direction to have empty positions
 extendCosmosForPosition :: Pos -> Cosmos a b -> Cosmos a b
 extendCosmosForPosition (Pos x y) c =
   case compare y 0 of
     LT ->
-      let c' = if abs y > belowAmount then nTimes (abs y - belowAmount) extendCosmosDown c else c
+      let c' = if abs y >= belowAmount then nTimes (abs y + 1 - belowAmount) extendCosmosDown c else c
        in go c'
     GT ->
-      let c' = if y > aboveAmount then nTimes (y - aboveAmount) extendCosmosUp c else c
+      let c' = if y >= aboveAmount then nTimes (y + 1 - aboveAmount) extendCosmosUp c else c
        in go c'
     EQ -> go c
  where
@@ -91,12 +95,12 @@ extendCosmosForPosition (Pos x y) c =
   rightAmount = cosmosRightAmount c
   go c' = case compare x 0 of
     LT ->
-      if abs x > leftAmount
-        then nTimes (abs x - leftAmount) extendCosmosLeft c'
+      if abs x >= leftAmount
+        then nTimes (abs x + 1 - leftAmount) extendCosmosLeft c'
         else c'
     GT ->
-      if x > rightAmount
-        then nTimes (x - rightAmount) extendCosmosRight c'
+      if x >= rightAmount
+        then nTimes (x + 1 - rightAmount) extendCosmosRight c'
         else c'
     EQ -> c'
 
@@ -167,8 +171,14 @@ extendCosmosDown c@(Cosmos above center below) =
   rightAmount = cosmosRightAmount c
 
 cosmosToGrid :: Cosmos a b -> [GridTemplateRow]
-cosmosToGrid (Cosmos above center below) =
-  toList $ fmap cosmosRowToGrid ((above |> center) <> below)
+cosmosToGrid c =
+  let leftBy = cosmosLeftAmount c
+      rightBy = cosmosRightAmount c
+      aboveBy = cosmosAboveAmount c
+      belowBy = cosmosBelowAmount c
+      xRange = [-leftBy .. rightBy]
+      yRange = [-belowBy .. aboveBy]
+   in [GridTemplateRow $ T.unwords [cosmicLabel (Pos x y) | x <- xRange] | y <- yRange]
 
 cosmosRowToGrid :: CosmosRow a b -> GridTemplateRow
 cosmosRowToGrid (CosmosRow left center right) =
@@ -202,6 +212,9 @@ updatePosition (Pos x y) dir = case dir of
   GridUp -> Pos x (y + 1)
   GridDown -> Pos x (y - 1)
 
+adjacentPositions :: Pos -> [Pos]
+adjacentPositions pos = map (updatePosition pos) [GridLeft, GridRight, GridUp, GridDown]
+
 {- | Slide a cosmos location and fill in the empty space with replacement
 This errors because we want to make sure we handle this correctly, the
 caller should know whether or not a slide is possible
@@ -216,4 +229,22 @@ slide p dir replacement c =
         else error "Tried to slide in invalid location"
 
 cosmicLabel :: Pos -> Text
-cosmicLabel (Pos x y) = T.pack $ printf "pos%02d%02d" x y
+cosmicLabel (Pos x y) =
+  T.pack
+    $ printf "pos%s%02d%s%02d" (negativeStr x) (abs x) (negativeStr y) (abs y)
+ where
+  negativeStr :: Int -> String
+  negativeStr n = if n < 0 then "n" else ""
+
+findInCosmos :: Eq b => b -> Cosmos a b -> Maybe Pos
+findInCosmos b c =
+  let leftBy = cosmosLeftAmount c
+      rightBy = cosmosRightAmount c
+      aboveBy = cosmosAboveAmount c
+      belowBy = cosmosBelowAmount c
+      xRange = [-leftBy .. rightBy]
+      yRange = [-belowBy .. aboveBy]
+      positions = [Pos x y | x <- xRange, y <- yRange]
+   in flip find positions $ \pos -> case viewCosmos pos c of
+        Just (CosmosLocation _ b') -> b == b'
+        _ -> False

@@ -114,6 +114,9 @@ withCriteria c = abilityCriteriaL <>~ c
 haunted :: Sourceable a => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
 
+cosmos :: Sourceable a => a -> Int -> Ability
+cosmos a n = mkAbility a n Cosmos
+
 reaction
   :: Sourceable a => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
 reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)
@@ -177,6 +180,7 @@ abilityTypeAction = \case
   ForcedAbilityWithCost _ _ -> Nothing
   AbilityEffect _ -> Nothing
   Haunted -> Nothing
+  Cosmos -> Nothing
   Objective aType -> abilityTypeAction aType
   ForcedWhen _ aType -> abilityTypeAction aType
 
@@ -192,6 +196,7 @@ abilityTypeCost = \case
   ForcedAbilityWithCost _ cost -> cost
   AbilityEffect cost -> cost
   Haunted -> Free
+  Cosmos -> Free
   Objective aType -> abilityTypeCost aType
   ForcedWhen _ aType -> abilityTypeCost aType
 
@@ -205,14 +210,15 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ActionAbilityWithSkill mAction skill cost ->
     ActionAbilityWithSkill mAction skill $ applyCostModifiers cost modifiers
   ActionAbilityWithBefore mAction mBeforeAction cost ->
-    ActionAbilityWithBefore mAction mBeforeAction $
-      applyCostModifiers cost modifiers
+    ActionAbilityWithBefore mAction mBeforeAction
+      $ applyCostModifiers cost modifiers
   ForcedAbility window -> ForcedAbility window
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
     ForcedAbilityWithCost window $ applyCostModifiers cost modifiers
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
   Haunted -> Haunted
+  Cosmos -> Cosmos
   Objective aType' -> Objective $ applyAbilityTypeModifiers aType' modifiers
   ForcedWhen c aType' -> ForcedWhen c $ applyAbilityTypeModifiers aType' modifiers
 
@@ -245,6 +251,7 @@ defaultAbilityWindow = \case
   ReactionAbility window _ -> window
   AbilityEffect _ -> AnyWindow
   Haunted -> AnyWindow
+  Cosmos -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
   ForcedWhen _ aType -> defaultAbilityWindow aType
 
@@ -261,6 +268,7 @@ isFastAbilityType = \case
   ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  Cosmos {} -> False
   ForcedWhen _ aType -> isFastAbilityType aType
 
 isReactionAbilityType :: AbilityType -> Bool
@@ -276,6 +284,7 @@ isReactionAbilityType = \case
   ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  Cosmos {} -> False
   ForcedWhen _ aType -> isReactionAbilityType aType
 
 isSilentForcedAbilityType :: AbilityType -> Bool
@@ -291,6 +300,7 @@ isSilentForcedAbilityType = \case
   ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  Cosmos {} -> False
   ForcedWhen _ aType -> isSilentForcedAbilityType aType
 
 isPerWindowLimit :: AbilityLimit -> Bool
@@ -316,4 +326,5 @@ defaultAbilityLimit = \case
   AbilityEffect _ -> NoLimit
   Objective aType -> defaultAbilityLimit aType
   Haunted -> NoLimit
+  Cosmos -> NoLimit
   ForcedWhen _ aType -> defaultAbilityLimit aType

@@ -95,6 +95,7 @@ data Cost
   | IncreaseCostOfThis CardId Int
   | AdditionalActionsCost
   | ClueCost GameValue
+  | ClueCostX
   | GroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost Int
@@ -172,6 +173,7 @@ displayCostType = \case
         <> ", or "
         <> tshow d
         <> " Clues for 1, 2, 3, or 4 players"
+  ClueCostX -> "Spend X Clues"
   GroupClueCost gv _ -> case gv of
     Static n -> pluralize n "Clue" <> " as a Group"
     PerPlayer n -> pluralize n "Clue" <> " per Player as a Group"

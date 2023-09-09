@@ -143,7 +143,7 @@ instance RunMessage BeforeTheBlackThrone where
 
       placeEmptySpaces <- concatForM emptySpaces $ \(pos, _) -> do
         (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
-        pure [placeEmptySpace, SetLocationLabel emptySpace' (tshow pos)]
+        pure [placeEmptySpace, SetLocationLabel emptySpace' (cosmicLabel pos)]
 
       azathoth <- genCard Enemies.azathoth
       createAzathoth <- toMessage <$> createEnemy azathoth Global

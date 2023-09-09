@@ -112,11 +112,12 @@ async function chooseAbility(ability: AbilityMessage) {
   showAbilities.value = false
   emits('choose', ability.index)
 }
+
 </script>
 
 <template>
   <div class="act-container">
-    <div class="card-container" :class="{ 'act--objective': hasObjective }">
+    <div class="card-container" :class="{ 'act--objective': hasObjective, 'act--can-interact': canInteract }">
       <img
         :class="{ 'act--can-progress': interactAction !== -1 }"
         class="card card--sideways"
@@ -265,5 +266,10 @@ async function chooseAbility(ability: AbilityMessage) {
   padding: 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+}
+
+.act--can-interact {
+  border: 2px solid $select;
+  cursor: pointer;
 }
 </style>

@@ -21,9 +21,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Label
-import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement

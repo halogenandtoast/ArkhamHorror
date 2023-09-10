@@ -218,8 +218,8 @@ testEnemyWithDef def attrsF = do
   card <- genCard def
   enemyId <- getRandom
   let enemy' =
-        overAttrs (\attrs -> attrsF $ attrs {enemyHealthDamage = 0, enemySanityDamage = 0}) $
-          lookupEnemy (toCardCode card) enemyId (toCardId card)
+        overAttrs (\attrs -> attrsF $ attrs {enemyHealthDamage = 0, enemySanityDamage = 0})
+          $ lookupEnemy (toCardCode card) enemyId (toCardId card)
   env <- get
   runReaderT (overGame (entitiesL . Entities.enemiesL %~ insertEntity enemy')) env
   pure enemy'
@@ -240,8 +240,8 @@ testAssetWithDef def attrsF owner = do
   assetId <- getRandom
   let
     asset' =
-      overAttrs attrsF $
-        lookupAsset (toCardCode card) assetId (Just $ toId owner) (toCardId card)
+      overAttrs attrsF
+        $ lookupAsset (toCardCode card) assetId (Just $ toId owner) (toCardId card)
   env <- get
   runReaderT (overGame (entitiesL . Entities.assetsL %~ insertEntity asset')) env
   pure asset'
@@ -355,8 +355,8 @@ createMessageChecker :: (Message -> Bool) -> TestAppT (IORef Bool)
 createMessageChecker f = do
   ref <- liftIO $ newIORef False
   testApp <- get
-  put $
-    testApp
+  put
+    $ testApp
       { testLogger =
           Just (\msg -> when (f msg) (liftIO $ atomicWriteIORef ref True))
       }
@@ -518,6 +518,7 @@ newGame investigator = do
         , gameIgnoreCanModifiers = False
         , gameEnemyEvading = Nothing
         , gameGitRevision = gitHash
+        , gameAllowEmptySpaces = False
         }
 
   liftIO $ do
@@ -549,7 +550,7 @@ getActiveCost =
     . headMay
     . mapToList
     . gameActiveCost
-    <$> getGame
+      <$> getGame
 
 evadedBy :: Investigator -> Enemy -> TestAppT Bool
 evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId

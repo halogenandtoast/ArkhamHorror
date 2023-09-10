@@ -130,6 +130,7 @@ watch(abilities, (abilities) => {
 
 const enemies = computed(() => {
   const enemyIds = props.location.enemies;
+
   return enemyIds
     .filter((e) => props.game.enemies[e].engagedInvestigators.length === 0);
 })

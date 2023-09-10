@@ -2591,6 +2591,7 @@ locationMatches investigatorId source window locationId matcher' = do
     -- special cases
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
+    Matcher.IncludeEmptySpace _ -> locationId <=~> matcher
     Matcher.MostBreaches _ -> locationId <=~> matcher
     Matcher.FewestBreaches {} -> locationId <=~> matcher
     Matcher.LocationWithBreaches _ -> locationId <=~> matcher
@@ -2833,7 +2834,7 @@ damageEffectMatches a = \case
 
 spawnAtOneOf :: InvestigatorId -> EnemyId -> [LocationId] -> GameT ()
 spawnAtOneOf iid eid targetLids = do
-  locations' <- select Matcher.Anywhere
+  locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> push (Discard GameSource (EnemyTarget eid))
     [lid] -> do

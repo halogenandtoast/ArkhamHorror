@@ -82,6 +82,8 @@ data Game = Game
     gameActiveCost :: Map ActiveCostId ActiveCost
   , -- track GitSha for debugging
     gameGitRevision :: GitSha
+  , -- allow empty spaces
+    gameAllowEmptySpaces :: Bool
   }
   deriving stock (Eq, Show)
 

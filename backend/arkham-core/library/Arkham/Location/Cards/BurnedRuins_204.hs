@@ -19,8 +19,9 @@ burnedRuins_204 :: LocationCard BurnedRuins_204
 burnedRuins_204 = location BurnedRuins_204 Cards.burnedRuins_204 3 (Static 3)
 
 instance HasModifiersFor BurnedRuins_204 where
-  getModifiersFor (EnemyTarget eid) (BurnedRuins_204 attrs@LocationAttrs {..})
-    | eid `elem` locationEnemies = pure $ toModifiers attrs [EnemyEvade 1]
+  getModifiersFor (EnemyTarget eid) (BurnedRuins_204 attrs) = do
+    atLocation <- enemyAtLocation eid attrs
+    pure $ toModifiers attrs [EnemyEvade 1 | atLocation]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BurnedRuins_204 where

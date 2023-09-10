@@ -25,22 +25,20 @@ coldSpringGlen_245 =
   location ColdSpringGlen_245 Cards.coldSpringGlen_245 2 (Static 0)
 
 instance HasModifiersFor ColdSpringGlen_245 where
-  getModifiersFor (EnemyTarget eid) (ColdSpringGlen_245 attrs) =
-    pure $
-      toModifiers
-        attrs
-        [EnemyEvade (-1) | eid `elem` locationEnemies attrs]
+  getModifiersFor (EnemyTarget eid) (ColdSpringGlen_245 attrs) = do
+    atLocation <- enemyAtLocation eid attrs
+    pure $ toModifiers attrs [EnemyEvade (-1) | atLocation]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ColdSpringGlen_245 where
   getAbilities (ColdSpringGlen_245 attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ReactionAbility
-          (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
-          Free
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ReactionAbility
+            (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
+            Free
+        | locationRevealed attrs
+        ]
 
 instance RunMessage ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of

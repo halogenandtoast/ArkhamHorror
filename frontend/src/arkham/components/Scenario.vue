@@ -533,15 +533,16 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           />
 
           <template v-if="scenario.usesGrid">
-            <div
-              class="empty-grid-position card"
-              v-for="u in unusedLabels"
-              :key="u"
-              :class="{ 'can-interact': unusedCanInteract(u) !== -1}"
-              :style="{ 'grid-area': u}"
-              @click="choose(unusedCanInteract(u))"
-              >
-            </div>
+            <template v-for="u in ususedLabels" :key="u">
+              <div
+                v-if="unusedCanInteract(u) !== -1"
+                class="empty-grid-position card"
+                :class="{ 'can-interact': unusedCanInteract(u) !== -1}"
+                :style="{ 'grid-area': u}"
+                @click="choose(unusedCanInteract(u))"
+                >
+              </div>
+            </template>
           </template>
         </transition-group>
       </div>
@@ -675,12 +676,10 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 .location-cards {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
 }
 
 .location-cards-container {
+  display: flex;
   flex: 1;
   justify-content: center;
   overflow-y: auto;

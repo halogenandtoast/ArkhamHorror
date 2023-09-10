@@ -70,7 +70,6 @@ data instance Field Location :: Type -> Type where
   LocationConnectsTo :: Field Location (Set Direction)
   LocationCardsUnderneath :: Field Location [Card]
   LocationInvestigators :: Field Location (Set InvestigatorId)
-  LocationEnemies :: Field Location (Set EnemyId)
   LocationAssets :: Field Location (Set AssetId)
   LocationEvents :: Field Location (Set EventId)
   LocationTreacheries :: Field Location (Set TreacheryId)
@@ -109,7 +108,6 @@ fieldLens = \case
   LocationConnectsTo -> connectsToL
   LocationCardsUnderneath -> cardsUnderneathL
   LocationInvestigators -> investigatorsL
-  LocationEnemies -> enemiesL
   LocationAssets -> assetsL
   LocationEvents -> eventsL
   LocationTreacheries -> treacheriesL
@@ -164,7 +162,6 @@ instance FromJSON (SomeField Location) where
     "LocationCardsUnderneath" -> pure $ SomeField LocationCardsUnderneath
     "LocationConnectedLocations" -> pure $ SomeField LocationConnectedLocations
     "LocationInvestigators" -> pure $ SomeField LocationInvestigators
-    "LocationEnemies" -> pure $ SomeField LocationEnemies
     "LocationAssets" -> pure $ SomeField LocationAssets
     "LocationEvents" -> pure $ SomeField LocationEvents
     "LocationTreacheries" -> pure $ SomeField LocationTreacheries
@@ -232,8 +229,8 @@ locationWith f def shroud' revealClues g =
   CardBuilder
     { cbCardCode = cdCardCode def
     , cbCardBuilder = \cardId lid ->
-        f . g $
-          LocationAttrs
+        (f . g)
+          $ LocationAttrs
             { locationId = lid
             , locationCardCode = toCardCode def
             , locationCardId = cardId
@@ -243,7 +240,6 @@ locationWith f def shroud' revealClues g =
             , locationShroud = shroud'
             , locationRevealed = not (cdDoubleSided def)
             , locationInvestigators = mempty
-            , locationEnemies = mempty
             , locationSymbol =
                 fromJustNote
                   "missing location symbol"
@@ -358,20 +354,6 @@ instance Targetable Location where
 instance Sourceable Location where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
-
-isEmptyLocation :: Location -> Bool
-isEmptyLocation =
-  and . sequence [noInvestigatorsAtLocation, noEnemiesAtLocation]
-
-noInvestigatorsAtLocation :: Location -> Bool
-noInvestigatorsAtLocation l = null investigators'
- where
-  investigators' = locationInvestigators $ toAttrs l
-
-noEnemiesAtLocation :: Location -> Bool
-noEnemiesAtLocation l = null enemies'
- where
-  enemies' = locationEnemies $ toAttrs l
 
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs

@@ -29,23 +29,21 @@ historicalSocietyRecordOffice_138 =
     (PerPlayer 1)
 
 instance HasModifiersFor HistoricalSocietyRecordOffice_138 where
-  getModifiersFor (EnemyTarget eid) (HistoricalSocietyRecordOffice_138 attrs) =
-    pure $
-      if eid `member` locationEnemies attrs
-        then toModifiers attrs [EnemyFight 1, EnemyEvade 1]
-        else []
+  getModifiersFor (EnemyTarget eid) (HistoricalSocietyRecordOffice_138 attrs) = do
+    atLocation <- enemyAtLocation eid attrs
+    pure $ toModifiers attrs $ guard atLocation *> [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HistoricalSocietyRecordOffice_138 where
   getAbilities (HistoricalSocietyRecordOffice_138 attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          EnemySpawns
-            Timing.When
-            (LocationWithId $ toId attrs)
-            AnyEnemy
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ EnemySpawns
+          Timing.When
+          (LocationWithId $ toId attrs)
+          AnyEnemy
       | not (locationRevealed attrs)
       ]
 

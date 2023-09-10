@@ -22,19 +22,19 @@ notreDame :: LocationCard NotreDame
 notreDame = location NotreDame Cards.notreDame 3 (PerPlayer 1)
 
 instance HasModifiersFor NotreDame where
-  getModifiersFor (EnemyTarget eid) (NotreDame attrs)
-    | eid `member` locationEnemies attrs && locationRevealed attrs =
-        pure $ toModifiers attrs [EnemyFight (-1), EnemyEvade 1]
+  getModifiersFor (EnemyTarget eid) (NotreDame attrs) | locationRevealed attrs = do
+    atLocation <- enemyAtLocation eid attrs
+    pure $ toModifiers attrs $ guard atLocation *> [EnemyFight (-1), EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities NotreDame where
   getAbilities (NotreDame attrs) =
     withRevealedAbilities
       attrs
-      [ limitedAbility (GroupLimit PerGame 1) $
-          restrictedAbility attrs 1 Here $
-            ActionAbility Nothing $
-              ActionCost 1
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
       ]
 
 instance RunMessage NotreDame where
@@ -46,15 +46,15 @@ instance RunMessage NotreDame where
       | isSource attrs source -> do
           agenda <- selectJust AnyAgenda
           hasDoom <- agendaMatches agenda AgendaWithAnyDoom
-          push $
-            chooseOrRunOne iid $
-              Label
-                "Place 1 doom on current agenda"
-                [PlaceDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
-                : [ Label
-                    "Remove 1 doom on current agenda"
-                    [RemoveDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
-                  | hasDoom
-                  ]
+          push
+            $ chooseOrRunOne iid
+            $ Label
+              "Place 1 doom on current agenda"
+              [PlaceDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
+              : [ Label
+                  "Remove 1 doom on current agenda"
+                  [RemoveDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
+                | hasDoom
+                ]
           pure l
     _ -> NotreDame <$> runMessage msg attrs

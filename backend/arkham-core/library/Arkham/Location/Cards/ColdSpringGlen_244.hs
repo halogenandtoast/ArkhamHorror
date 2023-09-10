@@ -25,19 +25,17 @@ coldSpringGlen_244 =
   location ColdSpringGlen_244 Cards.coldSpringGlen_244 3 (Static 2)
 
 instance HasModifiersFor ColdSpringGlen_244 where
-  getModifiersFor (EnemyTarget eid) (ColdSpringGlen_244 attrs) =
-    pure $
-      toModifiers
-        attrs
-        [EnemyEvade (-1) | eid `elem` locationEnemies attrs]
+  getModifiersFor (EnemyTarget eid) (ColdSpringGlen_244 attrs) = do
+    atLocation <- enemyAtLocation eid attrs
+    pure $ toModifiers attrs [EnemyEvade (-1) | atLocation]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ColdSpringGlen_244 where
   getAbilities (ColdSpringGlen_244 attrs) =
     withResignAction
       attrs
-      [ limitedAbility (GroupLimit PerGame 1) $
-        restrictedAbility
+      [ limitedAbility (GroupLimit PerGame 1)
+        $ restrictedAbility
           attrs
           1
           ( Here
@@ -54,11 +52,10 @@ instance RunMessage ColdSpringGlen_244 where
   runMessage msg l@(ColdSpringGlen_244 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <-
-        selectWithField InvestigatorClues $
-          investigatorAt (toId attrs)
+        selectWithField InvestigatorClues
+          $ investigatorAt (toId attrs)
             <> InvestigatorWithAnyClues
-      abominations <-
-        map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
+      abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
       when
         (null investigatorWithCluePairs || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
@@ -72,8 +69,8 @@ instance RunMessage ColdSpringGlen_244 where
             | target <- abominations
             ]
 
-      pushAll $
-        placeClueOnAbomination
+      pushAll
+        $ placeClueOnAbomination
           : [ chooseOne
               iid
               [ Label "Spend a second clue" [placeClueOnAbomination]

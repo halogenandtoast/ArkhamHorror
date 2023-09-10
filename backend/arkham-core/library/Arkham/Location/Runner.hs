@@ -38,9 +38,10 @@ import Arkham.Key
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.Helpers
 import Arkham.Matcher (
+  EnemyMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
-  locationWithEnemy,
+  enemyAt,
  )
 import Arkham.Message (Message (DiscoverClues, MoveAction, RevealLocation))
 import Arkham.Placement
@@ -181,17 +182,6 @@ instance RunMessage LocationAttrs where
     Discarded (AssetTarget aid) _ _ -> pure $ a & assetsL %~ deleteSet aid
     Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-    Discarded (EnemyTarget eid) _ _ -> pure $ a & enemiesL %~ deleteSet eid
-    PlaceEnemyInVoid eid -> pure $ a & enemiesL %~ deleteSet eid
-    PlaceEnemy eid placement -> do
-      case placement of
-        InThreatArea iid -> do
-          mlid <- field InvestigatorLocation iid
-          if mlid == Just locationId
-            then pure $ a & enemiesL %~ insertSet eid
-            else pure a
-        AtLocation lid | lid == locationId -> pure $ a & enemiesL %~ insertSet eid
-        _ -> pure a
     Flipped (AssetSource aid) card
       | toCardType card /= AssetType ->
           pure $ a & assetsL %~ deleteSet aid
@@ -199,7 +189,6 @@ instance RunMessage LocationAttrs where
     RemoveFromGame (TreacheryTarget tid) ->
       pure $ a & treacheriesL %~ deleteSet tid
     RemoveFromGame (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-    RemoveFromGame (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     Discard source target | isTarget a target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
@@ -258,7 +247,6 @@ instance RunMessage LocationAttrs where
       pure $ a & investigatorsL %~ insertSet iid
     SetLocationAsIf iid lid | lid /= locationId -> do
       pure $ a & investigatorsL %~ deleteSet iid
-    AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     RemovePlayerCardFromGame _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= card)
     AddToHand _ cards -> do
@@ -267,27 +255,6 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter (/= PlayerCard pc)
     AddToEncounterDiscard ec -> do
       pure $ a & cardsUnderneathL %~ filter (/= EncounterCard ec)
-    DefeatedAddToVictory (EnemyTarget eid) ->
-      pure $ a & enemiesL %~ deleteSet eid
-    EnemyEngageInvestigator eid iid -> do
-      mlid <- field InvestigatorLocation iid
-      if mlid == Just locationId
-        then pure $ a & enemiesL %~ insertSet eid
-        else pure a
-    EnemyMove eid lid | lid == locationId -> do
-      willMove <- canEnterLocation eid lid
-      pure $ if willMove then a & enemiesL %~ insertSet eid else a
-    EnemyMove eid lid -> do
-      mLocationId <- selectOne $ locationWithEnemy eid
-      if mLocationId == Just locationId
-        then do
-          willMove <- canEnterLocation eid lid
-          pure $ if willMove then a & enemiesL %~ deleteSet eid else a
-        else pure a
-    EnemyEntered eid lid | lid == locationId -> do
-      pure $ a & enemiesL %~ insertSet eid
-    EnemyEntered eid lid | lid /= locationId -> do
-      pure $ a & enemiesL %~ deleteSet eid
     Will next@(EnemySpawn miid lid eid) | lid == locationId -> do
       shouldSpawnNonEliteAtConnectingInstead <-
         getShouldSpawnNonEliteAtConnectingInstead a
@@ -319,12 +286,6 @@ instance RunMessage LocationAttrs where
                   | lid' <- availableLocationIds
                   ]
       pure a
-    EnemySpawn _ lid eid | lid == locationId -> do
-      pure $ a & enemiesL %~ insertSet eid
-    EnemySpawnedAt lid eid | lid == locationId -> do
-      pure $ a & enemiesL %~ insertSet eid
-    RemoveEnemy eid -> pure $ a & enemiesL %~ deleteSet eid
-    RemovedFromPlay (EnemySource eid) -> pure $ a & enemiesL %~ deleteSet eid
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo source target | not (isTarget a target) -> do
       when (locationClues a > 0) (push $ PlaceClues source (toTarget a) (locationClues a))
@@ -473,10 +434,6 @@ instance RunMessage LocationAttrs where
       pure a
     _ -> pure a
 
-locationEnemiesWithTrait :: LocationAttrs -> Trait -> GameT [EnemyId]
-locationEnemiesWithTrait LocationAttrs {locationEnemies} trait =
-  filterM (fieldMap EnemyTraits (member trait)) (setToList locationEnemies)
-
 locationInvestigatorsWithClues :: LocationAttrs -> GameT [InvestigatorId]
 locationInvestigatorsWithClues LocationAttrs {locationInvestigators} =
   filterM (fieldMap InvestigatorClues (> 0)) (setToList locationInvestigators)
@@ -569,3 +526,9 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead {} -> True
     _ -> False
+
+enemyAtLocation :: HasGame m => EnemyId -> LocationAttrs -> m Bool
+enemyAtLocation eid attrs = member eid <$> select (enemyAt $ toId attrs)
+
+locationEnemiesWithTrait :: HasGame m => LocationAttrs -> Trait -> m [EnemyId]
+locationEnemiesWithTrait attrs trait = selectList $ enemyAt (toId attrs) <> EnemyWithTrait trait

@@ -23,11 +23,9 @@ arkhamWoodsCorpseRiddenClearing =
     (PerPlayer 1)
 
 instance HasModifiersFor ArkhamWoodsCorpseRiddenClearing where
-  getModifiersFor (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =
-    pure $
-      toModifiers
-        attrs
-        [MaxDamageTaken 1 | eid `elem` locationEnemies attrs]
+  getModifiersFor (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) = do
+    atLocation <- enemyAtLocation eid attrs
+    pure $ toModifiers attrs [MaxDamageTaken 1 | atLocation]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ArkhamWoodsCorpseRiddenClearing where

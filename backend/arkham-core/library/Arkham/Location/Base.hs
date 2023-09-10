@@ -29,7 +29,6 @@ data LocationAttrs = LocationAttrs
   , locationShroud :: Int
   , locationRevealed :: Bool
   , locationInvestigators :: Set InvestigatorId
-  , locationEnemies :: Set EnemyId
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
   , locationConnectedMatchers :: [LocationMatcher]

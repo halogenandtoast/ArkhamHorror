@@ -101,14 +101,11 @@ import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.Types (
   Field (..),
   LocationAttrs (..),
-  isEmptyLocation,
   isRevealed,
   locationClues,
   locationDoom,
   locationHorror,
   locationResources,
-  noEnemiesAtLocation,
-  noInvestigatorsAtLocation,
   toLocationLabel,
   toLocationSymbol,
  )
@@ -1350,7 +1347,7 @@ getLocationsMatching lmatcher = do
       LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
       Anywhere -> pure ls
       LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
-      EmptyLocation -> pure $ filter isEmptyLocation ls
+      EmptyLocation -> filterM (andM . sequence [selectNone . investigatorAt . toId, selectNone . enemyAt . toId]) ls
       HauntedLocation ->
         filterM
           ( \l ->
@@ -1358,18 +1355,17 @@ getLocationsMatching lmatcher = do
                 (HauntedAbility <> AbilityOnLocation (LocationWithId $ toId l))
           )
           ls
-      LocationWithoutInvestigators -> pure $ filter noInvestigatorsAtLocation ls
-      LocationWithoutEnemies -> pure $ filter noEnemiesAtLocation ls
+      LocationWithoutInvestigators -> filterM (selectNone . investigatorAt . toId) ls
+      LocationWithoutEnemies -> filterM (selectNone . enemyAt . toId) ls
       LocationWithoutModifier modifier' ->
         filterM (\l -> notElem modifier' <$> getModifiers (toTarget l)) ls
       LocationWithModifier modifier' ->
         filterM (\l -> elem modifier' <$> getModifiers (toTarget l)) ls
       LocationWithEnemy enemyMatcher -> do
         enemies <- select enemyMatcher
-        pure
-          $ filter
-            (notNull . intersection enemies . attr locationEnemies)
-            ls
+        filterM
+          (fmap (notNull . intersection enemies) . select . enemyAt . toId)
+          ls
       LocationWithAsset assetMatcher -> do
         assets <- select assetMatcher
         flip filterM ls $ \l -> do
@@ -2316,7 +2312,7 @@ enemyMatcherFilter = \case
     matches' <- guardYourLocation $ \start -> do
       getShortestPath
         start
-        (fieldP LocationEnemies (any (`elem` matchingEnemyIds)))
+        (fmap (any (`elem` matchingEnemyIds)) . selectList . enemyAt)
         mempty
     if null matches'
       then pure $ toId enemy `elem` matchingEnemyIds
@@ -2449,7 +2445,6 @@ instance Projection Location where
       LocationCardsUnderneath -> pure locationCardsUnderneath
       LocationConnectedLocations -> select (ConnectedFrom $ LocationWithId lid)
       LocationInvestigators -> pure locationInvestigators
-      LocationEnemies -> pure locationEnemies
       LocationAssets -> pure locationAssets
       LocationEvents -> pure locationEvents
       LocationTreacheries -> pure locationTreacheries
@@ -3908,7 +3903,6 @@ runGameMessage msg g = case msg of
             DefaultReplace ->
               attrs
                 { locationInvestigators = locationInvestigators oldAttrs
-                , locationEnemies = locationEnemies oldAttrs
                 , locationEvents = locationEvents oldAttrs
                 , locationAssets = locationAssets oldAttrs
                 , locationTreacheries = locationTreacheries oldAttrs
@@ -3916,7 +3910,6 @@ runGameMessage msg g = case msg of
             Swap ->
               attrs
                 { locationInvestigators = locationInvestigators oldAttrs
-                , locationEnemies = locationEnemies oldAttrs
                 , locationEvents = locationEvents oldAttrs
                 , locationAssets = locationAssets oldAttrs
                 , locationTreacheries = locationTreacheries oldAttrs

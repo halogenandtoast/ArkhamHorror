@@ -26,32 +26,31 @@ devilsHopYard_252 =
 
 instance HasAbilities DevilsHopYard_252 where
   getAbilities (DevilsHopYard_252 attrs) =
-    withBaseAbilities attrs $
-      [ limitedAbility (GroupLimit PerGame 1) $
-        restrictedAbility
-          attrs
-          1
-          ( Here
-              <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-              <> EnemyCriteria
-                ( EnemyExists $
-                    EnemyAt YourLocation
-                      <> EnemyWithTrait Abomination
-                )
-          )
-          (FastAbility Free)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility
+            attrs
+            1
+            ( Here
+                <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+                <> EnemyCriteria
+                  ( EnemyExists
+                      $ EnemyAt YourLocation
+                        <> EnemyWithTrait Abomination
+                  )
+            )
+            (FastAbility Free)
+        | locationRevealed attrs
+        ]
 
 instance RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <-
-        selectWithField InvestigatorClues $
-          investigatorAt (toId attrs)
+        selectWithField InvestigatorClues
+          $ investigatorAt (toId attrs)
             <> InvestigatorWithAnyClues
-      abominations <-
-        map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
+      abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
       when
         (null investigatorWithCluePairs || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
@@ -65,11 +64,11 @@ instance RunMessage DevilsHopYard_252 where
             | target <- abominations
             ]
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
-          [ targetLabel iid' $
-            placeClueOnAbomination iid'
+          [ targetLabel iid'
+            $ placeClueOnAbomination iid'
               : [ chooseOne
                   iid'
                   [ Label "Spend a second clue" [placeClueOnAbomination iid']

@@ -40,7 +40,7 @@ fieldPM = fieldMapM
 
 fieldMap
   :: (HasCallStack, HasGame m, Projection a)
-  => (Field a typ)
+  => Field a typ
   -> (typ -> b)
   -> EntityId a
   -> m b
@@ -48,7 +48,7 @@ fieldMap f g = fieldMapM f (pure . g)
 
 fieldMapM
   :: (HasCallStack, HasGame m, Projection a)
-  => (Field a typ)
+  => Field a typ
   -> (typ -> m b)
   -> EntityId a
   -> m b

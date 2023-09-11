@@ -230,7 +230,7 @@ const transpose = (matrix: any[][]) => {
 // Removed empty rows and columns from the location layout
 const cleanLocationLayout = (locationLayout: string[]) => {
 
-  const labels = [...locations.value.map((location) => location.label),...enemiesAsLocations.value.map((enemy) => enemy.asSelfLocation)]
+  const labels = [...locations.value.map((location) => location.label),...enemiesAsLocations.value.map((enemy) => enemy.asSelfLocation), ...unusedLabels.value]
 
   if(labels.length === 0) {
     return locationLayout
@@ -258,7 +258,6 @@ const locationStyles = computed(() => {
     return {
       display: 'grid',
       'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
-      'grid-row-gap': '80px',
       'gap': '80px',
     };
   }

@@ -19,15 +19,14 @@ mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 
 instance RunMessage MysteriousChanting where
   runMessage msg t@(MysteriousChanting attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       enemies <- selectList $ NearestEnemy $ EnemyWithTrait Cultist
       case enemies of
         [] -> push $ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Cultist
         xs ->
           pushAll
-            [ chooseOne
-                iid
-                [targetLabel eid [PlaceDoom (toSource attrs) (toTarget eid) 2] | eid <- xs]
+            [ chooseOne iid
+                $ [targetLabel eid [PlaceDoom (toSource attrs) (toTarget eid) 2] | eid <- xs]
             ]
       pure t
     _ -> MysteriousChanting <$> runMessage msg attrs

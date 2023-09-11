@@ -78,8 +78,9 @@ actWith (n, side) f cardDef mCost g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (deckId, aid) ->
-        f . g $
-          ActAttrs
+        f
+          . g
+          $ ActAttrs
             { actId = aid
             , actCardId = cardId
             , actSequence = AS.Sequence n side
@@ -129,6 +130,7 @@ instance Targetable ActAttrs where
 instance Sourceable ActAttrs where
   toSource = ActSource . toId
   isSource ActAttrs {actId} (ActSource aid) = actId == aid
+  isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
 onSide :: AS.ActSide -> ActAttrs -> Bool

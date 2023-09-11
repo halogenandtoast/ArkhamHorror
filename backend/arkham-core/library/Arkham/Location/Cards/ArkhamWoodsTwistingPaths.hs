@@ -7,11 +7,9 @@ import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsTwistingPaths)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
@@ -19,28 +17,19 @@ newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: LocationCard ArkhamWoodsTwistingPaths
-arkhamWoodsTwistingPaths =
-  location
-    ArkhamWoodsTwistingPaths
-    Cards.arkhamWoodsTwistingPaths
-    3
-    (PerPlayer 1)
+arkhamWoodsTwistingPaths = location ArkhamWoodsTwistingPaths Cards.arkhamWoodsTwistingPaths 3 (PerPlayer 1)
 
 instance HasAbilities ArkhamWoodsTwistingPaths where
-  getAbilities (ArkhamWoodsTwistingPaths attrs)
-    | locationRevealed attrs =
-        withBaseAbilities attrs $
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                Leaves Timing.When You $
-                  LocationWithId $
-                    toId attrs
-          ]
-  getAbilities (ArkhamWoodsTwistingPaths attrs) = getAbilities attrs
+  getAbilities (ArkhamWoodsTwistingPaths attrs) =
+    withRevealedAbilities attrs
+      $ [ forcedAbility attrs 1
+            $ Leaves Timing.When You
+            $ LocationWithId (toId attrs)
+        ]
 
 instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       moveFrom <- popMessageMatching \case
         MoveFrom _ iid' lid' -> iid' == iid && toId l == lid'
         _ -> False
@@ -50,9 +39,9 @@ instance RunMessage ArkhamWoodsTwistingPaths where
       let
         target = InvestigatorTarget iid
         effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
-      l
-        <$ pushAll
-          [ CreateEffect "01151" effectMetadata source target
-          , beginSkillTest iid source target SkillIntellect 3
-          ]
+      pushAll
+        [ CreateEffect "01151" effectMetadata (toAbilitySource attrs 1) target
+        , beginSkillTest iid (toAbilitySource attrs 1) target #intellect 3
+        ]
+      pure l
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

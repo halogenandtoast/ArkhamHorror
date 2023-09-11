@@ -26,7 +26,12 @@ mainPath =
     (revealedConnectedMatchersL <>~ [LocationWithTrait Woods])
 
 instance HasAbilities MainPath where
-  getAbilities (MainPath a) = withResignAction a []
+  getAbilities (MainPath a) =
+    withRevealedAbilities a
+      $ [ withTooltip
+            "\"There's nothing we can do to stop them!\" You flee from the woods, leaving Arkham to its grisly fate."
+            $ locationResignAction a
+        ]
 
 instance RunMessage MainPath where
   runMessage msg (MainPath attrs) = MainPath <$> runMessage msg attrs

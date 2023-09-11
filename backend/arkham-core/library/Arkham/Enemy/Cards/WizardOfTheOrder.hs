@@ -29,16 +29,16 @@ wizardOfTheOrder =
 
 instance HasAbilities WizardOfTheOrder where
   getAbilities (WizardOfTheOrder a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 CanPlaceDoomOnThis $
-          ForcedAbility $
-            PhaseEnds Timing.When $
-              PhaseIs MythosPhase
-      ]
+    withBaseAbilities a
+      $ [ restrictedAbility a 1 CanPlaceDoomOnThis
+            $ ForcedAbility
+            $ PhaseEnds Timing.When
+            $ PhaseIs MythosPhase
+        ]
 
 instance RunMessage WizardOfTheOrder where
   runMessage msg e@(WizardOfTheOrder attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1)
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+      pure e
     _ -> WizardOfTheOrder <$> runMessage msg attrs

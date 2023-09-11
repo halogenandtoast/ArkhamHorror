@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Message
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -20,11 +19,10 @@ graspingHands = treachery GraspingHands Cards.graspingHands
 
 instance RunMessage GraspingHands where
   runMessage msg t@(GraspingHands attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillAgility 3)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source ->
-          t
-            <$ push (InvestigatorAssignDamage iid source DamageAny n 0)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ revelationSkillTest iid attrs #agility 3
+      pure t
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+      push $ assignDamage iid attrs n
+      pure t
     _ -> GraspingHands <$> runMessage msg attrs

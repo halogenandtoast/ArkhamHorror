@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.SkillType
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,8 +18,7 @@ arkhamWoodsOldHouse =
     Cards.arkhamWoodsOldHouse
     2
     (PerPlayer 1)
-    (investigateSkillL .~ SkillWillpower)
+    (investigateSkillL .~ #willpower)
 
 instance RunMessage ArkhamWoodsOldHouse where
-  runMessage msg (ArkhamWoodsOldHouse attrs) =
-    ArkhamWoodsOldHouse <$> runMessage msg attrs
+  runMessage msg (ArkhamWoodsOldHouse attrs) = ArkhamWoodsOldHouse <$> runMessage msg attrs

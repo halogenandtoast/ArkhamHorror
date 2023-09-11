@@ -137,6 +137,7 @@ instance Sourceable TreacheryAttrs where
   toSource = TreacherySource . toId
   isSource TreacheryAttrs {treacheryId} (TreacherySource tid) =
     treacheryId == tid
+  isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where
@@ -175,16 +176,16 @@ withTreacheryInvestigator :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ ->
-    error $
-      show (cdName $ toCardDef attrs)
+    error
+      $ show (cdName $ toCardDef attrs)
         <> " must be attached to an investigator"
 
 withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryOwner attrs f = case treacheryOwner attrs of
   Just iid -> f iid
   _ ->
-    error $
-      show (cdName $ toCardDef attrs)
+    error
+      $ show (cdName $ toCardDef attrs)
         <> " must be owned by an investigator"
 
 treachery
@@ -202,8 +203,9 @@ treacheryWith f cardDef g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (iid, tid) ->
-        f . g $
-          TreacheryAttrs
+        f
+          . g
+          $ TreacheryAttrs
             { treacheryId = tid
             , treacheryCardId = cardId
             , treacheryCardCode = toCardCode cardDef

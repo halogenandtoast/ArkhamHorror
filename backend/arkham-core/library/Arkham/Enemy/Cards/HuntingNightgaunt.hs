@@ -15,15 +15,14 @@ newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 huntingNightgaunt :: EnemyCard HuntingNightgaunt
-huntingNightgaunt =
-  enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
+huntingNightgaunt = enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
 
 instance HasModifiersFor HuntingNightgaunt where
   getModifiersFor (ChaosTokenTarget _) (HuntingNightgaunt a) = do
     mTarget <- getSkillTestTarget
     mAction <- getSkillTestAction
     case (mAction, mTarget) of
-      (Just Evade, Just target) | isTarget a target -> do
+      (Just Evade, Just (isTarget a -> True)) -> do
         pure $ toModifiers a [DoubleNegativeModifiersOnChaosTokens]
       _ -> pure []
   getModifiersFor _ _ = pure []

@@ -26,16 +26,13 @@ screechingByakhee =
     (preyL .~ Prey LowestRemainingSanity)
 
 instance HasModifiersFor ScreechingByakhee where
-  getModifiersFor target (ScreechingByakhee attrs) | isTarget attrs target =
-    do
-      minSanity <- selectAgg Min InvestigatorRemainingSanity $ investigatorEngagedWith (toId attrs)
-      pure $
-        toModifiers attrs $
-          if minSanity <= 4
-            then [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
-            else []
+  getModifiersFor target (ScreechingByakhee attrs) | isTarget attrs target = do
+    minSanity <- selectAgg Min InvestigatorRemainingSanity $ investigatorEngagedWith (toId attrs)
+    pure
+      $ toModifiers attrs
+      $ guard (minSanity <= 4)
+        *> [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ScreechingByakhee where
-  runMessage msg (ScreechingByakhee attrs) =
-    ScreechingByakhee <$> runMessage msg attrs
+  runMessage msg (ScreechingByakhee attrs) = ScreechingByakhee <$> runMessage msg attrs

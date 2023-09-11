@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.SkillType
 
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving anyclass (IsAsset)
@@ -23,8 +22,7 @@ instance HasModifiersFor BaseballBat where
     mAction <- getSkillTestAction
     mSource <- getSkillTestSource
     case (mAction, mSource) of
-      (Just Action.Fight, Just source)
-        | isSource a source -> pure $ toModifiers a [DamageDealt 1]
+      (Just Action.Fight, Just (isSource a -> True)) -> pure $ toModifiers a [DamageDealt 1]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -33,11 +31,11 @@ instance HasAbilities BaseballBat where
 
 instance RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
-        [ skillTestModifier attrs iid (SkillModifier SkillCombat 2)
-        , CreateEffect "01074" Nothing source (toTarget iid)
-        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+        [ skillTestModifier attrs iid (SkillModifier #combat 2)
+        , CreateEffect "01074" Nothing (toAbilitySource attrs 1) (toTarget iid)
+        , ChooseFightEnemy iid (toAbilitySource attrs 1) Nothing #combat mempty False
         ]
       pure a
     _ -> BaseballBat <$> runMessage msg attrs

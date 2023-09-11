@@ -38,18 +38,14 @@ instance RunMessage BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
-      push (AddSlot iid ArcaneSlot (slot attrs))
+      push $ AddSlot iid ArcaneSlot (slot attrs)
       BookOfShadows3 <$> runMessage msg attrs
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      spellAssetIds <-
-        selectList
-          (AssetControlledBy You <> AssetWithTrait Spell)
-      unless (null spellAssetIds) $
-        push $
-          chooseOne
-            iid
-            [ targetLabel aid' [AddUses aid' Charge 1]
-            | aid' <- spellAssetIds
-            ]
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      spellAsset <- selectList $ assetControlledBy iid <> AssetWithTrait Spell
+      pushWhen (notNull spellAsset)
+        $ chooseOne iid
+        $ [ targetLabel aid' [AddUses aid' Charge 1]
+          | aid' <- spellAsset
+          ]
       pure a
     _ -> BookOfShadows3 <$> runMessage msg attrs

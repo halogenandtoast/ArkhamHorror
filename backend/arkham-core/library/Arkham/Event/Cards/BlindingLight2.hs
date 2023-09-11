@@ -20,19 +20,12 @@ blindingLight2 :: EventCard BlindingLight2
 blindingLight2 = event BlindingLight2 Cards.blindingLight2
 
 instance RunMessage BlindingLight2 where
-  runMessage msg e@(BlindingLight2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _
-      | eid == eventId ->
-          e
-            <$ pushAll
-              [ CreateEffect "01069" Nothing (toSource attrs) (InvestigatorTarget iid)
-              , CreateEffect "01069" Nothing (toSource attrs) SkillTestTarget
-              , ChooseEvadeEnemy
-                  iid
-                  (EventSource eid)
-                  Nothing
-                  SkillWillpower
-                  AnyEnemy
-                  False
-              ]
+  runMessage msg e@(BlindingLight2 attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      pushAll
+        [ CreateEffect "01069" Nothing (toSource attrs) (toTarget iid)
+        , CreateEffect "01069" Nothing (toSource attrs) SkillTestTarget
+        , ChooseEvadeEnemy iid (toSource eid) Nothing #willpower AnyEnemy False
+        ]
+      pure e
     _ -> BlindingLight2 <$> runMessage msg attrs

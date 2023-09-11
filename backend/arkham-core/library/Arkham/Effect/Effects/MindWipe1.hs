@@ -18,8 +18,8 @@ mindWipe1 :: EffectArgs -> MindWipe1
 mindWipe1 = MindWipe1 . uncurry4 (baseAttrs "01068")
 
 instance HasModifiersFor MindWipe1 where
-  getModifiersFor target (MindWipe1 a@EffectAttrs {..})
-    | target == effectTarget = pure [toModifier a Blank]
+  getModifiersFor target (MindWipe1 a)
+    | target == effectTarget a = pure [toModifier a Blank]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MindWipe1 where

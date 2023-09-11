@@ -12,7 +12,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass (IsAsset)
@@ -23,12 +22,13 @@ catBurglar1 = ally CatBurglar1 Cards.catBurglar1 (2, 2)
 
 instance HasModifiersFor CatBurglar1 where
   getModifiersFor (InvestigatorTarget iid) (CatBurglar1 a) =
-    pure $ toModifiers a [SkillModifier SkillAgility 1 | controlledBy a iid]
+    pure $ toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CatBurglar1 where
   getAbilities (CatBurglar1 a) =
-    [ ( restrictedAbility
+    [ doesNotProvokeAttacksOfOpportunity
+        $ restrictedAbility
           a
           1
           ( ControlsThis
@@ -37,40 +37,22 @@ instance HasAbilities CatBurglar1 where
                 , LocationExists AccessibleLocation
                 ]
           )
-          (ActionAbility Nothing $ Costs [ActionCost 1, ExhaustCost (toTarget a)])
-      )
-        { abilityDoesNotProvokeAttacksOfOpportunity = True
-        }
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, exhaust a]
     ]
 
 instance RunMessage CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
-      push $
-        skillTestModifier
-          attrs
-          (InvestigatorTarget iid)
-          (SkillModifier SkillAgility 1)
+    InvestigatorPlayAsset iid aid | aid == toId attrs -> do
+      push $ skillTestModifier attrs iid (SkillModifier #agility 1)
       CatBurglar1 <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      engagedEnemyIds <-
-        selectList $
-          EnemyIsEngagedWith $
-            InvestigatorWithId
-              iid
+      engagedEnemyIds <- selectList $ enemyEngagedWith iid
       canDisengage <- iid <=~> InvestigatorCanDisengage
-      locationId <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      accessibleLocationIds <-
-        selectList $
-          AccessibleFrom $
-            LocationWithId
-              locationId
-      pushAll $
-        [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
+      locationId <- fieldJust InvestigatorLocation iid
+      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId locationId
+      pushAll
+        $ [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
           <> [ chooseOne
               iid
               [ targetLabel lid [Move $ move attrs iid lid]

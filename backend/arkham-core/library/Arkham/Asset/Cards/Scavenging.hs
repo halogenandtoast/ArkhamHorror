@@ -39,21 +39,19 @@ instance HasAbilities Scavenging where
               (WhileInvestigating Anywhere)
               (SuccessResult $ AtLeast $ Static 2)
           )
-          (ExhaustCost $ toTarget a)
+          (exhaust a)
     ]
 
 instance RunMessage Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( Search
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  [(Zone.FromDiscard, PutBack)]
-                  (CardWithTrait Item)
-                  $ DrawFound iid 1
-              )
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push
+        $ Search
+          iid
+          (toAbilitySource attrs 1)
+          (toTarget iid)
+          [(Zone.FromDiscard, PutBack)]
+          (CardWithTrait Item)
+        $ DrawFound iid 1
+      pure a
     _ -> Scavenging <$> runMessage msg attrs

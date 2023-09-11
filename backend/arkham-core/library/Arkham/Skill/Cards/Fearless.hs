@@ -16,9 +16,9 @@ fearless :: SkillCard Fearless
 fearless = skill Fearless Cards.fearless
 
 instance RunMessage Fearless where
-  runMessage msg s@(Fearless attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId -> do
-      mHealHorror <- getHealHorrorMessage attrs 1 skillOwner
+  runMessage msg s@(Fearless attrs) = case msg of
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+      mHealHorror <- getHealHorrorMessage attrs 1 (skillOwner attrs)
       for_ mHealHorror push
       pure s
     _ -> Fearless <$> runMessage msg attrs

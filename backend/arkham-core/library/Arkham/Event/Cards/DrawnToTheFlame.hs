@@ -15,8 +15,8 @@ drawnToTheFlame :: EventCard DrawnToTheFlame
 drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
 instance RunMessage DrawnToTheFlame where
-  runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(DrawnToTheFlame attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
         [ InvestigatorDrawEncounterCard iid
         , InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing

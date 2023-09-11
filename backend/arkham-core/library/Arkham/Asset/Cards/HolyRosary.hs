@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.SkillType
 
 newtype HolyRosary = HolyRosary AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -15,7 +14,7 @@ holyRosary = assetWith HolyRosary Cards.holyRosary (sanityL ?~ 2)
 
 instance HasModifiersFor HolyRosary where
   getModifiersFor (InvestigatorTarget iid) (HolyRosary a) =
-    pure [toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid]
+    pure $ toModifiers a [SkillModifier #willpower 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HolyRosary where

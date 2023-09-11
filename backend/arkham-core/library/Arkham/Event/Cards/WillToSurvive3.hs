@@ -15,10 +15,8 @@ willToSurvive3 :: EventCard WillToSurvive3
 willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 
 instance RunMessage WillToSurvive3 where
-  runMessage msg e@(WillToSurvive3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      e
-        <$ pushAll
-          [ CreateEffect "01085" Nothing (toSource attrs) (InvestigatorTarget iid)
-          ]
+  runMessage msg e@(WillToSurvive3 attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      push $ CreateEffect "01085" Nothing (toSource attrs) (toTarget iid)
+      pure e
     _ -> WillToSurvive3 <$> runMessage msg attrs

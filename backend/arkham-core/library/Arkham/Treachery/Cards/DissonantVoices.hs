@@ -22,28 +22,26 @@ dissonantVoices = treachery DissonantVoices Cards.dissonantVoices
 
 instance HasModifiersFor DissonantVoices where
   getModifiersFor (InvestigatorTarget iid) (DissonantVoices attrs) =
-    pure $
-      toModifiers
-        attrs
-        [ CannotPlay (CardWithOneOf $ map CardWithType [AssetType, EventType])
+    pure
+      $ toModifiers attrs
+      $ [ CannotPlay (CardWithOneOf $ map CardWithType [AssetType, EventType])
         | treacheryOnInvestigator iid attrs
         ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DissonantVoices where
   getAbilities (DissonantVoices a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          RoundEnds
-            Timing.When
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ RoundEnds Timing.When
     ]
 
 instance RunMessage DissonantVoices where
   runMessage msg t@(DissonantVoices attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId t) (InvestigatorTarget iid))
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ AttachTreachery (toId t) (InvestigatorTarget iid)
+      pure t
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> DissonantVoices <$> runMessage msg attrs

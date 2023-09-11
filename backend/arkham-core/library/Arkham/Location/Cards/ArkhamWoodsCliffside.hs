@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.SkillType
 
 newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,8 +18,7 @@ arkhamWoodsCliffside =
     Cards.arkhamWoodsCliffside
     2
     (PerPlayer 1)
-    (investigateSkillL .~ SkillAgility)
+    (investigateSkillL .~ #agility)
 
 instance RunMessage ArkhamWoodsCliffside where
-  runMessage msg (ArkhamWoodsCliffside attrs) =
-    ArkhamWoodsCliffside <$> runMessage msg attrs
+  runMessage msg (ArkhamWoodsCliffside attrs) = ArkhamWoodsCliffside <$> runMessage msg attrs

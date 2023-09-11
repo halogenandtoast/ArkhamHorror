@@ -29,17 +29,16 @@ acolyte =
 
 instance HasAbilities Acolyte where
   getAbilities (Acolyte a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 CanPlaceDoomOnThis $
-          ForcedAbility $
-            EnemySpawns Timing.After Anywhere $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ restrictedAbility a 1 CanPlaceDoomOnThis
+            $ ForcedAbility
+            $ EnemySpawns Timing.After Anywhere
+            $ EnemyWithId (toId a)
+        ]
 
 instance RunMessage Acolyte where
   runMessage msg e@(Acolyte attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (PlaceTokens (toSource attrs) (toTarget attrs) Doom 1)
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ PlaceTokens (toSource attrs) (toTarget attrs) Doom 1
+      pure e
     _ -> Acolyte <$> runMessage msg attrs

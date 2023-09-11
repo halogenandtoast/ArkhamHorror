@@ -16,6 +16,7 @@ ancientEvils = treachery AncientEvils Cards.ancientEvils
 
 instance RunMessage AncientEvils where
   runMessage msg t@(AncientEvils attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
-      t <$ pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+    Revelation _ (isSource attrs -> True) -> do
+      pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+      pure t
     _ -> AncientEvils <$> runMessage msg attrs

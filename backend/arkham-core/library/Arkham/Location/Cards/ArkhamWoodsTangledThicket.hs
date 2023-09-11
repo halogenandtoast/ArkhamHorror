@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.SkillType
 
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,7 +18,7 @@ arkhamWoodsTangledThicket =
     Cards.arkhamWoodsTangledThicket
     2
     (PerPlayer 1)
-    (investigateSkillL .~ SkillCombat)
+    (investigateSkillL .~ #combat)
 
 instance RunMessage ArkhamWoodsTangledThicket where
   runMessage msg (ArkhamWoodsTangledThicket attrs) =

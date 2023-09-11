@@ -53,7 +53,7 @@ instance RunMessage VengeanceAwaits where
         else do
           ritualSite <- getJustLocationByName "Ritual Site"
           enemies <- selectTargets $ enemyAt ritualSite
-          createUmordhoth <- createEnemyAt_ umordhoth ritualSiteId Nothing
+          createUmordhoth <- createEnemyAt_ umordhoth ritualSite Nothing
           pushAll $ map (Discard (toSource attrs)) enemies <> [createUmordhoth]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do

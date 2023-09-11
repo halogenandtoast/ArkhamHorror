@@ -6,10 +6,8 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsUnhallowedGround)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
@@ -25,32 +23,19 @@ arkhamWoodsUnhallowedGround =
     (PerPlayer 1)
 
 instance HasAbilities ArkhamWoodsUnhallowedGround where
-  getAbilities (ArkhamWoodsUnhallowedGround x)
-    | locationRevealed x =
-        withBaseAbilities x $
-          [ mkAbility x 1 $
-              ForcedAbility $
-                Enters Timing.After You $
-                  LocationWithId $
-                    toId x
-          ]
-  getAbilities (ArkhamWoodsUnhallowedGround x) = getAbilities x
+  getAbilities (ArkhamWoodsUnhallowedGround x) =
+    withRevealedAbilities x
+      $ [ forcedAbility x 1
+            $ Enters Timing.After You
+            $ LocationWithId (toId x)
+        ]
 
 instance RunMessage ArkhamWoodsUnhallowedGround where
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              ( beginSkillTest
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  SkillWillpower
-                  4
-              )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source ->
-          l
-            <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower 4
+      pure l
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
+      push $ assignDamageAndHorror iid attrs 1 1
+      pure l
     _ -> ArkhamWoodsUnhallowedGround <$> runMessage msg attrs

@@ -22,37 +22,29 @@ obscuringFog = treachery ObscuringFog Cards.obscuringFog
 
 instance HasModifiersFor ObscuringFog where
   getModifiersFor (LocationTarget lid) (ObscuringFog attrs) =
-    pure $
-      toModifiers attrs [ShroudModifier 2 | treacheryOnLocation lid attrs]
+    pure $ toModifiers attrs [ShroudModifier 2 | treacheryOnLocation lid attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ObscuringFog where
   getAbilities (ObscuringFog a) = case treacheryAttachedTarget a of
     Just (LocationTarget lid) ->
-      [ mkAbility a 1 $
-          ForcedAbility $
-            SkillTestResult
-              Timing.After
-              Anyone
-              (WhileInvestigating $ LocationWithId lid)
-              (SuccessResult AnyValue)
+      [ forcedAbility a 1
+          $ SkillTestResult
+            Timing.After
+            Anyone
+            (WhileInvestigating $ LocationWithId lid)
+            (SuccessResult AnyValue)
       ]
     _ -> []
 
 instance RunMessage ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      currentLocationId <- getJustLocation iid
-      withoutObscuringFog <-
-        selectNone $
-          TreacheryAt (LocationWithId currentLocationId)
-            <> treacheryIs Cards.obscuringFog
-      when withoutObscuringFog $
-        push $
-          AttachTreachery treacheryId $
-            LocationTarget currentLocationId
+    Revelation iid (isSource attrs -> True) -> do
+      location <- getJustLocation iid
+      withoutObscuringFog <- selectNone $ treacheryAt location <> treacheryIs Cards.obscuringFog
+      pushWhen withoutObscuringFog $ AttachTreachery treacheryId $ LocationTarget location
       pure t
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> ObscuringFog <$> runMessage msg attrs

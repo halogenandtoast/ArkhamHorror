@@ -18,8 +18,8 @@ emergencyCache :: EventCard EmergencyCache
 emergencyCache = event EmergencyCache Cards.emergencyCache
 
 instance RunMessage EmergencyCache where
-  runMessage msg e@(EmergencyCache attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _
-      | eid == eventId ->
-          e <$ pushAll [TakeResources iid 3 (toSource attrs) False]
+  runMessage msg e@(EmergencyCache attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      push $ TakeResources iid 3 (toSource attrs) False
+      pure e
     _ -> EmergencyCache <$> runMessage msg attrs

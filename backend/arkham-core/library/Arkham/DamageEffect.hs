@@ -46,8 +46,8 @@ storyDamage a n =
     , damageAssignmentDelayed = False
     }
 
-directDamage :: DamageAssignment -> DamageAssignment
-directDamage d = d {damageAssignmentDirect = True}
+isDirect :: DamageAssignment -> DamageAssignment
+isDirect d = d {damageAssignmentDirect = True}
 
 delayDamage :: DamageAssignment -> DamageAssignment
 delayDamage d = d {damageAssignmentDelayed = True}

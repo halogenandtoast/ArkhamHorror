@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -19,34 +18,20 @@ theYellowSign :: TreacheryCard TheYellowSign
 theYellowSign = treachery TheYellowSign Cards.theYellowSign
 
 instance RunMessage TheYellowSign where
-  runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t
-            <$ push
-              ( beginSkillTest
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  SkillWillpower
-                  4
-              )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source ->
-          t
-            <$ pushAll
-              [ InvestigatorAssignDamage
-                  iid
-                  (TreacherySource treacheryId)
-                  DamageAny
-                  0
-                  2
-              , Search
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  [fromDeck]
-                  (CardWithTrait Madness) -- TODO: We may need to specify weakness, candidate for card matcher
-                  (DrawFound iid 1)
-              ]
+  runMessage msg t@(TheYellowSign attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      push $ beginSkillTest iid attrs iid #willpower 4
+      pure t
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      pushAll
+        [ assignHorror iid attrs 2
+        , Search
+            iid
+            (toSource attrs)
+            (toTarget iid)
+            [fromDeck]
+            (CardWithTrait Madness) -- TODO: We may need to specify weakness, candidate for card matcher
+            (DrawFound iid 1)
+        ]
+      pure t
     _ -> TheYellowSign <$> runMessage msg attrs

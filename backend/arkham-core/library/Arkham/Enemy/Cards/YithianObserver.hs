@@ -30,22 +30,19 @@ yithianObserver =
 
 instance HasAbilities YithianObserver where
   getAbilities (YithianObserver a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.When You AnyEnemyAttack $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ forcedAbility a 1
+            $ EnemyAttacks Timing.When You AnyEnemyAttack
+            $ EnemyWithId (toId a)
+        ]
 
 instance RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       emptyHand <- fieldMap InvestigatorHand null iid
-      push $
-        if emptyHand
-          then skillTestModifiers source attrs [DamageDealt 1, HorrorDealt 1]
+      push
+        $ if emptyHand
+          then skillTestModifiers attrs attrs [DamageDealt 1, HorrorDealt 1]
           else toMessage $ randomDiscard iid attrs
       pure e
     _ -> YithianObserver <$> runMessage msg attrs

@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -23,29 +22,25 @@ dreamsOfRlyeh = treachery DreamsOfRlyeh Cards.dreamsOfRlyeh
 
 instance HasModifiersFor DreamsOfRlyeh where
   getModifiersFor (InvestigatorTarget iid) (DreamsOfRlyeh attrs) =
-    pure $ toModifiers attrs $ do
-      guard $ treacheryOnInvestigator iid attrs
-      [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
+    pure
+      $ toModifiers attrs
+      $ guard (treacheryOnInvestigator iid attrs)
+        *> [SkillModifier #willpower (-1), SanityModifier (-1)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DreamsOfRlyeh where
   getAbilities (DreamsOfRlyeh a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            1
-    ]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing (ActionCost 1)]
 
 instance RunMessage DreamsOfRlyeh where
-  runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid source (InvestigatorTarget iid) SkillWillpower 3
+  runMessage msg t@(DreamsOfRlyeh attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      push $ AttachTreachery (toId attrs) $ toTarget iid
       pure t
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source ->
-          t
-            <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ beginSkillTest iid attrs iid #willpower 3
+      pure t
+    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

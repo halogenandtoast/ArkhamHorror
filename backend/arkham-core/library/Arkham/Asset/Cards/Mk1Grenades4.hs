@@ -23,10 +23,10 @@ mk1Grenades4 =
 
 instance HasAbilities Mk1Grenades4 where
   getAbilities (Mk1Grenades4 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Supply 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
+          <> UseCost (AssetWithId $ toId a) Supply 1
     ]
 
 instance RunMessage Mk1Grenades4 where
@@ -55,10 +55,10 @@ instance RunMessage Mk1Grenades4 where
                 eid'
                 if eid == eid'
                   then [EnemyDamage eid' $ delayDamage $ attack attrs 2]
-                  else [EnemyDamage eid' $ delayDamage $ directDamage $ attack attrs 2]
+                  else [EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 2]
           iids <-
-            selectList $
-              colocatedWith iid
+            selectList
+              $ colocatedWith iid
                 <> NotInvestigator
                   (InvestigatorWithId iid)
           msgs <- selectListMap toMsg $ EnemyAt (locationWithInvestigator iid)

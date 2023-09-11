@@ -29,17 +29,15 @@ youngDeepOne =
 
 instance HasAbilities YoungDeepOne where
   getAbilities (YoungDeepOne a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyEngaged Timing.After You $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ forcedAbility a 1
+            $ EnemyEngaged Timing.After You
+            $ EnemyWithId (toId a)
+        ]
 
 instance RunMessage YoungDeepOne where
   runMessage msg e@(YoungDeepOne attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      e <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ assignDamage iid attrs 1
+      pure e
     _ -> YoungDeepOne <$> runMessage msg attrs

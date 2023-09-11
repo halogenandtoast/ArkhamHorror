@@ -15,9 +15,8 @@ perception :: SkillCard Perception
 perception = skill Perception Cards.perception
 
 instance RunMessage Perception where
-  runMessage msg s@(Perception attrs@SkillAttrs {..}) = case msg of
+  runMessage msg s@(Perception attrs) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      drawing <- drawCards skillOwner attrs 1
-      push drawing
+      pushM $ drawCards (skillOwner attrs) attrs 1
       pure s
     _ -> Perception <$> runMessage msg attrs

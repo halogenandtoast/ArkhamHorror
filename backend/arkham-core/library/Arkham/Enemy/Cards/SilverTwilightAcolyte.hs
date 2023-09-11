@@ -28,17 +28,15 @@ silverTwilightAcolyte =
 
 instance HasAbilities SilverTwilightAcolyte where
   getAbilities (SilverTwilightAcolyte a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After Anyone AnyEnemyAttack $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ forcedAbility a 1
+            $ EnemyAttacks Timing.After Anyone AnyEnemyAttack
+            $ EnemyWithId (toId a)
+        ]
 
 instance RunMessage SilverTwilightAcolyte where
   runMessage msg e@(SilverTwilightAcolyte attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push PlaceDoomOnAgenda
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push PlaceDoomOnAgenda
+      pure e
     _ -> SilverTwilightAcolyte <$> runMessage msg attrs

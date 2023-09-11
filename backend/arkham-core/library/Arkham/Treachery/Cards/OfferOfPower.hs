@@ -16,21 +16,17 @@ offerOfPower = treachery OfferOfPower Cards.offerOfPower
 
 instance RunMessage OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       drawing <- drawCards iid attrs 2
-      push $
-        chooseOne
-          iid
-          [ Label
-              "Draw 2 cards and place 2 doom on agenda"
-              [ drawing
-              , PlaceDoomOnAgenda
-              , PlaceDoomOnAgenda
-              , AdvanceAgendaIfThresholdSatisfied
-              ]
-          , Label
-              "Take 2 horror"
-              [InvestigatorAssignDamage iid source DamageAny 0 2]
+      push
+        $ chooseOne iid
+        $ [ Label "Draw 2 cards and place 2 doom on agenda"
+              $ [ drawing
+                , PlaceDoomOnAgenda
+                , PlaceDoomOnAgenda
+                , AdvanceAgendaIfThresholdSatisfied
+                ]
+          , Label "Take 2 horror" [assignHorror iid attrs 2]
           ]
       pure t
     _ -> OfferOfPower <$> runMessage msg attrs

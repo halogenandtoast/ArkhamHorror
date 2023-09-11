@@ -31,7 +31,7 @@ instance RunMessage HangmansHillWhereItAllEnds where
       let breaches = countLocationBreaches attrs
       act <- selectJust AnyAct
       pushAll
-        $ FindAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait Witch) True
+        $ findAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait Witch)
           : ( guard (breaches > 0)
                 *> [RemoveBreaches (toTarget attrs) breaches, PlaceBreaches (toTarget act) breaches]
             )

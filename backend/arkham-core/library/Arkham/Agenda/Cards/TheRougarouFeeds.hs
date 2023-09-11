@@ -6,7 +6,7 @@ module Arkham.Agenda.Cards.TheRougarouFeeds (
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers hiding (matches)
+import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
@@ -47,7 +47,7 @@ instance RunMessage TheRougarouFeeds where
                 let
                   (matches', _) =
                     span ((== c) . snd) nonBayouLocationsWithClueCounts
-                in
+                 in
                   case matches' of
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
                     xs ->

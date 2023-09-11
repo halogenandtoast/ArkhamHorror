@@ -96,16 +96,16 @@ instance HasChaosTokenValue ThePallidMask where
     Skull -> do
       -- -X where X is the number of locations away from the starting location
       startingLocation <-
-        selectJust $
-          LocationWithLabel $
-            positionToLabel
-              startPosition
+        selectJust
+          $ LocationWithLabel
+          $ positionToLabel
+            startPosition
       yourLocation <-
         fromJustNote "no location" <$> field InvestigatorLocation iid
       distance <-
         unDistance
           . fromMaybe (Distance 0)
-          <$> getDistance startingLocation yourLocation
+            <$> getDistance startingLocation yourLocation
       pure $ toChaosTokenValue attrs Skull (min 5 distance) distance
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
@@ -141,15 +141,15 @@ instance RunMessage ThePallidMask where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        AddCampaignCardToDeck
+      push
+        $ AddCampaignCardToDeck
           leadInvestigatorId
           Enemies.theManInThePallidMask
       pure
         . ThePallidMask
         $ attrs
-          & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+        & standaloneCampaignLogL
+          .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       didNotEscapeGazeOfThePhantom <-
@@ -214,8 +214,8 @@ instance RunMessage ThePallidMask where
       bottom <- shuffleM ([tombOfShadows, blockedPassage] <> bottom3)
       let catacombsDeck = rest <> bottom
 
-      pushAll $
-        [story investigatorIds intro]
+      pushAll
+        $ [story investigatorIds intro]
           <> [story investigatorIds harukosInformation | harukoInterviewed]
           <> [Remember YouOpenedASecretPassageway | harukoInterviewed]
           <> [ SetEncounterDeck encounterDeck
@@ -252,9 +252,9 @@ instance RunMessage ThePallidMask where
       lead <- getLead
       catacombs <- selectList UnrevealedLocation
       youOpenedASecretPassageway <- remembered YouOpenedASecretPassageway
-      pushWhen youOpenedASecretPassageway $
-        chooseOne lead $
-          [ targetLabel
+      pushWhen youOpenedASecretPassageway
+        $ chooseOne lead
+        $ [ targetLabel
             catacomb
             [RevealLocation (Just lead) catacomb]
           | catacomb <- catacombs
@@ -266,11 +266,11 @@ instance RunMessage ThePallidMask where
           mAction <- getSkillTestAction
           case mAction of
             Just Action.Fight ->
-              push $
-                CreateWindowModifierEffect
+              push
+                $ CreateWindowModifierEffect
                   EffectSkillTestWindow
-                  ( EffectModifiers $
-                      toModifiers
+                  ( EffectModifiers
+                      $ toModifiers
                         attrs
                         [ if isEasyStandard attrs
                             then DamageDealt (-1)
@@ -286,39 +286,36 @@ instance RunMessage ThePallidMask where
               enemies <-
                 selectList
                   (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
-              unless (null enemies) $
-                push $
-                  chooseOne
-                    iid
-                    [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy attrs iid]
-                    | enemy <- enemies
-                    ]
+              unless (null enemies)
+                $ push
+                $ chooseOne
+                  iid
+                  [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy attrs iid]
+                  | enemy <- enemies
+                  ]
             else do
               enemies <-
                 selectList
                   (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
-              unless (null enemies) $
-                push $
-                  chooseOne
-                    iid
-                    [ targetLabel
-                      enemy
-                      [ Ready (EnemyTarget enemy)
-                      , InitiateEnemyAttack $ enemyAttack enemy attrs iid
-                      ]
-                    | enemy <- enemies
+              unless (null enemies)
+                $ push
+                $ chooseOne
+                  iid
+                  [ targetLabel
+                    enemy
+                    [ Ready (EnemyTarget enemy)
+                    , InitiateEnemyAttack $ enemyAttack enemy attrs iid
                     ]
+                  | enemy <- enemies
+                  ]
           pure ()
         _ -> pure ()
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> case chaosTokenFace token of
       ElderThing -> do
-        push $
-          FindAndDrawEncounterCard
-            iid
-            ( CardWithType EnemyType
-                <> CardWithOneOf (map CardWithTrait [Ghoul, Geist])
-            )
-            True
+        push
+          $ findAndDrawEncounterCard iid
+          $ CardWithType EnemyType
+            <> CardWithOneOf (map CardWithTrait [Ghoul, Geist])
         pure s
       _ -> pure s
     ScenarioResolution res -> do
@@ -338,8 +335,8 @@ instance RunMessage ThePallidMask where
           Resolution 1 -> (Cultist, resolution1)
           Resolution 2 -> (Tablet, resolution2)
           _ -> error "Invalid resolution"
-      pushAll $
-        [story investigatorIds story', Record YouKnowTheSiteOfTheGate]
+      pushAll
+        $ [story investigatorIds story', Record YouKnowTheSiteOfTheGate]
           <> [ chooseSome
                 leadInvestigatorId
                 "Done having investigators read Act II"

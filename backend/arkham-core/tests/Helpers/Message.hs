@@ -76,8 +76,8 @@ beginSkillTest i sType n =
 
 beginActionSkillTest :: Investigator -> Action -> Maybe Target -> SkillType -> Int -> Message
 beginActionSkillTest i a mt sType n =
-  BeginSkillTest $
-    (initSkillTest (toId i) (TestSource mempty) target sType n)
+  BeginSkillTest
+    $ (initSkillTest (toId i) (TestSource mempty) target sType n)
       { skillTestAction = Just a
       }
  where

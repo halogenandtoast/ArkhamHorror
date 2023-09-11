@@ -12,6 +12,11 @@ import Arkham.Trait
 
 -- ** Investigator Patterns **
 
+pattern InvestigatorWithNonEmptyHand :: InvestigatorMatcher
+pattern InvestigatorWithNonEmptyHand <- HandWith (LengthIs (GreaterThan (Static 0)))
+  where
+    InvestigatorWithNonEmptyHand = HandWith (LengthIs (GreaterThan (Static 0)))
+
 pattern InvestigatorWithDiscardableCard :: InvestigatorMatcher
 pattern InvestigatorWithDiscardableCard <- HandWith (HasCard DiscardableCard)
   where

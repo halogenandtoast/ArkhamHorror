@@ -10,7 +10,6 @@ import Arkham.Action hiding (Ability)
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Matcher
 import Arkham.Message
 
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
@@ -19,24 +18,19 @@ newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
 
 victoriaDevereux :: EnemyCard VictoriaDevereux
 victoriaDevereux =
-  enemyWith
-    VictoriaDevereux
-    Cards.victoriaDevereux
-    (3, Static 3, 2)
-    (1, 0)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Northside"))
+  enemyWith VictoriaDevereux Cards.victoriaDevereux (3, Static 3, 2) (1, 0) (spawnAtL ?~ "Northside")
 
 instance HasAbilities VictoriaDevereux where
   getAbilities (VictoriaDevereux attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 OnSameLocation $
-          ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 5])
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 OnSameLocation
+            $ ActionAbility (Just Parley)
+            $ Costs [ActionCost 1, ResourceCost 5]
+        ]
 
 instance RunMessage VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          e <$ push (AddToVictory $ toTarget attrs)
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ AddToVictory $ toTarget attrs
+      pure e
     _ -> VictoriaDevereux <$> runMessage msg attrs

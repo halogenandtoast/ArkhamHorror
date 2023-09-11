@@ -41,7 +41,7 @@ instance RunMessage InLostCarcosa where
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask
-      palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
+      palaceOfTheKing <- getJustLocationByName "Palace of the King"
 
       createTheManInThePallidMask <-
         createEnemyAt_

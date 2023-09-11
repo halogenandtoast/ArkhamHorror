@@ -36,8 +36,8 @@ instance RunMessage SkinGame where
       lead <- getLead
       peterClover <- genCard Assets.peterClover
       drFrancisMorgan <- genCard Assets.drFrancisMorgan
-      cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
-      vipAreaId <- getJustLocationIdByName "VIP Area"
+      cloverClubBarId <- getJustLocationByName "Clover Club Bar"
+      vipAreaId <- getJustLocationByName "VIP Area"
       assetId <- getRandom
       pushAll $
         if completedExtracurricularActivity
@@ -56,7 +56,7 @@ instance RunMessage SkinGame where
             ]
       pure a
     FoundEncounterCard _ target ec | isTarget attrs target -> do
-      cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"
+      cloverClubBarId <- getJustLocationByName "Clover Club Bar"
       push $ SpawnEnemyAt (EncounterCard ec) cloverClubBarId
       pure a
     _ -> SkinGame <$> runMessage msg attrs

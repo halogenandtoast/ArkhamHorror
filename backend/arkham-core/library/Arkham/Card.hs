@@ -183,6 +183,9 @@ _EncounterCard :: Traversal' Card EncounterCard
 _EncounterCard f (EncounterCard pc) = EncounterCard <$> f pc
 _EncounterCard _ other = pure other
 
+onlyEncounterCards :: [Card] -> [EncounterCard]
+onlyEncounterCards = mapMaybe (preview _EncounterCard)
+
 instance Named Card where
   toName = toName . toCardDef
 

@@ -5,7 +5,7 @@ module Arkham.Treachery.Cards.OnTheProwl (
 
 import Arkham.Prelude
 
-import Arkham.Classes
+import Arkham.Classes hiding (matches)
 import Arkham.Location.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
@@ -28,8 +28,8 @@ instance RunMessage OnTheProwl where
         Nothing -> pure ()
         Just eid -> do
           locationIds <- setToList <$> nonBayouLocations
-          locationsWithClueCounts <- for locationIds $
-            \lid -> (lid,) <$> field LocationClues lid
+          locationsWithClueCounts <- for locationIds
+            $ \lid -> (lid,) <$> field LocationClues lid
           let
             sortedLocationsWithClueCounts = sortOn snd locationsWithClueCounts
           case sortedLocationsWithClueCounts of
@@ -38,12 +38,12 @@ instance RunMessage OnTheProwl where
               let
                 (matches, _) =
                   span ((== c) . snd) sortedLocationsWithClueCounts
-              in
+               in
                 case matches of
                   [(x, _)] -> push (MoveUntil x (EnemyTarget eid))
                   xs ->
-                    push $
-                      chooseOne
+                    push
+                      $ chooseOne
                         iid
                         [ targetLabel x [MoveUntil x (EnemyTarget eid)]
                         | (x, _) <- xs

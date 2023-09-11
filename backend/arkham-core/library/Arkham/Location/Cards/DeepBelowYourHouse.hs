@@ -4,12 +4,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (deepBelowYourHouse)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
@@ -22,33 +22,21 @@ deepBelowYourHouse =
 
 instance HasAbilities DeepBelowYourHouse where
   getAbilities (DeepBelowYourHouse attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          RevealLocation Timing.After You $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        ( beginSkillTest
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            SkillAgility
-            3
-        )
-      DeepBelowYourHouse <$> runMessage msg attrs
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source ->
-          l
-            <$ pushAll
-              ( replicate
-                  n
-                  (FindAndDrawEncounterCard iid (CardWithCardCode "01159") True)
-              )
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ beginSkillTest iid attrs iid #agility 3
+      pure l
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+      pushAll $ replicate n $ findAndDrawEncounterCard iid $ cardIs Enemies.swarmOfRats
+      pure l
     _ -> DeepBelowYourHouse <$> runMessage msg attrs

@@ -3,7 +3,7 @@ module Arkham.Helpers.Location where
 import Arkham.Prelude
 
 import Arkham.Card.CardDef
-import Arkham.Classes.Query
+import Arkham.Classes.Query hiding (matches)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Id

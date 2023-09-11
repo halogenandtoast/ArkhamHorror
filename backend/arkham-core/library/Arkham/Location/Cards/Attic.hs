@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (attic)
 import Arkham.Location.Runner
@@ -20,17 +19,12 @@ attic = location Attic Cards.attic 1 (PerPlayer 2)
 
 instance HasAbilities Attic where
   getAbilities (Attic a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Enters Timing.After You $
-              LocationWithId $
-                toId a
-      ]
+    withRevealedAbilities a
+      $ [forcedAbility a 1 $ Enters Timing.After You $ LocationWithId (toId a)]
 
 instance RunMessage Attic where
   runMessage msg a@(Attic attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ assignHorror iid (toAbilitySource attrs 1) 1
+      pure a
     _ -> Attic <$> runMessage msg attrs

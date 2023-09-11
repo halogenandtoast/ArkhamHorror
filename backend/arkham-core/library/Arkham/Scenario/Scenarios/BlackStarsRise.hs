@@ -121,8 +121,8 @@ instance RunMessage BlackStarsRise where
     StandaloneSetup -> do
       lead <- getLead
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
-      push $
-        ShuffleCardsIntoDeck (InvestigatorDeck lead) [theManInThePallidMask]
+      push
+        $ ShuffleCardsIntoDeck (InvestigatorDeck lead) [theManInThePallidMask]
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
@@ -203,8 +203,8 @@ instance RunMessage BlackStarsRise where
           placeLocation_
           [northTower, outerWall, brokenSteps, grandRue, abbeyChurch]
 
-      pushAll $
-        [story investigatorIds intro]
+      pushAll
+        $ [story investigatorIds intro]
           <> [story investigatorIds ashleighsInformation | ashleighInterviewed]
           <> [ SearchCollectionForRandom
               iid
@@ -244,8 +244,8 @@ instance RunMessage BlackStarsRise where
     PlaceDoomOnAgenda -> do
       agendaIds <- selectList AnyAgenda
       lead <- getLead
-      push $
-        chooseOne
+      push
+        $ chooseOne
           lead
           [ targetLabel agendaId [PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1]
           | agendaId <- agendaIds
@@ -261,13 +261,9 @@ instance RunMessage BlackStarsRise where
         targets <- selectListMap AgendaTarget AnyAgenda
         pushAll [PlaceTokens (toSource attrs) target Doom 1 | target <- targets]
       when (chaosTokenFace token == ElderThing) $ do
-        push $
-          FindAndDrawEncounterCard
-            iid
-            ( CardWithType EnemyType
-                <> CardWithOneOf (map CardWithTrait [Trait.Byakhee])
-            )
-            True
+        push
+          $ findAndDrawEncounterCard iid
+          $ CardWithType EnemyType <> CardWithTrait Trait.Byakhee
       pure s
     ScenarioResolution res -> do
       ashleighSlain <- selectOne $ VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke
@@ -281,38 +277,38 @@ instance RunMessage BlackStarsRise where
       case res of
         NoResolution -> push $ ScenarioResolution $ Resolution 3
         Resolution 1 -> do
-          pushAll $
-            [ story iids resolution1
-            , Record YouOpenedThePathBelow
-            , RemoveAllChaosTokens Cultist
-            , RemoveAllChaosTokens Tablet
-            , RemoveAllChaosTokens ElderThing
-            , AddChaosToken Cultist
-            , AddChaosToken Cultist
-            , AddChaosToken Tablet
-            , AddChaosToken Tablet
-            ]
+          pushAll
+            $ [ story iids resolution1
+              , Record YouOpenedThePathBelow
+              , RemoveAllChaosTokens Cultist
+              , RemoveAllChaosTokens Tablet
+              , RemoveAllChaosTokens ElderThing
+              , AddChaosToken Cultist
+              , AddChaosToken Cultist
+              , AddChaosToken Tablet
+              , AddChaosToken Tablet
+              ]
               <> updateSlain
               <> gainXp
               <> [EndOfGame Nothing]
         Resolution 2 -> do
-          pushAll $
-            [ story iids resolution2
-            , Record YouOpenedThePathAbove
-            , RemoveAllChaosTokens Cultist
-            , RemoveAllChaosTokens Tablet
-            , RemoveAllChaosTokens ElderThing
-            , AddChaosToken Cultist
-            , AddChaosToken Cultist
-            , AddChaosToken ElderThing
-            , AddChaosToken ElderThing
-            ]
+          pushAll
+            $ [ story iids resolution2
+              , Record YouOpenedThePathAbove
+              , RemoveAllChaosTokens Cultist
+              , RemoveAllChaosTokens Tablet
+              , RemoveAllChaosTokens ElderThing
+              , AddChaosToken Cultist
+              , AddChaosToken Cultist
+              , AddChaosToken ElderThing
+              , AddChaosToken ElderThing
+              ]
               <> updateSlain
               <> gainXp
               <> [EndOfGame Nothing]
         Resolution 3 -> do
-          pushAll $
-            story iids resolution3
+          pushAll
+            $ story iids resolution3
               : Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
               : map DrivenInsane iids
                 <> [GameOver]

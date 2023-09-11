@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (miskatonicUniversity)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -24,24 +23,19 @@ miskatonicUniversity =
 
 instance HasAbilities MiskatonicUniversity where
   getAbilities (MiskatonicUniversity x) =
-    withBaseAbilities
-      x
-      [ restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1
-      | locationRevealed x
-      ]
+    withRevealedAbilities x
+      $ [restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1]
 
 instance RunMessage MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              ( Search
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  [fromTopOfDeck 6]
-                  (CardWithOneOf $ map CardWithTrait [Tome, Spell])
-                  (DrawFound iid 1)
-              )
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push
+        $ Search
+          iid
+          (toAbilitySource attrs 1)
+          (toTarget iid)
+          [fromTopOfDeck 6]
+          (CardWithOneOf $ map CardWithTrait [Tome, Spell])
+          (DrawFound iid 1)
+      pure l
     _ -> MiskatonicUniversity <$> runMessage msg attrs

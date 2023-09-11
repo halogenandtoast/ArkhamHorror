@@ -11,7 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
+import Arkham.Classes hiding (matches)
 import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
@@ -26,7 +26,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (matches)
+import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.EchoesOfThePast.Story
 import Arkham.Token
@@ -76,10 +76,10 @@ placeAndLabelLocations :: Text -> [Card] -> GameT [(LocationId, [Message])]
 placeAndLabelLocations prefix locations =
   for (withIndex1 locations) $ \(idx, location) -> do
     (locationId, placement) <- placeLocation location
-    pure $
-      ( locationId
-      , [placement, SetLocationLabel locationId (prefix <> tshow idx)]
-      )
+    pure
+      $ ( locationId
+        , [placement, SetLocationLabel locationId (prefix <> tshow idx)]
+        )
 
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
@@ -136,28 +136,31 @@ instance RunMessage EchoesOfThePast where
             (unDeck partialEncounterDeck <> midnightMasks <> seekersToShuffle)
 
       groundFloor <-
-        genCards . drop 1
-          =<< shuffleM
-            [ Locations.historicalSocietyMeetingRoom
-            , Locations.historicalSocietyRecordOffice_129
-            , Locations.historicalSocietyHistoricalMuseum_130
-            ]
+        genCards
+          . drop 1
+            =<< shuffleM
+              [ Locations.historicalSocietyMeetingRoom
+              , Locations.historicalSocietyRecordOffice_129
+              , Locations.historicalSocietyHistoricalMuseum_130
+              ]
 
       secondFloor <-
-        genCards . drop 1
-          =<< shuffleM
-            [ Locations.historicalSocietyHistoricalMuseum_132
-            , Locations.historicalSocietyHistoricalLibrary_133
-            , Locations.historicalSocietyReadingRoom
-            ]
+        genCards
+          . drop 1
+            =<< shuffleM
+              [ Locations.historicalSocietyHistoricalMuseum_132
+              , Locations.historicalSocietyHistoricalLibrary_133
+              , Locations.historicalSocietyReadingRoom
+              ]
 
       thirdFloor <-
-        genCards . drop 1
-          =<< shuffleM
-            [ Locations.historicalSocietyHistoricalLibrary_136
-            , Locations.historicalSocietyPeabodysOffice
-            , Locations.historicalSocietyRecordOffice_138
-            ]
+        genCards
+          . drop 1
+            =<< shuffleM
+              [ Locations.historicalSocietyHistoricalLibrary_136
+              , Locations.historicalSocietyPeabodysOffice
+              , Locations.historicalSocietyRecordOffice_138
+              ]
 
       (entryHallId, placeEntryHall) <- placeLocationCard Locations.entryHall
       (quietHalls1Id, placeQuietHalls1) <- placeLocationCard Locations.quietHalls_131
@@ -181,8 +184,8 @@ instance RunMessage EchoesOfThePast where
                   [LocationWithTrait SecondFloor, LocationWithTrait ThirdFloor]
             )
         _ ->
-          for (zip thirdFloorPlacements seekersToSpawn) $
-            \((locationId, _), card) ->
+          for (zip thirdFloorPlacements seekersToSpawn)
+            $ \((locationId, _), card) ->
               createEnemyAt_ (EncounterCard card) locationId Nothing
 
       sebastienInterviewed <-
@@ -191,8 +194,8 @@ instance RunMessage EchoesOfThePast where
 
       fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty
 
-      pushAll $
-        [story investigatorIds intro]
+      pushAll
+        $ [story investigatorIds intro]
           <> [ story investigatorIds sebastiensInformation
              | sebastienInterviewed
              ]
@@ -256,8 +259,8 @@ instance RunMessage EchoesOfThePast where
       case token of
         Cultist -> do
           matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
               ]
@@ -273,8 +276,8 @@ instance RunMessage EchoesOfThePast where
       case chaosTokenFace token of
         Cultist -> do
           matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
               ]
@@ -314,56 +317,56 @@ instance RunMessage EchoesOfThePast where
 
       case n of
         1 ->
-          pushAll $
-            [ story investigatorIds resolution1
-            , Record YouTookTheOnyxClasp
-            , RecordCount Conviction (conviction + 1)
-            , chooseOne
-                leadInvestigatorId
-                [ TargetLabel
-                  (InvestigatorTarget iid)
-                  [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
-                | iid <- investigatorIds
-                ]
-            ]
+          pushAll
+            $ [ story investigatorIds resolution1
+              , Record YouTookTheOnyxClasp
+              , RecordCount Conviction (conviction + 1)
+              , chooseOne
+                  leadInvestigatorId
+                  [ TargetLabel
+                    (InvestigatorTarget iid)
+                    [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
+                  | iid <- investigatorIds
+                  ]
+              ]
               <> gainXp
               <> updateSlain
               <> removeTokens
               <> [AddChaosToken Cultist, AddChaosToken Cultist]
               <> [EndOfGame Nothing]
         2 ->
-          pushAll $
-            [ story investigatorIds resolution2
-            , Record YouLeftTheOnyxClaspBehind
-            , RecordCount Doubt (doubt + 1)
-            ]
+          pushAll
+            $ [ story investigatorIds resolution2
+              , Record YouLeftTheOnyxClaspBehind
+              , RecordCount Doubt (doubt + 1)
+              ]
               <> gainXp
               <> updateSlain
               <> removeTokens
               <> [AddChaosToken Tablet, AddChaosToken Tablet]
               <> [EndOfGame Nothing]
         3 ->
-          pushAll $
-            [ story investigatorIds resolution3
-            , Record YouDestroyedTheOathspeaker
-            , chooseOne
-                leadInvestigatorId
-                [ TargetLabel
-                  (InvestigatorTarget iid)
-                  [AddCampaignCardToDeck iid Assets.theTatteredCloak]
-                | iid <- investigatorIds
-                ]
-            ]
+          pushAll
+            $ [ story investigatorIds resolution3
+              , Record YouDestroyedTheOathspeaker
+              , chooseOne
+                  leadInvestigatorId
+                  [ TargetLabel
+                    (InvestigatorTarget iid)
+                    [AddCampaignCardToDeck iid Assets.theTatteredCloak]
+                  | iid <- investigatorIds
+                  ]
+              ]
               <> gainXp
               <> updateSlain
               <> removeTokens
               <> [AddChaosToken Tablet, AddChaosToken Tablet]
               <> [EndOfGame Nothing]
         4 ->
-          pushAll $
-            [ story investigatorIds resolution4
-            , Record TheFollowersOfTheSignHaveFoundTheWayForward
-            ]
+          pushAll
+            $ [ story investigatorIds resolution4
+              , Record TheFollowersOfTheSignHaveFoundTheWayForward
+              ]
               <> gainXp
               <> updateSlain
               <> removeTokens

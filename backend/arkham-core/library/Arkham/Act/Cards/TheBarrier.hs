@@ -23,20 +23,20 @@ theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing
 
 instance HasAbilities TheBarrier where
   getAbilities (TheBarrier x) =
-    [ mkAbility x 1 $
-        Objective $
-          ReactionAbility (RoundEnds Timing.When) $
-            GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
+    [ mkAbility x 1
+        $ Objective
+        $ ReactionAbility (RoundEnds Timing.When)
+        $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
     ]
 
 instance RunMessage TheBarrier where
   runMessage msg a@(TheBarrier attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
+      push $ AdvanceAct (toId a) (toSource iid) AdvancedWithClues
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      hallwayId <- getJustLocationIdByName "Hallway"
-      parlorId <- getJustLocationIdByName "Parlor"
+      hallwayId <- getJustLocationByName "Hallway"
+      parlorId <- getJustLocationByName "Parlor"
       ghoulPriest <- getSetAsideCard Enemies.ghoulPriest
       litaChantler <- getSetAsideCard Assets.litaChantler
       createGhoulPriest <- createEnemyAt_ ghoulPriest hallwayId Nothing

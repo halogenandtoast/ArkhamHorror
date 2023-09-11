@@ -26,7 +26,7 @@ instance RunMessage ArkhamWoodsTwistingPaths where
     PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
       do
         arkhamWoodsTwistingPathsId <-
-          getJustLocationIdByName
+          getJustLocationByName
             ("Arkham Woods" <:> "Twisting Paths")
         let disable = DisableEffect (effectId attrs)
         e
@@ -39,7 +39,7 @@ instance RunMessage ArkhamWoodsTwistingPaths where
     FailedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
       do
         arkhamWoodsTwistingPathsId <-
-          getJustLocationIdByName
+          getJustLocationByName
             ("Arkham Woods" <:> "Twisting Paths")
         e
           <$ when

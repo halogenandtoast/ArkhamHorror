@@ -35,15 +35,12 @@ instance RunMessage MaskOfUmordhoth where
       case enemies of
         [] ->
           pushAll
-            [ FindAndDrawEncounterCard
-                iid
-                (CardWithType EnemyType <> CardWithTrait Cultist)
-                True
+            [ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Cultist
             , Revelation iid source
             ]
         eids ->
-          push $
-            chooseOrRunOne
+          push
+            $ chooseOrRunOne
               iid
               [ targetLabel eid [AttachTreachery treacheryId (EnemyTarget eid)]
               | eid <- eids

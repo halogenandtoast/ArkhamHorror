@@ -20,16 +20,16 @@ northside = location Northside Cards.northside 3 (PerPlayer 2)
 
 instance HasAbilities Northside where
   getAbilities (Northside x) =
-    withRevealedAbilities x $
-      [ limitedAbility (GroupLimit PerGame 1) $
-          restrictedAbility x 1 Here $
-            ActionAbility Nothing $
-              Costs [ActionCost 1, ResourceCost 5]
-      ]
+    withRevealedAbilities x
+      $ [ limitedAbility (GroupLimit PerGame 1)
+            $ restrictedAbility x 1 Here
+            $ ActionAbility Nothing
+            $ Costs [ActionCost 1, ResourceCost 5]
+        ]
 
 instance RunMessage Northside where
   runMessage msg l@(Northside attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ GainClues iid (toAbilitySource attrs 1) 2
       pure l
     _ -> Northside <$> runMessage msg attrs

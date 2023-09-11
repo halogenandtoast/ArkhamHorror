@@ -15,7 +15,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
@@ -27,22 +26,19 @@ vengeanceAwaits =
   agenda (3, A) VengeanceAwaits Cards.vengeanceAwaits (Static 5)
 
 instance HasAbilities VengeanceAwaits where
+  getAbilities (VengeanceAwaits a)
+    | onSide A a =
+        [ forcedAbility a 1
+            $ AgendaAdvances Timing.When
+            $ AgendaWithId (toId a)
+        ]
   getAbilities (VengeanceAwaits a) =
-    if onSide A a
-      then
-        [ mkAbility a 1 $
-            ForcedAbility $
-              AgendaAdvances Timing.When $
-                AgendaWithId $
-                  toId a
-        ]
-      else
-        [ mkAbility a 2 $
-            Objective $
-              ForcedAbility $
-                EnemyDefeated Timing.After Anyone ByAny $
-                  enemyIs Enemies.umordhoth
-        ]
+    [ mkAbility a 2
+        $ Objective
+        $ ForcedAbility
+        $ EnemyDefeated Timing.After Anyone ByAny
+        $ enemyIs Enemies.umordhoth
+    ]
 
 instance RunMessage VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of
@@ -51,23 +47,20 @@ instance RunMessage VengeanceAwaits where
       umordhoth <- getSetAsideCard Enemies.umordhoth
       if "01146" `elem` actIds
         then do
-          (ritualSiteId, placeRitualSite) <-
-            placeSetAsideLocation
-              Locations.ritualSite
-          createUmordhoth <- createEnemyAt_ umordhoth ritualSiteId Nothing
+          (ritualSite, placeRitualSite) <- placeSetAsideLocation Locations.ritualSite
+          createUmordhoth <- createEnemyAt_ umordhoth ritualSite Nothing
           pushAll [placeRitualSite, createUmordhoth]
         else do
-          ritualSiteId <- getJustLocationIdByName "Ritual Site"
-          enemies <- selectTargets $ EnemyAt $ LocationWithId ritualSiteId
+          ritualSite <- getJustLocationByName "Ritual Site"
+          enemies <- selectTargets $ enemyAt ritualSite
           createUmordhoth <- createEnemyAt_ umordhoth ritualSiteId Nothing
-          pushAll $
-            [Discard (toSource attrs) enemy | enemy <- enemies]
-              <> [createUmordhoth]
+          pushAll $ map (Discard (toSource attrs)) enemies <> [createUmordhoth]
       pure a
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          a <$ push (ScenarioResolution $ Resolution 2)
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+      push R2
+      pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       actIds <- selectList AnyAct
-      a <$ pushAll [Discard GameSource (ActTarget actId) | actId <- actIds]
+      pushAll $ map (Discard GameSource . toTarget) actIds
+      pure a
     _ -> VengeanceAwaits <$> runMessage msg attrs

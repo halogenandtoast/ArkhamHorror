@@ -21,24 +21,20 @@ trapped =
 instance RunMessage Trapped where
   runMessage msg a@(Trapped attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      studyId <- getJustLocationIdByName "Study"
-      enemyIds <- enemiesAt studyId
+      study <- getJustLocationByName "Study"
+      enemies <- enemiesAt study
 
-      (hallwayId, placeHallway) <- placeSetAsideLocation Locations.hallway
+      (hallway, placeHallway) <- placeSetAsideLocation Locations.hallway
       placeCellar <- placeSetAsideLocation_ Locations.cellar
       placeAttic <- placeSetAsideLocation_ Locations.attic
       placeParlor <- placeSetAsideLocation_ Locations.parlor
 
-      pushAll $
-        [ placeHallway
-        , placeCellar
-        , placeAttic
-        , placeParlor
-        ]
-          <> map (toDiscard attrs) enemyIds
-          <> [ RevealLocation Nothing hallwayId
-             , MoveAllTo (toSource attrs) hallwayId
-             , RemoveLocation studyId
+      pushAll
+        $ [placeHallway, placeCellar, placeAttic, placeParlor]
+          <> map (toDiscard attrs) enemies
+          <> [ RevealLocation Nothing hallway
+             , MoveAllTo (toSource attrs) hallway
+             , RemoveLocation study
              , advanceActDeck attrs
              ]
       pure a

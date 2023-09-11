@@ -22,23 +22,21 @@ whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)
 instance RunMessage WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iid <- getLeadInvestigatorId
+      lead <- getLead
       -- The lead investigator can choose the first option even if one of the
       -- investigators has no cards in hand (but at least one does).
-      canChooseDiscardOption <-
-        selectAny
-          (HandWith $ LengthIs $ GreaterThan $ Static 0)
+      canChooseDiscardOption <- selectAny InvestigatorWithNonEmptyHand
       pushAll
-        [ chooseOne iid $
-            Label
+        [ chooseOne lead
+            $ Label
               "The lead investigator takes 2 horror"
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
+              [assignHorror lead attrs 2]
               : [ Label
                   "Each investigator discards 1 card at random from his or her hand"
                   [AllRandomDiscard (toSource attrs) AnyCard]
                 | canChooseDiscardOption
                 ]
-        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        , advanceAgendaDeck attrs
         ]
       pure a
     _ -> WhatsGoingOn <$> runMessage msg attrs

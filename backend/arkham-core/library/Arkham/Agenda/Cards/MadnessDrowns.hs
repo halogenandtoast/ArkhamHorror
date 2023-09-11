@@ -47,7 +47,7 @@ instance HasAbilities MadnessDrowns where
 instance RunMessage MadnessDrowns where
   runMessage msg a@(MadnessDrowns attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
+      palaceOfTheKing <- getJustLocationByName "Palace of the King"
       beastOfAldebaran <- getSetAsideCard Enemies.beastOfAldebaran
       createBeastOfAldebaran <-
         createEnemyAt_

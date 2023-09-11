@@ -108,8 +108,8 @@ forcedAbility entity idx window =
 restricted :: Criterion -> Ability -> Ability
 restricted criteria = abilityCriteriaL .~ criteria
 
-withCriteria :: Criterion -> Ability -> Ability
-withCriteria c = abilityCriteriaL <>~ c
+withCriteria :: Ability -> Criterion -> Ability
+withCriteria a c = a & abilityCriteriaL <>~ c
 
 haunted :: Sourceable a => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted

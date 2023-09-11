@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (diningCar)
 import Arkham.Location.Helpers
@@ -40,20 +41,18 @@ instance HasModifiersFor DiningCar where
 
 instance HasAbilities DiningCar where
   getAbilities (DiningCar x) =
-    withBaseAbilities x $
-      [ restrictedAbility x 1 Here $
-        ForcedAbility $
-          RevealLocation Timing.After You $
-            LocationWithId $
-              toId x
-      | locationRevealed x
-      ]
+    withBaseAbilities x
+      $ [ restrictedAbility x 1 Here
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId x
+        | locationRevealed x
+        ]
 
 instance RunMessage DiningCar where
   runMessage msg l@(DiningCar attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              (FindAndDrawEncounterCard iid (CardWithTitle "Grappling Horror") True)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ findAndDrawEncounterCard iid $ cardIs Enemies.grapplingHorror
+      pure l
     _ -> DiningCar <$> runMessage msg attrs

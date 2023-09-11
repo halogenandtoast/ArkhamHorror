@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Types
 import Arkham.Classes
 import Arkham.Damage
-import Arkham.Game.Helpers
 import Arkham.Matcher hiding (AssetExhausted)
 import Arkham.Message hiding (AssetDamage)
 import Arkham.Projection
@@ -26,8 +25,8 @@ instance RunMessage InspiringPresence where
   runMessage msg s@(InspiringPresence attrs) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       assets <-
-        selectList $
-          AssetAt
+        selectList
+          $ AssetAt
             (LocationWithInvestigator $ InvestigatorWithId $ skillOwner attrs)
             <> AllyAsset
       choices <- flip mapMaybeM assets $ \a -> do
@@ -42,8 +41,8 @@ instance RunMessage InspiringPresence where
           andChoices =
             if canHealDamage || canHealHorror
               then
-                [ chooseOrRunOne (skillOwner attrs) $
-                    [Label "Heal 1 damage" [healDamage] | canHealDamage]
+                [ chooseOrRunOne (skillOwner attrs)
+                    $ [Label "Heal 1 damage" [healDamage] | canHealDamage]
                       <> [Label "Heal 1 horror" [healHorror] | canHealHorror]
                 ]
               else []

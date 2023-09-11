@@ -39,16 +39,9 @@ theGathering difficulty =
 instance HasChaosTokenValue TheGathering where
   getChaosTokenValue iid chaosTokenFace (TheGathering attrs) = case chaosTokenFace of
     Skull -> do
-      ghoulCount <-
-        selectCount $
-          EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-            <> EnemyWithTrait Trait.Ghoul
+      ghoulCount <- selectCount $ EnemyAt (locationWithInvestigator iid) <> withTrait Trait.Ghoul
       pure $ toChaosTokenValue attrs Skull ghoulCount 2
-    Cultist ->
-      pure $
-        ChaosTokenValue
-          Cultist
-          (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
+    Cultist -> pure $ ChaosTokenValue Cultist (mwhen (isEasyStandard attrs) (NegativeModifier 1))
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
@@ -58,8 +51,11 @@ theGatheringAgendaDeck =
 
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of
+    PreScenarioSetup -> do
+      investigators <- allInvestigators
+      push $ story investigators theGatheringIntro
+      pure s
     Setup -> do
-      investigatorIds <- allInvestigatorIds
       encounterDeck <-
         buildEncounterDeckExcluding
           [Enemies.ghoulPriest]
@@ -70,16 +66,15 @@ instance RunMessage TheGathering where
           , EncounterSet.AncientEvils
           , EncounterSet.ChillingCold
           ]
-      (studyId, placeStudy) <- placeLocationCard Locations.study
+      (study, placeStudy) <- placeLocationCard Locations.study
 
       pushAll
         [ SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
         , placeStudy
-        , RevealLocation Nothing studyId
-        , MoveAllTo (toSource attrs) studyId
-        , story investigatorIds theGatheringIntro
+        , RevealLocation Nothing study
+        , MoveAllTo (toSource attrs) study
         ]
 
       setAsideCards <-
@@ -107,78 +102,51 @@ instance RunMessage TheGathering where
       pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      ghoulCount <-
-        selectCount $
-          EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-            <> EnemyWithTrait Trait.Ghoul
-      when (ghoulCount > 0) $
-        push $
-          InvestigatorAssignDamage
-            iid
-            (ChaosTokenEffectSource Tablet)
-            DamageAny
-            1
-            (if isEasyStandard attrs then 0 else 1)
+      pushWhenM (selectAny $ EnemyAt (locationWithInvestigator iid) <> withTrait Trait.Ghoul)
+        $ assignDamageAndHorror iid (ChaosTokenEffectSource Tablet) 1 (if isEasyStandard attrs then 0 else 1)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Skull | isHardExpert attrs -> do
-          push $
-            FindAndDrawEncounterCard
+          push
+            $ findAndDrawEncounterCard
               iid
               (CardWithType EnemyType <> CardWithTrait Trait.Ghoul)
-              True
-        Cultist ->
-          push $
-            InvestigatorAssignDamage
-              iid
-              (ChaosTokenSource token)
-              DamageAny
-              0
-              (if isEasyStandard attrs then 1 else 2)
+        Cultist -> push $ assignHorror iid (ChaosTokenSource token) (if isEasyStandard attrs then 1 else 2)
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
       lead <- getLead
-      iids <- allInvestigatorIds
-      xp <- getXpWithBonus 2
-      let
-        xpGain = [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        chooseToAddLita =
-          chooseOne
-            lead
-            [ Label
-                "Add Lita Chantler to your deck"
-                [AddCampaignCardToDeck lead Assets.litaChantler]
-            , Label "Do not add Lita Chantler to your deck" []
-            ]
+      investigators <- allInvestigators
+      gainXp <- toGainXp attrs $ getXpWithBonus 2
+      let chooseToAddLita = addCampaignCardToDeckChoice lead [lead] Assets.litaChantler
       case resolution of
         NoResolution ->
-          pushAll $
-            [ story iids noResolution
-            , Record YourHouseIsStillStanding
-            , Record GhoulPriestIsStillAlive
-            , chooseToAddLita
-            ]
-              <> xpGain
+          pushAll
+            $ [ story investigators noResolution
+              , Record YourHouseIsStillStanding
+              , Record GhoulPriestIsStillAlive
+              , chooseToAddLita
+              ]
+              <> gainXp
               <> [EndOfGame Nothing]
         Resolution 1 ->
-          pushAll $
-            [ story iids resolution1
-            , Record YourHouseHasBurnedToTheGround
-            , chooseToAddLita
-            , SufferTrauma lead 0 1
-            ]
-              <> xpGain
+          pushAll
+            $ [ story investigators resolution1
+              , Record YourHouseHasBurnedToTheGround
+              , chooseToAddLita
+              , SufferTrauma lead 0 1
+              ]
+              <> gainXp
               <> [EndOfGame Nothing]
         Resolution 2 ->
           -- TODO: Combine gainXP and bonus so modifiers work
-          pushAll $
-            [ story iids resolution2
-            , Record YourHouseIsStillStanding
-            , GainXP lead (toSource attrs) 1
-            ]
-              <> xpGain
+          pushAll
+            $ [ story investigators resolution2
+              , Record YourHouseIsStillStanding
+              , GainXP lead (toSource attrs) 1
+              ]
+              <> gainXp
               <> [EndOfGame Nothing]
         Resolution 3 ->
           pushAll
@@ -187,7 +155,7 @@ instance RunMessage TheGathering where
             -- \* end campaign if none left
             -- \* handle new investigators
             -- \* handle lead being killed
-            [ story iids resolution3
+            [ story investigators resolution3
             , Record LitaWasForcedToFindOthersToHelpHerCause
             , Record YourHouseIsStillStanding
             , Record GhoulPriestIsStillAlive

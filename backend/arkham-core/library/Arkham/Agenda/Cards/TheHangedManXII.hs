@@ -34,7 +34,7 @@ instance RunMessage TheHangedManXII where
           selectList $ LocationWithoutModifier CannotBeFlipped <> NotLocation (LocationWithTrait Spectral)
         lead <- getLead
         spectralWatcher <- getSetAsideCard Enemies.theSpectralWatcher
-        hangmansBrook <- getJustLocationIdByName "Hangman's Brook"
+        hangmansBrook <- getJustLocationByName "Hangman's Brook"
         createSpectralWatcher <-
           createEnemyAt_
             spectralWatcher

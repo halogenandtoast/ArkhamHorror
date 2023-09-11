@@ -31,19 +31,18 @@ instance RunMessage TheArkhamWoods where
         [ ShuffleEncounterDiscardBackIn
         , DiscardUntilFirst
             lead
-            (AgendaSource aid)
+            (toSource aid)
             Deck.EncounterDeck
             (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Monster)
         ]
       pure a
-    RequestedEncounterCard source _ mcard | isSource attrs source -> do
+    RequestedEncounterCard (isSource attrs -> True) _ mcard -> do
       case mcard of
-        Nothing ->
-          push $ advanceAgendaDeck attrs
+        Nothing -> push $ advanceAgendaDeck attrs
         Just card -> do
-          mainPathId <- getJustLocationIdByName "Main Path"
+          mainPath <- getJustLocationByName "Main Path"
           pushAll
-            [ SpawnEnemyAt (EncounterCard card) mainPathId
+            [ SpawnEnemyAt (EncounterCard card) mainPath
             , PlaceDoom (toSource attrs) (CardIdTarget $ toCardId card) 1
             , advanceAgendaDeck attrs
             ]

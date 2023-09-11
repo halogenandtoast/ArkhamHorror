@@ -23,7 +23,6 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Trait (Trait (SilverTwilight))
-import Data.Monoid.Extra (mwhen)
 
 newtype Metadata = Metadata
   { prologueInvestigators :: Map InvestigatorId InvestigatorId

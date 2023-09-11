@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Damage
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
@@ -36,13 +35,13 @@ instance RunMessage SoothingMelody where
       horrorInvestigators <-
         selectList $ HealableInvestigator (toSource attrs) HorrorType $ InvestigatorAt YourLocation
       damageAssets <-
-        selectListMap AssetTarget $
-          HealableAsset (toSource attrs) DamageType $
-            AssetAt YourLocation <> AllyAsset
+        selectListMap AssetTarget
+          $ HealableAsset (toSource attrs) DamageType
+          $ AssetAt YourLocation <> AllyAsset
       horrorAssets <-
-        selectListMap AssetTarget $
-          HealableAsset (toSource attrs) HorrorType $
-            AssetAt YourLocation <> AllyAsset
+        selectListMap AssetTarget
+          $ HealableAsset (toSource attrs) HorrorType
+          $ AssetAt YourLocation <> AllyAsset
 
       let
         componentLabel component target = case target of
@@ -51,20 +50,20 @@ instance RunMessage SoothingMelody where
           AssetTarget aid -> ComponentLabel (AssetComponent aid component)
           _ -> error "unhandled target"
         investigatorDamageChoices =
-          [ componentLabel DamageToken (toTarget i) $
-            HealDamage (toTarget i) (toSource attrs) 1
+          [ componentLabel DamageToken (toTarget i)
+            $ HealDamage (toTarget i) (toSource attrs) 1
               : [ResolveEvent iid eid (Just $ toTarget i) [] | isNothing mHealed]
           | i <- damageInvestigators
           ]
         damageAssetChoices =
-          [ componentLabel DamageToken asset $
-            HealDamage asset (toSource attrs) 1
+          [ componentLabel DamageToken asset
+            $ HealDamage asset (toSource attrs) 1
               : [ResolveEvent iid eid (Just $ toTarget asset) [] | isNothing mHealed]
           | asset <- damageAssets
           ]
         horrorAssetChoices =
-          [ componentLabel HorrorToken asset $
-            HealHorror asset (toSource attrs) 1
+          [ componentLabel HorrorToken asset
+            $ HealHorror asset (toSource attrs) 1
               : [ResolveEvent iid eid (Just $ toTarget asset) [] | isNothing mHealed]
           | asset <- horrorAssets
           ]

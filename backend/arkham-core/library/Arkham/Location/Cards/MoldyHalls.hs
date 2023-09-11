@@ -22,8 +22,8 @@ instance HasAbilities MoldyHalls where
   getAbilities (MoldyHalls attrs) =
     withBaseAbilities
       attrs
-      [ withCriteria (InvestigatorExists $ You <> InvestigatorWithAnyResources) $
-          haunted "Lose 3 resources" attrs 1
+      [ haunted "Lose 3 resources" attrs 1
+          `withCriteria` InvestigatorExists (You <> InvestigatorWithAnyResources)
       ]
 
 instance RunMessage MoldyHalls where

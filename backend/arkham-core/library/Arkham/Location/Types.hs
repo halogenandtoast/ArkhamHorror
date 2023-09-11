@@ -193,6 +193,7 @@ instance Sourceable LocationAttrs where
   toSource = LocationSource . toId
   isSource LocationAttrs {locationId} (LocationSource lid) =
     locationId == lid
+  isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
 instance HasCardCode LocationAttrs where

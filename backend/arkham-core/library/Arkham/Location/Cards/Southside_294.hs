@@ -13,7 +13,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Trait (Trait (Power))
-import Data.Monoid.Extra (mwhen)
 
 newtype Southside_294 = Southside_294 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

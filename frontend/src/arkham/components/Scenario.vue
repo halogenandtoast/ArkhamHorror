@@ -222,12 +222,35 @@ const scenarioDecks = computed(() => {
 
 })
 
+const transpose = (matrix: any[][]) => {
+  return matrix[0].map((_col, i) => matrix.map(row => row[i]));
+}
+
+
+// Removed empty rows and columns from the location layout
+const cleanLocationLayout = (locationLayout: string[]) => {
+  const rows = locationLayout.map((r) => r.split(/\s+/).filter((c) => c !== ''))
+
+  const cleanedRows = rows.filter((row) => {
+    return row.some((cell) => locations.value.some((location) => location.label === cell))
+  })
+
+  const transposed = transpose(cleanedRows)
+
+  const cleanedCols = transposed.filter((col) => {
+    return col.some((cell) => locations.value.some((location) => location.label === cell))
+  })
+
+  return transpose(cleanedCols).map((row) => row.join(' '))
+}
+
 const locationStyles = computed(() => {
   const { locationLayout } = props.scenario;
   if (locationLayout) {
+    const cleaned = cleanLocationLayout(locationLayout)
     return {
       display: 'grid',
-      'grid-template-areas': locationLayout.map((row) => `"${row}"`).join(' '),
+      'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
       'grid-row-gap': '80px',
       'gap': '80px',
     };
@@ -533,7 +556,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           />
 
           <template v-if="scenario.usesGrid">
-            <template v-for="u in ususedLabels" :key="u">
+            <template v-for="u in unusedLabels" :key="u">
               <div
                 v-if="unusedCanInteract(u) !== -1"
                 class="empty-grid-position card"
@@ -676,12 +699,14 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 .location-cards {
   display: flex;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
 }
 
 .location-cards-container {
   display: flex;
   flex: 1;
-  justify-content: center;
   overflow-y: auto;
 }
 

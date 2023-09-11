@@ -289,5 +289,11 @@ assignHorror iid (toSource -> source) horror = InvestigatorAssignDamage iid sour
 assignDamageAndHorror :: Sourceable source => InvestigatorId -> source -> Int -> Int -> Message
 assignDamageAndHorror iid (toSource -> source) damage horror = InvestigatorAssignDamage iid source DamageAny damage horror
 
+directDamage :: Sourceable source => InvestigatorId -> source -> Int -> Message
+directDamage iid (toSource -> source) damage = InvestigatorDirectDamage iid source damage 0
+
+directHorror :: Sourceable source => InvestigatorId -> source -> Int -> Message
+directHorror iid (toSource -> source) horror = InvestigatorDirectDamage iid source 0 horror
+
 findAndDrawEncounterCard :: InvestigatorId -> CardMatcher -> Message
 findAndDrawEncounterCard investigator cardMatcher = FindAndDrawEncounterCard investigator cardMatcher IncludeDiscard

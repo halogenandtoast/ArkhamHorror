@@ -25,10 +25,10 @@ flamethrower5 = asset Flamethrower5 Cards.flamethrower5
 
 instance HasAbilities Flamethrower5 where
   getAbilities (Flamethrower5 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
+          <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage Flamethrower5 where
@@ -57,20 +57,20 @@ instance RunMessage Flamethrower5 where
         engaged <- selectList $ enemyEngagedWith iid
         let
           toMsg eid' =
-            EnemyDamage eid' $ delayDamage $ directDamage $ attack attrs 1
-        pushAll $
-          [ chooseOne
-              iid
-              [ Label "Do standard damage" [EnemyDamage eid $ attack attrs 1]
-              , Label "Assign up to 4 damage among enemies engaged with you" $
-                  replicate
-                    damage
-                    ( chooseOne
-                        iid
-                        [targetLabel eid' [toMsg eid'] | eid' <- engaged]
-                    )
-              ]
-          , CheckDefeated (toSource attrs)
-          ]
+            EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 1
+        pushAll
+          $ [ chooseOne
+                iid
+                [ Label "Do standard damage" [EnemyDamage eid $ attack attrs 1]
+                , Label "Assign up to 4 damage among enemies engaged with you"
+                    $ replicate
+                      damage
+                      ( chooseOne
+                          iid
+                          [targetLabel eid' [toMsg eid'] | eid' <- engaged]
+                      )
+                ]
+            , CheckDefeated (toSource attrs)
+            ]
         pure a
     _ -> Flamethrower5 <$> runMessage msg attrs

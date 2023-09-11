@@ -46,7 +46,7 @@ instance RunMessage StormOfSpirits where
             toMsg eid' =
               if eid == eid'
                 then EnemyDamage eid' $ delayDamage $ attack attrs 2
-                else EnemyDamage eid' $ delayDamage $ directDamage $ attack attrs 2
+                else EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 2
           msgs <- selectListMap toMsg $ EnemyAt (locationWithInvestigator iid)
           pushAll $ msgs <> [CheckDefeated (toSource attrs)]
           pure e

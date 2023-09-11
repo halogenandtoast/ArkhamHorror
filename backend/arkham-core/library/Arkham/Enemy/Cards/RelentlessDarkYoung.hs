@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
@@ -25,17 +24,16 @@ relentlessDarkYoung =
     Cards.relentlessDarkYoung
     (4, Static 5, 2)
     (2, 1)
-    (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
+    (preyL .~ Prey (InvestigatorWithLowestSkill #agility))
 
 instance HasAbilities RelentlessDarkYoung where
   getAbilities (RelentlessDarkYoung attrs) =
-    withBaseAbilities
-      attrs
-      [mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When]
+    withBaseAbilities attrs
+      $ [mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When]
 
 instance RunMessage RelentlessDarkYoung where
   runMessage msg e@(RelentlessDarkYoung attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ HealDamage (toTarget attrs) (toSource attrs) 2
       pure e
     _ -> RelentlessDarkYoung <$> runMessage msg attrs

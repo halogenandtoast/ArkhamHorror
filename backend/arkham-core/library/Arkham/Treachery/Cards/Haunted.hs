@@ -22,26 +22,24 @@ haunted = treachery Haunted Cards.haunted
 
 instance HasModifiersFor Haunted where
   getModifiersFor (InvestigatorTarget iid) (Haunted attrs) =
-    pure $
-      toModifiers
-        attrs
-        [AnySkillValue (-1) | treacheryOnInvestigator iid attrs]
+    pure
+      $ toModifiers attrs
+      $ [AnySkillValue (-1) | treacheryOnInvestigator iid attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Haunted where
   getAbilities (Haunted a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost 2
     ]
 
 instance RunMessage Haunted where
   runMessage msg t@(Haunted attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ AttachTreachery (toId attrs) (toTarget iid)
+      pure t
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> Haunted <$> runMessage msg attrs

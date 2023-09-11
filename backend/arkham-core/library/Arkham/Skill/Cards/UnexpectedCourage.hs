@@ -14,5 +14,4 @@ unexpectedCourage :: SkillCard UnexpectedCourage
 unexpectedCourage = skill UnexpectedCourage Cards.unexpectedCourage
 
 instance RunMessage UnexpectedCourage where
-  runMessage msg (UnexpectedCourage attrs) =
-    UnexpectedCourage <$> runMessage msg attrs
+  runMessage msg (UnexpectedCourage attrs) = UnexpectedCourage <$> runMessage msg attrs

@@ -18,7 +18,8 @@ paranoia = treachery Paranoia Cards.paranoia
 
 instance RunMessage Paranoia where
   runMessage msg t@(Paranoia attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       resourceCount' <- field InvestigatorClues iid
-      t <$ push (SpendResources iid resourceCount')
+      push $ SpendResources iid resourceCount'
+      pure t
     _ -> Paranoia <$> runMessage msg attrs

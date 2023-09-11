@@ -28,15 +28,15 @@ mobEnforcer =
 
 instance HasAbilities MobEnforcer where
   getAbilities (MobEnforcer attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 OnSameLocation $
-          ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 4])
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 OnSameLocation
+            $ ActionAbility (Just Parley)
+            $ Costs [ActionCost 1, ResourceCost 4]
+        ]
 
 instance RunMessage MobEnforcer where
-  runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ (EnemySource eid) 1 _ _
-      | eid == enemyId ->
-          e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+  runMessage msg e@(MobEnforcer attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure e
     _ -> MobEnforcer <$> runMessage msg attrs

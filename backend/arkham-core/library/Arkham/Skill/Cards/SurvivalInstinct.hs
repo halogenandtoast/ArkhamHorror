@@ -21,9 +21,9 @@ survivalInstinct :: SkillCard SurvivalInstinct
 survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
 
 instance RunMessage SurvivalInstinct where
-  runMessage msg s@(SurvivalInstinct attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid (Just Action.Evade) _ (SkillTarget sid) _ _ | sid == skillId -> do
-      engagedEnemyIds <- selectList EnemyEngagedWithYou
+  runMessage msg s@(SurvivalInstinct attrs) = case msg of
+    PassedSkillTest iid (Just Action.Evade) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
+      engagedEnemyIds <- selectList $ enemyEngagedWith iid
       unblockedConnectedLocationIds <- selectList AccessibleLocation
       canMove <- iid <=~> InvestigatorCanMove
       canDisengage <- iid <=~> InvestigatorCanDisengage
@@ -40,9 +40,8 @@ instance RunMessage SurvivalInstinct where
           pushAll
             $ [ chooseOne
                   iid
-                  [ Label
-                      "Disengage from each other enemy"
-                      [DisengageEnemy iid eid | eid <- es]
+                  [ Label "Disengage from each other enemy"
+                      $ [DisengageEnemy iid eid | eid <- es]
                   , Label "Skip" []
                   ]
               ]

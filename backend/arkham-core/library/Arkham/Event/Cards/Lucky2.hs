@@ -21,10 +21,7 @@ instance RunMessage Lucky2 where
       drawing <- drawCards iid attrs 1
       pushAll
         [ drawing
-        , skillTestModifier
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            (AnySkillValue 2)
+        , skillTestModifier attrs iid $ AnySkillValue 2
         , RerunSkillTest
         ]
       pure e

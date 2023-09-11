@@ -41,6 +41,7 @@ instance HasAbilities Aquinnah1 where
           [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
     ]
 
+-- TODO: Batch cancel
 instance RunMessage Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
@@ -49,25 +50,16 @@ instance RunMessage Aquinnah1 where
         _ -> error "unhandled"
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId
-      enemyIds <-
-        selectList $
-          EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-            <> NotEnemy (EnemyWithId enemyId)
+      enemyIds <- selectList $ EnemyAt (locationWithInvestigator iid) <> NotEnemy (EnemyWithId enemyId)
 
       when (null enemyIds) (error "other enemies had to be present")
 
-      push $
-        chooseOne
-          iid
-          [ targetLabel
+      push
+        $ chooseOne iid
+        $ [ targetLabel
             eid
             [ EnemyDamage eid $ nonAttack source healthDamage'
-            , InvestigatorAssignDamage
-                iid
-                (EnemySource enemyId)
-                DamageAny
-                0
-                sanityDamage'
+            , assignHorror iid enemyId sanityDamage'
             ]
           | eid <- enemyIds
           ]

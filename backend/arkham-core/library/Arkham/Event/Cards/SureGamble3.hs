@@ -2,11 +2,11 @@ module Arkham.Event.Cards.SureGamble3 where
 
 import Arkham.Prelude
 
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message hiding (RevealChaosToken)
-import Arkham.Timing qualified as Timing
 import Arkham.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs
@@ -16,9 +16,14 @@ newtype SureGamble3 = SureGamble3 EventAttrs
 sureGamble3 :: EventCard SureGamble3
 sureGamble3 = event SureGamble3 Cards.sureGamble3
 
+toRevealedToken :: [Window] -> ChaosToken
+toRevealedToken [] = error "invalid"
+toRevealedToken ((windowType -> RevealChaosToken _ token) : _) = token
+toRevealedToken (_ : rest) = toRevealedToken rest
+
 instance RunMessage SureGamble3 where
-  runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid _ [Window Timing.When (RevealChaosToken _ token) _] _ | eid == eventId -> do
+  runMessage msg e@(SureGamble3 attrs) = case msg of
+    InvestigatorPlayEvent _ eid _ (toRevealedToken -> token) _ | eid == toId attrs -> do
       pushAll
         [ CreateEffect "01088" Nothing (toSource attrs) (ChaosTokenTarget token)
         ]

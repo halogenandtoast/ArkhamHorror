@@ -19,32 +19,26 @@ scrying = asset Scrying Cards.scrying
 
 instance HasAbilities Scrying where
   getAbilities (Scrying a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility Nothing $
-          Costs
-            [ ActionCost 1
-            , UseCost (AssetWithId $ toId a) Charge 1
-            , ExhaustCost $ toTarget a
-            ]
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1, exhaust a]
     ]
 
 instance RunMessage Scrying where
   runMessage msg a@(Scrying attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds
-      push $
-        chooseOne
-          iid
-          [ TargetLabel
-            target
-            [ Search
-                iid
-                source
-                target
-                [(FromTopOfDeck 3, PutBackInAnyOrder)]
-                AnyCard
-                ReturnCards
-            ]
+      push
+        $ chooseOne iid
+        $ [ targetLabel target
+            $ [ Search
+                  iid
+                  (toSource attrs)
+                  target
+                  [(FromTopOfDeck 3, PutBackInAnyOrder)]
+                  AnyCard
+                  ReturnCards
+              ]
           | target <- EncounterDeckTarget : targets
           ]
       pure a

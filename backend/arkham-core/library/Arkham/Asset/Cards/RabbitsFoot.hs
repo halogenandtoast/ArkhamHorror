@@ -17,16 +17,15 @@ rabbitsFoot = asset RabbitsFoot Cards.rabbitsFoot
 
 instance HasAbilities RabbitsFoot where
   getAbilities (RabbitsFoot a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (SkillTestResult Timing.After You AnySkillTest (FailureResult AnyValue))
-          (ExhaustCost $ toTarget a)
+          (exhaust a)
     ]
 
 instance RunMessage RabbitsFoot where
   runMessage msg a@(RabbitsFoot attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid attrs 1
       pure a
     _ -> RabbitsFoot <$> runMessage msg attrs

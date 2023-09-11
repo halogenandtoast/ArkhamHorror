@@ -20,23 +20,14 @@ mindWipe1 :: EventCard MindWipe1
 mindWipe1 = event MindWipe1 Cards.mindWipe1
 
 instance RunMessage MindWipe1 where
-  runMessage msg e@(MindWipe1 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      enemyIds <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
-      unless (null enemyIds) $
-        pushAll
-          [ chooseOne
-              iid
-              [ targetLabel
-                eid'
-                [ CreateEffect
-                    "01068"
-                    Nothing
-                    (EventSource eventId)
-                    (EnemyTarget eid')
-                ]
-              | eid' <- enemyIds
-              ]
+  runMessage msg e@(MindWipe1 attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      enemies <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
+      pushWhen (notNull enemies)
+        $ chooseOne iid
+        $ [ targetLabel eid'
+            $ [CreateEffect "01068" Nothing (toSource attrs) (toTarget eid')]
+          | eid' <- enemies
           ]
       pure e
     _ -> MindWipe1 <$> runMessage msg attrs

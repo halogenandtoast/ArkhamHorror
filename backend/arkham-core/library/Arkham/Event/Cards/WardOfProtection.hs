@@ -15,11 +15,11 @@ wardOfProtection :: EventCard WardOfProtection
 wardOfProtection = event WardOfProtection Cards.wardOfProtection
 
 instance RunMessage WardOfProtection where
-  runMessage msg e@(WardOfProtection attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(WardOfProtection attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
         [ CancelNext (toSource attrs) RevelationMessage
-        , InvestigatorAssignDamage iid (EventSource eid) DamageAny 0 1
+        , assignHorror iid (toSource eid) 1
         ]
       pure e
     _ -> WardOfProtection <$> runMessage msg attrs

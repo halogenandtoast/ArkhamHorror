@@ -20,22 +20,18 @@ forbiddenKnowledge =
 
 instance HasAbilities ForbiddenKnowledge where
   getAbilities (ForbiddenKnowledge a) =
-    [ restrictedAbility
-        (toSource a)
-        1
-        ControlsThis
-        ( FastAbility $
-            Costs
-              [ UseCost (AssetWithId $ toId a) Secret 1
-              , HorrorCost (toSource a) YouTarget 1
-              , ExhaustCost (toTarget a)
-              ]
-        )
+    [ restrictedAbility (toSource a) 1 ControlsThis
+        $ FastAbility
+        $ Costs
+          [ UseCost (AssetWithId $ toId a) Secret 1
+          , HorrorCost (toSource a) YouTarget 1
+          , ExhaustCost (toTarget a)
+          ]
     ]
 
 instance RunMessage ForbiddenKnowledge where
   runMessage msg a@(ForbiddenKnowledge attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ TakeResources iid 1 (toAbilitySource attrs 1) False
       pure a
     _ -> ForbiddenKnowledge <$> runMessage msg attrs

@@ -25,10 +25,10 @@ willToSurvive = event WillToSurvive Cards.willToSurvive
 instance RunMessage WillToSurvive where
   runMessage msg e@(WillToSurvive attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e
-        <$ pushAll
-          [ CreateEffect "60512" Nothing (toSource attrs) (InvestigatorTarget iid)
-          ]
+      pushAll
+        [ CreateEffect "60512" Nothing (toSource attrs) (InvestigatorTarget iid)
+        ]
+      pure e
     _ -> WillToSurvive <$> runMessage msg attrs
 
 newtype WillToSurviveEffect = WillToSurviveEffect EffectAttrs
@@ -39,10 +39,8 @@ willToSurviveEffect :: EffectArgs -> WillToSurviveEffect
 willToSurviveEffect = WillToSurviveEffect . uncurry4 (baseAttrs "60512")
 
 instance HasModifiersFor WillToSurviveEffect where
-  getModifiersFor target (WillToSurviveEffect a@EffectAttrs {..})
-    | target == effectTarget =
-        pure
-          [toModifier a DoNotDrawChaosTokensForSkillChecks]
+  getModifiersFor target (WillToSurviveEffect a) | target == effectTarget a = do
+    pure [toModifier a DoNotDrawChaosTokensForSkillChecks]
   getModifiersFor _ _ = pure []
 
 instance RunMessage WillToSurviveEffect where

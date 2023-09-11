@@ -16,8 +16,8 @@ lookWhatIFound :: EventCard LookWhatIFound
 lookWhatIFound = event LookWhatIFound Cards.lookWhatIFound
 
 instance RunMessage LookWhatIFound where
-  runMessage msg e@(LookWhatIFound attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(LookWhatIFound attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
       push $ InvestigatorDiscoverClues iid lid (toSource attrs) 2 Nothing
       pure e

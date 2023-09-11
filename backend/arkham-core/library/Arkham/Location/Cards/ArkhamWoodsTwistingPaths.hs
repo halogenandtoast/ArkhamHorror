@@ -27,6 +27,7 @@ instance HasAbilities ArkhamWoodsTwistingPaths where
             $ LocationWithId (toId attrs)
         ]
 
+-- TODO: Batch cancel
 instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do

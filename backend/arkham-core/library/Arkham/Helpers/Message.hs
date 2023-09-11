@@ -274,8 +274,20 @@ placeLabeledLocation lbl card = do
     alreadyTaken <- selectAny $ LocationWithLabel (mkLabel $ lbl <> tshow n)
     if alreadyTaken then getStartIndex (n + 1) else pure n
 
-assignDamage :: Sourceable source => InvestigatorId -> source -> Int -> UI Message
-assignDamage iid (toSource -> source) damage = DamageLabel iid [InvestigatorAssignDamage iid source DamageAny damage 0]
+assignDamageLabel :: Sourceable source => InvestigatorId -> source -> Int -> UI Message
+assignDamageLabel iid source damage = DamageLabel iid [assignDamage iid source damage]
 
-assignHorror :: Sourceable source => InvestigatorId -> source -> Int -> UI Message
-assignHorror iid (toSource -> source) horror = HorrorLabel iid [InvestigatorAssignDamage iid source DamageAny 0 horror]
+assignHorrorLabel :: Sourceable source => InvestigatorId -> source -> Int -> UI Message
+assignHorrorLabel iid source horror = HorrorLabel iid [assignHorror iid source horror]
+
+assignDamage :: Sourceable source => InvestigatorId -> source -> Int -> Message
+assignDamage iid (toSource -> source) damage = InvestigatorAssignDamage iid source DamageAny damage 0
+
+assignHorror :: Sourceable source => InvestigatorId -> source -> Int -> Message
+assignHorror iid (toSource -> source) horror = InvestigatorAssignDamage iid source DamageAny 0 horror
+
+assignDamageAndHorror :: Sourceable source => InvestigatorId -> source -> Int -> Int -> Message
+assignDamageAndHorror iid (toSource -> source) damage horror = InvestigatorAssignDamage iid source DamageAny damage horror
+
+findAndDrawEncounterCard :: InvestigatorId -> CardMatcher -> Message
+findAndDrawEncounterCard investigator cardMatcher = FindAndDrawEncounterCard investigator cardMatcher IncludeDiscard

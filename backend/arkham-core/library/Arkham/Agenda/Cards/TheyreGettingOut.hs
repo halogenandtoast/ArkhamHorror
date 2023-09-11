@@ -30,55 +30,36 @@ theyreGettingOut =
 
 instance HasAbilities TheyreGettingOut where
   getAbilities (TheyreGettingOut x) =
-    [ mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
-    , restrictedAbility
-        x
-        2
-        ( EnemyCriteria $
-            EnemyExists $
-              UnengagedEnemy
-                <> EnemyWithTrait Ghoul
-                <> NotEnemy (EnemyAt $ LocationWithTitle "Parlor")
-        )
-        $ ForcedAbility
-        $ RoundEnds Timing.When
+    [ forcedAbility x 1 $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
+    , forcedAbility x 2 (RoundEnds Timing.When)
+        `withCriteria` enemyExists
+          (UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy (EnemyAt $ LocationWithTitle "Parlor"))
     ]
 
 instance RunMessage TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      actSequence <-
-        fieldMap ActSequence (AS.unActStep . AS.actStep)
-          =<< selectJust AnyAct
-      let
-        resolution =
-          if actSequence `elem` [1, 2] then Resolution 3 else NoResolution
-      a <$ push (ScenarioResolution resolution)
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      actSequence <- fieldMap ActSequence (AS.unActStep . AS.actStep) =<< selectJust AnyAct
+      let resolution = if actSequence `elem` [1, 2] then Resolution 3 else NoResolution
+      push $ ScenarioResolution resolution
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       lead <- getLead
       enemiesToMove <-
-        selectList $
-          UnengagedEnemy
-            <> EnemyWithTrait Ghoul
-            <> NotEnemy
-              (EnemyAt $ LocationWithTitle "Parlor")
+        selectList
+          $ UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy (EnemyAt $ LocationWithTitle "Parlor")
 
-      unless (null enemiesToMove) $
-        push $
-          chooseOneAtATime
-            lead
-            [ targetLabel
-              enemy
-              [MoveToward (toTarget enemy) (LocationWithTitle "Parlor")]
-            | enemy <- enemiesToMove
-            ]
+      unless (null enemiesToMove)
+        $ push
+        $ chooseOneAtATime lead
+        $ [ targetLabel enemy [MoveToward (toTarget enemy) (LocationWithTitle "Parlor")]
+          | enemy <- enemiesToMove
+          ]
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       ghoulCount <-
-        selectCount $
-          EnemyWithTrait Ghoul
-            <> EnemyAt
-              (LocationMatchAny $ map LocationWithTitle ["Parlor", "Hallway"])
+        selectCount
+          $ EnemyWithTrait Ghoul <> EnemyAt (LocationMatchAny $ map LocationWithTitle ["Parlor", "Hallway"])
       pushAll $ replicate ghoulCount PlaceDoomOnAgenda
       pure a
     _ -> TheyreGettingOut <$> runMessage msg attrs

@@ -31,8 +31,8 @@ undergroundMuscle =
 instance RunMessage UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      laBellaLunaId <- getJustLocationIdByName "La Bella Luna"
-      cloverClubLoungeId <- getJustLocationIdByName "Clover Club Lounge"
+      laBellaLunaId <- getJustLocationByName "La Bella Luna"
+      cloverClubLoungeId <- getJustLocationByName "Clover Club Lounge"
       lead <- getLead
       result <- shuffleM =<< gatherEncounterSet HideousAbominations
       let

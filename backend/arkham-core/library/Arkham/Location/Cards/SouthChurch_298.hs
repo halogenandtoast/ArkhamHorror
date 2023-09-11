@@ -11,7 +11,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
-import Data.Monoid.Extra (mwhen)
 
 newtype SouthChurch_298 = SouthChurch_298 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

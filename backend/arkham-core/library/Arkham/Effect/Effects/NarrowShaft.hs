@@ -24,7 +24,7 @@ instance RunMessage NarrowShaft where
   runMessage msg e@(NarrowShaft attrs) = case msg of
     PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
       do
-        narrowShaftId <- getJustLocationIdByName "Narrow Shaft"
+        narrowShaftId <- getJustLocationByName "Narrow Shaft"
         let disable = DisableEffect (effectId attrs)
         e
           <$ when
@@ -35,7 +35,7 @@ instance RunMessage NarrowShaft where
             )
     FailedSkillTest iid _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
       do
-        narrowShaftId <- getJustLocationIdByName "Narrow Shaft"
+        narrowShaftId <- getJustLocationByName "Narrow Shaft"
         e
           <$ when
             (lid == narrowShaftId)

@@ -37,10 +37,10 @@ instance RunMessage InPursuitOfTheDead where
       heretics <- getSetAsideCardsMatching $ CardWithTitle "Heretic"
       case heretics of
         [heretic1, heretic2, heretic3, heretic4] -> do
-          theGallows <- getJustLocationIdByName "The Gallows"
-          hereticsGraves <- getJustLocationIdByName "Heretics' Graves"
-          chapelAttic <- getJustLocationIdByName "Chapel Attic"
-          chapelCrypt <- getJustLocationIdByName "Chapel Crypt"
+          theGallows <- getJustLocationByName "The Gallows"
+          hereticsGraves <- getJustLocationByName "Heretics' Graves"
+          chapelAttic <- getJustLocationByName "Chapel Attic"
+          chapelCrypt <- getJustLocationByName "Chapel Crypt"
 
           createHeretic1 <- createEnemyAt_ heretic1 theGallows Nothing
           createHeretic2 <- createEnemyAt_ heretic2 hereticsGraves Nothing

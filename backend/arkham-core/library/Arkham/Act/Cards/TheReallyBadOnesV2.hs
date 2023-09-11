@@ -36,7 +36,7 @@ instance RunMessage TheReallyBadOnesV2 where
   runMessage msg a@(TheReallyBadOnesV2 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       danielsCell <-
-        getJustLocationIdByName
+        getJustLocationByName
           ("Patient Confinement" <:> "Daniel's Cell")
       danielChesterfield <- getSetAsideCard Enemies.danielChesterfield
       createDanielChesterfield <-

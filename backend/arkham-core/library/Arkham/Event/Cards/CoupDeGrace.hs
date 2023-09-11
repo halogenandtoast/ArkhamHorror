@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
 import Arkham.Matcher hiding (EnemyDefeated, NonAttackDamageEffect)
 import Arkham.Message
 
@@ -25,11 +24,11 @@ instance RunMessage CoupDeGrace where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       isTurn <- iid <=~> TurnInvestigator
       enemies <-
-        selectList $
-          EnemyAt (locationWithInvestigator iid)
+        selectList
+          $ EnemyAt (locationWithInvestigator iid)
             <> EnemyCanBeDamagedBySource (toSource attrs)
-      pushAll $
-        chooseOrRunOne
+      pushAll
+        $ chooseOrRunOne
           iid
           [ targetLabel
             enemy

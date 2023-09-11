@@ -26,13 +26,13 @@ brokenSteps_290 = location BrokenSteps_290 Cards.brokenSteps_290 3 (Static 0)
 
 instance HasAbilities BrokenSteps_290 where
   getAbilities (BrokenSteps_290 a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Enters Timing.After You $
-              LocationWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ Enters Timing.After You
+            $ LocationWithId
+            $ toId a
+        ]
 
 instance RunMessage BrokenSteps_290 where
   runMessage msg l@(BrokenSteps_290 attrs) = case msg of
@@ -48,7 +48,7 @@ instance RunMessage BrokenSteps_290 where
           ]
             <> [ Label
                 "Draw the topmost cultist enemy in the encounter discard pile"
-                [FindAndDrawEncounterCard iid (CardWithId $ toCardId c) True]
+                [findAndDrawEncounterCard iid (CardWithId $ toCardId c)]
                | c <- maybeToList mCultistCard
                ]
       unless (null choices) $ push $ chooseOne iid choices

@@ -18,22 +18,16 @@ newtype WolfManDrew = WolfManDrew EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wolfManDrew :: EnemyCard WolfManDrew
-wolfManDrew =
-  enemyWith
-    WolfManDrew
-    Cards.wolfManDrew
-    (4, Static 4, 2)
-    (2, 0)
-    (spawnAtL ?~ "Downtown")
+wolfManDrew = enemyWith WolfManDrew Cards.wolfManDrew (4, Static 4, 2) (2, 0) (spawnAtL ?~ "Downtown")
 
 instance HasAbilities WolfManDrew where
   getAbilities (WolfManDrew a) =
     withBaseAbilities a
-      $ [forcedAbility a 1 $ EnemyAttacks Timing.When Anyone AnyEnemyAttack (toEnemyMatcher $ toId a)]
+      $ [forcedAbility a 1 $ EnemyAttacks Timing.When Anyone AnyEnemyAttack (EnemyWithId $ toId a)]
 
 instance RunMessage WolfManDrew where
   runMessage msg e@(WolfManDrew attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ HealDamage (toTarget attrs) (toSource attrs) 1
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ HealDamage (toTarget attrs) (toAbilitySource attrs 1) 1
       pure e
     _ -> WolfManDrew <$> runMessage msg attrs

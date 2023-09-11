@@ -54,7 +54,7 @@ instance RunMessage BeyondTheMistV4 where
       push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      geistTrap <- getJustLocationIdByName "The Geist-Trap"
+      geistTrap <- getJustLocationByName "The Geist-Trap"
       investigatorsAtUnvisitedIsles <- selectList $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
 
       silverTwilightLodge <- getSetAsideCardsMatching (CardFromEncounterSet SilverTwilightLodge)

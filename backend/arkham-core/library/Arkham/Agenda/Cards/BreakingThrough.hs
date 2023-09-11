@@ -26,12 +26,12 @@ breakingThrough =
 
 instance HasAbilities BreakingThrough where
   getAbilities (BreakingThrough x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          MovedBy
-            Timing.After
-            You
-            Matcher.EncounterCardSource
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ MovedBy
+          Timing.After
+          You
+          Matcher.EncounterCardSource
     ]
 
 instance RunMessage BreakingThrough where
@@ -42,8 +42,8 @@ instance RunMessage BreakingThrough where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       yogSothothSpawnLocation <-
         fromMaybeM
-          (getJustLocationIdByName "Another Dimension")
-          (getLocationIdByName "The Edge of the Universe")
+          (getJustLocationByName "Another Dimension")
+          (getLocationByName "The Edge of the Universe")
       yogSothoth <- getSetAsideCard Enemies.yogSothoth
       createYogSothoth <-
         createEnemyAt_

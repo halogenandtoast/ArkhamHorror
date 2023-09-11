@@ -92,6 +92,9 @@ instance Sourceable LocationId where
 instance Sourceable AssetId where
   toSource = AssetSource
 
+instance Sourceable AgendaId where
+  toSource = AgendaSource
+
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource = AbilitySource . toSource
 

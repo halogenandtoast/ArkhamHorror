@@ -22,12 +22,7 @@ instance RunMessage MysteriousChanting where
     Revelation iid source | isSource attrs source -> do
       enemies <- selectList $ NearestEnemy $ EnemyWithTrait Cultist
       case enemies of
-        [] ->
-          push $
-            FindAndDrawEncounterCard
-              iid
-              (CardWithType EnemyType <> CardWithTrait Cultist)
-              True
+        [] -> push $ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Cultist
         xs ->
           pushAll
             [ chooseOne

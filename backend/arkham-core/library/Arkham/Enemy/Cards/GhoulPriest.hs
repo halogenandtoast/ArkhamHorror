@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype GhoulPriest = GhoulPriest EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -22,7 +21,7 @@ ghoulPriest =
     Cards.ghoulPriest
     (4, PerPlayer 5, 4)
     (2, 2)
-    (preyL .~ Prey (InvestigatorWithHighestSkill SkillCombat))
+    (preyL .~ Prey (InvestigatorWithHighestSkill #combat))
 
 instance RunMessage GhoulPriest where
   runMessage msg (GhoulPriest attrs) = GhoulPriest <$> runMessage msg attrs

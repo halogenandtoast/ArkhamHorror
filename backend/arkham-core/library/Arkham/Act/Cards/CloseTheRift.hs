@@ -47,7 +47,7 @@ instance RunMessage CloseTheRift where
       pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <-
-        getJustLocationIdByName
+        getJustLocationByName
           "The Edge of the Universe"
       tearThroughTime <- getSetAsideCard Locations.tearThroughTime
       locationPlacement <- placeLocation_ tearThroughTime

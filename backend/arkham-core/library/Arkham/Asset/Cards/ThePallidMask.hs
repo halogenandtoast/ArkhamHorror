@@ -35,7 +35,7 @@ instance RunMessage ThePallidMask where
         selectJust
           (enemyIs Enemies.theManInThePallidMask)
       hasturTheTatteredKing <- getSetAsideCard Enemies.hasturTheTatteredKing
-      palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
+      palaceOfTheKing <- getJustLocationByName "Palace of the King"
       createHasturTheTatteredKing <-
         createEnemyAt_
           hasturTheTatteredKing

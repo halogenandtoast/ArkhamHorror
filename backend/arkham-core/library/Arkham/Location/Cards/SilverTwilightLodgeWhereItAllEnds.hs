@@ -31,7 +31,7 @@ instance RunMessage SilverTwilightLodgeWhereItAllEnds where
       let breaches = countLocationBreaches attrs
       act <- selectJust AnyAct
       pushAll
-        $ FindAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait SilverTwilight) True
+        $ findAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait SilverTwilight)
           : ( guard (breaches > 0)
                 *> [RemoveBreaches (toTarget attrs) breaches, PlaceBreaches (toTarget act) breaches]
             )

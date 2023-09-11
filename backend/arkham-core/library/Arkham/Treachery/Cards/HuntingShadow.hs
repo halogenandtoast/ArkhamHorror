@@ -3,9 +3,9 @@ module Arkham.Treachery.Cards.HuntingShadow where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype HuntingShadow = HuntingShadow TreacheryAttrs
@@ -17,18 +17,11 @@ huntingShadow = treachery HuntingShadow Cards.huntingShadow
 
 instance RunMessage HuntingShadow where
   runMessage msg t@(HuntingShadow attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      playerSpendableClueCount <- getSpendableClueCount [iid]
-      push $
-        if playerSpendableClueCount > 0
-          then
-            chooseOne
-              iid
-              [ Label "Spend 1 clue" [SpendClues 1 [iid]]
-              , Label
-                  "Take 2 damage"
-                  [InvestigatorAssignDamage iid source DamageAny 2 0]
-              ]
-          else InvestigatorAssignDamage iid source DamageAny 2 0
+    Revelation iid (isSource attrs -> True) -> do
+      canSpendClues <- getCanSpendNClues iid 1
+      push
+        $ chooseOrRunOne iid
+        $ [Label "Spend 1 clue" [SpendClues 1 [iid]] | canSpendClues]
+          <> [Label "Take 2 damage" [assignDamage iid attrs 2]]
       pure t
     _ -> HuntingShadow <$> runMessage msg attrs

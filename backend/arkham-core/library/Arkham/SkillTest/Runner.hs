@@ -15,8 +15,8 @@ import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Game.Helpers hiding (matches)
+import Arkham.Classes hiding (matches)
+import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))

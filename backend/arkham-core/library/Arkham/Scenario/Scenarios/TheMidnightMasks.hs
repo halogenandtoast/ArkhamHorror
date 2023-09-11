@@ -60,70 +60,70 @@ instance HasChaosTokenValue TheMidnightMasks where
 
 allCultists :: Set CardCode
 allCultists =
-  setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
+  setFromList
+    $ map
+      toCardCode
+      [ Enemies.wolfManDrew
+      , Enemies.hermanCollins
+      , Enemies.peterWarren
+      , Enemies.victoriaDevereux
+      , Enemies.ruthTurner
+      , Enemies.theMaskedHunter
+      ]
 
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of
+    PreScenarioSetup -> do
+      investigators <- allInvestigators
+      litaForcedToFindOthersToHelpHerCause <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause
+      pushAll
+        [ story investigators
+            $ introPart1
+            $ if litaForcedToFindOthersToHelpHerCause then TheMidnightMasksIntroOne else TheMidnightMasksIntroTwo
+        , story investigators introPart2
+        ]
+      pure s
     Setup -> do
       count' <- getPlayerCount
-      investigatorIds <- allInvestigatorIds
       (acolytes, darkCult) <-
         splitAt (count' - 1)
           . sortOn toCardCode
-          <$> gatherEncounterSet EncounterSet.DarkCult
+            <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
 
-      (yourHouseId, placeYourHouse) <- placeLocationCard Locations.yourHouse
-      (rivertownId, placeRivertown) <- placeLocationCard Locations.rivertown
-      (southsideId, placeSouthside) <-
+      (yourHouse, placeYourHouse) <- placeLocationCard Locations.yourHouse
+      (rivertown, placeRivertown) <- placeLocationCard Locations.rivertown
+      (southside, placeSouthside) <-
         placeLocationCard
-          =<< sample
-            ( Locations.southsideHistoricalSociety
-                :| [Locations.southsideMasBoardingHouse]
-            )
-      (downtownId, placeDowntown) <-
-        placeLocationCard
-          =<< sample
-            ( Locations.downtownFirstBankOfArkham
-                :| [Locations.downtownArkhamAsylum]
-            )
-      (graveyardId, placeGraveyard) <- placeLocationCard Locations.graveyard
-      placeEasttown <- placeLocationCard_ Locations.easttown
-      placeMiskatonicUniversity <-
-        placeLocationCard_
-          Locations.miskatonicUniversity
-      placeNorthside <- placeLocationCard_ Locations.northside
-      placeStMarysHospital <- placeLocationCard_ Locations.stMarysHospital
+          =<< sample2 Locations.southsideHistoricalSociety Locations.southsideMasBoardingHouse
+      (downtown, placeDowntown) <-
+        placeLocationCard =<< sample2 Locations.downtownFirstBankOfArkham Locations.downtownArkhamAsylum
+      (graveyard, placeGraveyard) <- placeLocationCard Locations.graveyard
+      otherPlacements <-
+        placeLocationCards_
+          [Locations.easttown, Locations.miskatonicUniversity, Locations.northside, Locations.stMarysHospital]
 
       houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
-      litaForcedToFindOthersToHelpHerCause <-
-        getHasRecord
-          LitaWasForcedToFindOthersToHelpHerCause
       ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
-      cultistDeck' <-
-        shuffleM
-          . map EncounterCard
-          =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
+      cultistDeck' <- shuffleM . map EncounterCard =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
 
       let
         startingLocationMessages =
           if houseBurnedDown
             then
-              [ RevealLocation Nothing rivertownId
-              , MoveAllTo (toSource attrs) rivertownId
+              [ RevealLocation Nothing rivertown
+              , MoveAllTo (toSource attrs) rivertown
               ]
             else
               [ placeYourHouse
-              , RevealLocation Nothing yourHouseId
-              , MoveAllTo (toSource attrs) yourHouseId
+              , RevealLocation Nothing yourHouse
+              , MoveAllTo (toSource attrs) yourHouse
               ]
-        ghoulPriestMessages =
-          [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
 
       spawnAcolyteMessages <-
-        for (zip acolytes [southsideId, downtownId, graveyardId]) $
-          \(c, l) -> createEnemyAt_ (EncounterCard c) l Nothing
+        for (zip acolytes [southside, downtown, graveyard])
+          $ \(c, l) -> createEnemyAt_ (EncounterCard c) l Nothing
 
       encounterDeck <-
         buildEncounterDeckWith
@@ -134,29 +134,18 @@ instance RunMessage TheMidnightMasks where
           , EncounterSet.LockedDoors
           ]
 
-      let
-        intro1or2 =
-          if litaForcedToFindOthersToHelpHerCause
-            then TheMidnightMasksIntroOne
-            else TheMidnightMasksIntroTwo
-
-      pushAll $
-        [ story investigatorIds (introPart1 intro1or2)
-        , story investigatorIds introPart2
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeRivertown
-        , placeSouthside
-        , placeStMarysHospital
-        , placeMiskatonicUniversity
-        , placeDowntown
-        , placeEasttown
-        , placeGraveyard
-        , placeNorthside
-        ]
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeRivertown
+          , placeSouthside
+          , placeDowntown
+          , placeGraveyard
+          ]
+          <> otherPlacements
           <> startingLocationMessages
-          <> ghoulPriestMessages
+          <> [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
           <> spawnAcolyteMessages
 
       agendas <- genCards [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
@@ -171,53 +160,47 @@ instance RunMessage TheMidnightMasks where
               & (agendaStackL . at 1 ?~ agendas)
           )
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
-      closestCultists <-
-        selectList $
-          NearestEnemy $
-            EnemyWithTrait
-              Trait.Cultist
+      closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
       case closestCultists of
         [] -> pure ()
         [x] -> push $ PlaceTokens (ChaosTokenEffectSource Cultist) (EnemyTarget x) Doom 1
         xs ->
-          push $
-            chooseOne
-              iid
-              [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1] | x <- xs]
+          push
+            $ chooseOne iid
+            $ [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1] | x <- xs]
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- selectList $ EnemyWithTrait Trait.Cultist
       case cultists of
-        [] -> push (DrawAnotherChaosToken iid)
+        [] -> push $ DrawAnotherChaosToken iid
         xs -> pushAll [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget eid) Doom 1 | eid <- xs]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
-      push $
-        if isEasyStandard attrs
+      push
+        $ if isEasyStandard attrs
           then InvestigatorPlaceAllCluesOnLocation iid (ChaosTokenEffectSource Tablet)
           else InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
       pure s
-    ScenarioResolution NoResolution ->
-      s <$ push (ScenarioResolution $ Resolution 1)
+    ScenarioResolution NoResolution -> do
+      push R1
+      pure s
     ScenarioResolution (Resolution n) -> do
       iids <- allInvestigatorIds
-      victoryDisplay <-
-        mapSet toCardCode
-          <$> select (VictoryDisplayCardMatch AnyCard)
-      xp <- getXp
+      victoryDisplay <- mapSet toCardCode <$> select (VictoryDisplayCardMatch AnyCard)
+      gainXp <- toGainXp attrs getXp
       let
         resolution = if n == 1 then resolution1 else resolution2
         cultistsWeInterrogated = allCultists `intersection` victoryDisplay
         cultistsWhoGotAway = allCultists `difference` cultistsWeInterrogated
-        ghoulPriestDefeated = "01116" `elem` victoryDisplay
-      pushAll $
-        [ story iids resolution
-        , recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
-        , recordSetInsert CultistsWhoGotAway cultistsWhoGotAway
-        ]
+        ghoulPriestDefeated = toCardCode Enemies.ghoulPriest `elem` victoryDisplay
+      pushAll
+        $ [ story iids resolution
+          , recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
+          , recordSetInsert CultistsWhoGotAway cultistsWhoGotAway
+          ]
           <> [Record ItIsPastMidnight | n == 2]
           <> [CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated]
-          <> [GainXP iid (toSource attrs) x | (iid, x) <- xp]
+          <> gainXp
           <> [EndOfGame Nothing]
       pure s
     HandleOption option -> do

@@ -24,19 +24,19 @@ peterWarren =
     Cards.peterWarren
     (2, Static 3, 3)
     (1, 0)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Miskatonic University"))
+    (spawnAtL ?~ "Miskatonic University")
 
 instance HasAbilities PeterWarren where
   getAbilities (PeterWarren attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 OnSameLocation $
-          ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost (Static 2)])
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 OnSameLocation
+            $ ActionAbility (Just Parley)
+            $ Costs [ActionCost 1, ClueCost (Static 2)]
+        ]
 
 instance RunMessage PeterWarren where
   runMessage msg e@(PeterWarren attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          e <$ push (AddToVictory $ toTarget attrs)
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ AddToVictory $ toTarget attrs
+      pure e
     _ -> PeterWarren <$> runMessage msg attrs

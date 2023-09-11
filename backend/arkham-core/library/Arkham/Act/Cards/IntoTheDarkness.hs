@@ -68,6 +68,6 @@ instance RunMessage IntoTheDarkness where
     RequestedEncounterCard (ActSource aid) _ mcard | aid == actId -> case mcard of
       Nothing -> pure a
       Just card -> do
-        ritualSiteId <- getJustLocationIdByName "Ritual Site"
+        ritualSiteId <- getJustLocationByName "Ritual Site"
         a <$ pushAll [SpawnEnemyAt (EncounterCard card) ritualSiteId]
     _ -> IntoTheDarkness <$> runMessage msg attrs

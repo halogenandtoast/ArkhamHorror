@@ -210,8 +210,8 @@ selectOnlyOne matcher =
   selectList matcher >>= \case
     [x] -> pure x
     xs ->
-      error $
-        "Expected only one "
+      error
+        $ "Expected only one "
           <> show (typeRep (Proxy @(QueryElement a)))
           <> " result for: "
           <> show matcher
@@ -227,3 +227,12 @@ isMatch a m = member a <$> select m
 
 class (Ord (QueryElement a), Eq (QueryElement a)) => Query a where
   select :: (HasCallStack, HasGame m) => a -> m (Set (QueryElement a))
+
+matches :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
+matches a matcher = member a <$> select matcher
+
+(<=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
+(<=~>) = matches
+
+(<!=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
+(<!=~>) el q = not <$> matches el q

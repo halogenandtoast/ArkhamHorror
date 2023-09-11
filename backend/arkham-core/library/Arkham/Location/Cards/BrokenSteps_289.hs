@@ -28,13 +28,13 @@ brokenSteps_289 = location BrokenSteps_289 Cards.brokenSteps_289 4 (Static 0)
 
 instance HasAbilities BrokenSteps_289 where
   getAbilities (BrokenSteps_289 a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Enters Timing.After You $
-              LocationWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ Enters Timing.After You
+            $ LocationWithId
+            $ toId a
+        ]
 
 instance RunMessage BrokenSteps_289 where
   runMessage msg l@(BrokenSteps_289 attrs) = case msg of
@@ -50,7 +50,7 @@ instance RunMessage BrokenSteps_289 where
           ]
             <> [ Label
                 "Draw the topmost omen treachery in the encounter discard pile"
-                [FindAndDrawEncounterCard iid (CardWithId $ toCardId c) True]
+                [findAndDrawEncounterCard iid (CardWithId $ toCardId c)]
                | c <- maybeToList mOmenCard
                ]
       unless (null choices) $ push $ chooseOne iid choices

@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
@@ -31,8 +30,8 @@ instance RunMessage Persuasion where
       case mlocation of
         Just location -> do
           enemies <-
-            selectWithField EnemySanityDamage $
-              enemyAt location
+            selectWithField EnemySanityDamage
+              $ enemyAt location
                 <> EnemyWithTrait Humanoid
                 <> NonWeaknessEnemy
                 <> CanParleyEnemy iid

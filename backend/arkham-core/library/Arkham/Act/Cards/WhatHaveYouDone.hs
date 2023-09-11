@@ -31,7 +31,7 @@ instance HasAbilities WhatHaveYouDone where
 instance RunMessage WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther
+      push $ AdvanceAct (toId attrs) (toSource iid) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       lead <- getLead
@@ -40,5 +40,5 @@ instance RunMessage WhatHaveYouDone where
         $ [ Label "It was never much of a home. Burn it down! (→ _R1_)" [R1]
           , Label "This \"hell-pit\" is my home! No way we are burning it! (→ _R2_)" [R2]
           ]
-      pure $ WhatHaveYouDone $ attrs & sequenceL .~ Sequence 3 B
+      pure a
     _ -> WhatHaveYouDone <$> runMessage msg attrs

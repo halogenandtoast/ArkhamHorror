@@ -45,8 +45,8 @@ instance RunMessage AnetteMasonReincarnatedEvil where
       investigators <- getInvestigators
       pushAll
         [ chooseOne investigator
-          $ [ assignDamage investigator (toAbilitySource attrs 1) 1
-            , assignHorror investigator (toAbilitySource attrs 1) 1
+          $ [ assignDamageLabel investigator (toAbilitySource attrs 1) 1
+            , assignHorrorLabel investigator (toAbilitySource attrs 1) 1
             ]
         | investigator <- investigators
         ]

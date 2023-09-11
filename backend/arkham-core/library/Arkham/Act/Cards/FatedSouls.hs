@@ -36,7 +36,7 @@ fatedSouls = act (2, A) FatedSouls Cards.fatedSouls (Just $ GroupClueCost (PerPl
 instance RunMessage FatedSouls where
   runMessage msg a@(FatedSouls attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      miskatonicRiver <- getJustLocationIdByName "Miskatonic River"
+      miskatonicRiver <- getJustLocationByName "Miskatonic River"
       watcher <- selectJust (OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
       watchersGrasp <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
       watchersGaze <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGaze

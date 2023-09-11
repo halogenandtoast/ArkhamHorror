@@ -10,7 +10,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype Graveyard = Graveyard LocationAttrs
@@ -22,38 +21,23 @@ graveyard = location Graveyard Cards.graveyard 1 (PerPlayer 2)
 
 instance HasAbilities Graveyard where
   getAbilities (Graveyard x) =
-    withBaseAbilities x $
-      [ mkAbility x 1 $
-          ForcedAbility
-            (Enters Timing.After Anyone $ LocationWithId (toId x))
-      ]
+    withRevealedAbilities x
+      $ [ mkAbility x 1
+            $ ForcedAbility
+            $ Enters Timing.After Anyone (LocationWithId $ toId x)
+        ]
 
 instance RunMessage Graveyard where
   runMessage msg l@(Graveyard attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              ( beginSkillTest
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  SkillWillpower
-                  3
-              )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          rivertownId <- getJustLocationIdByName "Rivertown"
-          l
-            <$ push
-              ( chooseOne
-                  iid
-                  [ Label
-                      "Take 2 horror"
-                      [InvestigatorAssignDamage iid source DamageAny 0 2]
-                  , Label
-                      "Move to Rivertown"
-                      [MoveTo $ move (toSource attrs) iid rivertownId]
-                  ]
-              )
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower 3
+      pure l
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
+      rivertown <- getJustLocationByName "Rivertown"
+      push
+        $ chooseOne iid
+        $ [ Label "Take 2 horror" [assignHorror iid (toAbilitySource attrs 1) 2]
+          , Label "Move to Rivertown" [MoveTo $ move (toAbilitySource attrs 1) iid rivertown]
+          ]
+      pure l
     _ -> Graveyard <$> runMessage msg attrs

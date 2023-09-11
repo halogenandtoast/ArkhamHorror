@@ -20,17 +20,12 @@ cellar = location Cellar Cards.cellar 4 (PerPlayer 2)
 
 instance HasAbilities Cellar where
   getAbilities (Cellar a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Enters Timing.After You $
-              LocationWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [forcedAbility a 1 $ Enters Timing.After You $ LocationWithId $ toId a]
 
 instance RunMessage Cellar where
   runMessage msg a@(Cellar attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ assignDamage iid (toAbilitySource attrs 1) 1
+      pure a
     _ -> Cellar <$> runMessage msg attrs

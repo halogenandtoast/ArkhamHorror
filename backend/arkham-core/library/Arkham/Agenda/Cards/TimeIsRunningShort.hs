@@ -12,7 +12,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
-import Arkham.Resolution
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -27,10 +26,11 @@ instance HasAbilities TimeIsRunningShort where
     [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
 instance RunMessage TimeIsRunningShort where
-  runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid
-      | aid == agendaId && onSide B attrs ->
-          a <$ push (ScenarioResolution $ Resolution 2)
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a <$ push (Resign iid)
+  runMessage msg a@(TimeIsRunningShort attrs) = case msg of
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      push R2
+      pure a
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ Resign iid
+      pure a
     _ -> TimeIsRunningShort <$> runMessage msg attrs

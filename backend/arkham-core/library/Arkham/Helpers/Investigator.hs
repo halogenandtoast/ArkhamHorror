@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Classes.Query
 import Arkham.Damage
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
@@ -69,8 +70,8 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
           pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
     applyModifier (ActionSkillModifier action skillType m) n
       | canBeIncreased || m < 0 =
-          pure $
-            if skillType `elem` matchingSkills && Just action == maction
+          pure
+            $ if skillType `elem` matchingSkills && Just action == maction
               then max 0 (n + m)
               else n
     applyModifier _ n = pure n
@@ -203,11 +204,11 @@ investigator
   :: (InvestigatorAttrs -> a) -> CardDef -> Stats -> CardBuilder () a
 investigator f cardDef Stats {..} =
   let iid = InvestigatorId (cdCardCode cardDef)
-  in  CardBuilder
+   in CardBuilder
         { cbCardCode = cdCardCode cardDef
         , cbCardBuilder = \_ _ ->
-            f $
-              InvestigatorAttrs
+            f
+              $ InvestigatorAttrs
                 { investigatorId = iid
                 , investigatorName = cdName cardDef
                 , investigatorCardCode = cdCardCode cardDef
@@ -301,6 +302,9 @@ getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
+getCanSpendNClues :: HasGame m => InvestigatorId -> Int -> m Bool
+getCanSpendNClues iid n = iid <=~> InvestigatorCanSpendClues (Static n)
+
 getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
@@ -333,11 +337,11 @@ canCommitToAnotherLocation attrs otherLocation = do
 
 findCard :: HasCallStack => CardId -> InvestigatorAttrs -> Card
 findCard cardId a =
-  fromJustNote "not in hand or discard or deck" $
-    findMatch $
-      (a ^. handL)
-        <> map PlayerCard (a ^. discardL)
-        <> map PlayerCard (unDeck $ a ^. deckL)
+  fromJustNote "not in hand or discard or deck"
+    $ findMatch
+    $ (a ^. handL)
+      <> map PlayerCard (a ^. discardL)
+      <> map PlayerCard (unDeck $ a ^. deckL)
  where
   findMatch = find ((== cardId) . toCardId)
 

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -30,23 +29,23 @@ instance RunMessage SurvivalInstinct where
       canDisengage <- iid <=~> InvestigatorCanDisengage
       let
         moveOptions =
-          chooseOrRunOne iid $
-            [Label "Do not move to a connecting location" []]
+          chooseOrRunOne iid
+            $ [Label "Do not move to a connecting location" []]
               <> [ targetLabel lid [Move $ move attrs iid lid]
                  | lid <- unblockedConnectedLocationIds
                  ]
 
       case engagedEnemyIds of
         es | notNull es && canDisengage -> do
-          pushAll $
-            [ chooseOne
-                iid
-                [ Label
-                    "Disengage from each other enemy"
-                    [DisengageEnemy iid eid | eid <- es]
-                , Label "Skip" []
-                ]
-            ]
+          pushAll
+            $ [ chooseOne
+                  iid
+                  [ Label
+                      "Disengage from each other enemy"
+                      [DisengageEnemy iid eid | eid <- es]
+                  , Label "Skip" []
+                  ]
+              ]
               <> [ moveOptions
                  | notNull unblockedConnectedLocationIds && canMove
                  ]

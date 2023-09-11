@@ -55,7 +55,6 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Query
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest.Base
@@ -2566,15 +2565,6 @@ targetMatches s = \case
 
 enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = member enemyId <$> select mtchr
-
-matches :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
-matches a matcher = member a <$> select matcher
-
-(<=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
-(<=~>) = matches
-
-(<!=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
-(<!=~>) el q = not <$> matches el q
 
 locationMatches
   :: HasGame m

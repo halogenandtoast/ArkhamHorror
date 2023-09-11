@@ -64,8 +64,8 @@ on double sided cards which card code is on the other side.
 getSetAsideCard :: HasGame m => CardDef -> m Card
 getSetAsideCard def = do
   card <- selectJust . SetAsideCardMatch $ cardIs def
-  pure $
-    if cardCodeExactEq (toCardCode card) (toCardCode def)
+  pure
+    $ if cardCodeExactEq (toCardCode card) (toCardCode def)
       then card
       else lookupCard (toCardCode def) (toCardId card)
 
@@ -85,12 +85,12 @@ maybeGetSetAsideEncounterCard = fmap (preview _EncounterCard) . getSetAsideCard
 getSetAsideCardsMatching :: HasGame m => CardMatcher -> m [Card]
 getSetAsideCardsMatching = selectList . SetAsideCardMatch
 
-getJustLocationIdByName :: HasGame m => Name -> m LocationId
-getJustLocationIdByName name =
-  fromJustNote ("Missing " <> show name) <$> getLocationIdByName name
+getJustLocationByName :: HasGame m => Name -> m LocationId
+getJustLocationByName name =
+  fromJustNote ("Missing " <> show name) <$> getLocationByName name
 
-getLocationIdByName :: HasGame m => Name -> m (Maybe LocationId)
-getLocationIdByName name = selectOne matcher
+getLocationByName :: HasGame m => Name -> m (Maybe LocationId)
+getLocationByName name = selectOne matcher
  where
   matcher = case (nameTitle name, nameSubtitle name) of
     (title, Just subtitle) -> LocationWithFullTitle title subtitle

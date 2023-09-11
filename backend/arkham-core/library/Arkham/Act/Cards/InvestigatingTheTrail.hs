@@ -28,16 +28,16 @@ investigatingTheTrail =
 instance RunMessage InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      mRitualSiteId <- getLocationIdByName "Ritual Site"
-      mainPathId <- getJustLocationIdByName "Main Path"
+      mRitualSiteId <- getLocationByName "Ritual Site"
+      mainPathId <- getJustLocationByName "Main Path"
       when (isNothing mRitualSiteId) $ do
         placeRitualSite <- placeSetAsideLocation_ Locations.ritualSite
         push placeRitualSite
       cultistsWhoGotAway <-
         traverse (genCard . lookupEncounterCardDef)
           =<< getRecordedCardCodes CultistsWhoGotAway
-      createEnemies <- for cultistsWhoGotAway $
-        \card -> createEnemyAt_ card mainPathId Nothing
+      createEnemies <- for cultistsWhoGotAway
+        $ \card -> createEnemyAt_ card mainPathId Nothing
 
       pushAll $ createEnemies <> [AdvanceActDeck actDeckId (toSource attrs)]
       pure a

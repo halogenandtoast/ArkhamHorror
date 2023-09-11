@@ -62,46 +62,43 @@ agendaDeck =
 
 instance RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
+    PreScenarioSetup -> do
+      investigators <- allInvestigators
+      push $ story investigators intro
+      pure s
     Setup -> do
-      investigatorIds <- allInvestigatorIds
       pastMidnight <- getHasRecord ItIsPastMidnight
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
       cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
       ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
 
       let
-        woodsLabels = ["woods" <> tshow @Int n | n <- [1 .. 4]]
-        ghoulPriestMessages =
-          [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
         pastMidnightMessages =
-          if pastMidnight
-            then
-              [ AllRandomDiscard (toSource attrs) AnyCard
-              , AllRandomDiscard (toSource attrs) AnyCard
-              ]
-            else []
+          guard pastMidnight
+            *> [ AllRandomDiscard (toSource attrs) AnyCard
+               , AllRandomDiscard (toSource attrs) AnyCard
+               ]
         cultistsWhoGotAwayMessages =
           replicate
             ((length cultistsWhoGotAway + 1) `div` 2)
             PlaceDoomOnAgenda
 
-      (mainPathId, placeMainPath) <- placeLocationCard Locations.mainPath
+      (mainPath, placeMainPath) <- placeLocationCard Locations.mainPath
 
-      arkhamWoods <-
-        genCards
-          [ Locations.arkhamWoodsUnhallowedGround
-          , Locations.arkhamWoodsTwistingPaths
-          , Locations.arkhamWoodsOldHouse
-          , Locations.arkhamWoodsCliffside
-          , Locations.arkhamWoodsTangledThicket
-          , Locations.arkhamWoodsQuietGlade
-          ]
-
-      woodsLocations <- take 4 <$> shuffleM arkhamWoods
+      woodsLocations <-
+        take 4
+          <$> shuffleM
+            [ Locations.arkhamWoodsUnhallowedGround
+            , Locations.arkhamWoodsTwistingPaths
+            , Locations.arkhamWoodsOldHouse
+            , Locations.arkhamWoodsCliffside
+            , Locations.arkhamWoodsTangledThicket
+            , Locations.arkhamWoodsQuietGlade
+            ]
 
       randomSet <-
-        sample $
-          EncounterSet.AgentsOfYogSothoth
+        sample
+          $ EncounterSet.AgentsOfYogSothoth
             :| [ EncounterSet.AgentsOfShubNiggurath
                , EncounterSet.AgentsOfCthulhu
                , EncounterSet.AgentsOfHastur
@@ -118,24 +115,20 @@ instance RunMessage TheDevourerBelow where
           , randomSet
           ]
 
-      placeWoods <-
-        for (zip woodsLabels woodsLocations) $ \(label, location) -> do
-          (locationId, placement) <- placeLocation location
-          pure [placement, SetLocationLabel locationId label]
+      placeWoods <- placeLabeledLocations_ "woods" woodsLocations
 
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck
-        , AddChaosToken ElderThing
-        , SetAgendaDeck
-        , SetActDeck
-        , placeMainPath
-        ]
-          <> concat placeWoods
-          <> [ RevealLocation Nothing mainPathId
-             , MoveAllTo (toSource attrs) mainPathId
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , AddChaosToken ElderThing
+          , SetAgendaDeck
+          , SetActDeck
+          , placeMainPath
+          ]
+          <> placeWoods
+          <> [ RevealLocation Nothing mainPath
+             , MoveAllTo (toSource attrs) mainPath
              ]
-          <> ghoulPriestMessages
+          <> [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
           <> cultistsWhoGotAwayMessages
           <> pastMidnightMessages
 
@@ -159,37 +152,21 @@ instance RunMessage TheDevourerBelow where
         [] -> pure ()
         [x] -> push $ PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom
         xs ->
-          push $
-            chooseOne
-              iid
-              [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom] | x <- xs]
+          push
+            $ chooseOne iid
+            $ [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom] | x <- xs]
       pure s
     ResolveChaosToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
-      isMonsterAtYourLocation <-
-        selectAny $
-          EnemyAt (locationWithInvestigator iid)
-            <> EnemyWithTrait Monster
-      when isMonsterAtYourLocation $ do
-        push $
-          InvestigatorAssignDamage
-            iid
-            (ChaosTokenEffectSource Tablet)
-            DamageAny
-            1
-            horror
+      pushWhenM (selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Monster)
+        $ assignDamageAndHorror iid (ChaosTokenEffectSource Tablet) 1 horror
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      anyAncientOnes <- selectAny $ EnemyWithTrait AncientOne
-      s <$ when anyAncientOnes (push $ DrawAnotherChaosToken iid)
-    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _
-      | isHardExpert attrs -> do
-          push $
-            FindAndDrawEncounterCard
-              iid
-              (CardWithType EnemyType <> CardWithTrait Monster)
-              True
-          pure s
+      pushWhenM (selectAny $ EnemyWithTrait AncientOne) $ DrawAnotherChaosToken iid
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ | isHardExpert attrs -> do
+      push $ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Monster
+      pure s
     ScenarioResolution r -> do
       let
         (resolution, record) = case r of
@@ -200,8 +177,8 @@ instance RunMessage TheDevourerBelow where
           Resolution 3 ->
             (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
           _ -> error "Invalid resolution"
-      iids <- allInvestigatorIds
-      pushAll [story iids resolution, Record record, EndOfGame Nothing]
+      investigators <- allInvestigators
+      pushAll [story investigators resolution, Record record, EndOfGame Nothing]
       pure s
     HandleOption option -> do
       whenM getIsStandalone $ do

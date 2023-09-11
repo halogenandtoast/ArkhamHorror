@@ -27,7 +27,7 @@ theSpectralRealm =
 instance RunMessage TheSpectralRealm where
   runMessage msg a@(TheSpectralRealm attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      entryHallId <- getJustLocationIdByName "Entry Hall"
+      entryHallId <- getJustLocationByName "Entry Hall"
       pushAll
         [ RevealLocation Nothing entryHallId
         , ShuffleEncounterDiscardBackIn

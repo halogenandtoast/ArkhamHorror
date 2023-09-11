@@ -186,6 +186,10 @@ data StoryMode = ResolveIt | DoNotResolveIt
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data IncludeDiscard = IncludeDiscard | ExcludeDiscard
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, Set Arbiter of Fates
@@ -430,7 +434,7 @@ data Message
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
   | FightEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
-  | FindAndDrawEncounterCard InvestigatorId CardMatcher Bool
+  | FindAndDrawEncounterCard InvestigatorId CardMatcher IncludeDiscard
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]

@@ -20,10 +20,9 @@ easttown = location Easttown Cards.easttown 2 (PerPlayer 1)
 
 instance HasModifiersFor Easttown where
   getModifiersFor (InvestigatorTarget iid) (Easttown attrs) =
-    pure $
-      toModifiers
-        attrs
-        [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Ally) 2
+    pure
+      $ toModifiers attrs
+      $ [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Ally) 2
         | iid `member` locationInvestigators attrs
         ]
   getModifiersFor _ _ = pure []

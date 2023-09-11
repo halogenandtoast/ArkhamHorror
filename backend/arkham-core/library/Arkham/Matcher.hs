@@ -19,6 +19,10 @@ instance WithTrait AssetMatcher where
   withTrait = AssetWithTrait
   {-# INLINE withTrait #-}
 
+instance WithTrait EnemyMatcher where
+  withTrait = EnemyWithTrait
+  {-# INLINE withTrait #-}
+
 -- ** Investigator Helpers **
 
 investigatorIs :: HasCardCode a => a -> InvestigatorMatcher

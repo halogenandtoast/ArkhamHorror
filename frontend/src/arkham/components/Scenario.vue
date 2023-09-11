@@ -229,16 +229,23 @@ const transpose = (matrix: any[][]) => {
 
 // Removed empty rows and columns from the location layout
 const cleanLocationLayout = (locationLayout: string[]) => {
+
+  const labels = [...locations.value.map((location) => location.label),...enemiesAsLocations.value.map((enemy) => enemy.asSelfLocation)]
+
+  if(labels.length === 0) {
+    return locationLayout
+  }
+
   const rows = locationLayout.map((r) => r.split(/\s+/).filter((c) => c !== ''))
 
   const cleanedRows = rows.filter((row) => {
-    return row.some((cell) => locations.value.some((location) => location.label === cell))
+    return row.some(cell => labels.some(l => l === cell))
   })
 
   const transposed = transpose(cleanedRows)
 
   const cleanedCols = transposed.filter((col) => {
-    return col.some((cell) => locations.value.some((location) => location.label === cell))
+    return col.some(cell => labels.some(l => l === cell))
   })
 
   return transpose(cleanedCols).map((row) => row.join(' '))

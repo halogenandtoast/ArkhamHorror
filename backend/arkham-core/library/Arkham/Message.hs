@@ -790,6 +790,7 @@ data Message
   | BecomeYithian InvestigatorId
   | SetScenarioMeta Value
   | DoStep Int Message
+  | ForInvestigator InvestigatorId Message
   | -- The Circle Undone
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId

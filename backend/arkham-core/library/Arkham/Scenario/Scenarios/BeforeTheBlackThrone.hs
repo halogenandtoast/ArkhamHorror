@@ -7,6 +7,7 @@ import Arkham.Prelude hiding ((<|))
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Attack
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -15,9 +16,11 @@ import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Label
@@ -31,6 +34,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Scenarios.BeforeTheBlackThrone.Story
+import Arkham.Trait qualified as Trait
 import Data.Aeson (Result (..))
 
 -- * Cosmos
@@ -48,31 +52,18 @@ newtype BeforeTheBlackThrone = BeforeTheBlackThrone ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beforeTheBlackThrone :: Difficulty -> BeforeTheBlackThrone
-beforeTheBlackThrone difficulty =
-  scenario
-    BeforeTheBlackThrone
-    "05325"
-    "Before the Black Throne"
-    difficulty
-    []
+beforeTheBlackThrone difficulty = scenario BeforeTheBlackThrone "05325" "Before the Black Throne" difficulty []
 
 instance HasChaosTokenValue BeforeTheBlackThrone where
   getChaosTokenValue iid tokenFace (BeforeTheBlackThrone attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Skull -> do
+      x <- selectJustField EnemyDoom (enemyIs Enemies.azathoth)
+      pure $ toChaosTokenValue attrs Skull (max 2 (x `div` 2)) (max 2 x)
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 6
     otherFace -> getChaosTokenValue iid otherFace attrs
 
--- Æ Find the Hideous Palace, Court of the Great Old Ones, and The Black Throne locations. (They are on the revealed side of 3 of the “Cosmos” locations.) Set those locations aside, out of play.
--- Æ Shuffle the remaining location cards into a separate deck, Cosmos‐side faceup. This deck is called the Cosmos (see “The Cosmos,” below).
--- Æ Take the set‐aside Hideous Palace and the top card of the Cosmos, and shuffle them so you cannot tell which is which. Then, put them into play along with facedown player cards from the top of the lead investigator’s deck, as depicted in “Location Placement for Setup / Act 1.” Facedown player cards represent empty space (see “Empty Space” on the next page).
--- Æ Set the Piper of Azathoth enemy aside, out of play.
--- Æ Put Azathoth into play next to the agenda deck. For the remainder of the scenario, Azathoth is in play, but is not at any location.
--- Æ Check Campaign Log. For each tally mark recorded next to the path winds before you, place 1 resource on the scenario reference card.
--- Æ Shuffle the remainder of the encounter cards to build the encounter deck.
---
---
 instance RunMessage BeforeTheBlackThrone where
   runMessage msg s@(BeforeTheBlackThrone attrs) = case msg of
     PreScenarioSetup -> do
@@ -218,5 +209,18 @@ instance RunMessage BeforeTheBlackThrone where
           <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
           <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
 
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
+        Cultist -> push $ findAndDrawEncounterCard iid (CardWithTrait Trait.Cultist)
+        Tablet -> do
+          azathoth <- selectJust $ enemyIs Enemies.azathoth
+          push $ EnemyAttack $ enemyAttack azathoth (ChaosTokenEffectSource Tablet) iid
+        _ -> pure ()
+      pure s
+    ResolveChaosToken _ ElderThing _ -> do
+      v <- getSkillTestModifiedSkillValue
+      azathoth <- selectJust $ enemyIs Enemies.azathoth
+      pushWhen (v == 0) $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget azathoth) 1
       pure s
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

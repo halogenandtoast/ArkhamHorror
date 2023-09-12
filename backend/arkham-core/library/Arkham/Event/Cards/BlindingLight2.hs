@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
 
 newtype BlindingLight2 = BlindingLight2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

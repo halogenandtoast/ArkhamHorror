@@ -12,6 +12,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
+import Arkham.Helpers.Card
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
@@ -27,8 +28,8 @@ grislyTotemSurvivor3 = asset GrislyTotemSurvivor3 Cards.grislyTotemSurvivor3
 
 instance HasAbilities GrislyTotemSurvivor3 where
   getAbilities (GrislyTotemSurvivor3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (CommittedCard Timing.After You AnyCard)
           (ExhaustCost $ toTarget a)
     ]
@@ -51,8 +52,8 @@ instance RunMessage GrislyTotemSurvivor3 where
   runMessage msg a@(GrislyTotemSurvivor3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ Label
             (toSkillLabel icon)

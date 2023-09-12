@@ -70,7 +70,7 @@ import Arkham.Game.Json ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Git (gitHash)
 import Arkham.Helpers
-import Arkham.Helpers.Card (extendedCardMatch)
+import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.Investigator hiding (investigator)
@@ -1987,10 +1987,12 @@ getEnemiesMatching :: HasGame m => EnemyMatcher -> m [Enemy]
 getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
   allGameEnemies <-
     toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
-  filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
+  -- filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
+  filterM (enemyMatcherFilter matcher) allGameEnemies
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
-  filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
+  -- filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
+  filterM (enemyMatcherFilter matcher) allGameEnemies
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case

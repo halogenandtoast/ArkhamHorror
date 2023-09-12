@@ -6,7 +6,9 @@ import Arkham.Action
 import Arkham.Card.CardDef
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
@@ -16,6 +18,7 @@ import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Stats
 import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 
@@ -91,8 +94,8 @@ parley
   -> Int
   -> Message
 parley iid (toSource -> source) (toTarget -> target) sType n =
-  BeginSkillTest $
-    (initSkillTest iid source target sType n)
+  BeginSkillTest
+    $ (initSkillTest iid source target sType n)
       { skillTestAction = Just Parley
       }
 
@@ -105,8 +108,8 @@ fight
   -> Int
   -> Message
 fight iid (toSource -> source) (toTarget -> target) sType n =
-  BeginSkillTest $
-    (initSkillTest iid source target sType n)
+  BeginSkillTest
+    $ (initSkillTest iid source target sType n)
       { skillTestAction = Just Fight
       }
 
@@ -119,8 +122,8 @@ evade
   -> Int
   -> Message
 evade iid (toSource -> source) (toTarget -> target) sType n =
-  BeginSkillTest $
-    (initSkillTest iid source target sType n)
+  BeginSkillTest
+    $ (initSkillTest iid source target sType n)
       { skillTestAction = Just Evade
       }
 
@@ -133,8 +136,8 @@ investigate
   -> Int
   -> Message
 investigate iid (toSource -> source) (toTarget -> target) sType n =
-  BeginSkillTest $
-    (initSkillTest iid source target sType n)
+  BeginSkillTest
+    $ (initSkillTest iid source target sType n)
       { skillTestAction = Just Investigate
       }
 
@@ -177,3 +180,63 @@ getIsPerilous skillTest = case skillTestSource skillTest of
     keywords <- field EnemyKeywords eid
     pure $ Peril `elem` keywords
   _ -> pure False
+
+getSkillTestModifiedSkillValue :: HasGame m => m Int
+getSkillTestModifiedSkillValue = do
+  st <- getJustSkillTest
+  currentSkillValue <- getCurrentSkillValue st
+  iconCount <- skillIconCount st
+  pure $ max 0 (currentSkillValue + iconCount)
+
+getCurrentSkillValue :: HasGame m => SkillTest -> m Int
+getCurrentSkillValue st = do
+  case skillTestBaseValue st of
+    SkillBaseValue sType -> do
+      sType' <- getAlternateSkill st sType
+      stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
+      pure $ statsSkillValue stats sType'
+    AndSkillBaseValue types -> do
+      values <- for types $ \sType -> do
+        sType' <- getAlternateSkill st sType
+        stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
+        pure $ statsSkillValue stats sType'
+      pure $ sum values
+    HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
+    StaticBaseValue n -> pure n
+
+skillIconCount :: HasGame m => SkillTest -> m Int
+skillIconCount SkillTest {..} = do
+  totalIcons <-
+    count matches
+      <$> concatMapM
+        iconsForCard
+        (concat $ toList skillTestCommittedCards)
+  case skillTestType of
+    SkillSkillTest sType -> do
+      investigatorModifiers <- getModifiers skillTestInvestigator
+      pure
+        $ if SkillCannotBeIncreased sType `elem` investigatorModifiers
+          then 0
+          else totalIcons
+    AndSkillTest types -> do
+      investigatorModifiers <- getModifiers skillTestInvestigator
+      pure
+        $ if any (\sType -> SkillCannotBeIncreased sType `elem` investigatorModifiers) types
+          then 0
+          else totalIcons
+    ResourceSkillTest -> pure totalIcons
+ where
+  matches WildMinusIcon = False
+  matches WildIcon = True
+  matches (SkillIcon s) = case skillTestType of
+    SkillSkillTest sType -> s == sType
+    AndSkillTest types -> s `elem` types
+    ResourceSkillTest -> False
+
+getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
+getAlternateSkill st sType = do
+  modifiers' <- getModifiers (skillTestInvestigator st)
+  pure $ foldr applyModifier sType modifiers'
+ where
+  applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
+  applyModifier _ a = a

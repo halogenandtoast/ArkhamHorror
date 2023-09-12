@@ -2,8 +2,6 @@
 
 module Arkham.SkillTest.Runner (
   module X,
-  skillIconCount,
-  getCurrentSkillValue,
 ) where
 
 import Arkham.Prelude
@@ -18,16 +16,13 @@ import Arkham.ChaosToken
 import Arkham.Classes hiding (matches)
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Card
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message
-import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Stats
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
@@ -84,59 +79,6 @@ autoFailSkillTestResultsData s = do
       modifiedSkillTestDifficulty
       Nothing
       False
-
-getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
-getAlternateSkill st sType = do
-  modifiers' <- getModifiers (skillTestInvestigator st)
-  pure $ foldr applyModifier sType modifiers'
- where
-  applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
-  applyModifier _ a = a
-
-getCurrentSkillValue :: HasGame m => SkillTest -> m Int
-getCurrentSkillValue st = do
-  case skillTestBaseValue st of
-    SkillBaseValue sType -> do
-      sType' <- getAlternateSkill st sType
-      stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
-      pure $ statsSkillValue stats sType'
-    AndSkillBaseValue types -> do
-      values <- for types $ \sType -> do
-        sType' <- getAlternateSkill st sType
-        stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
-        pure $ statsSkillValue stats sType'
-      pure $ sum values
-    HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
-    StaticBaseValue n -> pure n
-
-skillIconCount :: HasGame m => SkillTest -> m Int
-skillIconCount SkillTest {..} = do
-  totalIcons <-
-    count matches
-      <$> concatMapM
-        iconsForCard
-        (concat $ toList skillTestCommittedCards)
-  case skillTestType of
-    SkillSkillTest sType -> do
-      investigatorModifiers <- getModifiers skillTestInvestigator
-      pure
-        $ if SkillCannotBeIncreased sType `elem` investigatorModifiers
-          then 0
-          else totalIcons
-    AndSkillTest types -> do
-      investigatorModifiers <- getModifiers skillTestInvestigator
-      pure
-        $ if any (\sType -> SkillCannotBeIncreased sType `elem` investigatorModifiers) types
-          then 0
-          else totalIcons
-    ResourceSkillTest -> pure totalIcons
- where
-  matches WildMinusIcon = False
-  matches WildIcon = True
-  matches (SkillIcon s) = case skillTestType of
-    SkillSkillTest sType -> s == sType
-    AndSkillTest types -> s `elem` types
-    ResourceSkillTest -> False
 
 subtractSkillIconCount :: HasGame m => SkillTest -> m Int
 subtractSkillIconCount SkillTest {..} =

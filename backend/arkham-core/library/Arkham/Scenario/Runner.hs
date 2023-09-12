@@ -382,6 +382,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PlaceLocation _ card -> pure $ a & setAsideCardsL %~ delete card
   ReplaceLocation _ card _ -> pure $ a & setAsideCardsL %~ delete card
   CreateWeaknessInThreatArea card _ -> pure $ a & setAsideCardsL %~ delete card
+  ShuffleCardsIntoTopOfDeck Deck.EncounterDeck n (onlyEncounterCards -> cards) -> do
+    let (cards', rest) = draw n scenarioEncounterDeck
+    shuffled <- shuffleM (cards <> cards')
+    pure $ a & encounterDeckL .~ Deck (shuffled <> unDeck rest)
   PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
       let

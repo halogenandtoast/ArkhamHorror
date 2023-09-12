@@ -152,6 +152,9 @@ instance RunMessage BeforeTheBlackThrone where
           <> map (ObtainCard . toCard) cards
           <> placeEmptySpaces
 
+      setAsideCards <-
+        genCards [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
+
       agendas <- genCards [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
       acts <- genCards [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
 
@@ -165,6 +168,7 @@ instance RunMessage BeforeTheBlackThrone where
               & (agendaStackL . at 1 ?~ agendas)
               & (metaL .~ toJSON cosmos)
               & (usesGridL .~ True)
+              & (setAsideCardsL .~ setAsideCards)
           )
     SetScenarioMeta meta -> do
       case fromJSON @(Cosmos Card LocationId) meta of

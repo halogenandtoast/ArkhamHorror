@@ -11,11 +11,22 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Types qualified as Field
+import Arkham.Helpers
 import Arkham.Helpers.Ability
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
+import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types qualified as Field
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement
+import Arkham.Projection
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Data.List qualified as List
 
 newtype TheCosmosBeckons = TheCosmosBeckons ActAttrs
@@ -65,5 +76,74 @@ instance RunMessage TheCosmosBeckons where
             | (card, (lid, placement)) <- cardsWithMsgs
             ]
         ]
+      pure a
+    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
+      cosmicIngress <- getJustLocationByName "Cosmic Ingress"
+      emptySpace <- selectList $ IncludeEmptySpace $ locationIs Locations.emptySpace
+      cosmosLocations <-
+        selectList
+          $ NotLocation
+          $ LocationMatchAny [LocationWithTitle "Hideous Palace", LocationWithTitle "Cosmic Ingress"]
+      enemies <- selectList $ EnemyAt $ NotLocation $ LocationWithTitle "Hideous Palace"
+      enemyCards <- traverse (field Field.EnemyCard) enemies
+
+      cosmosCards <- traverse (field Field.LocationCard) cosmosLocations
+
+      let cosmos' = initCosmos @Card @LocationId
+
+      pushAll
+        $ RemoveLocation cosmicIngress
+          : map RemoveLocation (cosmosLocations <> emptySpace)
+            <> [ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) cosmosCards]
+            <> [ShuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards]
+            <> [ SetScenarioMeta (toJSON cosmos')
+               , NextAdvanceActStep (toId a) 1
+               , advanceActDeck attrs
+               ]
+      pure a
+    NextAdvanceActStep aid _ | aid == toId attrs -> do
+      (cards, cosmosDeck) <- splitAt 2 <$> getScenarioDeck CosmosDeck
+      courtOfTheGreatOldOnes <- getSetAsideCard Locations.courtOfTheGreatOldOnes
+      hideousPalace <- getJustLocationByName "Hideous Palace"
+      lead <- getLead
+      (firstCosmosCard, secondCosmosCard, thirdCosmosCard) <-
+        shuffleM (courtOfTheGreatOldOnes : cards) <&> \case
+          [x, y, z] -> (x, y, z)
+          _ -> error "impossible"
+
+      (firstCosmos, placeFirstCosmos) <- placeLocation firstCosmosCard
+      (secondCosmos, placeSecondCosmos) <- placeLocation secondCosmosCard
+      (thirdCosmos, placethirdCosmos) <- placeLocation thirdCosmosCard
+
+      (map toCard -> playerCards, _) <- fieldMap InvestigatorDeck (draw 7) lead
+
+      let
+        emptySpaceLocations =
+          [ Pos 0 1
+          , Pos 1 1
+          , Pos 2 1
+          , Pos 1 0
+          , Pos 0 (-1)
+          , Pos 1 (-1)
+          , Pos 2 (-1)
+          ]
+        emptySpaces = zip emptySpaceLocations playerCards
+
+      placeEmptySpaces <- concatForM emptySpaces $ \(pos, card) -> do
+        (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
+        pure [placeEmptySpace, PlaceCosmos lead emptySpace' (EmptySpace pos card)]
+
+      pushAll
+        $ [ SetScenarioDeck CosmosDeck cosmosDeck
+          , PlaceCosmos lead hideousPalace (CosmosLocation (Pos 0 0) hideousPalace)
+          , placeFirstCosmos
+          , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 1 2) firstCosmos)
+          , placeSecondCosmos
+          , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 1 (-2)) secondCosmos)
+          , placethirdCosmos
+          , PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 2 0) thirdCosmos)
+          ]
+          <> map (ObtainCard . toCard) playerCards
+          <> placeEmptySpaces
       pure a
     _ -> TheCosmosBeckons <$> runMessage msg attrs

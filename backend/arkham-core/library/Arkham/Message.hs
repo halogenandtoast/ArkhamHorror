@@ -707,6 +707,7 @@ data Message
   | ShuffleEncounterDiscardBackIn
   | ShuffleDeck DeckSignifier
   | ShuffleIntoDeck DeckSignifier Target
+  | ShuffleCardsIntoTopOfDeck DeckSignifier Int [Card]
   | SkillTestApplyResults
   | SkillTestApplyResultsAfter
   | SkillTestAsk Message

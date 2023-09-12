@@ -15,24 +15,24 @@ import Arkham.Message
 
 getHauntedAbilities :: HasGame m => InvestigatorId -> m [Ability]
 getHauntedAbilities iid =
-  selectList $
-    HauntedAbility
+  selectList
+    $ HauntedAbility
       <> AbilityOnLocation
         (locationWithInvestigator iid)
 
 runHauntedAbilities :: InvestigatorId -> GameT ()
 runHauntedAbilities iid = do
   hauntedAbilities <- getHauntedAbilities iid
-  pushWhen (notNull hauntedAbilities) $
-    chooseOneAtATime
+  pushWhen (notNull hauntedAbilities)
+    $ chooseOneAtATime
       iid
       [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
 
 runLocationHauntedAbilities :: InvestigatorId -> LocationId -> GameT ()
 runLocationHauntedAbilities iid lid = do
   hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
-  pushWhen (notNull hauntedAbilities) $
-    chooseOneAtATime
+  pushWhen (notNull hauntedAbilities)
+    $ chooseOneAtATime
       iid
       [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
 

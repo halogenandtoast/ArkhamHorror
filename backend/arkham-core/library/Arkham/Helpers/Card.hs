@@ -21,6 +21,8 @@ import Arkham.Id
 import Arkham.Location.Types
 import Arkham.Matcher hiding (AssetCard, LocationCard)
 import Arkham.Projection
+import Arkham.SkillType
+import Arkham.Target
 
 isDiscardable :: Card -> Bool
 isDiscardable = not . isWeakness
@@ -107,3 +109,19 @@ findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred
 
 findUniqueCard :: HasGame m => CardDef -> m Card
 findUniqueCard def = findJustCard (`cardMatch` (cardIs def <> CardIsUnique))
+
+iconsForCard :: HasGame m => Card -> m [SkillIcon]
+iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
+  modifiers' <- getModifiers (CardIdTarget pcId)
+  pure
+    $ foldr
+      applyAfterSkillModifiers
+      (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
+      modifiers'
+ where
+  applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
+  applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
+  applySkillModifiers _ ys = ys
+  applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
+  applyAfterSkillModifiers _ ys = ys
+iconsForCard _ = pure []

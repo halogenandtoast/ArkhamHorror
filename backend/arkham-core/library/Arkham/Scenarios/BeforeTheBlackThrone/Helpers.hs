@@ -24,13 +24,11 @@ getCosmos = do
     Error e -> error $ "failed to parse cosmos: " <> e
     Success result -> pure result
 
-findCosmosPosition :: HasGame m => InvestigatorId -> m Pos
+findCosmosPosition :: HasGame m => InvestigatorId -> m (Maybe Pos)
 findCosmosPosition iid = do
   cosmos' <- getCosmos
   lid <- getJustLocation iid
-  case findInCosmos lid cosmos' of
-    Nothing -> error "failed to find cosmos location"
-    Just pos -> pure pos
+  pure $ findInCosmos lid cosmos'
 
 cosmosFail :: HasQueue Message m => LocationAttrs -> m ()
 cosmosFail attrs = do
@@ -42,6 +40,29 @@ cosmosFail attrs = do
 getEmptyPositionsInDirections :: HasGame m => InvestigatorId -> [GridDirection] -> m [Pos]
 getEmptyPositionsInDirections iid directions = do
   cosmos' <- getCosmos
-  pos <- findCosmosPosition iid
-  let adjacents = positionsInDirections pos directions
-  pure $ filter (\adj -> isEmpty $ viewCosmos adj cosmos') adjacents
+  mpos <- findCosmosPosition iid
+  case mpos of
+    Nothing -> pure []
+    Just pos -> do
+      let adjacents = positionsInDirections pos directions
+      pure $ filter (\adj -> isEmpty $ viewCosmos adj cosmos') adjacents
+
+getLocationInDirection :: HasGame m => LocationId -> GridDirection -> m (Maybe LocationId)
+getLocationInDirection lid dir = do
+  cosmos' <- getCosmos
+  pure $ case findInCosmos lid cosmos' of
+    Nothing -> Nothing
+    Just pos -> case viewCosmos (updatePosition pos dir) cosmos' of
+      Nothing -> Nothing
+      Just (EmptySpace _ _) -> Nothing
+      Just (CosmosLocation _ lid') -> Just lid'
+
+getCanMoveLocationLeft :: HasGame m => LocationId -> m Bool
+getCanMoveLocationLeft lid = do
+  cosmos' <- getCosmos
+  pure $ case findInCosmos lid cosmos' of
+    Nothing -> False -- could be player location, like Luke
+    Just pos -> case viewCosmos (updatePosition pos GridLeft) cosmos' of
+      Nothing -> True
+      Just (EmptySpace _ _) -> True
+      Just (CosmosLocation _ _) -> False

@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.Rolands38Special (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
@@ -21,7 +20,7 @@ rolands38Special = asset Rolands38Special Cards.rolands38Special
 instance HasAbilities Rolands38Special where
   getAbilities (Rolands38Special x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ FightAction
         $ ActionCost 1 <> assetUseCost x Ammo 1
     ]
 

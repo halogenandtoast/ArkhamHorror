@@ -75,7 +75,7 @@ const debug = useDebug()
     />
     <template v-if="debug.active">
       <button @click="debug.send(game.id, {tag: 'InvestigatorDrawEncounterCard', contents: investigatorId})">Draw</button>
-      <button @click="debug.send(game.id, {tag: 'FindAndDrawEncounterCard', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, false]})">Select Draw</button>
+      <button @click="debug.send(game.id, {tag: 'FindAndDrawEncounterCard', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, 'ExcludeDiscard']})">Select Draw</button>
     </template>
   </div>
 </template>

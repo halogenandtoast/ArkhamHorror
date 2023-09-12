@@ -13,6 +13,9 @@ import Arkham.Matcher
 import Arkham.SkillType
 import Data.Aeson.TH
 
+pattern FightAction :: Cost -> AbilityType
+pattern FightAction cost = ActionAbility (Just Fight) cost
+
 data AbilityType
   = FastAbility {cost :: Cost}
   | ReactionAbility {window :: WindowMatcher, cost :: Cost}

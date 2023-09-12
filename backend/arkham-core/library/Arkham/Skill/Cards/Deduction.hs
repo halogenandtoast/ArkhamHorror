@@ -17,13 +17,8 @@ deduction :: SkillCard Deduction
 deduction = skill Deduction Cards.deduction
 
 instance RunMessage Deduction where
-  runMessage msg s@(Deduction attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _ _
-      | sid == skillId -> do
-          push $
-            skillTestModifier
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              (DiscoveredClues 1)
-          pure s
+  runMessage msg s@(Deduction attrs) = case msg of
+    PassedSkillTest iid (Just Action.Investigate) _ (isTarget attrs -> True) _ _ -> do
+      push $ skillTestModifier attrs iid (DiscoveredClues 1)
+      pure s
     _ -> Deduction <$> runMessage msg attrs

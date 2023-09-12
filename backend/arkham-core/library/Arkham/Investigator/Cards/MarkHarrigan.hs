@@ -34,19 +34,15 @@ markHarrigan =
 
 instance HasAbilities MarkHarrigan where
   getAbilities (MarkHarrigan attrs) =
-    [ restrictedAbility
-        attrs
-        1
-        Self
-        ( ReactionAbility
-            ( OrWindowMatcher
-                [ DealtDamage Timing.When AnySource You
-                , AssetDealtDamage Timing.When AnySource (AssetControlledBy You)
-                ]
-            )
-            Free
-        )
-        & (abilityLimitL .~ PlayerLimit PerPhase 1)
+    [ limitedAbility (PlayerLimit PerPhase 1)
+        $ restrictedAbility attrs 1 Self
+        $ ReactionAbility
+          ( OrWindowMatcher
+              [ DealtDamage Timing.When AnySource You
+              , AssetDealtDamage Timing.When AnySource (AssetControlledBy You)
+              ]
+          )
+          Free
     ]
 
 instance HasChaosTokenValue MarkHarrigan where
@@ -57,8 +53,7 @@ instance HasChaosTokenValue MarkHarrigan where
 
 instance RunMessage MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure i
     _ -> MarkHarrigan <$> runMessage msg attrs

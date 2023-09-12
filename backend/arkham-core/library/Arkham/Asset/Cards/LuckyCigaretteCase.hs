@@ -20,21 +20,15 @@ luckyCigaretteCase = asset LuckyCigaretteCase Cards.luckyCigaretteCase
 
 instance HasAbilities LuckyCigaretteCase where
   getAbilities (LuckyCigaretteCase a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
-          ( SkillTestResult
-              Timing.After
-              You
-              AnySkillTest
-              (SuccessResult $ AtLeast $ Static 2)
-          )
-          (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
+          (SkillTestResult Timing.After You AnySkillTest (SuccessResult $ AtLeast $ Static 2))
+          (exhaust a)
     ]
 
 instance RunMessage LuckyCigaretteCase where
   runMessage msg a@(LuckyCigaretteCase attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> LuckyCigaretteCase <$> runMessage msg attrs

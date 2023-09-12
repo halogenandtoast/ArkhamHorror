@@ -22,42 +22,28 @@ forbiddenTome = asset ForbiddenTome Cards.forbiddenTome
 
 instance HasAbilities ForbiddenTome where
   getAbilities (ForbiddenTome a) =
-    [ restrictedAbility
-        a
-        1
+    [ withCriteria
+        (mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1 <> exhaust a <> assetUseCost a Secret 1)
         (ControlsThis <> Negate (SelfHasModifier CannotDrawCards))
-        $ ActionAbility Nothing
-        $ ActionCost 1
-          <> ExhaustCost (toTarget a)
-          <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 instance RunMessage ForbiddenTome where
   runMessage msg a@(ForbiddenTome attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payments -> do
-      drawing <- drawCards iid attrs 1
+      drawing <- drawCards iid (toAbilitySource attrs 1) 1
       pushAll
         [ drawing
-        , UseCardAbilityChoice
-            iid
-            (toSource attrs)
-            1
-            NoAbilityMetadata
-            windows'
-            payments
+        , UseCardAbilityChoice iid (toSource attrs) 1 NoAbilityMetadata windows' payments
         ]
       pure a
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
       n <- fieldMap InvestigatorHand length iid
       noUses <- fieldMap AssetUses ((== 0) . useCount) (toId attrs)
-      when (n >= 10 && noUses) $ do
-        push $
-          chooseOne
-            iid
-            [ Label
-                "Discard Forbidden Tome"
-                [Discard (toAbilitySource attrs 1) (toTarget attrs), Record YouHaveTranslatedTheTome]
-            , Label "Do not discard Forbidden Tome" []
-            ]
+      pushWhen (n >= 10 && noUses)
+        $ chooseOne iid
+        $ [ Label "Discard Forbidden Tome"
+              $ [Discard (toAbilitySource attrs 1) (toTarget attrs), Record YouHaveTranslatedTheTome]
+          , Label "Do not discard Forbidden Tome" []
+          ]
       pure a
     _ -> ForbiddenTome <$> runMessage msg attrs

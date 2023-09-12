@@ -22,23 +22,19 @@ burglary = asset Burglary Cards.burglary
 
 instance HasAbilities Burglary where
   getAbilities (Burglary a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ Costs [ActionCost 1, exhaust a]
     ]
 
 instance RunMessage Burglary where
   runMessage msg a@(Burglary attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      lid <- fieldJust InvestigatorLocation iid
       skillType <- field LocationInvestigateSkill lid
-      push $ Investigate iid lid source (Just $ toTarget attrs) skillType False
+      push $ Investigate iid lid (toSource attrs) (Just $ toTarget attrs) skillType False
       pure a
-    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
-      pushAll [TakeResources iid 3 (toAbilitySource attrs 1) False]
+    Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
+      push $ TakeResources iid 3 (toAbilitySource attrs 1) False
       pure a
     _ -> Burglary <$> runMessage msg attrs

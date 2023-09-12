@@ -22,14 +22,14 @@ instance HasModifiersFor Backstab where
     mSource <- getSkillTestSource
     mAction <- getSkillTestAction
     pure $ case (mAction, mSource) of
-      (Just Fight, Just source) | isSource attrs source -> do
+      (Just Fight, Just (isSource attrs -> True)) -> do
         toModifiers attrs [DamageDealt 2]
       _ -> []
   getModifiersFor _ _ = pure []
 
 instance RunMessage Backstab where
-  runMessage msg e@(Backstab attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      push $ ChooseFightEnemy iid (EventSource eid) Nothing SkillAgility mempty False
+  runMessage msg e@(Backstab attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      push $ ChooseFightEnemy iid (toSource eid) Nothing SkillAgility mempty False
       pure e
     _ -> Backstab <$> runMessage msg attrs

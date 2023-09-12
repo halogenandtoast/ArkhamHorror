@@ -24,23 +24,19 @@ instance HasAbilities JewelOfAureolus3 where
   getAbilities (JewelOfAureolus3 x) =
     [ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
-          ( RevealChaosToken Timing.When (InvestigatorAt YourLocation) $
-              ChaosTokenMatchesAny
-                ( map
-                    ChaosTokenFaceIs
-                    [Skull, Cultist, Tablet, ElderThing, AutoFail]
-                )
+          ( RevealChaosToken Timing.When (InvestigatorAt YourLocation)
+              $ ChaosTokenMatchesAny (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
           )
-        $ ExhaustCost (toTarget x)
+        $ exhaust x
     ]
 
 instance RunMessage JewelOfAureolus3 where
   runMessage msg a@(JewelOfAureolus3 attrs) = case msg of
-    UseCardAbility iid source 1 (Window.revealedChaosTokens -> tokens) _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push $
-        If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs)) $
-          [ chooseOne
+    UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
+      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      push
+        $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
+        $ [ chooseOne
               iid
               [ Label "Draw 1 Card" [drawing]
               , Label "Take 2 Resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]

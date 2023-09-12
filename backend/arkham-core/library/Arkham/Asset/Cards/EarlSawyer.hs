@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype EarlSawyer = EarlSawyer AssetAttrs
@@ -22,21 +21,18 @@ earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 
 instance HasAbilities EarlSawyer where
   getAbilities (EarlSawyer attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ReactionAbility
-          (Matcher.EnemyEvaded Timing.After You AnyEnemy)
-          (ExhaustCost $ toTarget attrs)
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ReactionAbility (Matcher.EnemyEvaded Timing.After You AnyEnemy) (exhaust attrs)
     ]
 
 instance HasModifiersFor EarlSawyer where
-  getModifiersFor (InvestigatorTarget iid) (EarlSawyer a) =
-    pure [toModifier a (SkillModifier SkillAgility 1) | controlledBy a iid]
+  getModifiersFor (InvestigatorTarget iid) (EarlSawyer a) | controlledBy a iid = do
+    pure $ toModifiers a [SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage EarlSawyer where
   runMessage msg a@(EarlSawyer attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> EarlSawyer <$> runMessage msg attrs

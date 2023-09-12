@@ -29,27 +29,21 @@ instance HasAbilities CoverUp where
       a
       1
       (OnSameLocation <> CluesOnThis (AtLeast $ Static 1))
-      ( ReactionAbility
-          ( Matcher.DiscoverClues Timing.When You YourLocation $
-              AtLeast $
-                Static
-                  1
-          )
-          Free
-      )
-      : [ restrictedAbility a 2 (CluesOnThis $ AtLeast $ Static 1) $
-          ForcedAbility $
-            OrWindowMatcher
-              [ GameEnds Timing.When
-              , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
-              ]
+      (ReactionAbility (Matcher.DiscoverClues Timing.When You YourLocation $ AtLeast $ Static 1) Free)
+      : [ restrictedAbility a 2 (CluesOnThis $ AtLeast $ Static 1)
+          $ ForcedAbility
+          $ OrWindowMatcher
+            [ GameEnds Timing.When
+            , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+            ]
         | iid <- maybeToList (treacheryOwner a)
         ]
 
 instance RunMessage CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid (isSource attrs -> True) ->
-      t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
+    Revelation iid (isSource attrs -> True) -> do
+      push $ AttachTreachery treacheryId (toTarget iid)
+      pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       mMsg <- popMessageMatching $ \case
         Do (InvestigatorDiscoverClues {}) -> True
@@ -58,7 +52,7 @@ instance RunMessage CoverUp where
         Just (Do (InvestigatorDiscoverClues _ _ _ cluesToRemove _)) ->
           pure $ CoverUp $ attrs & tokensL %~ subtractTokens Clue cluesToRemove
         _ -> error "Do InvestigatorDiscoverClues  has to be present"
-    UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      withTreacheryInvestigator attrs $
-        \tormented -> t <$ push (SufferTrauma tormented 0 1)
+    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+      withTreacheryInvestigator attrs $ \tormented -> push (SufferTrauma tormented 0 1)
+      pure t
     _ -> CoverUp <$> runMessage msg attrs

@@ -21,24 +21,18 @@ analyticalMind = asset AnalyticalMind Cards.analyticalMind
 instance HasAbilities AnalyticalMind where
   getAbilities (AnalyticalMind attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility
-          (CommittedCards Timing.After You $ LengthIs $ EqualTo $ Static 1)
-        $ ExhaustCost (toTarget attrs)
+        $ ReactionAbility (CommittedCards Timing.After You $ LengthIs $ EqualTo $ Static 1)
+        $ exhaust attrs
     ]
 
 instance HasModifiersFor AnalyticalMind where
-  getModifiersFor (InvestigatorTarget iid) (AnalyticalMind attrs)
-    | controlledBy attrs iid =
-        pure $
-          toModifiers
-            attrs
-            [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
+  getModifiersFor (InvestigatorTarget iid) (AnalyticalMind attrs) | controlledBy attrs iid = do
+    pure $ toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AnalyticalMind where
   runMessage msg a@(AnalyticalMind attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> AnalyticalMind <$> runMessage msg attrs

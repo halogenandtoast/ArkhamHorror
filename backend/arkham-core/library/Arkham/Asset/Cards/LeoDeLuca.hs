@@ -18,8 +18,8 @@ instance HasModifiersFor LeoDeLuca where
   getModifiersFor _ _ = pure []
 
 instance RunMessage LeoDeLuca where
-  runMessage msg (LeoDeLuca attrs@AssetAttrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
-      push $ GainActions iid (AssetSource aid) 1
+  runMessage msg (LeoDeLuca attrs) = case msg of
+    InvestigatorPlayAsset iid aid | aid == toId attrs -> do
+      push $ GainActions iid (toSource aid) 1
       LeoDeLuca <$> runMessage msg attrs
     _ -> LeoDeLuca <$> runMessage msg attrs

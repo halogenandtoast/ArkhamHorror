@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
@@ -19,8 +18,7 @@ newtype AsylumHallsWesternPatientWing_168 = AsylumHallsWesternPatientWing_168 Lo
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-asylumHallsWesternPatientWing_168
-  :: LocationCard AsylumHallsWesternPatientWing_168
+asylumHallsWesternPatientWing_168 :: LocationCard AsylumHallsWesternPatientWing_168
 asylumHallsWesternPatientWing_168 =
   location
     AsylumHallsWesternPatientWing_168
@@ -30,18 +28,14 @@ asylumHallsWesternPatientWing_168 =
 
 instance HasAbilities AsylumHallsWesternPatientWing_168 where
   getAbilities (AsylumHallsWesternPatientWing_168 attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 Here $
-          ReactionAbility
-            (EnemyDefeated Timing.After You ByAny $ EnemyWithTrait Lunatic)
-            Free
-      ]
+    withRevealedAbilities attrs
+      $ [ restrictedAbility attrs 1 Here
+            $ ReactionAbility (EnemyDefeated Timing.After You ByAny $ EnemyWithTrait Lunatic) Free
+        ]
 
 instance RunMessage AsylumHallsWesternPatientWing_168 where
   runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure l
     _ -> AsylumHallsWesternPatientWing_168 <$> runMessage msg attrs

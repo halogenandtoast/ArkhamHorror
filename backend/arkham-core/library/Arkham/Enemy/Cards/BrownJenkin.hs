@@ -25,32 +25,32 @@ brownJenkin = enemy BrownJenkin Cards.brownJenkin (1, Static 1, 4) (1, 1)
 
 instance HasModifiersFor BrownJenkin where
   getModifiersFor (EnemyTarget eid) (BrownJenkin attrs) = do
-    ready <- eid <=~> (ReadyEnemy <> EnemyWithTrait Creature)
-    pure $ toModifiers attrs [EnemyFight 2 | ready]
+    isReady <- eid <=~> (ReadyEnemy <> EnemyWithTrait Creature)
+    pure $ toModifiers attrs [EnemyFight 2 | isReady]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrownJenkin where
   getAbilities (BrownJenkin x) =
-    withBaseAbilities x $
-      [ restrictedAbility
-          x
-          1
-          ( EnemyCriteria (ThisEnemy ReadyEnemy)
-              <> InvestigatorExists (InvestigatorAt (locationWithEnemy $ toId x) <> HandWith AnyCards)
-          )
-          $ ForcedAbility
-          $ PhaseEnds Timing.When
-          $ PhaseIs EnemyPhase
-      ]
+    withBaseAbilities x
+      $ [ restrictedAbility
+            x
+            1
+            ( EnemyCriteria (ThisEnemy ReadyEnemy)
+                <> InvestigatorExists (InvestigatorAt (locationWithEnemy $ toId x) <> HandWith AnyCards)
+            )
+            $ ForcedAbility
+            $ PhaseEnds Timing.When
+            $ PhaseIs EnemyPhase
+        ]
 
 instance RunMessage BrownJenkin where
   runMessage msg e@(BrownJenkin attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       investigatorsWithHand <-
-        selectWithField InvestigatorHand $
-          InvestigatorAt (locationWithEnemy $ toId attrs) <> HandWith AnyCards
+        selectWithField InvestigatorHand
+          $ InvestigatorAt (locationWithEnemy $ toId attrs) <> HandWith AnyCards
       msgs <- for investigatorsWithHand $ \(iid, hand) -> do
-        drawing <- drawCards iid attrs (length hand)
+        drawing <- drawCards iid (toAbilitySource attrs 1) (length hand)
         pure [DiscardHand iid (toSource attrs), drawing]
       pushAll $ concat msgs
       pure e

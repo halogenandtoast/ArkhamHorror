@@ -26,28 +26,24 @@ studyAberrantGateway =
 
 instance HasAbilities StudyAberrantGateway where
   getAbilities (StudyAberrantGateway attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
-      , mkAbility attrs 2 $
-          ForcedAbility $
-            EnemyAttemptsToSpawnAt
-              Timing.When
-              AnyEnemy
-              LocationNotInPlay
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
+        , mkAbility attrs 2 $ ForcedAbility $ EnemyAttemptsToSpawnAt Timing.When AnyEnemy LocationNotInPlay
+        ]
+
+getMatcher :: [Window] -> LocationMatcher
+getMatcher [] = error "Expected a window"
+getMatcher ((windowType -> Window.EnemyAttemptsToSpawnAt _ matcher) : _) = matcher
+getMatcher (_ : rest) = getMatcher rest
 
 instance RunMessage StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 3
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 3
       pure l
-    UseCardAbility _ source 2 [(windowType -> Window.EnemyAttemptsToSpawnAt _ locationMatcher)] _
-      | isSource attrs source ->
-          do
-            case locationMatcher of
-              LocationWithTitle title ->
-                l <$ push (PlaceLocationMatching $ CardWithTitle title)
-              _ -> error "Expected everything to use titles"
+    UseCardAbility _ (isSource attrs -> True) 2 (getMatcher -> matcher) _ -> do
+      case matcher of
+        LocationWithTitle title -> push (PlaceLocationMatching $ CardWithTitle title)
+        _ -> error "Expected everything to use titles"
+      pure l
     _ -> StudyAberrantGateway <$> runMessage msg attrs

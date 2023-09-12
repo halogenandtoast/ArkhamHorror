@@ -17,25 +17,22 @@ discOfItzamna2 = asset DiscOfItzamna2 Cards.discOfItzamna2
 
 instance HasAbilities DiscOfItzamna2 where
   getAbilities (DiscOfItzamna2 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
-          (EnemySpawns Timing.When YourLocation NonEliteEnemy)
-          Free
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (EnemySpawns Timing.When YourLocation NonEliteEnemy) Free
     ]
 
 instance RunMessage DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       -- this does not cancel so we must remove manually
-      menemySpawnMessage <-
-        fromQueue $
-          find ((== Just EnemySpawnMessage) . messageType)
-      a <$ case menemySpawnMessage of
-        Just msg'@(EnemySpawn _ _ eid) ->
+      menemySpawnMessage <- fromQueue $ find ((== Just EnemySpawnMessage) . messageType)
+      case menemySpawnMessage of
+        Just msg'@(EnemySpawn _ _ enemyId) ->
           replaceMessage
             msg'
             [ Discard (toAbilitySource attrs 1) (toTarget attrs)
-            , Discard (toAbilitySource attrs 1) (EnemyTarget eid)
+            , Discard (toAbilitySource attrs 1) (toTarget enemyId)
             ]
         _ -> pure ()
+      pure a
     _ -> DiscOfItzamna2 <$> runMessage msg attrs

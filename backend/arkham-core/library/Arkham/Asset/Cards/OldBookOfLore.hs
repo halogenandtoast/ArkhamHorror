@@ -19,37 +19,24 @@ oldBookOfLore = asset OldBookOfLore Cards.oldBookOfLore
 
 instance HasAbilities OldBookOfLore where
   getAbilities (OldBookOfLore a) =
-    [ restrictedAbility
-        a
-        1
-        ( ControlsThis
-            <> InvestigatorExists
-              ( InvestigatorAt YourLocation
-                  <> InvestigatorWithoutModifier CannotManipulateDeck
-              )
-        )
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, ExhaustCost $ toTarget a]
+    [ withCriteria (mkAbility a 1 (ActionAbility Nothing $ Costs [ActionCost 1, exhaust a]))
+        $ ControlsThis
+          <> InvestigatorExists
+            ( InvestigatorAt YourLocation
+                <> InvestigatorWithoutModifier CannotManipulateDeck
+            )
     ]
 
 instance RunMessage OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      investigatorIds <- selectList $ colocatedWith iid
-      push $
-        chooseOne
-          iid
-          [ targetLabel
-            iid'
-            [ Search
-                iid'
-                source
-                (InvestigatorTarget iid')
-                [fromTopOfDeck 3]
-                AnyCard
-                (DrawFound iid' 1)
-            ]
-          | iid' <- investigatorIds
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      investigators <- selectList $ colocatedWith iid
+      push
+        $ chooseOne iid
+        $ [ targetLabel iid'
+            $ [ Search iid' (toAbilitySource attrs 1) (toTarget iid') [fromTopOfDeck 3] AnyCard (DrawFound iid' 1)
+              ]
+          | iid' <- investigators
           ]
       pure a
     _ -> OldBookOfLore <$> runMessage msg attrs

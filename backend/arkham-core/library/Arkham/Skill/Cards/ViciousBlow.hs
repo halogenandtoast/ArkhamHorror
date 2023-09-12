@@ -20,10 +20,8 @@ viciousBlow :: SkillCard ViciousBlow
 viciousBlow = skill ViciousBlow Cards.viciousBlow
 
 instance RunMessage ViciousBlow where
-  runMessage msg s@(ViciousBlow attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _
-      | sid == skillId ->
-          s
-            <$ push
-              (skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1))
+  runMessage msg s@(ViciousBlow attrs) = case msg of
+    PassedSkillTest iid (Just Fight) _ (isTarget attrs -> True) _ _ -> do
+      push $ skillTestModifier attrs iid (DamageDealt 1)
+      pure s
     _ -> ViciousBlow <$> runMessage msg attrs

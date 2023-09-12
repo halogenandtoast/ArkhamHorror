@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype HardKnocks = HardKnocks AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -34,22 +33,10 @@ instance HasAbilities HardKnocks where
 
 instance RunMessage HardKnocks where
   runMessage msg a@(HardKnocks attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillCombat 1)
-              )
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillAgility 1)
-              )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 1)
+      pure a
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      push $ skillTestModifier (toAbilitySource attrs 2) iid (SkillModifier #agility 1)
+      pure a
     _ -> HardKnocks <$> runMessage msg attrs

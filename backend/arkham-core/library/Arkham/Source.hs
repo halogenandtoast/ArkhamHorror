@@ -102,7 +102,9 @@ instance Sourceable EventId where
   toSource = EventSource
 
 toAbilitySource :: Sourceable a => a -> Int -> Source
-toAbilitySource = AbilitySource . toSource
+toAbilitySource a n = case toSource a of
+  AbilitySource b n' -> AbilitySource b n'
+  b -> AbilitySource b n
 
 isAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isAbilitySource a idx (AbilitySource b idx') | idx == idx' = isSource a b

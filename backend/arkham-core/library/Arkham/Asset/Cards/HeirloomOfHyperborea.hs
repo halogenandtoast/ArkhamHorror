@@ -19,20 +19,15 @@ heirloomOfHyperborea = asset HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
 instance HasAbilities HeirloomOfHyperborea where
   getAbilities (HeirloomOfHyperborea x) =
-    [ restrictedAbility x 1 (ControlsThis <> CanDrawCards) $
-        ReactionAbility
-          ( Matcher.PlayCard
-              Timing.After
-              You
-              (BasicCardMatch $ CardWithTrait Spell)
-          )
+    [ restrictedAbility x 1 (ControlsThis <> CanDrawCards)
+        $ ReactionAbility
+          (Matcher.PlayCard Timing.After You (BasicCardMatch $ CardWithTrait Spell))
           Free
     ]
 
 instance RunMessage HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> HeirloomOfHyperborea <$> runMessage msg attrs

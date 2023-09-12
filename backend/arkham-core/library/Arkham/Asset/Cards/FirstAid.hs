@@ -23,60 +23,39 @@ firstAid = assetWith FirstAid Cards.firstAid (discardWhenNoUsesL .~ True)
 
 instance HasAbilities FirstAid where
   getAbilities (FirstAid x) =
-    [ restrictedAbility
-        x
-        1
-        ( ControlsThis
-            <> InvestigatorExists
-              ( AnyInvestigator
-                  [ HealableInvestigator (toSource x) HorrorType $
-                      InvestigatorAt YourLocation
-                  , HealableInvestigator (toSource x) DamageType $
-                      InvestigatorAt YourLocation
-                  ]
-              )
-        )
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
+    [ withCriteria (mkAbility x 1 (ActionAbility Nothing $ ActionCost 1 <> assetUseCost x Supply 1))
+        $ ControlsThis
+          <> InvestigatorExists
+            ( AnyInvestigator
+                [ HealableInvestigator (toSource x) HorrorType $ InvestigatorAt YourLocation
+                , HealableInvestigator (toSource x) DamageType $ InvestigatorAt YourLocation
+                ]
+            )
     ]
 
 instance RunMessage FirstAid where
   runMessage msg a@(FirstAid attrs) = case msg of
-    InDiscard _ msg'@(UseCardAbility _ source 1 _ _)
-      | isSource attrs source ->
-          runMessage msg' a
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    InDiscard _ msg'@(UseCardAbility _ (isSource attrs -> True) 1 _ _) -> runMessage msg' a
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       horrorInvestigators <-
-        select $
-          HealableInvestigator (toSource attrs) HorrorType $
-            colocatedWith iid
+        select $ HealableInvestigator (toAbilitySource attrs 1) HorrorType $ colocatedWith iid
       damageInvestigators <-
-        select $
-          HealableInvestigator (toSource attrs) DamageType $
-            colocatedWith iid
+        select $ HealableInvestigator (toAbilitySource attrs 1) DamageType $ colocatedWith iid
       let
-        allInvestigators =
-          setToList $ horrorInvestigators <> damageInvestigators
-        componentLabel component iid' =
-          ComponentLabel (InvestigatorComponent iid' component)
+        allInvestigators = setToList $ horrorInvestigators <> damageInvestigators
+        componentLabel component iid' = ComponentLabel (InvestigatorComponent iid' component)
       choices <- for allInvestigators $ \i -> do
         mHealHorror <-
           if i `member` horrorInvestigators
-            then getHealHorrorMessage attrs 1 i
+            then getHealHorrorMessage (toAbilitySource attrs 1) 1 i
             else pure Nothing
-        pure $
-          targetLabel
-            i
-            [ chooseOrRunOne iid $
-                [ componentLabel
-                  DamageToken
-                  i
-                  [HealDamage (InvestigatorTarget i) (toSource attrs) 1]
-                | i `member` damageInvestigators
-                ]
-                  <> [ componentLabel HorrorToken i [healHorror]
-                     | healHorror <- maybeToList mHealHorror
-                     ]
+        pure
+          $ targetLabel i
+          $ [ chooseOrRunOne iid
+                $ [ componentLabel DamageToken i [HealDamage (InvestigatorTarget i) (toAbilitySource attrs 1) 1]
+                  | i `member` damageInvestigators
+                  ]
+                  <> [componentLabel HorrorToken i [healHorror] | healHorror <- maybeToList mHealHorror]
             ]
       push $ chooseOne iid choices
       pure a

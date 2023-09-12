@@ -29,9 +29,9 @@ instance RunMessage Shrivelling where
   runMessage msg a@(Shrivelling attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
-        [ skillTestModifiers attrs iid [DamageDealt 1]
+        [ skillTestModifiers (toAbilitySource attrs 1) iid [DamageDealt 1]
         , CreateEffect "01060" Nothing (toAbilitySource attrs 1) (toTarget iid)
-        , ChooseFightEnemy iid (toAbilitySource attrs 1) Nothing #willpower mempty False
+        , chooseFightEnemy iid (toAbilitySource attrs 1) #willpower
         ]
       pure a
     _ -> Shrivelling <$> runMessage msg attrs

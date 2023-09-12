@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype PhysicalTraining = PhysicalTraining AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -34,22 +33,10 @@ instance HasAbilities PhysicalTraining where
 
 instance RunMessage PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillWillpower 1)
-              )
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillCombat 1)
-              )
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #willpower 1)
+      pure a
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      push $ skillTestModifier (toAbilitySource attrs 2) iid (SkillModifier #combat 1)
+      pure a
     _ -> PhysicalTraining <$> runMessage msg attrs

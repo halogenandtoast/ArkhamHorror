@@ -110,6 +110,22 @@ data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
 
+pattern PassedThisSkillTest :: InvestigatorId -> Source -> Message
+pattern PassedThisSkillTest iid source <-
+  PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
+
+pattern PassedThisSkillTestBy :: InvestigatorId -> Source -> Int -> Message
+pattern PassedThisSkillTestBy iid source n <-
+  PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
+
+pattern FailedThisSkillTest :: InvestigatorId -> Source -> Message
+pattern FailedThisSkillTest iid source <-
+  FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
+
+pattern FailedThisSkillTestBy :: InvestigatorId -> Source -> Int -> Message
+pattern FailedThisSkillTestBy iid source n <-
+  FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
+
 pattern PlaceClues :: Source -> Target -> Int -> Message
 pattern PlaceClues source target n = PlaceTokens source target Clue n
 

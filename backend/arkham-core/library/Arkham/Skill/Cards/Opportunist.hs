@@ -18,8 +18,8 @@ opportunist :: SkillCard Opportunist
 opportunist = skill Opportunist Cards.opportunist
 
 instance RunMessage Opportunist where
-  runMessage msg s@(Opportunist attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid _ _ (SkillTarget sid) _ n
-      | sid == skillId && n >= 3 ->
-          s <$ push (ReturnToHand iid (SkillTarget skillId))
+  runMessage msg s@(Opportunist attrs) = case msg of
+    PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 3 -> do
+      push $ ReturnToHand iid (toTarget attrs)
+      pure s
     _ -> Opportunist <$> runMessage msg attrs

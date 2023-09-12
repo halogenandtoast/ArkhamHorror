@@ -15,6 +15,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.Id
 import Arkham.ChaosToken (ChaosToken)
+import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.GameValue
 import Arkham.Id
@@ -140,6 +141,9 @@ data Cost
   | SupplyCost LocationMatcher Supply
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
   deriving stock (Show, Eq, Ord)
+
+assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
+assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
 
 exhaust :: Targetable a => a -> Cost
 exhaust = ExhaustCost . toTarget

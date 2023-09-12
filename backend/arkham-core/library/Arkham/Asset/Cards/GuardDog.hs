@@ -24,13 +24,9 @@ guardDog = ally GuardDog Cards.guardDog (3, 1)
 
 instance HasAbilities GuardDog where
   getAbilities (GuardDog x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
-          ( AssetDealtDamage
-              Timing.When
-              (SourceIsEnemyAttack AnyEnemy)
-              (AssetWithId (toId x))
-          )
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
+          (AssetDealtDamage Timing.When (SourceIsEnemyAttack AnyEnemy) (AssetWithId (toId x)))
           Free
     ]
 
@@ -44,7 +40,7 @@ toEnemyId (_ : ws) = toEnemyId ws
 
 instance RunMessage GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
-    UseCardAbility _ source 1 (toEnemyId -> eid) _ | isSource attrs source -> do
-      push $ EnemyDamage eid $ nonAttack source 1
+    UseCardAbility _ (isSource attrs -> True) 1 (toEnemyId -> eid) _ -> do
+      push $ EnemyDamage eid $ nonAttack (toAbilitySource attrs 1) 1
       pure a
     _ -> GuardDog <$> runMessage msg attrs

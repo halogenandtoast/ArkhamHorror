@@ -18,13 +18,10 @@ evidence :: EventCard Evidence
 evidence = event Evidence Cards.evidence
 
 instance RunMessage Evidence where
-  runMessage msg e@(Evidence attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <- getJustLocation iid
-      hasClues <- fieldP LocationClues (> 0) currentLocationId
-      pushAll $
-        [ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) 1 Nothing
-        | hasClues
-        ]
+  runMessage msg e@(Evidence attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      currentLocation <- getJustLocation iid
+      hasClues <- fieldP LocationClues (> 0) currentLocation
+      pushWhen hasClues $ InvestigatorDiscoverClues iid currentLocation (toSource attrs) 1 Nothing
       pure e
     _ -> Evidence <$> runMessage msg attrs

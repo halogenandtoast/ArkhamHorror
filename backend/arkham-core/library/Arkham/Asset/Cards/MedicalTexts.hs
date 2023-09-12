@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype MedicalTexts = MedicalTexts AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,37 +24,27 @@ instance HasAbilities MedicalTexts where
 
 instance RunMessage MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let controllerId = getController attrs
-      locationInvestigatorIds <- selectList $ colocatedWith controllerId
-      push $
-        chooseOne
-          iid
-          [ TargetLabel
-            (InvestigatorTarget iid')
-            [ beginSkillTest
-                iid
-                source
-                (InvestigatorTarget iid')
-                SkillIntellect
-                2
-            ]
-          | iid' <- locationInvestigatorIds
+      investigators <- selectList $ colocatedWith controllerId
+      push
+        $ chooseOne iid
+        $ [ targetLabel iid' [beginSkillTest iid (toAbilitySource attrs 1) iid' #intellect 2]
+          | iid' <- investigators
           ]
       pure a
-    PassedSkillTest _ _ source (SkillTestInitiatorTarget target@(InvestigatorTarget iid)) _ _
-      | isSource attrs source ->
-          do
-            whenM (canHaveDamageHealed attrs iid) $
-              push $
-                HealDamage
-                  target
-                  (toSource attrs)
-                  1
-            pure a
-    FailedSkillTest _ _ source (SkillTestInitiatorTarget (InvestigatorTarget iid)) _ _
-      | isSource attrs source ->
-          do
-            push (InvestigatorAssignDamage iid source DamageAny 1 0)
-            pure a
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Just target@(InvestigatorTarget iid) ->
+          pushWhenM (canHaveDamageHealed attrs iid)
+            $ HealDamage target (toAbilitySource attrs 1) 1
+        _ -> error "invalid target"
+      pure a
+    FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Just (InvestigatorTarget iid) -> push $ assignDamage iid (toAbilitySource attrs 1) 1
+        _ -> error "invalid target"
+      pure a
     _ -> MedicalTexts <$> runMessage msg attrs

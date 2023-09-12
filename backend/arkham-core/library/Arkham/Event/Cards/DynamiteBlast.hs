@@ -19,37 +19,21 @@ dynamiteBlast :: EventCard DynamiteBlast
 dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 
 instance RunMessage DynamiteBlast where
-  runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      connectedLocationIds <-
-        selectList $
-          AccessibleFrom $
-            LocationWithId
-              currentLocationId
-      choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
-        enemyIds <- selectList $ EnemyAt $ LocationWithId lid
-        investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
+  runMessage msg e@(DynamiteBlast attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      currentLocation <- fieldJust InvestigatorLocation iid
+      connectedLocations <- selectList $ AccessibleFrom $ LocationWithId currentLocation
+      choices <- for (currentLocation : connectedLocations) $ \location -> do
+        enemies <- selectList $ enemyAt location
+        investigators <- selectList $ investigatorAt location
         pure
-          ( lid
-          , map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
+          ( location
+          , map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemies
               <> map
-                ( \iid' ->
-                    InvestigatorAssignDamage
-                      iid'
-                      (toSource attrs)
-                      DamageAny
-                      3
-                      0
-                )
-                investigatorIds
+                (\iid' -> assignDamage iid' attrs 3)
+                investigators
           )
-      let
-        availableChoices =
-          map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
-      e <$ pushAll [chooseOne iid availableChoices]
+      let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices
+      push $ chooseOne iid availableChoices
+      pure e
     _ -> DynamiteBlast <$> runMessage msg attrs

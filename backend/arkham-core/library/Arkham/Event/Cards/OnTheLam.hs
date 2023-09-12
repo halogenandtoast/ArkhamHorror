@@ -20,8 +20,8 @@ onTheLam :: EventCard OnTheLam
 onTheLam = event OnTheLam Cards.onTheLam
 
 instance RunMessage OnTheLam where
-  runMessage msg e@(OnTheLam attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(OnTheLam attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       unshiftEffect attrs iid
       pure e
     _ -> OnTheLam <$> runMessage msg attrs
@@ -34,10 +34,13 @@ onTheLamEffect :: EffectArgs -> OnTheLamEffect
 onTheLamEffect = cardEffect OnTheLamEffect Cards.onTheLam
 
 instance HasModifiersFor OnTheLamEffect where
-  getModifiersFor target (OnTheLamEffect a@EffectAttrs {..}) =
-    pure $ toModifiers a [CannotBeAttackedBy NonEliteEnemy | target == effectTarget]
+  getModifiersFor target (OnTheLamEffect a) | target == effectTarget a = do
+    pure $ toModifiers a [CannotBeAttackedBy NonEliteEnemy]
+  getModifiersFor _ _ = pure []
 
 instance RunMessage OnTheLamEffect where
   runMessage msg e@(OnTheLamEffect attrs) = case msg of
-    EndRound -> e <$ push (DisableEffect $ toId attrs)
+    EndRound -> do
+      push $ DisableEffect $ toId attrs
+      pure e
     _ -> OnTheLamEffect <$> runMessage msg attrs

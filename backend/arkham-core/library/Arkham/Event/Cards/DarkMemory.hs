@@ -20,31 +20,20 @@ darkMemory = event DarkMemory Cards.darkMemory
 
 instance HasAbilities DarkMemory where
   getAbilities (DarkMemory x) =
-    [ restrictedAbility x 1 InYourHand $
-        ForcedAbility $
-          TurnEnds
-            Timing.When
-            You
+    [ restrictedAbility x 1 InYourHand
+        $ ForcedAbility
+        $ TurnEnds Timing.When You
     ]
 
 instance RunMessage DarkMemory where
-  runMessage msg e@(DarkMemory attrs@EventAttrs {..}) = case msg of
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
-      | iid' == iid ->
-          e
-            <$ pushAll
-              [ RevealInHand $ toCardId attrs
-              , InvestigatorAssignDamage
-                  iid
-                  (CardSource $ toCard attrs)
-                  DamageAny
-                  0
-                  2
-              ]
-    InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
-      e
-        <$ pushAll
-          [ PlaceDoomOnAgenda
-          , AdvanceAgendaIfThresholdSatisfied
-          ]
+  runMessage msg e@(DarkMemory attrs) = case msg of
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid' == iid -> do
+      pushAll
+        [ RevealInHand $ toCardId attrs
+        , assignHorror iid (CardSource $ toCard attrs) 2
+        ]
+      pure e
+    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do
+      pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+      pure e
     _ -> DarkMemory <$> runMessage msg attrs

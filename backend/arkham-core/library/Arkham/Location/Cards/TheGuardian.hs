@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
@@ -30,18 +29,12 @@ theGuardian =
 
 instance HasAbilities TheGuardian where
   getAbilities (TheGuardian attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ReactionAbility
-          (Enters Timing.After You $ LocationWithId $ toId attrs)
-          Free
-      | locationRevealed attrs
-      ]
+    withRevealedAbilities attrs
+      $ [mkAbility attrs 1 $ ReactionAbility (Enters Timing.After You $ LocationWithId $ toId attrs) Free]
 
 instance RunMessage TheGuardian where
   runMessage msg l@(TheGuardian attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure l
     _ -> TheGuardian <$> runMessage msg attrs

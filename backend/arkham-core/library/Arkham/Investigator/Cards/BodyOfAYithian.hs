@@ -28,15 +28,13 @@ instance HasAbilities BodyOfAYithian where
   getAbilities (BodyOfAYithian _) = []
 
 instance HasChaosTokenValue BodyOfAYithian where
-  getChaosTokenValue iid ElderSign (BodyOfAYithian (attrs `With` _))
-    | iid == toId attrs = do
-        pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
+  getChaosTokenValue iid ElderSign (BodyOfAYithian (attrs `With` _)) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage BodyOfAYithian where
   runMessage msg i@(BodyOfAYithian (attrs `With` meta)) = case msg of
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+      pushM $ drawCards iid (ChaosTokenEffectSource ElderSign) 1
       pure i
     _ -> BodyOfAYithian . (`with` meta) <$> runMessage msg attrs

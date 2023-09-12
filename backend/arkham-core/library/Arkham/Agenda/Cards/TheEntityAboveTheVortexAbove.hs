@@ -38,10 +38,10 @@ instance HasModifiersFor TheEntityAboveTheVortexAbove where
 
 instance HasAbilities TheEntityAboveTheVortexAbove where
   getAbilities (TheEntityAboveTheVortexAbove a) =
-    [ limitedAbility (GroupLimit PerRound 1) $
-        mkAbility a 1 $
-          FastAbility $
-            GroupClueCost (PerPlayer 1) Anywhere
+    [ limitedAbility (GroupLimit PerRound 1)
+        $ mkAbility a 1
+        $ FastAbility
+        $ GroupClueCost (PerPlayer 1) Anywhere
     ]
 
 instance RunMessage TheEntityAboveTheVortexAbove where
@@ -50,11 +50,11 @@ instance RunMessage TheEntityAboveTheVortexAbove where
       openThePathAbove <- getSetAsideCard Acts.openThePathAbove
       pushAll [Discard GameSource (toTarget attrs), AddAct 2 openThePathAbove]
       pure a
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       investigatorIds <- getInvestigatorIds
-      drawing <- for investigatorIds $ \iid -> drawCards iid attrs 1
-      pushAll $
-        PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+      drawing <- for investigatorIds $ \iid -> drawCards iid (toAbilitySource attrs 1) 1
+      pushAll
+        $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
           : AdvanceAgendaIfThresholdSatisfied
           : drawing
       pure a

@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
+import Control.Monad.Trans.Maybe
 
 newtype Machete = Machete AssetAttrs
   deriving anyclass (IsAsset)
@@ -20,14 +20,15 @@ machete = asset Machete Cards.machete
 
 instance HasModifiersFor Machete where
   getModifiersFor (InvestigatorTarget iid) (Machete attrs) = do
-    mSource <- getSkillTestSource
-    mTarget <- getSkillTestTarget
-    mInvestigator <- getSkillTestInvestigator
-    case (mSource, mTarget, mInvestigator) of
-      (Just source, Just (EnemyTarget eid), Just iid') | isSource attrs source && iid == iid' -> do
-        engagedEnemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
-        pure $ toModifiers attrs [DamageDealt 1 | engagedEnemies == [eid]]
-      _ -> pure []
+    mods <- runMaybeT $ do
+      (isSource attrs -> True) <- MaybeT getSkillTestSource
+      EnemyTarget eid <- MaybeT getSkillTestTarget
+      engagedEnemies <- lift $ selectList $ enemyEngagedWith iid
+      guard $ engagedEnemies == [eid]
+      iid' <- MaybeT getSkillTestInvestigator
+      guard $ iid == iid'
+      pure $ DamageDealt 1
+    pure $ toModifiers attrs $ maybeToList mods
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Machete where
@@ -35,10 +36,10 @@ instance HasAbilities Machete where
 
 instance RunMessage Machete where
   runMessage msg a@(Machete attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
-        [ skillTestModifier attrs iid (SkillModifier SkillCombat 1)
-        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+        [ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 1)
+        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
     _ -> Machete <$> runMessage msg attrs

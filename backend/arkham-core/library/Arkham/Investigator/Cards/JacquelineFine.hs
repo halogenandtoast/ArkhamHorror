@@ -30,10 +30,10 @@ jacquelineFine =
 
 instance HasAbilities JacquelineFine where
   getAbilities (JacquelineFine a) =
-    [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility a 1 Self $
-          ReactionAbility (WouldRevealChaosToken Timing.When $ InvestigatorAt YourLocation) $
-            Free
+    [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility a 1 Self
+        $ ReactionAbility (WouldRevealChaosToken Timing.When $ InvestigatorAt YourLocation)
+        $ Free
     ]
 
 instance HasChaosTokenValue JacquelineFine where
@@ -41,49 +41,47 @@ instance HasChaosTokenValue JacquelineFine where
     pure $ ChaosTokenValue ElderSign NoModifier
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
+getDrawSource :: [Window] -> Source
+getDrawSource [] = error "No draw source"
+getDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
+getDrawSource (_ : rest) = getDrawSource rest
+
 -- TODO: ChooseTokenMatch should have matchers that check the token results
 -- and then prompt the user to choose an option rather than having the bag
 -- handle the logic, this should work without changing behavior too much
 instance RunMessage JacquelineFine where
   runMessage msg i@(JacquelineFine attrs) = case msg of
-    UseCardAbility
-      iid
-      (isSource attrs -> True)
-      1
-      [Window Timing.When (Window.WouldRevealChaosToken drawSource _) _]
-      _ -> do
-        ignoreWindow <-
-          checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
-        pushAll
-          [ ReplaceCurrentDraw drawSource iid $
-              ChooseMatchChoice
-                [Undecided Draw, Undecided Draw, Undecided Draw]
-                []
-                [
-                  ( ChaosTokenFaceIs AutoFail
-                  ,
-                    ( "Cancel 1 {autofail} token"
-                    , ChooseMatch (toSource attrs) 1 CancelChoice [] [] (ChaosTokenFaceIs AutoFail)
-                    )
-                  )
+    UseCardAbility iid (isSource attrs -> True) 1 (getDrawSource -> drawSource) _ -> do
+      ignoreWindow <-
+        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
+      pushAll
+        [ ReplaceCurrentDraw drawSource iid
+            $ ChooseMatchChoice
+              [Undecided Draw, Undecided Draw, Undecided Draw]
+              []
+              [
+                ( ChaosTokenFaceIs AutoFail
                 ,
-                  ( ChaosTokenFaceIsNot AutoFail
-                  ,
-                    ( "Cancel 2 non-{autofail} tokens"
-                    , ChooseMatch (toSource attrs) 2 CancelChoice [] [] (ChaosTokenFaceIsNot AutoFail)
-                    )
+                  ( "Cancel 1 {autofail} token"
+                  , ChooseMatch (toAbilitySource attrs 1) 1 CancelChoice [] [] (ChaosTokenFaceIs AutoFail)
                   )
-                ]
-          , -- \$ Choose 1 [Undecided Draw, Undecided Draw, Undecided Draw] []
-            ignoreWindow
-          ]
-        pure i
+                )
+              ,
+                ( ChaosTokenFaceIsNot AutoFail
+                ,
+                  ( "Cancel 2 non-{autofail} tokens"
+                  , ChooseMatch (toAbilitySource attrs 1) 2 CancelChoice [] [] (ChaosTokenFaceIsNot AutoFail)
+                  )
+                )
+              ]
+        , -- \$ Choose 1 [Undecided Draw, Undecided Draw, Undecided Draw] []
+          ignoreWindow
+        ]
+      pure i
     ChaosTokenCanceled iid _ (chaosTokenFace -> ElderSign) | iid == toId attrs -> do
-      drawing <- drawCards (toId attrs) (toSource attrs) 1
-      push drawing
+      pushM $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
       JacquelineFine <$> runMessage msg attrs
     ChaosTokenIgnored iid _ (chaosTokenFace -> ElderSign) | iid == toId attrs -> do
-      drawing <- drawCards (toId attrs) (toSource attrs) 1
-      push drawing
+      pushM $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
       JacquelineFine <$> runMessage msg attrs
     _ -> JacquelineFine <$> runMessage msg attrs

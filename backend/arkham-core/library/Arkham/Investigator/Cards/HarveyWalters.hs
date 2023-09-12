@@ -34,16 +34,16 @@ harveyWalters =
 
 instance HasAbilities HarveyWalters where
   getAbilities (HarveyWalters a) =
-    [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility a 1 Self $
-          ReactionAbility
-            ( DrawCard
-                Timing.After
-                (InvestigatorAt YourLocation)
-                (BasicCardMatch AnyCard)
-                AnyDeck
-            )
-            Free
+    [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility a 1 Self
+        $ ReactionAbility
+          ( DrawCard
+              Timing.After
+              (InvestigatorAt YourLocation)
+              (BasicCardMatch AnyCard)
+              AnyDeck
+          )
+          Free
     ]
 
 instance HasChaosTokenValue HarveyWalters where
@@ -53,13 +53,10 @@ instance HasChaosTokenValue HarveyWalters where
 
 instance RunMessage HarveyWalters where
   runMessage msg i@(HarveyWalters attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (map windowType -> [Window.DrawCard iid' _ _]) _ ->
-      do
-        drawing <- drawCards iid' attrs 1
-        push drawing
-        pure i
+    UseCardAbility _ (isSource attrs -> True) 1 (map windowType -> [Window.DrawCard iid' _ _]) _ -> do
+      pushM $ drawCards iid' (toAbilitySource attrs 1) 1
+      pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+      pushM $ drawCards iid (ChaosTokenEffectSource ElderSign) 1
       pure i
     _ -> HarveyWalters <$> runMessage msg attrs

@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,22 +20,21 @@ rolands38Special = asset Rolands38Special Cards.rolands38Special
 
 instance HasAbilities Rolands38Special where
   getAbilities (Rolands38Special x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1 <> UseCost (AssetWithId $ toId x) Ammo 1
+    [ restrictedAbility x 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1 <> assetUseCost x Ammo 1
     ]
 
 instance RunMessage Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      anyClues <-
-        selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
+      anyClues <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
       pushAll
         [ skillTestModifiers
             (toAbilitySource attrs 1)
             iid
-            [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
-        , ChooseFightEnemy iid (toAbilitySource attrs 1) Nothing SkillCombat mempty False
+            [DamageDealt 1, SkillModifier #combat (if anyClues then 3 else 1)]
+        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
     _ -> Rolands38Special <$> runMessage msg attrs

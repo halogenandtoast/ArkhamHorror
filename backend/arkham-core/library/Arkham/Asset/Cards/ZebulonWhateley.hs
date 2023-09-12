@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ZebulonWhateley = ZebulonWhateley AssetAttrs
@@ -22,26 +21,20 @@ zebulonWhateley =
 
 instance HasAbilities ZebulonWhateley where
   getAbilities (ZebulonWhateley x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
-          ( SkillTestResult
-              Timing.After
-              You
-              (SkillTestOnTreachery AnyTreachery)
-              (SuccessResult AnyValue)
-          )
-          (ExhaustCost $ toTarget x)
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
+          (SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery) (SuccessResult AnyValue))
+          (exhaust x)
     ]
 
 instance HasModifiersFor ZebulonWhateley where
-  getModifiersFor (InvestigatorTarget iid) (ZebulonWhateley a) =
-    pure [toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid]
+  getModifiersFor (InvestigatorTarget iid) (ZebulonWhateley a) | controlledBy a iid = do
+    pure $ toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ZebulonWhateley where
   runMessage msg a@(ZebulonWhateley attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> ZebulonWhateley <$> runMessage msg attrs

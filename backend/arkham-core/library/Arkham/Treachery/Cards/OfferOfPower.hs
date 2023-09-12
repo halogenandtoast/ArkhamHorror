@@ -21,11 +21,7 @@ instance RunMessage OfferOfPower where
       push
         $ chooseOne iid
         $ [ Label "Draw 2 cards and place 2 doom on agenda"
-              $ [ drawing
-                , PlaceDoomOnAgenda
-                , PlaceDoomOnAgenda
-                , AdvanceAgendaIfThresholdSatisfied
-                ]
+              $ [drawing, PlaceDoomOnAgenda, PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
           , Label "Take 2 horror" [assignHorror iid attrs 2]
           ]
       pure t

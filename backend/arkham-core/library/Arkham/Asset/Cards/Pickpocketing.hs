@@ -21,16 +21,13 @@ pickpocketing = asset Pickpocketing Cards.pickpocketing
 
 instance HasAbilities Pickpocketing where
   getAbilities (Pickpocketing a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
-          (Matcher.EnemyEvaded Timing.After You AnyEnemy)
-          (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (Matcher.EnemyEvaded Timing.After You AnyEnemy) (exhaust a)
     ]
 
 instance RunMessage Pickpocketing where
   runMessage msg a@(Pickpocketing attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> Pickpocketing <$> runMessage msg attrs

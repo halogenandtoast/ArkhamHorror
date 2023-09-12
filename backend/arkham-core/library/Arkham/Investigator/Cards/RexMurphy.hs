@@ -56,8 +56,8 @@ instance HasChaosTokenValue RexMurphy where
 instance RunMessage RexMurphy where
   runMessage msg i@(RexMurphy attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $
-        InvestigatorDiscoverClues
+      push
+        $ InvestigatorDiscoverClues
           (toId attrs)
           (investigatorLocation attrs)
           (toAbilitySource attrs 1)
@@ -65,9 +65,9 @@ instance RunMessage RexMurphy where
           Nothing
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      drawing <- drawCards iid attrs 3
-      push $
-        chooseOne
+      drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 3
+      push
+        $ chooseOne
           iid
           [ Label "Automatically fail to draw 3" [FailSkillTest, drawing]
           , Label "Resolve normally" []

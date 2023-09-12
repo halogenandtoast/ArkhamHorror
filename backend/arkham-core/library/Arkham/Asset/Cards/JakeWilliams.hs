@@ -22,31 +22,29 @@ jakeWilliams :: AssetCard JakeWilliams
 jakeWilliams = ally JakeWilliams Cards.jakeWilliams (3, 2)
 
 instance HasModifiersFor JakeWilliams where
-  getModifiersFor (InvestigatorTarget iid) (JakeWilliams a)
-    | controlledBy a iid = do
-        actions <- field InvestigatorActionsTaken iid
-        pure $ toModifiers a $ do
-          action <- [Action.Move, Action.Investigate]
-          guard $ action `notElem` actions
-          pure $ ActionDoesNotCauseAttacksOfOpportunity action
+  getModifiersFor (InvestigatorTarget iid) (JakeWilliams a) | controlledBy a iid = do
+    actions <- field InvestigatorActionsTaken iid
+    pure $ toModifiers a $ do
+      action <- [Action.Move, Action.Investigate]
+      guard $ action `notElem` actions
+      pure $ ActionDoesNotCauseAttacksOfOpportunity action
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JakeWilliams where
   getAbilities (JakeWilliams a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( OrWindowMatcher
               [ RevealLocation Timing.After You Anywhere
               , PutLocationIntoPlay Timing.After You Anywhere
               ]
           )
-          (ExhaustCost (toTarget a))
+          (exhaust a)
     ]
 
 instance RunMessage JakeWilliams where
   runMessage msg a@(JakeWilliams attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> JakeWilliams <$> runMessage msg attrs

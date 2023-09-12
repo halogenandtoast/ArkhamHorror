@@ -24,28 +24,14 @@ theNecronomiconPetrusDeDaciaTranslation5 =
 
 instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
   getAbilities (TheNecronomiconPetrusDeDaciaTranslation5 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
-        FastAbility $
-          UseCost (AssetWithId $ toId a) Secret 1
-    , restrictedAbility a 2 (ControlsThis <> CanDrawCards) $
-        FastAbility $
-          UseCost (AssetWithId $ toId a) Secret 2
-    , restrictedAbility a 3 (ControlsThis <> CanDiscoverCluesAt Anywhere) $
-        FastAbility $
-          UseCost (AssetWithId $ toId a) Secret 3
-    , restrictedAbility
-        a
-        4
-        ( ControlsThis
-            <> EnemyCriteria
-              ( EnemyExists $
-                  EnemyIsEngagedWith You
-                    <> EnemyCanBeDamagedBySource
-                      (toSource a)
-              )
-        )
-        $ FastAbility
-        $ UseCost (AssetWithId $ toId a) Secret 4
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility (assetUseCost a Secret 1)
+    , restrictedAbility a 2 (ControlsThis <> CanDrawCards)
+        $ FastAbility (assetUseCost a Secret 2)
+    , restrictedAbility a 3 (ControlsThis <> CanDiscoverCluesAt Anywhere)
+        $ FastAbility (assetUseCost a Secret 3)
+    , withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a Secret 4)
+        $ ControlsThis <> enemyExists (EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (toSource a))
     ]
 
 instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
@@ -55,27 +41,21 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
         push $ skillTestModifier (toAbilitySource attrs 1) iid (AnySkillValue 2)
         pure a
       UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-        drawing <- drawCards iid attrs 2
-        push drawing
+        pushM $ drawCards iid (toAbilitySource attrs 2) 2
         pure a
       UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
-        lids <-
-          selectList $ LocationWithDiscoverableCluesBy $ InvestigatorWithId iid
-        when (notNull lids) $
-          push $
-            chooseOrRunOne
-              iid
-              [ targetLabel lid [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 2 Nothing]
-              | lid <- lids
-              ]
+        lids <- selectList $ LocationWithDiscoverableCluesBy $ InvestigatorWithId iid
+        pushWhen (notNull lids)
+          $ chooseOrRunOne
+            iid
+            [ targetLabel lid [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 2 Nothing]
+            | lid <- lids
+            ]
         pure a
       UseCardAbility iid (isSource attrs -> True) 4 _ _ -> do
-        eids <-
-          selectList $
-            EnemyIsEngagedWith (InvestigatorWithId iid)
-              <> EnemyCanBeDamagedBySource (toSource attrs)
-        push $
-          chooseOrRunOne
+        eids <- selectList $ enemyEngagedWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
+        push
+          $ chooseOrRunOne
             iid
             [ targetLabel eid [EnemyDamage eid $ nonAttack attrs 3]
             | eid <- eids

@@ -13,7 +13,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.SkillType
 
 newtype MindOverMatter = MindOverMatter EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -23,16 +22,10 @@ mindOverMatter :: EventCard MindOverMatter
 mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
 instance RunMessage MindOverMatter where
-  runMessage msg e@(MindOverMatter attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      e
-        <$ pushAll
-          [ createCardEffect
-              Cards.mindOverMatter
-              Nothing
-              (toSource attrs)
-              (InvestigatorTarget iid)
-          ]
+  runMessage msg e@(MindOverMatter attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      push $ createCardEffect Cards.mindOverMatter Nothing attrs iid
+      pure e
     _ -> MindOverMatter <$> runMessage msg attrs
 
 newtype MindOverMatterEffect = MindOverMatterEffect EffectAttrs
@@ -43,17 +36,14 @@ mindOverMatterEffect :: EffectArgs -> MindOverMatterEffect
 mindOverMatterEffect = cardEffect MindOverMatterEffect Cards.mindOverMatter
 
 instance HasModifiersFor MindOverMatterEffect where
-  getModifiersFor target (MindOverMatterEffect a@EffectAttrs {..})
-    | target == effectTarget =
-        pure $
-          toModifiers
-            a
-            [ UseSkillInPlaceOf SkillCombat SkillIntellect
-            , UseSkillInPlaceOf SkillAgility SkillIntellect
-            ]
+  getModifiersFor target (MindOverMatterEffect a) | target == effectTarget a = do
+    pure
+      $ toModifiers a [UseSkillInPlaceOf #combat #intellect, UseSkillInPlaceOf #agility #intellect]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MindOverMatterEffect where
   runMessage msg e@(MindOverMatterEffect attrs) = case msg of
-    EndRound -> e <$ push (DisableEffect $ effectId attrs)
+    EndRound -> do
+      push $ DisableEffect $ effectId attrs
+      pure e
     _ -> MindOverMatterEffect <$> runMessage msg attrs

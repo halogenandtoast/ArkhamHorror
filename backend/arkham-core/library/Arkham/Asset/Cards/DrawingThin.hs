@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -23,21 +21,16 @@ drawingThin = asset DrawingThin Cards.drawingThin
 instance HasAbilities DrawingThin where
   getAbilities (DrawingThin a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          (InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue)
-        $ ExhaustCost (toTarget a)
+        $ ReactionAbility (InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue)
+        $ exhaust a
     ]
 
 instance RunMessage DrawingThin where
   runMessage msg a@(DrawingThin attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      drawing <- drawCards iid (toAbilitySource attrs 1) 1
       pushAll
-        [ CreateWindowModifierEffect
-            EffectSkillTestWindow
-            (EffectModifiers $ toModifiers attrs [Difficulty 2])
-            source
-            SkillTestTarget
+        [ skillTestModifier (toAbilitySource attrs 1) SkillTestTarget (Difficulty 2)
         , chooseOne
             iid
             [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]

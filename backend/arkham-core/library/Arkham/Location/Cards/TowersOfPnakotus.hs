@@ -27,22 +27,18 @@ instance HasAbilities TowersOfPnakotus where
   getAbilities (TowersOfPnakotus attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (PlayerLimit PerTurn 1) $
-          restrictedAbility attrs 1 Here $
-            ActionAbility Nothing $
-              ActionCost 1
+      [ limitedAbility (PlayerLimit PerTurn 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
       ]
 
 instance RunMessage TowersOfPnakotus where
   runMessage msg l@(TowersOfPnakotus attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      discardableCount <-
-        fieldMap
-          InvestigatorHand
-          (count (`cardMatch` NonWeakness))
-          iid
-      push $
-        chooseAmounts
+      discardableCount <- fieldMap InvestigatorHand (count (`cardMatch` NonWeakness)) iid
+      push
+        $ chooseAmounts
           iid
           "Choose number of cards to discard"
           (MaxAmountTarget discardableCount)
@@ -50,11 +46,10 @@ instance RunMessage TowersOfPnakotus where
           (toTarget attrs)
       pure l
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
-      let
-        cardAmount = getChoiceAmount "Cards" choices
-      drawing <- drawCards iid attrs (cardAmount + 1)
-      pushAll $
-        replicate cardAmount (toMessage $ chooseAndDiscardCard iid $ toAbilitySource attrs 1)
+      let cardAmount = getChoiceAmount "Cards" choices
+      drawing <- drawCards iid (toAbilitySource attrs 1) (cardAmount + 1)
+      pushAll
+        $ replicate cardAmount (toMessage $ chooseAndDiscardCard iid $ toAbilitySource attrs 1)
           <> [ShuffleDiscardBackIn iid, drawing]
       pure l
     _ -> TowersOfPnakotus <$> runMessage msg attrs

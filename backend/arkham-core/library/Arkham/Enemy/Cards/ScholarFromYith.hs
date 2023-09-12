@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message hiding (EnemyAttacks)
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ScholarFromYith = ScholarFromYith EnemyAttrs
@@ -33,11 +32,11 @@ instance HasAbilities ScholarFromYith where
   getAbilities (ScholarFromYith a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.When You AnyEnemyAttack $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.When You AnyEnemyAttack
+          $ EnemyWithId
+          $ toId a
       , restrictedAbility
           a
           2
@@ -50,26 +49,18 @@ instance RunMessage ScholarFromYith where
   runMessage msg e@(ScholarFromYith attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
-        [ toMessage $ randomDiscard iid attrs
-        , toMessage $ randomDiscard iid attrs
+        [ toMessage $ randomDiscard iid (toAbilitySource attrs 1)
+        , toMessage $ randomDiscard iid (toAbilitySource attrs 1)
         ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $
-        parley
-          iid
-          (toAbilitySource attrs 2)
-          (InvestigatorTarget iid)
-          SkillIntellect
-          3
+      push $ parley iid (toAbilitySource attrs 2) iid #intellect 3
       pure e
-    PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        drawing <- drawCards iid attrs 1
-        pushAll [drawing, EnemyEvaded iid (toId attrs)]
-        pure e
-    FailedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ toMessage $ enemyAttack (toId attrs) attrs iid
-        pure e
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      drawing <- drawCards iid (toAbilitySource attrs 2) 1
+      pushAll [drawing, EnemyEvaded iid (toId attrs)]
+      pure e
+    FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      push $ toMessage $ enemyAttack (toId attrs) (toAbilitySource attrs 2) iid
+      pure e
     _ -> ScholarFromYith <$> runMessage msg attrs

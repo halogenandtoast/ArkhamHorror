@@ -17,12 +17,12 @@ elusive :: EventCard Elusive
 elusive = event Elusive Cards.elusive
 
 instance RunMessage Elusive where
-  runMessage msg e@(Elusive attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(Elusive attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
       targets <- selectList $ EmptyLocation <> RevealedLocation
-      pushAll $
-        [DisengageEnemy iid enemyId | enemyId <- enemyIds]
+      pushAll
+        $ [DisengageEnemy iid enemyId | enemyId <- enemyIds]
           <> [ chooseOrRunOne
               iid
               [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]

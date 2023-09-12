@@ -6,7 +6,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
@@ -22,22 +21,19 @@ professorWarrenRice =
     (isStoryL .~ True)
 
 instance HasModifiersFor ProfessorWarrenRice where
-  getModifiersFor (InvestigatorTarget iid) (ProfessorWarrenRice a) =
-    pure [toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid]
+  getModifiersFor (InvestigatorTarget iid) (ProfessorWarrenRice a) | controlledBy a iid = do
+    pure $ toModifiers a [SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ProfessorWarrenRice where
   getAbilities (ProfessorWarrenRice a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
-          (DiscoveringLastClue Timing.After You YourLocation)
-          (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (DiscoveringLastClue Timing.After You YourLocation) (exhaust a)
     ]
 
 instance RunMessage ProfessorWarrenRice where
   runMessage msg a@(ProfessorWarrenRice attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
-      push drawing
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> ProfessorWarrenRice <$> runMessage msg attrs

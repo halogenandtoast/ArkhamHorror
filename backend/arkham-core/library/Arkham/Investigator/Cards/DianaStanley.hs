@@ -48,15 +48,15 @@ instance HasModifiersFor DianaStanley where
 
 instance HasAbilities DianaStanley where
   getAbilities (DianaStanley a) =
-    [ limitedAbility (PlayerLimit PerPhase 1) $
-        restrictedAbility a 1 (Self <> fewerThan5CardBeneath) $
-          ReactionAbility
-            ( CancelledOrIgnoredCardOrGameEffect $
-                SourceOwnedBy You
-                  <> NotSource
-                    (SourceIsType InvestigatorType)
-            )
-            Free
+    [ limitedAbility (PlayerLimit PerPhase 1)
+        $ restrictedAbility a 1 (Self <> fewerThan5CardBeneath)
+        $ ReactionAbility
+          ( CancelledOrIgnoredCardOrGameEffect
+              $ SourceOwnedBy You
+                <> NotSource
+                  (SourceIsType InvestigatorType)
+          )
+          Free
     ]
    where
     fewerThan5CardBeneath =
@@ -69,45 +69,41 @@ instance HasChaosTokenValue DianaStanley where
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
+getCancelSource :: [Window] -> Source
+getCancelSource [] = error "No window to cancel"
+getCancelSource ((windowType -> Window.CancelledOrIgnoredCardOrGameEffect source) : _) = source
+getCancelSource (_ : rest) = getCancelSource rest
+
 instance RunMessage DianaStanley where
   runMessage msg i@(DianaStanley attrs) = case msg of
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
       unless (null cardsUnderneath) $ do
-        pushAll $
-          [ FocusCards cardsUnderneath
-          , chooseOrRunOne iid $
-              Label "Do not add any cards to your Hand" []
-                : [ TargetLabel (CardIdTarget $ toCardId c) [addToHand iid c]
-                  | c <- cardsUnderneath
-                  ]
-          , UnfocusCards
-          ]
+        pushAll
+          $ [ FocusCards cardsUnderneath
+            , chooseOrRunOne iid
+                $ Label "Do not add any cards to your Hand" []
+                  : [targetLabel (toCardId c) [addToHand iid c] | c <- cardsUnderneath]
+            , UnfocusCards
+            ]
       pure i
-    UseCardAbility
-      iid
-      (isSource attrs -> True)
-      1
-      [(windowType -> Window.CancelledOrIgnoredCardOrGameEffect source)]
-      _ ->
-        do
-          let
-            getSource = \case
-              AssetSource aid -> (RemoveAsset aid,) <$> field AssetCard aid
-              SkillSource sid -> (RemoveSkill sid,) <$> field SkillCard sid
-              EventSource eid -> (RemoveEvent eid,) <$> field EventCard eid
-              AbilitySource abilitySource _ -> getSource abilitySource
-              CardSource card -> pure (RemovePlayerCardFromGame False card, card)
-              _ -> error $ "Unhandled source for Diana Stanley: " <> show source
-          (removeMsg, card) <- getSource source
-          canLeavePlay <- case source of
-            AssetSource aid ->
-              member aid <$> select AssetCanLeavePlayByNormalMeans
-            _ -> pure $ not (cdPermanent $ toCardDef card)
-          drawing <- drawCards iid (toAbilitySource attrs 1) 1
-          pushAll $
-            [removeMsg | canLeavePlay]
-              <> [PlaceUnderneath (toTarget attrs) [card] | canLeavePlay]
-              <> [drawing, TakeResources iid 1 (toAbilitySource attrs 1) False]
-          pure i
+    UseCardAbility iid (isSource attrs -> True) 1 (getCancelSource -> source) _ -> do
+      let
+        getSource = \case
+          AssetSource aid -> (RemoveAsset aid,) <$> field AssetCard aid
+          SkillSource sid -> (RemoveSkill sid,) <$> field SkillCard sid
+          EventSource eid -> (RemoveEvent eid,) <$> field EventCard eid
+          AbilitySource abilitySource _ -> getSource abilitySource
+          CardSource card -> pure (RemovePlayerCardFromGame False card, card)
+          _ -> error $ "Unhandled source for Diana Stanley: " <> show source
+      (removeMsg, card) <- getSource source
+      canLeavePlay <- case source of
+        AssetSource aid -> member aid <$> select AssetCanLeavePlayByNormalMeans
+        _ -> pure $ not (cdPermanent $ toCardDef card)
+      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      pushAll
+        $ [removeMsg | canLeavePlay]
+          <> [PlaceUnderneath (toTarget attrs) [card] | canLeavePlay]
+          <> [drawing, TakeResources iid 1 (toAbilitySource attrs 1) False]
+      pure i
     _ -> DianaStanley <$> runMessage msg attrs

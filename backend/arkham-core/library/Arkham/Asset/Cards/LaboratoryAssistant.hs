@@ -19,14 +19,14 @@ laboratoryAssistant :: AssetCard LaboratoryAssistant
 laboratoryAssistant = ally LaboratoryAssistant Cards.laboratoryAssistant (1, 2)
 
 instance HasModifiersFor LaboratoryAssistant where
-  getModifiersFor (InvestigatorTarget iid) (LaboratoryAssistant attrs) =
-    pure $ toModifiers attrs [HandSize 2 | controlledBy attrs iid]
+  getModifiersFor (InvestigatorTarget iid) (LaboratoryAssistant attrs) | controlledBy attrs iid = do
+    pure $ toModifiers attrs [HandSize 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LaboratoryAssistant where
   getAbilities (LaboratoryAssistant x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
           (AssetEntersPlay Timing.When (AssetWithId $ toId x))
           Free
     ]
@@ -34,7 +34,6 @@ instance HasAbilities LaboratoryAssistant where
 instance RunMessage LaboratoryAssistant where
   runMessage msg a@(LaboratoryAssistant attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      drawing <- drawCards iid attrs 2
-      push drawing
+      pushM $ drawCards iid (toAbilitySource attrs 1) 2
       pure a
     _ -> LaboratoryAssistant <$> runMessage msg attrs

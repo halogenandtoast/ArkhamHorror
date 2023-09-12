@@ -32,10 +32,10 @@ theRitualBeginsBlackStarsRise =
 
 instance HasAbilities TheRitualBeginsBlackStarsRise where
   getAbilities (TheRitualBeginsBlackStarsRise a) =
-    [ limitedAbility (GroupLimit PerRound 1) $
-        mkAbility a 1 $
-          FastAbility $
-            GroupClueCost (PerPlayer 1) Anywhere
+    [ limitedAbility (GroupLimit PerRound 1)
+        $ mkAbility a 1
+        $ FastAbility
+        $ GroupClueCost (PerPlayer 1) Anywhere
     ]
 
 instance RunMessage TheRitualBeginsBlackStarsRise where
@@ -49,18 +49,18 @@ instance RunMessage TheRitualBeginsBlackStarsRise where
           a1aDoom <- field AgendaDoom a1aId
           markMsg <- if a1aDoom > 3 then markDoubt else markConviction
           pure [markMsg]
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , ShuffleCardsIntoDeck Deck.EncounterDeck riftSeekers
-        ]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , ShuffleCardsIntoDeck Deck.EncounterDeck riftSeekers
+          ]
           <> markDoubtOrConviction
           <> [advanceAgendaDeck attrs]
       pure a
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       investigatorIds <- getInvestigatorIds
-      drawing <- for investigatorIds $ \iid -> drawCards iid attrs 1
-      pushAll $
-        PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+      drawing <- for investigatorIds $ \iid -> drawCards iid (toAbilitySource attrs 1) 1
+      pushAll
+        $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
           : AdvanceAgendaIfThresholdSatisfied
           : drawing
       pure a

@@ -23,29 +23,24 @@ walterGilmansRoom =
     Cards.walterGilmansRoom
     4
     (PerPlayer 1)
-    ( costToEnterUnrevealedL
-        .~ Costs
-          [ActionCost 1, GroupClueCost (PerPlayer 1) (locationIs Locations.moldyHalls)]
-    )
+    $ costToEnterUnrevealedL
+      .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) (locationIs Locations.moldyHalls)]
 
 instance HasAbilities WalterGilmansRoom where
   getAbilities (WalterGilmansRoom a) =
-    withRevealedAbilities
-      a
-      [ restrictedAbility a 1 Here $ ActionAbility Nothing $ ActionCost 1
-      , haunted "Discard the top 2 cards of the encounter deck." a 2
-      ]
+    withRevealedAbilities a
+      $ [ restrictedAbility a 1 Here $ ActionAbility Nothing $ ActionCost 1
+        , haunted "Discard the top 2 cards of the encounter deck." a 2
+        ]
 
 instance RunMessage WalterGilmansRoom where
   runMessage msg l@(WalterGilmansRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       canDraw <- getCanDrawCards iid
-      drawing <- drawCards iid attrs 3
-      pushAll $
-        [drawing | canDraw]
-          <> [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
+      drawing <- drawCards iid (toAbilitySource attrs 1) 3
+      pushAll $ [drawing | canDraw] <> [assignHorror iid (toSource attrs) 1]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ DiscardTopOfEncounterDeck iid 2 (toSource attrs) Nothing
+      push $ DiscardTopOfEncounterDeck iid 2 (toAbilitySource attrs 2) Nothing
       pure l
     _ -> WalterGilmansRoom <$> runMessage msg attrs

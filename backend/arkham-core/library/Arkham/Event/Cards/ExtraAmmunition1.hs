@@ -18,17 +18,9 @@ extraAmmunition1 :: EventCard ExtraAmmunition1
 extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 
 instance RunMessage ExtraAmmunition1 where
-  runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      firearms <-
-        selectList $
-          AssetWithTrait Firearm
-            <> AssetControlledBy
-              (InvestigatorAt YourLocation)
-      pushAll
-        [ chooseOrRunOne
-            iid
-            [targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms]
-        ]
+  runMessage msg e@(ExtraAmmunition1 attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      firearms <- selectList $ AssetWithTrait Firearm <> AssetControlledBy (InvestigatorAt YourLocation)
+      push $ chooseOrRunOne iid [targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms]
       pure e
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

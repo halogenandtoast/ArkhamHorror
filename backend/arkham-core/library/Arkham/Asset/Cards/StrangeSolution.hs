@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
-import Arkham.SkillType
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,24 +23,15 @@ instance HasAbilities StrangeSolution where
 
 instance RunMessage StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( beginSkillTest
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  SkillIntellect
-                  4
-              )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          drawing <- drawCards iid attrs 2
-          pushAll
-            [ Discard (toAbilitySource attrs 1) (toTarget attrs)
-            , drawing
-            , Record YouHaveIdentifiedTheSolution
-            ]
-          pure a
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #intellect 4
+      pure a
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      drawing <- drawCards iid (toAbilitySource attrs 1) 2
+      pushAll
+        [ Discard (toAbilitySource attrs 1) (toTarget attrs)
+        , drawing
+        , Record YouHaveIdentifiedTheSolution
+        ]
+      pure a
     _ -> StrangeSolution <$> runMessage msg attrs

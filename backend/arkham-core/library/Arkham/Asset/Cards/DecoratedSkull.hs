@@ -24,8 +24,8 @@ decoratedSkull = asset DecoratedSkull Cards.decoratedSkull
 
 instance HasAbilities DecoratedSkull where
   getAbilities (DecoratedSkull a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( OrWindowMatcher
               [ EnemyDefeated Timing.After Anyone ByAny AnyEnemy
               , InvestigatorDefeated Timing.After ByAny Anyone
@@ -33,19 +33,18 @@ instance HasAbilities DecoratedSkull where
               ]
           )
           Free
-    , restrictedAbility a 2 ControlsThis $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Charge 1
+    , restrictedAbility a 2 ControlsThis
+        $ ActionAbility Nothing
+        $ ActionCost 1 <> assetUseCost a Charge 1
     ]
 
 instance RunMessage DecoratedSkull where
   runMessage msg a@(DecoratedSkull attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ AddUses (toId attrs) Charge 1
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      drawing <- drawCards iid attrs 1
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      drawing <- drawCards iid (toAbilitySource attrs 2) 1
       pushAll [drawing, TakeResources iid 1 (toAbilitySource attrs 2) False]
       pure a
     _ -> DecoratedSkull <$> runMessage msg attrs

@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ToothOfEztli = ToothOfEztli AssetAttrs
@@ -22,28 +21,22 @@ toothOfEztli = asset ToothOfEztli Cards.toothOfEztli
 instance HasModifiersFor ToothOfEztli where
   getModifiersFor (InvestigatorTarget iid) (ToothOfEztli a) | controlledBy a iid = do
     mSource <- getSkillTestSource
-    pure $ case mSource of
-      Just (TreacherySource _) -> do
-        toModifiers a [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
+    pure $ toModifiers a $ case mSource of
+      Just (TreacherySource _) -> [SkillModifier #willpower 1, SkillModifier #agility 1]
       _ -> []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ToothOfEztli where
   getAbilities (ToothOfEztli x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
-          ( SkillTestResult
-              Timing.After
-              You
-              (SkillTestOnTreachery AnyTreachery)
-              (SuccessResult AnyValue)
-          )
-          (ExhaustCost $ toTarget x)
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
+          (SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery) (SuccessResult AnyValue))
+          (exhaust x)
     ]
 
 instance RunMessage ToothOfEztli where
   runMessage msg a@(ToothOfEztli attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      pushM $ drawCards iid attrs 1
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> ToothOfEztli <$> runMessage msg attrs

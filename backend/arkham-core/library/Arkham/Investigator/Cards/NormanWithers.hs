@@ -38,10 +38,10 @@ normanWithers =
 instance HasModifiersFor NormanWithers where
   getModifiersFor target (NormanWithers (a `With` metadata))
     | isTarget a target =
-        pure $
-          toModifiers a $
-            TopCardOfDeckIsRevealed
-              : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+        pure
+          $ toModifiers a
+          $ TopCardOfDeckIsRevealed
+            : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
   getModifiersFor (CardIdTarget cid) (NormanWithers (a `With` _)) =
     case unDeck (investigatorDeck a) of
       x : _
@@ -73,24 +73,20 @@ instance HasChaosTokenValue NormanWithers where
 
 instance RunMessage NormanWithers where
   runMessage msg nw@(NormanWithers (a `With` metadata)) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource a source -> do
-      drawing <- drawCards iid a 1
-      push drawing
+    UseCardAbility iid (isSource a -> True) 1 _ _ -> do
+      pushM $ drawCards iid (toAbilitySource a 1) 1
       pure nw
     When (RevealChaosToken _ iid token) | iid == toId a -> do
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) $ do
-        drawing <- drawCards iid a 1
-        push $
-          chooseOne iid $
-            Label "Do not swap" []
-              : [ TargetLabel
-                  (CardIdTarget $ toCardId c)
-                  [ drawing
-                  , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
-                  ]
-                | c <- mapMaybe (preview _PlayerCard) (investigatorHand a)
-                ]
+        drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 1
+        push
+          $ chooseOne iid
+          $ Label "Do not swap" []
+            : [ targetLabel (toCardId c)
+                $ [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
+              | c <- onlyPlayerCards (investigatorHand a)
+              ]
       pure nw
     BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
     PlayCard iid card _ _ False | iid == toId a ->

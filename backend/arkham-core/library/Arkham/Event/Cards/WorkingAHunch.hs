@@ -18,12 +18,11 @@ workingAHunch :: EventCard WorkingAHunch
 workingAHunch = event WorkingAHunch Cards.workingAHunch
 
 instance RunMessage WorkingAHunch where
-  runMessage msg e@(WorkingAHunch attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(WorkingAHunch attrs) = case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       currentLocationId <- getJustLocation iid
       locationClueCount <- field LocationClues currentLocationId
-      when (locationClueCount > 0) $
-        push $
-          InvestigatorDiscoverClues iid currentLocationId (toSource attrs) 1 Nothing
+      pushWhen (locationClueCount > 0)
+        $ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) 1 Nothing
       pure e
     _ -> WorkingAHunch <$> runMessage msg attrs

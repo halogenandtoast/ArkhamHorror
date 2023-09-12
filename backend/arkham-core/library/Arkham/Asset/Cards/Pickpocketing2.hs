@@ -24,25 +24,22 @@ pickpocketing2 = asset Pickpocketing2 Cards.pickpocketing2
 
 instance HasAbilities Pickpocketing2 where
   getAbilities (Pickpocketing2 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
-          (Matcher.EnemyEvaded Timing.After You AnyEnemy)
-          (ExhaustCost $ toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (Matcher.EnemyEvaded Timing.After You AnyEnemy) (exhaust a)
     ]
 
 instance RunMessage Pickpocketing2 where
   runMessage msg a@(Pickpocketing2 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mskillTest <- getSkillTest
-      drawing <- drawCards iid attrs 1
+      drawing <- drawCards iid (toAbilitySource attrs 1) 1
       case skillTestResult <$> mskillTest of
         Just (SucceededBy _ n) | n >= 2 -> do
           pushAll [drawing, TakeResources iid 1 (toAbilitySource attrs 1) False]
         _ ->
-          push $
-            chooseOne
-              iid
-              [ Label "Draw 1 card" [drawing]
+          push
+            $ chooseOne iid
+            $ [ Label "Draw 1 card" [drawing]
               , Label "Gain 1 resource" [TakeResources iid 1 (toAbilitySource attrs 1) False]
               ]
       pure a

@@ -20,6 +20,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Resolution
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -297,3 +298,9 @@ directHorror iid (toSource -> source) horror = InvestigatorDirectDamage iid sour
 
 findAndDrawEncounterCard :: InvestigatorId -> CardMatcher -> Message
 findAndDrawEncounterCard investigator cardMatcher = FindAndDrawEncounterCard investigator cardMatcher IncludeDiscard
+
+ready :: Targetable target => target -> Message
+ready = Ready . toTarget
+
+chooseFightEnemy :: Sourceable source => InvestigatorId -> source -> SkillType -> Message
+chooseFightEnemy iid (toSource -> source) sType = ChooseFightEnemy iid source Nothing sType mempty False

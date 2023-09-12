@@ -40,12 +40,12 @@ winifredHabbamock =
 
 instance HasAbilities WinifredHabbamock where
   getAbilities (WinifredHabbamock a) =
-    [ limitedAbility (PlayerLimit PerTestOrAbility 1) $
-        restrictedAbility
+    [ limitedAbility (PlayerLimit PerTestOrAbility 1)
+        $ restrictedAbility
           a
           1
-          (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy (toId a)))) $
-          FastAbility Free
+          (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy (toId a))))
+        $ FastAbility Free
     ]
 
 instance HasChaosTokenValue WinifredHabbamock where
@@ -56,8 +56,7 @@ instance HasChaosTokenValue WinifredHabbamock where
 instance RunMessage WinifredHabbamock where
   runMessage msg i@(WinifredHabbamock attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) 1
-      push drawing
+      pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       push $ createCardEffect Cards.winifredHabbamock Nothing attrs attrs
@@ -83,8 +82,8 @@ instance RunMessage WinifredHabbamockEffect where
             InvestigatorSource iid -> do
               committedCards <- field InvestigatorCommittedCards iid
               unless (null committedCards) $ do
-                push $
-                  chooseN
+                push
+                  $ chooseN
                     iid
                     (min (n `div` 2) (length committedCards))
                     [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- committedCards]

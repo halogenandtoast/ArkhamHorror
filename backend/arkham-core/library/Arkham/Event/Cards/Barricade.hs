@@ -25,32 +25,22 @@ barricade :: EventCard Barricade
 barricade = event Barricade Cards.barricade
 
 instance HasModifiersFor Barricade where
-  getModifiersFor (LocationTarget lid) (Barricade attrs) =
-    pure $
-      toModifiers
-        attrs
-        [ CannotBeEnteredByNonElite
-        | LocationTarget lid `elem` eventAttachedTarget attrs
-        ]
+  getModifiersFor target (Barricade attrs) | target `elem` eventAttachedTarget attrs = do
+    pure $ toModifiers attrs [CannotBeEnteredByNonElite]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Barricade where
   getAbilities (Barricade x) = case eventAttachedTarget x of
-    Just (LocationTarget lid) ->
-      [ mkAbility x 1 $
-          ForcedAbility $
-            Leaves Timing.When You $
-              LocationWithId
-                lid
-      ]
+    Just (LocationTarget lid) -> [forcedAbility x 1 $ Leaves Timing.When You $ LocationWithId lid]
     _ -> []
 
 instance RunMessage Barricade where
   runMessage msg e@(Barricade attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
-      e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+      lid <- fieldJust InvestigatorLocation iid
+      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      pure e
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure e
     _ -> Barricade <$> runMessage msg attrs

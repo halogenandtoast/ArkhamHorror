@@ -34,13 +34,13 @@ instance RunMessage Knife where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ skillTestModifier attrs iid (SkillModifier #combat 1)
-        , ChooseFightEnemy iid (toAbilitySource attrs 1) Nothing #combat mempty False
+        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
     InDiscard _ (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
       pushAll
         [ skillTestModifiers attrs iid [SkillModifier #combat 2, DamageDealt 1]
-        , ChooseFightEnemy iid (toAbilitySource attrs 2) Nothing #combat mempty False
+        , chooseFightEnemy iid (toAbilitySource attrs 2) #combat
         ]
       pure a
     _ -> Knife <$> runMessage msg attrs

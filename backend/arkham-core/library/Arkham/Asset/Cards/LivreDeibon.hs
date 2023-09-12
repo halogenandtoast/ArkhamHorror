@@ -27,9 +27,7 @@ instance HasAbilities LivreDeibon where
     [ withTooltip
         "{fast} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
         $ restrictedAbility a 1 ControlsThis
-        $ FastAbility
-        $ ExhaustCost
-        $ toTarget a
+        $ FastAbility (exhaust a)
     , withTooltip
         "{fast} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location."
         $ restrictedAbility
@@ -39,30 +37,24 @@ instance HasAbilities LivreDeibon where
               <> DuringSkillTest SkillTestAtYourLocation
               <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
           )
-        $ FastAbility
-        $ ExhaustCost
-        $ toTarget a
+        $ FastAbility (exhaust a)
     ]
 
 instance RunMessage LivreDeibon where
   runMessage msg a@(LivreDeibon attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       handCards <- field InvestigatorHand iid
-      drawing <- drawCards iid attrs 1
-      push $
-        chooseOne iid $
-          [ TargetLabel
-            (CardIdTarget $ toCardId c)
-            [ drawing
-            , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
-            ]
-          | c <- mapMaybe (preview _PlayerCard) handCards
+      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      push
+        $ chooseOne iid
+        $ [ targetLabel (toCardId c) [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
+          | c <- onlyPlayerCards handCards
           ]
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       deckCards <- fieldMap InvestigatorDeck unDeck iid
       case deckCards of
         [] -> error "Missing deck card"
-        x : _ -> push (SkillTestCommitCard iid $ PlayerCard x)
+        x : _ -> push $ SkillTestCommitCard iid $ PlayerCard x
       pure a
     _ -> LivreDeibon <$> runMessage msg attrs

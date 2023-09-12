@@ -19,25 +19,20 @@ scrollOfProphecies = asset ScrollOfProphecies Cards.scrollOfProphecies
 
 instance HasAbilities ScrollOfProphecies where
   getAbilities (ScrollOfProphecies x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId x) Secret 1
+    [ restrictedAbility x 1 ControlsThis
+        $ ActionAbility Nothing
+        $ ActionCost 1 <> assetUseCost x Secret 1
     ]
 
 instance RunMessage ScrollOfProphecies where
   runMessage msg a@(ScrollOfProphecies attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       investigatorIds <- selectList $ colocatedWith iid
-      investigators <- forToSnd investigatorIds $ \i -> drawCards i attrs 3
-      push $
-        chooseOne
-          iid
-          [ targetLabel
-            iid'
-            [ drawing
-            , toMessage $ chooseAndDiscardCard iid' (toAbilitySource attrs 1)
-            ]
+      investigators <- forToSnd investigatorIds $ \i -> drawCards i (toAbilitySource attrs 1) 3
+      push
+        $ chooseOne iid
+        $ [ targetLabel iid'
+            $ [drawing, toMessage $ chooseAndDiscardCard iid' (toAbilitySource attrs 1)]
           | (iid', drawing) <- investigators
           ]
       pure a

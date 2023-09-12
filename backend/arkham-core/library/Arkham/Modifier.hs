@@ -243,6 +243,7 @@ data ModifierType
   | NoSurge
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | Omnipotent
+  | CountAllDoomInPlay
   deriving stock (Show, Eq, Ord)
 
 data Modifier = Modifier

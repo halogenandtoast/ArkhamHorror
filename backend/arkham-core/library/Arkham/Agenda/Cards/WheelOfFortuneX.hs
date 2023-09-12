@@ -11,8 +11,6 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Investigator
@@ -25,7 +23,6 @@ import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype Metadata = Metadata {locationsMoved :: [LocationId]}
@@ -46,17 +43,13 @@ instance RunMessage WheelOfFortuneX where
   runMessage msg a@(WheelOfFortuneX (attrs `With` meta)) =
     case msg of
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        cultists <- selectList $ EnemyWithTrait Cultist
-        doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
-        azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
+        ritualSuicideMessages <- commitRitualSuicide attrs
         lead <- getLead
         ableToFindYourWay <- Gilman'sJournal `inRecordSet` MementosDiscovered
         investigators <- getInvestigators
         pushAll
-          $ map (Discard (toSource attrs) . toTarget) cultists
-            <> [ PlaceDoom (toSource attrs) (toTarget azathoth) doom
-               , findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)
-               ]
+          $ ritualSuicideMessages
+            <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
             <> ( guard (not ableToFindYourWay)
                   *> [ForInvestigator iid (NextAdvanceAgendaStep (toId attrs) 1) | iid <- investigators]
                )

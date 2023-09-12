@@ -27,12 +27,17 @@ instance HasAbilities Azathoth where
 
 instance HasModifiersFor Azathoth where
   getModifiersFor target (Azathoth attrs) | isTarget attrs target = do
-    pure $ toModifiers attrs [Omnipotent]
+    noAgenda <- selectNone AnyAgenda
+    pure $ toModifiers attrs $ Omnipotent : [CountAllDoomInPlay | noAgenda]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Azathoth where
   runMessage msg e@(Azathoth attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push R1
+      pure e
+    PlaceDoomOnAgenda -> do
+      noAgenda <- selectNone AnyAgenda
+      pushWhen noAgenda $ PlaceDoom (toSource attrs) (toTarget attrs) 1
       pure e
     _ -> Azathoth <$> runMessage msg attrs

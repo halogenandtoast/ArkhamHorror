@@ -4,17 +4,24 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
 import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Location.Types
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Source
 import Arkham.Target
+import Arkham.Trait (Trait (Cultist))
 import Data.Aeson (Result (..))
 
 getCosmos :: HasGame m => m (Cosmos Card LocationId)
@@ -66,3 +73,12 @@ getCanMoveLocationLeft lid = do
       Nothing -> True
       Just (EmptySpace _ _) -> True
       Just (CosmosLocation _ _) -> False
+
+commitRitualSuicide :: (HasGame m, Sourceable source) => source -> m [Message]
+commitRitualSuicide (toSource -> source) = do
+  cultists <- selectList $ EnemyWithTrait Cultist
+  doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
+  azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
+  pure
+    $ map (Discard source . toTarget) cultists
+      <> [PlaceDoom source (toTarget azathoth) doom]

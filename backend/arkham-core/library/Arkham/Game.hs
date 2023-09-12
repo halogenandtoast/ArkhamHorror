@@ -2602,7 +2602,11 @@ getEnemyField f e = do
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemyTokens -> pure enemyTokens
-    EnemyDoom -> pure $ enemyDoom attrs
+    EnemyDoom -> do
+      countAllDoom <- attrs `hasModifier` CountAllDoomInPlay
+      if countAllDoom
+        then getDoomCount
+        else pure $ enemyDoom attrs
     EnemyEvade -> pure enemyEvade
     EnemyFight -> pure enemyFight
     EnemyClues -> pure $ enemyClues attrs

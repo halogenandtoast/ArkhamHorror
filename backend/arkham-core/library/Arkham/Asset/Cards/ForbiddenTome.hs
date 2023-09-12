@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
 import Arkham.Projection
 
 newtype ForbiddenTome = ForbiddenTome AssetAttrs

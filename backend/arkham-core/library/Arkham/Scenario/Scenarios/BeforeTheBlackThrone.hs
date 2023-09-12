@@ -57,7 +57,7 @@ beforeTheBlackThrone difficulty = scenario BeforeTheBlackThrone "05325" "Before 
 instance HasChaosTokenValue BeforeTheBlackThrone where
   getChaosTokenValue iid tokenFace (BeforeTheBlackThrone attrs) = case tokenFace of
     Skull -> do
-      x <- selectJustField EnemyDoom (enemyIs Enemies.azathoth)
+      x <- selectJustField EnemyDoom (IncludeOmnipotent $ enemyIs Enemies.azathoth)
       pure $ toChaosTokenValue attrs Skull (max 2 (x `div` 2)) (max 2 x)
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
@@ -214,13 +214,13 @@ instance RunMessage BeforeTheBlackThrone where
       case chaosTokenFace token of
         Cultist -> push $ findAndDrawEncounterCard iid (CardWithTrait Trait.Cultist)
         Tablet -> do
-          azathoth <- selectJust $ enemyIs Enemies.azathoth
+          azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
           push $ EnemyAttack $ enemyAttack azathoth (ChaosTokenEffectSource Tablet) iid
         _ -> pure ()
       pure s
     ResolveChaosToken _ ElderThing _ -> do
       v <- getSkillTestModifiedSkillValue
-      azathoth <- selectJust $ enemyIs Enemies.azathoth
+      azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       pushWhen (v == 0) $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget azathoth) 1
       pure s
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

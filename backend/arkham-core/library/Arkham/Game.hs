@@ -1984,18 +1984,20 @@ getEnemyMatching :: HasGame m => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching :: HasGame m => EnemyMatcher -> m [Enemy]
+getEnemiesMatching (IncludeOmnipotent matcher) = do
+  allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
+  filterM (enemyMatcherFilter matcher) allGameEnemies
 getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
   allGameEnemies <-
     toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
-  -- filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
-  filterM (enemyMatcherFilter matcher) allGameEnemies
+  filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
-  -- filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
-  filterM (enemyMatcherFilter matcher) allGameEnemies
+  filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
   EnemyCanBeDamagedBySource source -> \enemy -> do

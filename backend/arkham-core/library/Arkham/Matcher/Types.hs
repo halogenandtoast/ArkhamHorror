@@ -232,6 +232,7 @@ data EnemyMatcher
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
+  | IncludeOmnipotent EnemyMatcher
   | EnemyWithPlacement Placement
   deriving stock (Show, Eq, Ord)
 

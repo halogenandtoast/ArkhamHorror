@@ -18,6 +18,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -47,7 +48,7 @@ instance RunMessage WheelOfFortuneX where
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
         cultists <- selectList $ EnemyWithTrait Cultist
         doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
-        azathoth <- selectJust $ enemyIs Enemies.azathoth
+        azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
         lead <- getLead
         ableToFindYourWay <- Gilman'sJournal `inRecordSet` MementosDiscovered
         investigators <- getInvestigators
@@ -90,7 +91,14 @@ instance RunMessage WheelOfFortuneX where
               Nothing -> error "location not found in cosmos, we shouldn't be here"
               Just pos -> do
                 let cosmos' = slide pos GridLeft (Just $ EmptySpace pos card) cosmos
-                pushAll [ObtainCard card, SetScenarioMeta $ toJSON cosmos']
+                (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
+                pushAll
+                  [ ObtainCard card
+                  , SetLocationLabel lid (cosmicLabel $ updatePosition pos GridLeft)
+                  , placeEmptySpace
+                  , PlaceCosmos iid emptySpace' (EmptySpace pos card)
+                  , SetScenarioMeta $ toJSON cosmos'
+                  ]
                 pure a
           [] -> error "empty deck, what should we do?, maybe don't let this be called?"
           _ -> error "too many cards, why did this happen?"

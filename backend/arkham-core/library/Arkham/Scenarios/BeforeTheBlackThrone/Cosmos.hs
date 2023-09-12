@@ -28,6 +28,10 @@ cosmosLocationToPosition :: CosmosLocation a b -> Pos
 cosmosLocationToPosition (EmptySpace pos _) = pos
 cosmosLocationToPosition (CosmosLocation pos _) = pos
 
+setCosmosLocationPosition :: Pos -> CosmosLocation a b -> CosmosLocation a b
+setCosmosLocationPosition pos (EmptySpace _ a) = EmptySpace pos a
+setCosmosLocationPosition pos (CosmosLocation _ b) = CosmosLocation pos b
+
 data CosmosRow a b
   = CosmosRow
       (Seq (Maybe (CosmosLocation a b)))
@@ -113,11 +117,22 @@ setCosmosRow x mloc (CosmosRow left center right) =
     EQ -> CosmosRow left mloc right
 
 setCosmos :: Maybe (CosmosLocation a b) -> Pos -> Cosmos a b -> Cosmos a b
-setCosmos mloc (Pos x y) (Cosmos above center below) = case compare y 0 of
-  LT -> Cosmos above center (Seq.adjust (setCosmosRow x mloc) (abs y - 1) below)
+setCosmos mloc pos@(Pos x y) (Cosmos above center below) = case compare y 0 of
+  LT ->
+    Cosmos
+      above
+      center
+      (Seq.adjust (setCosmosRow x $ fmap (setCosmosLocationPosition pos) mloc) (abs y - 1) below)
   GT ->
-    Cosmos (Seq.adjust (setCosmosRow x mloc) (Seq.length above - y) above) center below
-  EQ -> Cosmos above (setCosmosRow x mloc center) below
+    Cosmos
+      ( Seq.adjust
+          (setCosmosRow x $ fmap (setCosmosLocationPosition pos) mloc)
+          (Seq.length above - y)
+          above
+      )
+      center
+      below
+  EQ -> Cosmos above (setCosmosRow x (fmap (setCosmosLocationPosition pos) mloc) center) below
 
 cosmosLeftAmount :: Cosmos a b -> Int
 cosmosLeftAmount (Cosmos _ center _) = cosmosRowLeft center

@@ -280,6 +280,20 @@ instance RunMessage TheCircleUndone where
              , NextCampaignStep Nothing
              ]
       pure c
+    CampaignStep EpilogueStep -> do
+      arrestedAnette <- getHasRecord TheInvestigatorsArrestedAnette
+      assumedControlOfTheLodge <- getHasRecord TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
+      survivedTheWatchersEmbrace <- getHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace
+      signedTheBlackBook <- getHasRecord TheInvestigatorsSignedTheBlackBookOfAzathoth
+      investigators <- allInvestigators
+      pushAll
+        $ [story investigators epilogueArrestedAnette | arrestedAnette]
+          <> [story investigators epilogueAssumedControlOfTheLodge | assumedControlOfTheLodge]
+          <> [story investigators epilogueSurvivedTheWatchersEmbrace | survivedTheWatchersEmbrace]
+          <> [story investigators epilogueSignedTheBlackBook | signedTheBlackBook]
+          <> [GameOver]
+
+      pure c
     PreScenarioSetup -> do
       case mapToList (prologueInvestigators metadata) of
         [] -> pure ()

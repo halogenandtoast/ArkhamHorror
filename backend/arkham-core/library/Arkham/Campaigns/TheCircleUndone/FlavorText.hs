@@ -557,3 +557,83 @@ sanford'sAssistance =
       \ all because for just a brief moment, for one fragment of a second, we\
       \ interrupted Azathoth’s dreaming. Do you understand?”"
     ]
+
+epilogueArrestedAnette :: FlavorText
+epilogueArrestedAnette =
+  FlavorText
+    (Just "Epilogue")
+    [ "“Gone? What do you mean she’s gone?!” Sheriff Engle demands."
+    , "“See for yourself,” the officer replies. He guides the sheriff through a\
+      \ long hallway flanked by holding cells. “She was guarded at all hours, trust\
+      \ me. One moment she was there, the next...” He stops in front of Anette’s\
+      \ cell, and watches as Sheriff Engle’s jaw drops. Smeared along the walls of\
+      \ the cell is a sticky red substance, painted in a delicate pattern. The\
+      \ woman is nowhere to be seen."
+    ]
+
+epilogueAssumedControlOfTheLodge :: FlavorText
+epilogueAssumedControlOfTheLodge =
+  FlavorText
+    (Just "Epilogue")
+    [ "You nod to the knight as he places the file you had requested onto your\
+      \ hardwood desk. Finding all of Carl Sanford’s records hadn’t been easy, but\
+      \ now all of the secrets of the Order were within your grasp. “What is the\
+      \ next step?” he asks, eager to serve. You inform him that there is to be a\
+      \ meeting in the sanctum this very night. “Very well. I will summon our most\
+      \ loyal members.” You dismiss him and turn to look out the window of your new\
+      \ office. The city of Arkham is as grim and moody as ever...but at least now\
+      \ you can protect it from the forces that lay beyond the Earth."
+    ]
+
+epilogueSurvivedTheWatchersEmbrace :: FlavorText
+epilogueSurvivedTheWatchersEmbrace =
+  FlavorText
+    (Just "Epilogue")
+    [ "Anna regards you calmly as you enter. As always, her prescience is\
+      \ disconcerting, but by now you have gotten used to it. “I’ve been expecting\
+      \ you for some time,” she admits. “I suppose you have questions for me. Very\
+      \ well. Ask away. Though I imagine that by now you must know the answer.” She\
+      \ neither offers you a seat nor a drink. You begin to describe your\
+      \ situation, though the truth of your condition is plain to see for somebody\
+      \ with her gifts (and few else). You had hoped for another explanation— any\
+      \ explanation at all—but it was only a desperate clinging to hope, without\
+      \ justification. Anna gives you a pitying grimace and shakes her head.\
+      \ “Surely by now you must understand. You have completed your task. Your\
+      \ business here has concluded. Now is the time for you to rest and be at\
+      \ peace.”"
+    , "Peace? No, you cannot be at peace! There is still so much left for you\
+      \ to do...!"
+    ]
+
+epilogueSignedTheBlackBook :: FlavorText
+epilogueSignedTheBlackBook =
+  FlavorText
+    (Just "Epilogue")
+    [ "In your dream, a tall man approaches. His grin is full of malice. “It is\
+      \ time to pay your due,” he announces. “You got what you wanted. Now it is my\
+      \ turn.”"
+    ]
+
+youAreBeingHunted :: FlavorText
+youAreBeingHunted =
+  FlavorText
+    (Just "You Are Being Hunted")
+    [ "No matter what you do, the creature’s assault on your mind never ceases.\
+      \ Its gaze haunts you everywhere you look. It controls your every\
+      \ thought—your hopes, your bonds, your fears, your ambitions. A reminder of\
+      \ your futile existence. Each night, you toss and turn, unable to wrench free\
+      \ from this sensation of worthlessness. Your thoughts turn to a grim,\
+      \ uncertain future. A future without life. A future without you. It is the\
+      \ one ordeal every mortal must endure, and yet the one experience no mortal\
+      \ could possibly describe. Ghosts? Realms beyond our mortal coil? Nothing but\
+      \ a last resort for a mind desperate to cling to life."
+    , "When the creature next invades, you have come to a new conclusion. An\
+      \ icy draft surrounds you as the thing coalesces before you. Your throat\
+      \ constricts and tears well in your eyes, but you stand tall. You are\
+      \ unafraid. The creature gazes at you curiously, and the piping of infernal\
+      \ flutes fades into silence. It extends its clawed hand, and you shake it.\
+      \ You will never truly be free from its grasp, but perhaps you and the\
+      \ creature can work in agreement. Perhaps you can tame your fear. It doesn’t\
+      \ matter if the world has no point. It’s yours, damnit, and nothing will stop\
+      \ you from altering it to your liking."
+    ]

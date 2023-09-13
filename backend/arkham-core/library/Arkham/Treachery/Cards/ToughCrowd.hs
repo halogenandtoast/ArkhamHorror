@@ -34,10 +34,10 @@ instance HasAbilities ToughCrowd where
 
 instance RunMessage ToughCrowd where
   runMessage msg t@(ToughCrowd attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
-      agendaId <- selectJust AnyAgenda
-      t <$ push (AttachTreachery (toId attrs) (AgendaTarget agendaId))
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation _ (isSource attrs -> True) -> do
+      push $ PlaceTreachery (toId attrs) TreacheryNextToAgenda
+      pure t
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> ToughCrowd <$> runMessage msg attrs

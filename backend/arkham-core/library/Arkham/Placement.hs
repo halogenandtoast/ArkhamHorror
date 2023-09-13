@@ -52,7 +52,7 @@ isOutOfPlayPlacement = \case
 data TreacheryPlacement
   = TreacheryAttachedTo Target
   | TreacheryInHandOf InvestigatorId
-  | TreacheryNextToAct
+  | TreacheryNextToAgenda
   | TreacheryLimbo
   deriving stock (Show, Eq)
 

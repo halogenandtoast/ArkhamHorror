@@ -1,35 +1,30 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Target, targetDecoder } from '@/arkham/types/Target';
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export type TreacheryPlacement =
   { tag: "TreacheryAttachedTo", contents: Target }
   | { tag: "TreacheryInHandOf", contents: string }
-  | { tag: "TreacheryNextToAct" }
+  | { tag: "TreacheryNextToAgenda" }
   | { tag: "TreacheryLimbo" }
 
 export const treacheryPlacementDecoder = JsonDecoder.oneOf<TreacheryPlacement>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryAttachedTo'), contents: targetDecoder }, 'TreacheryAttachedTo')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryInHandOf'), contents: JsonDecoder.string }, 'TreacheryInHandOf')
-  , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryNextToAct') }, 'TreacheryNextToAct')
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryNextToAgenda') }, 'TreacheryNextToAgenda')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryLimbo') }, 'TreacheryLimbo')
   ], 'TreacheryPlacement')
 
 export interface Treachery {
   id: string;
   cardCode: string;
-  clues?: number;
-  horror?: number;
-  resources?: number;
-  doom?: number;
+  tokens: Tokens;
   placement: TreacheryPlacement;
 }
 
 export const treacheryDecoder = JsonDecoder.object<Treachery>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
-  clues: JsonDecoder.optional(JsonDecoder.number),
-  horror: JsonDecoder.optional(JsonDecoder.number),
-  resources: JsonDecoder.optional(JsonDecoder.number),
-  doom: JsonDecoder.optional(JsonDecoder.number),
+  tokens: tokensDecoder,
   placement: treacheryPlacementDecoder,
 }, 'Treachery');

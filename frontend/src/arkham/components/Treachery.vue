@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
+import { TokenType } from '@/arkham/types/Token';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -61,6 +62,11 @@ const abilities = computed(() => {
     }, []);
 })
 
+const doom = computed(() => props.treachery.tokens[TokenType.Doom])
+const clues = computed(() => props.treachery.tokens[TokenType.Clue])
+const resources = computed(() => props.treachery.tokens[TokenType.Resource])
+const horror = computed(() => props.treachery.tokens[TokenType.Horror])
+
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 </script>
 <template>
@@ -80,24 +86,24 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
       />
     <div class="pool">
       <PoolItem
-        v-if="treachery.horror && treachery.horror > 0"
+        v-if="horror && horror > 0"
         type="horror"
-        :amount="treachery.horror"
+        :amount="horror"
       />
       <PoolItem
-        v-if="treachery.clues && treachery.clues > 0"
+        v-if="clues && clues > 0"
         type="clue"
-        :amount="treachery.clues"
+        :amount="clues"
       />
       <PoolItem
-        v-if="treachery.resources && treachery.resources > 0"
+        v-if="resources && resources > 0"
         type="resource"
-        :amount="treachery.resources"
+        :amount="resources"
       />
       <PoolItem
-        v-if="treachery.doom && treachery.doom > 0"
+        v-if="doom && doom > 0"
         type="doom"
-        :amount="treachery.doom"
+        :amount="doom"
       />
     </div>
   </div>
@@ -119,11 +125,26 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
 .treachery {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .attached .card {
   object-fit: cover;
   object-position: left bottom;
   height: $card-width*0.6;
+}
+
+.pool {
+  position: absolute;
+  top: 10%;
+  align-items: center;
+  display: flex;
+  align-self: flex-start;
+  align-items: flex-end;
+  * {
+    transform: scale(0.6);
+  }
+
+  pointer-events: none;
 }
 </style>

@@ -32,16 +32,16 @@ instance HasModifiersFor ChildrenOfValusia where
 
 instance HasAbilities ChildrenOfValusia where
   getAbilities (ChildrenOfValusia a) =
-    [ limitedAbility (PerCopyLimit Cards.childrenOfValusia PerRound 1) $
-        mkAbility a 1 $
-          ForcedAbility $
-            RoundEnds Timing.When
+    [ limitedAbility (PerCopyLimit Cards.childrenOfValusia PerRound 1)
+        $ mkAbility a 1
+        $ ForcedAbility
+        $ RoundEnds Timing.When
     ]
 
 instance RunMessage ChildrenOfValusia where
   runMessage msg t@(ChildrenOfValusia attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      push $ PlaceTreachery (toId attrs) TreacheryNextToAct
+      push $ PlaceTreachery (toId attrs) TreacheryNextToAgenda
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ Discard (toAbilitySource attrs 1) (toTarget attrs)

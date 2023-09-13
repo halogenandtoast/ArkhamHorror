@@ -23,15 +23,14 @@ sebastienMoreau = asset SebastienMoreau Cards.sebastienMoreau
 
 instance HasAbilities SebastienMoreau where
   getAbilities (SebastienMoreau a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            1
-    , mkAbility a 2 $
-        ForcedAbility $
-          LastClueRemovedFromAsset Timing.When $
-            AssetWithId $
-              toId a
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost 1
+    , mkAbility a 2
+        $ ForcedAbility
+        $ LastClueRemovedFromAsset Timing.When
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage SebastienMoreau where

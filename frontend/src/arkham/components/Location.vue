@@ -29,7 +29,11 @@ const handleFocus = () => {
   showAbilities.value = true
 }
 
-const handleFocusOut = () => {
+const handleFocusOut = (e: FocusEvent) => {
+  const target = e.target as HTMLElement
+  if (target && target.classList.contains('abilities')) {
+    return
+  }
   showAbilities.value = false
 }
 
@@ -81,6 +85,7 @@ async function clicked() {
 }
 
 async function chooseAbility(ability: number) {
+  showAbilities.value = false
   abilitiesEl.value?.blur()
   emits('choose', ability)
 }

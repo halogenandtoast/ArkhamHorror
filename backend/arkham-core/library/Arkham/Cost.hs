@@ -128,6 +128,7 @@ data Cost
   | HorrorCost Source Target Int
   | HorrorCostX Source -- for The Black Book
   | Free
+  | ScenarioResourceCost Int
   | ResourceCost Int
   | FieldResourceCost FieldCost
   | UseCost AssetMatcher UseType Int
@@ -220,6 +221,7 @@ displayCostType = \case
   HorrorCostX _ -> "Take X Horror"
   Free -> "Free"
   ResourceCost n -> pluralize n "Resource"
+  ScenarioResourceCost n -> pluralize n "Resource from the scenario reference"
   UseCost _ uType n -> case uType of
     Ammo -> tshow n <> " Ammo"
     Supply -> if n == 1 then "1 Supply" else tshow n <> " Supplies"

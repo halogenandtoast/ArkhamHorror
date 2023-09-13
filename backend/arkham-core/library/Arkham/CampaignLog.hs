@@ -74,5 +74,8 @@ deleteCampaignLogKey key = recordedL %~ deleteSet key
 setCampaignLogRecorded :: CampaignLogKey -> [SomeRecorded] -> CampaignLog -> CampaignLog
 setCampaignLogRecorded key entries = recordedSetsL %~ insertMap key entries
 
+setCampaignLogRecordedCount :: CampaignLogKey -> Int -> CampaignLog -> CampaignLog
+setCampaignLogRecordedCount key n = recordedCountsL %~ insertMap key n
+
 setCampaignLogOption :: CampaignOption -> CampaignLog -> CampaignLog
 setCampaignLogOption key = optionsL %~ insertSet key

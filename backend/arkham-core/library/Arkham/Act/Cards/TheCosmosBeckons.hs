@@ -27,7 +27,9 @@ import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Data.List qualified as List
+import Data.List.Extra qualified as List
 
 newtype TheCosmosBeckons = TheCosmosBeckons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -80,6 +82,7 @@ instance RunMessage TheCosmosBeckons where
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       cosmicIngress <- getJustLocationByName "Cosmic Ingress"
       emptySpace <- selectList $ IncludeEmptySpace $ locationIs Locations.emptySpace
+      emptySpaceCards <- getEmptySpaceCards
       cosmosLocations <-
         selectList
           $ NotLocation
@@ -90,14 +93,17 @@ instance RunMessage TheCosmosBeckons where
       cosmosCards <- traverse (field Field.LocationCard) cosmosLocations
 
       let cosmos' = initCosmos @Card @LocationId
+          cardsWithOwners = List.groupOnKey toCardOwner emptySpaceCards
 
       pushAll
         $ RemoveLocation cosmicIngress
           : map RemoveLocation (cosmosLocations <> emptySpace)
             <> [ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) cosmosCards]
             <> [ShuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards]
+            <> [ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | (Just iid, cards) <- cardsWithOwners]
             <> [ SetScenarioMeta (toJSON cosmos')
                , NextAdvanceActStep (toId a) 1
+               , AllDrawEncounterCard
                , advanceActDeck attrs
                ]
       pure a
@@ -113,7 +119,7 @@ instance RunMessage TheCosmosBeckons where
 
       (firstCosmos, placeFirstCosmos) <- placeLocation firstCosmosCard
       (secondCosmos, placeSecondCosmos) <- placeLocation secondCosmosCard
-      (thirdCosmos, placethirdCosmos) <- placeLocation thirdCosmosCard
+      (thirdCosmos, placeThirdCosmos) <- placeLocation thirdCosmosCard
 
       (map toCard -> playerCards, _) <- fieldMap InvestigatorDeck (draw 7) lead
 
@@ -140,7 +146,7 @@ instance RunMessage TheCosmosBeckons where
           , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 1 2) firstCosmos)
           , placeSecondCosmos
           , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 1 (-2)) secondCosmos)
-          , placethirdCosmos
+          , placeThirdCosmos
           , PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 2 0) thirdCosmos)
           ]
           <> map (ObtainCard . toCard) playerCards

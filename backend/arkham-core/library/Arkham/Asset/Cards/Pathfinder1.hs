@@ -25,28 +25,20 @@ instance HasAbilities Pathfinder1 where
     [ restrictedAbility
         attrs
         1
-        (ControlsThis <> InvestigatorExists (You <> UnengagedInvestigator))
-        (FastAbility $ ExhaustCost (toTarget attrs))
+        ( ControlsThis
+            <> InvestigatorExists (You <> UnengagedInvestigator)
+            <> LocationExists AccessibleLocation
+        )
+        (FastAbility $ exhaust attrs)
     ]
 
 instance RunMessage Pathfinder1 where
   runMessage msg a@(Pathfinder1 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      startId <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      accessibleLocationIds <-
-        selectList $
-          AccessibleFrom $
-            LocationWithId
-              startId
-      push $
-        chooseOne
-          iid
-          [ targetLabel lid [Move $ move attrs iid lid]
-          | lid <- accessibleLocationIds
-          ]
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      start <- fieldJust InvestigatorLocation iid
+      accessibleLocations <- selectList $ AccessibleFrom $ LocationWithId start
+      push
+        $ chooseOne iid
+        $ [targetLabel lid [Move $ move (toAbilitySource attrs 1) iid lid] | lid <- accessibleLocations]
       pure a
     _ -> Pathfinder1 <$> runMessage msg attrs

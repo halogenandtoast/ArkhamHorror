@@ -1027,6 +1027,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
   PlaceKey target k | not (isTarget a target) -> do
     pure $ a & (setAsideKeysL %~ deleteSet k)
+  RemoveTokens _ ScenarioTarget token amount -> do
+    pure $ a & tokensL %~ subtractTokens token amount
   RestartScenario -> do
     pure $ a & (inResolutionL .~ False)
   _ -> pure a

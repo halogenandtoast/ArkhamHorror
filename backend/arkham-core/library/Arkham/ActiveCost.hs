@@ -50,6 +50,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Token qualified as Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
@@ -524,6 +525,9 @@ instance RunMessage ActiveCost where
           n <- getSum <$> selectAgg Sum fld mtchr
           push $ PayCost acId iid skipAdditionalCosts (ResourceCost n)
           pure c
+        ScenarioResourceCost n -> do
+          push $ RemoveTokens (activeCostSource c) ScenarioTarget Token.Resource n
+          withPayment $ ResourcePayment n
         ResourceCost x -> do
           case activeCostTarget c of
             ForAbility {} -> push $ SpendResources iid x

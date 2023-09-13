@@ -109,3 +109,7 @@ toAbilitySource a n = case toSource a of
 isAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isAbilitySource a idx (AbilitySource b idx') | idx == idx' = isSource a b
 isAbilitySource _ _ _ = False
+
+isProxyAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
+isProxyAbilitySource a idx (AbilitySource (ProxySource _ b) idx') | idx == idx' = isSource a b
+isProxyAbilitySource _ _ _ = False

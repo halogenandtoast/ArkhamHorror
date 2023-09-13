@@ -58,7 +58,8 @@ instance RunMessage WheelOfFortuneX where
         pure a
       ForInvestigator iid (NextAdvanceAgendaStep aid _) | aid == toId attrs -> do
         location <- getJustLocation iid
-        mLeftLocation <- getLocationInDirection location GridLeft
+        pos <- findLocationInCosmos location
+        mLeftLocation <- getLocationInDirection pos GridLeft
         canMoveLocationLeft <-
           (&&) (location `notElem` locationsMoved meta) <$> getCanMoveLocationLeft location
 

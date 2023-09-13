@@ -190,6 +190,13 @@
     "name": "Before the Black Throne",
     "campaign": "05",
     "beta": true,
-    "settings": []
+    "settings": [
+        {
+          "key": "ThePathWindsBeforeYou",
+          "type": "ChooseNum",
+          "max": 6,
+          "content": 0
+        }
+    ]
   }
 ]

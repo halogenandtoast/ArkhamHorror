@@ -271,7 +271,7 @@ instance RunMessage BeforeTheBlackThrone where
                  ]
               <> gainXp
               <> [SufferTrauma investigator 0 2 | investigator <- investigators]
-              <> [GameOver]
+              <> [EndOfGame Nothing]
         Resolution 3 -> do
           msgs <- readInvestigatorDefeat
           gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
@@ -282,7 +282,7 @@ instance RunMessage BeforeTheBlackThrone where
                  ]
               <> gainXp
               <> [SufferTrauma investigator 2 0 | investigator <- investigators]
-              <> [GameOver]
+              <> [EndOfGame Nothing]
         Resolution 4 -> do
           msgs <- readInvestigatorDefeat
           lead <- getLead
@@ -303,7 +303,7 @@ instance RunMessage BeforeTheBlackThrone where
               ]
               <> gainXp
               <> [SufferTrauma investigator 2 2 | investigator <- investigators]
-              <> [GameOver]
+              <> [EndOfGame Nothing]
         _ -> error "unknown resolution"
       pure s
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

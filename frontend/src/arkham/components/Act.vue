@@ -96,10 +96,6 @@ const cardsUnder = computed(() => props.cardsUnder)
 
 const showCardsUnderAct = () => emits('show', cardsUnder, 'Cards Under Act', false)
 
-const treacheries = computed(() => Object.values(props.game.treacheries).
-  filter((t) => t.placement.tag === "TreacheryNextToAct").
-  map((t) => t.id))
-
 const debug = useDebug()
 
 async function clicked() {
@@ -148,14 +144,6 @@ async function chooseAbility(ability: AbilityMessage) {
       class="card card--sideways"
       :key="idx"
       :src="imageForCard(card)"
-    />
-    <Treachery
-      v-for="treacheryId in treacheries"
-      :key="treacheryId"
-      :treachery="game.treacheries[treacheryId]"
-      :game="game"
-      :investigatorId="investigatorId"
-      @choose="$emit('choose', $event)"
     />
     <Treachery
       v-for="treacheryId in act.treacheries"

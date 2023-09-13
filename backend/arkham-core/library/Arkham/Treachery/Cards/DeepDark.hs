@@ -33,30 +33,30 @@ instance HasModifiersFor DeepDark where
   getModifiersFor (InvestigatorTarget iid) (DeepDark (a `With` metadata)) = do
     let
       lids =
-        setToList $
-          Map.findWithDefault mempty iid $
-            investigatorLocationsClues metadata
+        setToList
+          $ Map.findWithDefault mempty iid
+          $ investigatorLocationsClues metadata
     case lids of
       [] -> pure []
       xs ->
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [CannotDiscoverCluesAt $ LocationMatchAny $ map LocationWithId xs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DeepDark where
   getAbilities (DeepDark (a `With` _)) =
-    [ limitedAbility (PerCopyLimit Cards.deepDark PerRound 1) $
-        mkAbility a 1 $
-          ForcedAbility $
-            RoundEnds Timing.When
+    [ limitedAbility (PerCopyLimit Cards.deepDark PerRound 1)
+        $ mkAbility a 1
+        $ ForcedAbility
+        $ RoundEnds Timing.When
     ]
 
 instance RunMessage DeepDark where
   runMessage msg t@(DeepDark (attrs `With` metadata)) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      push $ PlaceTreachery (toId attrs) TreacheryNextToAct
+      push $ PlaceTreachery (toId attrs) TreacheryNextToAgenda
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ Discard (toAbilitySource attrs 1) (toTarget attrs)

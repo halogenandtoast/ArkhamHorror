@@ -81,6 +81,11 @@ const imageForCard = (card: Card) => {
   return imgsrc(cardImage(card))
 }
 
+const treacheries = computed(() => Object.values(props.game.treacheries).
+  filter((t) => t.placement.tag === "TreacheryNextToAgenda").
+  map((t) => t.id))
+
+
 const debug = useDebug()
 </script>
 
@@ -97,6 +102,14 @@ const debug = useDebug()
       class="card card--sideways"
       :key="idx"
       :src="imageForCard(card)"
+    />
+    <Treachery
+      v-for="treacheryId in treacheries"
+      :key="treacheryId"
+      :treachery="game.treacheries[treacheryId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
     />
     <AbilityButton
       v-for="ability in abilities"

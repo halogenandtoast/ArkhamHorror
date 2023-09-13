@@ -40,7 +40,7 @@ baseTreachery cardCode name mEncounterSet isWeakness =
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = True
+    , cdRevelation = IsRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty
@@ -1361,6 +1361,7 @@ terribleSecret :: CardDef
 terribleSecret =
   (weakness "05015" "Terrible Secret")
     { cdCardTraits = singleton Madness
+    , cdRevelation = CannotBeCanceledRevelation
     }
 
 the13thVision :: CardDef
@@ -1619,6 +1620,7 @@ ultimateChaos :: CardDef
 ultimateChaos =
   (treachery "05342" "Ultimate Chaos" BeforeTheBlackThrone 2)
     { cdCardTraits = singleton Power
+    , cdRevelation = CannotBeCanceledRevelation
     }
 
 whisperedBargain :: CardDef

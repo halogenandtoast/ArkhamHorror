@@ -28,7 +28,7 @@ investigator cardCode name classSymbol traits =
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty
@@ -62,8 +62,8 @@ investigator cardCode name classSymbol traits =
 
 allInvestigatorCards :: Map CardCode CardDef
 allInvestigatorCards =
-  mapFromList $
-    concatMap
+  mapFromList
+    $ concatMap
       toCardCodePairs
       [ rolandBanks
       , daisyWalker
@@ -104,8 +104,8 @@ allInvestigatorCards =
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
 allEncounterInvestigatorCards =
-  mapFromList $
-    concatMap
+  mapFromList
+    $ concatMap
       toCardCodePairs
       [bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite]
 
@@ -117,8 +117,8 @@ withAlternates ccodes def = def {cdAlternateCardCodes = ccodes}
 
 rolandBanks :: CardDef
 rolandBanks =
-  withAlternates ["01501", "98004"] $
-    investigator
+  withAlternates ["01501", "98004"]
+    $ investigator
       "01001"
       ("Roland Banks" <:> "The Fed")
       Guardian
@@ -126,8 +126,8 @@ rolandBanks =
 
 daisyWalker :: CardDef
 daisyWalker =
-  withAlternate "01502" $
-    investigator
+  withAlternate "01502"
+    $ investigator
       "01002"
       ("Daisy Walker" <:> "The Librarian")
       Seeker
@@ -135,8 +135,8 @@ daisyWalker =
 
 skidsOToole :: CardDef
 skidsOToole =
-  withAlternate "01503" $
-    investigator
+  withAlternate "01503"
+    $ investigator
       "01003"
       ("\"Skids\" O'Toole" <:> "The Ex-Con")
       Rogue
@@ -144,13 +144,13 @@ skidsOToole =
 
 agnesBaker :: CardDef
 agnesBaker =
-  withAlternate "01504" $
-    investigator "01004" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]
+  withAlternate "01504"
+    $ investigator "01004" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]
 
 wendyAdams :: CardDef
 wendyAdams =
-  withAlternate "01505" $
-    investigator "01005" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter]
+  withAlternate "01505"
+    $ investigator "01005" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter]
 
 zoeySamaras :: CardDef
 zoeySamaras =
@@ -249,8 +249,8 @@ bodyOfAYithian =
 
 carolynFern :: CardDef
 carolynFern =
-  withAlternate "98010" $
-    investigator
+  withAlternate "98010"
+    $ investigator
       "05001"
       ("Carolyn Fern" <:> "The Psychologist")
       Guardian
@@ -290,8 +290,8 @@ ritaYoung =
 
 marieLambeau :: CardDef
 marieLambeau =
-  withAlternate "99001" $
-    investigator
+  withAlternate "99001"
+    $ investigator
       "05006"
       ("Marie Lambeau" <:> "The Entertainer")
       Mystic
@@ -331,8 +331,8 @@ pennyWhite =
 
 dexterDrake :: CardDef
 dexterDrake =
-  withAlternate "98016" $
-    investigator
+  withAlternate "98016"
+    $ investigator
       "07004"
       ("Dexter Drake" <:> "The Magician")
       Mystic
@@ -340,8 +340,8 @@ dexterDrake =
 
 normanWithers :: CardDef
 normanWithers =
-  withAlternate "98007" $
-    investigator
+  withAlternate "98007"
+    $ investigator
       "08004"
       ("Norman Withers" <:> "The Astronomer")
       Seeker

@@ -2767,7 +2767,8 @@ instance Query ExtendedCardMatcher where
       CanCancelRevelationEffect matcher' -> do
         cardIsMatch <- matches' c matcher'
         modifiers <- getModifiers (toCardId c)
-        pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers
+        let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
+        pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
       CanCancelAllEffects matcher' -> do
         cardIsMatch <- matches' c matcher'
         modifiers <- getModifiers (toCardId c)

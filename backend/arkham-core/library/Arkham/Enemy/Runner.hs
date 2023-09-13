@@ -39,6 +39,7 @@ import Arkham.Matcher (
   EnemyMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
+  MovesVia (..),
   PreyMatcher (..),
   investigatorEngagedWith,
   locationWithInvestigator,
@@ -526,19 +527,27 @@ instance RunMessage EnemyAttrs where
                 , CheckWindow
                     [leadInvestigatorId]
                     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
+                , CheckWindow
+                    [leadInvestigatorId]
+                    [mkWindow Timing.After (Window.EnemyMovesTo lid MovedViaHunter enemyId)]
                 ]
               pure $ a & movedFromHunterKeywordL .~ True
             ls -> do
-              pushAll
+              push
                 $ chooseOrRunOne
                   leadInvestigatorId
-                  [ targetLabel l [EnemyMove enemyId l]
-                  | l <- ls
-                  ]
-                  : [ CheckWindow
+                  [ targetLabel
+                    l
+                    [ EnemyMove enemyId l
+                    , CheckWindow
                         [leadInvestigatorId]
                         [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
+                    , CheckWindow
+                        [leadInvestigatorId]
+                        [mkWindow Timing.After (Window.EnemyMovesTo l MovedViaHunter enemyId)]
                     ]
+                  | l <- ls
+                  ]
               pure $ a & movedFromHunterKeywordL .~ True
     EnemiesAttack | not enemyExhausted -> do
       modifiers' <- getModifiers (EnemyTarget enemyId)

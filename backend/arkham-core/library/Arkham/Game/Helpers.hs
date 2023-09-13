@@ -1689,6 +1689,11 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.MovedFromHunter timing enemyMatcher -> guardTiming timing $ \case
       Window.MovedFromHunter eid -> member eid <$> select enemyMatcher
       _ -> noMatch
+    Matcher.EnemyMovedTo timing locationMatcher movesVia enemyMatcher -> guardTiming timing $ \case
+      Window.EnemyMovesTo lid movesVia' eid
+        | movesVia == movesVia' ->
+            andM [member eid <$> select enemyMatcher, member lid <$> select locationMatcher]
+      _ -> noMatch
     Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> guardTiming timing $ \case
       Window.PlaceUnderneath target' card ->
         andM

@@ -15,7 +15,7 @@ import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
 import Arkham.DefeatedBy
 import Arkham.Id
-import Arkham.Matcher (LocationMatcher)
+import Arkham.Matcher (LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -132,6 +132,7 @@ data WindowType
   | MovedButBeforeEnemyEngagement InvestigatorId LocationId
   | MovedBy Source LocationId InvestigatorId
   | MovedFromHunter EnemyId
+  | EnemyMovesTo LocationId MovesVia EnemyId
   | HuntersMoveStep
   | Moves InvestigatorId Source (Maybe LocationId) LocationId
   | NonFast

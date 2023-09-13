@@ -38,7 +38,7 @@ instance HasAbilities FlightIntoOblivion where
       attrs
       [ cosmos attrs 1
       , limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility attrs 2 (CanMoveThis GridUp)
+          $ restrictedAbility attrs 2 (Here <> CanMoveThis GridUp)
           $ ActionAbility Nothing (ActionCost 1 <> ScenarioResourceCost 1)
       ]
 

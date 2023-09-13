@@ -162,7 +162,7 @@ instance RunMessage LocationAttrs where
     LocationMoved lid | lid == locationId -> do
       pure $ a & (directionsL .~ mempty)
     LocationMoved lid | lid /= locationId -> do
-      pure $ a & (directionsL %~ filterMap (== lid))
+      pure $ a & (directionsL %~ filterMap (/= lid))
     AttachTreachery tid (LocationTarget lid) | lid == locationId -> do
       pure $ a & treacheriesL %~ insertSet tid
     PutLocationInFrontOf iid lid | lid == locationId -> do

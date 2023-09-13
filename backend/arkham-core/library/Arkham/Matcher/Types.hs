@@ -538,6 +538,10 @@ data DiscardedPlayerCardMatcher
       CardMatcher
   deriving stock (Show, Eq, Ord)
 
+data MovesVia = MovedViaHunter | MovedViaOther
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
@@ -615,6 +619,7 @@ data WindowMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
+  | EnemyMovedTo Timing Where MovesVia EnemyMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who
   | TurnEnds Timing Who

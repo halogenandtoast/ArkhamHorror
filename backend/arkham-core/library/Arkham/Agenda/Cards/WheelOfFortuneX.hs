@@ -11,6 +11,7 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Investigator
@@ -84,14 +85,12 @@ instance RunMessage WheelOfFortuneX where
             case mpos of
               Nothing -> error "location not found in cosmos, we shouldn't be here"
               Just pos -> do
-                let cosmos' = slide pos GridLeft (Just $ EmptySpace pos card) cosmos
                 (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
                 pushAll
                   [ ObtainCard card
-                  , SetLocationLabel lid (cosmicLabel $ updatePosition pos GridLeft)
                   , placeEmptySpace
                   , PlaceCosmos iid emptySpace' (EmptySpace pos card)
-                  , SetScenarioMeta $ toJSON cosmos'
+                  , PlaceCosmos iid lid (CosmosLocation (updatePosition pos GridLeft) lid)
                   ]
                 pure a
           [] -> error "empty deck, what should we do?, maybe don't let this be called?"

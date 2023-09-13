@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Cost.Status
 import Arkham.Criteria.Override
+import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Matcher
 import {-# SOURCE #-} Arkham.Modifier
@@ -135,6 +136,7 @@ data Criterion
   | ActionCanBeUndone
   | DuringPhase PhaseMatcher
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
+  | CanMoveThis GridDirection
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

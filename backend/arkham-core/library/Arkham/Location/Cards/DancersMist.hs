@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
@@ -80,7 +81,8 @@ instance RunMessage DancersMist where
                   ]
                   <> [ Label
                       "Lose 2 resources and connect to an adjacent location in a direction of your choice"
-                      [ chooseOrRunOne
+                      [ LoseResources iid (toAbilitySource attrs 1) 2
+                      , chooseOrRunOne
                           iid
                           [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
                           | pos'@(Pos x y) <- emptyPositions

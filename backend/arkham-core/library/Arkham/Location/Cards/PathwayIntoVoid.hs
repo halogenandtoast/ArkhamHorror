@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers

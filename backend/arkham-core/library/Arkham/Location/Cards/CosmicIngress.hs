@@ -38,14 +38,16 @@ instance HasAbilities CosmicIngress where
       $ [ restrictedAbility attrs 1 (CluesOnThis $ LessThan $ Static 3)
             $ ForcedAbility
             $ RoundEnds Timing.When
-        , restrictedAbility
-            ( ProxySource
-                (LocationMatcherSource $ LocationWithTrait Void)
-                (toSource attrs)
-            )
-            1
-            Here
-            (ActionAbility Nothing $ ActionCost 1)
+        , withTooltip
+            "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Cosmic Ingress"
+            $ restrictedAbility
+              ( ProxySource
+                  (LocationMatcherSource $ LocationWithTrait Void)
+                  (toSource attrs)
+              )
+              1
+              Here
+              (ActionAbility Nothing $ ActionCost 1)
         ]
 
 instance RunMessage CosmicIngress where

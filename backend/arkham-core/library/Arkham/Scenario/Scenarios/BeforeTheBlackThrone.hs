@@ -99,6 +99,8 @@ instance RunMessage BeforeTheBlackThrone where
             , Locations.dancersMist
             , Locations.dancersMist
             , Locations.flightIntoOblivion
+            , Locations.flightIntoOblivion
+            , Locations.flightIntoOblivion
             ]
 
       let
@@ -210,7 +212,8 @@ instance RunMessage BeforeTheBlackThrone where
         _ -> pure []
       pushAll
         $ currentMsgs
-          <> [ SetLocationLabel lid (cosmicLabel pos)
+          <> [ LocationMoved lid
+             , SetLocationLabel lid (cosmicLabel pos)
              , SetScenarioMeta (toJSON cosmos'')
              ]
           <> [PlacedLocationDirection lid Below topLocation | topLocation <- maybeToList mTopLocation]

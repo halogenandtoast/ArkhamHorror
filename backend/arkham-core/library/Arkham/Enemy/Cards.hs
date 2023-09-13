@@ -36,7 +36,7 @@ baseEnemy cardCode name mEncounterSet isWeakness =
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty
@@ -968,7 +968,7 @@ serpentsOfYig =
   (weakness "04014" "Serpents of Yig")
     { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
     , cdKeywords = singleton Keyword.Hunter
-    , cdRevelation = True
+    , cdRevelation = IsRevelation
     }
 
 ichtaca :: CardDef
@@ -1260,7 +1260,7 @@ covenInitiate :: CardDef
 covenInitiate =
   (enemy "05090" "Coven Initiate" AnettesCoven 3)
     { cdCardTraits = setFromList [Humanoid, Witch]
-    , cdRevelation = True
+    , cdRevelation = IsRevelation
     }
 
 priestessOfTheCoven :: CardDef
@@ -1424,7 +1424,7 @@ knightOfTheOuterVoid =
   (enemy "05222" "Knight of the Outer Void" ForTheGreaterGood 2)
     { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Peril, Keyword.Retaliate]
-    , cdRevelation = True
+    , cdRevelation = IsRevelation
     }
 
 gavriellaMizrah :: CardDef

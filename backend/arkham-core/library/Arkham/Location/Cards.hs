@@ -65,7 +65,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty
@@ -550,7 +550,7 @@ victory :: Int -> CardDef -> CardDef
 victory n def = def {cdVictoryPoints = Just n}
 
 revelation :: CardDef -> CardDef
-revelation def = def {cdRevelation = True}
+revelation def = def {cdRevelation = IsRevelation}
 
 singleSided :: CardDef -> CardDef
 singleSided def = def {cdDoubleSided = False}

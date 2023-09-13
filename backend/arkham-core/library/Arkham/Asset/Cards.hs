@@ -45,7 +45,7 @@ weakness :: CardCode -> Name -> CardDef
 weakness cardCode name =
   (baseAsset Nothing cardCode name 0 (singleton Neutral))
     { cdCardSubType = Just Weakness
-    , cdRevelation = True
+    , cdRevelation = IsRevelation
     , cdCost = Nothing
     }
 
@@ -53,7 +53,7 @@ storyWeakness :: CardCode -> Name -> EncounterSet -> CardDef
 storyWeakness cardCode name encounterSet =
   (baseAsset (Just (encounterSet, 1)) cardCode name 0 (singleton Neutral))
     { cdCardSubType = Just Weakness
-    , cdRevelation = True
+    , cdRevelation = IsRevelation
     , cdCost = Nothing
     }
 
@@ -84,7 +84,7 @@ baseAsset mEncounterSet cardCode name cost classSymbols =
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty
@@ -118,8 +118,8 @@ baseAsset mEncounterSet cardCode name cost classSymbols =
 
 allPlayerAssetCards :: Map CardCode CardDef
 allPlayerAssetCards =
-  mapFromList $
-    concatMap
+  mapFromList
+    $ concatMap
       toCardCodePairs
       [ abbessAllegriaDiBiase
       , aceOfRods1
@@ -522,8 +522,8 @@ allPlayerAssetCards =
 
 allEncounterAssetCards :: Map CardCode CardDef
 allEncounterAssetCards =
-  mapFromList $
-    map
+  mapFromList
+    $ map
       (toCardCode &&& id)
       [ adamLynch
       , alchemicalConcoction
@@ -693,8 +693,8 @@ shotgun4 =
 
 magnifyingGlass :: CardDef
 magnifyingGlass =
-  fast $
-    (asset "01030" "Magnifying Glass" 1 Seeker)
+  fast
+    $ (asset "01030" "Magnifying Glass" 1 Seeker)
       { cdSkills = [#intellect]
       , cdCardTraits = setFromList [Item, Tool]
       , cdSlots = [HandSlot]
@@ -753,8 +753,8 @@ medicalTexts =
 
 magnifyingGlass1 :: CardDef
 magnifyingGlass1 =
-  fast $
-    (asset "01040" "Magnifying Glass" 0 Seeker)
+  fast
+    $ (asset "01040" "Magnifying Glass" 0 Seeker)
       { cdSkills = [#intellect]
       , cdCardTraits = setFromList [Item, Tool]
       , cdLevel = 1
@@ -785,8 +785,8 @@ encyclopedia2 =
 
 switchblade :: CardDef
 switchblade =
-  fast $
-    (asset "01044" "Switchblade" 1 Rogue)
+  fast
+    $ (asset "01044" "Switchblade" 1 Rogue)
       { cdSkills = [#agility]
       , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
       , cdSlots = [HandSlot]
@@ -1282,8 +1282,8 @@ pathfinder1 =
 
 adaptable1 :: CardDef
 adaptable1 =
-  permanent $
-    (asset "02110" "Adaptable" 0 Rogue)
+  permanent
+    $ (asset "02110" "Adaptable" 0 Rogue)
       { cdCardTraits = setFromList [Talent]
       , cdLevel = 1
       }
@@ -1376,8 +1376,8 @@ artStudent =
 
 switchblade2 :: CardDef
 switchblade2 =
-  fast $
-    (asset "02152" "Switchblade" 1 Rogue)
+  fast
+    $ (asset "02152" "Switchblade" 1 Rogue)
       { cdSkills = [#combat, #agility]
       , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
       , cdLevel = 2
@@ -1404,8 +1404,8 @@ newspaper =
 
 relicHunter3 :: CardDef
 relicHunter3 =
-  permanent $
-    (asset "02157" "Relic Hunter" 0 Neutral)
+  permanent
+    $ (asset "02157" "Relic Hunter" 0 Neutral)
       { cdCardTraits = singleton Talent
       , cdLevel = 3
       , cdAlternateCardCodes = ["01695"]
@@ -1413,8 +1413,8 @@ relicHunter3 =
 
 charisma3 :: CardDef
 charisma3 =
-  permanent $
-    (asset "02158" "Charisma" 0 Neutral)
+  permanent
+    $ (asset "02158" "Charisma" 0 Neutral)
       { cdCardTraits = singleton Talent
       , cdLevel = 3
       , cdAlternateCardCodes = ["01694"]
@@ -1431,16 +1431,16 @@ helplessPassenger =
 
 keenEye3 :: CardDef
 keenEye3 =
-  permanent $
-    (asset "02185" "Keen Eye" 0 Guardian)
+  permanent
+    $ (asset "02185" "Keen Eye" 0 Guardian)
       { cdCardTraits = setFromList [Talent]
       , cdLevel = 3
       }
 
 higherEducation3 :: CardDef
 higherEducation3 =
-  permanent $
-    (asset "02187" "Higher Education" 0 Seeker)
+  permanent
+    $ (asset "02187" "Higher Education" 0 Seeker)
       { cdCardTraits = setFromList [Talent]
       , cdLevel = 3
       }
@@ -1455,24 +1455,24 @@ loneWolf =
 
 streetwise3 :: CardDef
 streetwise3 =
-  permanent $
-    (asset "02189" "Streetwise" 0 Rogue)
+  permanent
+    $ (asset "02189" "Streetwise" 0 Rogue)
       { cdCardTraits = setFromList [Talent]
       , cdLevel = 3
       }
 
 bloodPact3 :: CardDef
 bloodPact3 =
-  permanent $
-    (asset "02191" "Blood Pact" 0 Mystic)
+  permanent
+    $ (asset "02191" "Blood Pact" 0 Mystic)
       { cdCardTraits = setFromList [Spell, Pact]
       , cdLevel = 3
       }
 
 scrapper3 :: CardDef
 scrapper3 =
-  permanent $
-    (asset "02193" "Scrapper" 0 Survivor)
+  permanent
+    $ (asset "02193" "Scrapper" 0 Survivor)
       { cdCardTraits = setFromList [Talent]
       , cdLevel = 3
       }
@@ -1709,8 +1709,8 @@ tryAndTryAgain3 =
 
 theRedGlovedMan5 :: CardDef
 theRedGlovedMan5 =
-  fast $
-    (asset "02310" ("The Red-Gloved Man" <:> "He Was Never There") 2 Neutral)
+  fast
+    $ (asset "02310" ("The Red-Gloved Man" <:> "He Was Never There") 2 Neutral)
       { cdSkills = [#wild]
       , cdCardTraits = setFromList [Ally, Conspirator]
       , cdLevel = 5
@@ -2008,7 +2008,7 @@ claspOfBlackOnyx =
   )
     { cdCardTraits = setFromList [Item, Relic]
     , cdCost = Just (StaticCost 1)
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdCardInHandEffects = True
     }
 
@@ -2124,8 +2124,8 @@ archaicGlyphsProphecyForetold3 =
 
 pickpocketing2 :: CardDef
 pickpocketing2 =
-  fast $
-    (asset "03195" "Pickpocketing" 2 Rogue)
+  fast
+    $ (asset "03195" "Pickpocketing" 2 Rogue)
       { cdSkills = [#agility, #agility]
       , cdCardTraits = setFromList [Talent, Illicit]
       , cdLevel = 2
@@ -2174,8 +2174,8 @@ scrying3 =
 
 stickToThePlan3 :: CardDef
 stickToThePlan3 =
-  permanent $
-    (asset "03264" "Stick to the Plan" 0 Guardian)
+  permanent
+    $ (asset "03264" "Stick to the Plan" 0 Guardian)
       { cdCardTraits = singleton Talent
       , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional]
       , cdLevel = 3
@@ -2230,8 +2230,8 @@ armorOfArdennes5 =
 
 charonsObol1 :: CardDef
 charonsObol1 =
-  permanent $
-    (asset "03308" ("Charon's Obol" <:> "The Ferryman's Pay") 0 Rogue)
+  permanent
+    $ (asset "03308" ("Charon's Obol" <:> "The Ferryman's Pay") 0 Rogue)
       { cdCardTraits = setFromList [Item, Relic]
       , cdLevel = 1
       , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional]
@@ -2272,7 +2272,7 @@ thePallidMask :: CardDef
 thePallidMask =
   (asset "03321b" ("The Pallid Mask" <:> "Chasing Tails") 0 Neutral)
     { cdCardTraits = setFromList [Item, Relic]
-    , cdRevelation = True
+    , cdRevelation = IsRevelation
     }
 
 mitchBrown :: CardDef
@@ -2298,15 +2298,15 @@ jakeWilliams =
 
 finnsTrustyThirtyEight :: CardDef
 finnsTrustyThirtyEight =
-  fast $
-    ( asset
-        "04011"
-        ( "Finn's Trusty .38"
-            <:> "Never Leave Home Without It"
-        )
-        2
-        Neutral
-    )
+  fast
+    $ ( asset
+          "04011"
+          ( "Finn's Trusty .38"
+              <:> "Never Leave Home Without It"
+          )
+          2
+          Neutral
+      )
       { cdSkills = [#agility, #wild]
       , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
       , cdSlots = [HandSlot]
@@ -2413,12 +2413,12 @@ theChthonianStone =
     , cdSlots = [HandSlot]
     , cdUnique = True
     , cdKeywords =
-        singleton $
-          Keyword.Seal $
-            ChaosTokenMatchesAny $
-              map
-                ChaosTokenFaceIs
-                [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
+        singleton
+          $ Keyword.Seal
+          $ ChaosTokenMatchesAny
+          $ map
+            ChaosTokenFaceIs
+            [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }
 
 protectiveIncantation1 :: CardDef
@@ -2480,8 +2480,8 @@ relicOfAgesADeviceOfSomeSort =
 
 shrewdAnalysis :: CardDef
 shrewdAnalysis =
-  permanent $
-    (asset "04106" "Shrewd Analysis" 0 Seeker)
+  permanent
+    $ (asset "04106" "Shrewd Analysis" 0 Seeker)
       { cdCardTraits = singleton Talent
       }
 
@@ -2504,8 +2504,8 @@ fence1 =
 
 arcaneResearch :: CardDef
 arcaneResearch =
-  permanent $
-    (asset "04109" "Arcane Research" 0 Mystic)
+  permanent
+    $ (asset "04109" "Arcane Research" 0 Mystic)
       { cdCardTraits = singleton Talent
       , cdPurchaseMentalTrauma = Just 1
       }
@@ -2709,12 +2709,12 @@ crystallineElderSign3 =
     , cdSkills = [#wild]
     , cdSlots = [AccessorySlot]
     , cdKeywords =
-        singleton $
-          Keyword.Seal $
-            ChaosTokenMatchesAny $
-              map
-                ChaosTokenFaceIs
-                [Token.PlusOne, Token.ElderSign]
+        singleton
+          $ Keyword.Seal
+          $ ChaosTokenMatchesAny
+          $ map
+            ChaosTokenFaceIs
+            [Token.PlusOne, Token.ElderSign]
     , cdLevel = 3
     }
 
@@ -2768,8 +2768,8 @@ coltVestPocket =
 
 theSkeletonKey2 :: CardDef
 theSkeletonKey2 =
-  fast $
-    (asset "04270" "The Skeleton Key" 3 Rogue)
+  fast
+    $ (asset "04270" "The Skeleton Key" 3 Rogue)
       { cdSkills = [#intellect, #intellect]
       , cdCardTraits = setFromList [Item, Relic, Cursed]
       , cdUnique = True
@@ -3387,16 +3387,16 @@ agencyBackup5 =
 
 studious3 :: CardDef
 studious3 =
-  permanent $
-    (asset "05276" "Studious" 0 Seeker)
+  permanent
+    $ (asset "05276" "Studious" 0 Seeker)
       { cdCardTraits = singleton Talent
       , cdLevel = 3
       }
 
 anotherDayAnotherDollar3 :: CardDef
 anotherDayAnotherDollar3 =
-  permanent $
-    (asset "05278" "Another Day, Another Dollar " 0 Rogue)
+  permanent
+    $ (asset "05278" "Another Day, Another Dollar " 0 Rogue)
       { cdCardTraits = singleton Talent
       , cdLevel = 3
       }
@@ -3513,8 +3513,8 @@ keenEye =
 
 ancestralKnowledge3 :: CardDef
 ancestralKnowledge3 =
-  permanent $
-    (asset "07303" "Ancestral Knowledge" 0 Seeker)
+  permanent
+    $ (asset "07303" "Ancestral Knowledge" 0 Seeker)
       { cdCardTraits = singleton Talent
       , cdKeywords = setFromList [Keyword.Exceptional]
       , cdLevel = 3
@@ -3549,8 +3549,8 @@ guardDog2 =
 
 handcuffs2 :: CardDef
 handcuffs2 =
-  fast $
-    (asset "09035" "Handcuffs" 1 Guardian)
+  fast
+    $ (asset "09035" "Handcuffs" 1 Guardian)
       { cdCardTraits = setFromList [Item, Police]
       , cdSkills = [#combat, #agility]
       , cdLevel = 2
@@ -3908,8 +3908,8 @@ farsight4 =
 
 miskatonicArchaeologyFunding4 :: CardDef
 miskatonicArchaeologyFunding4 =
-  permanent $
-    (asset "60232" "Miskatonic Archaeology Funding" 0 Seeker)
+  permanent
+    $ (asset "60232" "Miskatonic Archaeology Funding" 0 Seeker)
       { cdCardTraits = singleton Grant
       , cdLevel = 4
       }
@@ -3951,8 +3951,8 @@ lonnieRitter =
 
 leatherJacket :: CardDef
 leatherJacket =
-  fast $
-    (asset "60310" "Leather Jacket" 2 Rogue)
+  fast
+    $ (asset "60310" "Leather Jacket" 2 Rogue)
       { cdSkills = [#combat]
       , cdCardTraits = setFromList [Item, Armor]
       , cdSlots = [BodySlot]
@@ -4278,16 +4278,16 @@ chainsaw4 =
 
 quickLearner4 :: CardDef
 quickLearner4 =
-  permanent $
-    (asset "60530" "Quick Learner" 0 Survivor)
+  permanent
+    $ (asset "60530" "Quick Learner" 0 Survivor)
       { cdCardTraits = singleton Condition
       , cdLevel = 4
       }
 
 dejaVu5 :: CardDef
 dejaVu5 =
-  permanent $
-    (asset "60531" "Déjà Vu" 0 Survivor)
+  permanent
+    $ (asset "60531" "Déjà Vu" 0 Survivor)
       { cdCardTraits = setFromList [Talent, Cursed]
       , cdLevel = 5
       }
@@ -4319,8 +4319,8 @@ fishingNet =
 
 monstrousTransformation :: CardDef
 monstrousTransformation =
-  fast $
-    (storyAsset "81030" "Monstrous Transformation" 0 CurseOfTheRougarou)
+  fast
+    $ (storyAsset "81030" "Monstrous Transformation" 0 CurseOfTheRougarou)
       { cdCardTraits = setFromList [Talent]
       }
 

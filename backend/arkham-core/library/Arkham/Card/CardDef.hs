@@ -55,6 +55,16 @@ toCardCodePairs c =
       (\cardCode -> (cardCode, c {cdArt = unCardCode cardCode}))
       (cdAlternateCardCodes c)
 
+data IsRevelation = NoRevelation | IsRevelation | CannotBeCanceledRevelation
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+isRevelation :: IsRevelation -> Bool
+isRevelation = \case
+  NoRevelation -> False
+  IsRevelation -> True
+  CannotBeCanceledRevelation -> True
+
 data CardDef = CardDef
   { cdCardCode :: CardCode
   , cdName :: Name
@@ -71,7 +81,7 @@ data CardDef = CardDef
   , cdKeywords :: Set Keyword
   , cdFastWindow :: Maybe WindowMatcher
   , cdActions :: [Action]
-  , cdRevelation :: Bool
+  , cdRevelation :: IsRevelation
   , cdVictoryPoints :: Maybe Int
   , cdVengeancePoints :: Maybe Int
   , cdCriteria :: Maybe Criterion
@@ -132,7 +142,7 @@ class HasCardDef a where
   toCardDef :: HasCallStack => a -> CardDef
 
 hasRevelation :: HasCardDef a => a -> Bool
-hasRevelation = cdRevelation . toCardDef
+hasRevelation = isRevelation . cdRevelation . toCardDef
 
 class HasOriginalCardCode a where
   toOriginalCardCode :: a -> CardCode

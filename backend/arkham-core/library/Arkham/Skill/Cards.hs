@@ -33,7 +33,7 @@ skill cardCode name icons classSymbol =
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty
@@ -67,8 +67,8 @@ skill cardCode name icons classSymbol =
 
 allPlayerSkillCards :: Map CardCode CardDef
 allPlayerSkillCards =
-  mapFromList $
-    concatMap
+  mapFromList
+    $ concatMap
       toCardCodePairs
       [ ableBodied
       , allIn5

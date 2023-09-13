@@ -25,8 +25,8 @@ lookupPlayerCardName = cdName . lookupPlayerCardDef
 
 lookupPlayerCardDef :: CardCode -> CardDef
 lookupPlayerCardDef cardCode =
-  fromJustNote ("Unknown card: " <> show cardCode) $
-    lookup cardCode allPlayerCards
+  fromJustNote ("Unknown card: " <> show cardCode)
+    $ lookup cardCode allPlayerCards
 
 allBasicWeaknesses :: [CardDef]
 allBasicWeaknesses =
@@ -60,7 +60,7 @@ randomWeakness =
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty

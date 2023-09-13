@@ -27,7 +27,7 @@ story cardCode name encounterSet =
     , cdKeywords = mempty
     , cdFastWindow = Nothing
     , cdActions = []
-    , cdRevelation = False
+    , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing
     , cdCriteria = mempty
@@ -61,8 +61,8 @@ story cardCode name encounterSet =
 
 allStoryCards :: Map CardCode CardDef
 allStoryCards =
-  mapFromList $
-    map
+  mapFromList
+    $ map
       (toCardCode &&& id)
       [ sickeningReality_65
       , sickeningReality_66

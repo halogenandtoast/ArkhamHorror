@@ -144,15 +144,12 @@ instance RunMessage LocationAttrs where
           , afterWindowMsg
           ]
       pure a
-    PlaceUnderneath target cards
-      | isTarget a target ->
-          pure $ a & cardsUnderneathL <>~ cards
-    SetLocationLabel lid label'
-      | lid == locationId ->
-          pure $ a & labelL .~ label'
-    PlacedLocationDirection lid direction lid2
-      | lid2 == locationId ->
-          pure $ a & (directionsL %~ insertMap direction lid)
+    PlaceUnderneath target cards | isTarget a target -> do
+      pure $ a & cardsUnderneathL <>~ cards
+    SetLocationLabel lid label' | lid == locationId -> do
+      pure $ a & labelL .~ label'
+    PlacedLocationDirection lid direction lid2 | lid2 == locationId -> do
+      pure $ a & (directionsL %~ insertMap direction lid)
     PlacedLocationDirection lid direction lid2 | lid == locationId -> do
       let
         reversedDirection = case direction of
@@ -162,15 +159,16 @@ instance RunMessage LocationAttrs where
           Below -> Above
 
       pure $ a & (directionsL %~ insertMap reversedDirection lid2)
-    AttachTreachery tid (LocationTarget lid)
-      | lid == locationId ->
-          pure $ a & treacheriesL %~ insertSet tid
-    PutLocationInFrontOf iid lid
-      | lid == locationId ->
-          pure $ a & inFrontOfL ?~ iid
-    PutLocationInCenter lid
-      | lid == locationId ->
-          pure $ a & inFrontOfL .~ Nothing
+    LocationMoved lid | lid == locationId -> do
+      pure $ a & (directionsL .~ mempty)
+    LocationMoved lid | lid /= locationId -> do
+      pure $ a & (directionsL %~ filterMap (== lid))
+    AttachTreachery tid (LocationTarget lid) | lid == locationId -> do
+      pure $ a & treacheriesL %~ insertSet tid
+    PutLocationInFrontOf iid lid | lid == locationId -> do
+      pure $ a & inFrontOfL ?~ iid
+    PutLocationInCenter lid | lid == locationId -> do
+      pure $ a & inFrontOfL .~ Nothing
     PlaceEvent _ eid placement -> case placement of
       AttachedToLocation lid
         | lid == locationId ->

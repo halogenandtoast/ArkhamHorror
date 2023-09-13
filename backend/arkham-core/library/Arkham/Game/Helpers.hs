@@ -56,6 +56,8 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos qualified as Cosmos
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -1087,6 +1089,14 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source windows' = \case
+  Criteria.CanMoveThis dir -> do
+    case source of
+      LocationSource lid -> do
+        cosmos' <- getCosmos
+        case Cosmos.findInCosmos lid cosmos' of
+          Nothing -> pure False
+          Just pos -> pure $ Cosmos.isEmpty $ Cosmos.viewCosmos (Cosmos.updatePosition pos dir) cosmos'
+      _ -> error "Only works on locations"
   Criteria.ChaosTokenCountIs tokenMatcher valueMatcher -> do
     n <- selectCount tokenMatcher
     gameValueMatches n valueMatcher

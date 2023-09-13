@@ -2,6 +2,7 @@ module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos where
 
 import Arkham.Prelude hiding ((<|))
 
+import Arkham.Direction
 import Arkham.Layout
 import Data.Sequence ((<|), (|>))
 import Data.Sequence qualified as Seq
@@ -12,16 +13,6 @@ nTimes :: Int -> (a -> a) -> (a -> a)
 nTimes 0 _ = id
 nTimes 1 f = f
 nTimes n f = f . nTimes (n - 1) f
-
-data GridDirection = GridUp | GridDown | GridLeft | GridRight
-  deriving stock (Eq)
-
-oppositeDirection :: GridDirection -> GridDirection
-oppositeDirection = \case
-  GridUp -> GridDown
-  GridDown -> GridUp
-  GridLeft -> GridRight
-  GridRight -> GridLeft
 
 data Pos = Pos Int Int
   deriving stock (Eq, Show, Generic)
@@ -173,8 +164,7 @@ extendCosmosRight (Cosmos above center below) =
 extendCosmosUp :: Cosmos a b -> Cosmos a b
 extendCosmosUp c@(Cosmos above center below) =
   Cosmos
-    ( above
-        |> (CosmosRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing))
+    ( (CosmosRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing)) <| above
     )
     center
     below
@@ -201,7 +191,7 @@ cosmosToGrid c =
       aboveBy = cosmosAboveAmount c
       belowBy = cosmosBelowAmount c
       xRange = [-leftBy .. rightBy]
-      yRange = [-belowBy .. aboveBy]
+      yRange = reverse [-belowBy .. aboveBy]
    in [GridTemplateRow $ T.unwords [cosmicLabel (Pos x y) | x <- xRange] | y <- yRange]
 
 cosmosRowToGrid :: CosmosRow a b -> GridTemplateRow
@@ -277,18 +267,17 @@ findInCosmos b c =
         _ -> False
 
 cosmosEmptySpaceCards :: Cosmos a b -> [a]
-cosmosEmptySpaceCards (Cosmos above center below) =
-  concat (toList (fmap cosmosRowEmptySpaceCards above))
-    <> cosmosRowEmptySpaceCards center
-    <> concat (toList (fmap cosmosRowEmptySpaceCards below))
-
-cosmosRowEmptySpaceCards :: CosmosRow a b -> [a]
-cosmosRowEmptySpaceCards (CosmosRow left center right) =
-  catMaybes
-    $ toList (fmap (>>= cosmosLocationCard) left)
-      <> [center >>= cosmosLocationCard]
-      <> toList (fmap (>>= cosmosLocationCard) right)
+cosmosEmptySpaceCards = mapMaybe cosmosLocationCard . flattenCosmos
 
 cosmosLocationCard :: CosmosLocation a b -> Maybe a
 cosmosLocationCard (EmptySpace _ a) = Just a
 cosmosLocationCard (CosmosLocation _ _) = Nothing
+
+flattenCosmos :: Cosmos a b -> [CosmosLocation a b]
+flattenCosmos (Cosmos above center below) =
+  concat (toList (fmap flattenCosmosRow above))
+    <> flattenCosmosRow center
+    <> concat (toList (fmap flattenCosmosRow below))
+
+flattenCosmosRow :: CosmosRow a b -> [CosmosLocation a b]
+flattenCosmosRow (CosmosRow left center right) = catMaybes $ toList left <> [center] <> toList right

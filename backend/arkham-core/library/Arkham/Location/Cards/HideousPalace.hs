@@ -38,14 +38,16 @@ instance HasAbilities HideousPalace where
       $ [ restrictedAbility attrs 1 (CluesOnThis $ LessThan $ Static 4)
             $ ForcedAbility
             $ RoundEnds Timing.When
-        , restrictedAbility
-            ( ProxySource
-                (LocationMatcherSource $ LocationWithTrait Void)
-                (toSource attrs)
-            )
-            1
-            Here
-            (ActionAbility Nothing $ ActionCost 1)
+        , withTooltip
+            "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Hideous Palace"
+            $ restrictedAbility
+              ( ProxySource
+                  (LocationMatcherSource $ LocationWithTrait Void)
+                  (toSource attrs)
+              )
+              1
+              Here
+              (ActionAbility Nothing $ ActionCost 1)
         ]
 
 instance RunMessage HideousPalace where

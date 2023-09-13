@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Deck qualified as Deck
+import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
@@ -22,6 +23,7 @@ import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait (Cultist))
+import Control.Monad.Trans.Maybe (runMaybeT)
 import Data.Aeson (Result (..))
 
 getCosmos :: HasGame m => m (Cosmos Card LocationId)
@@ -86,3 +88,12 @@ findLocationInCosmos lid = do
   case findInCosmos lid cosmos' of
     Nothing -> error $ "could not find location in cosmos: " <> show lid
     Just pos -> pure pos
+
+topmostRevealedLocationPositions :: HasGame m => m [Pos]
+topmostRevealedLocationPositions = do
+  cosmosLocations <- flattenCosmos <$> getCosmos
+  revealedCosmosLocations <- flip mapMaybeM cosmosLocations $ \case
+    CosmosLocation p@(Pos _ y) lid -> runMaybeT $ guardM (lift $ lid <=~> RevealedLocation) $> (p, y)
+    _ -> pure Nothing
+
+  pure $ maxes revealedCosmosLocations

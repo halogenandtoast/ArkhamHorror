@@ -595,6 +595,7 @@ data Message
   | PlaceNextTo Target [Card]
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
+  | LocationMoved LocationId
   | PlayCard InvestigatorId Card (Maybe Target) [Window] Bool
   | CardEnteredPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card

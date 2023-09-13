@@ -23,12 +23,7 @@ covenInitiate = enemy CovenInitiate Cards.covenInitiate (2, Static 2, 2) (0, 1)
 instance RunMessage CovenInitiate where
   runMessage msg e@(CovenInitiate attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $
-        DiscardTopOfEncounterDeck
-          iid
-          2
-          (toSource attrs)
-          (Just $ toTarget attrs)
+      push $ DiscardTopOfEncounterDeck iid 2 (toSource attrs) (Just $ toTarget attrs)
       pure e
     DiscardedTopOfEncounterDeck iid _ _ (isTarget attrs -> True) -> do
       deckEmpty <- scenarioFieldMap ScenarioEncounterDeck null
@@ -36,6 +31,6 @@ instance RunMessage CovenInitiate where
         mHexCard <- findTopOfDiscard (CardWithTrait Hex)
         for_
           mHexCard
-          \hexCard -> push (InvestigatorDrewEncounterCard iid hexCard)
+          (push . InvestigatorDrewEncounterCard iid)
       pure e
     _ -> CovenInitiate <$> runMessage msg attrs

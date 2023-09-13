@@ -204,6 +204,10 @@ data CampaignLogKey
   | TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
   | DoomDrawsEverCloser
   | ThePathWindsBeforeYou
+  | AzathothDevouredTheUniverse
+  | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
+  | AzathothSlumbersForNow
+  | TheInvestigatorsSignedTheBlackBookOfAzathoth
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

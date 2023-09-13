@@ -18,18 +18,20 @@ import Arkham.Direction
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Label
+import Arkham.Label (mkLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
@@ -66,6 +68,16 @@ instance HasChaosTokenValue BeforeTheBlackThrone where
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 6
     otherFace -> getChaosTokenValue iid otherFace attrs
+
+readInvestigatorDefeat :: HasGame m => m [Message]
+readInvestigatorDefeat = do
+  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  if null defeatedInvestigatorIds
+    then pure []
+    else
+      pure
+        $ [story defeatedInvestigatorIds investigatorDefeat]
+          <> map DrivenInsane defeatedInvestigatorIds
 
 instance RunMessage BeforeTheBlackThrone where
   runMessage msg s@(BeforeTheBlackThrone attrs) = case msg of
@@ -234,5 +246,64 @@ instance RunMessage BeforeTheBlackThrone where
       v <- getSkillTestModifiedSkillValue
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       pushWhen (v == 0) $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget azathoth) 1
+      pure s
+    ScenarioResolution n -> do
+      investigators <- getInvestigators
+      case n of
+        NoResolution -> push R1
+        Resolution x | x == 1 || x == 11 -> do
+          msgs <- if x == 1 then readInvestigatorDefeat else pure []
+          pushAll
+            $ msgs
+              <> [story investigators resolution1, Record AzathothDevouredTheUniverse]
+              <> map (InvestigatorKilled (toSource attrs)) investigators
+              <> [GameOver]
+        Resolution 2 -> do
+          lead <- getLead
+          msgs <- readInvestigatorDefeat
+          gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
+          pushAll
+            $ msgs
+              <> [ story investigators resolution2
+                 , Record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
+                 , Record AzathothSlumbersForNow
+                 , DrivenInsane lead
+                 ]
+              <> gainXp
+              <> [SufferTrauma investigator 0 2 | investigator <- investigators]
+              <> [GameOver]
+        Resolution 3 -> do
+          msgs <- readInvestigatorDefeat
+          gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
+          pushAll
+            $ msgs
+              <> [ story investigators resolution3
+                 , Record AzathothSlumbersForNow
+                 ]
+              <> gainXp
+              <> [SufferTrauma investigator 2 0 | investigator <- investigators]
+              <> [GameOver]
+        Resolution 4 -> do
+          msgs <- readInvestigatorDefeat
+          lead <- getLead
+          pushAll
+            $ msgs
+              <> [ storyWithChooseOne
+                    lead
+                    investigators
+                    resolution4
+                    [Label "It must be done." [R5], Label "I refuse" [ScenarioResolution (Resolution 11)]]
+                 ]
+        Resolution 5 -> do
+          gainXp <- toGainXp (toSource attrs) (getXpWithBonus 10)
+          pushAll
+            $ [ story investigators resolution5
+              , Record AzathothSlumbersForNow
+              , Record TheInvestigatorsSignedTheBlackBookOfAzathoth
+              ]
+              <> gainXp
+              <> [SufferTrauma investigator 2 2 | investigator <- investigators]
+              <> [GameOver]
+        _ -> error "unknown resolution"
       pure s
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

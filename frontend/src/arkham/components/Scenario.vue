@@ -10,6 +10,7 @@ import {
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card, toCardContents } from '@/arkham/types/Card';
+import { TokenType } from '@/arkham/types/Token';
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
@@ -387,6 +388,9 @@ const unusedCanInteract = (u: string) => choices.value.findIndex((c) => {
      return false
 })
 
+const resources = computed(() => props.scenario.tokens[TokenType.Resource])
+const hasPool = computed(() => resources.value && resources.value > 0)
+
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
@@ -511,6 +515,9 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :src="scenarioGuide"
           />
           <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
+          <div class="pool" v-if="hasPool">
+            <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          </div>
           <div class="keys" v-if="keys.length > 0">
             <Key v-for="key in keys" :key="key" :name="key" />
           </div>
@@ -931,5 +938,19 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   background: rgba(0, 0, 0, 0.5);
   border: 2px solid $select;
   cursor: pointer;
+}
+
+.pool {
+  position: absolute;
+  top: 10%;
+  align-items: center;
+  display: flex;
+  align-self: flex-start;
+  align-items: flex-end;
+  * {
+    transform: scale(0.6);
+  }
+
+  pointer-events: none;
 }
 </style>

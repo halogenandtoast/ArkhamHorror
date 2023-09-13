@@ -14,6 +14,14 @@ nTimes 1 f = f
 nTimes n f = f . nTimes (n - 1) f
 
 data GridDirection = GridUp | GridDown | GridLeft | GridRight
+  deriving stock (Eq)
+
+oppositeDirection :: GridDirection -> GridDirection
+oppositeDirection = \case
+  GridUp -> GridDown
+  GridDown -> GridUp
+  GridLeft -> GridRight
+  GridRight -> GridLeft
 
 data Pos = Pos Int Int
   deriving stock (Eq, Show, Generic)
@@ -267,3 +275,20 @@ findInCosmos b c =
    in flip find positions $ \pos -> case viewCosmos pos c of
         Just (CosmosLocation _ b') -> b == b'
         _ -> False
+
+cosmosEmptySpaceCards :: Cosmos a b -> [a]
+cosmosEmptySpaceCards (Cosmos above center below) =
+  concat (toList (fmap cosmosRowEmptySpaceCards above))
+    <> cosmosRowEmptySpaceCards center
+    <> concat (toList (fmap cosmosRowEmptySpaceCards below))
+
+cosmosRowEmptySpaceCards :: CosmosRow a b -> [a]
+cosmosRowEmptySpaceCards (CosmosRow left center right) =
+  catMaybes
+    $ toList (fmap (>>= cosmosLocationCard) left)
+      <> [center >>= cosmosLocationCard]
+      <> toList (fmap (>>= cosmosLocationCard) right)
+
+cosmosLocationCard :: CosmosLocation a b -> Maybe a
+cosmosLocationCard (EmptySpace _ a) = Just a
+cosmosLocationCard (CosmosLocation _ _) = Nothing

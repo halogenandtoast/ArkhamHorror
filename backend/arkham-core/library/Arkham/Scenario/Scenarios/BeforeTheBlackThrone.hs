@@ -8,6 +8,7 @@ import Arkham.Prelude hiding ((<|))
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -34,6 +35,8 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Scenarios.BeforeTheBlackThrone.Story
+import Arkham.Token (addTokens)
+import Arkham.Token qualified as Token
 import Arkham.Trait qualified as Trait
 import Data.Aeson (Result (..))
 
@@ -71,6 +74,7 @@ instance RunMessage BeforeTheBlackThrone where
       pushAll [story investigators intro]
       pure s
     Setup -> do
+      pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
       encounterDeck <-
         buildEncounterDeckExcluding
           [Enemies.piperOfAzathoth, Enemies.azathoth]
@@ -169,6 +173,7 @@ instance RunMessage BeforeTheBlackThrone where
               & (metaL .~ toJSON cosmos)
               & (usesGridL .~ True)
               & (setAsideCardsL .~ setAsideCards)
+              & (tokensL %~ addTokens Token.Resource pathWindsBeforeYouCount)
           )
     SetScenarioMeta meta -> do
       case fromJSON @(Cosmos Card LocationId) meta of

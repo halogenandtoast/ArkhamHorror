@@ -59,3 +59,11 @@ export type StandaloneSetting
       content: { key: string }[]
       ifRecorded?: SettingCondition[]
     }
+  | {
+      type: "ChooseNum",
+      key: string,
+      min?: number,
+      max: number,
+      content: number,
+      ifRecorded?: SettingCondition[]
+    }

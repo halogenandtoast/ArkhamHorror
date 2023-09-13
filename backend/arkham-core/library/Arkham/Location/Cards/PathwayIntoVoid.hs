@@ -33,7 +33,9 @@ instance HasAbilities PathwayIntoVoid where
 instance RunMessage PathwayIntoVoid where
   runMessage msg l@(PathwayIntoVoid attrs) = case msg of
     RunCosmos iid lid msgs | lid == toId attrs -> do
-      valids <- getEmptyPositionsInDirections iid [GridUp, GridDown, GridLeft, GridRight]
+      mpos <- findCosmosPosition iid
+      valids <-
+        maybe (pure []) (`getEmptyPositionsInDirections` [GridUp, GridDown, GridLeft, GridRight]) mpos
       if null valids
         then cosmosFail attrs
         else

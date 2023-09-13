@@ -111,6 +111,10 @@ const activeSettings = computed(() => {
           </template>
         </fieldset>
       </div>
+      <div v-if="setting.type === 'ChooseNum'" class="options">
+        <input type="number" v-model="setting.content" :id="setting.key" :max="setting.max" :min="setting.min || 0" />
+        <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
+      </div>
       <div v-if="setting.type === 'ToggleKey'" class="options">
         <input type="checkbox" v-model="setting.content" :id="setting.key"/>
         <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>

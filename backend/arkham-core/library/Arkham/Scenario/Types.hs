@@ -27,6 +27,7 @@ import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Data.Aeson.TH
 import Data.Typeable
 
@@ -68,6 +69,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioMeta :: Field Scenario Value
   ScenarioStoryCards :: Field Scenario (Map InvestigatorId [PlayerCard])
   ScenarioPlayerDecks :: Field Scenario (Map InvestigatorId (Deck PlayerCard))
+  ScenarioTokens :: Field Scenario Tokens
 
 deriving stock instance Show (Field Scenario typ)
 
@@ -105,6 +107,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioSetAsideKeys :: Set ArkhamKey
   , scenarioMeta :: Value
   , scenarioUsesGrid :: Bool
+  , scenarioTokens :: Tokens
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -171,6 +174,7 @@ scenario f cardCode name difficulty layout =
       , scenarioSetAsideKeys = mempty
       , scenarioMeta = Null
       , scenarioUsesGrid = False
+      , scenarioTokens = mempty
       , scenarioStoryCards = mempty
       , scenarioPlayerDecks = mempty
       }

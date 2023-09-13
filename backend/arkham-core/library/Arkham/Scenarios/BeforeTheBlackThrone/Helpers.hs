@@ -44,25 +44,19 @@ cosmosFail attrs = do
     , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) [toCard attrs]
     ]
 
-getEmptyPositionsInDirections :: HasGame m => InvestigatorId -> [GridDirection] -> m [Pos]
-getEmptyPositionsInDirections iid directions = do
+getEmptyPositionsInDirections :: HasGame m => Pos -> [GridDirection] -> m [Pos]
+getEmptyPositionsInDirections pos directions = do
   cosmos' <- getCosmos
-  mpos <- findCosmosPosition iid
-  case mpos of
-    Nothing -> pure []
-    Just pos -> do
-      let adjacents = positionsInDirections pos directions
-      pure $ filter (\adj -> isEmpty $ viewCosmos adj cosmos') adjacents
+  let adjacents = positionsInDirections pos directions
+  pure $ filter (\adj -> isEmpty $ viewCosmos adj cosmos') adjacents
 
-getLocationInDirection :: HasGame m => LocationId -> GridDirection -> m (Maybe LocationId)
-getLocationInDirection lid dir = do
+getLocationInDirection :: HasGame m => Pos -> GridDirection -> m (Maybe LocationId)
+getLocationInDirection pos dir = do
   cosmos' <- getCosmos
-  pure $ case findInCosmos lid cosmos' of
+  pure $ case viewCosmos (updatePosition pos dir) cosmos' of
     Nothing -> Nothing
-    Just pos -> case viewCosmos (updatePosition pos dir) cosmos' of
-      Nothing -> Nothing
-      Just (EmptySpace _ _) -> Nothing
-      Just (CosmosLocation _ lid') -> Just lid'
+    Just (EmptySpace _ _) -> Nothing
+    Just (CosmosLocation _ lid') -> Just lid'
 
 getCanMoveLocationLeft :: HasGame m => LocationId -> m Bool
 getCanMoveLocationLeft lid = do
@@ -82,3 +76,13 @@ commitRitualSuicide (toSource -> source) = do
   pure
     $ map (Discard source . toTarget) cultists
       <> [PlaceDoom source (toTarget azathoth) doom]
+
+getEmptySpaceCards :: HasGame m => m [Card]
+getEmptySpaceCards = cosmosEmptySpaceCards <$> getCosmos
+
+findLocationInCosmos :: HasGame m => LocationId -> m Pos
+findLocationInCosmos lid = do
+  cosmos' <- getCosmos
+  case findInCosmos lid cosmos' of
+    Nothing -> error $ "could not find location in cosmos: " <> show lid
+    Just pos -> pure pos

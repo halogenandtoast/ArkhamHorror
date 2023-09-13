@@ -65,6 +65,8 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Token (countTokens)
+import Arkham.Token qualified as Token
 import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWindow)
@@ -543,6 +545,9 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
     pure $ resources >= (cost + n)
   ResourceCost n -> do
     resources <- getSpendableResources iid
+    pure $ resources >= n
+  ScenarioResourceCost n -> do
+    resources <- scenarioFieldMap ScenarioTokens (countTokens Token.Resource)
     pure $ resources >= n
   DiscardFromCost n zone cardMatcher -> do
     -- We need to check that n valid candidates exist across all zones

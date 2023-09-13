@@ -55,6 +55,7 @@ data StandaloneSetting
   = SetKey CampaignLogKey Bool
   | SetRecorded CampaignLogKey SomeRecordableType [SetRecordedEntry]
   | SetOption CampaignOption Bool
+  | ChooseNum CampaignLogKey Int
   | NoChooseRecord
   deriving stock (Show)
 
@@ -69,6 +70,7 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
  where
   applySetting :: CampaignLog -> StandaloneSetting -> CampaignLog
   applySetting cl NoChooseRecord = cl
+  applySetting cl (ChooseNum k n) = setCampaignLogRecordedCount k n cl
   applySetting cl (SetKey k True) = setCampaignLogKey k cl
   applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
   applySetting cl (SetOption k True) = setCampaignLogOption k cl
@@ -76,10 +78,10 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting cl (SetRecorded k rt vs) = case rt of
     (SomeRecordableType RecordableCardCode) ->
       let entries = mapMaybe (toEntry @CardCode) vs
-      in  setCampaignLogRecorded k entries cl
+       in setCampaignLogRecorded k entries cl
     (SomeRecordableType RecordableMemento) ->
       let entries = mapMaybe (toEntry @Memento) vs
-      in  setCampaignLogRecorded k entries cl
+       in setCampaignLogRecorded k entries cl
   toEntry :: forall a. Recordable a => SetRecordedEntry -> Maybe SomeRecorded
   toEntry (SetAsRecorded e) = case fromJSON @a e of
     Success a -> Just (recorded a)
@@ -107,7 +109,8 @@ instance FromJSON StandaloneSetting where
         CrossedOutResults v <- o .: "content"
         pure $ SetRecorded k rt v
       "ToggleRecords" -> SetRecorded <$> o .: "key" <*> o .: "recordable" <*> o .: "content"
-      _ -> fail $ "No such standalone setting" <> t
+      "ChooseNum" -> ChooseNum <$> o .: "key" <*> o .: "content"
+      _ -> fail $ "No such standalone setting " <> t
 
 instance FromJSON SetRecordedEntry where
   parseJSON = withObject "SetRecordedEntry" $ \o -> do
@@ -205,10 +208,10 @@ handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
 handleAnswer Game {..} investigatorId = \case
   StandaloneSettingsAnswer settings' ->
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
-    in  [SetCampaignLog standaloneCampaignLog]
+     in [SetCampaignLog standaloneCampaignLog]
   CampaignSettingsAnswer settings' ->
     let campaignLog' = makeCampaignLog settings'
-    in  [SetCampaignLog campaignLog']
+     in [SetCampaignLog campaignLog']
   AmountsAnswer response -> case Map.lookup investigatorId gameQuestion of
     Just (ChooseAmounts _ _ _ target) ->
       [ ResolveAmounts
@@ -228,9 +231,9 @@ handleAnswer Game {..} investigatorId = \case
       Just (ChoosePaymentAmounts _ _ info) ->
         let
           costMap =
-            Map.fromList $
-              map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
-        in
+            Map.fromList
+              $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
+         in
           concatMap
             ( \(iid, n) ->
                 replicate n (Map.findWithDefault Noop iid costMap)
@@ -244,7 +247,7 @@ handleAnswer Game {..} investigatorId = \case
         fromJustNote
           "Invalid question type"
           (Map.lookup investigatorId gameQuestion)
-    in
+     in
       go id q response
  where
   go

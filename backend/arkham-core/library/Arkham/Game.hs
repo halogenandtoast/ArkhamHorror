@@ -3246,6 +3246,7 @@ instance Projection Scenario where
       ScenarioSetAsideKeys -> pure scenarioSetAsideKeys
       ScenarioName -> pure scenarioName
       ScenarioMeta -> pure scenarioMeta
+      ScenarioTokens -> pure scenarioTokens
       ScenarioStoryCards -> pure scenarioStoryCards
       ScenarioCardsUnderScenarioReference ->
         pure scenarioCardsUnderScenarioReference

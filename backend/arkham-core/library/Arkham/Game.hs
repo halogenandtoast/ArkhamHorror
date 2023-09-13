@@ -1512,10 +1512,7 @@ getLocationsMatching lmatcher = do
       ConnectedFrom matcher -> do
         startIds <- select matcher
         let starts = filter ((`elem` startIds) . toId) ls
-        matcherSupreme <-
-          foldMapM
-            (fmap AnyLocationMatcher . getConnectedMatcher)
-            starts
+        matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
         getLocationsMatching $ getAnyLocationMatcher matcherSupreme
       AccessibleFrom matcher ->
         getLocationsMatching (Unblocked <> ConnectedFrom matcher)

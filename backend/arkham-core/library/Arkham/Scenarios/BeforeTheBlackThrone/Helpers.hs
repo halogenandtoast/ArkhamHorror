@@ -82,12 +82,10 @@ commitRitualSuicide (toSource -> source) = do
 getEmptySpaceCards :: HasGame m => m [Card]
 getEmptySpaceCards = cosmosEmptySpaceCards <$> getCosmos
 
-findLocationInCosmos :: HasGame m => LocationId -> m Pos
+findLocationInCosmos :: HasGame m => LocationId -> m (Maybe Pos)
 findLocationInCosmos lid = do
   cosmos' <- getCosmos
-  case findInCosmos lid cosmos' of
-    Nothing -> error $ "could not find location in cosmos: " <> show lid
-    Just pos -> pure pos
+  pure $ findInCosmos lid cosmos'
 
 topmostRevealedLocationPositions :: HasGame m => m [Pos]
 topmostRevealedLocationPositions = do
@@ -97,3 +95,12 @@ topmostRevealedLocationPositions = do
     _ -> pure Nothing
 
   pure $ maxes revealedCosmosLocations
+
+bottommostRevealedLocationPositions :: HasGame m => m [Pos]
+bottommostRevealedLocationPositions = do
+  cosmosLocations <- flattenCosmos <$> getCosmos
+  revealedCosmosLocations <- flip mapMaybeM cosmosLocations $ \case
+    CosmosLocation p@(Pos _ y) lid -> runMaybeT $ guardM (lift $ lid <=~> RevealedLocation) $> (p, y)
+    _ -> pure Nothing
+
+  pure $ mins revealedCosmosLocations

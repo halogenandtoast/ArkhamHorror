@@ -59,21 +59,22 @@ instance RunMessage WheelOfFortuneX where
         pure a
       ForInvestigator iid (NextAdvanceAgendaStep aid _) | aid == toId attrs -> do
         location <- getJustLocation iid
-        pos <- findLocationInCosmos location
-        mLeftLocation <- getLocationInDirection pos GridLeft
-        canMoveLocationLeft <-
-          (&&) (location `notElem` locationsMoved meta) <$> getCanMoveLocationLeft location
+        mpos <- findLocationInCosmos location
+        for_ mpos $ \pos -> do
+          mLeftLocation <- getLocationInDirection pos GridLeft
+          canMoveLocationLeft <-
+            (&&) (location `notElem` locationsMoved meta) <$> getCanMoveLocationLeft location
 
-        pushWhen (isJust mLeftLocation || canMoveLocationLeft)
-          $ chooseOrRunOne iid
-          $ [ Label "Move to the location to your left" [Move $ move attrs iid leftLocation]
-            | leftLocation <- maybeToList mLeftLocation
-            ]
-            <> [ Label
-                "Move the placement of your location once to the left"
-                [HandleTargetChoice iid (toSource attrs) (toTarget location)]
-               | canMoveLocationLeft
-               ]
+          pushWhen (isJust mLeftLocation || canMoveLocationLeft)
+            $ chooseOrRunOne iid
+            $ [ Label "Move to the location to your left" [Move $ move attrs iid leftLocation]
+              | leftLocation <- maybeToList mLeftLocation
+              ]
+              <> [ Label
+                  "Move the placement of your location once to the left"
+                  [HandleTargetChoice iid (toSource attrs) (toTarget location)]
+                 | canMoveLocationLeft
+                 ]
 
         pure a
       HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do

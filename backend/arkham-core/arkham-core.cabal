@@ -2361,14 +2361,16 @@ library
       LambdaCase
       NoImplicitPrelude
       OverloadedLabels
+      OverloadedRecordDot
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
+      StrictData
       TypeFamilies
+      TypeFamilyDependencies
       TypeOperators
       UndecidableInstances
       ViewPatterns
-      StrictData
   build-tool-depends:
       cards-discover:cards-discover
   build-depends:
@@ -2490,14 +2492,16 @@ test-suite spec
       LambdaCase
       NoImplicitPrelude
       OverloadedLabels
+      OverloadedRecordDot
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
+      StrictData
       TypeFamilies
+      TypeFamilyDependencies
       TypeOperators
       UndecidableInstances
       ViewPatterns
-      StrictData
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-tool-depends:
       cards-discover:cards-discover

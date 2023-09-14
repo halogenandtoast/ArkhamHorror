@@ -18,17 +18,8 @@ newtype DaisyWalker = DaisyWalker InvestigatorAttrs
 
 daisyWalker :: InvestigatorCard DaisyWalker
 daisyWalker =
-  investigator
-    DaisyWalker
-    Cards.daisyWalker
-    Stats
-      { health = 5
-      , sanity = 9
-      , willpower = 3
-      , intellect = 5
-      , combat = 2
-      , agility = 2
-      }
+  investigator DaisyWalker Cards.daisyWalker
+    $ Stats {health = 5, sanity = 9, willpower = 3, intellect = 5, combat = 2, agility = 2}
 
 instance HasChaosTokenValue DaisyWalker where
   getChaosTokenValue iid ElderSign (DaisyWalker attrs) | iid == toId attrs = do
@@ -42,9 +33,8 @@ instance HasModifiersFor DaisyWalker where
 
 instance RunMessage DaisyWalker where
   runMessage msg i@(DaisyWalker attrs) = case msg of
-    PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _ | iid == toId attrs -> do
-      tomeCount <- selectCount $ assetControlledBy (toId attrs) <> withTrait Tome
-      when (tomeCount > 0) do
-        pushM $ drawCards iid (ChaosTokenEffectSource ElderSign) tomeCount
+    PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _ | attrs `is` iid -> do
+      tomeCount <- selectCount $ assetControlledBy attrs.id <> withTrait Tome
+      when (tomeCount > 0) $ pushM $ drawCards iid ElderSign tomeCount
       pure i
     _ -> DaisyWalker <$> runMessage msg attrs

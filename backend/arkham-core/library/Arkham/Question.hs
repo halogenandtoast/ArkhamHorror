@@ -115,6 +115,15 @@ data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
 targetLabel :: Targetable target => target -> [msg] -> UI msg
 targetLabel = TargetLabel . toTarget
 
+targetLabel1 :: Targetable target => target -> msg -> UI msg
+targetLabel1 t msg = targetLabel t [msg]
+
+targetLabels :: Targetable target => [target] -> (target -> [msg]) -> [UI msg]
+targetLabels = flip mapTargetLabel
+
+targetLabels1 :: Targetable target => [target] -> (target -> msg) -> [UI msg]
+targetLabels1 ts f = mapTargetLabel (pure . f) ts
+
 mapTargetLabel :: Targetable target => (target -> [msg]) -> [target] -> [UI msg]
 mapTargetLabel f = map (\c -> targetLabel c (f c))
 

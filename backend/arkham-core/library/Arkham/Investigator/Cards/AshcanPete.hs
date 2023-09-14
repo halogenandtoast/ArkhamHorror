@@ -22,50 +22,31 @@ ashcanPete =
   investigatorWith
     AshcanPete
     Cards.ashcanPete
-    Stats
-      { health = 6
-      , sanity = 5
-      , willpower = 4
-      , intellect = 2
-      , combat = 2
-      , agility = 3
-      }
+    Stats {health = 6, sanity = 5, willpower = 4, intellect = 2, combat = 2, agility = 3}
     (startsWithL .~ [Assets.duke])
 
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =
-    [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility
-          x
-          1
-          ( Self
-              <> AssetExists (AssetControlledBy You <> AssetExhausted)
-              <> Negate
-                (SelfHasModifier ControlledAssetsCannotReady)
-          )
-          (FastAbility $ HandDiscardCost 1 AnyCard)
+    [ playerLimit PerRound
+        $ withCriteria (mkAbility x 1 (FastAbility $ HandDiscardCost 1 AnyCard))
+        $ Self
+          <> AssetExists (AssetControlledBy You <> AssetExhausted)
+          <> Negate (SelfHasModifier ControlledAssetsCannotReady)
     ]
 
 instance HasChaosTokenValue AshcanPete where
-  getChaosTokenValue iid ElderSign (AshcanPete attrs)
-    | iid == toId attrs =
-        pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
+  getChaosTokenValue iid ElderSign (AshcanPete attrs) | attrs `is` iid = do
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of
-    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _drawnToken ElderSign iid | attrs `is` iid -> do
       mduke <- selectOne $ assetIs Assets.duke
-      for_ mduke $ \duke -> push $ Ready (AssetTarget duke)
+      for_ mduke $ push . ready
       pure i
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      targets <-
-        selectListMap
-          AssetTarget
-          (AssetControlledBy You <> AssetExhausted)
-      push $
-        chooseOne
-          iid
-          [TargetLabel target [Ready target] | target <- targets]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      targets <- selectList $ assetControlledBy iid <> AssetExhausted
+      push $ chooseOne iid $ targetLabels1 targets ready
       pure i
     _ -> AshcanPete <$> runMessage msg attrs

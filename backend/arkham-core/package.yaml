@@ -17,14 +17,16 @@ default-extensions:
 - LambdaCase
 - NoImplicitPrelude
 - OverloadedLabels
+- OverloadedRecordDot
 - OverloadedStrings
 - PatternSynonyms
 - RecordWildCards
+- StrictData
 - TypeFamilies
+- TypeFamilyDependencies
 - TypeOperators
 - UndecidableInstances
 - ViewPatterns
-- StrictData
 
 build-tools:
 - cards-discover

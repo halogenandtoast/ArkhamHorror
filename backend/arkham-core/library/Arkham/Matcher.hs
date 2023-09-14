@@ -68,6 +68,9 @@ assetControlledBy = AssetControlledBy . InvestigatorWithId
 assetAt :: LocationId -> AssetMatcher
 assetAt = AssetAt . LocationWithId
 
+assetAtLocationWith :: InvestigatorId -> AssetMatcher
+assetAtLocationWith = AssetAt . locationWithInvestigator
+
 -- ** Enemy Helpers **
 
 enemyIs :: HasCardCode a => a -> EnemyMatcher
@@ -75,6 +78,9 @@ enemyIs = EnemyIs . toCardCode
 
 enemyAt :: LocationId -> EnemyMatcher
 enemyAt = EnemyAt . LocationWithId
+
+enemyAtLocationWith :: InvestigatorId -> EnemyMatcher
+enemyAtLocationWith = EnemyAt . locationWithInvestigator
 
 enemyEngagedWith :: InvestigatorId -> EnemyMatcher
 enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId

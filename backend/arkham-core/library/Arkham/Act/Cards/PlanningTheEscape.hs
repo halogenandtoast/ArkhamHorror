@@ -75,10 +75,10 @@ instance RunMessage PlanningTheEscape where
             (member Monster . toTraits)
             (mapMaybe (preview _EncounterCard) enemyCards <> discardedCards)
 
-      pushAll $
-        [ ShuffleCardsIntoDeck Deck.EncounterDeck enemyCards
-        , ShuffleEncounterDiscardBackIn
-        ]
+      pushAll
+        $ [ ShuffleCardsIntoDeck Deck.EncounterDeck enemyCards
+          , ShuffleEncounterDiscardBackIn
+          ]
           <> [ DiscardUntilFirst
               lead
               (toSource attrs)
@@ -94,15 +94,12 @@ instance RunMessage PlanningTheEscape where
         investigators <- selectList (InvestigatorWithLowestSkill SkillWillpower)
         case investigators of
           [] -> error "Should have at least one investigator"
-          is ->
+          xs ->
             push
-              ( chooseOrRunOne
-                  leadInvestigatorId
-                  [ TargetLabel
-                    (InvestigatorTarget i)
-                    [InvestigatorDrewEncounterCard i card]
-                  | i <- is
-                  ]
-              )
+              $ chooseOrRunOne
+                leadInvestigatorId
+                [ targetLabel i [InvestigatorDrewEncounterCard i card]
+                | i <- xs
+                ]
       pure a
     _ -> PlanningTheEscape <$> runMessage msg attrs

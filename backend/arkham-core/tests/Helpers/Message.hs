@@ -86,3 +86,14 @@ beginActionSkillTest i a mt sType n =
 playAssetCard :: PlayerCard -> Investigator -> Message
 playAssetCard card (toId -> iid) =
   InitiatePlayCard iid (PlayerCard $ card {pcOwner = Just iid}) Nothing (defaultWindows iid) True
+
+search
+  :: (Targetable target, Sourceable source)
+  => Investigator
+  -> source
+  -> target
+  -> [(Zone, ZoneReturnStrategy)]
+  -> CardMatcher
+  -> FoundCardsStrategy
+  -> Message
+search iid (toSource -> source) (toTarget -> target) = Search iid source target

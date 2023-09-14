@@ -144,8 +144,9 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId eid ->
-        f . g $
-          EnemyAttrs
+        f
+          . g
+          $ EnemyAttrs
             { enemyId = eid
             , enemyCardId = cardId
             , enemyCardCode = toCardCode cardDef
@@ -224,6 +225,7 @@ instance Sourceable EnemyAttrs where
   toSource = EnemySource . toId
   isSource EnemyAttrs {enemyId} (EnemySource eid) = enemyId == eid
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
+  isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
 data Enemy = forall a. IsEnemy a => Enemy a

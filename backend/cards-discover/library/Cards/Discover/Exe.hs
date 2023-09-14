@@ -38,7 +38,7 @@ newtype Render' a = Render {unRender :: State (DList String) a}
 
 type Render = Render' ()
 
-instance (a ~ ()) => IsString (Render' a) where
+instance a ~ () => IsString (Render' a) where
   fromString str = Render (modify (\s -> s <> pure str))
 
 indent :: Int -> Render -> Render
@@ -68,10 +68,7 @@ getFilesRecursive baseDir = sort <$> go []
  where
   go :: FilePath -> IO [FilePath]
   go dir = do
-    c <-
-      map (dir </>) . filter (`notElem` [".", ".."])
-        <$> getDirectoryContents
-          (baseDir </> dir)
+    c <- map (dir </>) <$> listDirectory (baseDir </> dir)
     dirs <- filterM (doesDirectoryExist . (baseDir </>)) c >>= traverse go
     files <- filterM (doesFileExist . (baseDir </>)) c
     pure (files ++ concat dirs)
@@ -138,5 +135,5 @@ isValidModuleChar c = isAlphaNum c || c == '_' || c == '\''
 casify :: String -> String
 casify str = intercalate "_" $ groupBy (\a b -> isUpper a && isLower b) str
 
-stripSuffix :: (Eq a) => [a] -> [a] -> Maybe [a]
+stripSuffix :: Eq a => [a] -> [a] -> Maybe [a]
 stripSuffix suffix str = reverse <$> stripPrefix (reverse suffix) (reverse str)

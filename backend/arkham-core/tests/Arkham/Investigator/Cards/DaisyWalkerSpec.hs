@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 spec :: Spec
@@ -20,24 +19,24 @@ spec = describe "Daisy Walker" $ do
     it "provides an extra Tome action" $ gameTestWith Investigators.daisyWalker $ \daisyWalker -> do
       pushAndRun BeginRound
       pushAndRun $ LoseActions (toId daisyWalker) (TestSource mempty) 3
-      assert $
-        getCanAffordCost
+      assert
+        $ getCanAffordCost
           (toId daisyWalker)
           (toAbilitySource (TestSource $ singleton Tome) 1)
           Nothing
-          [Window Timing.When $ DuringTurn $ toId daisyWalker]
+          [duringTurn $ toId daisyWalker]
           (ActionCost 1)
 
     it "is lost after other additional actions" $ gameTestWith Investigators.daisyWalker $ \daisyWalker -> do
       pushAndRun BeginRound
       pushAndRun $ LoseActions (toId daisyWalker) (TestSource mempty) 4
-      assert $
-        not
+      assert
+        $ not
           <$> getCanAffordCost
             (toId daisyWalker)
             (toAbilitySource (TestSource $ singleton Tome) 1)
             Nothing
-            [Window Timing.When $ DuringTurn $ toId daisyWalker]
+            [duringTurn $ toId daisyWalker]
             (ActionCost 1)
 
     it "is in the choices for additional actions to lose" $ gameTestWith Investigators.daisyWalker $ \daisyWalker -> do
@@ -47,20 +46,20 @@ spec = describe "Daisy Walker" $ do
       chooseOptionMatching "lose tome action" \case
         Label _ [LoseAdditionalAction _ _ (TraitRestrictedAdditionalAction Tome AbilitiesOnly)] -> True
         _ -> False
-      assert $
-        not
+      assert
+        $ not
           <$> getCanAffordCost
             (toId daisyWalker)
             (toAbilitySource (TestSource $ singleton Tome) 1)
             Nothing
-            [Window Timing.When $ DuringTurn $ toId daisyWalker]
+            [duringTurn $ toId daisyWalker]
             (ActionCost 1)
-      assert $
-        getCanAffordCost
+      assert
+        $ getCanAffordCost
           (toId daisyWalker)
           (toAbilitySource (TestSource mempty) 2)
           (Just Action.Explore)
-          [Window Timing.When $ DuringTurn $ toId daisyWalker]
+          [duringTurn $ toId daisyWalker]
           (ActionCost 1)
 
   context "elder sign" $ do

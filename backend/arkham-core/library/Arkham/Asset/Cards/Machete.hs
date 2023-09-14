@@ -21,7 +21,7 @@ machete = asset Machete Cards.machete
 instance HasModifiersFor Machete where
   getModifiersFor (InvestigatorTarget iid) (Machete attrs) = do
     mods <- runMaybeT $ do
-      (isSource attrs -> True) <- MaybeT getSkillTestSource
+      (isAbilitySource attrs 1 -> True) <- MaybeT getSkillTestSource
       EnemyTarget eid <- MaybeT getSkillTestTarget
       engagedEnemies <- lift $ selectList $ enemyEngagedWith iid
       guard $ engagedEnemies == [eid]

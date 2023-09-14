@@ -265,8 +265,9 @@ assetWith f cardDef g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (aid, mOwner) ->
-        f . g $
-          AssetAttrs
+        f
+          . g
+          $ AssetAttrs
             { assetId = aid
             , assetCardId = cardId
             , assetCardCode = toCardCode cardDef
@@ -311,6 +312,7 @@ instance Targetable AssetAttrs where
 instance Sourceable AssetAttrs where
   toSource = AssetSource . toId
   isSource AssetAttrs {assetId} (AssetSource aid) = assetId == aid
+  isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool

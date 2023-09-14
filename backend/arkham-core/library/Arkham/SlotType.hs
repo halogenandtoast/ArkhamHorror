@@ -13,7 +13,7 @@ data SlotType
   | AccessorySlot
   | ArcaneSlot
   | TarotSlot
-  deriving stock (Show, Ord, Eq)
+  deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''SlotType)
 

@@ -58,7 +58,7 @@ data Target
   | CampaignTarget
   | AbilityTarget InvestigatorId Ability
   | BothTarget Target Target
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 class Targetable a where
   toTarget :: a -> Target

@@ -18,7 +18,7 @@ import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Query
-import Data.Typeable
+import Data.Data
 
 data FieldCost where
   FieldCost
@@ -43,6 +43,11 @@ data FieldCost where
     -> FieldCost
 
 deriving stock instance Show FieldCost
+
+instance Data FieldCost where
+  gunfold _ _ _ = error "gunfold(FieldCost)"
+  toConstr _ = error "toConstr(FieldCost)"
+  dataTypeOf _ = error "dataTypeOf(FieldCost)"
 
 instance Eq FieldCost where
   FieldCost (m1 :: m1) (f1 :: f1) == FieldCost (m2 :: m2) (f2 :: f2) = case eqT @m1 @m2 of

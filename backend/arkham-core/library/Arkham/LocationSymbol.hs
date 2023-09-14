@@ -22,6 +22,6 @@ data LocationSymbol
   | Droplet
   | Trefoil
   | NoSymbol
-  deriving stock (Show, Ord, Eq)
+  deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''LocationSymbol)

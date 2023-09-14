@@ -10,14 +10,14 @@ import Arkham.Trait
 import Data.Aeson.TH
 
 data ActionRestriction = AbilitiesOnly | NoRestriction
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data AdditionalAction
   = TraitRestrictedAdditionalAction Trait ActionRestriction
   | ActionRestrictedAdditionalAction Action
   | EffectAction Text EffectId
   | AnyAdditionalAction
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 additionalActionLabel :: AdditionalAction -> Text
 additionalActionLabel = \case

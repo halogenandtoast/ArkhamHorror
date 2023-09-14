@@ -13,7 +13,7 @@ data Phase
   | UpkeepPhase
   | ResolutionPhase
   | CampaignPhase
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 data MythosPhaseStep
   = MythosPhaseBeginsStep
@@ -21,7 +21,7 @@ data MythosPhaseStep
   | CheckDoomThresholdStep
   | EachInvestigatorDrawsEncounterCardStep
   | MythosPhaseEndsStep
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''Phase)
 $(deriveJSON defaultOptions ''MythosPhaseStep)

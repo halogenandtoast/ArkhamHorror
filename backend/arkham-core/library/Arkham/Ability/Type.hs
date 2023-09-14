@@ -42,6 +42,6 @@ data AbilityType
   | Haunted
   | Cosmos
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
-  deriving stock (Show, Ord, Eq)
+  deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''AbilityType)

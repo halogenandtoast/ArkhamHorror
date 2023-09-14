@@ -17,12 +17,12 @@ data UseType
   | Resource
   | Key
   | Lock
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''UseType)
 
 data Uses n = NoUses | Uses UseType n | UsesWithLimit UseType n n
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 use :: Uses Int -> Uses Int
 use = useN 1

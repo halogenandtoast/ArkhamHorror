@@ -15,7 +15,7 @@ data Name = Name
   { nameTitle :: Text
   , nameSubtitle :: Maybe Text
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 class Named a where
   toName :: a -> Name
@@ -65,7 +65,7 @@ data Labeled a = Labeled
   { getLabel :: Name
   , unLabel :: a
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance ToJSON a => ToJSON (Labeled a) where
   toJSON l = object ["getLabel" .= getLabel l, "unLabel" .= unLabel l]

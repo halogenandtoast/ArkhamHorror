@@ -27,9 +27,24 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
-import Data.Typeable
+import Data.Data
 
 data Asset = forall a. IsAsset a => Asset a
+
+instance Data Asset where
+  gunfold _ _ _ = error "gunfold(Asset)"
+  toConstr _ = error "toConstr(Asset)"
+  dataTypeOf _ = error "dataTypeOf(Asset)"
+
+instance Data (SomeField Asset) where
+  gunfold _ _ _ = error "gunfold(Asset)"
+  toConstr _ = error "toConstr(Asset)"
+  dataTypeOf _ = error "dataTypeOf(Asset)"
+
+instance Typeable a => Data (Field Asset a) where
+  gunfold _ _ _ = error "gunfold(Asset)"
+  toConstr _ = error "toConstr(Asset)"
+  dataTypeOf _ = error "dataTypeOf(Asset)"
 
 instance AsId Asset where
   type IdOf Asset = AssetId

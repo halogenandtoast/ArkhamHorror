@@ -6,6 +6,7 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 newtype ActStep = ActStep {unActStep :: Int}
+  deriving stock (Data)
   deriving newtype (Eq)
 
 actStep :: ActSequence -> ActStep
@@ -15,10 +16,10 @@ actSide :: ActSequence -> ActSide
 actSide (Sequence _ side) = side
 
 data ActSide = A | B | C | D | E | F
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 data ActSequence = Sequence Int ActSide
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''ActSide)
 $(deriveJSON defaultOptions ''ActSequence)

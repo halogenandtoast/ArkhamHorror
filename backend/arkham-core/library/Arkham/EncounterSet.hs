@@ -111,6 +111,6 @@ data EncounterSet
   | CurseOfTheRougarou
   | CarnevaleOfHorrors
   | Test
-  deriving stock (Show, Eq, Ord, Bounded, Enum)
+  deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 
 $(deriveJSON defaultOptions ''EncounterSet)

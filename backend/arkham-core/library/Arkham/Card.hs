@@ -161,7 +161,7 @@ data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
   | VengeanceCard Card
-  deriving stock (Show, Ord)
+  deriving stock (Show, Ord, Data)
 
 instance Eq Card where
   a == b = toCardId a == toCardId b

@@ -19,6 +19,6 @@ data CommitRestriction
   | CommittableTreachery
   | OnlyCardCommittedToTest
   | MustBeCommittedToYourTest
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''CommitRestriction)

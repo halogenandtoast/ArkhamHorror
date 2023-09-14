@@ -89,7 +89,7 @@ data Payment
   | ReturnToHandPayment Card
   | NoPayment
   | SupplyPayment Supply
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data Cost
   = ActionCost Int
@@ -141,7 +141,7 @@ data Cost
   | SealChaosTokenCost ChaosToken -- internal to track sealed token
   | SupplyCost LocationMatcher Supply
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
 assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
@@ -150,7 +150,7 @@ exhaust :: Targetable a => a -> Cost
 exhaust = ExhaustCost . toTarget
 
 data DynamicUseCostValue = DrawnCardsValue
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 displayCostType :: Cost -> Text
 displayCostType = \case
@@ -291,7 +291,7 @@ data CostZone
   = FromHandOf InvestigatorMatcher
   | FromPlayAreaOf InvestigatorMatcher
   | CostZones [CostZone]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup CostZone where
   CostZones xs <> CostZones ys = CostZones (xs <> ys)

@@ -7,7 +7,7 @@ data ArkhamKey
   | CultistKey
   | TabletKey
   | ElderThingKey
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 keyName :: ArkhamKey -> Text

@@ -59,10 +59,10 @@ data ScenarioLogKey
   | -- | The Depths of Yoth
     CollectedAStrangeLiquid
   | MeddledWithThePast (Labeled InvestigatorId)
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey = CurrentDepth | PlaceholderCountKey
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where
   format = \case

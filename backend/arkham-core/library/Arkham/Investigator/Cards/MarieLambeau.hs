@@ -15,47 +15,32 @@ import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Token
 
 newtype MarieLambeau = MarieLambeau InvestigatorAttrs
-  deriving anyclass (IsInvestigator)
+  deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 marieLambeau :: InvestigatorCard MarieLambeau
 marieLambeau =
-  investigator
-    MarieLambeau
-    Cards.marieLambeau
-    Stats
-      { health = 6
-      , sanity = 8
-      , willpower = 4
-      , intellect = 4
-      , combat = 1
-      , agility = 3
-      }
-
-instance HasAbilities MarieLambeau where
-  getAbilities (MarieLambeau _) = []
+  investigator MarieLambeau Cards.marieLambeau
+    $ Stats {health = 6, sanity = 8, willpower = 4, intellect = 4, combat = 1, agility = 3}
 
 -- TODO: Allow for playing of Spell Cards
 instance HasModifiersFor MarieLambeau where
   getModifiersFor target (MarieLambeau a) | isTarget a target = do
     hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId a)
-    pure $
-      toModifiers a [GiveAdditionalAction (TraitRestrictedAdditionalAction Spell NoRestriction) | hasDoom]
+    pure
+      $ toModifiers a [GiveAdditionalAction (TraitRestrictedAdditionalAction Spell NoRestriction) | hasDoom]
   getModifiersFor _ _ = pure []
 
 getDoomAmongstControlledCards :: HasGame m => InvestigatorId -> m Int
 getDoomAmongstControlledCards iid =
-  getSum
-    . fold
-    <$> sequence
-      [ selectAgg Sum AssetDoom (assetControlledBy iid)
-      , selectAgg Sum EventDoom (eventControlledBy iid)
-      , selectAgg Sum InvestigatorDoom (InvestigatorWithId iid)
-      ]
+  sumAllM
+    [ selectAgg Sum AssetDoom (assetControlledBy iid)
+    , selectAgg Sum EventDoom (eventControlledBy iid)
+    , selectAgg Sum InvestigatorDoom (InvestigatorWithId iid)
+    ]
 
 instance HasChaosTokenValue MarieLambeau where
   getChaosTokenValue iid ElderSign (MarieLambeau attrs) | iid == toId attrs = do
@@ -67,36 +52,19 @@ instance RunMessage MarieLambeau where
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       controlledAssets <- selectList (assetControlledBy iid)
       controlledEvents <- selectList (eventControlledBy iid)
-      assetsWithDoom <- filterM (<=~> AssetWithAnyDoom) controlledAssets
-      eventsWithDoom <- filterM (<=~> EventWithAnyDoom) controlledEvents
+      assetsWithDoom <- map toTarget <$> filterM (<=~> AssetWithAnyDoom) controlledAssets
+      eventsWithDoom <- map toTarget <$> filterM (<=~> EventWithAnyDoom) controlledEvents
 
-      let
-        removeDoomTargets =
-          map AssetTarget assetsWithDoom
-            <> map EventTarget eventsWithDoom
-            <> [InvestigatorTarget iid | investigatorDoom attrs > 0]
+      let removes = assetsWithDoom <> eventsWithDoom <> [toTarget iid | investigatorDoom attrs > 0]
+      let adds = map toTarget controlledAssets <> map toTarget controlledEvents <> [toTarget iid]
+      let place target = PlaceTokens (toSource attrs) target Doom 1
+      let remove target = RemoveTokens (toSource attrs) target Doom 1
 
-        addDoomTargets =
-          map AssetTarget controlledAssets
-            <> map EventTarget controlledEvents
-            <> [InvestigatorTarget iid]
-
-      push $
-        chooseOne iid $
-          Label
-            "Add 1 doom"
-            [ chooseOrRunOne
-                iid
-                [TargetLabel target [PlaceTokens (toSource attrs) target Doom 1] | target <- addDoomTargets]
-            ]
-            : [ Label
-                "Remove 1 doom"
-                [ chooseOrRunOne
-                    iid
-                    [TargetLabel target [RemoveTokens (toSource attrs) target Doom 1] | target <- removeDoomTargets]
-                ]
-              | notNull removeDoomTargets
-              ]
-              <> [Label "Do Nothing" []]
+      push
+        $ chooseOne iid
+        $ Label "Add 1 doom" [chooseOrRunOne iid $ targetLabels1 adds place]
+          : ( mwhen (notNull removes) [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels1 removes remove]]
+            )
+            <> [Label "Do Nothing" []]
       pure i
     _ -> MarieLambeau <$> runMessage msg attrs

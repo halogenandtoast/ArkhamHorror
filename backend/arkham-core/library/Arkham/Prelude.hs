@@ -293,3 +293,13 @@ ala _ hof = coerce . hof coerce
 
 filterBy :: [a -> Bool] -> [a] -> [a]
 filterBy fs = filter (and . sequence fs)
+
+foldAllM
+  :: (Monoid a, Applicative m, Traversable t, a ~ Element (t a), MonoFoldable (t a)) => t (m a) -> m a
+foldAllM xs = fmap fold $ sequenceA xs
+
+sumAllM
+  :: (Element (t (Sum b)) ~ Sum b, Num b, Applicative f, Traversable t, MonoFoldable (t (Sum b)))
+  => t (f (Sum b))
+  -> f b
+sumAllM xs = getSum <$> foldAllM xs

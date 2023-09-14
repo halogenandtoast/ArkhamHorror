@@ -12,7 +12,6 @@ import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
@@ -23,14 +22,12 @@ newtype JacquelineFine = JacquelineFine InvestigatorAttrs
 
 jacquelineFine :: InvestigatorCard JacquelineFine
 jacquelineFine =
-  investigator
-    JacquelineFine
-    Cards.jacquelineFine
-    Stats {health = 6, sanity = 9, willpower = 5, intellect = 3, combat = 2, agility = 2}
+  investigator JacquelineFine Cards.jacquelineFine
+    $ Stats {health = 6, sanity = 9, willpower = 5, intellect = 3, combat = 2, agility = 2}
 
 instance HasAbilities JacquelineFine where
   getAbilities (JacquelineFine a) =
-    [ limitedAbility (PlayerLimit PerRound 1)
+    [ playerLimit PerRound
         $ restrictedAbility a 1 Self
         $ ReactionAbility (WouldRevealChaosToken Timing.When $ InvestigatorAt YourLocation)
         $ Free

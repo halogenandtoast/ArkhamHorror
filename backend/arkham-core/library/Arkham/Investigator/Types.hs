@@ -233,6 +233,9 @@ instance HasField "id" InvestigatorAttrs InvestigatorId where
 instance HasField "assets" InvestigatorAttrs (Set AssetId) where
   getField = investigatorAssets
 
+instance HasField "resources" InvestigatorAttrs Int where
+  getField = investigatorResources
+
 instance HasField "sanityDamage" InvestigatorAttrs Int where
   getField = investigatorSanityDamage
 
@@ -241,6 +244,9 @@ instance HasField "healthDamage" InvestigatorAttrs Int where
 
 instance HasField "location" InvestigatorAttrs LocationId where
   getField = investigatorLocation
+
+instance HasField "cardsUnderneath" InvestigatorAttrs [Card] where
+  getField = investigatorCardsUnderneath
 
 data Investigator = forall a. IsInvestigator a => Investigator a
 

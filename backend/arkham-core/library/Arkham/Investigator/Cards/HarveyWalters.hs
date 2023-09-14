@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -20,29 +19,15 @@ newtype HarveyWalters = HarveyWalters InvestigatorAttrs
 
 harveyWalters :: InvestigatorCard HarveyWalters
 harveyWalters =
-  investigator
-    HarveyWalters
-    Cards.harveyWalters
-    Stats
-      { health = 7
-      , sanity = 8
-      , willpower = 4
-      , intellect = 5
-      , combat = 1
-      , agility = 2
-      }
+  investigator HarveyWalters Cards.harveyWalters
+    $ Stats {health = 7, sanity = 8, willpower = 4, intellect = 5, combat = 1, agility = 2}
 
 instance HasAbilities HarveyWalters where
   getAbilities (HarveyWalters a) =
-    [ limitedAbility (PlayerLimit PerRound 1)
+    [ playerLimit PerRound
         $ restrictedAbility a 1 Self
         $ ReactionAbility
-          ( DrawCard
-              Timing.After
-              (InvestigatorAt YourLocation)
-              (BasicCardMatch AnyCard)
-              AnyDeck
-          )
+          (DrawCard Timing.After (InvestigatorAt YourLocation) (BasicCardMatch AnyCard) AnyDeck)
           Free
     ]
 
@@ -57,6 +42,6 @@ instance RunMessage HarveyWalters where
       pushM $ drawCards iid' (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      pushM $ drawCards iid (ChaosTokenEffectSource ElderSign) 1
+      pushM $ drawCards iid ElderSign 1
       pure i
     _ -> HarveyWalters <$> runMessage msg attrs

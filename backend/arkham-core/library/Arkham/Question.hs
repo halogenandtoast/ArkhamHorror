@@ -37,6 +37,11 @@ pattern HorrorLabel iid msgs <- ComponentLabel (InvestigatorComponent iid Horror
   where
     HorrorLabel iid msgs = ComponentLabel (InvestigatorComponent iid HorrorToken) msgs
 
+pattern ResourceLabel :: InvestigatorId -> [msg] -> UI msg
+pattern ResourceLabel iid msgs <- ComponentLabel (InvestigatorComponent iid ResourceToken) msgs
+  where
+    ResourceLabel iid msgs = ComponentLabel (InvestigatorComponent iid ResourceToken) msgs
+
 data UI msg
   = Label {label :: Text, messages :: [msg]}
   | TooltipLabel {label :: Text, tooltip :: Tooltip, messages :: [msg]}

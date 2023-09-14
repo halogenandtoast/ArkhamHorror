@@ -14,7 +14,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (AssetCard, EventCard, PlaceUnderneath, SkillCard)
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillType
@@ -30,14 +29,7 @@ dianaStanley =
   investigatorWith
     DianaStanley
     Cards.dianaStanley
-    Stats
-      { health = 7
-      , sanity = 7
-      , willpower = 1
-      , intellect = 3
-      , combat = 3
-      , agility = 3
-      }
+    (Stats {health = 7, sanity = 7, willpower = 1, intellect = 3, combat = 3, agility = 3})
     (startsWithInHandL .~ [Events.darkInsight])
 
 instance HasModifiersFor DianaStanley where
@@ -48,13 +40,10 @@ instance HasModifiersFor DianaStanley where
 
 instance HasAbilities DianaStanley where
   getAbilities (DianaStanley a) =
-    [ limitedAbility (PlayerLimit PerPhase 1)
+    [ playerLimit PerPhase
         $ restrictedAbility a 1 (Self <> fewerThan5CardBeneath)
         $ ReactionAbility
-          ( CancelledOrIgnoredCardOrGameEffect
-              $ SourceOwnedBy You
-                <> NotSource
-                  (SourceIsType InvestigatorType)
+          ( CancelledOrIgnoredCardOrGameEffect $ SourceOwnedBy You <> NotSource (SourceIsType InvestigatorType)
           )
           Free
     ]

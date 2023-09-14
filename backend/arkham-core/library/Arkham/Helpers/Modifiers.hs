@@ -6,6 +6,7 @@ module Arkham.Helpers.Modifiers (
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
@@ -117,3 +118,7 @@ gameModifier (toSource -> source) (toTarget -> target) modifier = createWindowMo
 phaseModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 phaseModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectPhaseWindow source target [modifier]
+
+chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType -> Message
+chaosTokenEffect (toSource -> source) token modifier =
+  CreateChaosTokenEffect (EffectModifiers $ toModifiers source [modifier]) source token

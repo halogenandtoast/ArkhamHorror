@@ -15,7 +15,7 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealChaosToken)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 
@@ -42,7 +42,7 @@ instance HasAbilities FatherMateo where
     [ limitedAbility (PlayerLimit PerGame 1)
         $ restrictedAbility a 1 Self
         $ ReactionAbility
-          (RevealChaosToken Timing.After Anyone $ ChaosTokenFaceIs AutoFail)
+          (Matcher.RevealChaosToken Timing.After Anyone $ ChaosTokenFaceIs AutoFail)
           Free
     ]
 
@@ -55,11 +55,7 @@ instance RunMessage FatherMateo where
   runMessage msg i@(FatherMateo attrs) = case msg of
     ResolveChaosToken _drawnToken token iid | token == ElderSign && iid == toId attrs -> do
       pushAll
-        [ CreateEffect
-            "04004"
-            Nothing
-            (toSource attrs)
-            (InvestigatorTarget iid)
+        [ CreateEffect "04004" Nothing (toSource attrs) (InvestigatorTarget iid)
         , PassSkillTest
         ]
       pure i

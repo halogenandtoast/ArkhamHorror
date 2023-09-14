@@ -11,7 +11,6 @@ import Arkham.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard, RevealChaosToken)
-import Arkham.Message
 
 newtype Metadata = Metadata {playedFromTopOfDeck :: Bool}
   deriving stock (Show, Generic, Eq)
@@ -23,43 +22,26 @@ newtype NormanWithers = NormanWithers (InvestigatorAttrs `With` Metadata)
 
 normanWithers :: InvestigatorCard NormanWithers
 normanWithers =
-  investigator
-    (NormanWithers . (`with` Metadata False))
-    Cards.normanWithers
-    Stats
-      { health = 6
-      , sanity = 8
-      , willpower = 4
-      , intellect = 5
-      , combat = 2
-      , agility = 1
-      }
+  investigator (NormanWithers . (`with` Metadata False)) Cards.normanWithers
+    $ Stats {health = 6, sanity = 8, willpower = 4, intellect = 5, combat = 2, agility = 1}
 
 instance HasModifiersFor NormanWithers where
-  getModifiersFor target (NormanWithers (a `With` metadata))
-    | isTarget a target =
-        pure
-          $ toModifiers a
-          $ TopCardOfDeckIsRevealed
-            : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+  getModifiersFor target (NormanWithers (a `With` metadata)) | isTarget a target = do
+    pure
+      $ toModifiers a
+      $ TopCardOfDeckIsRevealed : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
   getModifiersFor (CardIdTarget cid) (NormanWithers (a `With` _)) =
     case unDeck (investigatorDeck a) of
-      x : _
-        | toCardId x == cid ->
-            pure $ toModifiers a [ReduceCostOf (CardWithId cid) 1]
+      x : _ | toCardId x == cid -> do
+        pure $ toModifiers a [ReduceCostOf (CardWithId cid) 1]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities NormanWithers where
   getAbilities (NormanWithers (a `With` _)) =
-    [ restrictedAbility
-        a
-        1
-        ( Self
-            <> InvestigatorExists (TopCardOfDeckIs WeaknessCard)
-            <> CanManipulateDeck
-        )
-        $ ForcedAbility AnyWindow
+    [ (restrictedAbility a 1)
+        (Self <> InvestigatorExists (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck)
+        (ForcedAbility AnyWindow)
     ]
 
 instance HasChaosTokenValue NormanWithers where

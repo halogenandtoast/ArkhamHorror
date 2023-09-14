@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
@@ -22,19 +21,12 @@ markHarrigan =
   investigatorWith
     MarkHarrigan
     Cards.markHarrigan
-    Stats
-      { willpower = 3
-      , intellect = 2
-      , combat = 5
-      , agility = 3
-      , health = 9
-      , sanity = 5
-      }
+    (Stats {willpower = 3, intellect = 2, combat = 5, agility = 3, health = 9, sanity = 5})
     (startsWithL .~ [Assets.sophieInLovingMemory])
 
 instance HasAbilities MarkHarrigan where
   getAbilities (MarkHarrigan attrs) =
-    [ limitedAbility (PlayerLimit PerPhase 1)
+    [ playerLimit PerPhase
         $ restrictedAbility attrs 1 Self
         $ ReactionAbility
           ( OrWindowMatcher
@@ -53,7 +45,7 @@ instance HasChaosTokenValue MarkHarrigan where
 
 instance RunMessage MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure i
     _ -> MarkHarrigan <$> runMessage msg attrs

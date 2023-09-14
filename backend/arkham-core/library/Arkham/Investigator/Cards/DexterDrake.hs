@@ -17,7 +17,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (Discarded, DuringTurn)
-import Arkham.Message
 import Arkham.Window (defaultWindows)
 
 newtype DexterDrake = DexterDrake InvestigatorAttrs
@@ -26,17 +25,8 @@ newtype DexterDrake = DexterDrake InvestigatorAttrs
 
 dexterDrake :: InvestigatorCard DexterDrake
 dexterDrake =
-  investigator
-    DexterDrake
-    Cards.dexterDrake
-    Stats
-      { health = 6
-      , sanity = 8
-      , willpower = 5
-      , intellect = 2
-      , combat = 3
-      , agility = 2
-      }
+  investigator DexterDrake Cards.dexterDrake
+    $ Stats {health = 6, sanity = 8, willpower = 5, intellect = 2, combat = 3, agility = 2}
 
 instance HasAbilities DexterDrake where
   getAbilities (DexterDrake a) =
@@ -73,8 +63,8 @@ instance RunMessage DexterDrake where
   runMessage msg i@(DexterDrake attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (toCardPaid -> card) -> do
       cards <-
-        selectList $
-          ExtendedCardWithOneOf
+        selectList
+          $ ExtendedCardWithOneOf
             [ PlayableCardWithCostReduction
                 1
                 ( InHandOf (InvestigatorWithId $ toId attrs)
@@ -83,19 +73,13 @@ instance RunMessage DexterDrake where
             , InHandOf (InvestigatorWithId iid) <> BasicCardMatch (cardIs Assets.occultScraps)
             ]
       pushAll
-        [ chooseOrRunOne
-            iid
-            [ targetLabel
-              (toCardId c)
-              [ createCardEffect
-                  Cards.dexterDrake
-                  Nothing
-                  (toSource attrs)
-                  (toTarget $ toCardId c)
-              , PayCardCost iid c $ defaultWindows iid
+        [ chooseOrRunOne iid
+            $ [ targetLabel (toCardId c)
+                $ [ createCardEffect Cards.dexterDrake Nothing attrs (toCardId c)
+                  , PayCardCost iid c $ defaultWindows iid
+                  ]
+              | c <- cards
               ]
-            | c <- cards
-            ]
         ]
       pure i
     _ -> DexterDrake <$> runMessage msg attrs
@@ -108,18 +92,17 @@ dexterDrakeEffect :: EffectArgs -> DexterDrakeEffect
 dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake
 
 instance HasModifiersFor DexterDrakeEffect where
-  getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs)
-    | effectTarget attrs == target = do
-        card <- getCard cid
-        pure $
-          toModifiers attrs $
-            [ReduceCostOf (CardWithId cid) 1]
-              <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
+  getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs) | effectTarget attrs == target = do
+    card <- getCard cid
+    pure
+      $ toModifiers attrs
+      $ [ReduceCostOf (CardWithId cid) 1]
+        <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DexterDrakeEffect where
   runMessage msg e@(DexterDrakeEffect attrs) = case msg of
-    ResolvedCard _ card
-      | CardIdTarget (toCardId card) == effectTarget attrs ->
-          e <$ push (DisableEffect $ toId attrs)
+    ResolvedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs -> do
+      push $ DisableEffect (toId attrs)
+      pure e
     _ -> DexterDrakeEffect <$> runMessage msg attrs

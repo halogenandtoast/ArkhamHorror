@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.ChaosToken qualified as ChaosToken
+import Arkham.ChaosToken
 import Arkham.Token
 import Arkham.Window (defaultWindows)
 
@@ -24,19 +24,17 @@ theNecronomicon =
     . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor TheNecronomicon where
-  getModifiersFor (ChaosTokenTarget (ChaosToken.chaosTokenFace -> ChaosToken.ElderSign)) (TheNecronomicon a) = do
+  getModifiersFor (ChaosTokenTarget (chaosTokenFace -> ElderSign)) (TheNecronomicon a) = do
     mInvestigator <- getSkillTestInvestigator
-    case mInvestigator of
-      Just iid | controlledBy a iid -> do
-        pure $ toModifiers a [ForcedChaosTokenChange ChaosToken.ElderSign [ChaosToken.AutoFail]]
-      _ -> pure []
+    pure $ toModifiers a $ do
+      iid <- maybeToList mInvestigator
+      guard $ controlledBy a iid
+      pure $ ForcedChaosTokenChange ElderSign [AutoFail]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheNecronomicon where
   getAbilities (TheNecronomicon a) =
-    [ restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis)
-        $ ActionAbility Nothing (ActionCost 1)
-    ]
+    [restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis) ActionAbility_]
 
 instance RunMessage TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of

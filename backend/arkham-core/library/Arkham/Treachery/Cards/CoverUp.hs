@@ -37,7 +37,7 @@ instance HasAbilities CoverUp where
             [ GameEnds Timing.When
             , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
             ]
-        | iid <- maybeToList (treacheryOwner a)
+        | iid <- toList (treacheryOwner a)
         ]
 
 toClueCount :: [Window] -> Int
@@ -52,7 +52,7 @@ instance RunMessage CoverUp where
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 (toClueCount -> n) _ -> do
       popMessageMatching_ $ \case
-        Do (InvestigatorDiscoverClues {}) -> True
+        Do InvestigatorDiscoverClues {} -> True
         _ -> False
       pure $ CoverUp $ attrs & tokensL %~ subtractTokens Clue n
     UseThisAbility _ (isSource attrs -> True) 2 -> do

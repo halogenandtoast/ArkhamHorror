@@ -350,6 +350,9 @@ pattern PlayerTreachery <- CardWithType PlayerTreacheryType
 atLeast :: Int -> ValueMatcher
 atLeast n = AtLeast (Static n)
 
+lessThan :: Int -> ValueMatcher
+lessThan n = LessThan (Static n)
+
 pattern AtLeast :: GameValue -> ValueMatcher
 pattern AtLeast n <- GreaterThanOrEqualTo n
   where

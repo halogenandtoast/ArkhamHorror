@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.FortyFiveAutomatic (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 
@@ -20,7 +19,7 @@ fortyFiveAutomatic = asset FortyFiveAutomatic Cards.fortyFiveAutomatic
 instance HasAbilities FortyFiveAutomatic where
   getAbilities (FortyFiveAutomatic a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ FightAction
         $ ActionCost 1 <> assetUseCost a Ammo 1
     ]
 

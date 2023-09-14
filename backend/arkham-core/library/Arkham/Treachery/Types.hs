@@ -23,6 +23,7 @@ import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery.Cards
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -73,6 +74,9 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDrawnFrom :: Maybe DeckSignifier
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasField "resources" TreacheryAttrs Int where
+  getField = treacheryResources
 
 treacheryDoom :: TreacheryAttrs -> Int
 treacheryDoom = countTokens Doom . treacheryTokens

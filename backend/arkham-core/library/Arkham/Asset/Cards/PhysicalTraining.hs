@@ -33,10 +33,10 @@ instance HasAbilities PhysicalTraining where
 
 instance RunMessage PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #willpower 1)
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ skillTestModifier (toAbilitySource attrs 2) iid (SkillModifier #combat 1)
       pure a
     _ -> PhysicalTraining <$> runMessage msg attrs

@@ -53,3 +53,19 @@ fieldMapM
   -> EntityId a
   -> m b
 fieldMapM f g eid = g =<< field f eid
+
+filterByFieldM
+  :: (EntityId a ~ Element seq, IsSequence seq, HasGame m, Projection a)
+  => Field a typ
+  -> (typ -> m Bool)
+  -> seq
+  -> m seq
+filterByFieldM fld f = filterM (fieldPM fld f)
+
+filterByField
+  :: (EntityId a ~ Element seq, IsSequence seq, HasGame m, Projection a)
+  => Field a typ
+  -> (typ -> Bool)
+  -> seq
+  -> m seq
+filterByField fld f = filterByFieldM fld (pure . f)

@@ -16,3 +16,11 @@ toStartingUses (UsesWithLimit uType gameValue limitValue) = do
   limit <- getPlayerCountValue limitValue
   pure $ UsesWithLimit uType value limit
 toStartingUses NoUses = pure NoUses
+
+startingUseCountFor :: HasGame m => UseType -> Uses GameValue -> m Int
+startingUseCountFor uType uses = do
+  u' <- toStartingUses uses
+  pure $ if useType u' == Just uType then useCount u' else 0
+
+hasUsesFor :: UseType -> Uses Int -> Bool
+hasUsesFor uType uses = useType uses == Just uType && useCount uses > 0

@@ -110,6 +110,18 @@ data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
 
+class Is a b where
+  is :: a -> b -> Bool
+
+instance Sourceable a => Is a Source where
+  is = isSource
+
+instance Targetable a => Is a Target where
+  is = isTarget
+
+pattern UseThisAbility :: InvestigatorId -> Source -> Int -> Message
+pattern UseThisAbility iid source n <- UseCardAbility iid source n _ _
+
 pattern PassedThisSkillTest :: InvestigatorId -> Source -> Message
 pattern PassedThisSkillTest iid source <-
   PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _

@@ -36,6 +36,7 @@ import Arkham.Token qualified as Token
 import Arkham.Trait
 import Data.Text qualified as T
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -194,6 +195,9 @@ instance ToJSON InvestigatorAttrs where
 instance FromJSON InvestigatorAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
 
+instance Is InvestigatorAttrs InvestigatorId where
+  is = (==) . toId
+
 instance Entity InvestigatorAttrs where
   type EntityId InvestigatorAttrs = InvestigatorId
   type EntityAttrs InvestigatorAttrs = InvestigatorAttrs
@@ -222,6 +226,21 @@ instance Sourceable InvestigatorAttrs where
   isSource InvestigatorAttrs {investigatorId} (InvestigatorSource iid) =
     iid == investigatorId
   isSource _ _ = False
+
+instance HasField "id" InvestigatorAttrs InvestigatorId where
+  getField = investigatorId
+
+instance HasField "assets" InvestigatorAttrs (Set AssetId) where
+  getField = investigatorAssets
+
+instance HasField "sanityDamage" InvestigatorAttrs Int where
+  getField = investigatorSanityDamage
+
+instance HasField "healthDamage" InvestigatorAttrs Int where
+  getField = investigatorHealthDamage
+
+instance HasField "location" InvestigatorAttrs LocationId where
+  getField = investigatorLocation
 
 data Investigator = forall a. IsInvestigator a => Investigator a
 

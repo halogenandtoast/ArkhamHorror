@@ -101,6 +101,9 @@ instance Sourceable EnemyId where
 instance Sourceable EventId where
   toSource = EventSource
 
+instance Sourceable ChaosTokenFace where
+  toSource = ChaosTokenEffectSource
+
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource a n = case toSource a of
   AbilitySource b n' -> AbilitySource b n'

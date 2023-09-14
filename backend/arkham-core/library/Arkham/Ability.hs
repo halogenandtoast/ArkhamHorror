@@ -68,6 +68,9 @@ doesNotProvokeAttacksOfOpportunity =
 limitedAbility :: AbilityLimit -> Ability -> Ability
 limitedAbility l a = a & abilityLimitL .~ l
 
+playerLimit :: AbilityLimitType -> Ability -> Ability
+playerLimit lType = limitedAbility (PlayerLimit lType 1)
+
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 

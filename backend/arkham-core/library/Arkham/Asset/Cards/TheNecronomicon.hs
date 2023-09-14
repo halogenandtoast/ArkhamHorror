@@ -34,7 +34,7 @@ instance HasModifiersFor TheNecronomicon where
 
 instance HasAbilities TheNecronomicon where
   getAbilities (TheNecronomicon a) =
-    [restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis) ActionAbility_]
+    [restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis) actionAbility]
 
 instance RunMessage TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of

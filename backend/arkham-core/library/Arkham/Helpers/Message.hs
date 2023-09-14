@@ -7,6 +7,7 @@ import Arkham.Helpers.Message.Discard as X
 import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Creation
@@ -319,3 +320,6 @@ search iid (toSource -> source) (toTarget -> target) = Search iid source target
 
 takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False
+
+assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
+assignEnemyDamage = flip EnemyDamage

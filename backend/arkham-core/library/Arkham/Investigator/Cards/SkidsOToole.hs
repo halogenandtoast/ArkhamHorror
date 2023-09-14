@@ -33,10 +33,10 @@ instance HasChaosTokenValue SkidsOToole where
 
 instance RunMessage SkidsOToole where
   runMessage msg i@(SkidsOToole attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ GainActions (toId attrs) (toAbilitySource attrs 1) 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ GainActions iid (toAbilitySource attrs 1) 1
       pure i
-    PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _ | iid == toId attrs -> do
-      push $ TakeResources iid 2 (ChaosTokenEffectSource ElderSign) False
+    PassedSkillTestWithToken iid ElderSign | attrs `is` iid -> do
+      push $ takeResources iid ElderSign 2
       pure i
     _ -> SkidsOToole <$> runMessage msg attrs

@@ -25,8 +25,7 @@ instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
     [ playerLimit PerPhase
         $ restrictedAbility x 1 (Self <> enemyExists (EnemyAt YourLocation))
-        $ ReactionAbility (PlacedCounter Timing.When You AnySource HorrorCounter $ atLeast 1)
-        $ Free
+        $ FreeReactionAbility (PlacedCounter Timing.When You AnySource HorrorCounter $ atLeast 1)
     ]
 
 instance HasChaosTokenValue AgnesBaker where
@@ -41,6 +40,6 @@ instance RunMessage AgnesBaker where
         selectList $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
       push
         $ chooseOne iid
-        $ [targetLabel target [EnemyDamage target $ nonAttack attrs 1] | target <- targets]
+        $ targetLabels1 targets (assignEnemyDamage $ nonAttack attrs 1)
       pure i
     _ -> AgnesBaker <$> runMessage msg attrs

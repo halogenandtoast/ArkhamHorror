@@ -143,6 +143,9 @@ pattern FailedThisSkillTestBy :: InvestigatorId -> Source -> Int -> Message
 pattern FailedThisSkillTestBy iid source n <-
   FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
 
+pattern ElderSignEffect :: InvestigatorId -> Message
+pattern ElderSignEffect iid <- ResolveChaosToken _ ElderSign iid
+
 pattern PlaceClues :: Source -> Target -> Int -> Message
 pattern PlaceClues source target n = PlaceTokens source target Clue n
 

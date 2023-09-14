@@ -29,10 +29,8 @@ instance RunMessage Rolands38Special where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       anyClues <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
       pushAll
-        [ skillTestModifiers
-            (toAbilitySource attrs 1)
-            iid
-            [DamageDealt 1, SkillModifier #combat (if anyClues then 3 else 1)]
+        [ skillTestModifiers (toAbilitySource attrs 1) iid
+            $ [DamageDealt 1, SkillModifier #combat (if anyClues then 3 else 1)]
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a

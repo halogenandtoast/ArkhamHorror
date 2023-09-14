@@ -28,19 +28,19 @@ import Arkham.Trait
 import Data.Aeson.TH
 
 data DeckRestriction = Signature InvestigatorId
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data EventChoicesRepeatable = EventChoicesRepeatable | EventChoicesNotRepeatable
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data EventChoice = EventChooseN Int EventChoicesRepeatable
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''DeckRestriction)
 $(deriveJSON defaultOptions ''AttackOfOpportunityModifier)
@@ -56,7 +56,7 @@ toCardCodePairs c =
       (cdAlternateCardCodes c)
 
 data IsRevelation = NoRevelation | IsRevelation | CannotBeCanceledRevelation
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 isRevelation :: IsRevelation -> Bool
@@ -112,7 +112,7 @@ data CardDef = CardDef
   , cdCanReplace :: Bool
   , cdDeckRestrictions :: [DeckRestriction]
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance IsCardMatcher CardDef where
   toCardMatcher = cardIs

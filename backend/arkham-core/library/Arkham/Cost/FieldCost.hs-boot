@@ -1,10 +1,12 @@
 {-# LANGUAGE QuantifiedConstraints #-}
+
 module Arkham.Cost.FieldCost where
 
 import Arkham.Prelude
 
 data FieldCost
 
+instance Data FieldCost
 instance ToJSON FieldCost
 instance FromJSON FieldCost
 instance Show FieldCost

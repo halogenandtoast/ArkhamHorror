@@ -11,6 +11,8 @@ import Arkham.Id
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Trait (Trait)
+import Control.Lens (over, transform)
+import Data.Data.Lens (biplate)
 
 class WithTrait a where
   withTrait :: Trait -> a
@@ -39,16 +41,10 @@ investigatorAt = InvestigatorAt . LocationWithId
 
 replaceYouMatcher
   :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
-replaceYouMatcher iid You = InvestigatorWithId iid
-replaceYouMatcher iid (InvestigatorMatches matchers) =
-  InvestigatorMatches $ map (replaceYouMatcher iid) matchers
-replaceYouMatcher iid (AnyInvestigator matchers) =
-  AnyInvestigator $ map (replaceYouMatcher iid) matchers
-replaceYouMatcher iid (HealableInvestigator source damageType inner) =
-  HealableInvestigator source damageType $ replaceYouMatcher iid inner
-replaceYouMatcher iid (IncludeEliminated inner) =
-  IncludeEliminated $ replaceYouMatcher iid inner
-replaceYouMatcher _ m = m
+replaceYouMatcher iid = transform go
+ where
+  go You = InvestigatorWithId iid
+  go m = m
 
 -- ** Prey Helpers **
 
@@ -163,123 +159,20 @@ cardIs = CardWithCardCode . toCardCode
 
 resolveEventMatcher
   :: InvestigatorId -> (Maybe LocationId) -> EventMatcher -> EventMatcher
-resolveEventMatcher _ Nothing = id
-resolveEventMatcher iid (Just lid) = go
- where
-  go matcher = case matcher of
-    EventControlledBy investigatorMatcher ->
-      EventControlledBy $ replaceYouMatcher iid investigatorMatcher
-    EventAt locationMatcher ->
-      EventAt (replaceYourLocation iid (Just lid) locationMatcher)
-    EventAttachedToAsset assetMatcher ->
-      EventAttachedToAsset (resolveAssetMatcher iid (Just lid) assetMatcher)
-    EventMatches es -> EventMatches $ map go es
-    NotEvent eventMatcher -> NotEvent (go eventMatcher)
-    other -> other
+resolveEventMatcher iid mlid = over biplate (replaceYourLocation iid mlid)
 
 resolveAssetMatcher
   :: InvestigatorId -> (Maybe LocationId) -> AssetMatcher -> AssetMatcher
-resolveAssetMatcher _ Nothing = id
-resolveAssetMatcher iid (Just lid) = go
- where
-  go matcher = case matcher of
-    AssetAt locationMatcher ->
-      AssetAt (replaceYourLocation iid (Just lid) locationMatcher)
-    AssetAttachedToAsset assetMatcher -> AssetAttachedToAsset $ go assetMatcher
-    AssetControlledBy investigatorMatcher ->
-      AssetControlledBy $ replaceYouMatcher iid investigatorMatcher
-    AssetMatches as -> AssetMatches $ map go as
-    AssetOneOf as -> AssetOneOf $ map go as
-    NotAsset assetMatcher -> NotAsset (go assetMatcher)
-    AssetWithFewestClues assetMatcher -> AssetWithFewestClues (go assetMatcher)
-    ClosestAsset lid' assetMatcher -> ClosestAsset lid' (go assetMatcher)
-    AssetWithDifferentTitleFromAtLeastOneCardInHand investigatorMatcher cardMatcher assetMatcher ->
-      AssetWithDifferentTitleFromAtLeastOneCardInHand
-        (replaceYouMatcher iid investigatorMatcher)
-        cardMatcher
-        (go assetMatcher)
-    HealableAsset source damageType assetMatcher ->
-      HealableAsset source damageType (go assetMatcher)
-    other -> other
+resolveAssetMatcher iid mlid = over biplate (replaceYourLocation iid mlid)
 
 replaceYourLocation
   :: InvestigatorId -> Maybe LocationId -> LocationMatcher -> LocationMatcher
-replaceYourLocation _ Nothing = id
-replaceYourLocation iid (Just lid) = go
+replaceYourLocation iid Nothing = over biplate (replaceYouMatcher iid)
+replaceYourLocation iid (Just lid) = transform go . over biplate (replaceYouMatcher iid)
  where
-  go matcher = case matcher of
-    IncludeEmptySpace inner -> IncludeEmptySpace (go inner)
-    MostBreaches inner -> MostBreaches (go inner)
-    FewestBreaches -> matcher
-    LocationWithIncursion {} -> matcher
-    LocationWithBrazier {} -> matcher
-    LocationWithBreaches {} -> matcher
-    LocationIsInFrontOf {} -> matcher
-    HauntedLocation {} -> matcher
-    IsIchtacasDestination {} -> matcher
-    LocationWithoutClues {} -> matcher
-    LocationWithTitle {} -> matcher
-    LocationWithFullTitle {} -> matcher
-    LocationWithUnrevealedTitle {} -> matcher
-    LocationWithId {} -> matcher
-    LocationWithLabel {} -> matcher
-    LocationWithSymbol {} -> matcher
-    LocationLeavingPlay -> matcher
-    LocationWithCardId {} -> matcher
-    LocationWithDoom {} -> matcher
-    LocationWithDefeatedEnemyThisRound {} -> matcher
+  go = \case
     YourLocation -> LocationWithId lid
-    SameLocation -> LocationWithId lid
-    NotYourLocation -> NotLocation (LocationWithId lid)
-    LocationIs {} -> matcher
-    Anywhere -> matcher
-    Nowhere -> matcher
-    EmptyLocation -> matcher
-    AccessibleLocation -> AccessibleFrom (LocationWithId lid)
-    ConnectedFrom m -> ConnectedFrom (go m)
-    ConnectedTo m -> ConnectedTo (go m)
-    AccessibleFrom m -> AccessibleFrom (go m)
-    AccessibleTo m -> AccessibleTo (go m)
-    ConnectedLocation -> ConnectedFrom (LocationWithId lid)
-    LocationWithDistanceFrom int m -> LocationWithDistanceFrom int (go m)
-    LocationWithResources {} -> matcher
-    LocationWithClues {} -> matcher
-    LocationWithHorror {} -> matcher
-    LocationWithMostClues m -> LocationWithMostClues (go m)
-    LocationWithEnemy {} -> matcher
-    LocationWithAsset {} -> matcher
-    SingleSidedLocation {} -> matcher
-    LocationWithInvestigator m ->
-      LocationWithInvestigator (replaceYouMatcher iid m)
-    HighestShroud m ->
-      HighestShroud (go m)
-    RevealedLocation -> matcher
-    UnrevealedLocation -> matcher
-    InvestigatableLocation -> matcher
-    LocationNotInPlay -> matcher
-    FarthestLocationFromLocation lid' m ->
-      FarthestLocationFromLocation lid' (go m)
-    NearestLocationToLocation lid' m -> NearestLocationToLocation lid' (go m)
-    FarthestLocationFromYou m -> FarthestLocationFromLocation lid (go m)
-    FarthestLocationFromAll m -> FarthestLocationFromAll (go m)
-    NearestLocationToYou m -> NearestLocationToYou (go m) -- TODO: FIX to FromLocation
-    LocationWithLowerShroudThan m -> LocationWithLowerShroudThan (go m)
-    LocationWithTrait {} -> matcher
-    LocationWithoutTrait {} -> matcher
-    LocationInDirection dir m -> LocationInDirection dir (go m)
-    LocationWithTreachery {} -> matcher
-    LocationWithoutTreachery {} -> matcher
-    LocationWithoutModifier {} -> matcher
-    LocationWithModifier {} -> matcher
-    LocationMatchAll ms -> LocationMatchAll $ map go ms
-    LocationMatchAny ms -> LocationMatchAny $ map go ms
-    FirstLocation ms -> FirstLocation $ map go ms
-    NotLocation m -> NotLocation (go m)
-    LocationCanBeFlipped -> matcher
-    ClosestPathLocation {} -> matcher
-    BlockedLocation -> matcher
-    ThisLocation -> matcher
-    LocationWithDiscoverableCluesBy {} -> matcher
+    other -> other
 
 defaultRemoveDoomMatchers :: RemoveDoomMatchers
 defaultRemoveDoomMatchers =

@@ -1,3 +1,4 @@
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -34,7 +35,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-import Data.Typeable
+import Data.Data
 
 class
   ( Typeable a
@@ -229,6 +230,21 @@ instance Sourceable EnemyAttrs where
   isSource _ _ = False
 
 data Enemy = forall a. IsEnemy a => Enemy a
+
+instance Data Enemy where
+  gunfold _ _ _ = error "gunfold(Enemy)"
+  toConstr _ = error "toConstr(Enemy)"
+  dataTypeOf _ = error "dataTypeOf(Enemy)"
+
+instance Data (SomeField Enemy) where
+  gunfold _ _ _ = error "gunfold(Enemy)"
+  toConstr _ = error "toConstr(Enemy)"
+  dataTypeOf _ = error "dataTypeOf(Enemy)"
+
+instance Typeable a => Data (Field Enemy a) where
+  gunfold _ _ _ = error "gunfold(Enemy)"
+  toConstr _ = error "toConstr(Enemy)"
+  dataTypeOf _ = error "dataTypeOf(Enemy)"
 
 instance HasCardDef Enemy where
   toCardDef (Enemy a) = toCardDef (toAttrs a)

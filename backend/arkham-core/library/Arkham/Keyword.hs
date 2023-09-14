@@ -23,7 +23,7 @@ data Keyword
   | Permanent
   | Researched CampaignLogKey
   | Seal ChaosTokenMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where
   toKeywords :: a -> Set Keyword

@@ -4,7 +4,7 @@ module Arkham.Field where
 
 import Arkham.Prelude
 import Control.Monad.Fail (fail)
-import Data.Typeable
+import Data.Data
 
 data family Field a :: Type -> Type
 
@@ -17,8 +17,11 @@ data SomeField a where
        , FromJSON typ
        , Ord typ
        , Typeable typ
+       , Typeable a
        , Show typ
        , Eq typ
+       , Data a
+       , Data (Field a typ)
        , Show (Field a typ)
        , ToJSON (Field a typ)
        )

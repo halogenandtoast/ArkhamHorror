@@ -15,7 +15,7 @@ data GameValue
   | PerPlayer Int
   | StaticWithPerPlayer Int Int
   | ByPlayerCount Int Int Int Int
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 class IsGameValue a where
   toGameValue :: a -> GameValue

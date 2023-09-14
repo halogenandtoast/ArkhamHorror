@@ -21,7 +21,7 @@ data Supply
   | Gasoline
   | Pocketknife
   | Pickaxe
-  deriving stock (Show, Eq, Bounded, Enum, Ord)
+  deriving stock (Show, Eq, Bounded, Enum, Ord, Data)
 
 prologueSupplies :: [Supply]
 prologueSupplies =

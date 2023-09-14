@@ -49,6 +49,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
 import Data.Char qualified as C
 import Data.Coerce as X (Coercible, coerce)
+import Data.Data as X (Data)
 import Data.Kind as X (Type)
 import Data.List as X (nub, (\\))
 import Data.List qualified as L

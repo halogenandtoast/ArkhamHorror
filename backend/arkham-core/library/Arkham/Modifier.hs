@@ -244,20 +244,20 @@ data ModifierType
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | Omnipotent
   | CountAllDoomInPlay
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType
   , modifierActiveDuringSetup :: Bool
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data ActionTarget
   = FirstOneOf [Action]
   | IsAction Action
   | EnemyAction Action EnemyMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}

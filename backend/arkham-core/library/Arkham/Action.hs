@@ -30,5 +30,5 @@ data Action
   | Resource
   | Explore
   | Circle
-  deriving stock (Show, Eq, Ord, Enum, Bounded, Generic)
+  deriving stock (Show, Eq, Ord, Enum, Bounded, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)

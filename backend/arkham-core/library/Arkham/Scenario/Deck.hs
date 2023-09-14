@@ -16,7 +16,7 @@ data ScenarioDeckKey
   | ExplorationDeck -- The Untamed Wilds
   | UnknownPlacesDeck -- The Secret Name
   | CosmosDeck -- Before the Black Throne
-  deriving stock (Show, Ord, Eq)
+  deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)
 
@@ -26,7 +26,7 @@ instance FromJSONKey ScenarioDeckKey
 data ScenarioEncounterDeckKey
   = RegularEncounterDeck
   | SpectralEncounterDeck -- The Wages of Sin
-  deriving stock (Show, Ord, Eq)
+  deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''ScenarioEncounterDeckKey)
 

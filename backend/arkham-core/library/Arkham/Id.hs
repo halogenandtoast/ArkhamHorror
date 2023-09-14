@@ -5,56 +5,73 @@ import Arkham.Prelude
 import Arkham.Card.CardCode
 
 newtype ActId = ActId {unActId :: CardCode}
+  deriving stock (Data)
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
 newtype AgendaId = AgendaId {unAgendaId :: CardCode}
+  deriving stock (Data)
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
 newtype AssetId = AssetId {unAssetId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype CampaignId = CampaignId {unCampaignId :: Text}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, IsString)
 
 newtype EffectId = EffectId {unEffectId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype EnemyId = EnemyId {unEnemyId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype EventId = EventId {unEventId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype InvestigatorId = InvestigatorId {unInvestigatorId :: CardCode}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, IsString)
 
 newtype LocationId = LocationId {unLocationId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype ScenarioId = ScenarioId {unScenarioId :: CardCode}
+  deriving stock (Data)
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
 newtype SkillId = SkillId {unSkillId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype StoryId = StoryId {unStoryId :: CardCode}
+  deriving stock (Data)
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
 newtype TreacheryId = TreacheryId {unTreacheryId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 -- non entity-ids
 
 newtype ActiveCostId = ActiveCostId {unActiveCostId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype TokenId = TokenId {unTokenId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord)
 
 newtype CardDrawId = CardDrawId UUID
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 newtype BatchId = BatchId {unBatchId :: UUID}
+  deriving stock (Data)
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 class AsId a where

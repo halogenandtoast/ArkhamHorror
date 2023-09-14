@@ -5,6 +5,7 @@ import Data.Aeson.Types
 import Data.Text qualified as T
 
 newtype CardCode = CardCode {unCardCode :: Text}
+  deriving stock (Data)
   deriving newtype (Show, Ord, Hashable, IsString)
 
 instance Eq CardCode where

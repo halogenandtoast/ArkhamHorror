@@ -191,7 +191,7 @@ data Trait
   | Woods
   | Yithian
   | Yoth
-  deriving stock (Show, Eq, Generic, Ord, Enum, Bounded, Read)
+  deriving stock (Show, Eq, Generic, Ord, Enum, Bounded, Read, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 class HasTraits a where

@@ -56,7 +56,7 @@ data Source
   | ThisCard
   | CardCostSource CardId
   | BothSource Source Source
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''Source)
 

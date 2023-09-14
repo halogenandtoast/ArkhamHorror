@@ -21,7 +21,7 @@ data EncounterCard = MkEncounterCard
   , ecIsFlipped :: Maybe Bool
   , ecAddedPeril :: Bool
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance HasCardCode EncounterCard where
   toCardCode = ecCardCode

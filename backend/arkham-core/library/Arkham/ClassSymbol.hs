@@ -12,5 +12,5 @@ data ClassSymbol
   | Mystic
   | Neutral
   | Mythos
-  deriving stock (Show, Eq, Generic, Bounded, Enum, Ord)
+  deriving stock (Show, Eq, Generic, Bounded, Enum, Ord, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)

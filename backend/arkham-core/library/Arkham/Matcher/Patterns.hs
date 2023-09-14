@@ -230,6 +230,26 @@ pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0))
 
 -- ** Location Patterns **
 
+pattern SameLocation :: LocationMatcher
+pattern SameLocation <- YourLocation
+  where
+    SameLocation = YourLocation
+
+pattern NotYourLocation :: LocationMatcher
+pattern NotYourLocation <- NotLocation YourLocation
+  where
+    NotYourLocation = NotLocation YourLocation
+
+pattern AccessibleLocation :: LocationMatcher
+pattern AccessibleLocation <- AccessibleFrom YourLocation
+  where
+    AccessibleLocation = AccessibleFrom YourLocation
+
+pattern ConnectedLocation :: LocationMatcher
+pattern ConnectedLocation <- ConnectedFrom YourLocation
+  where
+    ConnectedLocation = ConnectedFrom YourLocation
+
 pattern LocationWithAnyDoom :: LocationMatcher
 pattern LocationWithAnyDoom <- LocationWithDoom (GreaterThan (Static 0))
   where

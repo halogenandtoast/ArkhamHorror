@@ -8,6 +8,6 @@ import {-# SOURCE #-} Arkham.Criteria
 import Data.Aeson.TH
 
 newtype CriteriaOverride = CriteriaOverride Criterion
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''CriteriaOverride)

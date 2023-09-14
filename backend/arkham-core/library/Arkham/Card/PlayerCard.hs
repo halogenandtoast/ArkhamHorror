@@ -23,7 +23,7 @@ data PlayerCard = MkPlayerCard
   , pcOriginalCardCode :: CardCode
   , pcCustomizations :: IntMap Int
   }
-  deriving stock (Show, Ord)
+  deriving stock (Show, Ord, Data)
 
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2

@@ -27,7 +27,7 @@ data Ability = Ability
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
   }
-  deriving stock (Show, Ord)
+  deriving stock (Show, Ord, Data)
 
 data AbilityMetadata
   = IntMetadata Int
@@ -36,7 +36,7 @@ data AbilityMetadata
   | EncounterCardMetadata EncounterCard
   | SkillChoiceMetadata SkillType
   | NoAbilityMetadata
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 instance Eq Ability where
   a == b =
@@ -59,8 +59,8 @@ abilityCriteriaL = lens abilityCriteria $ \m x -> m {abilityCriteria = x}
 
 abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
 abilityDoesNotProvokeAttacksOfOpportunityL =
-  lens abilityDoesNotProvokeAttacksOfOpportunity $
-    \m x -> m {abilityDoesNotProvokeAttacksOfOpportunity = x}
+  lens abilityDoesNotProvokeAttacksOfOpportunity
+    $ \m x -> m {abilityDoesNotProvokeAttacksOfOpportunity = x}
 
 $(deriveJSON defaultOptions ''AbilityMetadata)
 $(deriveJSON (aesonOptions $ Just "ability") ''Ability)

@@ -34,8 +34,8 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
 import Control.Lens (non, over, set)
+import Data.Data
 import Data.Text qualified as T
-import Data.Typeable
 
 class
   ( Typeable a
@@ -295,6 +295,21 @@ on iid LocationAttrs {locationInvestigators} =
   iid `member` locationInvestigators
 
 data Location = forall a. IsLocation a => Location a
+
+instance Data Location where
+  gunfold _ _ _ = error "gunfold(Location)"
+  toConstr _ = error "toConstr(Location)"
+  dataTypeOf _ = error "dataTypeOf(Location)"
+
+instance Data (SomeField Location) where
+  gunfold _ _ _ = error "gunfold(Location)"
+  toConstr _ = error "toConstr(Location)"
+  dataTypeOf _ = error "dataTypeOf(Location)"
+
+instance Typeable a => Data (Field Location a) where
+  gunfold _ _ _ = error "gunfold(Location)"
+  toConstr _ = error "toConstr(Location)"
+  dataTypeOf _ = error "dataTypeOf(Location)"
 
 instance HasCardDef Location where
   toCardDef (Location l) = toCardDef (toAttrs l)

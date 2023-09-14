@@ -123,10 +123,10 @@ data CardType
   | StoryType
   | InvestigatorType
   | ScenarioType
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 data CardSubType = Weakness | BasicWeakness
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 encounterCardTypes :: [CardType]
 encounterCardTypes =

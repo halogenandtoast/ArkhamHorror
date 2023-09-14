@@ -7,6 +7,6 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 data DamageType = HorrorType | DamageType
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''DamageType)

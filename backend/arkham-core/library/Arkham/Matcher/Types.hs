@@ -38,6 +38,7 @@ import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Trait
 import Arkham.Zone
+import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
 
 type Who = InvestigatorMatcher
@@ -108,7 +109,9 @@ data InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
   | InvestigatorWithKey ArkhamKey
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
+
+instance Plated InvestigatorMatcher
 
 instance Semigroup InvestigatorMatcher where
   InvestigatorMatches xs <> InvestigatorMatches ys =
@@ -121,7 +124,7 @@ data PreyMatcher
   = Prey InvestigatorMatcher
   | OnlyPrey InvestigatorMatcher
   | BearerOf EnemyId
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data AssetMatcher
   = AssetWithTitle Text
@@ -172,7 +175,7 @@ data AssetMatcher
   | HealableAsset Source DamageType AssetMatcher
   | AssetWithPlacement Placement
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup AssetMatcher where
   AnyAsset <> x = x
@@ -234,7 +237,7 @@ data EnemyMatcher
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
   | IncludeOmnipotent EnemyMatcher
   | EnemyWithPlacement Placement
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x
@@ -274,7 +277,7 @@ data EventMatcher
   | AnyEvent
   | NotEvent EventMatcher
   | EventWithPlacement Placement
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EventMatcher where
   EventMatches xs <> EventMatches ys = EventMatches (xs <> ys)
@@ -295,20 +298,16 @@ data LocationMatcher
   | LocationWithoutClues
   | LocationWithDoom ValueMatcher
   | YourLocation
-  | SameLocation
-  | NotYourLocation
   | LocationIs CardCode
   | LocationWithCardId CardId
   | Anywhere
   | Nowhere
   | HauntedLocation
   | EmptyLocation
-  | AccessibleLocation
   | ConnectedFrom LocationMatcher
   | ConnectedTo LocationMatcher
   | AccessibleFrom LocationMatcher
   | AccessibleTo LocationMatcher
-  | ConnectedLocation
   | LocationWithDistanceFrom Int LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
@@ -358,7 +357,9 @@ data LocationMatcher
   | FewestBreaches
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
+
+instance Plated LocationMatcher
 
 instance IsString LocationMatcher where
   fromString = LocationWithTitle . fromString
@@ -407,7 +408,7 @@ data SkillMatcher
   | SkillMatches [SkillMatcher]
   | YourSkill
   | AnySkill
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup SkillMatcher where
   AnySkill <> x = x
@@ -437,7 +438,7 @@ data TreacheryMatcher
   | TreacheryMatches [TreacheryMatcher]
   | TreacheryOneOf [TreacheryMatcher]
   | NotTreachery TreacheryMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup TreacheryMatcher where
   AnyTreachery <> x = x
@@ -471,7 +472,7 @@ data ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
   | CanCancelRevelationEffect ExtendedCardMatcher
   | CanCancelAllEffects ExtendedCardMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup ExtendedCardMatcher where
   ExtendedCardMatches xs <> ExtendedCardMatches ys =
@@ -509,7 +510,7 @@ data CardMatcher
   | DiscardableCard
   | CardOwnedBy InvestigatorId
   | CardFromEncounterSet EncounterSet
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance IsString CardMatcher where
   fromString = CardWithTitle . fromString
@@ -533,13 +534,11 @@ instance IsCardMatcher CardMatcher where
   {-# INLINE toCardMatcher #-}
 
 data DiscardedPlayerCardMatcher
-  = DiscardedCardMatcher
-      InvestigatorMatcher
-      CardMatcher
-  deriving stock (Show, Eq, Ord)
+  = DiscardedCardMatcher InvestigatorMatcher CardMatcher
+  deriving stock (Show, Eq, Ord, Data)
 
 data MovesVia = MovedViaHunter | MovedViaOther
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data WindowMatcher
@@ -661,13 +660,13 @@ data WindowMatcher
   | LostResources Timing Who SourceMatcher
   | LostActions Timing Who SourceMatcher
   | WouldTriggerChaosTokenRevealEffectOnCard Who CardMatcher [ChaosTokenFace]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data DefeatedByMatcher
   = ByHorror
@@ -677,7 +676,7 @@ data DefeatedByMatcher
   | BySource SourceMatcher
   | ByAnyOf [DefeatedByMatcher]
   | DefeatedByMatches [DefeatedByMatcher]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Monoid DefeatedByMatcher where
   mempty = ByAny
@@ -707,7 +706,7 @@ data SkillTestMatcher
   | SkillTestMatches [SkillTestMatcher]
   | NotSkillTest SkillTestMatcher
   | SkillTestFromRevelation
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data SourceMatcher
   = SourceWithTrait Trait
@@ -721,7 +720,7 @@ data SourceMatcher
   | SourceMatches [SourceMatcher]
   | NotSource SourceMatcher
   | SourceIs Source
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup SourceMatcher where
   AnySource <> x = x
@@ -739,7 +738,7 @@ data TargetMatcher
   | LocationTargetMatches LocationMatcher
   | ActTargetMatches ActMatcher
   | ScenarioCardTarget
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup TargetMatcher where
   AnyTarget <> x = x
@@ -753,7 +752,7 @@ data TargetListMatcher
   = HasTarget TargetMatcher
   | ExcludesTarget TargetMatcher
   | AnyTargetList
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup SkillTestMatcher where
   AnySkillTest <> x = x
@@ -768,7 +767,7 @@ data SkillTestResultMatcher
   | SuccessResult ValueMatcher
   | AnyResult
   | ResultOneOf [SkillTestResultMatcher]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data ValueMatcher
   = LessThan GameValue
@@ -777,13 +776,13 @@ data ValueMatcher
   | GreaterThanOrEqualTo GameValue
   | EqualTo GameValue
   | AnyValue
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data SkillTestValueMatcher
   = SkillTestGameValue ValueMatcher
   | GreaterThanBaseValue
   | AnySkillTestValue
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data ChaosTokenMatcher
   = WithNegativeModifier
@@ -794,7 +793,7 @@ data ChaosTokenMatcher
   | ChaosTokenMatches [ChaosTokenMatcher]
   | IncludeSealed ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup ChaosTokenMatcher where
   AnyChaosToken <> x = x
@@ -808,18 +807,18 @@ instance Monoid ChaosTokenMatcher where
   mempty = AnyChaosToken
 
 data PhaseMatcher = AnyPhase | PhaseIs Phase
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data WindowMythosStepMatcher
   = WhenAllDrawEncounterCard
   | AfterCheckDoomThreshold
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter | ResourceCounter
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data AbilityMatcher
   = AbilityOnLocation LocationMatcher
@@ -838,7 +837,7 @@ data AbilityMatcher
   | AbilityOnCardControlledBy InvestigatorId
   | AssetAbility AssetMatcher
   | HauntedAbility
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup AbilityMatcher where
   AnyAbility <> x = x
@@ -856,14 +855,14 @@ data CardListMatcher
   | HasCard CardMatcher
   | AnyCards
   | DifferentLengthIsAtLeast Int CardMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data DeckMatcher
   = EncounterDeck
   | DeckOf InvestigatorMatcher
   | AnyDeck
   | DeckIs DeckSignifier
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data AgendaMatcher
   = AgendaWithId AgendaId
@@ -875,7 +874,7 @@ data AgendaMatcher
   | AgendaWithDeckId Int
   | NotAgenda AgendaMatcher
   | AgendaMatches [AgendaMatcher]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup AgendaMatcher where
   AnyAgenda <> x = x
@@ -893,34 +892,34 @@ data ActMatcher
   | ActWithDeckId Int
   | NotAct ActMatcher
   | ActOneOf [ActMatcher]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data DamageEffectMatcher
   = AttackDamageEffect
   | NonAttackDamageEffect
   | AnyDamageEffect
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data EnemyAttackMatcher
   = AnyEnemyAttack
   | AttackOfOpportunityAttack
   | CancelableEnemyAttack EnemyAttackMatcher
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data ScenarioMatcher = TheScenario
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data CampaignMatcher = TheCampaign
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data EffectMatcher = AnyEffect
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data SkillTypeMatcher
   = AnySkillType
   | NotSkillType SkillType
   | IsSkillType SkillType
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data RemoveDoomMatchers = RemoveDoomMatchers
   { removeDoomLocations :: LocationMatcher
@@ -933,7 +932,7 @@ data RemoveDoomMatchers = RemoveDoomMatchers
   , removeDoomEvents :: EventMatcher
   , removeDoomSkills :: SkillMatcher
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 newtype RemainingActMatcher = RemainingActMatcher {unRemainingActMatcher :: ActMatcher}
   deriving stock (Show, Eq, Ord)
@@ -942,7 +941,7 @@ data StoryMatcher
   = StoryWithTitle Text
   | StoryWithPlacement Placement
   | StoryMatchAll [StoryMatcher]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup StoryMatcher where
   StoryMatchAll xs <> StoryMatchAll ys = StoryMatchAll (xs <> ys)

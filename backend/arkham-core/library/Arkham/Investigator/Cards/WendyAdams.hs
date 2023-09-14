@@ -38,7 +38,7 @@ instance HasAbilities WendyAdams where
     ]
 
 instance RunMessage WendyAdams where
-  runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
+  runMessage msg i@(WendyAdams attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
       cancelChaosToken token
       pushAll
@@ -50,7 +50,7 @@ instance RunMessage WendyAdams where
         , DrawAnotherChaosToken iid
         ]
       pure i
-    ResolveChaosToken _ ElderSign iid | iid == investigatorId -> do
+    ElderSignEffect (is attrs -> True) -> do
       maid <- selectOne $ assetIs Assets.wendysAmulet
       pushWhen (isJust maid) PassSkillTest
       pure i

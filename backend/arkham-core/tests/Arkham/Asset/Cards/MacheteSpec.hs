@@ -13,14 +13,15 @@ import Arkham.Projection
 
 spec :: Spec
 spec = describe "Machete" $ do
-  it "gives +1 combat and +1 damage if the attacked enemy is the only enemy engaged with you" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
+  it "gives +1 combat and +1 damage if the attacked enemy is the only enemy engaged with you"
+    $ gameTest
+    $ \investigator -> do
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.machete
       machete <- selectJust $ assetIs Assets.machete
-      enemy <- testEnemy $
-        \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
+      enemy <- testEnemy
+        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
       location <- testLocation id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
@@ -36,12 +37,12 @@ spec = describe "Machete" $ do
 
   it "does not give additional damage if the attacked enemy is not engaged with you" $ do
     gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.machete
       machete <- selectJust $ assetIs Assets.machete
-      enemy <- testEnemy $
-        \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3, enemyExhausted = True}
+      enemy <- testEnemy
+        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3, enemyExhausted = True}
       location <- testLocation id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
@@ -57,14 +58,14 @@ spec = describe "Machete" $ do
 
   it "does not give additional damage if the attacked enemy is not the only enemy engaged with you" $ do
     gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.machete
       machete <- selectJust $ assetIs Assets.machete
-      enemy1 <- testEnemy $
-        \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
-      enemy2 <- testEnemy $
-        \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
+      enemy1 <- testEnemy
+        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
+      enemy2 <- testEnemy
+        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
       location <- testLocation id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location

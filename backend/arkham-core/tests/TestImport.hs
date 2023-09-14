@@ -107,13 +107,13 @@ ref `refShouldBe` y = do
   liftIO $ result `shouldBe` y
 
 nonFast :: Window
-nonFast = Window Timing.When NonFast
+nonFast = Window Timing.When NonFast Nothing
 
 fastPlayerWindow :: Window
-fastPlayerWindow = Window Timing.When FastPlayerWindow
+fastPlayerWindow = Window Timing.When FastPlayerWindow Nothing
 
 duringTurn :: InvestigatorId -> Window
-duringTurn = Window Timing.When . DuringTurn
+duringTurn iid = Window Timing.When (DuringTurn iid) Nothing
 
 data TestApp = TestApp
   { game :: IORef Game

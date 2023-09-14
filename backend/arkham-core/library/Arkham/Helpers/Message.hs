@@ -218,9 +218,10 @@ pushAllM mmsgs = do
   pushAll $ map toMessage msgs
 
 pushM :: IsMessage msg => GameT msg -> GameT ()
-pushM mmsg = do
-  msg <- mmsg
-  push $ toMessage msg
+pushM mmsg = mmsg >>= pushMessage
+
+pushMessage :: IsMessage msg => msg -> GameT ()
+pushMessage = push . toMessage
 
 removeMessageType :: HasQueue Message m => MessageType -> m ()
 removeMessageType msgType = withQueue_ $ \queue ->
@@ -315,3 +316,6 @@ search
   -> FoundCardsStrategy
   -> Message
 search iid (toSource -> source) (toTarget -> target) = Search iid source target
+
+takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
+takeResources iid (toSource -> source) n = TakeResources iid n source False

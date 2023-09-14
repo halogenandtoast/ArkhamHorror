@@ -806,6 +806,7 @@ library
       Arkham.Difficulty
       Arkham.Direction
       Arkham.Discard
+      Arkham.Discover
       Arkham.Distance
       Arkham.Draw.Types
       Arkham.Effect

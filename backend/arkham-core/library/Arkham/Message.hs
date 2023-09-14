@@ -34,6 +34,7 @@ import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Direction
 import Arkham.Discard
+import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
@@ -122,6 +123,10 @@ instance Targetable a => Is a Target where
 pattern UseThisAbility :: InvestigatorId -> Source -> Int -> Message
 pattern UseThisAbility iid source n <- UseCardAbility iid source n _ _
 
+pattern PassedSkillTestWithToken :: InvestigatorId -> ChaosTokenFace -> Message
+pattern PassedSkillTestWithToken iid face <-
+  PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> face)) _ _
+
 pattern PassedThisSkillTest :: InvestigatorId -> Source -> Message
 pattern PassedThisSkillTest iid source <-
   PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
@@ -204,6 +209,17 @@ instance IsMessage (HandDiscard Message) where
 
 instance IsMessage (EnemyCreation Message) where
   toMessage = CreateEnemy
+  {-# INLINE toMessage #-}
+
+instance IsMessage Discover where
+  toMessage discover = case discover.location of
+    DiscoverYourLocation ->
+      InvestigatorDiscoverCluesAtTheirLocation
+        discover.investigator
+        discover.source
+        discover.count
+        discover.action
+    DiscoverAtLocation lid -> DiscoverCluesAtLocation discover.investigator lid discover.source discover.count discover.action
   {-# INLINE toMessage #-}
 
 data ReplaceStrategy = DefaultReplace | Swap

@@ -20,22 +20,21 @@ zoeySamaras =
 
 instance HasAbilities ZoeySamaras where
   getAbilities (ZoeySamaras x) =
-    [ (restrictedAbility x 1)
-        (Self <> Negate (SelfHasModifier CannotGainResources))
+    [ restrictedAbility x 1 (Self <> CanGainResources)
         $ FreeReactionAbility (EnemyEngaged Timing.After You AnyEnemy)
     ]
 
 instance HasChaosTokenValue ZoeySamaras where
-  getChaosTokenValue iid ElderSign (ZoeySamaras attrs) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (ZoeySamaras attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ TakeResources iid 1 (toAbilitySource attrs 1) False
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ takeResources iid (toAbilitySource attrs 1) 1
       pure i
-    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       push $ skillTestModifier attrs attrs (DamageDealt 1)
       pure i
     _ -> ZoeySamaras <$> runMessage msg attrs

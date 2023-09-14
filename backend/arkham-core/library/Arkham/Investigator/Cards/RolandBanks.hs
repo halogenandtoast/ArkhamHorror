@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Location.Types
@@ -27,8 +28,8 @@ rolandBanks =
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks attrs) =
     [ playerLimit PerRound
-        $ reaction attrs 1 (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation) Free
-        $ Matcher.EnemyDefeated Timing.After You ByAny AnyEnemy
+        $ restrictedAbility attrs 1 (Self <> AbleToDiscoverCluesAt YourLocation)
+        $ FreeReactionAbility (Matcher.EnemyDefeated Timing.After You ByAny AnyEnemy)
     ]
 
 instance HasChaosTokenValue RolandBanks where
@@ -40,6 +41,6 @@ instance HasChaosTokenValue RolandBanks where
 instance RunMessage RolandBanks where
   runMessage msg i@(RolandBanks attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
+      pushMessage $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
       pure i
     _ -> RolandBanks <$> runMessage msg attrs

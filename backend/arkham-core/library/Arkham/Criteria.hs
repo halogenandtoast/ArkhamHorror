@@ -47,6 +47,11 @@ pattern CanDiscoverCluesAt :: LocationMatcher -> Criterion
 pattern CanDiscoverCluesAt locationMatcher =
   InvestigatorExists (InvestigatorMatches [You, InvestigatorCanDiscoverCluesAt locationMatcher])
 
+-- TODO: This is too close in name to CanDiscoverCluesAt, need to determine if CanDiscoverCluesAt needs to exist
+pattern AbleToDiscoverCluesAt :: LocationMatcher -> Criterion
+pattern AbleToDiscoverCluesAt locationMatcher =
+  Criteria [OnLocation LocationWithAnyClues, CanDiscoverCluesAt locationMatcher]
+
 pattern CanTakeControlOfClues :: Criterion
 pattern CanTakeControlOfClues <-
   Negate (SelfHasModifier CannotTakeControlOfClues)

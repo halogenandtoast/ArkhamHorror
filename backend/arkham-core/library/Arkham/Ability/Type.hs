@@ -16,6 +16,9 @@ import Data.Aeson.TH
 pattern FightAction :: Cost -> AbilityType
 pattern FightAction cost = ActionAbility (Just Fight) cost
 
+pattern FreeReactionAbility :: WindowMatcher -> AbilityType
+pattern FreeReactionAbility window = ReactionAbility window Free
+
 data AbilityType
   = FastAbility {cost :: Cost}
   | ReactionAbility {window :: WindowMatcher, cost :: Cost}

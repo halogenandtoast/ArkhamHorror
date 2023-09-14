@@ -12,8 +12,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
-import Arkham.Investigator.Runner qualified as Attrs
-import Arkham.Message
+import Arkham.Investigator.Types qualified as Attrs
 import Data.Aeson (Result (..))
 import Data.Typeable
 
@@ -48,8 +47,8 @@ lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 instance FromJSON Investigator where
   parseJSON = withObject "Investigator" $ \o -> do
     cCode <- o .: "cardCode"
-    withInvestigatorCardCode cCode $
-      \(SomeInvestigator (_ :: Proxy a)) -> Investigator <$> parseJSON @a (Object o)
+    withInvestigatorCardCode cCode
+      $ \(SomeInvestigator (_ :: Proxy a)) -> Investigator <$> parseJSON @a (Object o)
 
 withInvestigatorCardCode
   :: CardCode -> (SomeInvestigator -> r) -> r
@@ -67,8 +66,8 @@ data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator (Proxy a)
 
 allInvestigators :: Map CardCode SomeInvestigatorCard
 allInvestigators =
-  mapFromList $
-    map
+  mapFromList
+    $ map
       (toFst someInvestigatorCardCode)
       [ SomeInvestigatorCard rolandBanks
       , SomeInvestigatorCard daisyWalker
@@ -109,21 +108,22 @@ allInvestigators =
 
 becomeYithian :: Investigator -> Investigator
 becomeYithian (Investigator a) =
-  Investigator $
-    BodyOfAYithian . (`with` YithianMetadata (toJSON a)) $
-      (toAttrs a)
-        { investigatorHealth = 7
-        , investigatorSanity = 7
-        , investigatorWillpower = 2
-        , investigatorIntellect = 2
-        , investigatorCombat = 2
-        , investigatorAgility = 2
-        , investigatorCardCode = "04244"
-        , investigatorClass = Neutral
-        , investigatorTraits = setFromList [Monster, Yithian]
-        , investigatorIsYithian = True
-        , investigatorDiscarding = Nothing
-        }
+  Investigator
+    $ BodyOfAYithian
+    . (`with` YithianMetadata (toJSON a))
+    $ (toAttrs a)
+      { investigatorHealth = 7
+      , investigatorSanity = 7
+      , investigatorWillpower = 2
+      , investigatorIntellect = 2
+      , investigatorCombat = 2
+      , investigatorAgility = 2
+      , investigatorCardCode = "04244"
+      , investigatorClass = Neutral
+      , investigatorTraits = setFromList [Monster, Yithian]
+      , investigatorIsYithian = True
+      , investigatorDiscarding = Nothing
+      }
 
 handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) -> Investigator
 handleInvestigator o@(Investigator a) f = case cast a of

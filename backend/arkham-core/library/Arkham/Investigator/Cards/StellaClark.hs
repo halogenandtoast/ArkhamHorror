@@ -7,7 +7,6 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (RevealChaosToken)
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype StellaClark = StellaClark InvestigatorAttrs
@@ -16,23 +15,14 @@ newtype StellaClark = StellaClark InvestigatorAttrs
 
 stellaClark :: InvestigatorCard StellaClark
 stellaClark =
-  investigator
-    StellaClark
-    Cards.stellaClark
-    Stats
-      { health = 8
-      , sanity = 8
-      , willpower = 3
-      , intellect = 2
-      , combat = 3
-      , agility = 4
-      }
+  investigator StellaClark Cards.stellaClark
+    $ Stats {health = 8, sanity = 8, willpower = 3, intellect = 2, combat = 3, agility = 4}
 
 instance HasAbilities StellaClark where
   getAbilities (StellaClark a) =
-    [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility a 1 Self $
-          ReactionAbility (SkillTestResult Timing.After You SkillTestWasFailed AnyResult) Free
+    [ playerLimit PerRound
+        $ restrictedAbility a 1 Self
+        $ FreeReactionAbility (SkillTestResult Timing.After You SkillTestWasFailed AnyResult)
     ]
 
 instance HasChaosTokenValue StellaClark where
@@ -50,10 +40,9 @@ instance RunMessage StellaClark where
       when (ElderSign `elem` faces) $ do
         healDamage <- canHaveDamageHealed attrs iid
         mHealHorror <- getHealHorrorMessage attrs 1 iid
-        push $
-          chooseOne
-            iid
-            [ Label "Resolve as Elder Sign" []
+        push
+          $ chooseOne iid
+          $ [ Label "Resolve as Elder Sign" []
             , Label
                 "Automatically fail this skill test to heal 1 damage and 1 horror"
                 $ FailSkillTest

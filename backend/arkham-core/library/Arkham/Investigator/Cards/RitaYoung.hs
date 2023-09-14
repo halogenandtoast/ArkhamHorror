@@ -15,7 +15,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyEvaded)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
@@ -27,36 +27,20 @@ newtype RitaYoung = RitaYoung InvestigatorAttrs
 
 ritaYoung :: InvestigatorCard RitaYoung
 ritaYoung =
-  investigator
-    RitaYoung
-    Cards.ritaYoung
-    Stats
-      { health = 9
-      , sanity = 5
-      , willpower = 3
-      , intellect = 2
-      , combat = 3
-      , agility = 5
-      }
+  investigator RitaYoung Cards.ritaYoung
+    $ Stats {health = 9, sanity = 5, willpower = 3, intellect = 2, combat = 3, agility = 5}
 
 instance HasAbilities RitaYoung where
   getAbilities (RitaYoung a) =
-    [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility
-          a
-          1
+    [ playerLimit PerRound
+        $ (restrictedAbility a 1)
           ( Self
               <> AnyCriterion
                 [ LocationExists AccessibleLocation
-                , EnemyCriteria
-                    ( EnemyExists $
-                        EvadingEnemy
-                          <> EnemyCanBeDamagedBySource
-                            (toAbilitySource a 1)
-                    )
+                , enemyExists $ EvadingEnemy <> EnemyCanBeDamagedBySource (toAbilitySource a 1)
                 ]
           )
-        $ ReactionAbility (EnemyEvaded Timing.After You AnyEnemy) Free
+          (FreeReactionAbility $ Matcher.EnemyEvaded Timing.After You AnyEnemy)
     ]
 
 instance HasChaosTokenValue RitaYoung where
@@ -73,34 +57,21 @@ toEnemyId (x : xs) = case windowType x of
 instance RunMessage RitaYoung where
   runMessage msg i@(RitaYoung attrs) = case msg of
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ createCardEffect Cards.ritaYoung Nothing (toSource attrs) (InvestigatorTarget iid)
+      push $ createCardEffect Cards.ritaYoung Nothing (toSource attrs) (toTarget iid)
       pure i
-    UseCardAbility iid (isSource attrs -> True) 1 (toEnemyId -> enemyId) _ ->
-      do
-        canDamage <- enemyId <=~> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
-        connectingLocations <- selectList AccessibleLocation
-        push $
-          chooseOrRunOne iid $
-            [ Label
-              "Damage enemy"
-              [ EnemyDamage enemyId $
-                  nonAttack (toAbilitySource attrs 1) 1
-              ]
-            | canDamage
-            ]
-              <> [ Label
-                  "Move to a connecting location"
-                  [ chooseOne
-                      iid
-                      [ TargetLabel
-                        (LocationTarget lid')
-                        [Move $ move (toSource attrs) iid lid']
-                      | lid' <- connectingLocations
-                      ]
-                  ]
-                 | notNull connectingLocations
-                 ]
-        pure i
+    UseCardAbility iid (isSource attrs -> True) 1 (toEnemyId -> enemyId) _ -> do
+      canDamage <- enemyId <=~> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
+      connectingLocations <- selectList AccessibleLocation
+      push
+        $ chooseOrRunOne iid
+        $ [ Label "Damage enemy" [EnemyDamage enemyId $ nonAttack (toAbilitySource attrs 1) 1]
+          | canDamage
+          ]
+          <> [ Label "Move to a connecting location"
+              $ [chooseOne iid $ targetLabels1 connectingLocations (Move . move (toSource attrs) iid)]
+             | notNull connectingLocations
+             ]
+      pure i
     _ -> RitaYoung <$> runMessage msg attrs
 
 newtype RitaYoungElderSignEffect = RitaYoungElderSignEffect EffectAttrs
@@ -112,19 +83,14 @@ ritaYoungElderSignEffect = cardEffect RitaYoungElderSignEffect Cards.ritaYoung
 
 instance HasModifiersFor RitaYoungElderSignEffect where
   getModifiersFor (AbilityTarget iid ab) (RitaYoungElderSignEffect a)
-    | abilityIndex ab
-        == 1
-        && abilitySource ab
-        == InvestigatorSource iid
-        && InvestigatorTarget iid
-        == effectTarget a = do
+    | abilityIndex ab == 1 && abilitySource ab == toSource iid && toTarget iid == effectTarget a = do
         pure $ toModifiers a [IgnoreLimit]
   getModifiersFor _ _ = pure []
 
 instance RunMessage RitaYoungElderSignEffect where
-  runMessage msg e@(RitaYoungElderSignEffect attrs@EffectAttrs {..}) =
+  runMessage msg e@(RitaYoungElderSignEffect attrs) =
     case msg of
       EndRound -> do
-        push (DisableEffect effectId)
+        push (DisableEffect $ toId attrs)
         pure e
       _ -> RitaYoungElderSignEffect <$> runMessage msg attrs

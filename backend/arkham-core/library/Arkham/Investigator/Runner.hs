@@ -13,6 +13,7 @@ import Arkham.Classes as X
 import Arkham.Helpers.Investigator as X
 import Arkham.Helpers.Message as X
 import Arkham.Investigator.Types as X
+import Arkham.Message as X hiding (InvestigatorDamage, InvestigatorDefeated, InvestigatorResigned)
 import Arkham.Name as X
 import Arkham.Source as X
 import Arkham.Stats as X
@@ -60,7 +61,6 @@ import Arkham.Matcher (
   treacheryInHandOf,
   pattern InvestigatorCanDisengage,
  )
-import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Modifier qualified as Modifier
 import Arkham.Movement

@@ -7,11 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.DamageEffect
-import Arkham.GameValue
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
@@ -27,9 +25,8 @@ instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
     [ playerLimit PerPhase
         $ restrictedAbility x 1 (Self <> enemyExists (EnemyAt YourLocation))
-        $ ReactionAbility
-          (PlacedCounter Timing.When You AnySource HorrorCounter $ AtLeast $ Static 1)
-          Free
+        $ ReactionAbility (PlacedCounter Timing.When You AnySource HorrorCounter $ atLeast 1)
+        $ Free
     ]
 
 instance HasChaosTokenValue AgnesBaker where

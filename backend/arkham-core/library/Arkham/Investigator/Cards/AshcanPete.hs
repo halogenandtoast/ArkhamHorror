@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (FastPlayerWindow)
-import Arkham.Message
 import Arkham.Modifier
 
 newtype AshcanPete = AshcanPete InvestigatorAttrs

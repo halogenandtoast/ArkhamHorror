@@ -15,7 +15,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 
@@ -29,14 +28,7 @@ gavriellaMizrah meta =
   investigatorWith
     (GavriellaMizrah . (`with` meta))
     Cards.gavriellaMizrah
-    Stats
-      { health = 8
-      , sanity = 4
-      , willpower = 3
-      , intellect = 2
-      , combat = 4
-      , agility = 1
-      }
+    (Stats {health = 8, sanity = 4, willpower = 3, intellect = 2, combat = 4, agility = 1})
     ( ( startsWithL
           .~ [Cards.fortyFiveAutomatic, Cards.physicalTraining, Cards.fateOfAllFools]
       )
@@ -53,39 +45,33 @@ gavriellaMizrah meta =
     )
 
 instance HasModifiersFor GavriellaMizrah where
-  getModifiersFor target (GavriellaMizrah (a `With` _))
-    | isTarget a target =
-        pure $
-          toModifiersWith
-            a
-            setActiveDuringSetup
-            [ CannotTakeAction (IsAction Action.Draw)
-            , CannotDrawCards
-            , CannotManipulateDeck
-            , StartingResources (-4)
-            ]
+  getModifiersFor target (GavriellaMizrah (a `With` _)) | a `isTarget` target = do
+    pure
+      $ toModifiersWith
+        a
+        setActiveDuringSetup
+        [ CannotTakeAction (IsAction Action.Draw)
+        , CannotDrawCards
+        , CannotManipulateDeck
+        , StartingResources (-4)
+        ]
   getModifiersFor (AssetTarget aid) (GavriellaMizrah (a `With` _)) = do
     isFortyFiveAutomatic <-
       selectAny $ AssetWithId aid <> assetIs Cards.fortyFiveAutomatic
-    pure $
-      toModifiersWith
-        a
-        setActiveDuringSetup
-        [AdditionalStartingUses (-2) | isFortyFiveAutomatic]
+    pure $ toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-2) | isFortyFiveAutomatic]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah (a `With` _)) =
-    [ restrictedAbility a 1 (Self <> ClueOnLocation) $
-        ReactionAbility
+    [ restrictedAbility a 1 (Self <> ClueOnLocation)
+        $ ReactionAbility
           (EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy)
           Free
     ]
 
 instance HasChaosTokenValue GavriellaMizrah where
-  getChaosTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _))
-    | iid == toId attrs = do
-        pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _)) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage GavriellaMizrah where
@@ -107,10 +93,7 @@ instance RunMessage GavriellaMizrah where
       push $ RemovedFromGame (PlayerCard pc)
       pure i
     DiscardCard iid _ cardId | iid == toId attrs -> do
-      let
-        card =
-          fromJustNote "must be in hand" $
-            find ((== cardId) . toCardId) (investigatorHand attrs)
+      let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) (investigatorHand attrs)
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> do

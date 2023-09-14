@@ -8,6 +8,7 @@ import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import Arkham.Timing
 import Arkham.Trait
 
 -- ** Investigator Patterns **
@@ -346,6 +347,9 @@ pattern PlayerTreachery <- CardWithType PlayerTreacheryType
 
 -- ** Value Patterns **
 
+atLeast :: Int -> ValueMatcher
+atLeast n = AtLeast (Static n)
+
 pattern AtLeast :: GameValue -> ValueMatcher
 pattern AtLeast n <- GreaterThanOrEqualTo n
   where
@@ -370,3 +374,19 @@ pattern TreacheryWithAnyDoom <-
   TreacheryWithDoom (GreaterThan (Static 0))
   where
     TreacheryWithAnyDoom = TreacheryWithDoom (GreaterThan (Static 0))
+
+-- ** Window Patterns **
+
+pattern InvestigationResult
+  :: Timing -> Who -> LocationMatcher -> SkillTestResultMatcher -> WindowMatcher
+pattern InvestigationResult timing who where_ result <-
+  SkillTestResult timing who (WhileInvestigating where_) result
+  where
+    InvestigationResult timing who where_ result = SkillTestResult timing who (WhileInvestigating where_) result
+
+pattern SuccessfulInvestigationResult
+  :: Timing -> Who -> LocationMatcher -> ValueMatcher -> WindowMatcher
+pattern SuccessfulInvestigationResult timing who where_ amount <-
+  SkillTestResult timing who (WhileInvestigating where_) (SuccessResult amount)
+  where
+    SuccessfulInvestigationResult timing who where_ amount = SkillTestResult timing who (WhileInvestigating where_) (SuccessResult amount)

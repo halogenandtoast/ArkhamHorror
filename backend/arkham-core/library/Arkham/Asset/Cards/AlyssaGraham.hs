@@ -20,10 +20,10 @@ alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
 instance HasAbilities AlyssaGraham where
   getAbilities (AlyssaGraham a) =
-    [ restrictedAbility a 1 ControlsThis $
-        FastAbility $
-          Costs
-            [ExhaustCost (toTarget a)]
+    [ restrictedAbility a 1 ControlsThis
+        $ FastAbility
+        $ Costs
+          [ExhaustCost (toTarget a)]
     ]
 
 instance HasModifiersFor AlyssaGraham where
@@ -36,7 +36,7 @@ instance RunMessage AlyssaGraham where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds
       let
-        search target =
+        goSearch target =
           TargetLabel
             target
             [ Search
@@ -47,7 +47,7 @@ instance RunMessage AlyssaGraham where
                 AnyCard
                 (DeferSearchedToTarget $ toTarget attrs)
             ]
-      push $ chooseOne iid $ search EncounterDeckTarget : map search targets
+      push $ chooseOne iid $ goSearch EncounterDeckTarget : map goSearch targets
       pure a
     SearchFound iid target deck cards | isTarget attrs target -> do
       pushAll

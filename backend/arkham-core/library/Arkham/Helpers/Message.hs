@@ -304,3 +304,14 @@ ready = Ready . toTarget
 
 chooseFightEnemy :: Sourceable source => InvestigatorId -> source -> SkillType -> Message
 chooseFightEnemy iid (toSource -> source) sType = ChooseFightEnemy iid source Nothing sType mempty False
+
+search
+  :: (Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> target
+  -> [(Zone, ZoneReturnStrategy)]
+  -> CardMatcher
+  -> FoundCardsStrategy
+  -> Message
+search iid (toSource -> source) (toTarget -> target) = Search iid source target

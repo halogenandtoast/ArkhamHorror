@@ -46,11 +46,14 @@ getBatchId ((windowBatchId -> Just batchId) : _) = batchId
 getBatchId (_ : rest) = getBatchId rest
 getBatchId [] = error "No batch id found"
 
+duringTurnWindow :: InvestigatorId -> Window
+duringTurnWindow = mkWindow Timing.When . DuringTurn
+
 defaultWindows :: InvestigatorId -> [Window]
 defaultWindows iid =
-  [ Window Timing.When (DuringTurn iid) Nothing
-  , Window Timing.When NonFast Nothing
-  , Window Timing.When FastPlayerWindow Nothing
+  [ duringTurnWindow iid
+  , mkWindow Timing.When NonFast
+  , mkWindow Timing.When FastPlayerWindow
   ]
 
 hasEliminatedWindow :: [Window] -> Bool

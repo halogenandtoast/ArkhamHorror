@@ -15,7 +15,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
@@ -26,26 +25,15 @@ newtype WinifredHabbamock = WinifredHabbamock InvestigatorAttrs
 
 winifredHabbamock :: InvestigatorCard WinifredHabbamock
 winifredHabbamock =
-  investigator
-    WinifredHabbamock
-    Cards.winifredHabbamock
-    Stats
-      { health = 8
-      , sanity = 7
-      , willpower = 1
-      , intellect = 3
-      , combat = 3
-      , agility = 5
-      }
+  investigator WinifredHabbamock Cards.winifredHabbamock
+    $ Stats {health = 8, sanity = 7, willpower = 1, intellect = 3, combat = 3, agility = 5}
 
 instance HasAbilities WinifredHabbamock where
   getAbilities (WinifredHabbamock a) =
-    [ limitedAbility (PlayerLimit PerTestOrAbility 1)
-        $ restrictedAbility
-          a
-          1
-          (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy (toId a))))
-        $ FastAbility Free
+    [ playerLimit PerTestOrAbility
+        $ (restrictedAbility a 1)
+          (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy a.id)))
+          (FastAbility Free)
     ]
 
 instance HasChaosTokenValue WinifredHabbamock where
@@ -80,13 +68,10 @@ instance RunMessage WinifredHabbamockEffect where
         Just st -> case skillTestResult st of
           SucceededBy _ n -> case effectSource of
             InvestigatorSource iid -> do
-              committedCards <- field InvestigatorCommittedCards iid
-              unless (null committedCards) $ do
-                push
-                  $ chooseN
-                    iid
-                    (min (n `div` 2) (length committedCards))
-                    [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- committedCards]
+              cards <- field InvestigatorCommittedCards iid
+              pushWhen (notNull cards)
+                $ chooseN iid (min (n `div` 2) (length cards))
+                $ [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- cards]
             _ -> error "invalid source"
           _ -> pure ()
       pure e

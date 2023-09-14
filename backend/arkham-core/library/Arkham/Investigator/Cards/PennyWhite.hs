@@ -19,7 +19,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base
 import Arkham.Timing qualified as Timing
@@ -34,31 +33,24 @@ pennyWhite meta =
   investigatorWith
     (PennyWhite . (`with` meta))
     Cards.pennyWhite
-    Stats
-      { health = 7
-      , sanity = 5
-      , willpower = 4
-      , intellect = 1
-      , combat = 3
-      , agility = 2
-      }
+    (Stats {health = 7, sanity = 5, willpower = 4, intellect = 1, combat = 3, agility = 2})
     $ (startsWithL .~ [Cards.digDeep, Cards.knife, Cards.flashlight])
-      . ( startsWithInHandL
-            .~ [ Cards.strayCat
-               , Cards.lucky
-               , Cards.knife
-               , Cards.flashlight
-               , Cards.actOfDesperation
-               , Cards.actOfDesperation
-               , Cards.ableBodied
-               , Cards.ableBodied
-               ]
-        )
+    . ( startsWithInHandL
+          .~ [ Cards.strayCat
+             , Cards.lucky
+             , Cards.knife
+             , Cards.flashlight
+             , Cards.actOfDesperation
+             , Cards.actOfDesperation
+             , Cards.ableBodied
+             , Cards.ableBodied
+             ]
+      )
 
 instance HasModifiersFor PennyWhite where
   getModifiersFor target (PennyWhite (a `With` _)) | isTarget a target = do
-    pure $
-      toModifiersWith
+    pure
+      $ toModifiersWith
         a
         setActiveDuringSetup
         [ CannotTakeAction (IsAction Action.Draw)
@@ -68,8 +60,8 @@ instance HasModifiersFor PennyWhite where
         ]
   getModifiersFor (AssetTarget aid) (PennyWhite (a `With` _)) = do
     isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
-    pure $
-      toModifiersWith
+    pure
+      $ toModifiersWith
         a
         setActiveDuringSetup
         [AdditionalStartingUses (-1) | isFlashlight]
@@ -77,22 +69,21 @@ instance HasModifiersFor PennyWhite where
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite (a `With` _)) =
-    [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility a 1 (Self <> ClueOnLocation) $
-          ReactionAbility
-            ( SkillTestResult
-                Timing.After
-                You
-                SkillTestFromRevelation
-                (SuccessResult AnyValue)
-            )
-            Free
+    [ playerLimit PerRound
+        $ restrictedAbility a 1 (Self <> ClueOnLocation)
+        $ ReactionAbility
+          ( SkillTestResult
+              Timing.After
+              You
+              SkillTestFromRevelation
+              (SuccessResult AnyValue)
+          )
+          Free
     ]
 
 instance HasChaosTokenValue PennyWhite where
-  getChaosTokenValue iid ElderSign (PennyWhite (attrs `With` _))
-    | iid == toId attrs = do
-        pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
+  getChaosTokenValue iid ElderSign (PennyWhite (attrs `With` _)) | iid == toId attrs = do
+    pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage PennyWhite where
@@ -103,13 +94,8 @@ instance RunMessage PennyWhite where
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSkillTest <- getSkillTest
       for_ mSkillTest $ \skillTest ->
-        when (skillTestIsRevelation skillTest) $
-          push $
-            createCardEffect
-              Cards.pennyWhite
-              Nothing
-              (toSource attrs)
-              (toTarget attrs)
+        pushWhen (skillTestIsRevelation skillTest)
+          $ createCardEffect Cards.pennyWhite Nothing (toSource attrs) (toTarget attrs)
       pure i
     DrawStartingHand iid | iid == toId attrs -> pure i
     InvestigatorMulligan iid | iid == toId attrs -> do
@@ -119,10 +105,7 @@ instance RunMessage PennyWhite where
       push $ RemovedFromGame (PlayerCard pc)
       pure i
     DiscardCard iid _ cardId | iid == toId attrs -> do
-      let
-        card =
-          fromJustNote "must be in hand" $
-            find ((== cardId) . toCardId) (investigatorHand attrs)
+      let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) (investigatorHand attrs)
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> do

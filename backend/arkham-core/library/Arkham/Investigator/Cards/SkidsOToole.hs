@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Message
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -17,24 +16,14 @@ newtype SkidsOToole = SkidsOToole InvestigatorAttrs
 
 skidsOToole :: InvestigatorCard SkidsOToole
 skidsOToole =
-  investigator
-    SkidsOToole
-    Cards.skidsOToole
-    Stats
-      { health = 8
-      , sanity = 6
-      , willpower = 2
-      , intellect = 3
-      , combat = 3
-      , agility = 4
-      }
+  investigator SkidsOToole Cards.skidsOToole
+    $ Stats {health = 8, sanity = 6, willpower = 2, intellect = 3, combat = 3, agility = 4}
 
 instance HasAbilities SkidsOToole where
   getAbilities (SkidsOToole a) =
-    [ limitedAbility (PlayerLimit PerTurn 1) $
-        restrictedAbility a 1 (Self <> DuringTurn You) $
-          FastAbility $
-            ResourceCost 2
+    [ playerLimit PerTurn
+        $ restrictedAbility a 1 (Self <> DuringTurn You)
+        $ FastAbility (ResourceCost 2)
     ]
 
 instance HasChaosTokenValue SkidsOToole where

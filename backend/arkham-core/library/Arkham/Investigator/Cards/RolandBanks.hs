@@ -11,7 +11,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -28,7 +28,7 @@ instance HasAbilities RolandBanks where
   getAbilities (RolandBanks attrs) =
     [ playerLimit PerRound
         $ reaction attrs 1 (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation) Free
-        $ EnemyDefeated Timing.After You ByAny AnyEnemy
+        $ Matcher.EnemyDefeated Timing.After You ByAny AnyEnemy
     ]
 
 instance HasChaosTokenValue RolandBanks where

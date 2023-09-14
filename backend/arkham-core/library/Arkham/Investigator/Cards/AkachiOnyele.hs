@@ -8,7 +8,6 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Use
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Message
 import Arkham.Projection
 
 newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs

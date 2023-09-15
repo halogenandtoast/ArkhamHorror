@@ -539,6 +539,24 @@ header {
   100% { --gradient-angle: 0deg; }
 }
 
+@keyframes glow {
+  0% {
+    filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
+      drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
+      drop-shadow(0 0 7vmin MediumOrchid);
+  }
+  50% {
+    filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
+      drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
+      drop-shadow(0 0 7vmin Black);
+  }
+  100% {
+    filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
+      drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
+      drop-shadow(0 0 7vmin MediumOrchid);
+  }
+}
+
 .revelation {
   //--clr-1: Indigo;
   //--clr-2: MediumOrchid;
@@ -563,7 +581,7 @@ header {
   inset: 0;
   width: fit-content;
   height: fit-content;
-  animation: revelation 0.3s ease-in-out;
+  animation: revelation 0.3s ease-in-out, glow 4s cubic-bezier(0.550, 0.085, 0.680, 0.530) infinite;
 
   //animation: revelation 0.3s ease-in-out, anim 30s infinite, rotation 30s linear infinite;
 

@@ -157,22 +157,14 @@ cardIs = CardWithCardCode . toCardCode
 
 -- ** Replacements
 
-resolveEventMatcher
-  :: InvestigatorId -> (Maybe LocationId) -> EventMatcher -> EventMatcher
-resolveEventMatcher iid mlid = over biplate (replaceYourLocation iid mlid)
+resolveEventMatcher :: InvestigatorId -> EventMatcher -> EventMatcher
+resolveEventMatcher iid = over biplate (replaceYouMatcher iid)
 
-resolveAssetMatcher
-  :: InvestigatorId -> (Maybe LocationId) -> AssetMatcher -> AssetMatcher
-resolveAssetMatcher iid mlid = over biplate (replaceYourLocation iid mlid)
+resolveAssetMatcher :: InvestigatorId -> AssetMatcher -> AssetMatcher
+resolveAssetMatcher iid = over biplate (replaceYouMatcher iid)
 
-replaceYourLocation
-  :: InvestigatorId -> Maybe LocationId -> LocationMatcher -> LocationMatcher
-replaceYourLocation iid Nothing = over biplate (replaceYouMatcher iid)
-replaceYourLocation iid (Just lid) = transform go . over biplate (replaceYouMatcher iid)
- where
-  go = \case
-    YourLocation -> LocationWithId lid
-    other -> other
+replaceYourLocation :: InvestigatorId -> LocationMatcher -> LocationMatcher
+replaceYourLocation iid = over biplate (replaceYouMatcher iid)
 
 defaultRemoveDoomMatchers :: RemoveDoomMatchers
 defaultRemoveDoomMatchers =

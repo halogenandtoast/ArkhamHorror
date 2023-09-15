@@ -1383,17 +1383,14 @@ passesCriteria iid mcard source windows' = \case
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
   Criteria.AgendaExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do
-    mlid <- field InvestigatorLocation iid
-    selectAny (Matcher.resolveAssetMatcher iid mlid matcher)
+    selectAny (Matcher.resolveAssetMatcher iid matcher)
   Criteria.EventExists matcher -> do
-    mlid <- field InvestigatorLocation iid
-    selectAny (Matcher.resolveEventMatcher iid mlid matcher)
+    selectAny (Matcher.resolveEventMatcher iid matcher)
   Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of
     Nothing -> pure False
     Just aid -> do
-      mlid <- field InvestigatorLocation iid
       selectAny
-        $ Matcher.NotAsset (Matcher.AssetWithId aid) <> Matcher.resolveAssetMatcher iid mlid matcher
+        $ Matcher.NotAsset (Matcher.AssetWithId aid) <> Matcher.resolveAssetMatcher iid matcher
   Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
@@ -1410,17 +1407,14 @@ passesCriteria iid mcard source windows' = \case
   Criteria.Criteria rs -> allM (passesCriteria iid mcard source windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source windows') rs
   Criteria.LocationExists matcher -> do
-    mlid <- field InvestigatorLocation iid
-    selectAny (Matcher.replaceYourLocation iid mlid matcher)
+    selectAny (Matcher.replaceYourLocation iid matcher)
   Criteria.LocationCount n matcher -> do
-    mlid <- field InvestigatorLocation iid
-    (== n) <$> selectCount (Matcher.replaceYourLocation iid mlid matcher)
+    (== n) <$> selectCount (Matcher.replaceYourLocation iid matcher)
   Criteria.ExtendedCardCount n matcher ->
     (== n) <$> selectCount matcher
   Criteria.AllLocationsMatch targetMatcher locationMatcher -> do
-    mlid <- field InvestigatorLocation iid
-    targets <- select (Matcher.replaceYourLocation iid mlid targetMatcher)
-    actual <- select (Matcher.replaceYourLocation iid mlid locationMatcher)
+    targets <- select (Matcher.replaceYourLocation iid targetMatcher)
+    actual <- select (Matcher.replaceYourLocation iid locationMatcher)
     pure $ all (`member` actual) targets
   Criteria.InvestigatorIsAlone ->
     (== 1) <$> selectCount (Matcher.colocatedWith iid)
@@ -2452,22 +2446,13 @@ matchWho iid who Matcher.You = pure $ iid == who
 matchWho iid who Matcher.NotYou = pure $ iid /= who
 matchWho _ _ Matcher.Anyone = pure True
 matchWho iid who (Matcher.InvestigatorAt matcher) = do
-  mlid <- field InvestigatorLocation iid
-  member who
-    <$> select
-      (Matcher.InvestigatorAt $ Matcher.replaceYourLocation iid mlid matcher)
+  who <=~> Matcher.InvestigatorAt (Matcher.replaceYourLocation iid matcher)
 matchWho iid who matcher =
   member who <$> (select =<< replaceMatchWhoLocations iid matcher)
  where
   replaceMatchWhoLocations iid' = \case
     Matcher.InvestigatorAt matcher' -> do
-      mlid <- field InvestigatorLocation iid'
-      pure
-        $ Matcher.InvestigatorAt
-        $ Matcher.replaceYourLocation
-          iid
-          mlid
-          matcher'
+      pure $ Matcher.InvestigatorAt $ Matcher.replaceYourLocation iid matcher'
     Matcher.HealableInvestigator source damageType inner -> do
       Matcher.HealableInvestigator source damageType
         <$> replaceMatchWhoLocations iid' inner
@@ -2595,8 +2580,7 @@ locationMatches
   -> Matcher.LocationMatcher
   -> m Bool
 locationMatches investigatorId source window locationId matcher' = do
-  mlid <- field InvestigatorLocation investigatorId
-  let matcher = Matcher.replaceYourLocation investigatorId mlid matcher'
+  let matcher = Matcher.replaceYourLocation investigatorId matcher'
   case matcher of
     -- special cases
     Matcher.NotLocation m ->

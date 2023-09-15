@@ -1088,9 +1088,7 @@ instance RunMessage EnemyAttrs where
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId
-      yourLocation <- selectOne $ locationWithInvestigator activeInvestigatorId
-      lids <-
-        selectList $ replaceYourLocation activeInvestigatorId yourLocation locationMatcher
+      lids <- selectList $ replaceYourLocation activeInvestigatorId locationMatcher
       leadInvestigatorId <- getLeadInvestigatorId
       case lids of
         [] ->
@@ -1098,7 +1096,7 @@ instance RunMessage EnemyAttrs where
             $ Discard GameSource (EnemyTarget eid)
               : [ Surge iid (toSource a)
                 | enemySurgeIfUnableToSpawn
-                , iid <- maybeToList miid
+                , iid <- toList miid
                 ]
         [lid] -> do
           windows' <-

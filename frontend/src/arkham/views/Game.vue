@@ -1,18 +1,22 @@
 <script lang="ts" setup>
+import { JsonDecoder } from 'ts.data.json';
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
-import { fetchGame } from '@/arkham/api'
+import { imgsrc } from '@/arkham/helpers';
+import { fetchGame, undoChoice } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api'
+import CardView from '@/arkham/components/Card.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import Scenario from '@/arkham/components/Scenario.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
+import { Card, cardDecoder } from '@/arkham/types/Card'
 import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useDebug } from '@/arkham/debug'
@@ -30,6 +34,22 @@ const debug = useDebug()
 const route = useRoute()
 const store = useCardStore()
 const { copy } = useClipboard({ source })
+
+interface GameCard {
+  title: string
+  card: Card
+}
+
+const gameCardDecoder = JsonDecoder.object<GameCard>(
+  {
+    title: JsonDecoder.string,
+    card: cardDecoder
+  },
+  'GameCard'
+);
+
+
+const gameCard = ref<GameCard | null>(null)
 
 const spectate = route.fullPath.endsWith('/spectate')
 const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
@@ -53,22 +73,38 @@ const cards = computed(() => store.cards)
 const ready = ref(false)
 const solo = ref(false)
 const game = ref<Arkham.Game | null>(null)
+const gameTemp = ref<Arkham.Game | null>(null)
 const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
 
 const question = computed(() => investigatorId.value ? game.value?.question[investigatorId.value] : null)
 
-watch(data, async (newData) => {
-  const { tag, contents } = JSON.parse(newData)
+async function undo() {
+  gameCard.value = null
+  undoChoice(props.gameId);
+}
 
-  switch(tag) {
+watch(data, async (newData) => {
+  const result = JSON.parse(newData)
+
+  switch(result.tag) {
     case "GameMessage":
-      gameLog.value = Object.freeze([...gameLog.value, contents])
+      gameLog.value = Object.freeze([...gameLog.value, result.contents])
+      return
+    case "GameCard":
+      gameCardDecoder.decodeToPromise(result).then((r) => {
+        gameCard.value = r
+      })
       return
     case "GameUpdate":
-      Arkham.gameDecoder.decodeToPromise(contents)
+      Arkham.gameDecoder.decodeToPromise(result.contents)
         .then((updatedGame) => {
-          game.value = updatedGame
+          if (gameCard.value) {
+            gameTemp.value = updatedGame
+            game.value = {...game.value, question: {}} as Arkham.Game
+          } else {
+            game.value = updatedGame
+          }
           gameLog.value = Object.freeze([...updatedGame.log])
           if (solo.value === true) {
             if (Object.keys(game.value.question).length == 1) {
@@ -79,6 +115,13 @@ watch(data, async (newData) => {
           }
         })
       return
+  }
+})
+
+watch(gameCard, async () => {
+  if(!gameCard.value && gameTemp.value) {
+    game.value = gameTemp.value
+    gameTemp.value = null
   }
 })
 
@@ -161,6 +204,18 @@ provide('solo', solo)
     </div>
     <template v-else>
       <div class="game-main">
+        <div v-if="gameCard" class="revelation">
+          <div class="revelation-container">
+            <h2>{{gameCard.title}}</h2>
+            <div class="revelation-card-container">
+              <div class="revelation-card">
+                <CardView :game="game" :card="gameCard.card" :investigatorId="investigatorId" />
+                <img :src="imgsrc('player_back.jpg')" class="card back" />
+              </div>
+              <button @click="gameCard = null">OK</button>
+            </div>
+          </div>
+        </div>
         <CampaignSettings
           v-if="game.campaign && !gameOver && question && question.tag === 'PickCampaignSettings'"
           :game="game"
@@ -191,7 +246,7 @@ provide('solo', solo)
           @update="update"
         />
         <div class="sidebar" v-if="game.scenario && game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver'">
-          <GameLog :game="game" :gameLog="gameLog" />
+          <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
           <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
   >
             <button :href="href" @click="navigate">View Log</button>
@@ -388,6 +443,223 @@ header {
     padding: 10px 20px;
     color: white;
     text-align: center;
+  }
+}
+
+@keyframes revelation {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  65% {
+    transform: scale(1.3);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes anim {
+	0%,
+	100% {
+		border-radius: 30% 70% 70% 30% / 30% 52% 48% 70%;
+		//box-shadow: 10px -2vmin 4vmin LightPink inset, 10px -4vmin 4vmin MediumPurple inset, 10px -2vmin 7vmin purple inset;
+	}
+
+	10% {
+		border-radius: 50% 50% 20% 80% / 25% 80% 20% 75%;
+	}
+
+	20% {
+		border-radius: 67% 33% 47% 53% / 37% 20% 80% 63%;
+	}
+
+	30% {
+		border-radius: 39% 61% 47% 53% / 37% 40% 60% 63%;
+		//box-shadow: 20px -4vmin 8vmin hotpink inset, -1vmin -2vmin 6vmin LightPink inset, -1vmin -2vmin 4vmin MediumPurple inset, 1vmin 4vmin 8vmin purple inset;
+	}
+
+	40% {
+		border-radius: 39% 61% 82% 18% / 74% 40% 60% 26%;
+	}
+
+	50% {
+		border-radius: 100%;
+		//box-shadow: 40px 4vmin 16vmin hotpink inset, 40px 2vmin 5vmin LightPink inset, 40px 4vmin 4vmin MediumPurple inset, 40px 6vmin 8vmin purple inset;
+	}
+
+	60% {
+		border-radius: 50% 50% 53% 47% / 72% 69% 31% 28%;
+	}
+
+	70% {
+		border-radius: 50% 50% 53% 47% / 26% 22% 78% 74%;
+		//box-shadow: 1vmin 1vmin 8vmin LightPink inset, 2vmin -1vmin 4vmin MediumPurple inset, -1vmin -1vmin 16vmin purple inset;
+	}
+
+	80% {
+		border-radius: 50% 50% 53% 47% / 26% 69% 31% 74%;
+	}
+
+	90% {
+		border-radius: 20% 80% 20% 80% / 20% 80% 20% 80%;
+	}
+}
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotation {
+  0% { --gradient-angle: 360deg; }
+  100% { --gradient-angle: 0deg; }
+}
+
+.revelation {
+  //--clr-1: Indigo;
+  //--clr-2: MediumOrchid;
+  //--clr-3: DarkOrchid;
+  //background: conic-gradient(
+  //  from var(--gradient-angle),
+  //  var(--clr-1),
+  //  var(--clr-2),
+  //  var(--clr-3),
+  //  var(--clr-2),
+  //  var(--clr-1));
+  padding: 30px;
+  position: absolute;
+  //background: Black;
+  transform: all 0.5s;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  text-align:center;
+  margin: auto;
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  animation: revelation 0.3s ease-in-out;
+
+  //animation: revelation 0.3s ease-in-out, anim 30s infinite, rotation 30s linear infinite;
+
+  display: grid;
+  // glow effect
+  filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
+		drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
+		drop-shadow(0 0 7vmin MediumOrchid);
+
+  > div {
+    overflow: hidden;
+  }
+
+  button {
+    width: 100%;
+    border: 0;
+    padding: 10px;
+    text-transform: uppercase;
+    background-color: #532e61;
+    font-weight: bold;
+    color: #EEE;
+    font: Arial, sans-serif;
+    &:hover {
+      background-color: #311b3e;
+    }
+
+  i {
+    font-style: normal;
+  }
+}
+
+
+  h2 {
+    font-family: Teutonic;
+    text-transform: uppercase;
+    margin: 0;
+    padding: 0;
+    font-size: 2.5em;
+  }
+
+  :deep(.card) {
+    animation: revelation 0.6s ease-in-out;
+    width: 300px !important;
+    overflow: hidden;
+  }
+}
+
+.revelation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+  justify-self: center;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateY(180deg);
+    opacity: 0;
+  }
+
+  49% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+
+}
+
+
+.revelation-card-container {
+  width: 300px;
+  aspect-ratio: 5/7;
+
+  .revelation-card {
+    position: relative;
+    width: 300px;
+    padding-bottom: 15px;
+    aspect-ratio: 5/7;
+    :deep(.card) {
+      transform-style: preserve-3d;
+      position: absolute;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      animation: flip 0.3s linear;
+      animation-delay: 0.3s;
+      -webkit-animation-fill-mode: forwards; /* Chrome 16+, Safari 4+ */
+      -moz-animation-fill-mode: forwards;    /* FF 5+ */
+      -o-animation-fill-mode: forwards;      /* Not implemented yet */
+      -ms-animation-fill-mode: forwards;     /* IE 10+ */
+      animation-fill-mode: forwards;         /* When the spec is finished */
+    }
+
+    .card.back {
+      transform-style: preserve-3d;
+      position: absolute;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      animation: flip 0.3s linear;
+      animation-direction: reverse;
+      animation-delay: 0.3s;
+      animation-fill-mode: forwards;         /* When the spec is finished */
+    }
   }
 }
 </style>

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { watch, ref, computed, nextTick, onMounted } from 'vue';
-import { undoChoice } from '@/arkham/api'
 import { Game } from '@/arkham/types/Game';
 import GameMessage from '@/arkham/components/GameMessage.vue';
 
@@ -8,6 +7,11 @@ const props = defineProps<{
   game: Game
   gameLog: readonly string[]
 }>()
+
+const emit = defineEmits<{
+  undo: []
+}>()
+
 const messages = ref<Element | null>(null)
 const truncatedGameLog = computed(() => props.gameLog.slice(-10))
 
@@ -35,9 +39,6 @@ watch(truncatedGameLog, async () => {
   }
 }, { deep: true })
 
-async function undo() {
-  undoChoice(props.game.id);
-}
 </script>
 
 <template>
@@ -47,7 +48,7 @@ async function undo() {
     </ul>
     <div>
       <input type="text">
-      <button @click="undo">Undo</button>
+      <button @click="emit('undo')">Undo</button>
     </div>
   </div>
 </template>

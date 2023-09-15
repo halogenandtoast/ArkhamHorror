@@ -4328,6 +4328,9 @@ runGameMessage msg g = case msg of
         _ -> pure g
       VengeanceCard _ -> error "Vengeance card"
   DrewPlayerEnemy iid card -> do
+    investigator <- getInvestigator iid
+    send $ format investigator <> " drew " <> format card
+    sendEnemy (toTitle investigator <> " drew Enemy") (toJSON card)
     enemyId <- getRandom
     let enemy = createEnemy card enemyId
     pushAll

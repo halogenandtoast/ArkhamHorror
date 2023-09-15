@@ -36,7 +36,7 @@ instance HasAbilities SilverTwilightAcolyte where
 
 instance RunMessage SilverTwilightAcolyte where
   runMessage msg e@(SilverTwilightAcolyte attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       push PlaceDoomOnAgenda
       pure e
     _ -> SilverTwilightAcolyte <$> runMessage msg attrs

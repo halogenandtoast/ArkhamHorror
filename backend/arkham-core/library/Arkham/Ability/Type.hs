@@ -13,14 +13,20 @@ import Arkham.Matcher
 import Arkham.SkillType
 import Data.Aeson.TH
 
-pattern FightAction :: Cost -> AbilityType
-pattern FightAction cost = ActionAbility (Just Fight) cost
+fightAction :: Cost -> AbilityType
+fightAction cost = ActionAbility (Just Fight) (ActionCost 1 <> cost)
 
-pattern ActionAbility_ :: AbilityType
-pattern ActionAbility_ = ActionAbility Nothing (ActionCost 1)
+fightAction_ :: AbilityType
+fightAction_ = ActionAbility (Just Fight) (ActionCost 1)
 
-pattern FreeReactionAbility :: WindowMatcher -> AbilityType
-pattern FreeReactionAbility window = ReactionAbility window Free
+actionAbility :: AbilityType
+actionAbility = ActionAbility Nothing (ActionCost 1)
+
+actionAbilityWithCost :: Cost -> AbilityType
+actionAbilityWithCost cost = ActionAbility Nothing (ActionCost 1 <> cost)
+
+freeReaction :: WindowMatcher -> AbilityType
+freeReaction window = ReactionAbility window Free
 
 data AbilityType
   = FastAbility {cost :: Cost}

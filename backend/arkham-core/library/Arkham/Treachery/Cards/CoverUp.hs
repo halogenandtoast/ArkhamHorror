@@ -30,7 +30,7 @@ instance HasAbilities CoverUp where
       a
       1
       (OnSameLocation <> CluesOnThis (atLeast 1))
-      (FreeReactionAbility (Matcher.DiscoverClues Timing.When You YourLocation $ atLeast 1))
+      (freeReaction (Matcher.DiscoverClues Timing.When You YourLocation $ atLeast 1))
       : [ restrictedAbility a 2 (CluesOnThis $ atLeast 1)
           $ ForcedAbility
           $ OrWindowMatcher

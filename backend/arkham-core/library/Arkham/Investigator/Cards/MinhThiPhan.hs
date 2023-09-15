@@ -45,6 +45,6 @@ instance RunMessage MinhThiPhan where
       skills <- selectList AnySkill
       pushWhen (notNull skills)
         $ chooseOne iid
-        $ targetLabels1 skills (CreateEffect "03002" Nothing (toSource ElderSign) . toTarget)
+        $ targetLabels skills (only . CreateEffect "03002" Nothing (toSource ElderSign) . toTarget)
       pure i
     _ -> MinhThiPhan <$> runMessage msg attrs

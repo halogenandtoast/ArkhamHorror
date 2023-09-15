@@ -22,7 +22,7 @@ instance HasAbilities StellaClark where
   getAbilities (StellaClark a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 Self
-        $ FreeReactionAbility (SkillTestResult Timing.After You SkillTestWasFailed AnyResult)
+        $ freeReaction (SkillTestResult Timing.After You SkillTestWasFailed AnyResult)
     ]
 
 instance HasChaosTokenValue StellaClark where

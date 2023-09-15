@@ -75,8 +75,8 @@ getPlacePursuitEnemyMessages = do
   depthStart <- getDepthStart
   pure $ do
     guard $ notNull choices
-    pure $
-      chooseOrRunOne
+    pure
+      $ chooseOrRunOne
         lead
         [ targetLabel choice [PlaceEnemy choice $ AtLocation depthStart]
         | choice <- choices

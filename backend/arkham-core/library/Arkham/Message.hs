@@ -70,6 +70,7 @@ import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Control.Exception
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack {} = Just AttackMessage
@@ -110,6 +111,12 @@ storyWithChooseOne lead iids flavor choices =
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
   deriving anyclass (FromJSON, ToJSON)
+
+instance IsLabel "clues" AdvancementMethod where
+  fromLabel = AdvancedWithClues
+
+instance IsLabel "other" AdvancementMethod where
+  fromLabel = AdvancedWithOther
 
 class Is a b where
   is :: a -> b -> Bool

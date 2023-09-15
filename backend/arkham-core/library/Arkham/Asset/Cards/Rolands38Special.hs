@@ -19,10 +19,7 @@ rolands38Special = asset Rolands38Special Cards.rolands38Special
 
 instance HasAbilities Rolands38Special where
   getAbilities (Rolands38Special x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ FightAction
-        $ ActionCost 1 <> assetUseCost x Ammo 1
-    ]
+    [restrictedAbility x 1 ControlsThis $ fightAction $ assetUseCost x Ammo 1]
 
 instance RunMessage Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of

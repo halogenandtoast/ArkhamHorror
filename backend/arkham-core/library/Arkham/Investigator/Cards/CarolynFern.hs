@@ -73,7 +73,7 @@ instance RunMessage CarolynFern where
       push
         $ chooseOrRunOne iid
         $ Label "Do not heal anything" []
-          : targetLabels1 assetsWithHorror (\target -> HealHorror target (toSource attrs) 1)
-            <> map (uncurry targetLabel1) investigatorsWithHealHorror
+          : targetLabels assetsWithHorror (\target -> only $ HealHorror target (toSource attrs) 1)
+            <> map (uncurry targetLabel . second only) investigatorsWithHealHorror
       pure i
     _ -> CarolynFern <$> runMessage msg attrs

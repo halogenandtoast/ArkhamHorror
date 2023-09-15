@@ -30,37 +30,14 @@ locationsWithLabels trait locationSet = do
   shuffled <- shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)
  where
-  labels =
-    [ pack (camelCase $ show trait) <> "Bayou"
-    , pack (camelCase $ show trait) <> "1"
-    , pack (camelCase $ show trait) <> "2"
-    ]
+  prefix = pack (camelCase $ show trait)
+  labels = [prefix <> "Bayou", prefix <> "1", prefix <> "2"]
 
 locationsByTrait :: Map Trait [CardDef]
 locationsByTrait =
   mapFromList
-    [
-      ( NewOrleans
-      , [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor]
-      )
-    ,
-      ( Riverside
-      ,
-        [ Locations.brackishWaters
-        , Locations.audubonPark
-        , Locations.faubourgMarigny
-        ]
-      )
-    ,
-      ( Wilderness
-      ,
-        [ Locations.forgottenMarsh
-        , Locations.trappersCabin
-        , Locations.twistedUnderbrush
-        ]
-      )
-    ,
-      ( Unhallowed
-      , [Locations.foulSwamp, Locations.ritualGrounds, Locations.overgrownCairns]
-      )
+    [ (NewOrleans, [Locations.cursedShores, Locations.gardenDistrict, Locations.broadmoor])
+    , (Riverside, [Locations.brackishWaters, Locations.audubonPark, Locations.faubourgMarigny])
+    , (Wilderness, [Locations.forgottenMarsh, Locations.trappersCabin, Locations.twistedUnderbrush])
+    , (Unhallowed, [Locations.foulSwamp, Locations.ritualGrounds, Locations.overgrownCairns])
     ]

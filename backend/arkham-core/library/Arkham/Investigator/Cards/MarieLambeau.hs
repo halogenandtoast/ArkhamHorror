@@ -62,8 +62,10 @@ instance RunMessage MarieLambeau where
 
       push
         $ chooseOne iid
-        $ Label "Add 1 doom" [chooseOrRunOne iid $ targetLabels1 adds place]
-          : ( mwhen (notNull removes) [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels1 removes remove]]
+        $ Label "Add 1 doom" [chooseOrRunOne iid $ targetLabels adds (only . place)]
+          : ( mwhen
+                (notNull removes)
+                [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels removes (only . remove)]]
             )
             <> [Label "Do Nothing" []]
       pure i

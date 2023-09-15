@@ -75,7 +75,7 @@ selectListMapM
   => (QueryElement a -> m b)
   -> a
   -> m [b]
-selectListMapM f = (traverse f . setToList =<<) . select
+selectListMapM f = traverse f . setToList <=< select
 
 selectJust
   :: (HasCallStack, Show a, Query a, HasGame m)

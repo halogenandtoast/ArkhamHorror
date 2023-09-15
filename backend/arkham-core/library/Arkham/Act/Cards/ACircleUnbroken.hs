@@ -24,36 +24,25 @@ aCircleUnbroken = act (4, A) ACircleUnbroken Cards.aCircleUnbroken Nothing
 
 instance HasAbilities ACircleUnbroken where
   getAbilities (ACircleUnbroken x) =
-    [ mkAbility x 1 $
-        Objective $
-          ForcedAbility $
-            EnemyDefeated Timing.After Anyone ByAny $
-              enemyIs Enemies.anetteMason
-    , restrictedAbility
-        x
-        2
-        ( LocationExists $
-            locationIs Locations.witchesCircle
-              <> LocationWithoutClues
-        )
+    [ mkAbility x 1
         $ Objective
-        $ ForcedAbility AnyWindow
+        $ ForcedAbility
+        $ EnemyDefeated Timing.After Anyone ByAny
+        $ enemyIs Enemies.anetteMason
+    , restrictedAbility x 2 (LocationExists $ locationIs Locations.witchesCircle <> LocationWithoutClues)
+        $ Objective (ForcedAbility AnyWindow)
     ]
 
 instance RunMessage ACircleUnbroken where
   runMessage msg a@(ACircleUnbroken attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ advanceVia #other attrs attrs
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      push $ advanceVia #other attrs attrs
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      defeatedAnette <-
-        selectAny $
-          VictoryDisplayCardMatch $
-            cardIs
-              Enemies.anetteMason
-      push $ scenarioResolution $ if defeatedAnette then 1 else 2
+      defeatedAnette <- selectAny $ VictoryDisplayCardMatch $ cardIs Enemies.anetteMason
+      push $ if defeatedAnette then R1 else R2
       pure a
     _ -> ACircleUnbroken <$> runMessage msg attrs

@@ -20,7 +20,7 @@ heirloomOfHyperborea = asset HeirloomOfHyperborea Cards.heirloomOfHyperborea
 instance HasAbilities HeirloomOfHyperborea where
   getAbilities (HeirloomOfHyperborea x) =
     [ restrictedAbility x 1 (ControlsThis <> CanDrawCards)
-        $ FreeReactionAbility
+        $ freeReaction
         $ Matcher.PlayCard Timing.After You (BasicCardMatch $ CardWithTrait Spell)
     ]
 

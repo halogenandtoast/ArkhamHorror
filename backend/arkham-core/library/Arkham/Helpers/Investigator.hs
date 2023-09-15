@@ -423,7 +423,7 @@ canHaveHorrorHealed a iid = do
     _ -> pure Nothing
 
 canHaveDamageHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
-canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId
+canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) DamageType . InvestigatorWithId
 
 getInvestigatorsWithHealHorror
   :: (HasGame m, Sourceable a)

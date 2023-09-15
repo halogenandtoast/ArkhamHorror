@@ -40,6 +40,7 @@ const image = computed(() => {
 }
 
 .poolItem {
+  pointer-events: none;
   width: 30px;
   display: grid;
   place-items: center;
@@ -71,12 +72,14 @@ const image = computed(() => {
 }
 
 .resource--can-take, .resource--can-spend {
+  pointer-events: auto;
   padding: 0px;
   cursor: pointer;
   background-color: $select;
 }
 
 .health--can-interact, .sanity--can-interact {
+  pointer-events: auto;
   > span {
     padding: 0px;
     cursor: pointer;

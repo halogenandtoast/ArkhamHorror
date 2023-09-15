@@ -53,6 +53,9 @@ const getPosition = (el: HTMLElement) => {
 const getImage = (el: HTMLElement): string | null => {
   if (el instanceof HTMLImageElement) {
     if (el.classList.contains('card')) {
+      if (el.closest(".revelation")) {
+        return null
+      }
       return el.src
     }
   } else if (el instanceof HTMLDivElement) {

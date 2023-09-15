@@ -68,7 +68,7 @@ data GameEnv = GameEnv
   { gameEnvGame :: IORef Game
   , gameEnvQueue :: Queue Message
   , gameRandomGen :: IORef StdGen
-  , gameLogger :: Text -> IO ()
+  , gameLogger :: ClientMessage -> IO ()
   }
 
 instance HasGameRef GameEnv where

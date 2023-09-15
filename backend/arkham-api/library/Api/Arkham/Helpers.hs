@@ -15,6 +15,7 @@ import Arkham.GameEnv
 import Arkham.Message
 import Control.Lens hiding (from)
 import Control.Monad.Random (MonadRandom (..), StdGen, mkStdGen)
+import Data.Aeson qualified as Aeson
 import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
@@ -53,7 +54,10 @@ toPublicGame :: Entity ArkhamGame -> GameLog -> PublicGame ArkhamGameId
 toPublicGame (Entity gId ArkhamGame {..}) gameLog =
   PublicGame gId arkhamGameName (gameLogToLogEntries gameLog) arkhamGameCurrentData
 
-data ApiResponse = GameUpdate (PublicGame ArkhamGameId) | GameMessage Text
+data ApiResponse
+  = GameUpdate (PublicGame ArkhamGameId)
+  | GameMessage Text
+  | GameCard {title :: Text, card :: Aeson.Value}
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
@@ -64,7 +68,7 @@ data GameApp = GameApp
   { appGame :: IORef Game
   , appQueue :: Queue Message
   , appGen :: IORef StdGen
-  , appLogger :: Text -> IO ()
+  , appLogger :: ClientMessage -> IO ()
   }
 
 instance HasGame GameAppT where
@@ -90,7 +94,7 @@ instance CardGen GameAppT where
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = Map.insert cardId card (gameCards g)}, ())
 
-newApp :: MonadIO m => Game -> (Text -> IO ()) -> [Message] -> m GameApp
+newApp :: MonadIO m => Game -> (ClientMessage -> IO ()) -> [Message] -> m GameApp
 newApp g logger msgs = do
   gameRef <- newIORef g
   queueRef <- newQueue msgs
@@ -123,8 +127,8 @@ getChannel gameId = do
     Just chan -> pure chan
     Nothing -> do
       chan <- atomically newBroadcastTChan
-      atomicModifyIORef' gameChannelsRef $
-        \gameChannels' -> (Map.insert gameId chan gameChannels', ())
+      atomicModifyIORef' gameChannelsRef
+        $ \gameChannels' -> (Map.insert gameId chan gameChannels', ())
       pure chan
 
 displayCardType :: CardType -> Text

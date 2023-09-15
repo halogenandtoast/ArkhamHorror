@@ -21,7 +21,7 @@ zoeySamaras =
 instance HasAbilities ZoeySamaras where
   getAbilities (ZoeySamaras x) =
     [ restrictedAbility x 1 (Self <> CanGainResources)
-        $ FreeReactionAbility (EnemyEngaged Timing.After You AnyEnemy)
+        $ freeReaction (EnemyEngaged Timing.After You AnyEnemy)
     ]
 
 instance HasChaosTokenValue ZoeySamaras where

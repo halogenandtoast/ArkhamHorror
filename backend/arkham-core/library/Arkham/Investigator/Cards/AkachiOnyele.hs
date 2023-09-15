@@ -37,6 +37,6 @@ instance RunMessage AkachiOnyele where
       assets <- filterByField AssetUses (hasUsesFor Charge) (toList $ investigatorAssets attrs)
       pushWhen (notNull assets)
         $ chooseOne iid
-        $ Done "Do not use Elder Sign ability" : targetLabels1 assets (\asset -> AddUses asset Charge 1)
+        $ Done "Do not use Elder Sign ability" : targetLabels assets (\asset -> only $ AddUses asset Charge 1)
       pure i
     _ -> AkachiOnyele <$> runMessage msg attrs

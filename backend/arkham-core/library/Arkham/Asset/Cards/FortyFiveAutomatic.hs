@@ -18,10 +18,7 @@ fortyFiveAutomatic = asset FortyFiveAutomatic Cards.fortyFiveAutomatic
 
 instance HasAbilities FortyFiveAutomatic where
   getAbilities (FortyFiveAutomatic a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ FightAction
-        $ ActionCost 1 <> assetUseCost a Ammo 1
-    ]
+    [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of

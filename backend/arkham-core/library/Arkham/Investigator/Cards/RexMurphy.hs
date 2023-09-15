@@ -25,7 +25,7 @@ instance HasAbilities RexMurphy where
   getAbilities (RexMurphy x) =
     [ (restrictedAbility x 1)
         (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
-        (FreeReactionAbility $ SuccessfulInvestigationResult Timing.After You Anywhere (atLeast 2))
+        (freeReaction $ SuccessfulInvestigationResult Timing.After You Anywhere (atLeast 2))
     ]
 
 instance HasChaosTokenValue RexMurphy where

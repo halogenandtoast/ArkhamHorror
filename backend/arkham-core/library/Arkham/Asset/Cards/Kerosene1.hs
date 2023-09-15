@@ -30,8 +30,8 @@ instance HasAbilities Kerosene1 where
               (LocationOfThis <> LocationWithDefeatedEnemyThisRound)
             <> AnyCriterion
               [ InvestigatorExists
-                  ( HealableInvestigator (toSource a) HorrorType $
-                      InvestigatorAt YourLocation
+                  ( HealableInvestigator (toSource a) HorrorType
+                      $ InvestigatorAt YourLocation
                   )
               , AssetExists
                   ( HealableAsset (toSource a) HorrorType $ AssetAt YourLocation
@@ -62,8 +62,8 @@ instance RunMessage Kerosene1 where
 
       let maxHorror = min 2 (totalInvestigatorHorror + totalAssetHorror)
 
-      push $
-        chooseAmounts
+      push
+        $ chooseAmounts
           iid
           "Choose amount of horror to heal"
           (MaxAmountTarget maxHorror)
@@ -72,32 +72,32 @@ instance RunMessage Kerosene1 where
       pure a
     ResolveAmounts iid (getChoiceAmount "Horror" -> n) (isTarget attrs -> True) ->
       do
-        pushAll $
-          replicate n $
-            UseCardAbilityChoice
-              iid
-              (toSource attrs)
-              1
-              NoAbilityMetadata
-              []
-              NoPayment
+        pushAll
+          $ replicate n
+          $ UseCardAbilityChoice
+            iid
+            (toSource attrs)
+            1
+            NoAbilityMetadata
+            []
+            NoPayment
         pure a
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
       investigatorsWithHeal <-
-        getInvestigatorsWithHealHorror attrs 1 $
-          colocatedWith iid
+        getInvestigatorsWithHealHorror attrs 1
+          $ colocatedWith iid
 
       assets <-
-        selectTargets $
-          HealableAsset (toSource attrs) HorrorType $
-            AssetAt
-              (locationWithInvestigator iid)
+        selectTargets
+          $ HealableAsset (toSource attrs) HorrorType
+          $ AssetAt
+            (locationWithInvestigator iid)
 
-      push $
-        chooseOne iid $
-          [ TargetLabel target [HealHorror target (toSource attrs) 1]
+      push
+        $ chooseOne iid
+        $ [ TargetLabel target [HealHorror target (toSource attrs) 1]
           | target <- assets
           ]
-            <> map (uncurry targetLabel . second pure) investigatorsWithHeal
+          <> map (uncurry targetLabel . second only) investigatorsWithHeal
       pure a
     _ -> Kerosene1 <$> runMessage msg attrs

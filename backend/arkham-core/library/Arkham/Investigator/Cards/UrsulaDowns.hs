@@ -34,7 +34,7 @@ instance HasAbilities UrsulaDowns where
   getAbilities (UrsulaDowns (attrs `With` _)) =
     [ playerLimit PerRound
         $ restrictedAbility attrs 1 Self
-        $ FreeReactionAbility (Moves Timing.After You AnySource Anywhere Anywhere)
+        $ freeReaction (Moves Timing.After You AnySource Anywhere Anywhere)
     ]
 
 instance HasChaosTokenValue UrsulaDowns where
@@ -65,7 +65,7 @@ instance RunMessage UrsulaDowns where
         $ chooseOne attrs.id
         $ [ Label "Do not move to a connecting location" []
           , Label "Move to a connecting location"
-              $ [chooseOne attrs.id $ targetLabels1 targets (Move . move (toSource attrs) (toId attrs))]
+              $ [chooseOne attrs.id $ targetLabels targets (only . Move . move (toSource attrs) (toId attrs))]
           ]
       pure $ UrsulaDowns $ attrs `with` Metadata False
     _ -> UrsulaDowns . (`with` metadata) <$> runMessage msg attrs

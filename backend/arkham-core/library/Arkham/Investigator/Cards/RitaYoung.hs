@@ -40,7 +40,7 @@ instance HasAbilities RitaYoung where
                 , enemyExists $ EvadingEnemy <> EnemyCanBeDamagedBySource (toAbilitySource a 1)
                 ]
           )
-          (FreeReactionAbility $ Matcher.EnemyEvaded Timing.After You AnyEnemy)
+          (freeReaction $ Matcher.EnemyEvaded Timing.After You AnyEnemy)
     ]
 
 instance HasChaosTokenValue RitaYoung where
@@ -68,7 +68,7 @@ instance RunMessage RitaYoung where
           | canDamage
           ]
           <> [ Label "Move to a connecting location"
-              $ [chooseOne iid $ targetLabels1 connectingLocations (Move . move (toSource attrs) iid)]
+              $ [chooseOne iid $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)]
              | notNull connectingLocations
              ]
       pure i

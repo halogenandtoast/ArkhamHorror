@@ -102,16 +102,13 @@ instance RunMessage TheGathering where
       pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      pushWhenM (selectAny $ EnemyAt (locationWithInvestigator iid) <> withTrait Trait.Ghoul)
-        $ assignDamageAndHorror iid (ChaosTokenEffectSource Tablet) 1 (if isEasyStandard attrs then 0 else 1)
+      pushWhenM (selectAny $ enemyAtLocationWith iid <> withTrait Trait.Ghoul)
+        $ assignDamageAndHorror iid Tablet 1 (if isEasyStandard attrs then 0 else 1)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Skull | isHardExpert attrs -> do
-          push
-            $ findAndDrawEncounterCard
-              iid
-              (CardWithType EnemyType <> CardWithTrait Trait.Ghoul)
+          push $ findAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait Trait.Ghoul)
         Cultist -> push $ assignHorror iid (ChaosTokenSource token) (if isEasyStandard attrs then 1 else 2)
         _ -> pure ()
       pure s

@@ -26,25 +26,25 @@ instance HasAbilities TheBarrier where
     [ mkAbility x 1
         $ Objective
         $ ReactionAbility (RoundEnds Timing.When)
-        $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
+        $ GroupClueCost (PerPlayer 3) "Hallway"
     ]
 
 instance RunMessage TheBarrier where
   runMessage msg a@(TheBarrier attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource iid) AdvancedWithClues
+      push $ advanceVia #clues a iid
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      hallwayId <- getJustLocationByName "Hallway"
-      parlorId <- getJustLocationByName "Parlor"
+      hallway <- getJustLocationByName "Hallway"
+      parlor <- getJustLocationByName "Parlor"
       ghoulPriest <- getSetAsideCard Enemies.ghoulPriest
       litaChantler <- getSetAsideCard Assets.litaChantler
-      createGhoulPriest <- createEnemyAt_ ghoulPriest hallwayId Nothing
+      createGhoulPriest <- createEnemyAt_ ghoulPriest hallway Nothing
       assetId <- getRandom
 
       pushAll
-        [ RevealLocation Nothing parlorId
-        , CreateAssetAt assetId litaChantler (AtLocation parlorId)
+        [ RevealLocation Nothing parlor
+        , CreateAssetAt assetId litaChantler (AtLocation parlor)
         , createGhoulPriest
         , advanceActDeck attrs
         ]

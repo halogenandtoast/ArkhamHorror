@@ -11,6 +11,7 @@ import Arkham.Act.Sequence as X
 import Arkham.Act.Types as X
 import Arkham.Cost as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Act as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X

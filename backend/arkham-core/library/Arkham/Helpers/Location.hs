@@ -35,7 +35,7 @@ getConnectedMatcher l = do
     <$> foldM applyModifier (base <> directionalMatchers) modifiers
  where
   applyModifier current (ConnectedToWhen whenMatcher matcher) = do
-    matches <- member l <$> select whenMatcher
+    matches <- elem l <$> select whenMatcher
     pure $ current <> [matcher | matches]
   applyModifier current _ = pure current
   self = LocationWithId l

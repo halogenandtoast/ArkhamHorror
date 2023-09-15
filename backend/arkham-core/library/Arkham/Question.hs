@@ -117,19 +117,25 @@ data Question msg
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
   deriving stock (Show, Eq)
 
-targetLabel :: Targetable target => target -> [msg] -> UI msg
-targetLabel = TargetLabel . toTarget
+targetLabel
+  :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))
+  => target
+  -> t msg
+  -> UI msg
+targetLabel (toTarget -> target) (toList -> msgs) = TargetLabel target msgs
 
-targetLabel1 :: Targetable target => target -> msg -> UI msg
-targetLabel1 t msg = targetLabel t [msg]
-
-targetLabels :: Targetable target => [target] -> (target -> [msg]) -> [UI msg]
+targetLabels
+  :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))
+  => [target]
+  -> (target -> t msg)
+  -> [UI msg]
 targetLabels = flip mapTargetLabel
 
-targetLabels1 :: Targetable target => [target] -> (target -> msg) -> [UI msg]
-targetLabels1 ts f = mapTargetLabel (pure . f) ts
-
-mapTargetLabel :: Targetable target => (target -> [msg]) -> [target] -> [UI msg]
+mapTargetLabel
+  :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))
+  => (target -> t msg)
+  -> [target]
+  -> [UI msg]
 mapTargetLabel f = map (\c -> targetLabel c (f c))
 
 mapTargetLabelWith :: Targetable target => (c -> target) -> (c -> [msg]) -> [c] -> [UI msg]

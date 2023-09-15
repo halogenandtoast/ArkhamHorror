@@ -65,7 +65,7 @@ import Language.Haskell.TH hiding (location)
 import Safe as X (fromJustNote)
 import System.Random.Shuffle as X
 
-import Data.Foldable (foldlM)
+import Data.Foldable (Foldable (foldMap), foldlM)
 import Data.List.NonEmpty qualified as NE
 
 suffixedNamer :: FieldNamer
@@ -303,3 +303,16 @@ sumAllM
   => t (f (Sum b))
   -> f b
 sumAllM xs = getSum <$> foldAllM xs
+
+newtype Only a = Only a
+
+type instance Element (Only a) = a
+
+instance MonoFoldable (Only a) where
+  otoList (Only a) = [a]
+
+only :: a -> Only a
+only = Only
+
+instance Foldable Only where
+  foldMap f (Only a) = f a

@@ -332,7 +332,7 @@ canCommitToAnotherLocation attrs otherLocation = do
   modifiers <- getModifiers (toTarget attrs)
   anyM permit modifiers
  where
-  permit (CanCommitToSkillTestPerformedByAnInvestigatorAt matcher) = member otherLocation <$> select matcher
+  permit (CanCommitToSkillTestPerformedByAnInvestigatorAt matcher) = elem otherLocation <$> select matcher
   permit _ = pure False
 
 findCard :: HasCallStack => CardId -> InvestigatorAttrs -> Card
@@ -416,7 +416,7 @@ canHaveHorrorHealed a iid = do
         mAsIfInverstigator <- getFirst . foldMap asIfInvestigator <$> getModifiers target
         case mAsIfInverstigator of
           Just iid' | iid == iid' -> do
-            innerResult <- member tid <$> select (treacheryIs Treacheries.rationalThought)
+            innerResult <- elem tid <$> select (treacheryIs Treacheries.rationalThought)
             pure $ InvestigatorId (CardCode $ UUID.toText $ unTreacheryId tid) <$ guard innerResult
           _ -> pure Nothing
       _ -> pure Nothing

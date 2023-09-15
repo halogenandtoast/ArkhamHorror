@@ -5211,6 +5211,7 @@ runGameMessage msg g = case msg of
     pure $ g & (activeCardL ?~ card)
   Revelation iid (PlayerCardSource card) -> case toCardType card of
     AssetType -> do
+      sendRevelation (toJSON $ toCard card)
       assetId <- getRandom
       let asset = createAsset card assetId
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
@@ -5245,7 +5246,7 @@ runGameMessage msg g = case msg of
         other -> other
     pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
-    push $ ResolvedCard iid (EncounterCard card)
+    push $ ResolvedCard iid (toCard card)
     let
       g' =
         g
@@ -5257,13 +5258,15 @@ runGameMessage msg g = case msg of
             )
     case toCardType card of
       EnemyType -> do
+        investigator <- getInvestigator iid
+        sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
         enemyId <- getRandom
         let enemy = createEnemy card enemyId
         checkWindowMessage <-
           checkWindows
             [ mkWindow
                 Timing.When
-                (Window.DrawCard iid (EncounterCard card) Deck.EncounterDeck)
+                (Window.DrawCard iid (toCard card) Deck.EncounterDeck)
             ]
         pushAll
           $ [checkWindowMessage, InvestigatorDrawEnemy iid enemyId]
@@ -5272,18 +5275,20 @@ runGameMessage msg g = case msg of
         pure
           $ g'
           & (entitiesL . enemiesL . at enemyId ?~ enemy)
-          & (activeCardL ?~ EncounterCard card)
+          & (activeCardL ?~ toCard card)
       TreacheryType -> do
-        g
-          <$ push
-            (DrewTreachery iid (Just Deck.EncounterDeck) $ EncounterCard card)
+        sendRevelation (toJSON $ toCard card)
+        push $ DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)
+        pure g
       EncounterAssetType -> do
+        sendRevelation (toJSON $ toCard card)
         assetId <- getRandom
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ resolve $ Revelation iid (AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       LocationType -> do
+        sendRevelation (toJSON $ toCard card)
         locationId <- getRandom
         let location = createLocation card locationId
         pushAll

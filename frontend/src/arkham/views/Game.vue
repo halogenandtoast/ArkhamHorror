@@ -229,7 +229,8 @@ provide('solo', solo)
             <div class="revelation-card-container">
               <div class="revelation-card">
                 <CardView :game="game" :card="gameCard.card" :investigatorId="investigatorId" />
-                <img :src="imgsrc('player_back.jpg')" class="card back" />
+                <img v-if="gameCard.card.tag === 'PlayerCard'" :src="imgsrc('player_back.jpg')" class="card back" />
+                <img v-else :src="imgsrc('back.png')" class="card back" />
               </div>
               <button @click="gameCard = null">OK</button>
             </div>

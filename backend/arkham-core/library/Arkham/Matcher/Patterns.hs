@@ -230,6 +230,11 @@ pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0))
 
 -- ** Location Patterns **
 
+pattern YourLocation :: LocationMatcher
+pattern YourLocation <- LocationWithInvestigator You
+  where
+    YourLocation = LocationWithInvestigator You
+
 pattern SameLocation :: LocationMatcher
 pattern SameLocation <- YourLocation
   where

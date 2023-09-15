@@ -297,7 +297,6 @@ data LocationMatcher
   | LocationLeavingPlay
   | LocationWithoutClues
   | LocationWithDoom ValueMatcher
-  | YourLocation
   | LocationIs CardCode
   | LocationWithCardId CardId
   | Anywhere

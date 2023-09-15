@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { JsonDecoder } from 'ts.data.json';
 import { useWebSocket, useClipboard } from '@vueuse/core'
-import { ref, computed, provide, onUnmounted, watch } from 'vue'
+import { reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
@@ -80,8 +80,9 @@ const gameLog = ref<readonly string[]>(Object.freeze([]))
 const question = computed(() => investigatorId.value ? game.value?.question[investigatorId.value] : null)
 
 async function undo() {
+  gameTemp.value = null
   gameCard.value = null
-  undoChoice(props.gameId);
+  undoChoice(props.gameId)
 }
 
 watch(data, async (newData) => {
@@ -131,6 +132,13 @@ fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInve
   gameLog.value = Object.freeze(newGame.log)
   investigatorId.value = newInvestigatorId
   ready.value = true
+  Object.values(newGame.cards).forEach((card) => {
+    const { cardCode, isFlipped } = card.contents
+    const suffix = !props.revealed && isFlipped ? 'b' : ''
+    const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
+    if (preloaded.includes(url)) return
+    preload(url)
+  })
 })
 
 async function choose(idx: number) {
@@ -154,6 +162,17 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
 function switchInvestigator (newInvestigatorId: string) { investigatorId.value = newInvestigatorId }
 
 async function update(state: Arkham.Game) { game.value = state }
+
+const preloaded = reactive([])
+
+const preload = (img) => {
+  const preloadLink = document.createElement("link");
+  preloadLink.href = img;
+  preloadLink.rel = "preload";
+  preloadLink.as = "image";
+  preloaded.push(img)
+  document.head.appendChild(preloadLink);
+}
 
 function debugExport () {
   fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))

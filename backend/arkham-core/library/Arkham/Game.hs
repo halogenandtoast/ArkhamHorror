@@ -5345,6 +5345,7 @@ runGameMessage msg g = case msg of
               <> [AfterRevelation iid treacheryId, UnsetActiveCard]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   DrewTreachery iid _ (PlayerCard card) -> do
+    sendRevelation (toJSON $ toCard card)
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId
     -- player treacheries will not trigger draw treachery windows

@@ -120,7 +120,7 @@ data TestApp = TestApp
   , messageQueueRef :: Queue Message
   , gen :: IORef StdGen
   , testLogger :: Maybe (Message -> IO ())
-  , testGameLogger :: Text -> IO ()
+  , testGameLogger :: ClientMessage -> IO ()
   }
 
 newtype TestAppT a = TestAppT {unTestAppT :: StateT TestApp IO a}

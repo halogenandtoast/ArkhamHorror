@@ -236,6 +236,27 @@ instance Data Enemy where
   toConstr _ = error "toConstr(Enemy)"
   dataTypeOf _ = error "dataTypeOf(Enemy)"
 
+-- This instance might need to be defined in the future, I believe we'd need
+-- something like the definition below, however this means that we'd need to
+-- make every Enemy an instance of Data as well, which is a bit of a pain.
+-- But if we need that simply add Data a to IsEnemy and follow the errors.
+
+{-
+data ExConstr = forall a. Typeable a => ExConstr a
+
+instance Data Enemy where
+  gunfold k z c | Just (ExConstr ec) <- cast c, Just (Enemy (_ :: a)) <- cast ec = k (z (Enemy :: a -> Enemy))
+  gunfold _ _ c = error $ "gunfold(Enemy): " <> show c
+  toConstr (Enemy _) = con_Enemy
+  dataTypeOf _ = ty_Enemy
+
+con_Enemy :: Constr
+con_Enemy = mkConstr ty_Enemy "Enemy" [] Prefix
+
+ty_Enemy :: DataType
+ty_Enemy = mkDataType "Arkham.Enemy.Types.Enemy" [con_Enemy]
+-}
+
 instance Data (SomeField Enemy) where
   gunfold _ _ _ = error "gunfold(Enemy)"
   toConstr _ = error "toConstr(Enemy)"

@@ -285,6 +285,7 @@ allPlayerEventCards =
       , telescopicSight3
       , thePaintedWorld
       , thinkOnYourFeet
+      , thinkOnYourFeet2
       , timeWarp2
       , trialByFire
       , trueSurvivor3
@@ -2456,6 +2457,19 @@ contraband2 =
                 <> AssetNotAtUseLimit
                 <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
             )
+    }
+
+thinkOnYourFeet2 :: CardDef
+thinkOnYourFeet2 =
+  (event "51006" "Think on Your Feet" 0 Rogue)
+    { cdSkills = [#intellect, #agility, #agility]
+    , cdCardTraits = singleton Trick
+    , cdFastWindow = Just (EnemyEnters Timing.When YourLocation AnyEnemy)
+    , cdCriteria =
+        Just
+          ( Criteria.LocationExists AccessibleLocation
+              <> Criteria.InvestigatorExists (You <> InvestigatorCanMove)
+          )
     }
 
 bloodEclipse1 :: CardDef

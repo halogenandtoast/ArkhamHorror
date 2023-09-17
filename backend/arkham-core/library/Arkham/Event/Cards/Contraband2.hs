@@ -23,22 +23,18 @@ contraband2 = event Contraband2 Cards.contraband2
 instance RunMessage Contraband2 where
   runMessage msg e@(Contraband2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      investigatorIds <-
-        selectList $
-          InvestigatorAt $
-            LocationWithInvestigator $
-              InvestigatorWithId iid
+      investigatorIds <- selectList $ colocatedWith iid
 
       ammoAssets <-
-        selectWithField AssetUses $
-          AssetWithUseType Ammo
+        selectWithField AssetUses
+          $ AssetWithUseType Ammo
             <> AssetNotAtUseLimit
             <> AssetOneOf
               (map assetControlledBy investigatorIds)
 
       supplyAssets <-
-        selectWithField AssetUses $
-          AssetWithUseType Supply
+        selectWithField AssetUses
+          $ AssetWithUseType Supply
             <> AssetNotAtUseLimit
             <> AssetOneOf
               (map assetControlledBy investigatorIds)
@@ -51,8 +47,8 @@ instance RunMessage Contraband2 where
 
       drawing <- drawCards iid attrs 1
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Place 2 ammo or supply tokens on that asset and draw 1 card."

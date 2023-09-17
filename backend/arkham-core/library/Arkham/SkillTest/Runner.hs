@@ -88,20 +88,6 @@ subtractSkillIconCount SkillTest {..} =
   matches WildIcon = False
   matches (SkillIcon _) = False
 
-getModifiedSkillTestDifficulty :: HasGame m => SkillTest -> m Int
-getModifiedSkillTestDifficulty s = do
-  modifiers' <- getModifiers SkillTestTarget
-  let
-    preModifiedDifficulty =
-      foldr applyPreModifier (skillTestDifficulty s) modifiers'
-  pure $ foldr applyModifier preModifiedDifficulty modifiers'
- where
-  applyModifier (Difficulty m) n = max 0 (n + m)
-  applyModifier DoubleDifficulty n = n * 2
-  applyModifier _ n = n
-  applyPreModifier (SetDifficulty m) _ = m
-  applyPreModifier _ n = n
-
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedChaosTokenValue :: HasGame m => SkillTest -> ChaosToken -> m Int

@@ -115,6 +115,7 @@ allPlayerSkillCards =
       , recklessAssault
       , resourceful
       , riseToTheOccasion
+      , riseToTheOccasion3
       , runForYourLife
       , sayYourPrayers
       , sealOfTheElderSign5
@@ -529,6 +530,18 @@ daring =
   (skill "06111" "Daring" [#wild, #wild, #wild] Guardian)
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyTestWithActions [Action.Fight, Action.Evade]]
+    }
+
+riseToTheOccasion3 :: CardDef
+riseToTheOccasion3 =
+  ( skill
+      "51010"
+      "Rise to the Occasion"
+      [#wild, #wild]
+      Survivor
+  )
+    { cdCardTraits = singleton Innate
+    , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 1]
     }
 
 overpower2 :: CardDef

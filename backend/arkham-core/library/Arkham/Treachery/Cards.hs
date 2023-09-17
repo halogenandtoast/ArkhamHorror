@@ -145,6 +145,7 @@ allPlayerTreacheryCards =
       , theHarbinger
       , thePriceOfFailure
       , thriceDamnedCuriosity
+      , throughTheGates
       , voiceOfTheMessenger
       , wrackedByNightmares
       , yaztaroth
@@ -1683,6 +1684,10 @@ maskOfUmordhoth =
   (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
     { cdCardTraits = setFromList [Item, Mask]
     }
+
+throughTheGates :: CardDef
+throughTheGates =
+  (basicWeakness "51011" "Through the Gates") {cdCardTraits = setFromList [Pact, Mystery]}
 
 selfDestructive :: CardDef
 selfDestructive =

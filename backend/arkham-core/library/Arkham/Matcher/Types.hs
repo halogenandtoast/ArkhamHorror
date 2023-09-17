@@ -232,6 +232,7 @@ data EnemyMatcher
   | NotEnemy EnemyMatcher
   | MovingEnemy
   | EvadingEnemy
+  | AttackedEnemy
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher

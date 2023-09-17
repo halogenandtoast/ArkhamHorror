@@ -239,6 +239,7 @@ allPlayerEventCards =
       , onTheHunt
       , onTheLam
       , oops
+      , oops2
       , parallelFates
       , parallelFates2
       , payDay1
@@ -773,12 +774,12 @@ oops =
   (event "02113" "Oops!" 2 Survivor)
     { cdSkills = [#combat, #combat]
     , cdCardTraits = singleton Fortune
+    , cdCriteria = Just $ Criteria.enemyExists (EnemyAt YourLocation <> NotEnemy AttackedEnemy)
     , cdFastWindow =
         Just
-          $ SkillTestResult Timing.After You (WhileAttackingAnEnemy AnyEnemy)
+          $ SkillTestResult Timing.After You (WhileAttackingAnEnemy EnemyEngagedWithYou)
           $ FailureResult
-          $ LessThan
-          $ Static 3
+          $ lessThan 3
     , cdAlternateCardCodes = ["60518"]
     }
 
@@ -2470,6 +2471,20 @@ thinkOnYourFeet2 =
           ( Criteria.LocationExists AccessibleLocation
               <> Criteria.InvestigatorExists (You <> InvestigatorCanMove)
           )
+    , cdLevel = 2
+    }
+
+oops2 :: CardDef
+oops2 =
+  (event "51009" "Oops!" 2 Survivor)
+    { cdSkills = [#combat, #combat, #agility]
+    , cdCardTraits = singleton Fortune
+    , cdLevel = 2
+    , cdFastWindow =
+        Just
+          $ SkillTestResult Timing.After You (WhileAttackingAnEnemy AnyEnemy)
+          $ FailureResult
+          $ lessThan 4
     }
 
 bloodEclipse1 :: CardDef

@@ -31,9 +31,9 @@ instance HasModifiersFor Duke where
     mAction <- getSkillTestAction
     case (mAction, mSource) of
       (Just Action.Fight, Just source) | isSource a source -> do
-        pure $ toModifiers a [BaseSkillOf SkillCombat 4, DamageDealt 1]
+        pure $ toModifiers a [BaseSkillOf #combat 4, DamageDealt 1]
       (Just Action.Investigate, Just source) | isSource a source -> do
-        pure $ toModifiers a [BaseSkillOf SkillIntellect 4]
+        pure $ toModifiers a [BaseSkillOf #intellect 4]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -43,11 +43,8 @@ instance HasModifiersFor Duke where
 instance HasAbilities Duke where
   getAbilities (Duke a) =
     [ fightAbility a 1 (ActionCost 1 <> exhaust a) ControlsThis
-    , restrictedAbility a 2 ControlsThis $
-        ActionAbilityWithBefore
-          (Just Action.Investigate)
-          (Just Action.Move)
-          (ActionCost 1 <> exhaust a)
+    , restrictedAbility a 2 ControlsThis
+        $ ActionAbilityWithBefore (Just #investigate) (Just #move) (ActionCost 1 <> exhaust a)
     ]
 
 dukeInvestigate :: HasGame m => AssetAttrs -> InvestigatorId -> LocationId -> m Message
@@ -57,26 +54,26 @@ dukeInvestigate attrs iid lid = do
 
 instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ ChooseFightEnemy iid source Nothing SkillCombat mempty False
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ chooseFightEnemy iid (toAbilitySource attrs 1) #combat
       pure a
-    UseCardAbility iid source 2 windows' _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do
+      let source = toAbilitySource attrs 2
       lid <- getJustLocation iid
       accessibleLocationIds <-
-        traverse (traverseToSnd (dukeInvestigate attrs iid))
-          =<< selectList (AccessibleFrom $ LocationWithId lid)
+        traverse (traverseToSnd (dukeInvestigate attrs iid)) =<< selectList (accessibleFrom lid)
       investigateAbilities <-
         filterM
           ( andM
               . sequence
-                [ pure . (`abilityIs` Action.Investigate)
+                [ pure . (`abilityIs` #investigate)
                 , (\ab -> anyM (getCanAffordAbility iid ab) windows')
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                 ]
           )
           =<< field LocationAbilities lid
       let
-        investigateActions :: [UI Message] =
+        investigateActions =
           map
             ( (\f -> f windows' [])
                 . AbilityLabel iid
@@ -89,23 +86,18 @@ instance RunMessage Duke where
                 . (`applyAbilityModifiers` [ActionCostModifier (-1)])
             )
             investigateAbilities
-      push $
-        chooseOne iid $
-          investigateActions
-            <> [ targetLabel
-                lid'
-                [ Move $ move attrs iid lid'
-                , CheckAdditionalActionCosts
-                    iid
-                    (LocationTarget lid')
-                    Action.Investigate
-                    [investigate']
-                ]
-               | (lid', investigate') <- accessibleLocationIds
-               ]
+      push
+        $ chooseOne iid
+        $ investigateActions
+          <> [ targetLabel
+              lid'
+              [ Move $ move attrs iid lid'
+              , CheckAdditionalActionCosts iid (toTarget lid') #investigate [investigate']
+              ]
+             | (lid', investigate') <- accessibleLocationIds
+             ]
       pure a
-    UseCardAbility iid (ProxySource (LocationSource lid) (isSource attrs -> True)) 101 _ _ -> do
-      investigate' <- dukeInvestigate attrs iid lid
-      push investigate'
+    UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 _ _ -> do
+      pushM $ dukeInvestigate attrs iid lid
       pure a
     _ -> Duke <$> runMessage msg attrs

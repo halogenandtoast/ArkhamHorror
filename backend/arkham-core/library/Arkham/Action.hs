@@ -1,6 +1,7 @@
 module Arkham.Action where
 
 import Arkham.Prelude
+import GHC.OverloadedLabels
 
 data ActionType
   = EnemyActionType
@@ -32,3 +33,9 @@ data Action
   | Circle
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance IsLabel "investigate" Action where
+  fromLabel = Investigate
+
+instance IsLabel "move" Action where
+  fromLabel = Move

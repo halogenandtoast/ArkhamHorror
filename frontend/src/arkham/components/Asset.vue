@@ -149,7 +149,7 @@ watch(abilities, (abilities) => {
 </script>
 
 <template>
-  <div class="asset">
+  <div class="asset" :data-index="asset.cardId">
     <div class="card-frame">
       <img
         :data-id="id"

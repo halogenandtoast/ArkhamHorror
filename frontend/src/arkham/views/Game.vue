@@ -677,6 +677,7 @@ header {
       position: absolute;
       top: 0;
       left: 0;
+      opacity: 0;
       backface-visibility: hidden;
       animation: flip 0.3s linear;
       animation-delay: 0.3s;
@@ -696,7 +697,7 @@ header {
       animation: flip 0.3s linear;
       animation-direction: reverse;
       animation-delay: 0.3s;
-      animation-fill-mode: forwards;         /* When the spec is finished */
+      animation-fill-mode: forwards;
     }
   }
 }

@@ -317,3 +317,6 @@ only = Only
 
 instance Foldable Only where
   foldMap f (Only a) = f a
+
+forMaybeM :: Monad m => [a] -> (a -> m (Maybe b)) -> m [b]
+forMaybeM xs f = catMaybes <$> traverse f xs

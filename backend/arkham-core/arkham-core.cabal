@@ -352,6 +352,7 @@ library
       Arkham.Asset.Cards.BeatCop2
       Arkham.Asset.Cards.BerettaM19184
       Arkham.Asset.Cards.Blackjack
+      Arkham.Asset.Cards.Blackjack2
       Arkham.Asset.Cards.BloodPact3
       Arkham.Asset.Cards.BookOfShadows1
       Arkham.Asset.Cards.BookOfShadows3
@@ -661,6 +662,7 @@ library
       Arkham.Asset.Cards.Straitjacket
       Arkham.Asset.Cards.StrangeSolution
       Arkham.Asset.Cards.StrangeSolutionAcidicIchor4
+      Arkham.Asset.Cards.StrangeSolutionEmpoweringElixir4
       Arkham.Asset.Cards.StrangeSolutionFreezingVariant4
       Arkham.Asset.Cards.StrangeSolutionRestorativeConcoction4
       Arkham.Asset.Cards.StrayCat

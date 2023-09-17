@@ -168,6 +168,7 @@ allPlayerAssetCards =
       , beatCop2
       , berettaM19184
       , blackjack
+      , blackjack2
       , bloodPact3
       , bookOfShadows1
       , bookOfShadows3
@@ -464,6 +465,7 @@ allPlayerAssetCards =
       , stHubertsKey
       , strangeSolution
       , strangeSolutionAcidicIchor4
+      , strangeSolutionEmpoweringElixir4
       , strangeSolutionFreezingVariant4
       , strangeSolutionRestorativeConcoction4
       , strayCat
@@ -1585,6 +1587,7 @@ strangeSolutionRestorativeConcoction4 =
     , cdSkills = [#willpower, #willpower]
     , cdLevel = 4
     , cdUses = uses Supply 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheSolution
     }
 
 strangeSolutionAcidicIchor4 :: CardDef
@@ -1594,6 +1597,7 @@ strangeSolutionAcidicIchor4 =
     , cdSkills = [#combat, #combat]
     , cdLevel = 4
     , cdUses = uses Supply 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheSolution
     }
 
 strangeSolutionFreezingVariant4 :: CardDef
@@ -1603,6 +1607,7 @@ strangeSolutionFreezingVariant4 =
     , cdSkills = [#agility, #agility]
     , cdLevel = 4
     , cdUses = uses Supply 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheSolution
     }
 
 joeyTheRatVigil :: CardDef
@@ -3632,6 +3637,25 @@ bandolier2 =
     , cdCardTraits = setFromList [Item]
     , cdSlots = [BodySlot]
     , cdLevel = 2
+    }
+
+blackjack2 :: CardDef
+blackjack2 =
+  (asset "51002" "Blackjack" 2 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSlots = [HandSlot]
+    , cdLevel = 2
+    }
+
+strangeSolutionEmpoweringElixir4 :: CardDef
+strangeSolutionEmpoweringElixir4 =
+  (asset "51004" ("Strange Solution" <:> "Empowering Elixir") 1 Seeker)
+    { cdCardTraits = setFromList [Item, Science]
+    , cdSkills = [#intellect, #intellect]
+    , cdLevel = 4
+    , cdUses = uses Supply 3
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheSolution
     }
 
 riteOfSeeking2 :: CardDef

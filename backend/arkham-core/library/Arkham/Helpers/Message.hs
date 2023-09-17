@@ -38,6 +38,17 @@ drawCards i source n = do
   drawing <- newCardDraw i source n
   pure $ DrawCards drawing
 
+drawCardsIfCan
+  :: (MonadRandom m, Sourceable source, HasGame m)
+  => InvestigatorId
+  -> source
+  -> Int
+  -> m (Maybe Message)
+drawCardsIfCan i source n = do
+  canDraw <- i <=~> InvestigatorCanDrawCards Anyone
+  drawing <- drawCards i source n
+  pure $ guard canDraw $> drawing
+
 drawCardsAction
   :: (MonadRandom m, Sourceable source)
   => InvestigatorId
@@ -320,6 +331,12 @@ search iid (toSource -> source) (toTarget -> target) = Search iid source target
 
 takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False
+
+gainResourcesIfCan
+  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> Int -> m (Maybe Message)
+gainResourcesIfCan iid source n = do
+  canGainResources <- iid <=~> InvestigatorCanGainResources
+  pure $ guard canGainResources $> takeResources iid source n
 
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage

@@ -36,7 +36,7 @@ instance HasAbilities Machete where
 
 instance RunMessage Machete where
   runMessage msg a@(Machete attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 1)
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat

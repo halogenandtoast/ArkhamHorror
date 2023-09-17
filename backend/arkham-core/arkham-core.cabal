@@ -696,6 +696,7 @@ library
       Arkham.Asset.Cards.TheTatteredCloak
       Arkham.Asset.Cards.TheTowerXVI
       Arkham.Asset.Cards.ThirtyTwoColt
+      Arkham.Asset.Cards.ThirtyTwoColt2
       Arkham.Asset.Cards.TimewornBrand5
       Arkham.Asset.Cards.ToothOfEztli
       Arkham.Asset.Cards.TrackShoes
@@ -1147,6 +1148,7 @@ library
       Arkham.Event.Cards.DynamiteBlast
       Arkham.Event.Cards.DynamiteBlast2
       Arkham.Event.Cards.DynamiteBlast3
+      Arkham.Event.Cards.EatLead
       Arkham.Event.Cards.EatLead2
       Arkham.Event.Cards.Eavesdrop
       Arkham.Event.Cards.EideticMemory3

@@ -151,6 +151,7 @@ allPlayerEventCards =
       , dynamiteBlast
       , dynamiteBlast2
       , dynamiteBlast3
+      , eatLead
       , eatLead2
       , eavesdrop
       , eideticMemory3
@@ -1428,7 +1429,7 @@ eatLead2 =
           $ ActivateAbility
             Timing.When
             You
-            (AssetAbility (AssetWithTrait Firearm) <> AbilityIsAction Action.Fight)
+            (AssetAbility (AssetWithTrait Firearm <> AssetWithUses Uses.Ammo) <> AbilityIsAction Action.Fight)
     , cdLevel = 2
     , cdSkills = [#combat, #agility]
     }
@@ -2485,6 +2486,19 @@ oops2 =
           $ SkillTestResult Timing.After You (WhileAttackingAnEnemy AnyEnemy)
           $ FailureResult
           $ lessThan 4
+    }
+
+eatLead :: CardDef
+eatLead =
+  (event "51002" "\"Eat lead!\"" 1 Guardian)
+    { cdCardTraits = singleton Tactic
+    , cdFastWindow =
+        Just
+          $ ActivateAbility
+            Timing.When
+            You
+            (AssetAbility (AssetWithTrait Firearm <> AssetWithUses Uses.Ammo) <> AbilityIsAction Action.Fight)
+    , cdSkills = [#combat, #agility]
     }
 
 bloodEclipse1 :: CardDef

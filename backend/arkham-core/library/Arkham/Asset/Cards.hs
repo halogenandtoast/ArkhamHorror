@@ -496,6 +496,7 @@ allPlayerAssetCards =
       , theTowerXVI
       , thermos
       , thirtyTwoColt
+      , thirtyTwoColt2
       , timewornBrand5
       , toothOfEztli
       , trackShoes
@@ -3678,6 +3679,16 @@ clarityOfMind3 =
     , cdUses = uses Charge 4
     , cdSlots = [ArcaneSlot]
     , cdLevel = 3
+    }
+
+thirtyTwoColt2 :: CardDef
+thirtyTwoColt2 =
+  (asset "52001" ".32 Colt" 2 Guardian)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdUses = uses Ammo 6
+    , cdSlots = [HandSlot]
+    , cdLevel = 2
     }
 
 coltVestPocket2 :: CardDef

@@ -30,6 +30,9 @@ instance WithTrait EnemyMatcher where
 investigatorIs :: HasCardCode a => a -> InvestigatorMatcher
 investigatorIs = InvestigatorIs . toCardCode
 
+notInvestigator :: InvestigatorId -> InvestigatorMatcher
+notInvestigator = NotInvestigator . InvestigatorWithId
+
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
 colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 

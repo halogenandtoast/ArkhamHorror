@@ -6,10 +6,8 @@ module Arkham.Asset.Cards.Blackjack (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.SkillType
 
 newtype Blackjack = Blackjack AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -19,21 +17,15 @@ blackjack :: AssetCard Blackjack
 blackjack = asset Blackjack Cards.blackjack
 
 instance HasAbilities Blackjack where
-  getAbilities (Blackjack a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) (ActionCost 1)
-    ]
+  getAbilities (Blackjack a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
 
 instance RunMessage Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ pushAll
-              [ skillTestModifiers
-                  attrs
-                  (InvestigatorTarget iid)
-                  [SkillModifier SkillCombat 1, DoesNotDamageOtherInvestigator]
-              , ChooseFightEnemy iid source Nothing SkillCombat mempty False
-              ]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
+      pushAll
+        [ skillTestModifiers source iid [SkillModifier #combat 1, DoesNotDamageOtherInvestigator]
+        , chooseFightEnemy iid source #combat
+        ]
+      pure a
     _ -> Blackjack <$> runMessage msg attrs

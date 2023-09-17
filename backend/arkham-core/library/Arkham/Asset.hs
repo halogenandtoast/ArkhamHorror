@@ -21,8 +21,8 @@ lookupAsset cardCode = case lookup cardCode allAssets of
 instance FromJSON Asset where
   parseJSON = withObject "Asset" $ \o -> do
     cCode <- o .: "cardCode"
-    withAssetCardCode cCode $
-      \(_ :: AssetCard a) -> Asset <$> parseJSON @a (Object o)
+    withAssetCardCode cCode
+      $ \(_ :: AssetCard a) -> Asset <$> parseJSON @a (Object o)
 
 withAssetCardCode
   :: CardCode -> (forall a. IsAsset a => AssetCard a -> r) -> r
@@ -577,6 +577,9 @@ allAssets =
     , -- Return to the Dunwich Legacy
       --- guardian [rtdwl]
       SomeAssetCard bandolier2
+    , SomeAssetCard blackjack2
+    , --- seeker [rtdwl]
+      SomeAssetCard strangeSolutionEmpoweringElixir4
     , --- mystic [rtdwl]
       SomeAssetCard riteOfSeeking2
     , -- Return to the Forgotten Age

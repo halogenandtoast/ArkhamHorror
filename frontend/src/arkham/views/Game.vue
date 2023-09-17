@@ -73,56 +73,66 @@ const cards = computed(() => store.cards)
 const ready = ref(false)
 const solo = ref(false)
 const game = ref<Arkham.Game | null>(null)
-const gameTemp = ref<Arkham.Game | null>(null)
 const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
 
 const question = computed(() => investigatorId.value ? game.value?.question[investigatorId.value] : null)
 
 async function undo() {
-  gameTemp.value = null
+  resultQueue.value = []
   gameCard.value = null
   undoChoice(props.gameId)
 }
 
-watch(data, async (newData) => {
-  const result = JSON.parse(newData)
+const resultQueue = ref<any>([])
 
+const handleResult = (result) => {
   switch(result.tag) {
     case "GameMessage":
       gameLog.value = Object.freeze([...gameLog.value, result.contents])
       return
     case "GameCard":
-      gameCardDecoder.decodeToPromise(result).then((r) => {
-        gameCard.value = r
-      })
+      if (gameCard.value) {
+        resultQueue.value.push(result)
+      } else {
+        gameCardDecoder.decodeToPromise(result).then((r) => {
+          gameCard.value = r
+        })
+      }
       return
     case "GameUpdate":
-      Arkham.gameDecoder.decodeToPromise(result.contents)
-        .then((updatedGame) => {
-          if (gameCard.value) {
-            gameTemp.value = updatedGame
-            game.value = {...game.value, question: {}} as Arkham.Game
-          } else {
+      if (gameCard.value) {
+        resultQueue.value.push(result)
+        game.value = {...game.value, question: {}} as Arkham.Game
+      } else {
+        Arkham.gameDecoder.decodeToPromise(result.contents)
+          .then((updatedGame) => {
             game.value = updatedGame
-          }
-          gameLog.value = Object.freeze([...updatedGame.log])
-          if (solo.value === true) {
-            if (Object.keys(game.value.question).length == 1) {
-              investigatorId.value = Object.keys(game.value.question)[0]
-            } else if (game.value.activeInvestigatorId !== investigatorId.value) {
-              investigatorId.value = Object.keys(game.value.question)[0]
+            gameLog.value = Object.freeze([...updatedGame.log])
+            if (solo.value === true) {
+              if (Object.keys(game.value.question).length == 1) {
+                investigatorId.value = Object.keys(game.value.question)[0]
+              } else if (game.value.activeInvestigatorId !== investigatorId.value) {
+                investigatorId.value = Object.keys(game.value.question)[0]
+              }
             }
-          }
-        })
+          })
+      }
       return
   }
+}
+
+watch(data, async (newData) => {
+  const result = JSON.parse(newData)
+  handleResult(result)
 })
 
 watch(gameCard, async () => {
-  if(!gameCard.value && gameTemp.value) {
-    game.value = gameTemp.value
-    gameTemp.value = null
+  if(!gameCard.value) {
+    const r = resultQueue.value.shift()
+    if (r) {
+      handleResult(r)
+    }
   }
 })
 
@@ -641,7 +651,27 @@ header {
   justify-self: center;
 }
 
-@keyframes flip {
+@keyframes flip-back {
+  0% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+
+  49% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: rotateY(-180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes flip-front {
   0% {
     transform: rotateY(180deg);
     opacity: 0;
@@ -673,18 +703,19 @@ header {
     padding-bottom: 15px;
     aspect-ratio: 5/7;
     perspective: 1000px;
-    :deep(.card) {
+    :deep(.card-container) {
+      transform: rotateY(-180deg);
       transform-style: preserve-3d;
       position: absolute;
       top: 0;
       left: 0;
       backface-visibility: hidden;
-      animation: flip 0.3s linear;
+      animation: flip-front 0.3s linear;
       animation-delay: 0.3s;
       animation-fill-mode: forwards;
     }
 
-    .card.front {
+    .card-container {
       opacity: 0;
       transform-style: preserve-3d;
     }
@@ -695,8 +726,7 @@ header {
       top: 0;
       left: 0;
       backface-visibility: hidden;
-      animation: flip 0.3s linear;
-      animation-direction: reverse;
+      animation: flip-back 0.3s linear;
       animation-delay: 0.3s;
       animation-fill-mode: forwards;
     }

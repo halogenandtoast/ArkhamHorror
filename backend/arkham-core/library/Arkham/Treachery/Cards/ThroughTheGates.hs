@@ -30,6 +30,8 @@ instance RunMessage ThroughTheGates where
       for_ mcard $ \(toCard -> card) -> do
         if card `cardMatch` WeaknessCard
           then pushAll [ObtainCard card, AddToHand iid [card]]
-          else pushAll [ObtainCard card, RemoveAllCopiesOfCardFromGame iid (toCardCode card)]
+          else do
+            send $ format (toCard attrs) <> " removed all copies of " <> format card <> " from the game"
+            pushAll [ObtainCard card, RemoveAllCopiesOfCardFromGame iid (toCardCode card)]
       pure t
     _ -> ThroughTheGates <$> runMessage msg attrs

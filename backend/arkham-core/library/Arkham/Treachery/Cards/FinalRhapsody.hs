@@ -27,7 +27,7 @@ instance RunMessage FinalRhapsody where
         [ chooseOne
             iid
             [ Label
-                ("Take " <> tshow damageCount <> " damage")
+                ("Take " <> tshow damageCount <> " damage and horror")
                 [ InvestigatorAssignDamage
                     iid
                     source

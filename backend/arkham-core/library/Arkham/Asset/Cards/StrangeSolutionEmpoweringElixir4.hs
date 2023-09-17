@@ -28,7 +28,7 @@ instance HasAbilities StrangeSolutionEmpoweringElixir4 where
             $ InvestigatorAt YourLocation
               <> AnyInvestigator [InvestigatorCanGainResources, InvestigatorCanDrawCards Anyone]
         )
-        actionAbility
+        $ actionAbilityWithCost (assetUseCost attrs Charge 1 <> exhaust attrs)
     ]
 
 instance RunMessage StrangeSolutionEmpoweringElixir4 where

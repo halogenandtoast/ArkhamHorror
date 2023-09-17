@@ -210,6 +210,7 @@ allPlayerEventCards =
       , liveAndLearn
       , lodgeDebts
       , logicalReasoning
+      , logicalReasoning4
       , lookWhatIFound
       , lookWhatIFound2
       , lucky
@@ -2499,6 +2500,26 @@ eatLead =
             You
             (AssetAbility (AssetWithTrait Firearm <> AssetWithUses Uses.Ammo) <> AbilityIsAction Action.Fight)
     , cdSkills = [#combat, #agility]
+    }
+
+logicalReasoning4 :: CardDef
+logicalReasoning4 =
+  (event "52003" "Logical Reasoning" 2 Seeker)
+    { cdSkills = [#willpower, #willpower, #willpower]
+    , cdCardTraits = singleton Insight
+    , cdLevel = 4
+    , cdCriteria =
+        Just
+          ( Criteria.InvestigatorExists (You <> InvestigatorWithAnyClues)
+              <> Criteria.AnyCriterion
+                [ Criteria.InvestigatorExists
+                    (HealableInvestigator ThisCard HorrorType $ InvestigatorAt YourLocation)
+                , Criteria.TreacheryExists
+                    ( TreacheryWithTrait Terror
+                        <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
+                    )
+                ]
+          )
     }
 
 bloodEclipse1 :: CardDef

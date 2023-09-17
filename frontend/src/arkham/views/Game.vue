@@ -672,12 +672,12 @@ header {
     width: 300px;
     padding-bottom: 15px;
     aspect-ratio: 5/7;
+    perspective: 1000px;
     :deep(.card) {
       transform-style: preserve-3d;
       position: absolute;
       top: 0;
       left: 0;
-      opacity: 0;
       backface-visibility: hidden;
       animation: flip 0.3s linear;
       animation-delay: 0.3s;
@@ -686,6 +686,10 @@ header {
       -o-animation-fill-mode: forwards;      /* Not implemented yet */
       -ms-animation-fill-mode: forwards;     /* IE 10+ */
       animation-fill-mode: forwards;         /* When the spec is finished */
+    }
+
+    .card.front {
+      opacity: 0;
     }
 
     .card.back {

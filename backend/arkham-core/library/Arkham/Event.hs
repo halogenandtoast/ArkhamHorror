@@ -384,6 +384,9 @@ allEvents =
     , SomeEventCard thinkOnYourFeet2
     , --- survivor [rtdwl]
       SomeEventCard oops2
+    , -- Return to the Path to Carcosa
+      --- guardian [rtnotz]
+      SomeEventCard eatLead
     , -- Return to the Forgotten Age
       --- guardian [rttfa]
       SomeEventCard bloodEclipse1

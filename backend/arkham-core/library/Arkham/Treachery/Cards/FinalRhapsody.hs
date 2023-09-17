@@ -28,13 +28,7 @@ instance RunMessage FinalRhapsody where
             iid
             [ Label
                 ("Take " <> tshow damageCount <> " damage and horror")
-                [ InvestigatorAssignDamage
-                    iid
-                    source
-                    DamageAny
-                    damageCount
-                    damageCount
-                ]
+                [assignDamageAndHorror iid source damageCount damageCount]
             ]
         , ResetChaosTokens source
         ]

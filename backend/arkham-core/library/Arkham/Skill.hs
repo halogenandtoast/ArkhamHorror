@@ -24,8 +24,8 @@ lookupSkill cardCode = case lookup cardCode allSkills of
 instance FromJSON Skill where
   parseJSON = withObject "Skill" $ \o -> do
     cCode <- o .: "cardCode"
-    withSkillCardCode cCode $
-      \(_ :: SkillCard a) -> Skill <$> parseJSON @a (Object o)
+    withSkillCardCode cCode
+      $ \(_ :: SkillCard a) -> Skill <$> parseJSON @a (Object o)
 
 withSkillCardCode
   :: CardCode -> (forall a. IsSkill a => SkillCard a -> r) -> r
@@ -87,6 +87,7 @@ allSkills =
     , SomeSkillCard daring
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied
+    , SomeSkillCard riseToTheOccasion3
     , SomeSkillCard overpower2
     , SomeSkillCard perception2
     , SomeSkillCard anythingYouCanDoBetter

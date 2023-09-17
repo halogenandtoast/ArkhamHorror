@@ -38,6 +38,17 @@ getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
 getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = getsSkillTest skillTestSource
 
+getSkillTestBaseSkill :: HasGame m => InvestigatorId -> m (Maybe Int)
+getSkillTestBaseSkill iid = do
+  mSkillTest <- getSkillTest
+  case mSkillTest of
+    Nothing -> pure Nothing
+    Just sTest -> Just <$> getSkillTestBaseSkillForSkillTest iid sTest
+
+getSkillTestBaseSkillForSkillTest :: HasGame m => InvestigatorId -> SkillTest -> m Int
+getSkillTestBaseSkillForSkillTest iid sTest =
+  getBaseValueForSkillTestType iid (skillTestAction sTest) (skillTestType sTest)
+
 getsSkillTest :: HasGame m => (SkillTest -> a) -> m (Maybe a)
 getsSkillTest f = fmap f <$> getSkillTest
 
@@ -188,6 +199,13 @@ getSkillTestModifiedSkillValue = do
   iconCount <- skillIconCount st
   pure $ max 0 (currentSkillValue + iconCount)
 
+getSkillTestDifficulty :: HasGame m => m (Maybe Int)
+getSkillTestDifficulty = do
+  mSkillTest <- getSkillTest
+  case mSkillTest of
+    Nothing -> pure Nothing
+    Just st -> Just <$> getModifiedSkillTestDifficulty st
+
 getCurrentSkillValue :: HasGame m => SkillTest -> m Int
 getCurrentSkillValue st = do
   case skillTestBaseValue st of
@@ -240,3 +258,17 @@ getAlternateSkill st sType = do
  where
   applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
   applyModifier _ a = a
+
+getModifiedSkillTestDifficulty :: HasGame m => SkillTest -> m Int
+getModifiedSkillTestDifficulty s = do
+  modifiers' <- getModifiers SkillTestTarget
+  let
+    preModifiedDifficulty =
+      foldr applyPreModifier (skillTestDifficulty s) modifiers'
+  pure $ foldr applyModifier preModifiedDifficulty modifiers'
+ where
+  applyModifier (Difficulty m) n = max 0 (n + m)
+  applyModifier DoubleDifficulty n = n * 2
+  applyModifier _ n = n
+  applyPreModifier (SetDifficulty m) _ = m
+  applyPreModifier _ n = n

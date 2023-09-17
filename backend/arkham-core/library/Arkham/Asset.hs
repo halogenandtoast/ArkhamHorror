@@ -582,6 +582,7 @@ allAssets =
       SomeAssetCard strangeSolutionEmpoweringElixir4
     , --- mystic [rtdwl]
       SomeAssetCard riteOfSeeking2
+    , SomeAssetCard clarityOfMind3
     , -- Return to the Forgotten Age
       --- rogue [rttfa]
       SomeAssetCard coltVestPocket2

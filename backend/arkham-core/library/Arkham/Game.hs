@@ -2078,6 +2078,12 @@ enemyMatcherFilter = \case
             pure $ mdistance == Just minDistance
           _ -> pure False
       else pure False
+  AttackedEnemy -> \enemy -> do
+    mTarget <- getSkillTestTarget
+    mAction <- getSkillTestAction
+    case (mTarget, mAction) of
+      (Just (EnemyTarget eid), Just Action.Fight) -> pure $ eid == toId enemy
+      _ -> pure False
   NotEnemy m -> fmap not . enemyMatcherFilter m
   EnemyWithTitle title -> pure . (`hasTitle` title)
   EnemyWithFullTitle title subtitle ->

@@ -357,6 +357,8 @@ allTreacheries =
       SomeTreacheryCard chillFromBelow
     , -- The Devourer's Cult
       SomeTreacheryCard maskOfUmordhoth
+    , -- Return to the Dunwich Legacy
+      SomeTreacheryCard throughTheGates
     , -- Nathaniel Cho
       SomeTreacheryCard selfDestructive
     , -- Harvey Walters

@@ -190,6 +190,7 @@ allPlayerAssetCards =
       , chuckFergus2
       , chuckFergus5
       , clarityOfMind
+      , clarityOfMind3
       , clairvoyance
       , clairvoyance3
       , clairvoyance5
@@ -3667,6 +3668,16 @@ riteOfSeeking2 =
     , cdUses = uses Charge 3
     , cdSlots = [ArcaneSlot]
     , cdAlternateCardCodes = ["01689"]
+    }
+
+clarityOfMind3 :: CardDef
+clarityOfMind3 =
+  (asset "51008" "Clarity of Mind" 2 Mystic)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = singleton Spell
+    , cdUses = uses Charge 4
+    , cdSlots = [ArcaneSlot]
+    , cdLevel = 3
     }
 
 coltVestPocket2 :: CardDef

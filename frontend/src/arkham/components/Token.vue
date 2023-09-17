@@ -94,12 +94,18 @@ const classObject = computed(() => ({
 </script>
 
 <template>
-  <img
-    class="token"
-    :class="classObject"
-    :src="image"
-    @click="choose(revealedTokenAction)"
-  />
+  <div class="token-container">
+    <img
+      class="token front"
+      :class="classObject"
+      :src="image"
+      @click="choose(revealedTokenAction)"
+    />
+    <img
+      class="token back"
+      :src="imgsrc('ct_blank.png')"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -108,6 +114,7 @@ const classObject = computed(() => ({
   border-radius: 500px;
   cursor: pointer;
 }
+
 
 .cancelled {
   filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8);
@@ -118,6 +125,57 @@ const classObject = computed(() => ({
 }
 
 .token {
-  position:relative;
+  width: 150px;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateY(180deg);
+    opacity: 0;
+  }
+
+  49% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+
+}
+
+
+.back {
+  transform-style: preserve-3d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
+  animation: flip 0.2s linear;
+  animation-direction: reverse;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 2;
+}
+
+.front {
+  transform-style: preserve-3d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  backface-visibility: hidden;
+  animation: flip 0.2s linear;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 2;
+}
+
+.token-container {
+  width: 150px;
+  position: relative;
 }
 </style>

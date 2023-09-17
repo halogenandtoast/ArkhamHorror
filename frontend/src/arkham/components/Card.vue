@@ -106,7 +106,7 @@ const hasPool = computed(() => {
 </script>
 
 <template>
-  <div class="card-container">
+  <div class="card-container" :data-index="card.id">
     <img
       :class="{'card--can-interact': cardAction !== -1}"
       class="card"

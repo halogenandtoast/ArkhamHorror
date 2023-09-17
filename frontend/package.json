@@ -15,6 +15,7 @@
     "@vueuse/core": "^9.0.2",
     "axios": "^0.27.2",
     "floating-vue": "^2.0.0-beta.17",
+    "gsap": "^3.12.2",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "pinia": "^2.0.14",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
     "@tsconfig/node18": "^2.0.1",
+    "@types/md5": "^2.3.2",
     "@types/node": "^18.16.17",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/eslint-config-prettier": "^7.1.0",
@@ -39,7 +41,6 @@
     "prettier": "2.7.1",
     "typescript": "5.1.6",
     "vite": "^4.3.9",
-    "vue-tsc": "^1.8.6",
-    "@types/md5": "^2.3.2"
+    "vue-tsc": "^1.8.6"
   }
 }

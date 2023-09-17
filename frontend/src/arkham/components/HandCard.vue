@@ -17,7 +17,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const cardContents = computed<CardContents>(() => 
+const cardContents = computed<CardContents>(() =>
   props.card.tag == 'VengeanceCard' ? props.card.contents.contents : props.card.contents)
 
 const id = computed(() => cardContents.value.id)
@@ -87,7 +87,7 @@ const image = computed(() => {
 </script>
 
 <template>
-  <div class="card-container" v-if="solo || (investigatorId == ownerId)">
+  <div class="card-container" :data-index="id" v-if="solo || (investigatorId == ownerId)">
     <img
       :class="classObject"
       class="card"

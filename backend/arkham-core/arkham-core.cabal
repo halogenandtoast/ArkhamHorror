@@ -1207,6 +1207,7 @@ library
       Arkham.Event.Cards.LiveAndLearn
       Arkham.Event.Cards.LodgeDebts
       Arkham.Event.Cards.LogicalReasoning
+      Arkham.Event.Cards.LogicalReasoning4
       Arkham.Event.Cards.LookWhatIFound
       Arkham.Event.Cards.LookWhatIFound2
       Arkham.Event.Cards.Lucky

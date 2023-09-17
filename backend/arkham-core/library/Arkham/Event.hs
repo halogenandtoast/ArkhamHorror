@@ -24,8 +24,8 @@ lookupEvent cardCode = case lookup cardCode allEvents of
 instance FromJSON Event where
   parseJSON = withObject "Event" $ \o -> do
     cCode <- o .: "cardCode"
-    withEventCardCode cCode $
-      \(_ :: EventCard a) -> Event <$> parseJSON @a (Object o)
+    withEventCardCode cCode
+      $ \(_ :: EventCard a) -> Event <$> parseJSON @a (Object o)
 
 withEventCardCode
   :: CardCode -> (forall a. IsEvent a => EventCard a -> r) -> r
@@ -381,6 +381,7 @@ allEvents =
       SomeEventCard preposterousSketches2
     , --- rogue [rtdwl]
       SomeEventCard contraband2
+    , SomeEventCard thinkOnYourFeet2
     , -- Return to the Forgotten Age
       --- guardian [rttfa]
       SomeEventCard bloodEclipse1

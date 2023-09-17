@@ -681,15 +681,12 @@ header {
       backface-visibility: hidden;
       animation: flip 0.3s linear;
       animation-delay: 0.3s;
-      -webkit-animation-fill-mode: forwards; /* Chrome 16+, Safari 4+ */
-      -moz-animation-fill-mode: forwards;    /* FF 5+ */
-      -o-animation-fill-mode: forwards;      /* Not implemented yet */
-      -ms-animation-fill-mode: forwards;     /* IE 10+ */
-      animation-fill-mode: forwards;         /* When the spec is finished */
+      animation-fill-mode: forwards;
     }
 
     .card.front {
       opacity: 0;
+      transform-style: preserve-3d;
     }
 
     .card.back {

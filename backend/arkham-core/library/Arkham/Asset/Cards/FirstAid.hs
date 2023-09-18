@@ -17,7 +17,7 @@ newtype FirstAid = FirstAid AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstAid :: AssetCard FirstAid
-firstAid = assetWith FirstAid Cards.firstAid (discardWhenNoUsesL .~ True)
+firstAid = assetWith FirstAid Cards.firstAid (whenNoUsesL ?~ DiscardWhenNoUses)
 
 -- validity here is a little complex, you have to be able to heal horror and an investigator exists at your location that has any horror, or the same for damage
 

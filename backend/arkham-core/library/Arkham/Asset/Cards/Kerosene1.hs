@@ -18,7 +18,7 @@ newtype Kerosene1 = Kerosene1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kerosene1 :: AssetCard Kerosene1
-kerosene1 = assetWith Kerosene1 Cards.kerosene1 (discardWhenNoUsesL .~ True)
+kerosene1 = assetWith Kerosene1 Cards.kerosene1 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities Kerosene1 where
   getAbilities (Kerosene1 a) =

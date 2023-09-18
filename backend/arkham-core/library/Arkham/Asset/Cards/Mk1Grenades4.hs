@@ -19,7 +19,7 @@ newtype Mk1Grenades4 = Mk1Grenades4 AssetAttrs
 
 mk1Grenades4 :: AssetCard Mk1Grenades4
 mk1Grenades4 =
-  assetWith Mk1Grenades4 Cards.mk1Grenades4 (discardWhenNoUsesL .~ True)
+  assetWith Mk1Grenades4 Cards.mk1Grenades4 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities Mk1Grenades4 where
   getAbilities (Mk1Grenades4 a) =

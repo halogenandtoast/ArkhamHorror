@@ -22,7 +22,7 @@ sealOfTheSeventhSign5 =
   assetWith
     SealOfTheSeventhSign5
     Cards.sealOfTheSeventhSign5
-    (discardWhenNoUsesL .~ True)
+    (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities SealOfTheSeventhSign5 where
   getAbilities (SealOfTheSeventhSign5 a) =

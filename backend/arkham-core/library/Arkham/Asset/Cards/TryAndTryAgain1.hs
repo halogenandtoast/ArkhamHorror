@@ -20,12 +20,12 @@ newtype TryAndTryAgain1 = TryAndTryAgain1 AssetAttrs
 
 tryAndTryAgain1 :: AssetCard TryAndTryAgain1
 tryAndTryAgain1 =
-  assetWith TryAndTryAgain1 Cards.tryAndTryAgain1 (discardWhenNoUsesL .~ True)
+  assetWith TryAndTryAgain1 Cards.tryAndTryAgain1 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities TryAndTryAgain1 where
   getAbilities (TryAndTryAgain1 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( SkillTestResult
               Timing.After
               Anyone
@@ -39,8 +39,8 @@ instance RunMessage TryAndTryAgain1 where
   runMessage msg a@(TryAndTryAgain1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       committedSkillCards <-
-        selectListMapM (field SkillCard) $
-          skillControlledBy iid
+        selectListMapM (field SkillCard)
+          $ skillControlledBy iid
       pushAll
         [ FocusCards committedSkillCards
         , chooseOne

@@ -17,7 +17,7 @@ newtype FirstAid3 = FirstAid3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstAid3 :: AssetCard FirstAid3
-firstAid3 = assetWith FirstAid3 Cards.firstAid3 (discardWhenNoUsesL .~ True)
+firstAid3 = assetWith FirstAid3 Cards.firstAid3 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities FirstAid3 where
   getAbilities (FirstAid3 x) =

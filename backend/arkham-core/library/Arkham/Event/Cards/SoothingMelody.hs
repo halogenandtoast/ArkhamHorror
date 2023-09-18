@@ -34,7 +34,7 @@ instance RunMessage SoothingMelody where
       pushAll $ ResolveEventChoice iid eid 1 Nothing [] : [drawing | canDraw]
       pure e
     ResolveEventChoice iid eid n _ _ | eid == toId attrs -> do
-      modifiers' <- getModifiers (toTarget $ toCardId attrs)
+      modifiers' <- liftA2 (<>) (getModifiers (toCardId attrs)) (getModifiers attrs)
       let
         updateLimit :: Int -> ModifierType -> Int
         updateLimit x (MetaModifier (Object o)) =
@@ -66,19 +66,19 @@ instance RunMessage SoothingMelody where
         investigatorDamageChoices =
           [ componentLabel DamageToken (toTarget i)
             $ HealDamage (toTarget i) (toSource attrs) 1
-              : [ResolveEvent iid eid (Just $ toTarget i) [] | n < limit]
+              : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
           | i <- damageInvestigators
           ]
         damageAssetChoices =
           [ componentLabel DamageToken asset
             $ HealDamage asset (toSource attrs) 1
-              : [ResolveEvent iid eid (Just $ toTarget asset) [] | n < limit]
+              : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
           | asset <- damageAssets
           ]
         horrorAssetChoices =
           [ componentLabel HorrorToken asset
             $ HealHorror asset (toSource attrs) 1
-              : [ResolveEvent iid eid (Just $ toTarget asset) [] | n < limit]
+              : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
           | asset <- horrorAssets
           ]
 

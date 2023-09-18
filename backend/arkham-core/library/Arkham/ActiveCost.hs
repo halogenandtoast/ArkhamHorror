@@ -591,12 +591,12 @@ instance RunMessage ActiveCost where
                       ]
                   )
         ActionCost x -> do
-          costModifier <-
+          costModifier' <-
             if skipAdditionalCosts
               then pure 0
               else getActionCostModifier c
           let
-            modifiedActionCost = max 0 (x + costModifier)
+            modifiedActionCost = max 0 (x + costModifier')
             mAction = case activeCostTarget c of
               ForAbility a -> abilityAction a
               _ -> Nothing

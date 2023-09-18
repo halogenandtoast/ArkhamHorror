@@ -391,6 +391,7 @@ allPlayerAssetCards =
       , oldKeyring
       , oliveMcBride
       , onYourOwn3
+      , onYourOwn3_Exceptional
       , ornateBow3
       , otherworldlyCompass2
       , painkillers
@@ -3829,6 +3830,17 @@ theChthonianStone3 =
             [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }
 
+onYourOwn3_Exceptional :: CardDef
+onYourOwn3_Exceptional =
+  permanent
+    $ (asset "53010" "On Your Own" 0 Survivor)
+      { cdCardTraits = singleton Talent
+      , cdSkills = [#willpower]
+      , cdLimits = [LimitPerInvestigator 1]
+      , cdExceptional = True
+      , cdLevel = 3
+      }
+
 backpack2 :: CardDef
 backpack2 =
   (asset "53011" "Backpack" 1 Neutral)
@@ -3836,6 +3848,13 @@ backpack2 =
     , cdCardTraits = singleton Item
     , cdSlots = [BodySlot]
     , cdLevel = 2
+    }
+
+dendromorphosis :: CardDef
+dendromorphosis =
+  (weakness "53012" ("Dendromorphosis" <:> "\"Natural\" Transformation"))
+    { cdSlots = [HandSlot, HandSlot]
+    , cdCost = Nothing
     }
 
 wellConnected3 :: CardDef

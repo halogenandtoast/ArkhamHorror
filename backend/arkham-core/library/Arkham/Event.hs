@@ -394,6 +394,8 @@ allEvents =
       SomeEventCard bloodEclipse1
     , --- seeker [rttfa]
       SomeEventCard truthFromFiction2
+    , --- survivor [rttfa]
+      SomeEventCard alterFate1
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeEventCard cleanThemOut

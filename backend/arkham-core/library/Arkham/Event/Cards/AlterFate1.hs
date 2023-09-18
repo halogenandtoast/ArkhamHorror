@@ -1,6 +1,6 @@
-module Arkham.Event.Cards.AlterFate3 (
-  alterFate3,
-  AlterFate3 (..),
+module Arkham.Event.Cards.AlterFate1 (
+  alterFate1,
+  AlterFate1 (..),
 ) where
 
 import Arkham.Prelude
@@ -11,15 +11,15 @@ import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 
-newtype AlterFate3 = AlterFate3 EventAttrs
+newtype AlterFate1 = AlterFate1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-alterFate3 :: EventCard AlterFate3
-alterFate3 = event AlterFate3 Cards.alterFate3
+alterFate1 :: EventCard AlterFate1
+alterFate1 = event AlterFate1 Cards.alterFate1
 
-instance RunMessage AlterFate3 where
-  runMessage msg e@(AlterFate3 attrs) = case msg of
+instance RunMessage AlterFate1 where
+  runMessage msg e@(AlterFate1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       treacheries <- selectList $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
       pushAll
@@ -30,4 +30,4 @@ instance RunMessage AlterFate3 where
             ]
         ]
       pure e
-    _ -> AlterFate3 <$> runMessage msg attrs
+    _ -> AlterFate1 <$> runMessage msg attrs

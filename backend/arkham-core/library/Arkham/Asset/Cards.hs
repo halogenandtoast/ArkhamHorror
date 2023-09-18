@@ -330,6 +330,7 @@ allPlayerAssetCards =
       , kerosene1
       , keyOfYs
       , knife
+      , knightOfSwords3
       , knuckleduster
       , kukri
       , laboratoryAssistant
@@ -386,6 +387,7 @@ allPlayerAssetCards =
       , newspaper
       , newspaper2
       , occultLexicon
+      , occultLexicon3
       , occultScraps
       , oldBookOfLore
       , oldBookOfLore3
@@ -497,6 +499,7 @@ allPlayerAssetCards =
       , theCouncilsCoffer2
       , theCustodian
       , theGoldPocketWatch4
+      , theHierophantV3
       , theKingInYellow
       , theMoonXiii1
       , theNecronomicon
@@ -3888,6 +3891,24 @@ theWorldXxi3 =
     , cdCardInHandEffects = True
     }
 
+occultLexicon3 :: CardDef
+occultLexicon3 =
+  (asset "54004" "Occult Lexicon" 2 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tome, Occult]
+    , cdSlots = [HandSlot]
+    , cdLevel = 3
+    }
+
+knightOfSwords3 :: CardDef
+knightOfSwords3 =
+  (asset "54005" ("Knight of Swords" <:> "Charge Ever Onward") 3 Rogue)
+    { cdCardTraits = singleton Tarot
+    , cdSlots = [TarotSlot]
+    , cdLevel = 3
+    , cdCardInHandEffects = True
+    }
+
 wellConnected3 :: CardDef
 wellConnected3 =
   (asset "54006" "Well Connected" 2 Rogue)
@@ -3895,6 +3916,15 @@ wellConnected3 =
     , cdSkills = [#intellect, #agility]
     , cdLimits = [LimitPerInvestigator 1]
     , cdLevel = 3
+    }
+
+theHierophantV3 :: CardDef
+theHierophantV3 =
+  (asset "54007" ("The Hierophant • V" <:> "Your True Master Awaits") 3 Mystic)
+    { cdCardTraits = singleton Tarot
+    , cdSlots = [TarotSlot]
+    , cdLevel = 3
+    , cdCardInHandEffects = True
     }
 
 signMagick3 :: CardDef

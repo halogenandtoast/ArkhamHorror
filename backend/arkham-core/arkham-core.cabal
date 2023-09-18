@@ -524,6 +524,7 @@ library
       Arkham.Asset.Cards.KeyOfYs
       Arkham.Asset.Cards.KeyToTheChamber
       Arkham.Asset.Cards.Knife
+      Arkham.Asset.Cards.KnightOfSwords3
       Arkham.Asset.Cards.Knuckleduster
       Arkham.Asset.Cards.Kukri
       Arkham.Asset.Cards.LaboratoryAssistant
@@ -581,6 +582,7 @@ library
       Arkham.Asset.Cards.Newspaper
       Arkham.Asset.Cards.Newspaper2
       Arkham.Asset.Cards.OccultLexicon
+      Arkham.Asset.Cards.OccultLexicon3
       Arkham.Asset.Cards.OccultScraps
       Arkham.Asset.Cards.OldBookOfLore
       Arkham.Asset.Cards.OldBookOfLore3
@@ -696,6 +698,7 @@ library
       Arkham.Asset.Cards.TheCouncilsCoffer2
       Arkham.Asset.Cards.TheCustodian
       Arkham.Asset.Cards.TheGoldPocketWatch4
+      Arkham.Asset.Cards.TheHierophantV3
       Arkham.Asset.Cards.TheKingInYellow
       Arkham.Asset.Cards.TheMoonXIII1
       Arkham.Asset.Cards.TheNecronomicon

@@ -1,4 +1,4 @@
-module Arkham.Asset.Cards.HallowedMirror3 (hallowedMirror3, HallowedMirror3) where
+module Arkham.Asset.Cards.OccultLexicon3 (occultLexicon3, OccultLexicon3) where
 
 import Arkham.Prelude
 
@@ -13,20 +13,20 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
-newtype HallowedMirror3 = HallowedMirror3 AssetAttrs
+newtype OccultLexicon3 = OccultLexicon3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hallowedMirror3 :: AssetCard HallowedMirror3
-hallowedMirror3 = asset HallowedMirror3 Cards.hallowedMirror3
+occultLexicon3 :: AssetCard OccultLexicon3
+occultLexicon3 = asset OccultLexicon3 Cards.occultLexicon3
 
-instance HasAbilities HallowedMirror3 where
-  getAbilities (HallowedMirror3 a) =
+instance HasAbilities OccultLexicon3 where
+  getAbilities (OccultLexicon3 a) =
     [ restrictedAbility a 1 ControlsThis
         $ freeReaction
         $ Matcher.PlayCard #when You
         $ BasicCardMatch
-        $ cardIs Events.soothingMelody
+        $ cardIs Events.bloodRite
     ]
 
 getCard :: [Window] -> Card
@@ -34,16 +34,16 @@ getCard = \case
   ((windowType -> Window.PlayCard _ card) : _) -> card
   _ -> error "impossible"
 
-instance RunMessage HallowedMirror3 where
-  runMessage msg a@(HallowedMirror3 attrs) = case msg of
+instance RunMessage OccultLexicon3 where
+  runMessage msg a@(OccultLexicon3 attrs) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
-      handSoothingMelody <- genCard Events.soothingMelody
-      deckSoothingMelodies <- replicateM 2 (genCard Events.soothingMelody)
+      handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
+      deckBloodRites <- replicateM 2 (genCard Events.bloodRite)
       canShuffleDeck <- getCanShuffleDeck iid
       pushAll
-        $ addToHand iid handSoothingMelody
-          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
-      HallowedMirror3 <$> runMessage msg attrs
+        $ addToHand iid handBloodRite
+          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
+      OccultLexicon3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       push
         $ chooseOne
@@ -56,4 +56,4 @@ instance RunMessage HallowedMirror3 where
               [eventModifier (toAbilitySource attrs 1) (toCardId card) (SetAfterPlay ShuffleThisBackIntoDeck)]
           ]
       pure a
-    _ -> HallowedMirror3 <$> runMessage msg attrs
+    _ -> OccultLexicon3 <$> runMessage msg attrs

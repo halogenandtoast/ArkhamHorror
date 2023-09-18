@@ -619,10 +619,13 @@ allAssets =
     , SomeAssetCard hallowedMirror3
     , -- seeker [rttcu]
       SomeAssetCard theWorldXxi3
+    , SomeAssetCard occultLexicon3
     , -- rogue [rttcu]
-      SomeAssetCard wellConnected3
+      SomeAssetCard knightOfSwords3
+    , SomeAssetCard wellConnected3
     , -- mystic [rttcu]
-      SomeAssetCard signMagick3
+      SomeAssetCard theHierophantV3
+    , SomeAssetCard signMagick3
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeAssetCard randallCho

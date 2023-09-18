@@ -18,11 +18,11 @@ hallowedMirror = asset HallowedMirror Cards.hallowedMirror
 instance RunMessage HallowedMirror where
   runMessage msg (HallowedMirror attrs) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
-      handSoothingMelody <- PlayerCard <$> genPlayerCard Events.soothingMelody
+      handSoothingMelody <- genCard Events.soothingMelody
       deckSoothingMelodies <- replicateM 2 (genCard Events.soothingMelody)
       canShuffleDeck <- getCanShuffleDeck iid
-      pushAll $
-        addToHand iid handSoothingMelody
+      pushAll
+        $ addToHand iid handSoothingMelody
           : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
       HallowedMirror <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do

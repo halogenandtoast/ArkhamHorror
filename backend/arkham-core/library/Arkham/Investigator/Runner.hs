@@ -1738,14 +1738,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               if null deck'
                 then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
                 else pure []
-            drawCardsWindowMsg <-
-              checkWindows [mkWhen $ Window.DrawCards iid $ map PlayerCard allDrawn]
+            (before, _, after) <- frame $ Window.DrawCards iid $ map toCard allDrawn
             pushAll
               $ windowMsgs
                 <> [DeckHasNoCards iid Nothing | null deck']
                 <> [InvestigatorDrewPlayerCard iid card | card <- allDrawn]
-                <> [drawCardsWindowMsg]
+                <> [before]
                 <> msgs'
+                <> [after]
             pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ Deck deck'
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-

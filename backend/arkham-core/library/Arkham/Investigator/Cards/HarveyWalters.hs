@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -26,9 +25,7 @@ instance HasAbilities HarveyWalters where
   getAbilities (HarveyWalters a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 Self
-        $ ReactionAbility
-          (DrawCard Timing.After (InvestigatorAt YourLocation) (BasicCardMatch AnyCard) AnyDeck)
-          Free
+        $ freeReaction (DrawsCards #after (InvestigatorAt YourLocation) (atLeast 1))
     ]
 
 instance HasChaosTokenValue HarveyWalters where
@@ -38,7 +35,7 @@ instance HasChaosTokenValue HarveyWalters where
 
 instance RunMessage HarveyWalters where
   runMessage msg i@(HarveyWalters attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (map windowType -> [Window.DrawCard iid' _ _]) _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 (map windowType -> [Window.DrawCards iid' _]) _ -> do
       pushM $ drawCards iid' (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do

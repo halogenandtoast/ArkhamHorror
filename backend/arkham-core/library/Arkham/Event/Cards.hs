@@ -73,6 +73,7 @@ event cardCode name cost classSymbol =
     , cdLocationConnections = []
     , cdLocationRevealedConnections = []
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }

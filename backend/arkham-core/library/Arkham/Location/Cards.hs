@@ -93,6 +93,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdLocationConnections = connectedLocationSymbols
     , cdLocationRevealedConnections = connectedLocationSymbols
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }

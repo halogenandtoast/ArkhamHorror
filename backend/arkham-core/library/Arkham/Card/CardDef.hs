@@ -109,6 +109,7 @@ data CardDef = CardDef
   , cdLocationConnections :: [LocationSymbol]
   , cdLocationRevealedConnections :: [LocationSymbol]
   , cdPurchaseMentalTrauma :: Maybe Int
+  , cdGrantedXp :: Maybe Int
   , cdCanReplace :: Bool
   , cdDeckRestrictions :: [DeckRestriction]
   }

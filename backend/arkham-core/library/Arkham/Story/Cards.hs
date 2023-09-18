@@ -55,6 +55,7 @@ story cardCode name encounterSet =
     , cdLocationConnections = []
     , cdLocationRevealedConnections = []
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }

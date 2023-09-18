@@ -88,6 +88,7 @@ randomWeakness =
     , cdLocationConnections = []
     , cdLocationRevealedConnections = []
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }

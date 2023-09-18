@@ -112,6 +112,7 @@ baseAsset mEncounterSet cardCode name cost classSymbols =
     , cdLocationConnections = []
     , cdLocationRevealedConnections = []
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }

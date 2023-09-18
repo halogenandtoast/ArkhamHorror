@@ -68,6 +68,7 @@ baseTreachery cardCode name mEncounterSet isWeakness =
     , cdLocationConnections = []
     , cdLocationRevealedConnections = []
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }
@@ -119,6 +120,7 @@ allPlayerTreacheryCards =
       , doomed
       , drawingTheSign
       , finalRhapsody
+      , finePrint
       , haunted
       , hospitalDebts
       , hypochondria
@@ -127,6 +129,7 @@ allPlayerTreacheryCards =
       , lostSoul
       , nihilism
       , obsessive
+      , offerYouCannotRefuse
       , outOfBodyExperience
       , overzealous
       , paranoia
@@ -136,6 +139,7 @@ allPlayerTreacheryCards =
       , rexsCurse
       , searchingForIzzie
       , selfDestructive
+      , sellYourSoul
       , shellShock
       , smiteTheWicked
       , starsOfHyades
@@ -1719,6 +1723,20 @@ unspeakableOathCowardice =
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdDeckRestrictions = [CampaignModeOnly]
     }
+
+offerYouCannotRefuse :: CardDef
+offerYouCannotRefuse =
+  (basicWeakness "53013" "Offer You Cannot Refuse")
+    { cdCardTraits = singleton Pact
+    , cdDeckRestrictions = [CampaignModeOnly]
+    , cdGrantedXp = Just 2
+    }
+
+finePrint :: CardDef
+finePrint = (weakness "53014" "Fine Print") {cdCardTraits = singleton Pact}
+
+sellYourSoul :: CardDef
+sellYourSoul = (weakness "53015" "Sell Your Soul") {cdCardTraits = singleton Pact}
 
 selfDestructive :: CardDef
 selfDestructive =

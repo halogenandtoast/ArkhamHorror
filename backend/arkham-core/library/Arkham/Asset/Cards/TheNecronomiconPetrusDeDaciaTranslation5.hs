@@ -24,13 +24,17 @@ theNecronomiconPetrusDeDaciaTranslation5 =
 
 instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
   getAbilities (TheNecronomiconPetrusDeDaciaTranslation5 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+    [ withTooltip "{fast} Spend 1 secret: You get +2 skill value for this skill test."
+        $ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
         $ FastAbility (assetUseCost a Secret 1)
-    , restrictedAbility a 2 (ControlsThis <> CanDrawCards)
+    , withTooltip "{fast} Spend 2 secrets: Draw 2 cards."
+        $ restrictedAbility a 2 (ControlsThis <> CanDrawCards)
         $ FastAbility (assetUseCost a Secret 2)
-    , restrictedAbility a 3 (ControlsThis <> CanDiscoverCluesAt Anywhere)
+    , withTooltip "{fast} Spend 3 secrets: Discover 1 clue at any location."
+        $ restrictedAbility a 3 (ControlsThis <> CanDiscoverCluesAt LocationWithAnyClues)
         $ FastAbility (assetUseCost a Secret 3)
-    , withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a Secret 4)
+    , withTooltip "{fast} Spend 4 secrets: Deal 3 damage to an enemy engaged with you."
+        $ withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a Secret 4)
         $ ControlsThis <> enemyExists (EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (toSource a))
     ]
 

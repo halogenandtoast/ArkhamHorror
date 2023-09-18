@@ -60,6 +60,16 @@ data Target
   | BothTarget Target Target
   deriving stock (Show, Eq, Ord, Data)
 
+pattern Initiator :: Target -> Target
+pattern Initiator t <- SkillTestInitiatorTarget t
+  where
+    Initiator t = SkillTestInitiatorTarget t
+
+pattern InitiatorProxy :: Target -> Target -> Target
+pattern InitiatorProxy t a <- SkillTestInitiatorTarget (ProxyTarget t a)
+  where
+    InitiatorProxy t a = SkillTestInitiatorTarget (ProxyTarget t a)
+
 class Targetable a where
   toTarget :: a -> Target
   isTarget :: a -> Target -> Bool
@@ -108,6 +118,10 @@ toActionTarget target = target
 toProxyTarget :: Target -> Target
 toProxyTarget (ProxyTarget proxyTarget _) = proxyTarget
 toProxyTarget target = target
+
+_EnemyTarget :: Traversal' Target EnemyId
+_EnemyTarget f (EnemyTarget enemy) = EnemyTarget <$> f enemy
+_EnemyTarget _ other = pure other
 
 $(deriveJSON defaultOptions ''Target)
 

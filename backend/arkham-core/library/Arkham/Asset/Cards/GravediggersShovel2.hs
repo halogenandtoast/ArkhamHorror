@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.GravediggersShovel (
-  gravediggersShovel,
-  GravediggersShovel (..),
+module Arkham.Asset.Cards.GravediggersShovel2 (
+  gravediggersShovel2,
+  GravediggersShovel2 (..),
 ) where
 
 import Arkham.Prelude
@@ -11,25 +11,25 @@ import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Matcher
 
-newtype GravediggersShovel = GravediggersShovel AssetAttrs
+newtype GravediggersShovel2 = GravediggersShovel2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-gravediggersShovel :: AssetCard GravediggersShovel
-gravediggersShovel = asset GravediggersShovel Cards.gravediggersShovel
+gravediggersShovel2 :: AssetCard GravediggersShovel2
+gravediggersShovel2 = asset GravediggersShovel2 Cards.gravediggersShovel2
 
-instance HasAbilities GravediggersShovel where
-  getAbilities (GravediggersShovel x) =
+instance HasAbilities GravediggersShovel2 where
+  getAbilities (GravediggersShovel2 x) =
     [ fightAbility x 1 (ActionCost 1) ControlsThis
     , restrictedAbility
         x
         2
         (ControlsThis <> InvestigatorExists (You <> InvestigatorCanDiscoverCluesAt YourLocation))
-        $ actionAbilityWithCost (discardCost x)
+        $ actionAbilityWithCost (OrCost [discardCost x, removeCost x])
     ]
 
-instance RunMessage GravediggersShovel where
-  runMessage msg a@(GravediggersShovel attrs) = case msg of
+instance RunMessage GravediggersShovel2 where
+  runMessage msg a@(GravediggersShovel2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ skillTestModifier attrs iid (SkillModifier #combat 2)
@@ -39,4 +39,7 @@ instance RunMessage GravediggersShovel where
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       pushMessage $ discoverAtYourLocation iid (toAbilitySource attrs 2) 1
       pure a
-    _ -> GravediggersShovel <$> runMessage msg attrs
+    InOutOfPlay (UseThisAbility iid (isSource attrs -> True) 2) -> do
+      pushMessage $ discoverAtYourLocation iid (toAbilitySource attrs 2) 2
+      pure a
+    _ -> GravediggersShovel2 <$> runMessage msg attrs

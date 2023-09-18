@@ -226,6 +226,7 @@ investigator f cardDef Stats {..} =
                 , investigatorTokens = mempty
                 , investigatorLocation = LocationId nil
                 , investigatorActionsTaken = mempty
+                , investigatorActionsPerformed = mempty
                 , investigatorRemainingActions = 3
                 , investigatorEndedTurn = False
                 , investigatorEngagedEnemies = mempty
@@ -283,8 +284,8 @@ investigator f cardDef Stats {..} =
         }
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
-matchTarget attrs (FirstOneOf as) action =
-  action `elem` as && all (`notElem` investigatorActionsTaken attrs) as
+matchTarget attrs (FirstOneOfPerformed as) action =
+  action `elem` as && all (`notElem` investigatorActionsPerformed attrs) as
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 

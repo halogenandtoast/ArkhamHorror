@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -37,8 +36,8 @@ instance RunMessage RealmOfMadness where
           InvestigatorHand
           (any (`cardMatch` NonWeakness))
           iid
-      push $
-        if horror > 0 && (hasAssets || hasDiscardableCards)
+      push
+        $ if horror > 0 && (hasAssets || hasDiscardableCards)
           then RevelationChoice iid (toSource attrs) horror
           else InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
       pure t
@@ -63,10 +62,10 @@ instance RunMessage RealmOfMadness where
                 (toSource attrs)
                 (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
             ]
-      unless (null assets && null handDiscardableCards) $
-        push $
-          chooseOne iid $
-            map discardAsset assets
-              <> map discardHandCard handDiscardableCards
+      unless (null assets && null handDiscardableCards)
+        $ push
+        $ chooseOne iid
+        $ map discardAsset assets
+          <> map discardHandCard handDiscardableCards
       pure t
     _ -> RealmOfMadness <$> runMessage msg attrs

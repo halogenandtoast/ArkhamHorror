@@ -22,10 +22,10 @@ inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
 instance HasAbilities InTheKnow1 where
   getAbilities (InTheKnow1 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId attrs) Secret 1
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
+          <> UseCost (AssetWithId $ toId attrs) Secret 1
     ]
 
 instance RunMessage InTheKnow1 where
@@ -42,20 +42,20 @@ instance RunMessage InTheKnow1 where
           locations
           \lid -> do
             investigateActions <-
-              selectList $
-                AbilityOnLocation (LocationWithId lid)
+              selectList
+                $ AbilityOnLocation (LocationWithId lid)
                   <> AbilityIsAction Action.Investigate
             pure $ map (lid,) investigateActions
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             location
             [ SetLocationAsIf iid location
-            , UseAbility iid investigateAbility windows'
+            , UseAbility iid ability windows'
             , SetLocationAsIf iid investigatorLocation
             ]
-          | (location, investigateAbility) <- locationsWithInvestigate
+          | (location, ability) <- locationsWithInvestigate
           ]
       pure a
     _ -> InTheKnow1 <$> runMessage msg attrs

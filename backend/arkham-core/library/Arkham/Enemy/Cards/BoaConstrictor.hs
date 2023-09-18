@@ -31,17 +31,17 @@ instance HasAbilities BoaConstrictor where
   getAbilities (BoaConstrictor a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After You AnyEnemyAttack $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.After You AnyEnemyAttack
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage BoaConstrictor where
   runMessage msg e@(BoaConstrictor attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ createCardEffect Cards.boaConstrictor Nothing source (InvestigatorTarget iid)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ createCardEffect Cards.boaConstrictor Nothing (toAbilitySource attrs 1) iid
       pure e
     _ -> BoaConstrictor <$> runMessage msg attrs
 
@@ -53,16 +53,14 @@ boaConstrictorEffect :: EffectArgs -> BoaConstrictorEffect
 boaConstrictorEffect = cardEffect BoaConstrictorEffect Cards.boaConstrictor
 
 instance HasModifiersFor BoaConstrictorEffect where
-  getModifiersFor target (BoaConstrictorEffect a) | effectTarget a == target =
-    do
-      phase <- getPhase
-      pure $
-        toModifiers a [ControlledAssetsCannotReady | phase == UpkeepPhase]
+  getModifiersFor target (BoaConstrictorEffect a) | effectTarget a == target = do
+    phase <- getPhase
+    pure $ toModifiers a [ControlledAssetsCannotReady | phase == UpkeepPhase]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BoaConstrictorEffect where
-  runMessage msg e@(BoaConstrictorEffect attrs@EffectAttrs {..}) = case msg of
+  runMessage msg e@(BoaConstrictorEffect attrs) = case msg of
     EndUpkeep -> do
-      push (DisableEffect effectId)
+      push (DisableEffect $ toId attrs)
       pure e
     _ -> BoaConstrictorEffect <$> runMessage msg attrs

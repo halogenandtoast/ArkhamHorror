@@ -146,6 +146,9 @@ allPlayerTreacheryCards =
       , thePriceOfFailure
       , thriceDamnedCuriosity
       , throughTheGates
+      , unspeakableOathBloodthirst
+      , unspeakableOathCowardice
+      , unspeakableOathCuriosity
       , voiceOfTheMessenger
       , wrackedByNightmares
       , yaztaroth
@@ -1078,7 +1081,11 @@ thePriceOfFailure =
   (weakness "04039" "The Price of Failure") {cdCardTraits = singleton Pact}
 
 doomed :: CardDef
-doomed = (basicWeakness "04040" "Doomed") {cdCardTraits = singleton Curse}
+doomed =
+  (basicWeakness "04040" "Doomed")
+    { cdCardTraits = singleton Curse
+    , cdDeckRestrictions = [CampaignModeOnly]
+    }
 
 accursedFate :: CardDef
 accursedFate =
@@ -1688,6 +1695,30 @@ maskOfUmordhoth =
 throughTheGates :: CardDef
 throughTheGates =
   (basicWeakness "51011" "Through the Gates") {cdCardTraits = setFromList [Pact, Mystery]}
+
+unspeakableOathBloodthirst :: CardDef
+unspeakableOathBloodthirst =
+  (basicWeakness "52011" ("Unspeakable Oath" <:> "Bloodthirst"))
+    { cdCardTraits = setFromList [Madness, Pact]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdDeckRestrictions = [CampaignModeOnly]
+    }
+
+unspeakableOathCuriosity :: CardDef
+unspeakableOathCuriosity =
+  (basicWeakness "52012" ("Unspeakable Oath" <:> "Curiosity"))
+    { cdCardTraits = setFromList [Madness, Pact]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdDeckRestrictions = [CampaignModeOnly]
+    }
+
+unspeakableOathCowardice :: CardDef
+unspeakableOathCowardice =
+  (basicWeakness "52013" ("Unspeakable Oath" <:> "Cowardice"))
+    { cdCardTraits = setFromList [Madness, Pact]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdDeckRestrictions = [CampaignModeOnly]
+    }
 
 selfDestructive :: CardDef
 selfDestructive =

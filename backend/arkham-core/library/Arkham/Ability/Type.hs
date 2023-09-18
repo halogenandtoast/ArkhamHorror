@@ -28,8 +28,13 @@ actionAbilityWithCost cost = ActionAbility Nothing (ActionCost 1 <> cost)
 freeReaction :: WindowMatcher -> AbilityType
 freeReaction window = ReactionAbility window Free
 
+pattern FastAbility :: Cost -> AbilityType
+pattern FastAbility cost <- FastAbility' cost Nothing
+  where
+    FastAbility cost = FastAbility' cost Nothing
+
 data AbilityType
-  = FastAbility {cost :: Cost}
+  = FastAbility' {cost :: Cost, action :: Maybe Action}
   | ReactionAbility {window :: WindowMatcher, cost :: Cost}
   | ActionAbility {action :: Maybe Action, cost :: Cost}
   | ActionAbilityWithSkill {action :: Maybe Action, skillType :: SkillType, cost :: Cost}

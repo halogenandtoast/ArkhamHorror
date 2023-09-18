@@ -325,6 +325,9 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     dropDownDecoder,
     pickScenarioSettingsDecoder,
     pickCampaignSettingsDecoder,
+    JsonDecoder.succeed.chain((f) => {
+      return JsonDecoder.fail(f)
+    })
   ],
   'Question',
 );

@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.SkillType
 
 newtype BloodEclipse3 = BloodEclipse3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -29,20 +28,10 @@ countDamage = \case
 
 instance RunMessage BloodEclipse3 where
   runMessage msg e@(BloodEclipse3 attrs) = case msg of
-    PaidForCardCost iid card (countDamage -> n)
-      | toCardId card == toCardId attrs -> do
-          pushAll
-            [ skillTestModifiers
-                (toSource attrs)
-                (InvestigatorTarget iid)
-                [DamageDealt n, SkillModifier SkillWillpower n]
-            , ChooseFightEnemy
-                iid
-                (toSource attrs)
-                Nothing
-                SkillWillpower
-                mempty
-                False
-            ]
-          pure e
+    PaidForCardCost iid card (countDamage -> n) | toCardId card == toCardId attrs -> do
+      pushAll
+        [ skillTestModifiers attrs iid [DamageDealt n, SkillModifier #willpower n]
+        , chooseFightEnemy iid attrs #willpower
+        ]
+      pure e
     _ -> BloodEclipse3 <$> runMessage msg attrs

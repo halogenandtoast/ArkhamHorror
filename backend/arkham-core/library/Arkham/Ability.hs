@@ -95,6 +95,18 @@ fightAbility entity idx cost criteria =
     { abilityCriteria = criteria
     }
 
+evadeAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+evadeAbility entity idx cost criteria =
+  (mkAbility entity idx (ActionAbility (Just Action.Evade) cost))
+    { abilityCriteria = criteria
+    }
+
+investigateAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+investigateAbility entity idx cost criteria =
+  (mkAbility entity idx (ActionAbility (Just Action.Investigate) cost))
+    { abilityCriteria = criteria
+    }
+
 reactionAbility
   :: Sourceable a
   => a
@@ -177,7 +189,7 @@ isTriggeredAbility =
 
 abilityTypeAction :: AbilityType -> Maybe Action
 abilityTypeAction = \case
-  FastAbility _ -> Nothing
+  FastAbility' _ mAction -> mAction
   ReactionAbility {} -> Nothing
   ActionAbility mAction _ -> mAction
   ActionAbilityWithSkill mAction _ _ -> mAction
@@ -193,7 +205,7 @@ abilityTypeAction = \case
 
 abilityTypeCost :: AbilityType -> Cost
 abilityTypeCost = \case
-  FastAbility cost -> cost
+  FastAbility' cost _ -> cost
   ReactionAbility _ cost -> cost
   ActionAbility _ cost -> cost
   ActionAbilityWithSkill _ _ cost -> cost
@@ -209,7 +221,7 @@ abilityTypeCost = \case
 
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = case aType of
-  FastAbility cost -> FastAbility $ applyCostModifiers cost modifiers
+  FastAbility' cost mAction -> FastAbility' (applyCostModifiers cost modifiers) mAction
   ReactionAbility window cost ->
     ReactionAbility window $ applyCostModifiers cost modifiers
   ActionAbility mAction cost ->
@@ -248,7 +260,7 @@ applyCostModifier cost _ = cost
 
 defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
-  FastAbility _ -> FastPlayerWindow
+  FastAbility' {} -> FastPlayerWindow
   ActionAbility {} -> Matcher.DuringTurn You
   ActionAbilityWithBefore {} -> Matcher.DuringTurn You
   ActionAbilityWithSkill {} -> Matcher.DuringTurn You
@@ -264,7 +276,7 @@ defaultAbilityWindow = \case
 
 isFastAbilityType :: AbilityType -> Bool
 isFastAbilityType = \case
-  FastAbility {} -> True
+  FastAbility' {} -> True
   ForcedAbility {} -> False
   SilentForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
@@ -284,7 +296,7 @@ isReactionAbilityType = \case
   ForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
   Objective aType -> isReactionAbilityType aType
-  FastAbility {} -> False
+  FastAbility' {} -> False
   ReactionAbility {} -> True
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
@@ -300,7 +312,7 @@ isSilentForcedAbilityType = \case
   ForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
   Objective aType -> isSilentForcedAbilityType aType
-  FastAbility {} -> False
+  FastAbility' {} -> False
   ReactionAbility {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
@@ -326,7 +338,7 @@ defaultAbilityLimit = \case
   SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
-  FastAbility _ -> NoLimit
+  FastAbility' {} -> NoLimit
   ActionAbility _ _ -> NoLimit
   ActionAbilityWithBefore {} -> NoLimit
   ActionAbilityWithSkill {} -> NoLimit

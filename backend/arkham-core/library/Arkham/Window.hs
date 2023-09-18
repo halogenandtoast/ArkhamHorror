@@ -38,6 +38,12 @@ data Window = Window
 mkWindow :: Timing -> WindowType -> Window
 mkWindow timing windowType = Window timing windowType Nothing
 
+mkWhen :: WindowType -> Window
+mkWhen windowType = Window #when windowType Nothing
+
+mkAfter :: WindowType -> Window
+mkAfter windowType = Window #after windowType Nothing
+
 windowTypes :: [Window] -> [WindowType]
 windowTypes = map windowType
 
@@ -92,6 +98,7 @@ data WindowType
   | Discarded InvestigatorId Source Card
   | DiscoverClues InvestigatorId LocationId Source Int
   | DiscoveringLastClue InvestigatorId LocationId
+  | SuccessfullyInvestigateWithNoClues InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier
   | DrawCards InvestigatorId [Card]
   | DrawChaosToken InvestigatorId ChaosToken

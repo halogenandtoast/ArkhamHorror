@@ -586,8 +586,20 @@ allAssets =
     , -- Return to the Path to Carcosa
       --- guardian [rtptc]
       SomeAssetCard thirtyTwoColt2
+    , --- seeker [rtptc]
+      SomeAssetCard archaicGlyphsMarkingsOfIsis3
+    , --- rogue [rtptc]
+      SomeAssetCard stealth3
+    , SomeAssetCard suggestion1
+    , --- mystic [rtptc]
+      SomeAssetCard alchemicalTransmutation2
+    , --- survivor [rtptc]
+      SomeAssetCard lantern2
+    , SomeAssetCard gravediggersShovel2
     , -- Return to the Forgotten Age
-      --- rogue [rttfa]
+      --- guardian [rttfa]
+      SomeAssetCard survivalKnife2
+    , --- rogue [rttfa]
       SomeAssetCard coltVestPocket2
     , --- mystic [rttfa]
       SomeAssetCard mistsOfRlyeh2

@@ -7,7 +7,6 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
@@ -46,10 +45,10 @@ instance HasChaosTokenValue ExtracurricularActivity where
       Skull -> pure $ toChaosTokenValue attrs Skull 1 2
       Cultist -> do
         discardCount <- fieldMap InvestigatorDiscard length iid
-        pure $
-          ChaosTokenValue Cultist $
-            NegativeModifier $
-              if discardCount >= 10 then (if isEasyStandard attrs then 3 else 5) else 1
+        pure
+          $ ChaosTokenValue Cultist
+          $ NegativeModifier
+          $ if discardCount >= 10 then (if isEasyStandard attrs then 3 else 5) else 1
       ElderThing -> pure $ ChaosTokenValue Tablet (NegativeModifier 0) -- determined by an effect
       otherFace -> getChaosTokenValue iid otherFace attrs
 
@@ -87,12 +86,12 @@ instance RunMessage ExtracurricularActivity where
           , Locations.administrationBuilding
           ]
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeMiskatonicQuad
-        ]
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeMiskatonicQuad
+          ]
           <> placeOtherLocations
           <> [ RevealLocation Nothing miskatonicQuadId
              , MoveAllTo (toSource attrs) miskatonicQuadId
@@ -128,16 +127,16 @@ instance RunMessage ExtracurricularActivity where
               & (agendaStackL . at 1 ?~ agendas)
           )
     ResolveChaosToken drawnToken ElderThing iid -> do
-      push $
-        DiscardTopOfDeck
+      push
+        $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 2 else 3)
           (ChaosTokenEffectSource ElderThing)
           (Just $ ChaosTokenTarget drawnToken)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ -> do
-      push $
-        DiscardTopOfDeck
+      push
+        $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 3 else 5)
           (ChaosTokenEffectSource Skull)
@@ -147,8 +146,8 @@ instance RunMessage ExtracurricularActivity where
       do
         let
           n =
-            sum $
-              map
+            sum
+              $ map
                 (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
                 cards
         push $ CreateChaosTokenValueEffect (-n) (toSource attrs) target
@@ -156,12 +155,12 @@ instance RunMessage ExtracurricularActivity where
     ScenarioResolution NoResolution -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids noResolution
-        , Record ProfessorWarrenRiceWasKidnapped
-        , Record TheInvestigatorsFailedToSaveTheStudents
-        , AddChaosToken Tablet
-        ]
+      pushAll
+        $ [ story iids noResolution
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheInvestigatorsFailedToSaveTheStudents
+          , AddChaosToken Tablet
+          ]
           <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
@@ -169,56 +168,56 @@ instance RunMessage ExtracurricularActivity where
       leadInvestigatorId <- getLeadInvestigatorId
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids resolution1
-        , Record TheInvestigatorsRescuedProfessorWarrenRice
-        , AddChaosToken Tablet
-        , chooseOne
-            leadInvestigatorId
-            [ Label
-                "Add Professor Warren Rice to your deck"
-                [ AddCampaignCardToDeck
-                    leadInvestigatorId
-                    Assets.professorWarrenRice
-                ]
-            , Label "Do not add Professor Warren Rice to your deck" []
-            ]
-        ]
+      pushAll
+        $ [ story iids resolution1
+          , Record TheInvestigatorsRescuedProfessorWarrenRice
+          , AddChaosToken Tablet
+          , chooseOne
+              leadInvestigatorId
+              [ Label
+                  "Add Professor Warren Rice to your deck"
+                  [ AddCampaignCardToDeck
+                      leadInvestigatorId
+                      Assets.professorWarrenRice
+                  ]
+              , Label "Do not add Professor Warren Rice to your deck" []
+              ]
+          ]
           <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids resolution2
-        , Record ProfessorWarrenRiceWasKidnapped
-        , Record TheStudentsWereRescued
-        ]
+      pushAll
+        $ [ story iids resolution2
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheStudentsWereRescued
+          ]
           <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids resolution3
-        , Record ProfessorWarrenRiceWasKidnapped
-        , Record TheExperimentWasDefeated
-        ]
+      pushAll
+        $ [ story iids resolution3
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheExperimentWasDefeated
+          ]
           <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 4) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids resolution4
-        , Record InvestigatorsWereUnconsciousForSeveralHours
-        , Record ProfessorWarrenRiceWasKidnapped
-        , Record TheInvestigatorsFailedToSaveTheStudents
-        , AddChaosToken Tablet
-        ]
+      pushAll
+        $ [ story iids resolution4
+          , Record InvestigatorsWereUnconsciousForSeveralHours
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheInvestigatorsFailedToSaveTheStudents
+          , AddChaosToken Tablet
+          ]
           <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s

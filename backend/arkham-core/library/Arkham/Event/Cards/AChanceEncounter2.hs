@@ -6,7 +6,6 @@ module Arkham.Event.Cards.AChanceEncounter2 (
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards

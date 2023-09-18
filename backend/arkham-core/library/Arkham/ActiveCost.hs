@@ -17,7 +17,6 @@ import Arkham.Asset.Types (
  )
 import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -86,29 +85,30 @@ costSealedChaosTokensL =
 activeCostPaid :: ActiveCost -> Bool
 activeCostPaid = (== Free) . activeCostCosts
 
-matchTarget :: [Action] -> ActionTarget -> Action -> Bool
-matchTarget takenActions (FirstOneOf as) action =
-  action `elem` as && all (`notElem` takenActions) as
-matchTarget _ (IsAction a) action = action == a
-matchTarget _ (EnemyAction a _) action = action == a
+matchTarget :: [Action] -> [Action] -> ActionTarget -> Action -> Bool
+matchTarget _takenActions performedActions (FirstOneOfPerformed as) action =
+  action `elem` as && all (`notElem` performedActions) as
+matchTarget _ _ (IsAction a) action = action == a
+matchTarget _ _ (EnemyAction a _) action = action == a
 
 getActionCostModifier :: HasGame m => ActiveCost -> m Int
 getActionCostModifier ac = do
   let iid = activeCostInvestigator ac
   takenActions <- field InvestigatorActionsTaken iid
+  performedActions <- field InvestigatorActionsPerformed iid
   modifiers <- getModifiers (InvestigatorTarget iid)
-  pure $ foldr (applyModifier takenActions) 0 modifiers
+  pure $ foldr (applyModifier takenActions performedActions) 0 modifiers
  where
   actions = case activeCostActions ac of
     [] -> error "expected action"
     as -> as
-  applyModifier takenActions (ActionCostOf match m) n =
+  applyModifier takenActions performedActions (ActionCostOf match m) n =
     -- For cards we've already calculated the cost as an additional cost for
     -- the action specifically
     case activeCostTarget ac of
       ForCard {} -> n
-      _ -> if any (matchTarget takenActions match) actions then n + m else n
-  applyModifier _ _ n = n
+      _ -> if any (matchTarget takenActions performedActions match) actions then n + m else n
+  applyModifier _ _ _ n = n
 
 countAdditionalActionPayments :: Payment -> Int
 countAdditionalActionPayments AdditionalActionPayment = 1
@@ -140,7 +140,9 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     Cosmos -> pure ()
     ForcedAbilityWithCost _ cost -> push (PayCost activeCostId iid False cost)
     AbilityEffect cost -> push (PayCost activeCostId iid False cost)
-    FastAbility cost -> push (PayCost activeCostId iid False cost)
+    FastAbility' cost mAction ->
+      pushAll
+        $ PayCost activeCostId iid False cost : [PerformedAction iid action | action <- toList mAction]
     ForcedWhen _ aType ->
       startAbilityPayment
         activeCost
@@ -163,25 +165,18 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
                  ]
         )
     ActionAbilityWithSkill mAction _ cost ->
-      if mAction
-        `notElem` [ Just Action.Fight
-                  , Just Action.Evade
-                  , Just Action.Resign
-                  , Just Action.Parley
-                  ]
+      if mAction `notElem` map Just [#fight, #evade, #resign, #parley]
         then
           pushAll
-            ( PayCost activeCostId iid False cost
-                : [TakenAction iid action | action <- maybeToList mAction]
-                  <> [ CheckAttackOfOpportunity iid False
-                     | not abilityDoesNotProvokeAttacksOfOpportunity
-                     ]
-            )
+            $ PayCost activeCostId iid False cost
+              : [TakenAction iid action | action <- maybeToList mAction]
+                <> [ CheckAttackOfOpportunity iid False
+                   | not abilityDoesNotProvokeAttacksOfOpportunity
+                   ]
         else
           pushAll
-            ( PayCost activeCostId iid False cost
-                : [TakenAction iid action | action <- maybeToList mAction]
-            )
+            $ PayCost activeCostId iid False cost
+              : [TakenAction iid action | action <- maybeToList mAction]
     ActionAbility mAction cost -> do
       let action = fromMaybe Action.Ability $ mAction
       beforeWindowMsg <-

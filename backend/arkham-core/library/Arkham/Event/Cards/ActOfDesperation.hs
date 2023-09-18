@@ -7,7 +7,6 @@ module Arkham.Event.Cards.ActOfDesperation (
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Effect.Runner ()
@@ -36,8 +35,8 @@ instance RunMessage ActOfDesperation where
     PaidForCardCost iid card (getDiscards -> [(zone, discard)])
       | toCardId card == toCardId attrs -> do
           let n = maybe 0 toPrintedCost . cdCost $ toCardDef discard
-          pushAll $
-            skillTestModifiers
+          pushAll
+            $ skillTestModifiers
               (toSource attrs)
               (InvestigatorTarget iid)
               (DamageDealt 1 : [SkillModifier SkillCombat n | n > 0])

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
@@ -27,8 +26,8 @@ instance RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       allies <-
-        selectList $
-          AllyAsset
+        selectList
+          $ AllyAsset
             <> AssetControlledBy
               (InvestigatorWithId iid)
       targetsWithCosts <- for

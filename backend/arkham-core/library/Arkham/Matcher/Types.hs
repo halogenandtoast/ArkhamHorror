@@ -40,6 +40,7 @@ import Arkham.Trait
 import Arkham.Zone
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 type Who = InvestigatorMatcher
 
@@ -533,6 +534,10 @@ instance IsCardMatcher CardMatcher where
   toCardMatcher = id
   {-# INLINE toCardMatcher #-}
 
+instance IsCardMatcher CardType where
+  toCardMatcher = CardWithType
+  {-# INLINE toCardMatcher #-}
+
 data DiscardedPlayerCardMatcher
   = DiscardedCardMatcher InvestigatorMatcher CardMatcher
   deriving stock (Show, Eq, Ord, Data)
@@ -615,6 +620,7 @@ data WindowMatcher
   | PlacedCounterOnEnemy Timing EnemyMatcher SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnAgenda Timing AgendaMatcher SourceMatcher CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
+  | SuccessfullyInvestigatedWithNoClues Timing Who Where
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
@@ -808,6 +814,9 @@ instance Monoid ChaosTokenMatcher where
 
 data PhaseMatcher = AnyPhase | PhaseIs Phase
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "enemy" PhaseMatcher where
+  fromLabel = PhaseIs EnemyPhase
 
 data WindowMythosStepMatcher
   = WhenAllDrawEncounterCard

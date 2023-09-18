@@ -254,7 +254,7 @@ data Modifier = Modifier
   deriving stock (Show, Eq, Ord, Data)
 
 data ActionTarget
-  = FirstOneOf [Action]
+  = FirstOneOfPerformed [Action]
   | IsAction Action
   | EnemyAction Action EnemyMatcher
   deriving stock (Show, Eq, Ord, Data)

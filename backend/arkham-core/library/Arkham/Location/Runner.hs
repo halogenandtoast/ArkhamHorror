@@ -107,42 +107,30 @@ instance RunMessage LocationAttrs where
             skillType
             shroudValue'
       pure a
-    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ n
-      | isTarget a target ->
-          a <$ push (Successful (Action.Investigate, toTarget a) iid source (toTarget a) n)
-    PassedSkillTest
-      iid
-      (Just Action.Investigate)
-      source
-      (SkillTestInitiatorTarget (ProxyTarget target investigationTarget))
-      _
-      n
-        | isTarget a target ->
-            do
-              push
-                $ Successful
-                  (Action.Investigate, toTarget a)
-                  iid
-                  source
-                  investigationTarget
-                  n
-              pure a
+    PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
+      let clues = locationClues a
+      (before, _, after) <- frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
+      pushAll
+        $ [before | clues == 0]
+          <> [Successful (Action.Investigate, toTarget a) iid source (toTarget a) n]
+          <> [after | clues == 0]
+      pure a
+    PassedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
+      let clues = locationClues a
+      (before, _, after) <- frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
+      pushAll
+        $ [before | clues == 0]
+          <> [Successful (Action.Investigate, toTarget a) iid source actual n]
+          <> [after | clues == 0]
+      pure a
     Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (LocationTarget lid)
       clueAmount <- cluesToDiscover iid 1
-      whenWindowMsg <-
-        checkWindows
-          [mkWindow Timing.When (Window.SuccessfulInvestigation iid lid)]
-      afterWindowMsg <-
-        checkWindows
-          [mkWindow Timing.After (Window.SuccessfulInvestigation iid lid)]
-      unless (AlternateSuccessfullInvestigation `elem` modifiers')
-        $ pushAll
-          [ whenWindowMsg
-          , InvestigatorDiscoverClues iid lid (toSource a) clueAmount (Just Action.Investigate)
-          , afterWindowMsg
-          ]
+      (before, _, after) <- frame (Window.SuccessfulInvestigation iid lid)
+      unless (AlternateSuccessfullInvestigation `elem` modifiers') $ do
+        pushAll
+          [before, InvestigatorDiscoverClues iid lid (toSource a) clueAmount (Just #investigate), after]
       pure a
     PlaceUnderneath target cards | isTarget a target -> do
       pure $ a & cardsUnderneathL <>~ cards

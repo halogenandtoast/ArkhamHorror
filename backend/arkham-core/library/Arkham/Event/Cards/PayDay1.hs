@@ -22,7 +22,7 @@ payDay1 = event PayDay1 Cards.payDay1
 instance RunMessage PayDay1 where
   runMessage msg e@(PayDay1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      n <- fieldMap InvestigatorActionsTaken length iid
+      n <- fieldMap InvestigatorActionsPerformed length iid
       pushAll [TakeResources iid n (toSource attrs) False]
       pure e
     _ -> PayDay1 <$> runMessage msg attrs

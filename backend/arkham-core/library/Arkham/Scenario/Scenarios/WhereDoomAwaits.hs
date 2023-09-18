@@ -12,7 +12,6 @@ import Arkham.Agenda.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -82,8 +81,8 @@ instance HasChaosTokenValue WhereDoomAwaits where
   getChaosTokenValue iid chaosTokenFace (WhereDoomAwaits attrs) = case chaosTokenFace of
     Skull -> do
       isAltered <-
-        selectAny $
-          LocationWithInvestigator (InvestigatorWithId iid)
+        selectAny
+          $ LocationWithInvestigator (InvestigatorWithId iid)
             <> LocationWithTrait Altered
       if isAltered
         then pure $ toChaosTokenValue attrs Skull 3 5
@@ -96,8 +95,8 @@ instance HasChaosTokenValue WhereDoomAwaits where
           AgendaSequence
           (AS.unAgendaStep . AS.agendaStep)
           agendaId
-      pure $
-        ChaosTokenValue
+      pure
+        $ ChaosTokenValue
           Tablet
           ( if isEasyStandard attrs
               then NegativeModifier (if agendaStep == 2 then 4 else 2)
@@ -115,7 +114,7 @@ instance RunMessage WhereDoomAwaits where
       pure
         . WhereDoomAwaits
         $ attrs
-          & standaloneCampaignLogL
+        & standaloneCampaignLogL
           .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
@@ -183,22 +182,24 @@ instance RunMessage WhereDoomAwaits where
           else pure []
 
       divergingPaths <-
-        genCards . take 3
-          =<< shuffleM
-            [ Locations.slaughteredWoods
-            , Locations.eerieGlade
-            , Locations.destroyedPath
-            , Locations.frozenSpring
-            ]
+        genCards
+          . take 3
+            =<< shuffleM
+              [ Locations.slaughteredWoods
+              , Locations.eerieGlade
+              , Locations.destroyedPath
+              , Locations.frozenSpring
+              ]
 
       alteredPaths <-
-        genCards . take 3
-          =<< shuffleM
-            [ Locations.dimensionalGap
-            , Locations.aTearInThePath
-            , Locations.uprootedWoods
-            , Locations.lostMemories
-            ]
+        genCards
+          . take 3
+            =<< shuffleM
+              [ Locations.dimensionalGap
+              , Locations.aTearInThePath
+              , Locations.uprootedWoods
+              , Locations.lostMemories
+              ]
 
       let
         token = case scenarioDifficulty attrs of
@@ -207,8 +208,8 @@ instance RunMessage WhereDoomAwaits where
           Hard -> MinusSix
           Expert -> MinusSeven
 
-      pushAll $
-        story investigatorIds intro
+      pushAll
+        $ story investigatorIds intro
           : [story investigatorIds introPart1 | naomiHasTheInvestigatorsBacks]
             <> [GainClues lead (toSource attrs) 1 | naomiHasTheInvestigatorsBacks]
             <> [ AddChaosToken token
@@ -254,8 +255,8 @@ instance RunMessage WhereDoomAwaits where
         ]
       pure s
     ResolveChaosToken drawnToken ElderThing iid -> do
-      push $
-        DiscardTopOfDeck
+      push
+        $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 2 else 3)
           (ChaosTokenEffectSource ElderThing)
@@ -270,20 +271,20 @@ instance RunMessage WhereDoomAwaits where
     ScenarioResolution (Resolution 1) -> do
       xp <- getXp
       investigatorIds <- allInvestigatorIds
-      pushAll $
-        [ story investigatorIds resolution1
-        , Record TheInvestigatorsEnteredTheGate
-        ]
+      pushAll
+        $ [ story investigatorIds resolution1
+          , Record TheInvestigatorsEnteredTheGate
+          ]
           <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
           <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       investigatorIds <- allInvestigatorIds
-      pushAll $
-        [ story investigatorIds resolution2
-        , Record
-            YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
-        ]
+      pushAll
+        $ [ story investigatorIds resolution2
+          , Record
+              YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
+          ]
           <> [DrivenInsane iid | iid <- investigatorIds]
           <> [GameOver]
       pure s

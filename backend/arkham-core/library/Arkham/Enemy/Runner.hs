@@ -1179,4 +1179,6 @@ instance RunMessage EnemyAttrs where
       let sources = keys enemyAssignedDamage
       pushAll $ map CheckDefeated sources
       pure a
+    Msg.Damage (isTarget a -> True) _ _ -> do
+      error $ "Use EnemyDamage instead"
     _ -> pure a

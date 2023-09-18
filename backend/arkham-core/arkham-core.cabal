@@ -309,6 +309,7 @@ library
       Arkham.Asset.Cards.AgencyBackup5
       Arkham.Asset.Cards.AlchemicalConcoction
       Arkham.Asset.Cards.AlchemicalTransmutation
+      Arkham.Asset.Cards.AlchemicalTransmutation2
       Arkham.Asset.Cards.AlejandroVela
       Arkham.Asset.Cards.AliceLuxley
       Arkham.Asset.Cards.AlyssaGraham
@@ -332,6 +333,7 @@ library
       Arkham.Asset.Cards.ArcaneStudies4
       Arkham.Asset.Cards.ArchaicGlyphs
       Arkham.Asset.Cards.ArchaicGlyphsGuidingStones3
+      Arkham.Asset.Cards.ArchaicGlyphsMarkingsOfIsis3
       Arkham.Asset.Cards.ArchaicGlyphsProphecyForetold3
       Arkham.Asset.Cards.ArmorOfArdennes5
       Arkham.Asset.Cards.ArtStudent
@@ -461,6 +463,7 @@ library
       Arkham.Asset.Cards.GrannyOrne
       Arkham.Asset.Cards.GrannyOrne3
       Arkham.Asset.Cards.GravediggersShovel
+      Arkham.Asset.Cards.GravediggersShovel2
       Arkham.Asset.Cards.GreteWagner
       Arkham.Asset.Cards.GreteWagner3
       Arkham.Asset.Cards.GrimmsFairyTales
@@ -522,6 +525,7 @@ library
       Arkham.Asset.Cards.LaboratoryAssistant
       Arkham.Asset.Cards.LadyEsprit
       Arkham.Asset.Cards.Lantern
+      Arkham.Asset.Cards.Lantern2
       Arkham.Asset.Cards.LeatherCoat
       Arkham.Asset.Cards.LeatherCoat1
       Arkham.Asset.Cards.LeatherJacket
@@ -658,6 +662,7 @@ library
       Arkham.Asset.Cards.SpiritSpeaker
       Arkham.Asset.Cards.SpringfieldM19034
       Arkham.Asset.Cards.Stealth
+      Arkham.Asset.Cards.Stealth3
       Arkham.Asset.Cards.StHubertsKey
       Arkham.Asset.Cards.StickToThePlan3
       Arkham.Asset.Cards.Straitjacket
@@ -670,8 +675,10 @@ library
       Arkham.Asset.Cards.Streetwise
       Arkham.Asset.Cards.Streetwise3
       Arkham.Asset.Cards.Studious3
+      Arkham.Asset.Cards.Suggestion1
       Arkham.Asset.Cards.Suggestion4
       Arkham.Asset.Cards.SurvivalKnife
+      Arkham.Asset.Cards.SurvivalKnife2
       Arkham.Asset.Cards.Switchblade
       Arkham.Asset.Cards.Switchblade2
       Arkham.Asset.Cards.TennesseeSourMash
@@ -816,7 +823,6 @@ library
       Arkham.Effect
       Arkham.Effect.Effects
       Arkham.Effect.Effects.AChanceEncounter
-      Arkham.Effect.Effects.AlchemicalTransmutation
       Arkham.Effect.Effects.ArcaneBarrier
       Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Effect.Effects.BaseballBat
@@ -861,7 +867,6 @@ library
       Arkham.Effect.Effects.Shrivelling
       Arkham.Effect.Effects.SleightOfHand
       Arkham.Effect.Effects.SongOfTheDead2
-      Arkham.Effect.Effects.StormOfSpirits
       Arkham.Effect.Effects.SureGamble3
       Arkham.Effect.Effects.SurgeEffect
       Arkham.Effect.Effects.TenAcreMeadow_246
@@ -1276,6 +1281,7 @@ library
       Arkham.Event.Cards.StandTogether
       Arkham.Event.Cards.StandTogether3
       Arkham.Event.Cards.StormOfSpirits
+      Arkham.Event.Cards.StormOfSpirits3
       Arkham.Event.Cards.SureGamble3
       Arkham.Event.Cards.SwiftReflexes
       Arkham.Event.Cards.Taunt
@@ -2325,6 +2331,9 @@ library
       Arkham.Treachery.Cards.UmordhothsHunger
       Arkham.Treachery.Cards.UmordhothsWrath
       Arkham.Treachery.Cards.UnhallowedCountry
+      Arkham.Treachery.Cards.UnspeakableOathBloodthirst
+      Arkham.Treachery.Cards.UnspeakableOathCowardice
+      Arkham.Treachery.Cards.UnspeakableOathCuriosity
       Arkham.Treachery.Cards.VastExpanse
       Arkham.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Treachery.Cards.VisionsOfFuturesPast

@@ -51,8 +51,12 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
     \card -> do
       when
         (toCardDef card == randomWeakness)
-        (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
+        (sample (NE.fromList nonCampaignOnlyWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
+ where
+  nonCampaignOnlyWeaknesses =
+    filter (not . isCampaignOnly) allBasicWeaknesses
+  isCampaignOnly = elem CampaignModeOnly . cdDeckRestrictions
 
 toChaosTokenValue :: ScenarioAttrs -> ChaosTokenFace -> Int -> Int -> ChaosTokenValue
 toChaosTokenValue attrs t esVal heVal =

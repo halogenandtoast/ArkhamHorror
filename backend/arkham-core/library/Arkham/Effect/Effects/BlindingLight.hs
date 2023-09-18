@@ -22,24 +22,22 @@ blindingLight = BlindingLight . uncurry4 (baseAttrs "01066")
 
 instance RunMessage BlindingLight where
   runMessage msg e@(BlindingLight attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token
-      | InvestigatorTarget iid == effectTarget ->
-          e
-            <$ when
-              (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-              ( pushAll
-                  [ If
-                      (Window.RevealChaosTokenEffect iid token effectId)
-                      [LoseActions iid (toSource attrs) 1]
-                  , DisableEffect effectId
-                  ]
-              )
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+      when
+        (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        $ pushAll
+          [ If
+              (Window.RevealChaosTokenEffect iid token effectId)
+              [LoseActions iid (toSource attrs) 1]
+          , DisableEffect effectId
+          ]
+      pure e
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
-      | SkillTestTarget == effectTarget ->
-          e
-            <$ pushAll
-              [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 1
-              , DisableEffect effectId
-              ]
+      | SkillTestTarget == effectTarget -> do
+          pushAll
+            [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 1
+            , DisableEffect effectId
+            ]
+          pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> BlindingLight <$> runMessage msg attrs

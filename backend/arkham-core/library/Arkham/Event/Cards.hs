@@ -279,6 +279,7 @@ allPlayerEventCards =
       , standTogether
       , standTogether3
       , stormOfSpirits
+      , stormOfSpirits3
       , sureGamble3
       , swiftReflexes
       , taunt
@@ -1423,7 +1424,7 @@ trueSurvivor3 =
 
 eatLead2 :: CardDef
 eatLead2 =
-  (event "03304" "\"Eat lead!\"" 0 Guardian)
+  (event "52002" "\"Eat lead!\"" 0 Guardian)
     { cdCardTraits = singleton Tactic
     , cdFastWindow =
         Just
@@ -1611,6 +1612,7 @@ darkPact =
     { cdCardTraits = singleton Pact
     , cdCardSubType = Just BasicWeakness
     , cdCardInHandEffects = True
+    , cdDeckRestrictions = [CampaignModeOnly]
     }
 
 sceneOfTheCrime :: CardDef
@@ -2520,6 +2522,15 @@ logicalReasoning4 =
                     )
                 ]
           )
+    }
+
+stormOfSpirits3 :: CardDef
+stormOfSpirits3 =
+  (event "52008" "Storm of Spirits" 3 Mystic)
+    { cdSkills = [#willpower, #combat, #combat]
+    , cdCardTraits = singleton Spell
+    , cdActions = [Action.Fight]
+    , cdLevel = 3
     }
 
 bloodEclipse1 :: CardDef

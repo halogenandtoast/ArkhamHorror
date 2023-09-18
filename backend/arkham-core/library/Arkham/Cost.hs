@@ -149,6 +149,12 @@ assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
 exhaust :: Targetable a => a -> Cost
 exhaust = ExhaustCost . toTarget
 
+discardCost :: Targetable a => a -> Cost
+discardCost = DiscardCost FromPlay . toTarget
+
+removeCost :: Targetable a => a -> Cost
+removeCost = RemoveCost . toTarget
+
 data DynamicUseCostValue = DrawnCardsValue
   deriving stock (Show, Eq, Ord, Data)
 
@@ -205,7 +211,7 @@ displayCostType = \case
   DamageCost _ _ n -> tshow n <> " Damage"
   DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
-  DiscardCost zone _ -> "Discard from" <> tshow zone
+  DiscardCost zone _ -> "Discard from " <> zoneLabel zone
   DiscardCardCost _ -> "Discard Card"
   DiscardFromCost n _ _ -> "Discard " <> tshow n
   DiscardDrawnCardCost -> "Discard Drawn Card"

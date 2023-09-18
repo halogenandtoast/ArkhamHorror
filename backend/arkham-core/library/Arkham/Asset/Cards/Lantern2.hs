@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.Lantern (
-  lantern,
-  Lantern (..),
+module Arkham.Asset.Cards.Lantern2 (
+  lantern2,
+  Lantern2 (..),
 ) where
 
 import Arkham.Prelude
@@ -14,23 +14,23 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 
-newtype Lantern = Lantern AssetAttrs
+newtype Lantern2 = Lantern2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lantern :: AssetCard Lantern
-lantern = asset Lantern Cards.lantern
+lantern2 :: AssetCard Lantern2
+lantern2 = asset Lantern2 Cards.lantern2
 
-instance HasAbilities Lantern where
-  getAbilities (Lantern x) =
+instance HasAbilities Lantern2 where
+  getAbilities (Lantern2 x) =
     [ investigateAbility x 1 (ActionCost 1) ControlsThis
     , doesNotProvokeAttacksOfOpportunity
         $ restrictedAbility x 2 (ControlsThis <> enemyExists (EnemyAt YourLocation))
-        $ actionAbilityWithCost (discardCost x)
+        $ actionAbilityWithCost (OrCost [discardCost x, removeCost x])
     ]
 
-instance RunMessage Lantern where
-  runMessage msg a@(Lantern attrs) = case msg of
+instance RunMessage Lantern2 where
+  runMessage msg a@(Lantern2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       lid <- fieldJust InvestigatorLocation iid
       skillType <- field LocationInvestigateSkill lid
@@ -42,7 +42,12 @@ instance RunMessage Lantern where
       pure a
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       let source = toAbilitySource attrs 2
-      enemies <- selectList $ enemyAtLocationWith iid
-      push $ chooseOne iid [targetLabel enemy [EnemyDamage enemy $ nonAttack source 1] | enemy <- enemies]
+      targets <- selectTargets $ enemyAtLocationWith iid
+      push $ chooseOne iid [TargetLabel target [Damage target source 1] | target <- targets]
       pure a
-    _ -> Lantern <$> runMessage msg attrs
+    InOutOfPlay (UseThisAbility iid (isSource attrs -> True) 2) -> do
+      let source = toAbilitySource attrs 2
+      enemies <- selectList $ enemyAtLocationWith iid
+      push $ chooseOne iid [targetLabel enemy [EnemyDamage enemy $ nonAttack source 2] | enemy <- enemies]
+      pure a
+    _ -> Lantern2 <$> runMessage msg attrs

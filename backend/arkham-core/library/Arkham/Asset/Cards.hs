@@ -127,6 +127,7 @@ allPlayerAssetCards =
       , adaptable1
       , agencyBackup5
       , alchemicalTransmutation
+      , alchemicalTransmutation2
       , alejandroVela
       , aliceLuxley
       , alyssaGraham
@@ -150,6 +151,7 @@ allPlayerAssetCards =
       , arcaneStudies4
       , archaicGlyphs
       , archaicGlyphsGuidingStones3
+      , archaicGlyphsMarkingsOfIsis3
       , archaicGlyphsProphecyForetold3
       , armorOfArdennes5
       , artStudent
@@ -273,6 +275,7 @@ allPlayerAssetCards =
       , grannyOrne
       , grannyOrne3
       , gravediggersShovel
+      , gravediggersShovel2
       , greteWagner
       , greteWagner3
       , grimmsFairyTales
@@ -327,6 +330,7 @@ allPlayerAssetCards =
       , laboratoryAssistant
       , ladyEsprit
       , lantern
+      , lantern2
       , leatherCoat
       , leatherCoat1
       , leatherJacket
@@ -456,6 +460,7 @@ allPlayerAssetCards =
       , spectralWeb
       , spiritAthame1
       , stealth
+      , stealth3
       , stickToThePlan3
       , streetwise
       , streetwise3
@@ -470,8 +475,10 @@ allPlayerAssetCards =
       , strangeSolutionFreezingVariant4
       , strangeSolutionRestorativeConcoction4
       , strayCat
+      , suggestion1
       , suggestion4
       , survivalKnife
+      , survivalKnife2
       , switchblade
       , switchblade2
       , tennesseeSourMash
@@ -2117,6 +2124,7 @@ archaicGlyphsGuidingStones3 =
     , cdSlots = [ArcaneSlot]
     , cdUses = uses Charge 3
     , cdLevel = 3
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGlyphs
     }
 
 archaicGlyphsProphecyForetold3 :: CardDef
@@ -2127,6 +2135,7 @@ archaicGlyphsProphecyForetold3 =
     , cdSlots = [ArcaneSlot]
     , cdUses = uses Charge 3
     , cdLevel = 3
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGlyphs
     }
 
 pickpocketing2 :: CardDef
@@ -3687,6 +3696,72 @@ thirtyTwoColt2 =
     { cdSkills = [#combat, #combat]
     , cdCardTraits = setFromList [Item, Weapon, Firearm]
     , cdUses = uses Ammo 6
+    , cdSlots = [HandSlot]
+    , cdLevel = 2
+    }
+
+archaicGlyphsMarkingsOfIsis3 :: CardDef
+archaicGlyphsMarkingsOfIsis3 =
+  (asset "52004" ("Archaic Glyphs" <:> "Markings of Isis 3") 2 Seeker)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = singleton Spell
+    , cdSlots = [ArcaneSlot]
+    , cdUses = uses Charge 3
+    , cdLevel = 3
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGlyphs
+    }
+
+stealth3 :: CardDef
+stealth3 =
+  (asset "52005" "Stealth" 2 Rogue)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = singleton Talent
+    , cdLevel = 3
+    }
+
+suggestion1 :: CardDef
+suggestion1 =
+  (asset "52006" "Suggestion" 3 Rogue)
+    { cdCardTraits = singleton Spell
+    , cdSkills = [#willpower]
+    , cdUses = uses Charge 3
+    , cdSlots = [ArcaneSlot]
+    , cdLevel = 1
+    }
+
+alchemicalTransmutation2 :: CardDef
+alchemicalTransmutation2 =
+  (asset "52007" "Alchemical Transmutation" 0 Mystic)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = singleton Spell
+    , cdUses = uses Charge 4
+    , cdSlots = [ArcaneSlot]
+    , cdLevel = 2
+    }
+
+lantern2 :: CardDef
+lantern2 =
+  (asset "52009" "Lantern" 1 Survivor)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdSlots = [HandSlot]
+    , cdLevel = 2
+    }
+
+gravediggersShovel2 :: CardDef
+gravediggersShovel2 =
+  (asset "52010" "Gravedigger's Shovel" 1 Survivor)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
+    , cdSlots = [HandSlot]
+    , cdLevel = 2
+    }
+
+survivalKnife2 :: CardDef
+survivalKnife2 =
+  (asset "53002" "Survival Knife" 2 Guardian)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSlots = [HandSlot]
     , cdLevel = 2
     }

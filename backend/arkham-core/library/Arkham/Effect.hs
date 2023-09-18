@@ -26,6 +26,8 @@ import Arkham.Act.Acts (infiltratingTheLodgeEffect, theYithianRelicEffect)
 import Arkham.Agenda.Agendas (lostMemoriesEffect, theLoversVIEffect, theRedDepthsEffect)
 import Arkham.Asset.Assets (
   aceOfRods1Effect,
+  alchemicalTransmutation2Effect,
+  alchemicalTransmutationEffect,
   arbiterOfFatesEffect,
   azureFlame3Effect,
   azureFlame5Effect,
@@ -78,6 +80,8 @@ import Arkham.Event.Events (
   oneTwoPunchEffect,
   pilfer3Effect,
   slipAwayEffect,
+  stormOfSpirits3Effect,
+  stormOfSpiritsEffect,
   telescopicSight3Effect,
   vantagePointEffect,
   willToSurviveEffect,
@@ -247,7 +251,7 @@ allEffects =
     , ("03024", SomeEffect fieldwork)
     , ("03029", SomeEffect sleightOfHand)
     , ("03031", SomeEffect lockpicks1)
-    , ("03032", SomeEffect alchemicalTransmutation)
+    , ("03032", SomeEffect alchemicalTransmutationEffect)
     , ("03033", SomeEffect uncageTheSoul)
     , ("03047a", SomeEffect theStrangerACityAflame)
     , ("03047b", SomeEffect theStrangerThePathIsMine)
@@ -255,7 +259,7 @@ allEffects =
     , ("03100", SomeEffect theKingsEdict)
     , ("03141", SomeEffect mrPeabody)
     , ("03149", SomeEffect charlesRossEsq)
-    , ("03153", SomeEffect stormOfSpirits)
+    , ("03153", SomeEffect stormOfSpiritsEffect)
     , ("03155", SomeEffect fightOrFlight)
     , ("03158", SomeEffect callingInFavors)
     , ("03209", SomeEffect montmartre209)
@@ -317,7 +321,9 @@ allEffects =
     , ("50008", SomeEffect mindWipe3)
     , ("50044", SomeEffect jeremiahPierce)
     , ("51007", SomeEffect riteOfSeeking2)
-    , ("52007", SomeEffect mistsOfRlyeh2Effect)
+    , ("52007", SomeEffect alchemicalTransmutation2Effect)
+    , ("52008", SomeEffect stormOfSpirits3Effect)
+    , ("53007", SomeEffect mistsOfRlyeh2Effect)
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielCho)
     , ("60103", SomeEffect tommyMalloy)

@@ -505,6 +505,7 @@ allPlayerAssetCards =
       , thePallidMask
       , theRedGlovedMan5
       , theSkeletonKey2
+      , theStarXvii3
       , theTatteredCloak
       , theTowerXVI
       , thermos
@@ -3856,6 +3857,15 @@ dendromorphosis =
   (weakness "53012" ("Dendromorphosis" <:> "\"Natural\" Transformation"))
     { cdSlots = [HandSlot, HandSlot]
     , cdCost = Nothing
+    }
+
+theStarXvii3 :: CardDef
+theStarXvii3 =
+  (asset "54001" ("The Star • XVII" <:> "You Have Been Chosen") 3 Neutral)
+    { cdCardTraits = singleton Tarot
+    , cdSlots = [TarotSlot]
+    , cdLevel = 3
+    , cdCardInHandEffects = True
     }
 
 wellConnected3 :: CardDef

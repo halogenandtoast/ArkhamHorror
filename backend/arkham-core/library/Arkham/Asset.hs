@@ -617,6 +617,8 @@ allAssets =
       -- guardian [rttcu]
       SomeAssetCard theStarXvii3
     , SomeAssetCard hallowedMirror3
+    , -- seeker [rttcu]
+      SomeAssetCard theWorldXxi3
     , -- rogue [rttcu]
       SomeAssetCard wellConnected3
     , -- mystic [rttcu]

@@ -509,6 +509,7 @@ allPlayerAssetCards =
       , theStarXvii3
       , theTatteredCloak
       , theTowerXVI
+      , theWorldXxi3
       , thermos
       , thirtyTwoColt
       , thirtyTwoColt2
@@ -3862,7 +3863,7 @@ dendromorphosis =
 
 theStarXvii3 :: CardDef
 theStarXvii3 =
-  (asset "54001" ("The Star • XVII" <:> "You Have Been Chosen") 3 Neutral)
+  (asset "54001" ("The Star • XVII" <:> "You Have Been Chosen") 3 Guardian)
     { cdCardTraits = singleton Tarot
     , cdSlots = [TarotSlot]
     , cdLevel = 3
@@ -3876,6 +3877,15 @@ hallowedMirror3 =
     , cdCardTraits = setFromList [Item, Relic, Occult, Blessed]
     , cdSlots = [AccessorySlot]
     , cdLevel = 3
+    }
+
+theWorldXxi3 :: CardDef
+theWorldXxi3 =
+  (asset "54003" ("The World • XXI" <:> "The Journey is Complete") 3 Seeker)
+    { cdCardTraits = singleton Tarot
+    , cdSlots = [TarotSlot]
+    , cdLevel = 3
+    , cdCardInHandEffects = True
     }
 
 wellConnected3 :: CardDef

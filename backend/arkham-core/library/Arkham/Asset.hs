@@ -614,7 +614,9 @@ allAssets =
     , --- weakness [rttfa]
       SomeAssetCard dendromorphosis
     , -- Return to the circle undone
-      -- rogue [rttcu]
+      -- guardian [rttcu]
+      SomeAssetCard theStarXvii3
+    , -- rogue [rttcu]
       SomeAssetCard wellConnected3
     , -- mystic [rttcu]
       SomeAssetCard signMagick3

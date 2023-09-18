@@ -164,6 +164,7 @@ data AssetMatcher
   | AssetWithDamage
   | AssetWithHorror
   | AssetWithHealth
+  | AssetWithSanity
   | AssetWithFewestClues AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -42,8 +41,8 @@ instance RunMessage Corrosion where
           InvestigatorHand
           (any (`cardMatch` handMatcher))
           iid
-      push $
-        if shroud > 0 && (hasAssets || hasHandAssets)
+      push
+        $ if shroud > 0 && (hasAssets || hasHandAssets)
           then RevelationChoice iid source shroud
           else gainSurge attrs
       pure t
@@ -68,10 +67,10 @@ instance RunMessage Corrosion where
                 source
                 (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
             ]
-      unless (null assets && null handAssets) $
-        push $
-          chooseOne iid $
-            map discardAsset assets
-              <> map discardHandAsset handAssets
+      unless (null assets && null handAssets)
+        $ push
+        $ chooseOne iid
+        $ map discardAsset assets
+          <> map discardHandAsset handAssets
       pure t
     _ -> Corrosion <$> runMessage msg attrs

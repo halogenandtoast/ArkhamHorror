@@ -10,7 +10,7 @@ export interface FastAbility {
 }
 
 export const fastAbilityDecoder = JsonDecoder.object<FastAbility>({
-  tag: JsonDecoder.isExactly("FastAbility"),
+  tag: JsonDecoder.isExactly("FastAbility'").map(() => "FastAbility"),
   cost: costDecoder
 }, 'FastAbility')
 

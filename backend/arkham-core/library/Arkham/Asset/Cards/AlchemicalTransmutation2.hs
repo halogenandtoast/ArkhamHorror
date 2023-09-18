@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.AlchemicalTransmutation (
-  alchemicalTransmutation,
-  alchemicalTransmutationEffect,
-  AlchemicalTransmutation (..),
+module Arkham.Asset.Cards.AlchemicalTransmutation2 (
+  alchemicalTransmutation2,
+  alchemicalTransmutation2Effect,
+  AlchemicalTransmutation2 (..),
 ) where
 
 import Arkham.Prelude
@@ -14,42 +14,42 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Window qualified as Window
 
-newtype AlchemicalTransmutation = AlchemicalTransmutation AssetAttrs
+newtype AlchemicalTransmutation2 = AlchemicalTransmutation2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-alchemicalTransmutation :: AssetCard AlchemicalTransmutation
-alchemicalTransmutation = asset AlchemicalTransmutation Cards.alchemicalTransmutation
+alchemicalTransmutation2 :: AssetCard AlchemicalTransmutation2
+alchemicalTransmutation2 = asset AlchemicalTransmutation2 Cards.alchemicalTransmutation2
 
-instance HasAbilities AlchemicalTransmutation where
-  getAbilities (AlchemicalTransmutation a) =
+instance HasAbilities AlchemicalTransmutation2 where
+  getAbilities (AlchemicalTransmutation2 a) =
     [ restrictedAbility a 1 ControlsThis
         $ actionAbilityWithCost (exhaust a <> assetUseCost a Charge 1)
     ]
 
-instance RunMessage AlchemicalTransmutation where
-  runMessage msg a@(AlchemicalTransmutation attrs) = case msg of
+instance RunMessage AlchemicalTransmutation2 where
+  runMessage msg a@(AlchemicalTransmutation2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       pushAll
-        [ createCardEffect Cards.alchemicalTransmutation Nothing source iid
-        , beginSkillTest iid source attrs #willpower 1
+        [ createCardEffect Cards.alchemicalTransmutation2 Nothing source iid
+        , beginSkillTest iid source attrs #willpower 0
         ]
       pure a
-    PassedThisSkillTestBy iid (isSource attrs -> True) (min 3 -> n) -> do
+    PassedThisSkillTestBy iid (isSource attrs -> True) (min 4 -> n) -> do
       push $ TakeResources iid n (toAbilitySource attrs 1) False
       pure a
-    _ -> AlchemicalTransmutation <$> runMessage msg attrs
+    _ -> AlchemicalTransmutation2 <$> runMessage msg attrs
 
-newtype AlchemicalTransmutationEffect = AlchemicalTransmutationEffect EffectAttrs
+newtype AlchemicalTransmutation2Effect = AlchemicalTransmutation2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-alchemicalTransmutationEffect :: EffectArgs -> AlchemicalTransmutationEffect
-alchemicalTransmutationEffect = cardEffect AlchemicalTransmutationEffect Cards.alchemicalTransmutation
+alchemicalTransmutation2Effect :: EffectArgs -> AlchemicalTransmutation2Effect
+alchemicalTransmutation2Effect = cardEffect AlchemicalTransmutation2Effect Cards.alchemicalTransmutation2
 
-instance RunMessage AlchemicalTransmutationEffect where
-  runMessage msg e@(AlchemicalTransmutationEffect attrs) =
+instance RunMessage AlchemicalTransmutation2Effect where
+  runMessage msg e@(AlchemicalTransmutation2Effect attrs) =
     case msg of
       RevealChaosToken _ iid token | toTarget iid == effectTarget attrs -> do
         let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
@@ -64,4 +64,4 @@ instance RunMessage AlchemicalTransmutationEffect where
       SkillTestEnds _ _ -> do
         push $ DisableEffect $ toId attrs
         pure e
-      _ -> AlchemicalTransmutationEffect <$> runMessage msg attrs
+      _ -> AlchemicalTransmutation2Effect <$> runMessage msg attrs

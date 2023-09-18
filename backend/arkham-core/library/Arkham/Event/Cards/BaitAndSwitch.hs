@@ -20,34 +20,25 @@ baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 instance RunMessage BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      push $
-        ChooseEvadeEnemy
-          iid
-          (toSource attrs)
-          (Just $ toTarget attrs)
-          SkillAgility
-          AnyEnemy
-          False
+      push $ ChooseEvadeEnemy iid (toSource attrs) (Just $ toTarget attrs) SkillAgility AnyEnemy False
       pure e
-    Successful (Action.Evade, EnemyTarget eid) iid _ target _
-      | isTarget attrs target -> do
-          nonElite <- member eid <$> select NonEliteEnemy
-          pushAll $ EnemyEvaded iid eid : [WillMoveEnemy eid msg | nonElite]
-          pure e
-    WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _)
-      | isTarget attrs target -> do
-          choices <- selectList ConnectedLocation
-          let
-            enemyMoveChoices =
-              chooseOne
-                iid
-                [ targetLabel choice [EnemyMove enemyId choice]
-                | choice <- choices
-                ]
-          insertAfterMatching
-            [enemyMoveChoices]
-            \case
-              AfterEvadeEnemy {} -> True
-              _ -> False
-          pure e
+    Successful (Action.Evade, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
+      nonElite <- member eid <$> select NonEliteEnemy
+      pushAll $ EnemyEvaded iid eid : [WillMoveEnemy eid msg | nonElite]
+      pure e
+    WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
+      choices <- selectList ConnectedLocation
+      let
+        enemyMoveChoices =
+          chooseOne
+            iid
+            [ targetLabel choice [EnemyMove enemyId choice]
+            | choice <- choices
+            ]
+      insertAfterMatching
+        [enemyMoveChoices]
+        \case
+          AfterEvadeEnemy {} -> True
+          _ -> False
+      pure e
     _ -> BaitAndSwitch <$> runMessage msg attrs

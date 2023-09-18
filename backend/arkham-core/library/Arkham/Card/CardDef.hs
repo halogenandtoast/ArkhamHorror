@@ -27,7 +27,7 @@ import Arkham.Slot
 import Arkham.Trait
 import Data.Aeson.TH
 
-data DeckRestriction = Signature InvestigatorId
+data DeckRestriction = Signature InvestigatorId | CampaignModeOnly
   deriving stock (Show, Eq, Ord, Data)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
@@ -122,6 +122,7 @@ isSignature = any isSignatureDeckRestriction . cdDeckRestrictions
  where
   isSignatureDeckRestriction = \case
     Signature _ -> True
+    _ -> False
 
 instance Named CardDef where
   toName = cdName

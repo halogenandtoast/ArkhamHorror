@@ -783,6 +783,7 @@ data Message
   | DrawStartingHand InvestigatorId
   | TakeStartingResources InvestigatorId
   | TakenAction InvestigatorId Action
+  | PerformedAction InvestigatorId Action
   | ChosenEvadeEnemy Source EnemyId
   | TriggerSkillTest InvestigatorId
   | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType

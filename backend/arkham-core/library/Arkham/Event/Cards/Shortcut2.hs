@@ -25,25 +25,21 @@ instance HasAbilities Shortcut2 where
   getAbilities (Shortcut2 a) = case eventAttachedTarget a of
     Just (LocationTarget lid) ->
       [ restrictedAbility
-          (ProxySource (LocationSource lid) (toSource a))
+          (ProxySource (toSource lid) (toSource a))
           1
           (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
-          (FastAbility $ ExhaustCost (toTarget a))
+          (FastAbility' (exhaust a) (Just #move))
       ]
     _ -> []
 
 instance RunMessage Shortcut2 where
   runMessage msg e@(Shortcut2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid
-      e <$ push (PlaceEvent iid eid (AttachedToLocation lid))
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
+      lid <- selectJust $ locationWithInvestigator iid
+      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      pure e
+    UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
       connectingLocations <- selectList $ AccessibleLocation
-      push $
-        chooseOne
-          iid
-          [ targetLabel lid' [Move $ move (toSource attrs) iid lid']
-          | lid' <- connectingLocations
-          ]
+      push $ chooseOne iid $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)
       pure e
     _ -> Shortcut2 <$> runMessage msg attrs

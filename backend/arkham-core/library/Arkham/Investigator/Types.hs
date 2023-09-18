@@ -87,6 +87,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorDiscard :: Field Investigator [PlayerCard]
   InvestigatorClass :: Field Investigator ClassSymbol
   InvestigatorActionsTaken :: Field Investigator [Action]
+  InvestigatorActionsPerformed :: Field Investigator [Action]
   InvestigatorSlots :: Field Investigator (Map SlotType [Slot])
   InvestigatorUsedAbilities :: Field Investigator [UsedAbility]
   InvestigatorTraits :: Field Investigator (Set Trait)
@@ -120,6 +121,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorTokens :: Tokens
   , investigatorLocation :: LocationId
   , investigatorActionsTaken :: [Action]
+  , investigatorActionsPerformed :: [Action]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
   , investigatorEngagedEnemies :: Set EnemyId

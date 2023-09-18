@@ -10,8 +10,6 @@ import Arkham.Asset.Types (Field (AssetUses))
 import Arkham.Asset.Uses
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
@@ -60,15 +58,7 @@ instance RunMessage EatLead2 where
           checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
         pushAll
           [ SpendUses (AssetTarget aid) Ammo ammo
-          , CreateWindowModifierEffect
-              EffectSkillTestWindow
-              ( EffectModifiers $
-                  toModifiers
-                    attrs
-                    [ChangeRevealStrategy $ RevealAndChoose ammo 1]
-              )
-              (toSource attrs)
-              (InvestigatorTarget iid)
+          , skillTestModifier attrs iid (ChangeRevealStrategy $ RevealAndChoose ammo 1)
           , ignoreWindow
           ]
       pure e

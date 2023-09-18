@@ -23,8 +23,8 @@ whispersInYourHeadAnxiety =
 
 instance HasModifiersFor WhispersInYourHeadAnxiety where
   getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadAnxiety a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [CannotTriggerFastAbilities | treacheryInHandOf a == Just iid]
   getModifiersFor _ _ = pure []
@@ -35,10 +35,10 @@ instance HasAbilities WhispersInYourHeadAnxiety where
 
 instance RunMessage WhispersInYourHeadAnxiety where
   runMessage msg t@(WhispersInYourHeadAnxiety attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (PlaceTreachery (toId attrs) (TreacheryInHandOf iid))
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      pure t
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure t
     _ -> WhispersInYourHeadAnxiety <$> runMessage msg attrs

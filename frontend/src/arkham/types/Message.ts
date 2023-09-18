@@ -301,6 +301,9 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     doneDecoder,
     tokenGroupChoiceDecoder,
     effectActionButtonDecoder,
+    JsonDecoder.succeed.chain((f) => {
+      return JsonDecoder.fail(f)
+    })
   ],
   'Message',
 );

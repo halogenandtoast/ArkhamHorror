@@ -27,7 +27,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Attack
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
@@ -209,7 +208,7 @@ preventedByInvestigatorModifiers iid ability = do
     MustTakeAction x -> not <$> preventsAbility x -- reads a little weird but we want only thing things x would prevent with cannot take action
     _ -> pure False
   preventsAbility = \case
-    FirstOneOf as -> case abilityAction ability of
+    FirstOneOfPerformed as -> case abilityAction ability of
       Just action
         | action `elem` as ->
             fieldP InvestigatorActionsTaken (\taken -> all (`notElem` taken) as) iid
@@ -236,63 +235,67 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
       isTurn <- matchWho iid iid Matcher.TurnInvestigator
       if not isTurn
         then pure False
-        else case action of
-          Action.Fight -> case abilitySource of
-            EnemySource _ -> pure True
-            _ -> do
-              modifiers <- getModifiers (AbilityTarget iid ab)
-              let
-                isOverride = \case
-                  EnemyFightActionCriteria override -> Just override
-                  CanModify (EnemyFightActionCriteria override) -> Just override
-                  _ -> Nothing
-                overrides = mapMaybe isOverride modifiers
-              case overrides of
-                [] -> notNull <$> select (Matcher.CanFightEnemy $ AbilitySource abilitySource abilityIndex)
-                [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
-                _ -> error "multiple overrides found"
-          Action.Evade -> case abilitySource of
-            EnemySource _ -> pure True
-            _ -> do
-              modifiers <- getModifiers (AbilityTarget iid ab)
-              let
-                isOverride = \case
-                  EnemyEvadeActionCriteria override -> Just override
-                  CanModify (EnemyEvadeActionCriteria override) -> Just override
-                  _ -> Nothing
-                overrides = mapMaybe isOverride modifiers
-              case overrides of
-                [] -> notNull <$> select (Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex)
-                [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
-                _ -> error "multiple overrides found"
-          Action.Engage -> case abilitySource of
-            EnemySource _ -> pure True
-            _ -> notNull <$> select Matcher.CanEngageEnemy
-          Action.Parley -> case abilitySource of
-            EnemySource _ -> pure True
-            AssetSource _ -> pure True
-            LocationSource _ -> pure True
-            _ -> notNull <$> select (Matcher.CanParleyEnemy iid)
-          Action.Investigate -> case abilitySource of
-            LocationSource _ -> pure True
-            _ -> notNull <$> select Matcher.InvestigatableLocation
-          -- The below actions may not be handled correctly yet
-          Action.Ability -> pure True
-          Action.Draw -> pure True
-          Action.Move -> pure True
-          Action.Play -> pure True
-          Action.Resign -> pure True
-          Action.Resource -> pure True
-          Action.Explore ->
-            iid <=~> Matcher.InvestigatorWithoutModifier CannotExplore
-          Action.Circle -> pure True
+        else canDoAction iid ab action
     ActionAbility Nothing _ -> matchWho iid iid Matcher.TurnInvestigator
-    FastAbility _ -> pure True
+    FastAbility' _ (Just action) -> canDoAction iid ab action
+    FastAbility' _ Nothing -> pure True
     ReactionAbility _ _ -> pure True
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     ForcedAbilityWithCost _ _ -> pure True
     AbilityEffect _ -> pure True
+
+canDoAction :: HasGame m => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
+  Action.Fight -> case abilitySource of
+    EnemySource _ -> pure True
+    _ -> do
+      modifiers <- getModifiers (AbilityTarget iid ab)
+      let
+        isOverride = \case
+          EnemyFightActionCriteria override -> Just override
+          CanModify (EnemyFightActionCriteria override) -> Just override
+          _ -> Nothing
+        overrides = mapMaybe isOverride modifiers
+      case overrides of
+        [] -> notNull <$> select (Matcher.CanFightEnemy $ AbilitySource abilitySource abilityIndex)
+        [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
+        _ -> error "multiple overrides found"
+  Action.Evade -> case abilitySource of
+    EnemySource _ -> pure True
+    _ -> do
+      modifiers <- getModifiers (AbilityTarget iid ab)
+      let
+        isOverride = \case
+          EnemyEvadeActionCriteria override -> Just override
+          CanModify (EnemyEvadeActionCriteria override) -> Just override
+          _ -> Nothing
+        overrides = mapMaybe isOverride modifiers
+      case overrides of
+        [] -> notNull <$> select (Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex)
+        [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
+        _ -> error "multiple overrides found"
+  Action.Engage -> case abilitySource of
+    EnemySource _ -> pure True
+    _ -> notNull <$> select Matcher.CanEngageEnemy
+  Action.Parley -> case abilitySource of
+    EnemySource _ -> pure True
+    AssetSource _ -> pure True
+    LocationSource _ -> pure True
+    _ -> notNull <$> select (Matcher.CanParleyEnemy iid)
+  Action.Investigate -> case abilitySource of
+    LocationSource _ -> pure True
+    _ -> notNull <$> select Matcher.InvestigatableLocation
+  -- The below actions may not be handled correctly yet
+  Action.Ability -> pure True
+  Action.Draw -> pure True
+  Action.Move -> pure True
+  Action.Play -> pure True
+  Action.Resign -> pure True
+  Action.Resource -> pure True
+  Action.Explore ->
+    iid <=~> Matcher.InvestigatorWithoutModifier CannotExplore
+  Action.Circle -> pure True
 
 getCanAffordAbility
   :: HasGame m => InvestigatorId -> Ability -> Window -> m Bool
@@ -322,7 +325,7 @@ getCanAffordAbilityCost iid a@Ability {..} = do
     ActionAbilityWithBefore _ mBeforeAction cost ->
       getCanAffordCost iid (toSource a) mBeforeAction [] (f cost)
     ReactionAbility _ cost -> getCanAffordCost iid (toSource a) Nothing [] (f cost)
-    FastAbility cost -> getCanAffordCost iid (toSource a) Nothing [] (f cost)
+    FastAbility' cost mAction -> getCanAffordCost iid (toSource a) mAction [] (f cost)
     ForcedAbilityWithCost _ cost ->
       getCanAffordCost iid (toSource a) Nothing [] (f cost)
     ForcedAbility _ -> pure True
@@ -390,7 +393,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
             ActionAbility _ _ -> pure True
             ActionAbilityWithBefore {} -> pure True
             ActionAbilityWithSkill {} -> pure True
-            FastAbility _ -> pure True
+            FastAbility' {} -> pure True
             AbilityEffect _ -> pure True
             Objective {} -> pure True
             Haunted -> pure True
@@ -446,14 +449,14 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         pure $ total < n
 
 applyActionCostModifier
-  :: [Action] -> Maybe Action -> ModifierType -> Int -> Int
-applyActionCostModifier _ (Just action) (ActionCostOf (IsAction action') m) n
+  :: [Action] -> [Action] -> Maybe Action -> ModifierType -> Int -> Int
+applyActionCostModifier _ _ (Just action) (ActionCostOf (IsAction action') m) n
   | action == action' = n + m
-applyActionCostModifier takenActions (Just action) (ActionCostOf (FirstOneOf as) m) n
-  | action `elem` as && all (`notElem` takenActions) as =
+applyActionCostModifier _ performedActions (Just action) (ActionCostOf (FirstOneOfPerformed as) m) n
+  | action `elem` as && all (`notElem` performedActions) as =
       n + m
-applyActionCostModifier _ _ (ActionCostModifier m) n = n + m
-applyActionCostModifier _ _ _ n = n
+applyActionCostModifier _ _ _ (ActionCostModifier m) n = n + m
+applyActionCostModifier _ _ _ _ n = n
 
 getCanAffordCost
   :: (HasGame m, Sourceable source)
@@ -510,9 +513,10 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
       then pure True
       else do
         takenActions <- field InvestigatorActionsTaken iid
+        performedActions <- field InvestigatorActionsPerformed iid
         let
           modifiedActionCost =
-            foldr (applyActionCostModifier takenActions mAction) n modifiers
+            foldr (applyActionCostModifier takenActions performedActions mAction) n modifiers
         additionalActions <- field InvestigatorAdditionalActions iid
         additionalActionCount <-
           length
@@ -1651,6 +1655,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , matchWho iid who whoMatcher
             ]
         _ -> noMatch
+    Matcher.SuccessfullyInvestigatedWithNoClues timing whoMatcher whereMatcher -> guardTiming timing $ \case
+      Window.SuccessfullyInvestigateWithNoClues who where' -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , locationMatches iid source window' where' whereMatcher
+          ]
+      _ -> pure False
     Matcher.LostActions timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostActions who source' _ ->
         andM
@@ -2924,7 +2935,7 @@ isForcedAbilityType iid source = \case
   ForcedAbility {} -> pure True
   ForcedAbilityWithCost {} -> pure True
   Objective aType -> isForcedAbilityType iid source aType
-  FastAbility {} -> pure False
+  FastAbility' {} -> pure False
   ReactionAbility {} -> pure False
   ActionAbility {} -> pure False
   ActionAbilityWithSkill {} -> pure False

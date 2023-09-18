@@ -11,11 +11,11 @@ import Arkham.Card.CardCode as X
 import Arkham.Card.CardDef as X
 import Arkham.Card.CardType as X
 import Arkham.Card.Class as X
+import Arkham.Card.Cost as X
 import Arkham.Card.EncounterCard as X (EncounterCard (..))
 import Arkham.Card.Id as X
 import Arkham.Card.PlayerCard as X (PlayerCard (..))
 
-import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger

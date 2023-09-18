@@ -33,7 +33,6 @@ import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.Card.PlayerCard
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
@@ -2687,6 +2686,7 @@ instance Projection Investigator where
       InvestigatorDiscard -> pure investigatorDiscard
       InvestigatorClass -> pure investigatorClass
       InvestigatorActionsTaken -> pure investigatorActionsTaken
+      InvestigatorActionsPerformed -> pure investigatorActionsPerformed
       InvestigatorSlots -> pure investigatorSlots
       InvestigatorUsedAbilities -> pure investigatorUsedAbilities
       InvestigatorTraits -> pure investigatorTraits
@@ -3615,6 +3615,7 @@ runGameMessage msg g = case msg of
       & (actionCanBeUndoneL .~ False)
       & (actionDiffL .~ [])
       & (inDiscardEntitiesL .~ mempty)
+      & (outOfPlayEntitiesL %~ deleteMap RemovedZone)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
@@ -4502,14 +4503,15 @@ runGameMessage msg g = case msg of
         push $ EnemyAttacks (EnemyAttack details2 : as)
       _ -> push $ chooseOneAtATime (gameLeadInvestigatorId g) $ map toUI as
     pure g
-  Flipped (AssetSource aid) card
-    | toCardType card /= AssetType ->
-        pure $ g & entitiesL . assetsL %~ deleteMap aid
+  Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
+    pure $ g & entitiesL . assetsL %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> do
     card <- field AssetCard aid
+    asset <- getAsset aid
     pure
       $ g
       & (entitiesL . assetsL %~ deleteMap aid)
+      & (outOfPlayEntitiesL . at RemovedZone . non mempty . assetsL . at aid ?~ asset)
       & (removedFromPlayL %~ (card :))
   RemoveFromGame (LocationTarget lid) -> do
     pure $ g & (entitiesL . locationsL %~ deleteMap lid)

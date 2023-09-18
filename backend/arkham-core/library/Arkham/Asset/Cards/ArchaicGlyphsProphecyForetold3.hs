@@ -20,10 +20,7 @@ newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAtt
 
 instance HasAbilities ArchaicGlyphsProphecyForetold3 where
   getAbilities (ArchaicGlyphsProphecyForetold3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
-    ]
+    [investigateAbility a 1 (Costs [ActionCost 1, assetUseCost a Charge 1]) ControlsThis]
 
 archaicGlyphsProphecyForetold3 :: AssetCard ArchaicGlyphsProphecyForetold3
 archaicGlyphsProphecyForetold3 =
@@ -33,34 +30,17 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
   runMessage msg a@(ArchaicGlyphsProphecyForetold3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
-      case mlid of
-        Nothing -> push $ Discard (toSource attrs) (toTarget attrs)
-        Just lid -> do
-          skillType <- field LocationInvestigateSkill lid
-          pushAll
-            [ Investigate
-                iid
-                lid
-                (toSource attrs)
-                (Just $ toTarget attrs)
-                skillType
-                False
-            , Discard (toSource attrs) (toTarget attrs)
+      for_ mlid $ \lid -> do
+        skillType <- field LocationInvestigateSkill lid
+        push $ Investigate iid lid (toSource attrs) (Just $ toTarget attrs) skillType False
+      pure a
+    Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) _ -> do
+      enemies <- selectList EnemyEngagedWithYou
+      pushAll
+        $ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) 1 (Just Action.Investigate)
+          : [ chooseOne iid
+              $ Label "No evasion" [] : [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]
+            | notNull enemies
             ]
       pure a
-    Successful (Action.Investigate, LocationTarget lid) iid _ target _
-      | isTarget attrs target -> do
-          enemies <- selectList EnemyEngagedWithYou
-          pushAll $
-            InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) 1 (Just Action.Investigate)
-              : [ chooseOne
-                  iid
-                  ( Label "No evasion" []
-                      : [ targetLabel enemy [EnemyEvaded iid enemy]
-                        | enemy <- enemies
-                        ]
-                  )
-                | notNull enemies
-                ]
-          pure a
     _ -> ArchaicGlyphsProphecyForetold3 <$> runMessage msg attrs

@@ -99,6 +99,10 @@ createCostModifiers source (toCard -> card) modifiers' =
 reduceCostOf :: (Sourceable source, IsCard card) => source -> card -> Int -> Message
 reduceCostOf source (toCard -> card) n = createCostModifiers source card [ReduceCostOf (CardWithId $ toCardId card) n]
 
+turnModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+turnModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectTurnWindow source target [modifier]
+
 createRoundModifier
   :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
 createRoundModifier = createWindowModifierEffect EffectRoundWindow

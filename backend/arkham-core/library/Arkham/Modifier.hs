@@ -30,6 +30,7 @@ import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
+import {-# SOURCE #-} Arkham.Strategy
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait
 import Data.Aeson.TH
@@ -244,6 +245,7 @@ data ModifierType
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | Omnipotent
   | CountAllDoomInPlay
+  | SetAfterPlay AfterPlayStrategy
   deriving stock (Show, Eq, Ord, Data)
 
 data Modifier = Modifier

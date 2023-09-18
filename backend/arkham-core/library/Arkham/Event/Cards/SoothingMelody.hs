@@ -6,13 +6,17 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Damage
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
+import Data.Aeson
+import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype SoothingMelody = SoothingMelody EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -27,9 +31,19 @@ instance RunMessage SoothingMelody where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
       drawing <- drawCards iid attrs 1
-      pushAll $ ResolveEvent iid eid Nothing [] : [drawing | canDraw]
+      pushAll $ ResolveEventChoice iid eid 1 Nothing [] : [drawing | canDraw]
       pure e
-    ResolveEvent iid eid mHealed _ | eid == toId attrs -> do
+    ResolveEventChoice iid eid n _ _ | eid == toId attrs -> do
+      modifiers' <- getModifiers (toTarget $ toCardId attrs)
+      let
+        updateLimit :: Int -> ModifierType -> Int
+        updateLimit x (MetaModifier (Object o)) =
+          case fromJSON <$> KeyMap.lookup "use3" o of
+            Just (Success True) -> 3
+            _ -> x
+        updateLimit x _ = x
+
+      let limit = foldl' updateLimit 2 modifiers'
       damageInvestigators <-
         selectList $ HealableInvestigator (toSource attrs) DamageType $ InvestigatorAt YourLocation
       horrorInvestigators <-
@@ -52,19 +66,19 @@ instance RunMessage SoothingMelody where
         investigatorDamageChoices =
           [ componentLabel DamageToken (toTarget i)
             $ HealDamage (toTarget i) (toSource attrs) 1
-              : [ResolveEvent iid eid (Just $ toTarget i) [] | isNothing mHealed]
+              : [ResolveEvent iid eid (Just $ toTarget i) [] | n < limit]
           | i <- damageInvestigators
           ]
         damageAssetChoices =
           [ componentLabel DamageToken asset
             $ HealDamage asset (toSource attrs) 1
-              : [ResolveEvent iid eid (Just $ toTarget asset) [] | isNothing mHealed]
+              : [ResolveEvent iid eid (Just $ toTarget asset) [] | n < limit]
           | asset <- damageAssets
           ]
         horrorAssetChoices =
           [ componentLabel HorrorToken asset
             $ HealHorror asset (toSource attrs) 1
-              : [ResolveEvent iid eid (Just $ toTarget asset) [] | isNothing mHealed]
+              : [ResolveEvent iid eid (Just $ toTarget asset) [] | n < limit]
           | asset <- horrorAssets
           ]
 

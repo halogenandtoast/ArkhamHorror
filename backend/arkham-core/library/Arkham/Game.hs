@@ -4079,6 +4079,11 @@ runGameMessage msg g = case msg of
                 )
               RemoveThisFromGame ->
                 (RemoveFromGame (SkillTarget skillId), Nothing)
+              ShuffleThisBackIntoDeck ->
+                ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
+                , Just skillId
+                )
+
     pushAll $ map fst skillPairs
     let
       skillsToRemove = mapMaybe snd skillPairs

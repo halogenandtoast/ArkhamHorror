@@ -293,6 +293,7 @@ allPlayerAssetCards =
       , guardDog2
       , guidingSpirit1
       , hallowedMirror
+      , hallowedMirror3
       , handcuffs
       , handcuffs2
       , harlanEarnstone
@@ -3866,6 +3867,15 @@ theStarXvii3 =
     , cdSlots = [TarotSlot]
     , cdLevel = 3
     , cdCardInHandEffects = True
+    }
+
+hallowedMirror3 :: CardDef
+hallowedMirror3 =
+  (asset "54002" "Hallowed Mirror" 2 Guardian)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Item, Relic, Occult, Blessed]
+    , cdSlots = [AccessorySlot]
+    , cdLevel = 3
     }
 
 wellConnected3 :: CardDef

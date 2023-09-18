@@ -215,6 +215,7 @@ allPlayerAssetCards =
       , decoratedSkull
       , decoratedSkull3
       , dejaVu5
+      , dendromorphosis
       , detectivesColt1911s
       , deVermisMysteriis2
       , digDeep

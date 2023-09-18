@@ -602,7 +602,8 @@ allAssets =
     , --- seeker [rttfa]
       SomeAssetCard ancientStoneTransientThoughts4
     , --- rogue [rttfa]
-      SomeAssetCard coltVestPocket2
+      SomeAssetCard decoratedSkull3
+    , SomeAssetCard coltVestPocket2
     , --- mystic [rttfa]
       SomeAssetCard mistsOfRlyeh2
     , --- neutral [rttfa]

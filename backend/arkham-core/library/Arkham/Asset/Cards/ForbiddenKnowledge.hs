@@ -16,7 +16,7 @@ forbiddenKnowledge =
   assetWith
     ForbiddenKnowledge
     Cards.forbiddenKnowledge
-    (discardWhenNoUsesL .~ True)
+    (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities ForbiddenKnowledge where
   getAbilities (ForbiddenKnowledge a) =

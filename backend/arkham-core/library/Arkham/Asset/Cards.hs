@@ -213,6 +213,7 @@ allPlayerAssetCards =
       , dayanaEsperence3
       , deathXiii1
       , decoratedSkull
+      , decoratedSkull3
       , dejaVu5
       , detectivesColt1911s
       , deVermisMysteriis2
@@ -488,6 +489,7 @@ allPlayerAssetCards =
       , tennesseeSourMashSurvivor3
       , theBlackBook
       , theChthonianStone
+      , theChthonianStone3
       , theCodexOfAges
       , theCouncilsCoffer2
       , theCustodian
@@ -3779,6 +3781,16 @@ ancientStoneTransientThoughts4 =
     , cdLevel = 4
     }
 
+decoratedSkull3 :: CardDef
+decoratedSkull3 =
+  (asset "53005" ("Decorated Skull" <:> "Doom Begets Doom") 0 Rogue)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSlots = [AccessorySlot]
+    , cdUses = uses Charge 0
+    , cdLevel = 3
+    }
+
 coltVestPocket2 :: CardDef
 coltVestPocket2 =
   (asset "53006" "Colt Vest Pocket" 2 Rogue)
@@ -3797,6 +3809,24 @@ mistsOfRlyeh2 =
     , cdSlots = [ArcaneSlot]
     , cdUses = uses Charge 5
     , cdLevel = 2
+    }
+
+theChthonianStone3 :: CardDef
+theChthonianStone3 =
+  (asset "53008" ("The Chthonian Stone" <:> "Stygian Waymark") 2 Mystic)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSlots = [HandSlot]
+    , cdUnique = True
+    , cdLevel = 3
+    , cdUses = uses Charge 3
+    , cdKeywords =
+        singleton
+          $ Keyword.Seal
+          $ ChaosTokenMatchesAny
+          $ map
+            ChaosTokenFaceIs
+            [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }
 
 backpack2 :: CardDef

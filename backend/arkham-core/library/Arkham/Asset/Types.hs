@@ -202,6 +202,10 @@ instance FromJSON (SomeField Asset) where
     "AssetCardsUnderneath" -> pure $ SomeField AssetCardsUnderneath
     _ -> error "no such field"
 
+data WhenNoUses = DiscardWhenNoUses | ReturnToHandWhenNoUses
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
   , assetCardId :: CardId
@@ -217,7 +221,7 @@ data AssetAttrs = AssetAttrs
   , assetExhausted :: Bool
   , assetTokens :: Tokens
   , assetCanLeavePlayByNormalMeans :: Bool
-  , assetDiscardWhenNoUses :: Bool
+  , assetWhenNoUses :: Maybe WhenNoUses
   , assetIsStory :: Bool
   , assetCardsUnderneath :: [Card]
   , assetSealedChaosTokens :: [ChaosToken]
@@ -297,7 +301,7 @@ assetWith f cardDef g =
             , assetExhausted = False
             , assetTokens = mempty
             , assetCanLeavePlayByNormalMeans = True
-            , assetDiscardWhenNoUses = False
+            , assetWhenNoUses = Nothing
             , assetIsStory = False
             , assetCardsUnderneath = []
             , assetSealedChaosTokens = []

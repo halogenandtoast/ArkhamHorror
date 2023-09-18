@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.TheChthonianStone (
-  theChthonianStone,
-  TheChthonianStone (..),
+module Arkham.Asset.Cards.TheChthonianStone3 (
+  theChthonianStone3,
+  TheChthonianStone3 (..),
 ) where
 
 import Arkham.Prelude
@@ -12,27 +12,27 @@ import Arkham.ChaosToken
 import Arkham.Matcher
 import Arkham.Window qualified as Window
 
-newtype TheChthonianStone = TheChthonianStone AssetAttrs
+newtype TheChthonianStone3 = TheChthonianStone3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theChthonianStone :: AssetCard TheChthonianStone
-theChthonianStone = asset TheChthonianStone Cards.theChthonianStone
+theChthonianStone3 :: AssetCard TheChthonianStone3
+theChthonianStone3 = assetWith TheChthonianStone3 Cards.theChthonianStone3 (whenNoUsesL ?~ ReturnToHandWhenNoUses)
 
-instance HasAbilities TheChthonianStone where
-  getAbilities (TheChthonianStone a) =
+instance HasAbilities TheChthonianStone3 where
+  getAbilities (TheChthonianStone3 a) =
     [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
         $ ForcedAbility
         $ RevealChaosToken #when You
         $ ChaosTokenFaceIs AutoFail
     ]
 
-instance RunMessage TheChthonianStone where
-  runMessage msg a@(TheChthonianStone attrs) = case msg of
+instance RunMessage TheChthonianStone3 where
+  runMessage msg a@(TheChthonianStone3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
       push
         $ If
           (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
-          [ReturnToHand iid (toTarget attrs)]
+          [SpendUses (toTarget attrs) Charge 1]
       pure a
-    _ -> TheChthonianStone <$> runMessage msg attrs
+    _ -> TheChthonianStone3 <$> runMessage msg attrs

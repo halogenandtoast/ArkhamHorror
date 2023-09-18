@@ -20,7 +20,7 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
 
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
 grotesqueStatue4 =
-  assetWith GrotesqueStatue4 Cards.grotesqueStatue4 (discardWhenNoUsesL .~ True)
+  assetWith GrotesqueStatue4 Cards.grotesqueStatue4 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities GrotesqueStatue4 where
   getAbilities (GrotesqueStatue4 x) =

@@ -14,7 +14,7 @@ newtype Suggestion1 = Suggestion1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 suggestion1 :: AssetCard Suggestion1
-suggestion1 = assetWith Suggestion1 Cards.suggestion1 (discardWhenNoUsesL .~ True)
+suggestion1 = assetWith Suggestion1 Cards.suggestion1 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities Suggestion1 where
   getAbilities (Suggestion1 a) =

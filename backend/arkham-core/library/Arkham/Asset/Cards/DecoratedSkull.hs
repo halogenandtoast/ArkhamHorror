@@ -13,7 +13,6 @@ import Arkham.Asset.Runner hiding (
   InvestigatorDefeated,
  )
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype DecoratedSkull = DecoratedSkull AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,23 +26,21 @@ instance HasAbilities DecoratedSkull where
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
           ( OrWindowMatcher
-              [ EnemyDefeated Timing.After Anyone ByAny AnyEnemy
-              , InvestigatorDefeated Timing.After ByAny Anyone
-              , AssetDefeated Timing.After ByAny AllyAsset
+              [ EnemyDefeated #after Anyone ByAny AnyEnemy
+              , InvestigatorDefeated #after ByAny Anyone
+              , AssetDefeated #after ByAny AllyAsset
               ]
           )
           Free
-    , restrictedAbility a 2 ControlsThis
-        $ ActionAbility Nothing
-        $ ActionCost 1 <> assetUseCost a Charge 1
+    , restrictedAbility a 2 ControlsThis (actionAbilityWithCost $ assetUseCost a Charge 1)
     ]
 
 instance RunMessage DecoratedSkull where
   runMessage msg a@(DecoratedSkull attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ AddUses (toId attrs) Charge 1
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       drawing <- drawCards iid (toAbilitySource attrs 2) 1
       pushAll [drawing, TakeResources iid 1 (toAbilitySource attrs 2) False]
       pure a

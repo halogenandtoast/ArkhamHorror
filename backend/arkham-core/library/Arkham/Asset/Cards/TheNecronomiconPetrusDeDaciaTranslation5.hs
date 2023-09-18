@@ -31,7 +31,7 @@ instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
         $ restrictedAbility a 2 (ControlsThis <> CanDrawCards)
         $ FastAbility (assetUseCost a Secret 2)
     , withTooltip "{fast} Spend 3 secrets: Discover 1 clue at any location."
-        $ restrictedAbility a 3 (ControlsThis <> CanDiscoverCluesAt LocationWithAnyClues)
+        $ restrictedAbility a 3 (ControlsThis <> CanDiscoverCluesAt Anywhere)
         $ FastAbility (assetUseCost a Secret 3)
     , withTooltip "{fast} Spend 4 secrets: Deal 3 damage to an enemy engaged with you."
         $ withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a Secret 4)

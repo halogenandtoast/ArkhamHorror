@@ -149,9 +149,13 @@ instance RunMessage AssetAttrs where
     SpendUses target useType' n | isTarget a target -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do
         let remainingUses = max 0 (m - n)
-        when
-          (assetDiscardWhenNoUses && remainingUses == 0)
-          (push $ Discard GameSource $ toTarget a)
+        when (remainingUses == 0)
+          $ for_ assetWhenNoUses
+          $ \case
+            DiscardWhenNoUses -> push $ Discard GameSource $ toTarget a
+            ReturnToHandWhenNoUses ->
+              for_ assetController $ \iid ->
+                push $ ReturnToHand iid $ toTarget a
         pure $ a & usesL .~ Uses useType' remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
@@ -205,13 +209,13 @@ instance RunMessage AssetAttrs where
           <> [whenEnterMsg, afterEnterMsg]
       pure
         $ a
-          & (placementL .~ InPlayArea iid)
-          & (controllerL ?~ iid)
-          & ( usesL
-                .~ if assetUses == NoUses
-                  then foldl' applyModifier startingUses modifiers
-                  else assetUses
-            )
+        & (placementL .~ InPlayArea iid)
+        & (controllerL ?~ iid)
+        & ( usesL
+              .~ if assetUses == NoUses
+                then foldl' applyModifier startingUses modifiers
+                else assetUses
+          )
     TakeControlOfAsset iid aid | aid == assetId -> do
       push
         =<< checkWindows

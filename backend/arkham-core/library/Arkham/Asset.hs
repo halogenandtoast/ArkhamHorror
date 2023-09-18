@@ -616,6 +616,7 @@ allAssets =
     , -- Return to the circle undone
       -- guardian [rttcu]
       SomeAssetCard theStarXvii3
+    , SomeAssetCard hallowedMirror3
     , -- rogue [rttcu]
       SomeAssetCard wellConnected3
     , -- mystic [rttcu]

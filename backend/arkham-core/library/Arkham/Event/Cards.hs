@@ -295,6 +295,7 @@ allPlayerEventCards =
       , trueSurvivor3
       , trusted
       , truthFromFiction
+      , truthFromFiction2
       , uncageTheSoul
       , unearthTheAncients
       , unearthTheAncients2
@@ -2541,6 +2542,18 @@ bloodEclipse1 =
     , cdActions = [Action.Fight]
     , cdAdditionalCost = Just $ InvestigatorDamageCost ThisCard You DamageAny 2
     , cdLevel = 1
+    }
+
+truthFromFiction2 :: CardDef
+truthFromFiction2 =
+  (event "53003" "Truth from Fiction" 1 Seeker)
+    { cdSkills = [#intellect, #intellect, #intellect]
+    , cdCardTraits = singleton Insight
+    , cdLevel = 2
+    , cdCriteria =
+        Just
+          $ Criteria.AssetExists
+            (AssetControlledBy (InvestigatorAt YourLocation) <> AssetWithUseType Uses.Secret)
     }
 
 cleanThemOut :: CardDef

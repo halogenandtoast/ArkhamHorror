@@ -401,6 +401,7 @@ library
       Arkham.Asset.Cards.DecoratedSkull
       Arkham.Asset.Cards.DecoratedSkull3
       Arkham.Asset.Cards.DejaVu5
+      Arkham.Asset.Cards.Dendromorphosis
       Arkham.Asset.Cards.DetectivesColt1911s
       Arkham.Asset.Cards.DeVermisMysteriis2
       Arkham.Asset.Cards.DigDeep
@@ -586,6 +587,7 @@ library
       Arkham.Asset.Cards.OldKeyring
       Arkham.Asset.Cards.OliveMcBride
       Arkham.Asset.Cards.OnYourOwn3
+      Arkham.Asset.Cards.OnYourOwn3_Exceptional
       Arkham.Asset.Cards.OrnateBow3
       Arkham.Asset.Cards.OtherworldlyCompass2
       Arkham.Asset.Cards.Painkillers
@@ -1092,6 +1094,7 @@ library
       Arkham.Event.Cards.AChanceEncounter2
       Arkham.Event.Cards.ActOfDesperation
       Arkham.Event.Cards.AgainstAllOdds2
+      Arkham.Event.Cards.AlterFate1
       Arkham.Event.Cards.AlterFate3
       Arkham.Event.Cards.Ambush1
       Arkham.Event.Cards.AnatomicalDiagrams

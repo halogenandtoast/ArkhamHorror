@@ -516,6 +516,12 @@ data CardMatcher
 instance IsString CardMatcher where
   fromString = CardWithTitle . fromString
 
+instance IsLabel "survivor" CardMatcher where
+  fromLabel = CardWithClass Survivor
+
+instance IsLabel "event" CardMatcher where
+  fromLabel = CardWithType EventType
+
 instance Semigroup CardMatcher where
   AnyCard <> a = a
   a <> AnyCard = a

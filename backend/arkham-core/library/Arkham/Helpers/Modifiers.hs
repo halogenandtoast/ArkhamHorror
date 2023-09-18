@@ -119,6 +119,10 @@ gameModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 gameModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectGameWindow source target [modifier]
 
+costModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+costModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectCostWindow source target [modifier]
+
 phaseModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 phaseModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectPhaseWindow source target [modifier]

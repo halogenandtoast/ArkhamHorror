@@ -606,8 +606,13 @@ allAssets =
     , SomeAssetCard coltVestPocket2
     , --- mystic [rttfa]
       SomeAssetCard mistsOfRlyeh2
+    , SomeAssetCard theChthonianStone3
+    , --- survivor [rttfa]
+      SomeAssetCard onYourOwn3_Exceptional
     , --- neutral [rttfa]
       SomeAssetCard backpack2
+    , --- weakness [rttfa]
+      SomeAssetCard dendromorphosis
     , -- Return to the circle undone
       -- rogue [rttcu]
       SomeAssetCard wellConnected3

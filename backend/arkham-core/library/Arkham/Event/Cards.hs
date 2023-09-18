@@ -95,6 +95,7 @@ allPlayerEventCards =
       , anatomicalDiagrams
       , astoundingRevelation
       , astralTravel
+      , alterFate1
       , alterFate3
       , backstab
       , backstab3
@@ -2555,6 +2556,18 @@ truthFromFiction2 =
         Just
           $ Criteria.AssetExists
             (AssetControlledBy (InvestigatorAt YourLocation) <> AssetWithUseType Uses.Secret)
+    }
+
+alterFate1 :: CardDef
+alterFate1 =
+  (event "53009" "Alter Fate" 3 Survivor)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Spell, Blessed]
+    , cdCriteria =
+        Just
+          $ Criteria.TreacheryExists
+          $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
+    , cdLevel = 1
     }
 
 cleanThemOut :: CardDef

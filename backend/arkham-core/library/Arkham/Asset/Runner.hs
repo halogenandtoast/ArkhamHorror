@@ -82,16 +82,8 @@ instance RunMessage AssetAttrs where
     CheckDefeated source -> do
       mDefeated <- defeated a source
       for_ mDefeated $ \defeatedBy -> do
-        whenWindow <-
-          checkWindows
-            [mkWindow Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
-        afterWindow <-
-          checkWindows
-            [mkWindow Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
-        pushAll
-          $ [whenWindow]
-            <> resolve (AssetDefeated assetId)
-            <> [afterWindow]
+        (before, _, after) <- frame (Window.AssetDefeated (toId a) defeatedBy)
+        pushAll $ [before] <> resolve (AssetDefeated assetId) <> [after]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard GameSource $ toTarget a)
     Msg.AssetDamage aid source damage horror | aid == assetId -> do

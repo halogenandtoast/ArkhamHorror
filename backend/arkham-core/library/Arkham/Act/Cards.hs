@@ -55,6 +55,7 @@ act cardCode name stage encounterSet =
     , cdLocationConnections = []
     , cdLocationRevealedConnections = []
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }

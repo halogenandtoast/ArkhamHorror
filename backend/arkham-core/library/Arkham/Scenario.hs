@@ -110,6 +110,7 @@ scenarioCard cCode name ecSet =
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
     , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
     }

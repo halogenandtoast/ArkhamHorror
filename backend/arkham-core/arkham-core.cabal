@@ -2199,6 +2199,7 @@ library
       Arkham.Treachery.Cards.FinalMistake
       Arkham.Treachery.Cards.FinalRhapsody
       Arkham.Treachery.Cards.FineDining
+      Arkham.Treachery.Cards.FinePrint
       Arkham.Treachery.Cards.FrozenInFear
       Arkham.Treachery.Cards.FrozenInFearAPhantomOfTruth
       Arkham.Treachery.Cards.GhostlyPresence
@@ -2244,6 +2245,7 @@ library
       Arkham.Treachery.Cards.ObscuringFog
       Arkham.Treachery.Cards.Obsessive
       Arkham.Treachery.Cards.OfferOfPower
+      Arkham.Treachery.Cards.OfferYouCannotRefuse
       Arkham.Treachery.Cards.OminousPortents
       Arkham.Treachery.Cards.OnTheProwl
       Arkham.Treachery.Cards.OnWingsOfDarkness
@@ -2278,6 +2280,7 @@ library
       Arkham.Treachery.Cards.SearchingForIzzie
       Arkham.Treachery.Cards.SecretsOfTheBeyond
       Arkham.Treachery.Cards.SelfDestructive
+      Arkham.Treachery.Cards.SellYourSoul
       Arkham.Treachery.Cards.SerpentsCall
       Arkham.Treachery.Cards.SerpentsIre
       Arkham.Treachery.Cards.Shadowed

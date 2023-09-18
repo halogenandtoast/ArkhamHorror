@@ -363,6 +363,10 @@ allTreacheries =
       SomeTreacheryCard unspeakableOathBloodthirst
     , SomeTreacheryCard unspeakableOathCuriosity
     , SomeTreacheryCard unspeakableOathCowardice
+    , -- Return to the Forgotten Age
+      SomeTreacheryCard offerYouCannotRefuse
+    , SomeTreacheryCard finePrint
+    , SomeTreacheryCard sellYourSoul
     , -- Nathaniel Cho
       SomeTreacheryCard selfDestructive
     , -- Harvey Walters

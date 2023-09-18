@@ -136,6 +136,7 @@ allPlayerAssetCards =
       , ancientStone1
       , ancientStoneKnowledgeOfTheElders4
       , ancientStoneMindsInHarmony4
+      , ancientStoneTransientThoughts4
       , annaKaslow4
       , anotherDayAnotherDollar3
       , aquinnah1
@@ -3764,6 +3765,17 @@ survivalKnife2 =
     , cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSlots = [HandSlot]
     , cdLevel = 2
+    }
+
+ancientStoneTransientThoughts4 :: CardDef
+ancientStoneTransientThoughts4 =
+  (asset "53004" ("Ancient Stone" <:> "Transient Thoughts") 2 Seeker)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [#agility, #agility]
+    , cdSlots = [HandSlot]
+    , cdUses = uses Secret 0
+    , cdKeywords = setFromList [Keyword.Researched YouHaveIdentifiedTheStone]
+    , cdLevel = 4
     }
 
 coltVestPocket2 :: CardDef

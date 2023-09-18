@@ -599,6 +599,8 @@ allAssets =
     , -- Return to the Forgotten Age
       --- guardian [rttfa]
       SomeAssetCard survivalKnife2
+    , --- seeker [rttfa]
+      SomeAssetCard ancientStoneTransientThoughts4
     , --- rogue [rttfa]
       SomeAssetCard coltVestPocket2
     , --- mystic [rttfa]

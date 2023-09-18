@@ -392,6 +392,8 @@ allEvents =
     , -- Return to the Forgotten Age
       --- guardian [rttfa]
       SomeEventCard bloodEclipse1
+    , --- seeker [rttfa]
+      SomeEventCard truthFromFiction2
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeEventCard cleanThemOut

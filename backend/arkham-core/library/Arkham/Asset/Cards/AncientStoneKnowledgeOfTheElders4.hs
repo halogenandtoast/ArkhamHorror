@@ -48,9 +48,9 @@ instance RunMessage AncientStoneKnowledgeOfTheElders4 where
         <$> runMessage msg (attrs {assetUses = Uses Secret n})
     UseCardAbility iid (isSource attrs -> True) 1 _ (getDamage -> damage) -> do
       enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
-      push $
-        chooseOrRunOne iid $
-          [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs damage]
+      push
+        $ chooseOrRunOne iid
+        $ [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs damage]
           | enemy <- enemies
           ]
       pure a

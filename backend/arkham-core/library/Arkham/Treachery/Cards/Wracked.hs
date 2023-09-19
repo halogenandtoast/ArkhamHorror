@@ -33,17 +33,17 @@ instance HasModifiersFor Wracked where
       (Just source, Just iid') | iid == iid' -> do
         performed <- historySkillTestsPerformed <$> getHistory RoundHistory iid
         hasExhaustedWitch <-
-          selectAny $
-            ExhaustedEnemy
+          selectAny
+            $ ExhaustedEnemy
               <> EnemyWithTrait Witch
               <> EnemyAt
                 (locationWithInvestigator iid)
-        pure $
-          toModifiers attrs $
-            [AnySkillValue (-1) | performed == 0 && treacheryOnInvestigator iid attrs]
-              <> [ SkillTestAutomaticallySucceeds
-                 | hasExhaustedWitch && isSource attrs source
-                 ]
+        pure
+          $ toModifiers attrs
+          $ [AnySkillValue (-1) | null performed && treacheryOnInvestigator iid attrs]
+            <> [ SkillTestAutomaticallySucceeds
+               | hasExhaustedWitch && isSource attrs source
+               ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

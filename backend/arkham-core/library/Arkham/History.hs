@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Card.CardCode
 import Arkham.Enemy.Types.Attrs
 import Arkham.Id
+import Arkham.SkillType
 import Arkham.Target
 import Data.Map.Strict qualified as Map
 
@@ -18,7 +19,7 @@ data History = History
   , historyLocationsSuccessfullyInvestigated :: Set LocationId
   , historySuccessfulExplore :: Bool
   , historyActionsCompleted :: Int
-  , historySkillTestsPerformed :: Int
+  , historySkillTestsPerformed :: [[SkillType]]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
@@ -45,11 +46,11 @@ instance Semigroup History where
             + historyActionsCompleted g
       , historySkillTestsPerformed =
           historySkillTestsPerformed h
-            + historySkillTestsPerformed g
+            <> historySkillTestsPerformed g
       }
 
 instance Monoid History where
-  mempty = History [] [] [] False mempty False 0 0
+  mempty = History [] [] [] False mempty False 0 []
 
 insertHistory
   :: InvestigatorId

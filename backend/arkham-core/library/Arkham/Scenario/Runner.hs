@@ -96,6 +96,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         push $ LoadDeck iid (Deck deck')
     pure a
   Setup -> a <$ pushAllEnd [BeginGame, BeginRound, Begin InvestigationPhase]
+  BeginRound -> pure $ a & turnL +~ 1
   StartCampaign -> do
     standalone <- getIsStandalone
     when standalone $ do

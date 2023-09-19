@@ -3258,6 +3258,7 @@ instance Projection Scenario where
       ScenarioName -> pure scenarioName
       ScenarioMeta -> pure scenarioMeta
       ScenarioTokens -> pure scenarioTokens
+      ScenarioTurn -> pure scenarioTurn
       ScenarioStoryCards -> pure scenarioStoryCards
       ScenarioCardsUnderScenarioReference ->
         pure scenarioCardsUnderScenarioReference
@@ -4103,9 +4104,15 @@ runGameMessage msg g = case msg of
                 )
 
     pushAll $ map fst skillPairs
+
     let
+      skillTypes = case skillTestType <$> g ^. skillTestL of
+        Just (SkillSkillTest skillType) -> [skillType]
+        Just (AndSkillTest types) -> types
+        Just ResourceSkillTest -> []
+        Nothing -> []
       skillsToRemove = mapMaybe snd skillPairs
-      historyItem = mempty {historySkillTestsPerformed = 1}
+      historyItem = mempty {historySkillTestsPerformed = [skillTypes]}
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id

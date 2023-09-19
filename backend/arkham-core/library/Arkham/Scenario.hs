@@ -13,8 +13,13 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.EncounterSet qualified as EncounterSet
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest
+import Arkham.History
 import Arkham.Id
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Name
 import Arkham.Scenario.Runner
@@ -36,21 +41,31 @@ instance HasModifiersFor TarotCard where
       TheFool0 ->
         case target of
           InvestigatorTarget iid -> do
-            defeated <- iid <=~> DefeatedInvestigator
-            case facing of
-              Upright -> do
-                pure $ toModifiers source [XPModifier 2 | not defeated]
-              Reversed ->
-                pure $ toModifiers source [XPModifier (-2) | defeated]
+            defeated <- iid <=~> Matcher.DefeatedInvestigator
+            pure . toModifiers source $ case facing of
+              Upright -> [XPModifier 2 | not defeated]
+              Reversed -> [XPModifier (-2) | defeated]
           _ -> pure []
       TheMagicianI ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
+        case target of
+          InvestigatorTarget _ -> do
+            firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
+            pure . toModifiers source $ case facing of
+              Upright -> [StartingResources 3]
+              Reversed -> XPModifier (-3) : [CannotGainResources | firstTurn]
+          _ -> pure []
       TheHighPriestessII ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
+        case target of
+          InvestigatorTarget iid -> do
+            history <- getHistory TurnHistory iid
+            currentSkillTypes <- getSkillTestSkillTypes
+            let
+              skillTypes = concat $ historySkillTestsPerformed history
+              firstIntellectTest = #intellect `notElem` skillTypes && #intellect `elem` currentSkillTypes
+            pure . toModifiers source $ case facing of
+              Upright -> [SkillModifier #intellect 1 | firstIntellectTest]
+              Reversed -> [SkillModifier #intellect (-1) | firstIntellectTest]
+          _ -> pure []
       TheEmpressIII ->
         case facing of
           Upright -> pure []

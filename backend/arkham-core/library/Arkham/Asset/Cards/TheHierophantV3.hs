@@ -22,18 +22,17 @@ theHierophantV3 = asset TheHierophantV3 Cards.theHierophantV3
 
 instance HasAbilities TheHierophantV3 where
   getAbilities (TheHierophantV3 a) =
-    [ restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
+    [ restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)
     ]
 
 instance HasModifiersFor TheHierophantV3 where
-  getModifiersFor (InvestigatorTarget iid) (TheHierophantV3 attrs)
-    | attrs `controlledBy` iid =
-        pure
-          $ toModifiers
-            attrs
-            [ SlotCanHold ArcaneSlot (CardFillsSlot AccessorySlot)
-            , SlotCanHold AccessorySlot (CardFillsSlot ArcaneSlot)
-            ]
+  getModifiersFor (InvestigatorTarget iid) (TheHierophantV3 attrs) | attrs `controlledBy` iid = do
+    pure
+      $ toModifiers
+        attrs
+        [ SlotCanBe ArcaneSlot AccessorySlot
+        , SlotCanBe AccessorySlot ArcaneSlot
+        ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheHierophantV3 where

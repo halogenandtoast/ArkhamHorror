@@ -57,8 +57,8 @@ instance HasAbilities BoneFilledCaverns where
         1
         ( AnyCriterion
             [ Negate
-              ( LocationExists $
-                  LocationInDirection dir (LocationWithId $ toId attrs)
+              ( LocationExists
+                  $ LocationInDirection dir (LocationWithId $ toId attrs)
               )
             | dir <- [Below, RightOf]
             ]
@@ -74,11 +74,7 @@ instance RunMessage BoneFilledCaverns where
   runMessage msg l@(BoneFilledCaverns (attrs `With` metadata)) = case msg of
     Investigate iid lid _ _ _ False | lid == toId attrs -> do
       result <- runMessage msg attrs
-      assetIds <-
-        selectList $
-          AssetControlledBy (InvestigatorWithId iid)
-            <> AssetInSlot HandSlot
-      push (RefillSlots iid HandSlot assetIds)
+      push $ RefillSlots iid
       pure $ BoneFilledCaverns $ With result (Metadata $ Just iid)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- countM (directionEmpty attrs) [Below, RightOf]

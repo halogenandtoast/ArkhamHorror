@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Action
 import Arkham.Action.Additional
+import Arkham.Asset.Types qualified as Field
 import Arkham.Card
 import Arkham.Classes.Query
 import Arkham.Damage
@@ -152,21 +153,54 @@ removeFromSlots
   :: AssetId -> Map SlotType [Slot] -> Map SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
-fitsAvailableSlots :: IsCard a => [SlotType] -> a -> InvestigatorAttrs -> Bool
-fitsAvailableSlots slotTypes cardDef a =
-  null
-    ( slotTypes
-        \\ concatMap
-          (\slotType -> availableSlotTypesFor slotType cardDef a)
+data FitsSlots = FitsSlots | MissingSlots [SlotType]
+
+fitsAvailableSlots :: HasGame m => AssetId -> InvestigatorAttrs -> m FitsSlots
+fitsAvailableSlots aid a = do
+  assetCard <- field Field.AssetCard aid
+  slotTypes <- do
+    baseSlots <- field Field.AssetSlots aid
+    modifiers <- getModifiers aid
+    pure $ filter ((`notElem` modifiers) . DoNotTakeUpSlot) baseSlots
+
+  canHoldMap :: Map SlotType [SlotType] <- do
+    mods <- getModifiers a
+    let
+      canHold = \case
+        SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
+        _ -> id
+    pure $ foldr canHold mempty mods
+
+  -- N.B. we map (const slotType) in order to determine coverage. In other words if
+  -- a card like The Hierophant V (3) is in play we have Accessory and Arcane
+  -- slots actings as both, but for the sake of this function we'd need to make
+  -- sure, for instance, all Arcane slots are covered by a card, so we'd count
+  -- every Accessory Slot as an Arcane Slot
+  -- WARNING This only works if the slots are bidirectional and if we need it
+  -- to work in other cases we'll need to alter this logic
+  let availableSlots =
+        flip
+          concatMap
           (nub slotTypes)
-    )
+          (\slotType -> map (const slotType) $ availableSlotTypesFor slotType canHoldMap assetCard a)
+  let missingSlotTypes = slotTypes \\ availableSlots
+
+  if null missingSlotTypes
+    then pure FitsSlots
+    else pure $ MissingSlots missingSlotTypes
 
 availableSlotTypesFor
-  :: IsCard a => SlotType -> a -> InvestigatorAttrs -> [SlotType]
-availableSlotTypesFor slotType a attrs =
-  case lookup slotType (attrs ^. slotsL) of
-    Nothing -> []
-    Just slots -> replicate (length (filter (canPutIntoSlot a) slots)) slotType
+  :: IsCard a
+  => SlotType
+  -> Map SlotType [SlotType]
+  -> a
+  -> InvestigatorAttrs
+  -> [SlotType]
+availableSlotTypesFor slotType canHoldMap a attrs =
+  let possibleSlotTypes = slotType : findWithDefault [] slotType canHoldMap
+   in flip concatMap possibleSlotTypes $ \sType ->
+        let slots = findWithDefault [] sType (attrs ^. slotsL)
+         in replicate (length (filter (canPutIntoSlot a) slots)) sType
 
 placeInAvailableSlot :: IsCard a => AssetId -> a -> [Slot] -> [Slot]
 placeInAvailableSlot _ _ [] = []

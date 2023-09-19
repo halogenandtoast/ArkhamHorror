@@ -19,6 +19,7 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
+import Arkham.Tarot
 
 instance FromJSON Scenario where
   parseJSON = withObject "Scenario" $ \o -> do
@@ -27,6 +28,112 @@ instance FromJSON Scenario where
       Nothing -> error $ "Unknown scenario: " <> show cCode
       Just (SomeScenario (_ :: Difficulty -> a)) ->
         Scenario <$> parseJSON @a (Object o)
+
+instance HasModifiersFor TarotCard where
+  getModifiersFor target (TarotCard facing arcana) = do
+    let source = TarotSource arcana
+    case arcana of
+      TheFool0 ->
+        case target of
+          InvestigatorTarget iid -> do
+            defeated <- iid <=~> DefeatedInvestigator
+            case facing of
+              Upright -> do
+                pure $ toModifiers source [XPModifier 2 | not defeated]
+              Reversed ->
+                pure $ toModifiers source [XPModifier (-2) | defeated]
+          _ -> pure []
+      TheMagicianI ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheHighPriestessII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheEmpressIII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheEmperorIV ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheHierophantV ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheLoversVI ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheChariotVII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      StrengthVIII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheHermitIX ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      WheelOfFortuneX ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      JusticeXI ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheHangedManXII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      DeathXIII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TemperanceXIV ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheDevilXV ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheTowerXVI ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheStarXVII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheMoonXVIII ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheSunXIX ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      JudgementXX ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+      TheWorldXXI ->
+        case facing of
+          Upright -> pure []
+          Reversed -> pure []
+
+instance HasModifiersFor Scenario where
+  getModifiersFor target (Scenario a) =
+    liftA2
+      (<>)
+      (concatMapM (getModifiersFor target) (attr scenarioTarotCards a))
+      (getModifiersFor target a)
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of

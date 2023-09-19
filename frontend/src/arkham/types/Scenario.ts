@@ -11,6 +11,7 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import type { LogContents } from '@/arkham/types/Campaign';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard';
 
 export interface ScenarioName {
   title: string;
@@ -53,6 +54,7 @@ export interface Scenario {
   tokens: Tokens;
   counts: Record<string, number>; // eslint-disable-line
   encounterDecks: Record<string, [CardContents[], CardContents[]]>;
+  tarotCards: TarotCard[];
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -81,6 +83,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   standaloneCampaignLog: logContentsDecoder,
   tokens: tokensDecoder,
+  tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
   counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]').map<Record<string, number>>(res => {
     return res.reduce<Record<string, number>>((acc, [k, v]) => {
       acc[k] = v

@@ -220,9 +220,6 @@ instance Show Scenario where
 instance ToJSON Scenario where
   toJSON (Scenario a) = toJSON a
 
-instance HasModifiersFor Scenario where
-  getModifiersFor target (Scenario a) = getModifiersFor target a
-
 instance Entity Scenario where
   type EntityId Scenario = ScenarioId
   type EntityAttrs Scenario = ScenarioAttrs

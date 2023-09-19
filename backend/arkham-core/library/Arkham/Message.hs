@@ -64,6 +64,7 @@ import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tarot
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
@@ -840,6 +841,10 @@ data Message
   | RemoveBreaches Target Int
   | RunCosmos InvestigatorId LocationId [Message]
   | PlaceCosmos InvestigatorId LocationId (CosmosLocation Card LocationId)
+  | PerformReading TarotReading
+  | FocusTarot
+  | UnfocusTarot
+  | RotateTarot TarotCard
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]

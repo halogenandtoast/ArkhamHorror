@@ -27,6 +27,7 @@ import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tarot
 import Arkham.Token
 import Data.Aeson.TH
 import Data.Typeable
@@ -70,6 +71,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioStoryCards :: Field Scenario (Map InvestigatorId [PlayerCard])
   ScenarioPlayerDecks :: Field Scenario (Map InvestigatorId (Deck PlayerCard))
   ScenarioTokens :: Field Scenario Tokens
+  ScenarioTarotCards :: Field Scenario [TarotCard]
 
 deriving stock instance Show (Field Scenario typ)
 
@@ -108,6 +110,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioMeta :: Value
   , scenarioUsesGrid :: Bool
   , scenarioTokens :: Tokens
+  , scenarioTarotCards :: [TarotCard]
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -177,6 +180,7 @@ scenario f cardCode name difficulty layout =
       , scenarioTokens = mempty
       , scenarioStoryCards = mempty
       , scenarioPlayerDecks = mempty
+      , scenarioTarotCards = mempty
       }
 
 instance Entity ScenarioAttrs where

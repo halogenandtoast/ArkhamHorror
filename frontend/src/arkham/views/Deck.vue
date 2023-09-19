@@ -24,7 +24,6 @@ const deck = ref<Deck | null>(null)
 const deckRef = ref(null)
 
 onMounted(() => {
-  console.log(deckRef.value)
   if (deckRef.value !== null) {
     const el = deckRef.value
     const observer = new IntersectionObserver(

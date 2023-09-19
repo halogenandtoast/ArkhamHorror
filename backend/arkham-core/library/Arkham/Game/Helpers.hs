@@ -800,6 +800,7 @@ targetToSource = \case
   StoryTarget code -> StorySource code
   AgendaMatcherTarget _ -> error "can not convert"
   CampaignTarget -> CampaignSource
+  TarotTarget arcana -> TarotSource arcana
   AbilityTarget _ _ -> error "can not convert"
   BothTarget t1 t2 -> BothSource (targetToSource t1) (targetToSource t2)
 
@@ -841,6 +842,7 @@ sourceToTarget = \case
   EnemyAttackSource a -> EnemyTarget a
   StorySource code -> StoryTarget code
   CampaignSource -> CampaignTarget
+  TarotSource arcana -> TarotTarget arcana
   ThisCard -> error "not converted"
   CardCostSource _ -> error "not converted"
   BothSource s1 s2 -> BothTarget (sourceToTarget s1) (sourceToTarget s2)

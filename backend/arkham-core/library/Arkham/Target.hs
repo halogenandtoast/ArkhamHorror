@@ -14,6 +14,7 @@ import Arkham.ChaosToken
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Phase
+import Arkham.Tarot
 import Arkham.Trait
 import Data.Aeson.TH
 
@@ -58,6 +59,7 @@ data Target
   | CampaignTarget
   | AbilityTarget InvestigatorId Ability
   | BothTarget Target Target
+  | TarotTarget TarotCardArcana
   deriving stock (Show, Eq, Ord, Data)
 
 pattern Initiator :: Target -> Target

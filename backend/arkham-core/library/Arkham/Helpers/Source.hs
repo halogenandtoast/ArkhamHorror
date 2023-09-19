@@ -50,6 +50,7 @@ sourceTraits = \case
   LocationMatcherSource _ -> pure mempty
   EnemyMatcherSource _ -> pure mempty
   CampaignSource -> pure mempty
+  TarotSource _ -> pure mempty
   ThisCard -> error "can not get traits"
   CardCostSource _ -> pure mempty
   BothSource _ _ -> error "doesn't make sense, or will solve later"

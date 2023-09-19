@@ -34,7 +34,7 @@ data TarotCardArcana
   | TheHierophantV
   | TheLoversVI
   | TheChariotVII
-  | StengthVIII
+  | StrengthVIII
   | TheHermitIX
   | WheelOfFortuneX
   | JusticeXI

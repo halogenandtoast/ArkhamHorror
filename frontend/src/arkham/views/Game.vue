@@ -101,7 +101,6 @@ const handleResult = (result) => {
       if (uiLock.value) {
         resultQueue.value.push(result)
       } else {
-        console.log(result.contents)
         JsonDecoder.array(tarotCardDecoder, 'tarotCards').decodeToPromise(result.contents).then((r) => {
           uiLock.value = true
           tarotCards.value = r
@@ -142,6 +141,7 @@ const handleResult = (result) => {
 
 const continueUI = () => {
   gameCard.value = null
+  tarotCards.value = []
   uiLock.value = false
 }
 
@@ -150,8 +150,8 @@ watch(data, async (newData) => {
   handleResult(result)
 })
 
-watch(gameCard, async () => {
-  if(!gameCard.value) {
+watch(uiLock, async () => {
+  if(!uiLock.value) {
     const r = resultQueue.value.shift()
     if (r) {
       handleResult(r)
@@ -274,7 +274,7 @@ provide('solo', solo)
             <div class="revelation-card-container">
               <div v-for="(tarotCard, idx) in tarotCards" :key="idx" class="tarot-card">
                 <div class="card-container">
-                  <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="tarot" />
+                  <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="tarot" :class="tarotCard.facing" />
                 </div>
                 <img :src="imgsrc('tarot/back.jpg')" class="card back" />
               </div>
@@ -779,6 +779,9 @@ header {
     padding-bottom: 15px;
     aspect-ratio: 9/16;
     perspective: 1000px;
+    .Reversed {
+      transform: rotateZ(180deg);
+    }
     .card-container {
       transform: rotateY(-180deg);
       transform-style: preserve-3d;

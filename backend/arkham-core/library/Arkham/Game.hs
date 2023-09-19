@@ -3686,7 +3686,6 @@ runGameMessage msg g = case msg of
              , InvestigatorsMulligan
              , Setup
              , EndSetup
-             , BeginGame
              ]
     pure
       $ g

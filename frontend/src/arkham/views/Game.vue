@@ -17,6 +17,7 @@ import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
 import { Card, cardDecoder } from '@/arkham/types/Card'
+import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/TarotCard'
 import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useDebug } from '@/arkham/debug'
@@ -50,6 +51,7 @@ const gameCardDecoder = JsonDecoder.object<GameCard>(
 
 
 const gameCard = ref<GameCard | null>(null)
+const tarotCards = ref<TarotCard[]>([])
 
 const spectate = route.fullPath.endsWith('/spectate')
 const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
@@ -81,8 +83,12 @@ const question = computed(() => investigatorId.value ? game.value?.question[inve
 async function undo() {
   resultQueue.value = []
   gameCard.value = null
+  tarotCards.value = []
+  uiLock.value = false
   undoChoice(props.gameId)
 }
+
+const uiLock = ref<boolean>(false)
 
 const resultQueue = ref<any>([])
 
@@ -91,17 +97,29 @@ const handleResult = (result) => {
     case "GameMessage":
       gameLog.value = Object.freeze([...gameLog.value, result.contents])
       return
+    case "GameTarot":
+      if (uiLock.value) {
+        resultQueue.value.push(result)
+      } else {
+        console.log(result.contents)
+        JsonDecoder.array(tarotCardDecoder, 'tarotCards').decodeToPromise(result.contents).then((r) => {
+          uiLock.value = true
+          tarotCards.value = r
+        })
+      }
+      return
     case "GameCard":
-      if (gameCard.value) {
+      if (uiLock.value) {
         resultQueue.value.push(result)
       } else {
         gameCardDecoder.decodeToPromise(result).then((r) => {
+          uiLock.value = true
           gameCard.value = r
         })
       }
       return
     case "GameUpdate":
-      if (gameCard.value) {
+      if (uiLock.value) {
         resultQueue.value.push(result)
         game.value = {...game.value, question: {}} as Arkham.Game
       } else {
@@ -120,6 +138,11 @@ const handleResult = (result) => {
       }
       return
   }
+}
+
+const continueUI = () => {
+  gameCard.value = null
+  uiLock.value = false
 }
 
 watch(data, async (newData) => {
@@ -242,7 +265,20 @@ provide('solo', solo)
                 <img v-if="gameCard.card.tag === 'PlayerCard'" :src="imgsrc('player_back.jpg')" class="card back" />
                 <img v-else :src="imgsrc('back.png')" class="card back" />
               </div>
-              <button @click="gameCard = null">OK</button>
+              <button @click="continueUI">OK</button>
+            </div>
+          </div>
+        </div>
+        <div v-if="tarotCards.length > 0" class="revelation">
+          <div class="revelation-container">
+            <div class="revelation-card-container">
+              <div v-for="(tarotCard, idx) in tarotCards" :key="idx" class="tarot-card">
+                <div class="card-container">
+                  <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="tarot" />
+                </div>
+                <img :src="imgsrc('tarot/back.jpg')" class="card back" />
+              </div>
+              <button @click="continueUI">OK</button>
             </div>
           </div>
         </div>
@@ -704,6 +740,46 @@ header {
     aspect-ratio: 5/7;
     perspective: 1000px;
     :deep(.card-container) {
+      transform: rotateY(-180deg);
+      transform-style: preserve-3d;
+      position: absolute;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      animation: flip-front 0.3s linear;
+      animation-delay: 0.3s;
+      animation-fill-mode: forwards;
+    }
+
+    .card-container {
+      opacity: 0;
+      transform-style: preserve-3d;
+    }
+
+    .card.back {
+      transform-style: preserve-3d;
+      position: absolute;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      animation: flip-back 0.3s linear;
+      animation-delay: 0.3s;
+      animation-fill-mode: forwards;
+    }
+  }
+
+  .tarot {
+    width: 300px;
+    aspect-ratio: 9/16;
+  }
+
+  .tarot-card {
+    position: relative;
+    width: 300px;
+    padding-bottom: 15px;
+    aspect-ratio: 9/16;
+    perspective: 1000px;
+    .card-container {
       transform: rotateY(-180deg);
       transform-style: preserve-3d;
       position: absolute;

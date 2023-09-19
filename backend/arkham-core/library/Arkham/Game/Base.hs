@@ -84,6 +84,8 @@ data Game = Game
     gameGitRevision :: GitSha
   , -- allow empty spaces
     gameAllowEmptySpaces :: Bool
+  , -- perform tarot readings
+    gamePerformTarotReadings :: Bool
   }
   deriving stock (Eq, Show)
 

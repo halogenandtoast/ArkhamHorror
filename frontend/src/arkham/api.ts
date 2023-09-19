@@ -103,7 +103,7 @@ export const updateCampaignSettings = (gameId: string, campaignLog: CampaignLogS
       keys: campaignLog.keys.map((o) => o.key)
     }
   })
-       
+
 
 export const deleteGame = (gameId: string): Promise<void> => api
   .delete(`arkham/games/${gameId}`);
@@ -121,6 +121,7 @@ export const newGame = (
   difficulty: Difficulty,
   campaignName: string,
   multiplayerVariant: string,
+  includeTarotReadings: boolean,
 ): Promise<Game> => api
   .post('arkham/games', {
     deckIds,
@@ -129,7 +130,8 @@ export const newGame = (
     scenarioId,
     difficulty,
     campaignName,
-    multiplayerVariant
+    multiplayerVariant,
+    includeTarotReadings,
   })
   .then((resp) => gameDecoder.decodeToPromise(resp.data));
 

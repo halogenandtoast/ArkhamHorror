@@ -519,6 +519,7 @@ newGame investigator = do
         , gameEnemyEvading = Nothing
         , gameGitRevision = gitHash
         , gameAllowEmptySpaces = False
+        , gamePerformTarotReadings = False
         }
 
   liftIO $ do

@@ -20,6 +20,8 @@ type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
 
 const gameMode = ref<GameMode>('Campaign')
 
+const includeTarotReadings = ref(false)
+
 const scenarios = computed(() => scenarioJSON.filter((s) =>
   s.beta
     ? currentUser.value && currentUser.value.beta
@@ -163,6 +165,7 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
+        includeTarotReadings.value,
       ).then((game) => router.push(`/games/${game.id}`));
     }
   } else {
@@ -177,6 +180,7 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
+        includeTarotReadings.value,
       ).then((game) => router.push(`/games/${game.id}`));
     }
   }
@@ -285,6 +289,26 @@ async function start() {
               />
               <label :for="`difficulty${difficulty}`">{{difficulty}}</label>
             </template>
+          </div>
+
+          <p>Include Tarot Readings</p>
+          <div class="options">
+            <input
+              type="radio"
+              v-model="includeTarotReadings"
+              :value="false"
+              :checked="!includeTarotReadings"
+              id="tarotNo"
+            />
+            <label for="tarotNo">No</label>
+            <input
+              type="radio"
+              v-model="includeTarotReadings"
+              :value="true"
+              :checked="includeTarotReadings"
+              id="tarotYes"
+            />
+            <label for="tarotYes">Yes</label>
           </div>
 
           <div>

@@ -841,6 +841,7 @@ data Message
   | RemoveBreaches Target Int
   | RunCosmos InvestigatorId LocationId [Message]
   | PlaceCosmos InvestigatorId LocationId (CosmosLocation Card LocationId)
+  | PerformTarotReading
   | PerformReading TarotReading
   | FocusTarot
   | UnfocusTarot

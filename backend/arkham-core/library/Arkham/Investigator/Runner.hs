@@ -42,7 +42,7 @@ import Arkham.Game.Helpers hiding (windows)
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Card (extendedCardMatch)
+import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Attrs
@@ -1300,8 +1300,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing []
     pure a
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
+    -- It might seem weird that we remove the asset from the slots here since
+    -- we haven't added it yet, however in the case that an asset adds some
+    -- additional slot we'll have called RefillSlots already, and then this
+    -- will have taken up the necessary slot so we remove it here so it can be
+    -- placed correctly later
     pushAll [InvestigatorClearUnusedAssetSlots iid, Do (InvestigatorPlayAsset iid aid)]
-    pure a
+    pure $ a & slotsL %~ removeFromSlots aid
   InvestigatorClearUnusedAssetSlots iid | iid == investigatorId -> do
     updatedSlots <- for (mapToList investigatorSlots) $ \(slotType, slots) -> do
       slots' <- for slots $ \slot -> do
@@ -1313,6 +1318,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure (slotType, slots')
     pure $ a & slotsL .~ mapFromList updatedSlots
   Do (InvestigatorPlayAsset iid aid) | iid == investigatorId -> do
+    -- this asset might already be slotted so check first
     fitsSlots <- fitsAvailableSlots aid a
     case fitsSlots of
       FitsSlots -> push (InvestigatorPlayedAsset iid aid)
@@ -1950,15 +1956,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   CannotCommitCards matcher -> cardMatch card matcher
                   _ -> False
               passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
+
+              icons <- iconsForCard (toCard card)
+
               pure
                 $ PlayerCard card
                   `notElem` committedCards
-                  && ( any (`member` skillIcons) (cdSkills (toCardDef card))
-                        || ( null (cdSkills $ toCardDef card)
-                              && toCardType card
-                              == SkillType
-                           )
-                     )
+                  && (any (`member` skillIcons) icons || (null icons && toCardType card == SkillType))
                   && passesCommitRestrictions
                   && not prevented
             EncounterCard card ->
@@ -2052,15 +2056,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
                     _ -> False
                 passesCriterias <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
+                icons <- iconsForCard (toCard card)
                 pure
                   $ and
                     [ PlayerCard card `notElem` committedCards
                     , or
-                        [ any (`member` skillIcons) (cdSkills (toCardDef card))
-                        , and
-                            [ null (cdSkills (toCardDef card))
-                            , toCardType card == SkillType
-                            ]
+                        [ any (`member` skillIcons) icons
+                        , and [null icons, toCardType card == SkillType]
                         ]
                     , passesCriterias
                     , not prevented

@@ -621,6 +621,7 @@ function onLeave(el, done) {
   width: $card-width;
   background: rgba(0,0,0,0.5);
   aspect-ratio: 5 / 7;
+  height: calc($card-width * 7 / 5);
   border-radius: 6px;
   overflow: hidden;
   display: grid;

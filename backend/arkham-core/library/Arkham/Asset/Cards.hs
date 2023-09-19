@@ -381,6 +381,7 @@ allPlayerAssetCards =
       , mk1Grenades4
       , mollyMaxwell
       , monstrousTransformation
+      , moonPendant2
       , moxie1
       , mrRook
       , mysteriousRaven
@@ -3953,6 +3954,15 @@ theFool03 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [TarotSlot]
     , cdLevel = 3
+    , cdCardInHandEffects = True
+    }
+
+moonPendant2 :: CardDef
+moonPendant2 =
+  (asset "54012" "Moon Pendant" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [AccessorySlot]
+    , cdLevel = 2
     , cdCardInHandEffects = True
     }
 

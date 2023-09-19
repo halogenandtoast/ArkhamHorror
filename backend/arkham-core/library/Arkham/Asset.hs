@@ -630,6 +630,7 @@ allAssets =
       SomeAssetCard nineOfRods3
     , -- neutral [rttcu]
       SomeAssetCard theFool03
+    , SomeAssetCard moonPendant2
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeAssetCard randallCho

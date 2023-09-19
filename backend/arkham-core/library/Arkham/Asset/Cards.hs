@@ -49,6 +49,14 @@ weakness cardCode name =
     , cdCost = Nothing
     }
 
+basicWeakness :: CardCode -> Name -> CardDef
+basicWeakness cardCode name =
+  (baseAsset Nothing cardCode name 0 (singleton Neutral))
+    { cdCardSubType = Just BasicWeakness
+    , cdRevelation = IsRevelation
+    , cdCost = Nothing
+    }
+
 storyWeakness :: CardCode -> Name -> EncounterSet -> CardDef
 storyWeakness cardCode name encounterSet =
   (baseAsset (Just (encounterSet, 1)) cardCode name 0 (singleton Neutral))
@@ -500,6 +508,7 @@ allPlayerAssetCards =
       , theCodexOfAges
       , theCouncilsCoffer2
       , theCustodian
+      , theDevilXv
       , theFool03
       , theGoldPocketWatch4
       , theHierophantV3
@@ -3060,11 +3069,12 @@ aceOfRods1 =
 
 theTowerXVI :: CardDef
 theTowerXVI =
-  (weakness "05042" ("The Tower • XVI" <:> "Circumstances Beyond Your Control"))
+  (basicWeakness "05042" ("The Tower • XVI" <:> "Circumstances Beyond Your Control"))
     { cdCardTraits = setFromList [Omen, Tarot]
     , cdSlots = [TarotSlot]
     , cdCardInHandEffects = True
     , cdCanReplace = False
+    , cdRevelation = NoRevelation
     , cdCost = Just (StaticCost 4)
     }
 
@@ -3862,7 +3872,7 @@ backpack2 =
 
 dendromorphosis :: CardDef
 dendromorphosis =
-  (weakness "53012" ("Dendromorphosis" <:> "\"Natural\" Transformation"))
+  (basicWeakness "53012" ("Dendromorphosis" <:> "\"Natural\" Transformation"))
     { cdSlots = [HandSlot, HandSlot]
     , cdCost = Nothing
     }
@@ -3964,6 +3974,17 @@ moonPendant2 =
     , cdSlots = [AccessorySlot]
     , cdLevel = 2
     , cdCardInHandEffects = True
+    }
+
+theDevilXv :: CardDef
+theDevilXv =
+  (basicWeakness "54015" ("The Devil • XV" <:> "Your Shadow Hungers"))
+    { cdCardTraits = setFromList [Omen, Tarot]
+    , cdSlots = [TarotSlot]
+    , cdCardInHandEffects = True
+    , cdCanReplace = False
+    , cdRevelation = NoRevelation
+    , cdCost = Just (StaticCost 3)
     }
 
 randallCho :: CardDef

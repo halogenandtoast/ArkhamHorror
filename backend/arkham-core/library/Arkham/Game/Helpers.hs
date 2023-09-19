@@ -2546,6 +2546,7 @@ targetTraits = \case
   InvestigationTarget _ _ -> pure mempty
   AgendaMatcherTarget _ -> pure mempty
   CampaignTarget -> pure mempty
+  TarotTarget _ -> pure mempty
   AbilityTarget _ _ -> pure mempty
   BothTarget _ _ -> error "won't make sense, or need to determine later"
 

@@ -59,7 +59,9 @@ getSkillTestSkillTypes :: HasGame m => m [SkillType]
 getSkillTestSkillTypes =
   getsSkillTest skillTestType <&> \case
     Just (SkillSkillTest skillType) -> [skillType]
-    _ -> []
+    Just (AndSkillTest types) -> types
+    Just ResourceSkillTest -> []
+    Nothing -> []
 
 getSkillTestMatchingSkillIcons :: HasGame m => m (Set SkillIcon)
 getSkillTestMatchingSkillIcons =

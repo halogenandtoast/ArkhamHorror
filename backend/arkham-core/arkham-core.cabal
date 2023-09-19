@@ -581,6 +581,7 @@ library
       Arkham.Asset.Cards.MysteriousRaven
       Arkham.Asset.Cards.Newspaper
       Arkham.Asset.Cards.Newspaper2
+      Arkham.Asset.Cards.NineOfRods3
       Arkham.Asset.Cards.OccultLexicon
       Arkham.Asset.Cards.OccultLexicon3
       Arkham.Asset.Cards.OccultScraps
@@ -697,6 +698,7 @@ library
       Arkham.Asset.Cards.TheCodexOfAges
       Arkham.Asset.Cards.TheCouncilsCoffer2
       Arkham.Asset.Cards.TheCustodian
+      Arkham.Asset.Cards.TheFool03
       Arkham.Asset.Cards.TheGoldPocketWatch4
       Arkham.Asset.Cards.TheHierophantV3
       Arkham.Asset.Cards.TheKingInYellow
@@ -1306,6 +1308,7 @@ library
       Arkham.Event.Cards.ThinkOnYourFeet2
       Arkham.Event.Cards.TimeWarp2
       Arkham.Event.Cards.TrialByFire
+      Arkham.Event.Cards.TrialByFire3
       Arkham.Event.Cards.TrueSurvivor3
       Arkham.Event.Cards.Trusted
       Arkham.Event.Cards.TruthFromFiction

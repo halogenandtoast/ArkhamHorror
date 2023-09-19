@@ -294,6 +294,7 @@ allPlayerEventCards =
       , thinkOnYourFeet2
       , timeWarp2
       , trialByFire
+      , trialByFire3
       , trueSurvivor3
       , trusted
       , truthFromFiction
@@ -2568,6 +2569,14 @@ alterFate1 =
           $ Criteria.TreacheryExists
           $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
     , cdLevel = 1
+    }
+
+trialByFire3 :: CardDef
+trialByFire3 =
+  (event "54010" "Trial by Fire" 2 Survivor)
+    { cdSkills = [#wild, #wild]
+    , cdCardTraits = singleton Spirit
+    , cdFastWindow = Just $ DuringTurn You
     }
 
 cleanThemOut :: CardDef

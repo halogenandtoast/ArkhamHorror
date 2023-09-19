@@ -386,6 +386,7 @@ allPlayerAssetCards =
       , mysteriousRaven
       , newspaper
       , newspaper2
+      , nineOfRods3
       , occultLexicon
       , occultLexicon3
       , occultScraps
@@ -498,6 +499,7 @@ allPlayerAssetCards =
       , theCodexOfAges
       , theCouncilsCoffer2
       , theCustodian
+      , theFool03
       , theGoldPocketWatch4
       , theHierophantV3
       , theKingInYellow
@@ -3934,6 +3936,24 @@ signMagick3 =
     , cdCardTraits = setFromList [Ritual, Talent]
     , cdSlots = [HandSlot]
     , cdLevel = 3
+    }
+
+nineOfRods3 :: CardDef
+nineOfRods3 =
+  (asset "54009" ("Nine of Rods" <:> "Every Trial a Lesson") 3 Survivor)
+    { cdCardTraits = singleton Tarot
+    , cdSlots = [TarotSlot]
+    , cdLevel = 3
+    , cdCardInHandEffects = True
+    }
+
+theFool03 :: CardDef
+theFool03 =
+  (asset "54011" ("The Fool • 0" <:> "Unlimited Potential") 3 Neutral)
+    { cdCardTraits = singleton Tarot
+    , cdSlots = [TarotSlot]
+    , cdLevel = 3
+    , cdCardInHandEffects = True
     }
 
 randallCho :: CardDef

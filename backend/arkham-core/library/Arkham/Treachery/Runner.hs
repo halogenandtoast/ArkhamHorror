@@ -26,24 +26,19 @@ addHiddenToHand iid a = PlaceTreachery (toId a) (TreacheryInHandOf iid)
 
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
-    InvestigatorEliminated iid
-      | InvestigatorTarget iid `elem` treacheryAttachedTarget a -> do
-          push (Discard GameSource $ toTarget a)
-          pure a
-    InvestigatorEliminated iid
-      | Just iid == treacheryOwner ->
-          a <$ push (Discard GameSource $ toTarget a)
-    PlaceTreachery tid placement
-      | tid == treacheryId ->
-          pure $ a & placementL .~ placement
+    InvestigatorEliminated iid | InvestigatorTarget iid `elem` treacheryAttachedTarget a -> do
+      push (Discard GameSource $ toTarget a)
+      pure a
+    InvestigatorEliminated iid | Just iid == treacheryOwner -> do
+      a <$ push (Discard GameSource $ toTarget a)
+    PlaceTreachery tid placement | tid == treacheryId -> do
+      pure $ a & placementL .~ placement
     PlaceTokens _ (isTarget a -> True) token n -> do
       pure $ a & tokensL %~ addTokens token n
-    PlaceEnemyInVoid eid
-      | EnemyTarget eid `elem` treacheryAttachedTarget a ->
-          a <$ push (Discard GameSource $ toTarget a)
-    Discarded target _ _
-      | target `elem` treacheryAttachedTarget a ->
-          a <$ push (Discard GameSource $ toTarget a)
+    PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
+      a <$ push (Discard GameSource $ toTarget a)
+    Discarded target _ _ | target `elem` treacheryAttachedTarget a -> do
+      a <$ push (Discard GameSource $ toTarget a)
     After (Revelation _ (isSource a -> True)) -> do
       when
         (treacheryPlacement == TreacheryLimbo)

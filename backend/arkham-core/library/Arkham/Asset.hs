@@ -626,6 +626,10 @@ allAssets =
     , -- mystic [rttcu]
       SomeAssetCard theHierophantV3
     , SomeAssetCard signMagick3
+    , -- survivor [rttcu]
+      SomeAssetCard nineOfRods3
+    , -- neutral [rttcu]
+      SomeAssetCard theFool03
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeAssetCard randallCho

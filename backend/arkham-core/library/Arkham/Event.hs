@@ -396,6 +396,9 @@ allEvents =
       SomeEventCard truthFromFiction2
     , --- survivor [rttfa]
       SomeEventCard alterFate1
+    , -- Return to the Circle Undone
+      --- survivor [rttcu]
+      SomeEventCard trialByFire3
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeEventCard cleanThemOut

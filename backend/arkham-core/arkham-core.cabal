@@ -2125,6 +2125,7 @@ library
       Arkham.Story.Types
       Arkham.Strategy
       Arkham.Target
+      Arkham.Tarot
       Arkham.Text
       Arkham.Timing
       Arkham.Token

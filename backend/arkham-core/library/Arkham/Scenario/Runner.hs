@@ -50,6 +50,7 @@ import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Story.Types (Field (..))
+import Arkham.Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
@@ -1031,4 +1032,24 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & tokensL %~ subtractTokens token amount
   RestartScenario -> do
     pure $ a & (inResolutionL .~ False)
+  PerformReading Chaos -> do
+    card <- TarotCard <$> sample2 Upright Reversed <*> sample tarotDeck
+    pure $ a & tarotCardsL .~ [card]
+  PerformReading Balance -> do
+    cards <- sampleN 2 tarotDeck
+    case cards of
+      [c1, c2] -> pure $ a & tarotCardsL .~ [TarotCard Upright c1, TarotCard Reversed c2]
+      _ -> error "impossible"
+  PerformReading Choice -> do
+    lead <- getLead
+    cards <- map (TarotCard Upright) <$> sampleN 3 tarotDeck
+    pushAll [FocusTarot, chooseN lead 2 [], UnfocusTarot]
+    pure $ a & tarotCardsL .~ cards
+  RotateTarot (toTarotArcana -> arcana) -> do
+    let
+      rotate = \case
+        TarotCard Upright a | a == arcana -> TarotCard Reversed a
+        TarotCard Reversed a | a == arcana -> TarotCard Upright a
+        c -> c
+    pure $ a & tarotCardsL %~ map rotate
   _ -> pure a

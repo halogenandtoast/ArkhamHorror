@@ -3257,6 +3257,7 @@ instance Projection Scenario where
       ScenarioCardsUnderScenarioReference ->
         pure scenarioCardsUnderScenarioReference
       ScenarioPlayerDecks -> pure scenarioPlayerDecks
+      ScenarioTarotCards -> pure scenarioTarotCards
 
 instance Projection Skill where
   field fld sid = do

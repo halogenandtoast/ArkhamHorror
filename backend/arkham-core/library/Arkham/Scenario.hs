@@ -67,17 +67,41 @@ instance HasModifiersFor TarotCard where
               Reversed -> [SkillModifier #intellect (-1) | firstIntellectTest]
           _ -> pure []
       TheEmpressIII ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
+        case target of
+          InvestigatorTarget iid -> do
+            history <- getHistory TurnHistory iid
+            currentSkillTypes <- getSkillTestSkillTypes
+            let
+              skillTypes = concat $ historySkillTestsPerformed history
+              firstAgilityTest = #agility `notElem` skillTypes && #agility `elem` currentSkillTypes
+            pure . toModifiers source $ case facing of
+              Upright -> [SkillModifier #agility 1 | firstAgilityTest]
+              Reversed -> [SkillModifier #agility (-1) | firstAgilityTest]
+          _ -> pure []
       TheEmperorIV ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
+        case target of
+          InvestigatorTarget iid -> do
+            history <- getHistory TurnHistory iid
+            currentSkillTypes <- getSkillTestSkillTypes
+            let
+              skillTypes = concat $ historySkillTestsPerformed history
+              firstCombatTest = #combat `notElem` skillTypes && #combat `elem` currentSkillTypes
+            pure . toModifiers source $ case facing of
+              Upright -> [SkillModifier #combat 1 | firstCombatTest]
+              Reversed -> [SkillModifier #combat (-1) | firstCombatTest]
+          _ -> pure []
       TheHierophantV ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
+        case target of
+          InvestigatorTarget iid -> do
+            history <- getHistory TurnHistory iid
+            currentSkillTypes <- getSkillTestSkillTypes
+            let
+              skillTypes = concat $ historySkillTestsPerformed history
+              firstWillpowerTest = #willpower `notElem` skillTypes && #willpower `elem` currentSkillTypes
+            pure . toModifiers source $ case facing of
+              Upright -> [SkillModifier #willpower 1 | firstWillpowerTest]
+              Reversed -> [SkillModifier #willpower (-1) | firstWillpowerTest]
+          _ -> pure []
       TheLoversVI ->
         case facing of
           Upright -> pure []

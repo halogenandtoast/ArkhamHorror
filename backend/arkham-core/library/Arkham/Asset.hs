@@ -631,6 +631,8 @@ allAssets =
     , -- neutral [rttcu]
       SomeAssetCard theFool03
     , SomeAssetCard moonPendant2
+    , -- weakness [rttcu]
+      SomeAssetCard theDevilXv
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeAssetCard randallCho

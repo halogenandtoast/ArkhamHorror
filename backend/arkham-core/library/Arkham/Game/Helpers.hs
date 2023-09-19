@@ -2415,7 +2415,10 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       Window.PlayCard who card ->
         andM
           [ matchWho iid who whoMatcher
-          , member card <$> select cardMatcher
+          , case cardMatcher of
+              Matcher.BasicCardMatch baseMatcher ->
+                pure $ cardMatch card baseMatcher
+              _ -> member card <$> select cardMatcher
           ]
       _ -> noMatch
     Matcher.AssetEntersPlay timing assetMatcher -> guardTiming timing $ \case

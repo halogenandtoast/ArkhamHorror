@@ -1070,6 +1070,7 @@ getTreacheriesMatching matcher = do
       pure . (== (title <:> subtitle)) . toName
     TreacheryWithId treacheryId -> pure . (== treacheryId) . toId
     TreacheryWithTrait t -> fmap (member t) . field TreacheryTraits . toId
+    TreacheryWithCardId cardId -> pure . (== cardId) . toCardId
     TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
     TreacheryAt locationMatcher -> \treachery -> do
       targets <- selectListMap (Just . LocationTarget) locationMatcher

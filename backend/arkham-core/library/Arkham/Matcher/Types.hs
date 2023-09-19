@@ -432,6 +432,7 @@ data TreacheryMatcher
   | TreacheryInHandOf InvestigatorMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher
   | TreacheryIs CardCode
+  | TreacheryWithCardId CardId
   | TreacheryAt LocationMatcher
   | TreacheryOnEnemy EnemyMatcher
   | TreacheryIsNonWeakness

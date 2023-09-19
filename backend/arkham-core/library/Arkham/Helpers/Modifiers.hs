@@ -103,6 +103,10 @@ turnModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 turnModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectTurnWindow source target [modifier]
 
+turnModifiers
+  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+turnModifiers (toSource -> source) (toTarget -> target) modifiers = createWindowModifierEffect EffectTurnWindow source target modifiers
+
 createRoundModifier
   :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
 createRoundModifier = createWindowModifierEffect EffectRoundWindow

@@ -74,7 +74,7 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
-import Control.Lens (each)
+import Control.Lens (each, non)
 import Control.Monad.Extra (findM)
 import Data.Map.Strict qualified as Map
 import Data.Monoid
@@ -589,19 +589,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ insertSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) _ (PlayerCard card) | aid `elem` investigatorAssets -> do
-    let
-      slotTypes = cdSlots $ toCardDef card
-      slots slotType = findWithDefault [] slotType investigatorSlots
-      assetIds slotType = mapMaybe slotItem $ slots slotType
-    pushAll
-      [ RefillSlots investigatorId slotType (filter (/= aid) $ assetIds slotType)
-      | slotType <- slotTypes
-      ]
-    pure
-      $ a
-      & (assetsL %~ deleteSet aid)
-      & (discardL %~ (card :))
-      & (slotsL %~ removeFromSlots aid)
+    -- let
+    --   slotTypes = cdSlots (toCardDef card)
+    --   slots slotType = findWithDefault [] slotType investigatorSlots
+    --   assetIds slotType = mapMaybe slotItem $ slots slotType
+    push $ RefillSlots investigatorId
+    pure $ a & (assetsL %~ deleteSet aid) & (discardL %~ (card :)) & (slotsL %~ removeFromSlots aid)
   Discarded (AssetTarget aid) _ (EncounterCard _) | aid `elem` investigatorAssets -> do
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets -> do
@@ -1320,24 +1313,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure (slotType, slots')
     pure $ a & slotsL .~ mapFromList updatedSlots
   Do (InvestigatorPlayAsset iid aid) | iid == investigatorId -> do
-    slotTypes <- do
-      baseSlots <- field AssetSlots aid
-      modifiers <- getModifiers (AssetTarget aid)
-      pure $ filter ((`notElem` modifiers) . DoNotTakeUpSlot) baseSlots
-
-    assetCard <- field AssetCard aid
-    if fitsAvailableSlots slotTypes assetCard a
-      then push (InvestigatorPlayedAsset iid aid)
-      else do
-        let
-          missingSlotTypes =
-            slotTypes
-              \\ concatMap
-                (\slotType -> availableSlotTypesFor slotType assetCard a)
-                (nub slotTypes)
+    fitsSlots <- fitsAvailableSlots aid a
+    case fitsSlots of
+      FitsSlots -> push (InvestigatorPlayedAsset iid aid)
+      MissingSlots missingSlotTypes -> do
         assetsThatCanProvideSlots <-
           selectList
-            $ AssetControlledBy (InvestigatorWithId iid)
+            $ assetControlledBy iid
               <> DiscardableAsset
               <> AssetOneOf (map AssetInSlot missingSlotTypes)
         push
@@ -1359,13 +1341,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let assetsUpdate = assetsL %~ insertSet aid
     slotTypes <- field AssetSlots aid
     assetCard <- field AssetCard aid
-    pure
-      $ foldl'
-        ( \a' slotType ->
-            a' & slotsL . ix slotType %~ placeInAvailableSlot aid assetCard
-        )
-        (a & handL %~ (filter (/= assetCard)) & assetsUpdate)
-        slotTypes
+
+    canHoldMap :: Map SlotType [SlotType] <- do
+      mods <- getModifiers a
+      let
+        canHold = \case
+          SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
+          _ -> id
+      pure $ foldr canHold mempty mods
+    -- we need to figure out which slots are or aren't available
+    -- we've claimed we can play this, but we might need to change the slotType
+    let
+      handleSlotType :: Map SlotType [Slot] -> SlotType -> Map SlotType [Slot]
+      handleSlotType slots' sType =
+        case nub (availableSlotTypesFor sType canHoldMap assetCard a) of
+          [] -> error "No slot found"
+          [sType'] -> slots' & ix sType' %~ placeInAvailableSlot aid assetCard
+          xs | sType `elem` xs -> slots' & ix sType %~ placeInAvailableSlot aid assetCard
+          _ -> error $ "Too many slots found, we expect at max two and one must be the original slot"
+
+      slots = foldl' handleSlotType (a ^. slotsL) slotTypes
+
+    pure $ a & handL %~ (filter (/= assetCard)) & assetsUpdate & slotsL .~ slots
   RemoveCampaignCard cardDef -> do
     pure
       $ a
@@ -1536,47 +1533,71 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
       slots = findWithDefault [] slotType investigatorSlots
-      assetIds = mapMaybe slotItem slots
       emptiedSlots = sort $ slot : map emptySlot slots
-    push (RefillSlots iid slotType assetIds)
+    push $ RefillSlots iid
     pure $ a & slotsL %~ insertMap slotType emptiedSlots
-  RefillSlots iid slotType assetIds | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
-    let
-      handleSlotModifiers [] xs = xs
-      handleSlotModifiers (m : ms) xs = case m of
-        FewerSlots slotType' n
-          | slotType == slotType' ->
-              handleSlotModifiers ms $ drop n xs
-        _ -> handleSlotModifiers ms xs
-      slots =
-        handleSlotModifiers modifiers'
-          $ findWithDefault [] slotType investigatorSlots
-      emptiedSlots = sort $ map emptySlot slots
-    assetsWithCards <- flip mapMaybeM assetIds $ \assetId -> do
+  RefillSlots iid | iid == investigatorId -> do
+    assetIds <- selectList $ assetControlledBy (toId a)
+
+    requirements <- concatForM assetIds $ \assetId -> do
       assetCard <- field AssetCard assetId
-      exclude <- hasModifier (AssetTarget assetId) (DoNotTakeUpSlot slotType)
-      pure $ if exclude then Nothing else Just (assetId, assetCard)
+      mods <- getModifiers assetId
+      let slotFilter sType = DoNotTakeUpSlot sType `notElem` mods
+      pure $ (assetId,assetCard,) <$> filter slotFilter (cdSlots $ toCardDef assetCard)
+
+    let allSlots :: [(SlotType, Slot)] = concatMap (\(k, vs) -> (k,) . emptySlot <$> vs) $ Map.assocs (a ^. slotsL)
+
+    canHoldMap :: Map SlotType [SlotType] <- do
+      mods <- getModifiers a
+      let
+        canHold = \case
+          SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
+          _ -> id
+      pure $ foldr canHold mempty mods
+
     let
-      updatedSlots =
-        foldl'
-          ( \s (aid, card) ->
-              if any (canPutIntoSlot card) s
-                then placeInAvailableSlot aid card s
-                else s
-          )
-          emptiedSlots
-          assetsWithCards
-    if length (mapMaybe slotItem updatedSlots) == length assetIds
-      then pure $ a & slotsL %~ insertMap slotType updatedSlots
+      go [] _ = []
+      go rs [] = map (\(_, _, sType) -> sType) rs
+      go ((_, card, slotType) : rs) slots = do
+        case sort (filterBy [canPutIntoSlot card . snd, (== slotType) . fst] slots) of
+          [] -> case findWithDefault [] slotType canHoldMap of
+            [] -> slotType : go rs slots
+            [other] ->
+              case sort (filterBy [canPutIntoSlot card . snd, (== other) . fst] slots) of
+                [] -> slotType : go rs slots
+                (x : _) -> go rs (delete x slots)
+            _ -> error "not designed to work with more than one yet"
+          (x : _) -> go rs (delete x slots)
+
+    let
+      fill :: [(AssetId, Card, SlotType)] -> Map SlotType [Slot] -> Map SlotType [Slot]
+      fill [] slots = slots
+      fill ((aid, card, slotType) : rs) slots = do
+        case sort (filter (canPutIntoSlot card) (slots ^. at slotType . non [])) of
+          [] -> case findWithDefault [] slotType canHoldMap of
+            [] -> error "can't be filled 1"
+            [other] ->
+              case sort (filter (canPutIntoSlot card) (slots ^. at other . non [])) of
+                [] -> error "can't be filled 2"
+                _ -> fill rs (slots & ix other %~ placeInAvailableSlot aid card)
+            _ -> error "not designed to work with more than one yet"
+          _ -> fill rs (slots & ix slotType %~ placeInAvailableSlot aid card)
+
+    let
+      failedSlotTypes = nub (go requirements allSlots)
+      failedSlotTypes' = nub $ concatMap (\s -> s : findWithDefault [] s canHoldMap) failedSlotTypes
+      failedAssetIds' = map (\(aid, _, _) -> aid) $ filter (\(_, _, s) -> s `elem` failedSlotTypes') requirements
+
+    failedAssetIds <- selectFilter AssetCanLeavePlayByNormalMeans failedAssetIds'
+
+    if null failedAssetIds
+      then do
+        pure $ a & slotsL %~ fill requirements . Map.map (map emptySlot)
       else do
         push
           $ chooseOne iid
-          $ [ targetLabel aid'
-              $ [ Discard GameSource (AssetTarget aid')
-                , RefillSlots iid slotType (filter (/= aid') assetIds)
-                ]
-            | aid' <- assetIds
+          $ [ targetLabel aid' [Discard GameSource (AssetTarget aid'), RefillSlots iid]
+            | aid' <- failedAssetIds
             ]
         pure a
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True

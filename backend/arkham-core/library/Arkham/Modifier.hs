@@ -148,7 +148,7 @@ data ModifierType
   | DiscoveredClues Int
   | DoNotRemoveDoom
   | DoNotTakeUpSlot SlotType
-  | SlotCanHold SlotType CardMatcher
+  | SlotCanBe SlotType SlotType
   | CannotPlaceDoomOnThis
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator

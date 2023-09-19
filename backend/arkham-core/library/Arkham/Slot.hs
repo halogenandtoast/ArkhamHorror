@@ -1,3 +1,6 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Slot (module X, module Arkham.Slot) where
 
 import Arkham.Prelude
@@ -13,7 +16,9 @@ pattern TraitRestrictedSlot source trait massetId <- RestrictedSlot source (Card
   where
     TraitRestrictedSlot source trait massetId = RestrictedSlot source (CardWithTrait trait) massetId
 
-data Slot = Slot Source (Maybe AssetId) | RestrictedSlot Source CardMatcher (Maybe AssetId)
+data Slot
+  = Slot {source :: Source, asset :: Maybe AssetId}
+  | RestrictedSlot {source :: Source, matcher :: CardMatcher, asset :: Maybe AssetId}
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -19,6 +19,9 @@ selectAny = fmap notNull . selectListMap id
 selectNone :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectNone = fmap not . selectAny
 
+selectFilter :: (HasCallStack, Query a, HasGame m) => a -> [QueryElement a] -> m [QueryElement a]
+selectFilter matcher ids = toList . (setFromList ids `intersection`) <$> select matcher
+
 selectList
   :: (HasCallStack, Query a, HasGame m) => a -> m [QueryElement a]
 selectList = selectListMap id

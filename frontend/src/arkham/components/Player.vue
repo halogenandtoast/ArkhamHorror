@@ -140,6 +140,27 @@ const locations = computed(() => Object.values(props.game.locations).
 
 const debug = useDebug()
 const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
+const emptySlots = computed(() => props.player.slots.filter((s) => s.empty))
+
+
+const slotImg = (slot: Arkham.Slot) => {
+  switch (slot.tag) {
+    case 'HandSlot':
+      return imgsrc('slots/hand.png')
+    case 'BodySlot':
+      return imgsrc('slots/body.png')
+    case 'AccessorySlot':
+      return imgsrc('slots/accessory.png')
+    case 'ArcaneSlot':
+      return imgsrc('slots/arcane.png')
+    case 'TarotSlot':
+      return imgsrc('slots/tarot.png')
+    case 'AllySlot':
+      return imgsrc('slots/ally.png')
+  }
+
+  return ""
+}
 
 // function beforeLeaveHand(e: Element) {
 //   const el = e as HTMLElement
@@ -301,6 +322,10 @@ function onLeave(el, done) {
           :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
           @choose="$emit('choose', $event)"
         />
+
+        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot">
+          <img :src="slotImg(slot)" />
+        </div>
 
         <div v-if="committedCards.length > 0" class="committed-skills">
           <h2>Committed Skills</h2>
@@ -589,6 +614,23 @@ function onLeave(el, done) {
     writing-mode: vertical-rl;
     orientation: mixed;
     color: rgba(255, 255, 255, 0.75);
+  }
+}
+
+.slot {
+  width: $card-width;
+  background: rgba(0,0,0,0.5);
+  aspect-ratio: 5 / 7;
+  border-radius: 6px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  margin: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-sizing: border-box;
+  img {
+    width: calc($card-width / 2);
+    filter: invert(75%);
   }
 }
 </style>

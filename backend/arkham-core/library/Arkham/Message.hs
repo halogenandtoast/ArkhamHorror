@@ -651,7 +651,7 @@ data Message
   | RecordCount CampaignLogKey Int
   | RecordSetInsert CampaignLogKey [SomeRecorded]
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
-  | RefillSlots InvestigatorId SlotType [AssetId]
+  | RefillSlots InvestigatorId
   | Remember ScenarioLogKey
   | ScenarioCountIncrementBy ScenarioCountKey Int
   | ScenarioCountDecrementBy ScenarioCountKey Int

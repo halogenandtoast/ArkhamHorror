@@ -75,7 +75,49 @@ export interface Investigator {
   hunchDeck?: CardContents[];
   revealedHunchCard?: string | null;
   isYithian: boolean;
+  slots: Slot[];
 }
+
+type SlotType = 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
+
+export const slotTypeDecoder = JsonDecoder.oneOf<SlotType>([
+  JsonDecoder.isExactly('HandSlot'),
+  JsonDecoder.isExactly('BodySlot'),
+  JsonDecoder.isExactly('AccessorySlot'),
+  JsonDecoder.isExactly('ArcaneSlot'),
+  JsonDecoder.isExactly('TarotSlot'),
+  JsonDecoder.isExactly('AllySlot'),
+], 'SlotType')
+
+interface Slot {
+  tag: SlotType
+  empty: boolean
+}
+
+export const slotDecoder = JsonDecoder.object<Slot>({
+  tag: slotTypeDecoder,
+  empty: JsonDecoder.boolean,
+}, 'Slot')
+
+interface SlotContents {
+  asset: string | null
+}
+
+const slotContentsDecoder = JsonDecoder.object<SlotContents>({
+  asset: JsonDecoder.nullable(JsonDecoder.string),
+}, 'SlotContents')
+
+export const slotsDecoder = JsonDecoder.
+  array<[SlotType, SlotContents[]]>(
+    JsonDecoder.tuple([
+      slotTypeDecoder,
+      JsonDecoder.array(slotContentsDecoder, 'contents')
+    ], 'tup')
+  , 'Slot[]').
+  map((arr) =>
+      arr.flatMap(([key, value]) =>
+        value.map((contents) => ({ tag: key , empty: contents.asset === null})
+  )))
 
 export const investigatorDecoder = JsonDecoder.object<Investigator>({
   name: nameDecoder,
@@ -118,4 +160,5 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   isYithian: JsonDecoder.boolean,
+  slots: slotsDecoder,
 }, 'Investigator');

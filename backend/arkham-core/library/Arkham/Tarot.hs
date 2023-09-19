@@ -1,3 +1,6 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Tarot where
 
 import Arkham.Prelude
@@ -15,7 +18,7 @@ data TarotCardFacing = Upright | Reversed
   deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
-data TarotCard = TarotCard TarotCardFacing TarotCardArcana
+data TarotCard = TarotCard {facing :: TarotCardFacing, arcana :: TarotCardArcana}
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

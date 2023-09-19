@@ -58,6 +58,7 @@ data ApiResponse
   = GameUpdate (PublicGame ArkhamGameId)
   | GameMessage Text
   | GameCard {title :: Text, card :: Aeson.Value}
+  | GameTarot Aeson.Value
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 

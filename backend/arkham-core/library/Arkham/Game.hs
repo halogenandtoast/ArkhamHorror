@@ -156,6 +156,7 @@ import Arkham.Story
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Story.Types qualified as Story
 import Arkham.Target
+import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Treachery
@@ -211,6 +212,7 @@ newCampaign
   -> Int
   -> NonEmpty ArkhamDBDecklist
   -> Difficulty
+  -> Bool
   -> m (Queue Message, Game)
 newCampaign cid msid = newGame (maybe (This cid) (These cid) msid)
 
@@ -221,6 +223,7 @@ newScenario
   -> Int
   -> NonEmpty ArkhamDBDecklist
   -> Difficulty
+  -> Bool
   -> m (Queue Message, Game)
 newScenario = newGame . That
 
@@ -231,8 +234,9 @@ newGame
   -> Int
   -> NonEmpty ArkhamDBDecklist
   -> Difficulty
+  -> Bool
   -> m (Queue Message, Game)
-newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
+newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty includeTarotReadings = do
   let
     initialInvestigatorId = decklistInvestigatorId deck
     state =
@@ -285,6 +289,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty = do
         , gameIgnoreCanModifiers = False -- only to be used with local
         , gameGitRevision = gitHash
         , gameAllowEmptySpaces = False
+        , gamePerformTarotReadings = includeTarotReadings
         }
 
   gameRef <- newIORef game
@@ -3678,11 +3683,13 @@ runGameMessage msg g = case msg of
         Nothing -> id
         Just cl -> overAttrs (standaloneCampaignLogL .~ cl)
       standalone = isNothing $ modeCampaign $ g ^. modeL
+
     pushAll
       $ PreScenarioSetup
         : [StandaloneSetup | standalone]
-          <> [ ChooseLeadInvestigator
-             , SetupInvestigators
+          <> [ChooseLeadInvestigator]
+          <> [PerformTarotReading | gamePerformTarotReadings g]
+          <> [ SetupInvestigators
              , SetChaosTokensForScenario -- (chaosBagOf campaign')
              , InvestigatorsMulligan
              , Setup
@@ -3692,6 +3699,16 @@ runGameMessage msg g = case msg of
       $ g
       & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
+  PerformTarotReading -> do
+    lead <- getLead
+    push
+      $ questionLabel "Choose Tarot Reading Type" lead
+      $ ChooseOne
+        [ Label "Chaos" [PerformReading Tarot.Chaos]
+        , Label "Balance" [PerformReading Tarot.Balance]
+        , Label "Choice" [PerformReading Tarot.Choice]
+        ]
+    pure g
   RestartScenario -> do
     let standalone = isNothing $ modeCampaign $ g ^. modeL
     pushAll

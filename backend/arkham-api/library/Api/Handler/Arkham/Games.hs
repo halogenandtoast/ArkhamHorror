@@ -139,6 +139,7 @@ data CreateGamePost = CreateGamePost
   , difficulty :: Difficulty
   , campaignName :: Text
   , multiplayerVariant :: MultiplayerVariant
+  , includeTarotReadings :: Bool
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -162,7 +163,7 @@ postApiV1ArkhamGamesR = do
     Just cid -> do
       (queueRef, game) <-
         liftIO
-          $ newCampaign cid scenarioId newGameSeed playerCount decks difficulty
+          $ newCampaign cid scenarioId newGameSeed playerCount decks difficulty includeTarotReadings
       gameRef <- newIORef game
       runGameApp
         (GameApp gameRef queueRef genRef $ pure . const ())
@@ -182,7 +183,7 @@ postApiV1ArkhamGamesR = do
       Just sid -> do
         (queueRef, game) <-
           liftIO
-            $ newScenario sid newGameSeed playerCount decks difficulty
+            $ newScenario sid newGameSeed playerCount decks difficulty includeTarotReadings
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
@@ -285,9 +286,11 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
   toGameMessage = \case
     ClientText txt -> GameMessage txt
     ClientCard t v -> GameCard t v
+    ClientTarot v -> GameTarot v
   toClientText = \case
     ClientText txt -> Just txt
     ClientCard {} -> Nothing
+    ClientTarot {} -> Nothing
 
 -- TODO: Make this a websocket message
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()

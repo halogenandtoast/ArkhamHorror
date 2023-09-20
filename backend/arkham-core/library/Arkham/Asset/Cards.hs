@@ -396,6 +396,7 @@ allPlayerAssetCards =
       , newspaper
       , newspaper2
       , nineOfRods3
+      , observed4
       , occultLexicon
       , occultLexicon3
       , occultScraps
@@ -3975,6 +3976,15 @@ moonPendant2 =
     , cdLevel = 2
     , cdCardInHandEffects = True
     }
+
+observed4 :: CardDef
+observed4 =
+  permanent
+    $ (asset "54013" "Observed" 0 Neutral)
+      { cdCardTraits = singleton Blessed
+      , cdLevel = 4
+      , cdLimits = [LimitPerInvestigator 1]
+      }
 
 theDevilXv :: CardDef
 theDevilXv =

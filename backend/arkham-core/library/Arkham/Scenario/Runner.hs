@@ -60,6 +60,7 @@ import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, _1)
 import Data.IntMap.Strict qualified as IntMap
+import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
 
 instance HasChaosTokenValue ScenarioAttrs where
@@ -1014,6 +1015,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure a
   SetScenarioMeta v -> do
     pure $ a & metaL .~ v
+  LoadTarotDeck -> do
+    tarotDeck' <- shuffleM (toList tarotDeck)
+    pure $ a & tarotDeckL .~ tarotDeck'
   RemoveCompletedActFromGame n actId -> do
     let
       completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
@@ -1037,21 +1041,39 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   RestartScenario -> do
     pure $ a & (inResolutionL .~ False)
   PerformReading Chaos -> do
-    card <- TarotCard <$> sample2 Upright Reversed <*> sample tarotDeck
+    card <- TarotCard <$> sample2 Upright Reversed <*> sample (NE.fromList scenarioTarotDeck)
     sendTarot $ toJSON [card]
-    pure $ a & tarotCardsL . at GlobalTarot . non [] .~ [card]
+    pure
+      $ a
+      & (tarotCardsL . at GlobalTarot . non [] .~ [card])
+      & tarotDeckL %~ delete (toTarotArcana card)
   PerformReading Balance -> do
-    cards <- sampleN 2 tarotDeck
+    cards <- sampleN 2 (NE.fromList scenarioTarotDeck)
     case cards of
       [c1, c2] -> do
         sendTarot $ toJSON [TarotCard Upright c1, TarotCard Reversed c2]
-        pure $ a & tarotCardsL . at GlobalTarot . non [] .~ [TarotCard Upright c1, TarotCard Reversed c2]
+        pure
+          $ a
+          & (tarotCardsL . at GlobalTarot . non [] .~ [TarotCard Upright c1, TarotCard Reversed c2])
+          & tarotDeckL %~ filter (`notElem` cards)
       _ -> error "impossible"
   PerformReading Choice -> do
     lead <- getLead
-    cards <- map (TarotCard Upright) <$> sampleN 3 tarotDeck
+    cards <- map (TarotCard Upright) <$> sampleN 3 (NE.fromList scenarioTarotDeck)
     pushAll [FocusTarot, chooseN lead 2 [], UnfocusTarot]
-    pure $ a & tarotCardsL . at GlobalTarot . non [] .~ cards
+    pure
+      $ a
+      & tarotCardsL
+      . at GlobalTarot
+      . non [] .~ cards
+      & tarotDeckL %~ filter (`notElem` (map toTarotArcana cards))
+  DrawAndChooseTarot iid facing n -> do
+    cards <- map (TarotCard facing) <$> sampleN n (NE.fromList scenarioTarotDeck)
+    push $ chooseOrRunOne iid [TarotLabel (toTarotArcana card) [PlaceTarot iid card] | card <- cards]
+    pure a
+  PlaceTarot iid card -> do
+    tarotDeck' <- shuffleM $ delete (toTarotArcana card) scenarioTarotDeck
+    pure $ a & tarotDeckL .~ tarotDeck' & tarotCardsL . at (InvestigatorTarot iid) . non [] %~ (card :)
   RotateTarot (toTarotArcana -> arcana) -> do
     let
       rotate = \case

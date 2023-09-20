@@ -631,6 +631,7 @@ allAssets =
     , -- neutral [rttcu]
       SomeAssetCard theFool03
     , SomeAssetCard moonPendant2
+    , SomeAssetCard observed4
     , -- weakness [rttcu]
       SomeAssetCard theDevilXv
     , -- Investigator Starter Decks

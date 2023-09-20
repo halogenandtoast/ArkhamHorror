@@ -75,8 +75,10 @@ export const tarotCardDecoder = JsonDecoder.object<TarotCard>({
   scope: JsonDecoder.constant({ tag: 'GlobalTarot' }),
 }, 'TarotCard')
 
-export const tarotCardImage = (card: TarotCard) => {
-  switch (card.arcana) {
+export const tarotCardImage = (card: TarotCard) => tarotArcanaImage(card.arcana)
+
+export const tarotArcanaImage = (arcana: TarotCardArcana) => {
+  switch (arcana) {
     case 'TheFool0': return 'tarot-0.jpg'
     case 'TheMagicianI': return 'tarot-1.jpg'
     case 'TheHighPriestessII': return 'tarot-2.jpg'

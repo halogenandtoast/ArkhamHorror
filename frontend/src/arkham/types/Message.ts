@@ -3,6 +3,7 @@ import { Ability, abilityDecoder } from '@/arkham/types/Ability';
 import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { Target, targetDecoder } from '@/arkham/types/Target';
+import { tarotCardArcanaDecoder, TarotCardArcana } from '@/arkham/types/TarotCard';
 
 export enum MessageType {
   LABEL = 'Label',
@@ -19,6 +20,7 @@ export enum MessageType {
   FIGHT_LABEL = 'FightLabel',
   EVADE_LABEL = 'EvadeLabel',
   GRID_LABEL = 'GridLabel',
+  TAROT_LABEL = 'TarotLabel',
   DONE = 'Done',
   TOKEN_GROUP_CHOICE = 'TokenGroupChoice',
   EFFECT_ACTION_BUTTON = 'EffectActionButton'
@@ -155,6 +157,17 @@ export const gridLabelDecoder = JsonDecoder.object<GridLabel>(
     gridLabel: JsonDecoder.string,
   }, 'GridLabel')
 
+export interface TarotLabel {
+  tag: MessageType.TAROT_LABEL
+  tarotCard: TarotCardArcana
+}
+
+export const tarotLabelDecoder = JsonDecoder.object<TarotLabel>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.TAROT_LABEL),
+    tarotCard: tarotCardArcanaDecoder,
+  }, 'TarotLabel')
+
 export interface CardLabel {
   tag: MessageType.CARD_LABEL
   cardCode: string
@@ -210,7 +223,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | GridLabel | Done | TokenGroupChoice | EffectActionButton;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | GridLabel | TarotLabel | Done | TokenGroupChoice | EffectActionButton;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -298,6 +311,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     fightLabelDecoder,
     evadeLabelDecoder,
     gridLabelDecoder,
+    tarotLabelDecoder,
     doneDecoder,
     tokenGroupChoiceDecoder,
     effectActionButtonDecoder,

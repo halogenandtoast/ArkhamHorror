@@ -583,6 +583,7 @@ library
       Arkham.Asset.Cards.Newspaper
       Arkham.Asset.Cards.Newspaper2
       Arkham.Asset.Cards.NineOfRods3
+      Arkham.Asset.Cards.Observed4
       Arkham.Asset.Cards.OccultLexicon
       Arkham.Asset.Cards.OccultLexicon3
       Arkham.Asset.Cards.OccultScraps
@@ -2190,6 +2191,7 @@ library
       Arkham.Treachery.Cards.CurseOfTheRougarou
       Arkham.Treachery.Cards.CurseOfYig
       Arkham.Treachery.Cards.DaemonicPiping
+      Arkham.Treachery.Cards.Damned
       Arkham.Treachery.Cards.DanceOfTheYellowKing
       Arkham.Treachery.Cards.DarkFuture
       Arkham.Treachery.Cards.DeadlyFate

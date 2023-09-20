@@ -71,7 +71,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioStoryCards :: Field Scenario (Map InvestigatorId [PlayerCard])
   ScenarioPlayerDecks :: Field Scenario (Map InvestigatorId (Deck PlayerCard))
   ScenarioTokens :: Field Scenario Tokens
-  ScenarioTarotCards :: Field Scenario [TarotCard]
+  ScenarioTarotCards :: Field Scenario (Map TarotCardScope [TarotCard])
   ScenarioTurn :: Field Scenario Int
 
 deriving stock instance Show (Field Scenario typ)
@@ -111,7 +111,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioMeta :: Value
   , scenarioUsesGrid :: Bool
   , scenarioTokens :: Tokens
-  , scenarioTarotCards :: [TarotCard]
+  , scenarioTarotCards :: Map TarotCardScope [TarotCard]
   , scenarioTurn :: Int
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]

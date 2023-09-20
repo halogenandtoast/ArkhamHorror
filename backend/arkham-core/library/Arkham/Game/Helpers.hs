@@ -44,6 +44,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor)
+import Arkham.Helpers.Tarot
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), InvestigatorAttrs (..))
 import Arkham.Keyword qualified as Keyword
@@ -1458,6 +1459,9 @@ passesCriteria iid mcard source windows' = \case
   Criteria.DuringAction -> case mcard of
     Just (_, PaidCost) -> pure False -- If the cost is paid we're in a play action so we have to assume it is always False or it will never trigger
     _ -> getGameInAction
+  Criteria.AffectedByTarot -> case source of
+    TarotSource card -> affectedByTarot iid card
+    _ -> pure False
 
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing

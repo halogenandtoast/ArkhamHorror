@@ -1374,6 +1374,7 @@ library
       Arkham.Helpers.SkillTest
       Arkham.Helpers.Slot
       Arkham.Helpers.Source
+      Arkham.Helpers.Tarot
       Arkham.Helpers.Use
       Arkham.Helpers.Window
       Arkham.Helpers.Xp

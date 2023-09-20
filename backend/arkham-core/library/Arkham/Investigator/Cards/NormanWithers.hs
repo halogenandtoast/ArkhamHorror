@@ -69,7 +69,7 @@ instance RunMessage NormanWithers where
               | c <- onlyPlayerCards (investigatorHand a)
               ]
       pure nw
-    BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
+    Do BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
     PlayCard iid card _ _ False | iid == toId a ->
       case unDeck (investigatorDeck a) of
         c : _ | toCardId c == toCardId card -> do

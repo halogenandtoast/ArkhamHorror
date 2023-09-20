@@ -50,6 +50,7 @@ data ModifierType
   | AddSkillIcons [SkillIcon]
   | RemoveSkillIcons [SkillIcon]
   | AdditionalActions Int
+  | FewerActions Int
   | GiveAdditionalAction AdditionalAction
   | AdditionalStartingUses Int
   | SetAbilityCost Cost
@@ -125,7 +126,9 @@ data ModifierType
   | CannotBeMoved
   | CannotDisengageEnemies
   | CannotMoveMoreThanOnceEachTurn
+  | Mulligans Int
   | CannotMulligan
+  | CannotReplaceWeaknesses
   | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlay CardMatcher

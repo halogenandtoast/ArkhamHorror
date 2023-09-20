@@ -10,6 +10,7 @@ import {
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card, toCardContents } from '@/arkham/types/Card';
+import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import Act from '@/arkham/components/Act.vue';
@@ -391,6 +392,18 @@ const unusedCanInteract = (u: string) => choices.value.findIndex((c) => {
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const hasPool = computed(() => resources.value && resources.value > 0)
 
+const tarotCards = computed(() => props.scenario.tarotCards)
+
+const tarotCardAbility = (card: TarotCard) => {
+  return choices.value.findIndex((c) => {
+    if (c.tag == "AbilityLabel") {
+      return c.ability.source.tag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
+    }
+
+    return false
+  })
+}
+
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
@@ -411,6 +424,11 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         @close="hideCards"
       />
       <div class="scenario-cards">
+        <template v-if="tarotCards.length > 0">
+          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana">
+            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="choose(tarotCardAbility(tarotCard))"/>
+          </div>
+        </template>
         <div v-if="topEnemyInVoid">
           <Enemy
             :enemy="topEnemyInVoid"
@@ -952,5 +970,19 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   }
 
   pointer-events: none;
+}
+
+.tarot-card {
+  width: $card-width;
+  aspect-ratio: 9 / 16;
+
+  .can-interact {
+    aspect-ratio: 9 / 16;
+    box-sizing: border-box;
+  }
+
+  &.Reversed {
+    transform: rotateZ(180deg);
+  }
 }
 </style>

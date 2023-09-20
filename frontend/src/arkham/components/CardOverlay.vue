@@ -3,7 +3,12 @@ import { ref } from 'vue';
 import { imgsrc } from '@/arkham/helpers'
 
 const card = ref<string | null>(null);
+const reversed = ref<boolean>(false);
 const cardOverlay = ref<HTMLElement | null>(null);
+
+const getReversed = (el: HTMLElement) => {
+  return el.classList.contains('Reversed')
+}
 
 const getRotated = (el: HTMLElement) => {
   var st = window.getComputedStyle(el, null);
@@ -86,6 +91,7 @@ document.addEventListener('mouseover', (event) => {
   }
 
   card.value = getImage(event.target as HTMLElement)
+  reversed.value = getReversed(event.target as HTMLElement)
 
   if (event.target instanceof HTMLImageElement) {
     if (event.target.classList.contains('card')) {
@@ -136,7 +142,7 @@ document.addEventListener('mouseover', (event) => {
 
 <template>
   <div class="card-overlay" ref="cardOverlay">
-    <img v-if="card" :src="card" />
+    <img v-if="card" :src="card" :class="{ reversed }" />
   </div>
 </template>
 
@@ -155,5 +161,9 @@ document.addEventListener('mouseover', (event) => {
     max-width: 100%;
     max-height: 100%;
   }
+}
+
+.reversed {
+  transform: rotateZ(180deg);
 }
 </style>

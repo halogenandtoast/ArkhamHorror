@@ -59,7 +59,7 @@ data Target
   | CampaignTarget
   | AbilityTarget InvestigatorId Ability
   | BothTarget Target Target
-  | TarotTarget TarotCardArcana
+  | TarotTarget TarotCard
   deriving stock (Show, Eq, Ord, Data)
 
 pattern Initiator :: Target -> Target

@@ -44,8 +44,8 @@ instance RunMessage SefinaRousseau where
           : [targetLabel (toCardId card) [addToHand (toId i) card] | card <- attrs.cardsUnderneath]
       pure i
     DrawStartingHand iid | iid == toId attrs -> do
+      (discard', hand, deck) <- drawOpeningHand attrs 13
       let
-        (discard', hand, deck) = drawOpeningHand attrs 13
         events =
           filter (and . sequence [(== EventType) . toCardType, (/= Events.thePaintedWorld) . toCardDef]) hand
       pushAll [ShuffleDiscardBackIn iid, CheckHandSize $ toId attrs]

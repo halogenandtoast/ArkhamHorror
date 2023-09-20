@@ -20,17 +20,17 @@ arcaneStudies4 = asset ArcaneStudies4 Cards.arcaneStudies4
 
 instance HasAbilities ArcaneStudies4 where
   getAbilities (ArcaneStudies4 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
-        FastAbility $
-          OrCost [ResourceCost 1, UseCost (AssetWithId $ toId a) Resource 1]
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility
+        $ OrCost [ResourceCost 1, UseCost (AssetWithId $ toId a) Resource 1]
     ]
 
 instance RunMessage ArcaneStudies4 where
   runMessage msg a@(ArcaneStudies4 attrs) = case msg of
-    BeginRound -> pure . ArcaneStudies4 $ attrs & usesL .~ Uses Resource 2
+    Do BeginRound -> pure . ArcaneStudies4 $ attrs & usesL .~ Uses Resource 2
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Choose Willpower"

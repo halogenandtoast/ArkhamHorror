@@ -1388,6 +1388,7 @@ passesCriteria iid mcard source windows' = \case
     actId <- selectJust Matcher.AnyAct
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
   Criteria.AgendaExists matcher -> selectAny matcher
+  Criteria.ActExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do
     selectAny (Matcher.resolveAssetMatcher iid matcher)
   Criteria.EventExists matcher -> do
@@ -1589,6 +1590,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   let isMatch = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
   case mtchr of
+    Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
     Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
       guardTiming Timing.AtIf $ \case
@@ -2409,6 +2411,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , deckMatch iid deck deckMatcher
             ]
         _ -> noMatch
+    Matcher.DeckWouldRunOutOfCards timing whoMatcher -> guardTiming timing $ \case
+      Window.DeckWouldRunOutOfCards who -> matchWho iid who whoMatcher
+      _ -> noMatch
     Matcher.DeckHasNoCards timing whoMatcher -> guardTiming timing $ \case
       Window.DeckHasNoCards who -> matchWho iid who whoMatcher
       _ -> noMatch
@@ -2422,6 +2427,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                 pure $ cardMatch card baseMatcher
               _ -> member card <$> select cardMatcher
           ]
+      _ -> noMatch
+    Matcher.AgendaEntersPlay timing agendaMatcher -> guardTiming timing $ \case
+      Window.EnterPlay (AgendaTarget aid) -> member aid <$> select agendaMatcher
       _ -> noMatch
     Matcher.AssetEntersPlay timing assetMatcher -> guardTiming timing $ \case
       Window.EnterPlay (AssetTarget aid) -> member aid <$> select assetMatcher
@@ -2572,6 +2580,15 @@ targetMatches s = \case
       orM
         [ targetMatches left (Matcher.ActTargetMatches actMatcher)
         , targetMatches right (Matcher.ActTargetMatches actMatcher)
+        ]
+    _ -> pure False
+  Matcher.AgendaTargetMatches agendaMatcher -> case s of
+    AgendaTarget aid -> aid <=~> agendaMatcher
+    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (Matcher.AgendaTargetMatches agendaMatcher)
+    BothTarget left right ->
+      orM
+        [ targetMatches left (Matcher.AgendaTargetMatches agendaMatcher)
+        , targetMatches right (Matcher.AgendaTargetMatches agendaMatcher)
         ]
     _ -> pure False
   Matcher.ScenarioCardTarget -> case s of

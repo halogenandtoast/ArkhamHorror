@@ -47,7 +47,7 @@ instance RunMessage FinnEdwards where
     Setup ->
       FinnEdwards
         <$> runMessage msg (attrs & additionalActionsL %~ (ActionRestrictedAdditionalAction Action.Evade :))
-    BeginRound ->
+    Do BeginRound ->
       FinnEdwards
         <$> runMessage msg (attrs & additionalActionsL %~ (ActionRestrictedAdditionalAction Action.Evade :))
     _ -> FinnEdwards <$> runMessage msg attrs

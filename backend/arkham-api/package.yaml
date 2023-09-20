@@ -67,6 +67,7 @@ library:
     - string-conversions
     - template-haskell
     - text
+    - these
     - time
     - unix
     - unliftio

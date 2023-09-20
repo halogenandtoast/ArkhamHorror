@@ -96,7 +96,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         push $ LoadDeck iid (Deck deck')
     pure a
   Setup -> a <$ pushAllEnd [BeginGame, BeginRound, Begin InvestigationPhase]
-  BeginRound -> pure $ a & turnL +~ 1
+  BeginRound -> do
+    push $ Do BeginRound
+    pure $ a & turnL +~ 1
   StartCampaign -> do
     standalone <- getIsStandalone
     when standalone $ do
@@ -653,6 +655,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       targetCards = concat $ toList foundCards
     push $ EndSearch iid source EncounterDeckTarget cardSources
     case foundStrategy of
+      RemoveFoundFromGame _ _ -> error "Unhandled"
       DrawFound who n -> do
         let
           choices =

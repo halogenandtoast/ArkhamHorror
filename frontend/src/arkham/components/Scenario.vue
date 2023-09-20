@@ -10,7 +10,7 @@ import {
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card, toCardContents } from '@/arkham/types/Card';
-import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
+import { TarotCard, tarotCardImage, tarotArcanaImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import Act from '@/arkham/components/Act.vue';
@@ -392,17 +392,27 @@ const unusedCanInteract = (u: string) => choices.value.findIndex((c) => {
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const hasPool = computed(() => resources.value && resources.value > 0)
 
-const tarotCards = computed(() => props.scenario.tarotCards)
+const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scope === 'GlobalTarot'))
 
 const tarotCardAbility = (card: TarotCard) => {
   return choices.value.findIndex((c) => {
-    if (c.tag == "AbilityLabel") {
+    if (c.tag === "AbilityLabel") {
       return c.ability.source.tag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
     }
 
     return false
   })
 }
+
+const tarotCardChoices = computed(() => {
+  return choices.value.reduce((acc, c, idx) => {
+    if (c.tag === "TarotLabel") {
+      return acc.concat({ idx, arcana: c.tarotCard })
+    }
+
+    return acc
+  }, [])
+})
 
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
@@ -411,6 +421,9 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 <template>
   <div v-if="!gameOver" id="scenario" class="scenario">
+    <div v-if="tarotCardChoices.length > 0" class="tarot-card-choices">
+      <img v-for="{idx, arcana} in tarotCardChoices" :key="arcana" :src="imgsrc(`tarot/${tarotArcanaImage(arcana)}`)" class="card tarot-card" @click="choose(idx)"/>
+    </div>
     <div class="scenario-body">
       <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
       <CardRow
@@ -607,6 +620,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         :players="players"
         :playerOrder="playerOrder"
         :activePlayerId="activePlayerId"
+        :tarotCards="props.scenario.tarotCards"
         @choose="choose"
       />
     </div>
@@ -984,5 +998,20 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   &.Reversed {
     transform: rotateZ(180deg);
   }
+}
+
+.tarot-card-choices {
+  background: url("/img/arkham/background.jpg");
+  background-position: center;
+  background-size: contain;
+  position: absolute;
+  z-index: 1000;
+  margin: auto;
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
 }
 </style>

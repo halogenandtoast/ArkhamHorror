@@ -14,6 +14,7 @@ import Arkham.Id
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tarot
 import Arkham.Text
 import Arkham.Window
 import Data.Aeson.TH
@@ -52,6 +53,7 @@ data UI msg
   | EvadeLabel {enemyId :: EnemyId, messages :: [msg]}
   | FightLabel {enemyId :: EnemyId, messages :: [msg]}
   | GridLabel {gridLabel :: Text, messages :: [msg]}
+  | TarotLabel {tarotCard :: TarotCardArcana, messages :: [msg]}
   | AbilityLabel
       {investigatorId :: InvestigatorId, ability :: Ability, windows :: [Window], messages :: [msg]}
   | ComponentLabel {component :: Component, messages :: [msg]}

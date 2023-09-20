@@ -19,6 +19,7 @@ import Card from '@/arkham/components/Card.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
+import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import * as Arkham from '@/arkham/types/Investigator';
 
 interface RefWrapper<T> {
@@ -29,6 +30,7 @@ export interface Props {
   game: Game
   player: Arkham.Investigator
   investigatorId: string
+  tarotCards: TarotCard[]
 }
 
 const props = defineProps<Props>()
@@ -95,6 +97,16 @@ const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : plurali
 
 const id = computed(() => props.player.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const tarotCardAbility = (card: TarotCard) => {
+  return choices.value.findIndex((c) => {
+    if (c.tag === "AbilityLabel") {
+      return c.ability.source.tag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
+    }
+
+    return false
+  })
+}
 
 const drawCardsAction = computed(() => {
   return choices
@@ -261,6 +273,12 @@ function onLeave(el, done) {
   <div class="player-cards">
     <transition name="grow">
     <transition-group tag="section" class="in-play" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+
+        <template v-if="tarotCards.length > 0">
+          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana">
+            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="choose(tarotCardAbility(tarotCard))"/>
+          </div>
+        </template>
         <Event
           v-for="event in events"
           :event="event"

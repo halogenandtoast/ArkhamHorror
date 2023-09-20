@@ -3700,7 +3700,8 @@ runGameMessage msg g = case msg of
       standalone = isNothing $ modeCampaign $ g ^. modeL
 
     pushAll
-      $ PreScenarioSetup
+      $ LoadTarotDeck
+        : PreScenarioSetup
         : [StandaloneSetup | standalone]
           <> [ChooseLeadInvestigator]
           <> [PerformTarotReading | gamePerformTarotReadings g]

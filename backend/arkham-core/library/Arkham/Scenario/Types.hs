@@ -112,6 +112,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioUsesGrid :: Bool
   , scenarioTokens :: Tokens
   , scenarioTarotCards :: Map TarotCardScope [TarotCard]
+  , scenarioTarotDeck :: [TarotCardArcana]
   , scenarioTurn :: Int
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
@@ -183,6 +184,7 @@ scenario f cardCode name difficulty layout =
       , scenarioStoryCards = mempty
       , scenarioPlayerDecks = mempty
       , scenarioTarotCards = mempty
+      , scenarioTarotDeck = mempty
       , scenarioTurn = 0
       }
 

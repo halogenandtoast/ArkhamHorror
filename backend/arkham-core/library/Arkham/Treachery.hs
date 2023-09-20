@@ -367,6 +367,8 @@ allTreacheries =
       SomeTreacheryCard offerYouCannotRefuse
     , SomeTreacheryCard finePrint
     , SomeTreacheryCard sellYourSoul
+    , -- Return to the Circle Undone
+      SomeTreacheryCard damned
     , -- Nathaniel Cho
       SomeTreacheryCard selfDestructive
     , -- Harvey Walters

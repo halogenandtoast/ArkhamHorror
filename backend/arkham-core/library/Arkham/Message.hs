@@ -843,8 +843,11 @@ data Message
   | RemoveBreaches Target Int
   | RunCosmos InvestigatorId LocationId [Message]
   | PlaceCosmos InvestigatorId LocationId (CosmosLocation Card LocationId)
+  | LoadTarotDeck
   | PerformTarotReading
   | PerformReading TarotReading
+  | DrawAndChooseTarot InvestigatorId TarotCardFacing Int
+  | PlaceTarot InvestigatorId TarotCard
   | FocusTarot
   | UnfocusTarot
   | RotateTarot TarotCard
@@ -871,6 +874,7 @@ uiToRun = \case
   PortraitLabel _ msgs -> Run msgs
   TargetLabel _ msgs -> Run msgs
   GridLabel _ msgs -> Run msgs
+  TarotLabel _ msgs -> Run msgs
   SkillLabel _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
   FightLabel _ msgs -> Run msgs

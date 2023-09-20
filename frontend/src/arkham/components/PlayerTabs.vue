@@ -6,6 +6,7 @@ import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Investigator } from '@/arkham/types/Investigator';
+import type { TarotCard } from '@/arkham/types/TarotCard';
 
 export interface Props {
   game: Game
@@ -13,6 +14,7 @@ export interface Props {
   players: Record<string, Investigator>
   playerOrder: string[]
   activePlayerId: string
+  tarotCards: TarotCard[]
 }
 
 const props = defineProps<Props>()
@@ -47,6 +49,10 @@ function selectTabExtended(i: string) {
   }
 }
 
+function tarotCardsFor(i: string) {
+  return props.tarotCards.filter(c => c.scope.tag === 'InvestigatorTarot' && c.scope.contents === i)
+}
+
 
 watchEffect(() => selectedTab.value = props.investigatorId)
 </script>
@@ -77,6 +83,7 @@ watchEffect(() => selectedTab.value = props.investigatorId)
         :game="game"
         :investigatorId="investigatorId"
         :player="player"
+        :tarotCards="tarotCardsFor(player.id)"
         @choose="$emit('choose', $event)"
       />
     </Tab>

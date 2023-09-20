@@ -7,6 +7,7 @@ module Arkham.Scenario (
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken
@@ -32,6 +33,7 @@ import Arkham.Projection
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
 import Arkham.Tarot
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (duringTurnWindow)
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
@@ -543,6 +545,15 @@ instance RunMessage Scenario where
         let abilities = getAbilities card
         for_ abilities $ \ability -> do
           push $ chooseOne investigator [AbilityLabel investigator ability [] []]
+      pure result
+    PreScenarioSetup -> do
+      result <- go
+      observed <- selectList $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Assets.observed4
+      for_ observed $ \iid -> do
+        push $ DrawAndChooseTarot iid Upright 3
+      damned <- selectList $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Treacheries.damned
+      for_ damned $ \iid -> do
+        push $ DrawAndChooseTarot iid Reversed 1
       pure result
     _ -> go
    where

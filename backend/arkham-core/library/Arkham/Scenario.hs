@@ -21,6 +21,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
@@ -33,6 +34,7 @@ import Arkham.Scenario.Scenarios
 import Arkham.Tarot
 import Arkham.Window (duringTurnWindow)
 import Arkham.Window qualified as Window
+import Data.Map.Strict qualified as Map
 
 instance FromJSON Scenario where
   parseJSON = withObject "Scenario" $ \o -> do
@@ -43,27 +45,32 @@ instance FromJSON Scenario where
         Scenario <$> parseJSON @a (Object o)
 
 instance HasAbilities Scenario where
-  getAbilities (Scenario x) = concatMap getAbilities (attr scenarioTarotCards x)
+  getAbilities (Scenario x) = concatMap getAbilities $ concat $ toList (attr scenarioTarotCards x)
 
 instance HasAbilities TarotCard where
   getAbilities c@(TarotCard facing arcana) = case arcana of
     TheLoversVI ->
-      [mkAbility (TarotSource c) 1 $ ForcedAbility (Matcher.GameBegins #when)]
+      [ restrictedAbility (TarotSource c) 1 AffectedByTarot
+          $ ForcedAbility (Matcher.GameBegins #when)
+      ]
     StrengthVIII | facing == Upright -> do
-      [mkAbility (TarotSource c) 1 $ ForcedAbility (Matcher.GameBegins #when)]
+      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
     WheelOfFortuneX -> case facing of
       Upright ->
-        [ restrictedAbility (TarotSource c) 1 (ActExists Matcher.ActCanWheelOfFortuneX)
+        [ restrictedAbility (TarotSource c) 1 (AffectedByTarot <> ActExists Matcher.ActCanWheelOfFortuneX)
             $ ReactionAbility (Matcher.RevealChaosToken #when Matcher.You #autofail) Free
         ]
       Reversed ->
-        [ restrictedAbility (TarotSource c) 1 (AgendaExists Matcher.AgendaCanWheelOfFortuneX)
+        [ restrictedAbility
+            (TarotSource c)
+            1
+            (AffectedByTarot <> AgendaExists Matcher.AgendaCanWheelOfFortuneX)
             $ ForcedAbility (Matcher.RevealChaosToken #when Matcher.You #eldersign)
         ]
     JusticeXI -> case facing of
       Upright ->
         [ groupLimit PerGame
-            $ mkAbility (TarotSource c) 1
+            $ restrictedAbility (TarotSource c) 1 AffectedByTarot
             $ ForcedAbility
               ( Matcher.WouldPlaceDoomCounter
                   #when
@@ -72,20 +79,21 @@ instance HasAbilities TarotCard where
               )
         ]
       Reversed ->
-        [ mkAbility (TarotSource c) 1
+        [ restrictedAbility (TarotSource c) 1 AffectedByTarot
             $ ForcedAbility (Matcher.AgendaEntersPlay #when Matcher.FinalAgenda)
         ]
     TheDevilXV ->
-      [mkAbility (TarotSource c) 1 $ ForcedAbility (Matcher.GameBegins #when)]
+      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
     TheTowerXVI -> do
       -- This is handled by SetupInvestigators below
-      [mkAbility (TarotSource c) 1 $ ForcedAbility Matcher.NotAnyWindow]
+      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility Matcher.NotAnyWindow]
     TheStarXVII -> case facing of
       Upright ->
         [ restrictedAbility
             (TarotSource c)
             1
-            ( DuringSkillTest Matcher.AnySkillTest
+            ( AffectedByTarot
+                <> DuringSkillTest Matcher.AnySkillTest
                 <> InvestigatorExists
                   ( Matcher.AnyInvestigator
                       [ Matcher.HealableInvestigator (TarotSource c) DamageType Matcher.You
@@ -99,21 +107,29 @@ instance HasAbilities TarotCard where
         [ restrictedAbility
             (TarotSource c)
             1
-            (DuringSkillTest Matcher.AnySkillTest)
+            (AffectedByTarot <> DuringSkillTest Matcher.AnySkillTest)
             $ ForcedAbility (Matcher.RevealChaosToken #when Matcher.You #autofail)
         ]
     TheMoonXVIII -> case facing of
       Upright ->
         [ playerLimit PerGame
-            $ mkAbility (TarotSource c) 1
+            $ restrictedAbility (TarotSource c) 1 AffectedByTarot
             $ ForcedAbility (Matcher.DeckWouldRunOutOfCards #when Matcher.You)
         ]
-      Reversed -> [mkAbility (TarotSource c) 1 $ ForcedAbility (Matcher.GameBegins #when)]
+      Reversed -> [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
     JudgementXX ->
-      [mkAbility (TarotSource c) 1 $ ForcedAbility (Matcher.GameBegins #when)]
+      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
     TheWorldXXI ->
-      [mkAbility (TarotSource c) 1 $ ForcedAbility (Matcher.GameEnds #when)]
+      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameEnds #when)]
     _ -> []
+
+tarotInvestigator :: HasGame m => TarotCard -> m (Maybe InvestigatorId)
+tarotInvestigator card = do
+  tarotCards <- Map.assocs <$> scenarioField ScenarioTarotCards
+  pure $ case find (\(_, vs) -> card `elem` vs) tarotCards of
+    Nothing -> Nothing
+    Just (InvestigatorTarot iid, _) -> Just iid
+    Just (GlobalTarot, _) -> Nothing
 
 instance HasModifiersFor TarotCard where
   getModifiersFor target c@(TarotCard facing arcana) = do
@@ -122,66 +138,72 @@ instance HasModifiersFor TarotCard where
       TheFool0 ->
         case target of
           InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             defeated <- iid <=~> Matcher.DefeatedInvestigator
             pure . toModifiers source $ case facing of
-              Upright -> [XPModifier 2 | not defeated]
-              Reversed -> [XPModifier (-2) | defeated]
+              Upright -> [XPModifier 2 | not defeated && affected]
+              Reversed -> [XPModifier (-2) | defeated && affected]
           _ -> pure []
       TheMagicianI ->
         case target of
-          InvestigatorTarget _ -> do
+          InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
             pure . map setActiveDuringSetup . toModifiers source $ case facing of
-              Upright -> [StartingResources 3]
-              Reversed -> StartingResources (-3) : [CannotGainResources | firstTurn]
+              Upright -> [StartingResources 3 | affected]
+              Reversed -> guard affected *> (StartingResources (-3) : [CannotGainResources | firstTurn])
           _ -> pure []
       TheHighPriestessII ->
         case target of
           InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
               skillTypes = concat $ historySkillTestsPerformed history
               firstIntellectTest = #intellect `notElem` skillTypes && #intellect `elem` currentSkillTypes
             pure . toModifiers source $ case facing of
-              Upright -> [SkillModifier #intellect 1 | firstIntellectTest]
-              Reversed -> [SkillModifier #intellect (-1) | firstIntellectTest]
+              Upright -> [SkillModifier #intellect 1 | firstIntellectTest && affected]
+              Reversed -> [SkillModifier #intellect (-1) | firstIntellectTest && affected]
           _ -> pure []
       TheEmpressIII ->
         case target of
           InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
               skillTypes = concat $ historySkillTestsPerformed history
               firstAgilityTest = #agility `notElem` skillTypes && #agility `elem` currentSkillTypes
             pure . toModifiers source $ case facing of
-              Upright -> [SkillModifier #agility 1 | firstAgilityTest]
-              Reversed -> [SkillModifier #agility (-1) | firstAgilityTest]
+              Upright -> [SkillModifier #agility 1 | firstAgilityTest && affected]
+              Reversed -> [SkillModifier #agility (-1) | firstAgilityTest && affected]
           _ -> pure []
       TheEmperorIV ->
         case target of
           InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
               skillTypes = concat $ historySkillTestsPerformed history
               firstCombatTest = #combat `notElem` skillTypes && #combat `elem` currentSkillTypes
             pure . toModifiers source $ case facing of
-              Upright -> [SkillModifier #combat 1 | firstCombatTest]
-              Reversed -> [SkillModifier #combat (-1) | firstCombatTest]
+              Upright -> [SkillModifier #combat 1 | firstCombatTest && affected]
+              Reversed -> [SkillModifier #combat (-1) | firstCombatTest && affected]
           _ -> pure []
       TheHierophantV ->
         case target of
           InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
               skillTypes = concat $ historySkillTestsPerformed history
               firstWillpowerTest = #willpower `notElem` skillTypes && #willpower `elem` currentSkillTypes
             pure . toModifiers source $ case facing of
-              Upright -> [SkillModifier #willpower 1 | firstWillpowerTest]
-              Reversed -> [SkillModifier #willpower (-1) | firstWillpowerTest]
+              Upright -> [SkillModifier #willpower 1 | firstWillpowerTest && affected]
+              Reversed -> [SkillModifier #willpower (-1) | firstWillpowerTest && affected]
           _ -> pure []
       TheLoversVI ->
         case facing of
@@ -189,27 +211,30 @@ instance HasModifiersFor TarotCard where
           Reversed -> pure []
       TheChariotVII ->
         case target of
-          InvestigatorTarget _ -> do
+          InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
             pure . map setActiveDuringSetup . toModifiers source $ case facing of
-              Upright -> [StartingHand 2]
-              Reversed -> StartingHand (-2) : [CannotDrawCards | firstTurn]
+              Upright -> [StartingHand 2 | affected]
+              Reversed -> guard affected *> (StartingHand (-2) : [CannotDrawCards | firstTurn])
           _ -> pure []
       StrengthVIII ->
         case facing of
           Upright -> pure []
           Reversed -> do
             case target of
-              InvestigatorTarget _ -> do
+              InvestigatorTarget iid -> do
+                affected <- affectedByTarot iid c
                 firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-                pure $ toModifiers source [CannotPlay #asset | firstTurn]
+                pure $ toModifiers source [CannotPlay #asset | firstTurn && affected]
               _ -> pure []
       TheHermitIX ->
         case target of
-          InvestigatorTarget _ -> do
+          InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             pure . toModifiers source $ case facing of
-              Upright -> [HandSize 3]
-              Reversed -> [HandSize (-3)]
+              Upright -> [HandSize 3 | affected]
+              Reversed -> [HandSize (-3) | affected]
           _ -> pure []
       WheelOfFortuneX ->
         case facing of
@@ -221,24 +246,27 @@ instance HasModifiersFor TarotCard where
           Reversed -> pure []
       TheHangedManXII ->
         case target of
-          InvestigatorTarget _ -> do
+          InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             pure . map setActiveDuringSetup . toModifiers source $ case facing of
-              Upright -> [Mulligans 2]
-              Reversed -> [CannotMulligan, CannotReplaceWeaknesses]
+              Upright -> [Mulligans 2 | affected]
+              Reversed -> guard affected *> [CannotMulligan, CannotReplaceWeaknesses]
           _ -> pure []
       DeathXIII ->
         case target of
-          InvestigatorTarget _ -> do
+          InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             pure . toModifiers source $ case facing of
-              Upright -> [HealthModifier 1]
-              Reversed -> [HealthModifier (-1)]
+              Upright -> [HealthModifier 1 | affected]
+              Reversed -> [HealthModifier (-1) | affected]
           _ -> pure []
       TemperanceXIV ->
         case target of
-          InvestigatorTarget _ -> do
+          InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             pure . toModifiers source $ case facing of
-              Upright -> [SanityModifier 1]
-              Reversed -> [SanityModifier (-1)]
+              Upright -> [SanityModifier 1 | affected]
+              Reversed -> [SanityModifier (-1) | affected]
           _ -> pure []
       TheDevilXV ->
         case facing of
@@ -258,11 +286,12 @@ instance HasModifiersFor TarotCard where
           Reversed -> pure []
       TheSunXIX ->
         case target of
-          InvestigatorTarget _ -> do
+          InvestigatorTarget iid -> do
+            affected <- affectedByTarot iid c
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
             pure . toModifiers source $ case facing of
-              Upright -> [AdditionalActions 2 | firstTurn]
-              Reversed -> [FewerActions 2 | firstTurn]
+              Upright -> [AdditionalActions 2 | firstTurn && affected]
+              Reversed -> [FewerActions 2 | firstTurn && affected]
           _ -> pure []
       JudgementXX ->
         case facing of
@@ -277,13 +306,13 @@ instance HasModifiersFor Scenario where
   getModifiersFor target (Scenario a) =
     liftA2
       (<>)
-      (concatMapM (getModifiersFor target) (attr scenarioTarotCards a))
+      (concatMapM (getModifiersFor target) (concat . toList $ attr scenarioTarotCards a))
       (getModifiersFor target a)
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of
-    UseThisAbility _ source@(TarotSource (TarotCard facing TheLoversVI)) 1 -> do
-      investigators <- getInvestigators
+    UseThisAbility _ source@(TarotSource card@(TarotCard facing TheLoversVI)) 1 -> do
+      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       pushAll
         [ search
           iid
@@ -295,8 +324,8 @@ instance RunMessage Scenario where
         | iid <- investigators
         ]
       pure x
-    UseThisAbility _ source@(TarotSource (TarotCard Upright StrengthVIII)) 1 -> do
-      investigators <- getInvestigators
+    UseThisAbility _ source@(TarotSource card@(TarotCard Upright StrengthVIII)) 1 -> do
+      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       msgs <- forMaybeM investigators $ \investigator -> do
         results <- selectList (Matcher.InHandOf (Matcher.InvestigatorWithId investigator) <> #ally)
         resources <- getSpendableResources investigator
@@ -315,16 +344,16 @@ instance RunMessage Scenario where
           $ chooseOne investigator
           $ Label "Do not play asset" []
             : [ targetLabel
-                (toCardId card)
-                [ costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId card) 2)
-                , PayCardCost investigator card [duringTurnWindow investigator]
+                (toCardId c)
+                [ costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId c) 2)
+                , PayCardCost investigator c [duringTurnWindow investigator]
                 ]
-              | card <- cards
+              | c <- cards
               ]
 
       pushAll msgs
       pure x
-    UseCardAbility _ source@(TarotSource (TarotCard facing JusticeXI)) 1 ws _ -> do
+    UseCardAbility _ source@(TarotSource card@(TarotCard facing JusticeXI)) 1 ws _ -> do
       case facing of
         Upright -> do
           let
@@ -334,14 +363,19 @@ instance RunMessage Scenario where
             target = getDoomTarget ws
           cancelDoom target 1
         Reversed -> do
+          mInvestigator <- tarotInvestigator card
           lead <- getLead
+          let investigator = fromMaybe lead mInvestigator
+
           agendas <- selectList Matcher.AnyAgenda
           push
-            $ chooseOrRunOne lead [targetLabel agenda [PlaceDoom source (toTarget agenda) 1] | agenda <- agendas]
+            $ chooseOrRunOne
+              investigator
+              [targetLabel agenda [PlaceDoom source (toTarget agenda) 1] | agenda <- agendas]
       -- cancelDoom 1
       pure x
-    UseThisAbility _ source@(TarotSource (TarotCard facing TheDevilXV)) 1 -> do
-      investigators <- getInvestigators
+    UseThisAbility _ source@(TarotSource card@(TarotCard facing TheDevilXV)) 1 -> do
+      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       case facing of
         Upright -> do
           pushAll
@@ -363,8 +397,8 @@ instance RunMessage Scenario where
                 | slotType <- slotTypes
                 ]
       pure x
-    UseThisAbility _ source@(TarotSource (TarotCard facing TheTowerXVI)) 1 -> do
-      investigators <- getInvestigators
+    UseThisAbility _ source@(TarotSource card@(TarotCard facing TheTowerXVI)) 1 -> do
+      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       case facing of
         Upright ->
           pushAll
@@ -425,8 +459,8 @@ instance RunMessage Scenario where
             , Label "Do Nothing" []
             ]
         pure x
-    UseThisAbility _ source@(TarotSource (TarotCard Reversed TheMoonXVIII)) 1 -> do
-      investigators <- getInvestigators
+    UseThisAbility _ source@(TarotSource card@(TarotCard Reversed TheMoonXVIII)) 1 -> do
+      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       for_ investigators $ \investigator -> do
         push $ DiscardTopOfDeck investigator 5 source (Just $ TarotTarget (TarotCard Reversed TheMoonXVIII))
       pure x
@@ -451,10 +485,10 @@ instance RunMessage Scenario where
               push $ SwapChaosToken maxFace Skull
             Nothing -> pure ()
       pure x
-    UseThisAbility _ (TarotSource (TarotCard facing TheWorldXXI)) 1 -> do
+    UseThisAbility _ (TarotSource card@(TarotCard facing TheWorldXXI)) 1 -> do
       case facing of
         Upright -> do
-          investigators <- getInvestigators
+          investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
           investigatorsWhoCanHealTrauma <-
             catMaybes <$> for
               investigators
@@ -473,7 +507,8 @@ instance RunMessage Scenario where
               | (iid, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
               ]
         Reversed -> do
-          defeatedInvestigators <- selectList Matcher.DefeatedInvestigator
+          defeatedInvestigators <-
+            filterM (`affectedByTarot` card) =<< selectList Matcher.DefeatedInvestigator
           pushAll
             $ [ chooseOne
                 iid
@@ -501,11 +536,13 @@ instance RunMessage Scenario where
     SetupInvestigators -> do
       result <- go
       let isTowerXVI = (== TheTowerXVI) . toTarotArcana
-      for_ (filter isTowerXVI $ attr scenarioTarotCards s) $ \card -> do
+      for_ (filter isTowerXVI $ concat $ toList $ attr scenarioTarotCards s) $ \card -> do
         lead <- getLead
+        mInvestigator <- tarotInvestigator card
+        let investigator = fromMaybe lead mInvestigator
         let abilities = getAbilities card
         for_ abilities $ \ability -> do
-          push $ chooseOne lead [AbilityLabel lead ability [] []]
+          push $ chooseOne investigator [AbilityLabel investigator ability [] []]
       pure result
     _ -> go
    where

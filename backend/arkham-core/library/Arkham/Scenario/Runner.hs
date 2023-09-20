@@ -1039,24 +1039,24 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PerformReading Chaos -> do
     card <- TarotCard <$> sample2 Upright Reversed <*> sample tarotDeck
     sendTarot $ toJSON [card]
-    pure $ a & tarotCardsL .~ [card]
+    pure $ a & tarotCardsL . ix GlobalTarot .~ [card]
   PerformReading Balance -> do
     cards <- sampleN 2 tarotDeck
     case cards of
       [c1, c2] -> do
         sendTarot $ toJSON [TarotCard Upright c1, TarotCard Reversed c2]
-        pure $ a & tarotCardsL .~ [TarotCard Upright c1, TarotCard Reversed c2]
+        pure $ a & tarotCardsL . ix GlobalTarot .~ [TarotCard Upright c1, TarotCard Reversed c2]
       _ -> error "impossible"
   PerformReading Choice -> do
     lead <- getLead
     cards <- map (TarotCard Upright) <$> sampleN 3 tarotDeck
     pushAll [FocusTarot, chooseN lead 2 [], UnfocusTarot]
-    pure $ a & tarotCardsL .~ cards
+    pure $ a & tarotCardsL . ix GlobalTarot .~ cards
   RotateTarot (toTarotArcana -> arcana) -> do
     let
       rotate = \case
         TarotCard Upright arcana' | arcana' == arcana -> TarotCard Reversed arcana'
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
-    pure $ a & tarotCardsL %~ map rotate
+    pure $ a & tarotCardsL . ix GlobalTarot %~ map rotate
   _ -> pure a

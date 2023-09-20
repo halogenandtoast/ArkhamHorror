@@ -16,6 +16,7 @@ import Arkham.Game
 import Arkham.Message
 import Arkham.Scenario.Types
 import Arkham.Tarot
+import Control.Lens (ix, (.~))
 import Control.Monad.Logger
 import Control.Monad.Random (mkStdGen)
 import Data.Maybe (fromJust)
@@ -78,8 +79,8 @@ setTarot gameUUID cards = do
   let Game {gameMode} = arkhamGameCurrentData
   let
     gameMode' = case gameMode of
-      That s -> That $ overAttrs (\a -> a {scenarioTarotCards = cards}) s
-      These c s -> These c $ overAttrs (\a -> a {scenarioTarotCards = cards}) s
+      That s -> That $ overAttrs (tarotCardsL . ix GlobalTarot .~ cards) s
+      These c s -> These c $ overAttrs (tarotCardsL . ix GlobalTarot .~ cards) s
       c -> c
   now <- liftIO getCurrentTime
   void $ dbGhci $ do

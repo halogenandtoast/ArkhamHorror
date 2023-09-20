@@ -151,6 +151,7 @@ data Criterion
   | Never
   | Negate Criterion
   | DuringAction
+  | AffectedByTarot
   deriving stock (Show, Eq, Ord, Data)
 
 enemyExists :: EnemyMatcher -> Criterion

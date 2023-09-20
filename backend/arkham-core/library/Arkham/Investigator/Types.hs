@@ -147,6 +147,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorFoundCards :: Map Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
   , investigatorAdditionalActions :: [AdditionalAction]
+  , investigatorMulligansTaken :: Int
   , -- handling liquid courage
     investigatorHorrorHealed :: Int
   , -- the forgotten age

@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json'
+import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard'
 
 export interface ProxySource {
   sourceTag: "ProxySource"
@@ -13,7 +14,13 @@ export interface OtherSource {
   contents?: string
 }
 
-export type Source = ProxySource | OtherSource
+export interface TarotSource {
+  sourceTag: "TarotSource"
+  tag: "TarotSource"
+  contents: TarotCard
+}
+
+export type Source = ProxySource | TarotSource | OtherSource
 
 export const proxySourceDecoder: JsonDecoder.Decoder<ProxySource> = JsonDecoder.object<ProxySource>({
   tag: JsonDecoder.isExactly("ProxySource"),
@@ -21,6 +28,12 @@ export const proxySourceDecoder: JsonDecoder.Decoder<ProxySource> = JsonDecoder.
   source: JsonDecoder.lazy<Source>(() => sourceDecoder),
   originalSource: JsonDecoder.lazy<Source>(() => sourceDecoder),
 }, 'ProxySource')
+
+export const tarotSourceDecoder: JsonDecoder.Decoder<TarotSource> = JsonDecoder.object<TarotSource>({
+  tag: JsonDecoder.isExactly("TarotSource"),
+  sourceTag: JsonDecoder.constant("TarotSource"),
+  contents: tarotCardDecoder
+}, 'TarotSource')
 
 export const otherSourceDecoder = JsonDecoder.object<OtherSource>(
   {
@@ -33,5 +46,6 @@ export const otherSourceDecoder = JsonDecoder.object<OtherSource>(
 
 export const sourceDecoder = JsonDecoder.oneOf<Source>([
   proxySourceDecoder,
+  tarotSourceDecoder,
   otherSourceDecoder
 ], 'Source')

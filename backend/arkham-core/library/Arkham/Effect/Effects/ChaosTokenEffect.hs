@@ -18,17 +18,17 @@ newtype ChaosTokenEffect = ChaosTokenEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosTokenEffect :: EffectArgs -> ChaosTokenEffect
-chaosTokenEffect = ChaosTokenEffect . uncurry4 (baseAttrs "ctokef")
+chaosTokenEffect = ChaosTokenEffect . uncurry4 (baseAttrs "tokef")
 
 chaosTokenEffect'
   :: EffectId -> EffectMetadata Window Message -> Source -> ChaosToken -> ChaosTokenEffect
 chaosTokenEffect' eid metadata source chaosToken =
-  ChaosTokenEffect $
-    EffectAttrs
+  ChaosTokenEffect
+    $ EffectAttrs
       { effectId = eid
       , effectSource = source
       , effectTarget = ChaosTokenTarget chaosToken
-      , effectCardCode = "ctokef"
+      , effectCardCode = "tokef"
       , effectMetadata = Just metadata
       , effectTraits = mempty
       , effectWindow = Nothing

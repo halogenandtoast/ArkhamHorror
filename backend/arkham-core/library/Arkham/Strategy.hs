@@ -33,6 +33,7 @@ data FoundCardsStrategy
   | DrawFoundUpTo InvestigatorId Int
   | DeferSearchedToTarget Target
   | ReturnCards
+  | RemoveFoundFromGame InvestigatorId Int
   deriving stock (Show, Eq, Ord, Data)
 
 data AfterPlayStrategy

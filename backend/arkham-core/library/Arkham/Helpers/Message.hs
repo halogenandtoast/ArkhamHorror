@@ -25,7 +25,9 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (WindowType, defaultWindows, mkWindow)
+import Arkham.Token qualified as Token
+import Arkham.Window (Window (..), WindowType, defaultWindows, mkWindow)
+import Arkham.Window qualified as Window
 import Arkham.Zone
 
 drawCards
@@ -351,3 +353,53 @@ gainResourcesIfCan iid source n = do
 
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage
+
+-- This is obviously very complicated, but it feels like it shouldn't be
+-- However we find the correct message and only remove the amount indicated
+cancelDoom :: HasQueue Message m => Target -> Int -> m ()
+cancelDoom target n = do
+  replaceMessageMatching
+    \case
+      RunWindow _ [window] -> case windowType window of
+        Window.WouldPlaceDoom _ target' _ -> target == target'
+        _ -> False
+      _ -> False
+    \case
+      RunWindow iid [window] -> case windowType window of
+        Window.WouldPlaceDoom source' target' n' ->
+          [RunWindow iid [window {windowType = Window.WouldPlaceDoom source' target' (n' - n)}] | n' - n > 0]
+        _ -> error "mismatched"
+      _ -> error "mismatched"
+
+  let
+    findNewAmount [] = error "mismatches"
+    findNewAmount (Do (PlaceDoom _ target' n') : _) | target == target' = n' - n
+    findNewAmount (_ : rest) = findNewAmount rest
+
+    replaceWindowTypeDoomAmount m = \case
+      Window.WouldPlaceDoom source' target' _ -> Window.WouldPlaceDoom source' target' m
+      Window.PlacedDoom source' target' _ -> Window.PlacedDoom source' target' m
+      _ -> error "mismatched"
+
+    replaceWindowDoomAmount m Window {..} =
+      Window {windowTiming, windowBatchId, windowType = replaceWindowTypeDoomAmount m windowType}
+
+    replaceDoomAmount m = \case
+      CheckWindow xs ws -> CheckWindow xs (map (replaceWindowDoomAmount m) ws)
+      Do (PlaceTokens source' target' Token.Doom _) | target == target' -> Do (PlaceTokens source' target' Token.Doom m)
+      other -> other
+
+  replaceMessageMatching
+    \case
+      Would _ msgs -> flip any msgs $ \case
+        Do (PlaceDoom _ target' _) -> target == target'
+        _ -> False
+      _ -> False
+    \case
+      Would batchId msgs ->
+        let
+          newAmount = findNewAmount msgs
+          msgs' = map (replaceDoomAmount newAmount) msgs
+         in
+          [Would batchId msgs' | newAmount > 0]
+      _ -> error "mismatched"

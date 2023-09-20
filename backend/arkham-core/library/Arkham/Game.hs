@@ -14,6 +14,7 @@ import Arkham.Act.Types (ActAttrs (..), Field (..))
 import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda
+import Arkham.Agenda.Cards qualified as Agenda
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Agenda, AgendaAttrs (..), Field (..))
 import Arkham.Asset
@@ -1014,6 +1015,15 @@ getAgendasMatching matcher = do
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . attr agendaSequence
     AgendaWithDeckId n -> pure . (== n) . attr agendaDeckId
+    AgendaCanWheelOfFortuneX -> pure . not . attr agendaUsedWheelOfFortuneX
+    FinalAgenda -> \a -> do
+      card <- field AgendaCard (toId a)
+      let agendas =
+            filter ((== cdEncounterSet (toCardDef card)) . cdEncounterSet . toCardDef)
+              $ toList Agenda.allAgendaCards
+      let stages = mapMaybe (fmap Max0 . cdStage . toCardDef) agendas
+      let maxStage = getMax0 $ fold stages
+      pure $ cdStage (toCardDef card) == Just maxStage
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
     AgendaMatches ms -> \a -> allM (`matcherFilter` a) ms
 
@@ -1031,6 +1041,7 @@ getActsMatching matcher = do
     ActWithTreachery treacheryMatcher -> \act -> do
       treacheries <- select treacheryMatcher
       pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
+    ActCanWheelOfFortuneX -> pure . not . attr actUsedWheelOfFortuneX
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
 getRemainingActsMatching :: HasGame m => RemainingActMatcher -> m [Card]
@@ -1058,6 +1069,7 @@ getRemainingActsMatching matcher = do
     ActWithTreachery _ -> pure . const False
     ActWithSide _ -> error "Can't check side, since not on def"
     ActWithDeckId _ -> error "Can't check side, since not on def"
+    ActCanWheelOfFortuneX -> pure . const True
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
 getTreacheriesMatching :: HasGame m => TreacheryMatcher -> m [Treachery]
@@ -2589,6 +2601,7 @@ instance Projection Act where
       ActDeckId -> pure actDeckId
       ActAbilities -> pure $ getAbilities a
       ActCard -> pure $ lookupCard (unActId aid) actCardId
+      ActUsedWheelOfFortuneX -> pure actUsedWheelOfFortuneX
 
 instance Projection (OutOfPlayEntity Enemy) where
   field (OutOfPlayEnemyField outOfPlayZone f) = getEnemyField f <=< getOutOfPlayEnemy outOfPlayZone
@@ -3162,6 +3175,7 @@ instance Projection Agenda where
       AgendaDeckId -> pure agendaDeckId
       AgendaAbilities -> pure $ getAbilities a
       AgendaCard -> pure $ lookupCard (unAgendaId aid) agendaCardId
+      AgendaUsedWheelOfFortuneX -> pure agendaUsedWheelOfFortuneX
 
 instance Projection Campaign where
   field fld _ = do
@@ -4047,6 +4061,9 @@ runGameMessage msg g = case msg of
     let
       newAgendaId = AgendaId (toCardCode card)
       newAgenda = lookupAgenda newAgendaId agendaDeckId (toCardId card)
+
+    (before, _, after) <- frame (Window.EnterPlay $ toTarget newAgenda)
+    pushAll [before, after]
     pure
       $ g
       & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda . deleteMap aid1)
@@ -5709,3 +5726,9 @@ instance HasAbilities Game where
       <> getAbilities (gameInSearchEntities g)
       <> concatMap getAbilities (gameInHandEntities g)
       <> concatMap getAbilities (gameInDiscardEntities g)
+      <> getAbilities (gameMode g)
+
+instance HasAbilities GameMode where
+  getAbilities (This c) = getAbilities c
+  getAbilities (That s) = getAbilities s
+  getAbilities (These c s) = getAbilities c <> getAbilities s

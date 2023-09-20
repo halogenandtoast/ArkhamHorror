@@ -357,6 +357,6 @@ allEffects =
     , ("82035", SomeEffect mesmerize)
     , ("90002", SomeEffect daisysToteBagAdvanced)
     , ("wmode", SomeEffect windowModifierEffect)
-    , ("ctokef", SomeEffect chaosTokenEffect)
+    , ("tokef", SomeEffect chaosTokenEffect)
     , ("surge", SomeEffect surgeEffect)
     ]

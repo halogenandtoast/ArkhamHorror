@@ -162,6 +162,46 @@ isSymbolChaosToken = \case
   AutoFail -> True
   ElderSign -> True
 
+isNonNegativeChaosToken :: ChaosTokenFace -> Bool
+isNonNegativeChaosToken = \case
+  PlusOne -> True
+  Zero -> True
+  MinusOne -> False
+  MinusTwo -> False
+  MinusThree -> False
+  MinusFour -> False
+  MinusFive -> False
+  MinusSix -> False
+  MinusSeven -> False
+  MinusEight -> False
+  Skull -> False
+  Cultist -> False
+  Tablet -> False
+  ElderThing -> False
+  AutoFail -> False
+  ElderSign -> False
+
+-- only for the printed value and should not be used in scenario
+-- mainly used for the JudgementXX Tarot Card
+chaosTokenToFaceValue :: ChaosTokenFace -> Int
+chaosTokenToFaceValue = \case
+  PlusOne -> 1
+  Zero -> 0
+  MinusOne -> (-1)
+  MinusTwo -> (-2)
+  MinusThree -> (-3)
+  MinusFour -> (-4)
+  MinusFive -> (-5)
+  MinusSix -> (-6)
+  MinusSeven -> (-7)
+  MinusEight -> (-8)
+  Skull -> 0
+  Cultist -> 0
+  Tablet -> 0
+  ElderThing -> 0
+  AutoFail -> 0
+  ElderSign -> 0
+
 $(deriveJSON defaultOptions ''ChaosTokenModifier)
 $(deriveJSON defaultOptions ''ChaosTokenFace)
 $(deriveJSON defaultOptions ''ChaosToken)

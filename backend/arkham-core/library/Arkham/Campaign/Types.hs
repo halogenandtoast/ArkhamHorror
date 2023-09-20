@@ -9,6 +9,7 @@ import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
@@ -141,8 +142,8 @@ campaign
   -> [ChaosTokenFace]
   -> a
 campaign f campaignId' name difficulty chaosBagContents =
-  f $
-    CampaignAttrs
+  f
+    $ CampaignAttrs
       { campaignId = campaignId'
       , campaignName = name
       , campaignDecks = mempty
@@ -167,6 +168,9 @@ instance Targetable Campaign where
   toTarget _ = CampaignTarget
 
 data Campaign = forall a. IsCampaign a => Campaign a
+
+instance HasAbilities Campaign where
+  getAbilities _ = []
 
 instance Eq Campaign where
   (Campaign (a :: a)) == (Campaign (b :: b)) = case eqT @a @b of

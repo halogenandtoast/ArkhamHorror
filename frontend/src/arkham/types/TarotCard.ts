@@ -10,7 +10,7 @@ export type TarotCardArcana
   | 'TheHierophantV'
   | 'TheLoversVI'
   | 'TheChariotVII'
-  | 'StengthVIII'
+  | 'StrengthVIII'
   | 'TheHermitIX'
   | 'WheelOfFortuneX'
   | 'JusticeXI'
@@ -34,7 +34,7 @@ export const tarotCardArcanaDecoder = JsonDecoder.oneOf<TarotCardArcana>([
   JsonDecoder.isExactly('TheHierophantV'),
   JsonDecoder.isExactly('TheLoversVI'),
   JsonDecoder.isExactly('TheChariotVII'),
-  JsonDecoder.isExactly('StengthVIII'),
+  JsonDecoder.isExactly('StrengthVIII'),
   JsonDecoder.isExactly('TheHermitIX'),
   JsonDecoder.isExactly('WheelOfFortuneX'),
   JsonDecoder.isExactly('JusticeXI'),
@@ -76,7 +76,7 @@ export const tarotCardImage = (card: TarotCard) => {
     case 'TheHierophantV': return 'tarot-5.jpg'
     case 'TheLoversVI': return 'tarot-6.jpg'
     case 'TheChariotVII': return 'tarot-7.jpg'
-    case 'StengthVIII': return 'tarot-8.jpg'
+    case 'StrengthVIII': return 'tarot-8.jpg'
     case 'TheHermitIX': return 'tarot-9.jpg'
     case 'WheelOfFortuneX': return 'tarot-10.jpg'
     case 'JusticeXI': return 'tarot-11.jpg'
@@ -85,8 +85,8 @@ export const tarotCardImage = (card: TarotCard) => {
     case 'TemperanceXIV': return 'tarot-14.jpg'
     case 'TheDevilXV': return 'tarot-15.jpg'
     case 'TheTowerXVI': return 'tarot-16.jpg'
-    case 'TheMoonXVIII': return 'tarot-17.jpg'
-    case 'TheStarXVII': return 'tarot-18.jpg'
+    case 'TheStarXVII': return 'tarot-17.jpg'
+    case 'TheMoonXVIII': return 'tarot-18.jpg'
     case 'TheSunXIX': return 'tarot-19.jpg'
     case 'JudgementXX': return 'tarot-20.jpg'
     case 'TheWorldXXI': return 'tarot-21.jpg'

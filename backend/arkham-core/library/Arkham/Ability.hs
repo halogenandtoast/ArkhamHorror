@@ -71,6 +71,9 @@ limitedAbility l a = a & abilityLimitL .~ l
 playerLimit :: AbilityLimitType -> Ability -> Ability
 playerLimit lType = limitedAbility (PlayerLimit lType 1)
 
+groupLimit :: AbilityLimitType -> Ability -> Ability
+groupLimit lType = limitedAbility (GroupLimit lType 1)
+
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 

@@ -10,13 +10,17 @@ import Import.NoFoundation as X hiding (selectList)
 
 import Api.Arkham.Helpers
 import Application
+import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Message
+import Arkham.Scenario.Types
+import Arkham.Tarot
 import Control.Monad.Logger
 import Control.Monad.Random (mkStdGen)
 import Data.Maybe (fromJust)
 import Data.String.Conversions (cs)
+import Data.These
 import Data.Time
 import Data.UUID (UUID)
 import Data.UUID qualified as UUID
@@ -41,11 +45,9 @@ dbGhci action = do
   pool <- runStdoutLoggingT $ createPostgresqlPool dbURL (pgPoolSize conf)
   runSqlPool action pool
 
-runGameMessage :: String -> Message -> IO ()
+runGameMessage :: UUID -> Message -> IO ()
 runGameMessage gameUUID msg = do
-  let
-    gameId =
-      maybe (error "invalid uuid") ArkhamGameKey $ UUID.fromString gameUUID
+  let gameId = ArkhamGameKey gameUUID
   ArkhamGame {..} <- dbGhci $ get404 gameId
   let Game {gameSeed} = arkhamGameCurrentData
   gameRef <- newIORef arkhamGameCurrentData
@@ -57,8 +59,8 @@ runGameMessage gameUUID msg = do
   ge <- readIORef gameRef
   now <- liftIO getCurrentTime
   void $ dbGhci $ do
-    replace gameId $
-      ArkhamGame
+    replace gameId
+      $ ArkhamGame
         arkhamGameName
         ge
         arkhamGameStep
@@ -68,3 +70,24 @@ runGameMessage gameUUID msg = do
 
 gameDB :: Game -> ReaderT Game IO a -> IO a
 gameDB = flip runReaderT
+
+setTarot :: UUID -> [TarotCard] -> IO ()
+setTarot gameUUID cards = do
+  let gameId = ArkhamGameKey gameUUID
+  ArkhamGame {..} <- dbGhci $ get404 gameId
+  let Game {gameMode} = arkhamGameCurrentData
+  let
+    gameMode' = case gameMode of
+      That s -> That $ overAttrs (\a -> a {scenarioTarotCards = cards}) s
+      These c s -> These c $ overAttrs (\a -> a {scenarioTarotCards = cards}) s
+      c -> c
+  now <- liftIO getCurrentTime
+  void $ dbGhci $ do
+    replace gameId
+      $ ArkhamGame
+        arkhamGameName
+        (arkhamGameCurrentData {gameMode = gameMode'})
+        arkhamGameStep
+        arkhamGameMultiplayerVariant
+        arkhamGameCreatedAt
+        now

@@ -17,11 +17,13 @@ import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message
+import Arkham.Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window
@@ -44,6 +46,12 @@ advanceActSideA attrs advanceMode = do
 
 instance RunMessage Act where
   runMessage msg (Act a) = Act <$> runMessage msg a
+
+getChaosToken :: [Window] -> ChaosToken
+getChaosToken = \case
+  [] -> error "No chaos token drawn"
+  ((windowType -> Window.RevealChaosToken _ token) : _) -> token
+  (_ : rest) -> getChaosToken rest
 
 instance RunMessage ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
@@ -97,4 +105,15 @@ instance RunMessage ActAttrs where
       pure a
     Do (RemoveBreaches (isTarget a -> True) n) -> do
       pure $ a & breachesL %~ fmap (max 0 . subtract n)
+    UseCardAbility
+      iid
+      source@(TarotSource (TarotCard Upright WheelOfFortuneX))
+      1
+      (Window.revealedChaosTokens -> [token])
+      _ -> do
+        pushAll
+          [ ChaosTokenCanceled iid source token
+          , chaosTokenEffect source token $ ChaosTokenFaceModifier [Zero]
+          ]
+        pure $ a {actUsedWheelOfFortuneX = True}
     _ -> pure a

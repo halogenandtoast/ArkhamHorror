@@ -65,6 +65,7 @@ defaultWindows iid =
 hasEliminatedWindow :: [Window] -> Bool
 hasEliminatedWindow = any $ \case
   (windowType -> InvestigatorEliminated {}) -> True
+  (windowType -> EndOfGame {}) -> True
   _ -> False
 
 revealedChaosTokens :: [Window] -> [ChaosToken]
@@ -160,6 +161,8 @@ data WindowType
   | PlacedHorror Source Target Int
   | PlacedDoom Source Target Int
   | WouldPlaceDoom Source Target Int
+  | DeckWouldRunOutOfCards InvestigatorId
+  | DeckRanOutOfCards InvestigatorId
   | PlacedBreaches Target -- BEGIN Breaches
   | PlacedBreach Target
   | WouldPlaceBreaches Target

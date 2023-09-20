@@ -484,9 +484,13 @@ instance Semigroup ExtendedCardMatcher where
   x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
   x <> y = ExtendedCardMatches [x, y]
 
+instance IsLabel "ally" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #ally
+
 -- | Only relies on card state, can be used purely with `cardMatch`
 data CardMatcher
   = CardWithType CardType
+  | CardWithSubType CardSubType
   | CardWithCardCode CardCode
   | CardWithTitle Text
   | CardWithTrait Trait
@@ -523,6 +527,12 @@ instance IsLabel "survivor" CardMatcher where
 
 instance IsLabel "event" CardMatcher where
   fromLabel = CardWithType EventType
+
+instance IsLabel "asset" CardMatcher where
+  fromLabel = CardWithType AssetType
+
+instance IsLabel "ally" CardMatcher where
+  fromLabel = CardWithTrait Ally
 
 instance Semigroup CardMatcher where
   AnyCard <> a = a
@@ -565,6 +575,7 @@ data WindowMatcher
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | AmongSearchedCards Who
+  | DeckWouldRunOutOfCards Timing Who
   | DeckHasNoCards Timing Who
   | EncounterDeckRunsOutOfCards
   | MovedBy Timing Who SourceMatcher
@@ -590,6 +601,7 @@ data WindowMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
+  | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher
   | AssetDealtDamage Timing SourceMatcher AssetMatcher
@@ -663,6 +675,7 @@ data WindowMatcher
   | GameEnds Timing
   | InvestigatorEliminated Timing Who
   | AnyWindow
+  | NotAnyWindow
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
   | ActivateAbility Timing Who AbilityMatcher
@@ -751,6 +764,7 @@ data TargetMatcher
   | TargetMatches [TargetMatcher]
   | LocationTargetMatches LocationMatcher
   | ActTargetMatches ActMatcher
+  | AgendaTargetMatches AgendaMatcher
   | ScenarioCardTarget
   deriving stock (Show, Eq, Ord, Data)
 
@@ -808,6 +822,12 @@ data ChaosTokenMatcher
   | IncludeSealed ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "eldersign" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs ElderSign
+
+instance IsLabel "autofail" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs AutoFail
 
 instance Semigroup ChaosTokenMatcher where
   AnyChaosToken <> x = x
@@ -891,6 +911,8 @@ data AgendaMatcher
   | AgendaWithDeckId Int
   | NotAgenda AgendaMatcher
   | AgendaMatches [AgendaMatcher]
+  | AgendaCanWheelOfFortuneX
+  | FinalAgenda
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup AgendaMatcher where
@@ -909,6 +931,7 @@ data ActMatcher
   | ActWithDeckId Int
   | NotAct ActMatcher
   | ActOneOf [ActMatcher]
+  | ActCanWheelOfFortuneX
   deriving stock (Show, Eq, Ord, Data)
 
 data DamageEffectMatcher

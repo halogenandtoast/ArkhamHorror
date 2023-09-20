@@ -129,6 +129,7 @@ getAbilitiesForTurn attrs = do
   pure $ foldr applyModifier 3 modifiers
  where
   applyModifier (AdditionalActions m) n = max 0 (n + m)
+  applyModifier (FewerActions m) n = max 0 (n - m)
   applyModifier _ n = n
 
 getCanDiscoverClues
@@ -306,6 +307,7 @@ investigator f cardDef Stats {..} =
                 , investigatorFoundCards = mempty
                 , investigatorUsedAbilities = mempty
                 , investigatorAdditionalActions = []
+                , investigatorMulligansTaken = 0
                 , investigatorHorrorHealed = 0
                 , investigatorSupplies = []
                 , investigatorKeys = mempty
@@ -350,16 +352,18 @@ getCanAfford a@InvestigatorAttrs {..} as = do
   pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 drawOpeningHand
-  :: HasCallStack => InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
-drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
+  :: (HasCallStack, HasGame m) => InvestigatorAttrs -> Int -> m ([PlayerCard], [Card], [PlayerCard])
+drawOpeningHand a n = do
+  replaceWeaknesses <- not <$> hasModifier a CannotReplaceWeaknesses
+  pure $ go replaceWeaknesses n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
  where
-  go 0 (d, h, cs) = (d, h, cs)
-  go _ (_, _, []) =
+  go _ 0 (d, h, cs) = (d, h, cs)
+  go _ _ (_, _, []) =
     error "this should never happen, it means the deck was empty during drawing"
-  go m (d, h, c : cs) =
-    if isJust (cdCardSubType $ toCardDef c) && cdCanReplace (toCardDef c)
-      then go m (c : d, h, cs)
-      else go (m - 1) (d, PlayerCard c : h, cs)
+  go replaceWeaknesses m (d, h, c : cs) =
+    if isJust (cdCardSubType $ toCardDef c) && cdCanReplace (toCardDef c) && replaceWeaknesses
+      then go replaceWeaknesses m (c : d, h, cs)
+      else go replaceWeaknesses (m - 1) (d, PlayerCard c : h, cs)
 
 canCommitToAnotherLocation
   :: HasGame m => InvestigatorAttrs -> LocationId -> m Bool

@@ -260,7 +260,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           startingHandAmount = foldr applyModifier 5 modifiers'
           applyModifier (StartingHand m) n = max 0 (n + m)
           applyModifier _ n = n
-          (discard, hand, deck) = drawOpeningHand a startingHandAmount
+        (discard, hand, deck) <- drawOpeningHand a startingHandAmount
         pure
           $ a
           & (discardL .~ discard)
@@ -350,6 +350,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   FinishedWithMulligan iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     let
+      allowedMulligans =
+        foldl'
+          ( \total -> \case
+              Mulligans n -> max 0 (total + n)
+              _ -> total
+          )
+          1
+          modifiers'
       startingHandAmount =
         foldl'
           ( \total -> \case
@@ -366,19 +374,46 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
           5
           modifiers'
-      (discard, hand, deck) =
-        if any (`elem` (modifiers')) [CannotDrawCards, CannotManipulateDeck]
-          then (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
-          else drawOpeningHand a (startingHandAmount - length investigatorHand)
+    (discard, hand, deck) <-
+      if any (`elem` (modifiers')) [CannotDrawCards, CannotManipulateDeck]
+        then pure (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
+        else drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows [mkAfter (Window.DrawingStartingHand iid)]
     additionalHandCards <- traverse genCard investigatorStartsWithInHand
-    pushAll [ShuffleDiscardBackIn iid, window]
+
+    -- if we have any cards with revelations on them, we need to trigger them
+    let revelationCards = filter (hasRevelation . toCardDef) (additionalHandCards <> hand)
+    let
+      choices = mapMaybe cardChoice revelationCards
+      cardChoice = \case
+        card@(PlayerCard card') -> do
+          if hasRevelation card'
+            then
+              if toCardType card' == PlayerTreacheryType
+                then Just (card, DrewTreachery iid Nothing card)
+                else Just (card, Revelation iid $ PlayerCardSource card')
+            else
+              if toCardType card' == PlayerEnemyType
+                then Just (card, DrewPlayerEnemy iid card)
+                else Nothing
+        _ -> Nothing
+
+    pushAll
+      $ [ShuffleDiscardBackIn iid, window]
+        <> [ chooseOrRunOneAtATime iid [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
+           | notNull choices
+           ]
+        <> [ InvestigatorMulligan iid
+           | (a ^. mulligansTakenL + 1) < allowedMulligans
+           , startingHandAmount - length investigatorHand > 0
+           ]
     pure
       $ a
       & (tokensL %~ setTokens Resource startingResources)
       & (discardL .~ discard)
       & (handL .~ hand <> additionalHandCards)
       & (deckL .~ Deck deck)
+      & (mulligansTakenL +~ 1)
   ShuffleDiscardBackIn iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     if null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers'
@@ -1542,6 +1577,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       emptiedSlots = sort $ slot : map emptySlot slots
     push $ RefillSlots iid
     pure $ a & slotsL %~ insertMap slotType emptiedSlots
+  RemoveSlot iid slotType | iid == investigatorId -> do
+    -- This arbitrarily removes the first slot of the given type provided that
+    -- it is granted by the investigator
+    push $ RefillSlots iid
+    pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource a . slotSource)
   RefillSlots iid | iid == investigatorId -> do
     assetIds <- selectList $ assetControlledBy (toId a)
 
@@ -1607,7 +1647,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ]
         pure a
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
-  BeginRound -> do
+  Do BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
     modifiers' <- getModifiers (toTarget a)
     let
@@ -1713,7 +1753,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         -- horror."
         unless (null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
           drawing <- drawCards iid source n
-          pushAll [EmptyDeck iid, drawing, Msg.InvestigatorDamage iid EmptyDeckSource 0 1]
+          wouldDo
+            (EmptyDeck iid (Just drawing))
+            (Window.DeckWouldRunOutOfCards iid)
+            (Window.DeckRanOutOfCards iid)
+        -- push $ EmptyDeck iid
         pure a
       else do
         let deck = unDeck investigatorDeck
@@ -1813,7 +1857,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ if cannotGainResources then a else a & tokensL %~ addTokens Resource n
   PlaceTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ addTokens token n
-  EmptyDeck iid | iid == investigatorId -> do
+  Do (EmptyDeck iid mDrawing) | iid == investigatorId -> do
+    pushAll
+      $ [EmptyDeck iid mDrawing] <> maybeToList mDrawing <> [Msg.InvestigatorDamage iid EmptyDeckSource 0 1]
+    pure a
+  EmptyDeck iid _ | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     pushWhen (CardsCannotLeaveYourDiscardPile `notElem` modifiers')
       $ ShuffleDiscardBackIn iid
@@ -2377,6 +2425,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       targetCards = Map.map (filter (`cardMatch` cardMatcher)) foundCards
     push $ EndSearch iid source target cardSources
     case foundStrategy of
+      RemoveFoundFromGame _ n -> do
+        let
+          choices =
+            [ targetLabel (toCardId card) [RemovePlayerCardFromGame False card]
+            | (_, cards) <- mapToList targetCards
+            , card <- cards
+            ]
+        push
+          $ if null choices
+            then chooseOne iid [Label "No cards found" []]
+            else chooseN iid (min n (length choices)) choices
       DrawFound who n -> do
         let
           choices =
@@ -2472,6 +2531,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           & discardL %~ filter (/= pc)
           & handL %~ filter (/= card)
           & (deckL %~ Deck . filter (/= pc) . unDeck)
+          & foundCardsL
+          . each %~ filter (/= card)
       Nothing ->
         -- encounter cards can only be in hand
         pure $ a & (handL %~ filter (/= card))

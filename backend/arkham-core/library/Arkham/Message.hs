@@ -305,6 +305,7 @@ data Message
   | AddToEncounterDiscard EncounterCard
   | -- Slot Messages
     AddSlot InvestigatorId SlotType Slot
+  | RemoveSlot InvestigatorId SlotType
   | -- Adding Cards to Encounter Deck
     AddToEncounterDeck EncounterCard
   | -- Scenario Deck Messages
@@ -321,6 +322,7 @@ data Message
   | DefeatedAddToVictory Target
   | -- Tokens
     AddChaosToken ChaosTokenFace
+  | SwapChaosToken ChaosTokenFace ChaosTokenFace
   | RemoveAllChaosTokens ChaosTokenFace
   | -- Asset Uses
     AddUses AssetId UseType Int
@@ -439,7 +441,7 @@ data Message
   | DrewTreachery InvestigatorId (Maybe DeckSignifier) Card
   | ResolveTreachery InvestigatorId TreacheryId
   | DrivenInsane InvestigatorId
-  | EmptyDeck InvestigatorId
+  | EmptyDeck InvestigatorId (Maybe Message)
   | EndPhase
   | EndCheckWindow
   | EndEnemy

@@ -57,7 +57,7 @@ data Source
   | ThisCard
   | CardCostSource CardId
   | BothSource Source Source
-  | TarotSource TarotCardArcana
+  | TarotSource TarotCard
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''Source)

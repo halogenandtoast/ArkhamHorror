@@ -325,7 +325,7 @@ provide('solo', solo)
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
         </div>
         <div v-if="!game.scenario">
-          <GameLog :game="game" :gameLog="gameLog" />
+          <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
         </div>
       </div>
     </template>

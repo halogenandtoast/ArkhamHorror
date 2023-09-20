@@ -85,6 +85,7 @@ data Criterion
   | EventExists EventMatcher
   | ExcludeWindowAssetExists AssetMatcher
   | AgendaExists AgendaMatcher
+  | ActExists ActMatcher
   | InYourHand
   | DoomCountIs ValueMatcher
   | OnAct Int

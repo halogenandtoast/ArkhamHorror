@@ -46,6 +46,7 @@ data instance Field Agenda :: Type -> Type where
   AgendaDoom :: Field Agenda Int
   AgendaDeckId :: Field Agenda Int
   AgendaAbilities :: Field Agenda [Ability]
+  AgendaUsedWheelOfFortuneX :: Field Agenda Bool
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
@@ -58,6 +59,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaCardsUnderneath :: [Card]
   , agendaDeckId :: Int
   , agendaRemoveDoomMatchers :: RemoveDoomMatchers
+  , agendaUsedWheelOfFortuneX :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -111,8 +113,9 @@ agendaWith (n, side) f cardDef threshold g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (deckId, aid) ->
-        f . g $
-          AgendaAttrs
+        f
+          . g
+          $ AgendaAttrs
             { agendaDoom = 0
             , agendaDoomThreshold = Just threshold
             , agendaId = aid
@@ -123,6 +126,7 @@ agendaWith (n, side) f cardDef threshold g =
             , agendaCardsUnderneath = mempty
             , agendaDeckId = deckId
             , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
+            , agendaUsedWheelOfFortuneX = False
             }
     }
 

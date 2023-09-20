@@ -16,15 +16,23 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Agenda.AdvancementReason
+import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message
+import Arkham.Tarot
 import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
+import Arkham.Window (Window, mkWindow, windowType)
 import Arkham.Window qualified as Window
 
 advanceAgendaDeck :: AgendaAttrs -> Message
 advanceAgendaDeck attrs = AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+
+getChaosToken :: [Window] -> ChaosToken
+getChaosToken = \case
+  [] -> error "No chaos token drawn"
+  ((windowType -> Window.RevealChaosToken _ token) : _) -> token
+  (_ : rest) -> getChaosToken rest
 
 instance RunMessage AgendaAttrs where
   runMessage msg a@AgendaAttrs {..} = case msg of
@@ -47,24 +55,24 @@ instance RunMessage AgendaAttrs where
           pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOne
+      push
+        $ chooseOne
           leadInvestigatorId
           [targetLabel agendaId [AdvanceAgenda agendaId]]
-      pure $
-        a
-          & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) B)
-          & (flippedL .~ True)
+      pure
+        $ a
+        & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) B)
+        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == C -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOne
+      push
+        $ chooseOne
           leadInvestigatorId
           [targetLabel agendaId [AdvanceAgenda agendaId]]
-      pure $
-        a
-          & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) D)
-          & (flippedL .~ True)
+      pure
+        $ a
+        & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) D)
+        & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
       cannotBeAdvanced <- hasModifier a CannotBeAdvancedByDoomThreshold
       unless cannotBeAdvanced $ do
@@ -129,9 +137,20 @@ instance RunMessage AgendaAttrs where
               ]
           pure a
     RevertAgenda aid | aid == agendaId && agendaFlipped -> do
-      pure $
-        a
-          & (sequenceL .~ flipSequence agendaSequence)
-          & flippedL
+      pure
+        $ a
+        & (sequenceL .~ flipSequence agendaSequence)
+        & flippedL
           .~ False
+    UseCardAbility
+      iid
+      source@(TarotSource (TarotCard Reversed WheelOfFortuneX))
+      1
+      (getChaosToken -> token)
+      _ -> do
+        pushAll
+          [ ChaosTokenCanceled iid source token
+          , chaosTokenEffect source token $ ChaosTokenFaceModifier [MinusFive]
+          ]
+        pure $ a {agendaUsedWheelOfFortuneX = True}
     _ -> pure a

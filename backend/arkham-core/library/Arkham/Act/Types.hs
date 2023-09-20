@@ -42,6 +42,7 @@ data instance Field Act :: Type -> Type where
   ActDeckId :: Field Act Int
   ActAbilities :: Field Act [Ability]
   ActCard :: Field Act Card
+  ActUsedWheelOfFortuneX :: Field Act Bool
 
 data ActAttrs = ActAttrs
   { actId :: ActId
@@ -52,6 +53,7 @@ data ActAttrs = ActAttrs
   , actTreacheries :: Set TreacheryId
   , actDeckId :: Int
   , actBreaches :: Maybe Int
+  , actUsedWheelOfFortuneX :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -89,6 +91,7 @@ actWith (n, side) f cardDef mCost g =
             , actTreacheries = mempty
             , actDeckId = deckId
             , actBreaches = Nothing
+            , actUsedWheelOfFortuneX = False
             }
     }
 

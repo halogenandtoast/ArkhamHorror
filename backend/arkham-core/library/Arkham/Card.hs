@@ -118,6 +118,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
   CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'
+  CardWithSubType subType' -> cdCardSubType (toCardDef a) == Just subType'
   CardWithSkillIcon skillIcon ->
     skillIcon `member` setFromList @(Set SkillIcon) (cdSkills $ toCardDef a)
   CardWithCardCode cardCode -> toCardCode a == cardCode

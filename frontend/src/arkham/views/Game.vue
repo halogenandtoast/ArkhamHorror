@@ -272,11 +272,13 @@ provide('solo', solo)
         <div v-if="tarotCards.length > 0" class="revelation">
           <div class="revelation-container">
             <div class="revelation-card-container">
-              <div v-for="(tarotCard, idx) in tarotCards" :key="idx" class="tarot-card">
-                <div class="card-container">
-                  <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="tarot" :class="tarotCard.facing" />
+              <div class="tarot-cards">
+                <div v-for="(tarotCard, idx) in tarotCards" :key="idx" class="tarot-card">
+                  <div class="card-container">
+                    <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="tarot" :class="tarotCard.facing" />
+                  </div>
+                  <img :src="imgsrc('tarot/back.jpg')" class="card back" />
                 </div>
-                <img :src="imgsrc('tarot/back.jpg')" class="card back" />
               </div>
               <button @click="continueUI">OK</button>
             </div>
@@ -730,8 +732,18 @@ header {
 
 
 .revelation-card-container {
-  width: 300px;
-  aspect-ratio: 5/7;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  height: fit-content;
+
+  .tarot-cards {
+    gap: 15px;
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    height: fit-content;
+  }
 
   .revelation-card {
     position: relative;

@@ -392,7 +392,7 @@ const unusedCanInteract = (u: string) => choices.value.findIndex((c) => {
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const hasPool = computed(() => resources.value && resources.value > 0)
 
-const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scope === 'GlobalTarot'))
+const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scope.tag === 'GlobalTarot'))
 
 const tarotCardAbility = (card: TarotCard) => {
   return choices.value.findIndex((c) => {

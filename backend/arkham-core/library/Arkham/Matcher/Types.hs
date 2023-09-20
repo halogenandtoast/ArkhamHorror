@@ -487,6 +487,9 @@ instance Semigroup ExtendedCardMatcher where
 instance IsLabel "ally" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #ally
 
+instance IsLabel "asset" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #asset
+
 -- | Only relies on card state, can be used purely with `cardMatch`
 data CardMatcher
   = CardWithType CardType

@@ -1,5 +1,12 @@
 import { JsonDecoder } from "ts.data.json";
 
+export type TarotScope = { tag: 'GlobalTarot' } | { tag: 'InvestigatorTarot', contents: string };
+
+export const tarotScopeDecoder = JsonDecoder.oneOf<TarotScope>([
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('GlobalTarot') }),
+  JsonDecoder.object<TarotScope>({ tag: JsonDecoder.isExactly('InvestigatorTarot'), contents: JsonDecoder.string }, 'InvestigatorTarot'),
+], 'TarotScope');
+
 export type TarotCardFacing = 'Upright' | 'Reversed';
 export type TarotCardArcana
   = 'TheFool0'
@@ -59,11 +66,13 @@ export const tarotCardFacingDecoder = JsonDecoder.oneOf<TarotCardFacing>([
 export interface TarotCard {
   arcana: TarotCardArcana
   facing: TarotCardFacing
+  scope: TarotScope
 }
 
 export const tarotCardDecoder = JsonDecoder.object<TarotCard>({
   arcana: tarotCardArcanaDecoder,
   facing: tarotCardFacingDecoder,
+  scope: JsonDecoder.constant({ tag: 'GlobalTarot' }),
 }, 'TarotCard')
 
 export const tarotCardImage = (card: TarotCard) => {

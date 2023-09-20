@@ -11,7 +11,7 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import type { LogContents } from '@/arkham/types/Campaign';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
-import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard';
+import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
 
 export interface ScenarioName {
   title: string;
@@ -83,7 +83,12 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   standaloneCampaignLog: logContentsDecoder,
   tokens: tokensDecoder,
-  tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
+  // tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
+  tarotCards: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder)], '[string, number]'), '[string, number][]').map<TarotCard[]>(res => {
+    return res.reduce<TarorCard[]>((acc, [k, vs]) => {
+      return [...acc, ... vs.map(v => ({ ...v, scope: k }))]
+    }, [])
+  }),
   counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]').map<Record<string, number>>(res => {
     return res.reduce<Record<string, number>>((acc, [k, v]) => {
       acc[k] = v

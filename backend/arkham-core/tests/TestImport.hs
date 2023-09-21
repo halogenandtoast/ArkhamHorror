@@ -501,6 +501,7 @@ newGame investigator = do
         , gameGameState = IsActive
         , gameFoundCards = mempty
         , gameFocusedCards = mempty
+        , gameFocusedTarotCards = mempty
         , gameFocusedChaosTokens = mempty
         , gameActiveCard = Nothing
         , gameResolvingCard = Nothing

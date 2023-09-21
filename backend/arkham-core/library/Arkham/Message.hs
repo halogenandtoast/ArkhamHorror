@@ -848,8 +848,8 @@ data Message
   | PerformReading TarotReading
   | DrawAndChooseTarot InvestigatorId TarotCardFacing Int
   | PlaceTarot InvestigatorId TarotCard
-  | FocusTarot
-  | UnfocusTarot
+  | FocusTarotCards [TarotCard]
+  | UnfocusTarotCards
   | RotateTarot TarotCard
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)

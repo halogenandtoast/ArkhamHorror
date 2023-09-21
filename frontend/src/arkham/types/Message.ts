@@ -3,7 +3,7 @@ import { Ability, abilityDecoder } from '@/arkham/types/Ability';
 import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { Target, targetDecoder } from '@/arkham/types/Target';
-import { tarotCardArcanaDecoder, TarotCardArcana } from '@/arkham/types/TarotCard';
+import { tarotCardDecoder, TarotCard } from '@/arkham/types/TarotCard';
 
 export enum MessageType {
   LABEL = 'Label',
@@ -159,13 +159,13 @@ export const gridLabelDecoder = JsonDecoder.object<GridLabel>(
 
 export interface TarotLabel {
   tag: MessageType.TAROT_LABEL
-  tarotCard: TarotCardArcana
+  tarotCard: TarotCard
 }
 
 export const tarotLabelDecoder = JsonDecoder.object<TarotLabel>(
   {
     tag: JsonDecoder.isExactly(MessageType.TAROT_LABEL),
-    tarotCard: tarotCardArcanaDecoder,
+    tarotCard: tarotCardDecoder,
   }, 'TarotLabel')
 
 export interface CardLabel {

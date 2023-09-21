@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { CardLabel } from '@/arkham/types/Message';
+import { tarotCardImage } from '@/arkham/types/TarotCard';
 import { imgsrc } from '@/arkham/helpers';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
@@ -48,6 +49,12 @@ const cardLabels = computed(() =>
   choices.value.
     flatMap<[CardLabel, number][]>((choice, index) => {
       return choice.tag === "CardLabel" ? [[choice as CardLabel, index]] : []
+    }))
+
+const tarotLabels = computed(() =>
+  choices.value.
+    flatMap<[TarotLabel, number][]>((choice, index) => {
+      return choice.tag === "TarotLabel" ? [{choice, index}] : []
     }))
 
 const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsChaosTokensValue || 0) < 0 ? '-' : '+')
@@ -170,6 +177,14 @@ const label = function(body: string) {
         <template v-for="[[choice, index]] in cardLabels" :key="index">
           <a href='#' @click.prevent="choose(index)">
             <img class="card" :src="cardLabelImage(choice.cardCode)"/>
+          </a>
+        </template>
+      </div>
+
+      <div v-if="tarotLabels.length > 0">
+        <template v-for="{choice, index} in tarotLabels" :key="index">
+          <a href='#' @click.prevent="choose(index)">
+            <img class="card" :src="imgsrc(`tarot/${tarotCardImage(choice.tarotCard)}`)"/>
           </a>
         </template>
       </div>

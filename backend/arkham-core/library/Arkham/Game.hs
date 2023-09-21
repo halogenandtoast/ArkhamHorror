@@ -271,6 +271,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty include
         , gameSkillTest = Nothing
         , gameGameState = state
         , gameFocusedCards = mempty
+        , gameFocusedTarotCards = mempty
         , gameFoundCards = mempty
         , gameFocusedChaosTokens = mempty
         , gameActiveCard = Nothing
@@ -577,6 +578,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 g
             )
       , "focusedCards" .= toJSON gameFocusedCards
+      , "focusedTarotCards" .= toJSON gameFocusedTarotCards
       , "foundCards" .= toJSON gameFoundCards
       , "focusedChaosTokens"
           .= toJSON (runReader (traverse withModifiers gameFocusedChaosTokens) g)
@@ -3821,6 +3823,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
+  FocusTarotCards cards -> pure $ g & focusedTarotCardsL .~ cards
+  UnfocusTarotCards -> pure $ g & focusedTarotCardsL .~ mempty
   PutCardOnTopOfDeck _ _ c -> do
     mSkillId <- selectOne $ SkillWithCardId (toCardId c)
     let skillsF = maybe id deleteMap mSkillId

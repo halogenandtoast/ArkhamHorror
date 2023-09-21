@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.8 (Homebrew)
--- Dumped by pg_dump version 14.8 (Homebrew)
+-- Dumped from database version 14.9 (Homebrew)
+-- Dumped by pg_dump version 14.9 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -186,7 +186,8 @@ CREATE TABLE public.arkham_steps (
     id uuid DEFAULT public.uuid_generate_v4(),
     arkham_game_id uuid NOT NULL,
     choice jsonb NOT NULL,
-    step integer NOT NULL
+    step integer NOT NULL,
+    action_diff jsonb NOT NULL
 );
 
 
@@ -941,7 +942,7 @@ ALTER TABLE ONLY public.arkham_decks
 --
 
 ALTER TABLE ONLY public.arkham_log_entries
-    ADD CONSTRAINT arkham_log_entries_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id);
+    ADD CONSTRAINT arkham_log_entries_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id) ON DELETE CASCADE;
 
 
 --
@@ -949,7 +950,7 @@ ALTER TABLE ONLY public.arkham_log_entries
 --
 
 ALTER TABLE ONLY public.arkham_players
-    ADD CONSTRAINT arkham_players_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id);
+    ADD CONSTRAINT arkham_players_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id) ON DELETE CASCADE;
 
 
 --
@@ -957,7 +958,7 @@ ALTER TABLE ONLY public.arkham_players
 --
 
 ALTER TABLE ONLY public.arkham_players
-    ADD CONSTRAINT arkham_players_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT arkham_players_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -965,7 +966,7 @@ ALTER TABLE ONLY public.arkham_players
 --
 
 ALTER TABLE ONLY public.arkham_steps
-    ADD CONSTRAINT arkham_steps_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id);
+    ADD CONSTRAINT arkham_steps_arkham_game_id_fkey FOREIGN KEY (arkham_game_id) REFERENCES public.arkham_games(id) ON DELETE CASCADE;
 
 
 --

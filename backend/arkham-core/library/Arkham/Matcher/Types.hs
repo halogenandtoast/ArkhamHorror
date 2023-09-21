@@ -179,6 +179,9 @@ data AssetMatcher
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "ally" AssetMatcher where
+  fromLabel = AssetWithTrait Ally
+
 instance Semigroup AssetMatcher where
   AnyAsset <> x = x
   x <> AnyAsset = x

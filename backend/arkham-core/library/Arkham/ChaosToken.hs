@@ -5,6 +5,7 @@ module Arkham.ChaosToken where
 import Arkham.Prelude
 
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: UUID}
   deriving stock (Data)
@@ -85,6 +86,24 @@ data ChaosTokenFace
   | AutoFail
   | ElderSign
   deriving stock (Bounded, Enum, Show, Eq, Ord, Data)
+
+instance IsLabel "skull" ChaosTokenFace where
+  fromLabel = Skull
+
+instance IsLabel "cultist" ChaosTokenFace where
+  fromLabel = Cultist
+
+instance IsLabel "tablet" ChaosTokenFace where
+  fromLabel = Tablet
+
+instance IsLabel "elderthing" ChaosTokenFace where
+  fromLabel = ElderThing
+
+instance IsLabel "autofail" ChaosTokenFace where
+  fromLabel = AutoFail
+
+instance IsLabel "eldersign" ChaosTokenFace where
+  fromLabel = ElderSign
 
 isNumberChaosToken :: ChaosTokenFace -> Bool
 isNumberChaosToken = \case

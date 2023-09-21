@@ -17,7 +17,6 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier (ModifierType (..))
 import Arkham.Name
-import Arkham.Phase
 import Arkham.SkillType ()
 import Arkham.SlotType
 import Arkham.Source
@@ -1338,7 +1337,7 @@ onTheHunt :: CardDef
 onTheHunt =
   (event "03263" "On the Hunt" 1 Guardian)
     { cdCardTraits = singleton Tactic
-    , cdFastWindow = Just $ WouldDrawEncounterCard #when You (PhaseIs MythosPhase)
+    , cdFastWindow = Just $ WouldDrawEncounterCard #when You #mythos
     , cdSkills = [#intellect, #combat]
     }
 
@@ -1458,7 +1457,7 @@ infighting3 =
     { cdSkills = [#intellect, #intellect, #agility, #agility]
     , cdCardTraits = singleton Trick
     , cdLevel = 3
-    , cdFastWindow = Just $ PhaseBegins #after (PhaseIs EnemyPhase)
+    , cdFastWindow = Just $ PhaseBegins #after #enemy
     }
 
 smuggledGoods :: CardDef

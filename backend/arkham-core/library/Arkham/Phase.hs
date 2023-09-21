@@ -7,7 +7,7 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 data Phase
-  = MythosPhase
+  = MythosPhase MythosPhaseStep
   | InvestigationPhase
   | EnemyPhase
   | UpkeepPhase
@@ -16,12 +16,16 @@ data Phase
   deriving stock (Eq, Show, Ord, Data)
 
 data MythosPhaseStep
-  = MythosPhaseBeginsStep
-  | PlaceDoomOnAgendaStep
-  | CheckDoomThresholdStep
-  | EachInvestigatorDrawsEncounterCardStep
-  | MythosPhaseEndsStep
+  = MythosPhaseBeginsStep -- 1.1
+  | PlaceDoomOnAgendaStep -- 1.2
+  | CheckDoomThresholdStep -- 1.3
+  | EachInvestigatorDrawsEncounterCardStep -- 1.4
+  | MythosPhaseWindow -- fast player window
+  | MythosPhaseEndsStep -- 1.5
   deriving stock (Eq, Show, Ord, Data)
 
-$(deriveJSON defaultOptions ''Phase)
-$(deriveJSON defaultOptions ''MythosPhaseStep)
+$( do
+    phase <- deriveJSON defaultOptions ''Phase
+    mythosPhaseStep <- deriveJSON defaultOptions ''MythosPhaseStep
+    pure $ concat [phase, mythosPhaseStep]
+ )

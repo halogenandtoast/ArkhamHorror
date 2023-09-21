@@ -21,6 +21,7 @@ import Arkham.Phase
 import Arkham.Scenario.Types (Scenario)
 import Arkham.SkillTest.Base
 import Arkham.Target
+import Arkham.Tarot
 import Arkham.Zone
 import Data.Aeson.Diff qualified as Diff
 import Data.These
@@ -60,6 +61,7 @@ data Game = Game
     gamePhase :: Phase
   , gameSkillTest :: Maybe SkillTest
   , gameFocusedCards :: [Card]
+  , gameFocusedTarotCards :: [TarotCard]
   , gameFoundCards :: Map Zone [Card]
   , gameFocusedChaosTokens :: [ChaosToken]
   , gameActiveCard :: Maybe Card

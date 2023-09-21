@@ -404,16 +404,6 @@ const tarotCardAbility = (card: TarotCard) => {
   })
 }
 
-const tarotCardChoices = computed(() => {
-  return choices.value.reduce((acc, c, idx) => {
-    if (c.tag === "TarotLabel") {
-      return acc.concat({ idx, arcana: c.tarotCard })
-    }
-
-    return acc
-  }, [])
-})
-
 const phase = computed(() => props.game.phase)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
@@ -421,9 +411,6 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 <template>
   <div v-if="!gameOver" id="scenario" class="scenario">
-    <div v-if="tarotCardChoices.length > 0" class="tarot-card-choices">
-      <img v-for="{idx, arcana} in tarotCardChoices" :key="arcana" :src="imgsrc(`tarot/${tarotArcanaImage(arcana)}`)" class="card tarot-card" @click="choose(idx)"/>
-    </div>
     <div class="scenario-body">
       <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
       <CardRow
@@ -437,11 +424,17 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         @close="hideCards"
       />
       <div class="scenario-cards">
-        <template v-if="tarotCards.length > 0">
-          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana">
-            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="choose(tarotCardAbility(tarotCard))"/>
+        <div v-if="tarotCards.length > 0" class="tarot-cards">
+          <div
+            v-for="tarotCard in tarotCards"
+            :key="tarotCard.arcana"
+            class="tarot-card-container"
+            :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }"
+            @click="choose(tarotCardAbility(tarotCard))"
+          >
+            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" />
           </div>
-        </template>
+        </div>
         <div v-if="topEnemyInVoid">
           <Enemy
             :enemy="topEnemyInVoid"
@@ -677,7 +670,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 <style scoped lang="scss">
 .card {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
+  /*box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);*/
   border-radius: 6px;
   margin: 2px;
   width: $card-width;
@@ -988,16 +981,8 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 .tarot-card {
   width: $card-width;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 8 / 14;
 
-  .can-interact {
-    aspect-ratio: 9 / 16;
-    box-sizing: border-box;
-  }
-
-  &.Reversed {
-    transform: rotateZ(180deg);
-  }
 }
 
 .tarot-card-choices {
@@ -1014,4 +999,66 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   gap: 10px;
   padding: 10px;
 }
+
+.tarot-card {
+  margin: 0;
+}
+
+.tarot-card-container {
+  transition: transform 0.5s ease-in-out;
+  display:flex;
+  position: relative;
+  &:before {
+    z-index: -1;
+    background: black;
+    filter: blur(3px);
+    position: absolute;
+    inset: 10px 5px;
+    content: "";
+    transform: translate(0, 12px);
+    transition: inherit;
+  }
+
+  .can-interact {
+    aspect-ratio: 8 / 14;
+    box-sizing: border-box;
+  }
+
+  &.Reversed {
+    transform: rotateZ(180deg);
+    &:before {
+      transform-origin: center;
+      animation-fill-mode: forwards;
+      animation: shadow-rotate 0.5s linear;
+      transform: translate(0, -12px);
+    }
+  }
+}
+
+@keyframes shadow-rotate {
+  0% {
+    transform: translate(0, 12px);
+  }
+  25% {
+    transform: translate(6px, 12px);
+  }
+  50% {
+    transform: translate(12px, 0px);
+  }
+  75% {
+    transform: translate(6px, -12px);
+  }
+  100% {
+    transform: translate(0, -12px);
+  }
+}
+
+
+
+.tarot-cards {
+  display: flex;
+  gap: 10px;
+  margin-inline: 10px;
+}
+
 </style>

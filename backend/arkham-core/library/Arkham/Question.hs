@@ -53,7 +53,7 @@ data UI msg
   | EvadeLabel {enemyId :: EnemyId, messages :: [msg]}
   | FightLabel {enemyId :: EnemyId, messages :: [msg]}
   | GridLabel {gridLabel :: Text, messages :: [msg]}
-  | TarotLabel {tarotCard :: TarotCardArcana, messages :: [msg]}
+  | TarotLabel {tarotCard :: TarotCard, messages :: [msg]}
   | AbilityLabel
       {investigatorId :: InvestigatorId, ability :: Ability, windows :: [Window], messages :: [msg]}
   | ComponentLabel {component :: Component, messages :: [msg]}

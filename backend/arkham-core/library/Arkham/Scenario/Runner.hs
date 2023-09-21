@@ -1060,7 +1060,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PerformReading Choice -> do
     lead <- getLead
     cards <- map (TarotCard Upright) <$> sampleN 3 (NE.fromList scenarioTarotDeck)
-    pushAll [FocusTarot, chooseN lead 2 [], UnfocusTarot]
+    pushAll
+      [ FocusTarotCards cards
+      , questionLabel "Choose two cards to rotate" lead
+          $ ChooseN 2 [TarotLabel card [RotateTarot card] | card <- cards]
+      , UnfocusTarotCards
+      ]
     pure
       $ a
       & tarotCardsL
@@ -1069,7 +1074,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & tarotDeckL %~ filter (`notElem` (map toTarotArcana cards))
   DrawAndChooseTarot iid facing n -> do
     cards <- map (TarotCard facing) <$> sampleN n (NE.fromList scenarioTarotDeck)
-    push $ chooseOrRunOne iid [TarotLabel (toTarotArcana card) [PlaceTarot iid card] | card <- cards]
+    push $ chooseOrRunOne iid [TarotLabel card [PlaceTarot iid card] | card <- cards]
     pure a
   PlaceTarot iid card -> do
     tarotDeck' <- shuffleM $ delete (toTarotArcana card) scenarioTarotDeck
@@ -1080,5 +1085,5 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         TarotCard Upright arcana' | arcana' == arcana -> TarotCard Reversed arcana'
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
-    pure $ a & tarotCardsL . at GlobalTarot . non [] %~ map rotate
+    pure $ a & tarotCardsL . each %~ map rotate
   _ -> pure a

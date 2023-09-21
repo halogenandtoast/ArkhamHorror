@@ -101,6 +101,6 @@ export const tarotArcanaImage = (arcana: TarotCardArcana) => {
     case 'TheSunXIX': return 'tarot-19.jpg'
     case 'JudgementXX': return 'tarot-20.jpg'
     case 'TheWorldXXI': return 'tarot-21.jpg'
-    default : throw new Error("No such tarot card" + card.arcana)
+    default : throw new Error("No such tarot card: " + arcana)
   }
 }

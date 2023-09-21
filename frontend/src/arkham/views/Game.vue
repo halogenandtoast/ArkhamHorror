@@ -273,7 +273,11 @@ provide('solo', solo)
           <div class="revelation-container">
             <div class="revelation-card-container">
               <div class="tarot-cards">
-                <div v-for="(tarotCard, idx) in tarotCards" :key="idx" class="tarot-card">
+                <div
+                    v-for="(tarotCard, idx) in tarotCards"
+                    :key="idx"
+                    class="tarot-card"
+                  >
                   <div class="card-container">
                     <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="tarot" :class="tarotCard.facing" />
                   </div>
@@ -640,10 +644,6 @@ header {
 		drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
 		drop-shadow(0 0 7vmin MediumOrchid);
 
-  > div {
-    overflow: hidden;
-  }
-
   button {
     width: 100%;
     border: 0;
@@ -759,8 +759,21 @@ header {
       left: 0;
       backface-visibility: hidden;
       animation: flip-front 0.3s linear;
-      animation-delay: 0.3s;
+      //animation-delay: 0.3s;
       animation-fill-mode: forwards;
+
+      &:nth-child(1) {
+        animation-delay: 0.3s;
+      }
+
+      &:nth-child(2) {
+        animation-delay: 0.6s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.9s;
+      }
+
     }
 
     .card-container {
@@ -775,21 +788,44 @@ header {
       left: 0;
       backface-visibility: hidden;
       animation: flip-back 0.3s linear;
-      animation-delay: 0.3s;
       animation-fill-mode: forwards;
+
+      &:nth-child(1) {
+        animation-delay: 0.3s;
+      }
+
+      &:nth-child(2) {
+        animation-delay: 0.6s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.9s;
+      }
     }
   }
 
   .tarot {
     width: 300px;
-    aspect-ratio: 9/16;
+    aspect-ratio: 8/14;
+  }
+
+  .tarot-card:nth-child(1) {
+    animation-delay: 0.3s;
+  }
+
+  .tarot-card:nth-child(2) {
+    animation-delay: 0.6s;
+  }
+
+  .tarot-card:nth-child(3) {
+    animation-delay: 0.9s;
   }
 
   .tarot-card {
     position: relative;
     width: 300px;
     padding-bottom: 15px;
-    aspect-ratio: 9/16;
+    aspect-ratio: 8/14;
     perspective: 1000px;
     .Reversed {
       transform: rotateZ(180deg);
@@ -802,13 +838,21 @@ header {
       left: 0;
       backface-visibility: hidden;
       animation: flip-front 0.3s linear;
-      animation-delay: 0.3s;
       animation-fill-mode: forwards;
+      animation-delay: inherit;
+    }
+
+    img {
+      pointer-events: none;
     }
 
     .card-container {
       opacity: 0;
       transform-style: preserve-3d;
+      pointer-events: none;
+      img {
+        pointer-events: none;
+      }
     }
 
     .card.back {
@@ -818,8 +862,8 @@ header {
       left: 0;
       backface-visibility: hidden;
       animation: flip-back 0.3s linear;
-      animation-delay: 0.3s;
       animation-fill-mode: forwards;
+      animation-delay: inherit;
     }
   }
 }

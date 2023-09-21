@@ -17,10 +17,8 @@ import { Question, questionDecoder } from '@/arkham/types/Question';
 import { Skill, skillDecoder } from '@/arkham/types/Skill';
 import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder, SkillTestResults, skillTestResultsDecoder } from '@/arkham/types/SkillTest';
-import {
-  Card,
-  cardDecoder,
-} from '@/arkham/types/Card';
+import { Card, cardDecoder, } from '@/arkham/types/Card';
+import { TarotCard, tarotCardDecoder, } from '@/arkham/types/TarotCard';
 
 type GameState = { tag: 'IsPending' } | { tag: 'IsActive' } | { tag: 'IsOver' };
 
@@ -61,6 +59,7 @@ export interface Game {
   skillTestResults: SkillTestResults | null;
   treacheries: Record<string, Treachery>;
   focusedCards: Card[];
+  focusedTarotCards: TarotCard[];
   foundCards: Record<string, Card[]>;
   focusedChaosTokens: ChaosToken[];
   skillTestChaosTokens: ChaosToken[];
@@ -164,6 +163,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     skillTestResults: JsonDecoder.nullable(skillTestResultsDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    focusedTarotCards: JsonDecoder.array<TarotCard[]>(tarotCardDecoder, 'TarotCard[]'),
     foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
     focusedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     skillTestChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),

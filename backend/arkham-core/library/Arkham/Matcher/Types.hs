@@ -29,7 +29,6 @@ import Arkham.Label
 import Arkham.Location.Brazier
 import Arkham.LocationSymbol
 import Arkham.Modifier
-import Arkham.Phase
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.SkillType
 import Arkham.SlotType
@@ -846,11 +845,14 @@ instance Semigroup ChaosTokenMatcher where
 instance Monoid ChaosTokenMatcher where
   mempty = AnyChaosToken
 
-data PhaseMatcher = AnyPhase | PhaseIs Phase
+data PhaseMatcher = AnyPhase | IsMythosPhase | IsEnemyPhase
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "mythos" PhaseMatcher where
+  fromLabel = IsMythosPhase
+
 instance IsLabel "enemy" PhaseMatcher where
-  fromLabel = PhaseIs EnemyPhase
+  fromLabel = IsEnemyPhase
 
 data WindowMythosStepMatcher
   = WhenAllDrawEncounterCard

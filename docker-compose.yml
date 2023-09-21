@@ -23,5 +23,7 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    volumes:
+      - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
 volumes:
  pgdata:

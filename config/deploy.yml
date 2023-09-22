@@ -21,6 +21,7 @@ registry:
 
 env:
   secret:
+    - NODE_ENV
     - DATABASE_URL
     - ASSET_HOST
     - PORT

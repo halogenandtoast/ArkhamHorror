@@ -43,17 +43,17 @@ instance RunMessage AncientHall where
   runMessage msg l@(AncientHall attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       iids <-
-        selectList $
-          InvestigatorAt (LocationWithId $ toId attrs)
+        selectList
+          $ InvestigatorAt (LocationWithId $ toId attrs)
             <> InvestigatorCanSpendResources (Static 3)
       leadInvestigatorId <- getLeadInvestigatorId
       let flipClue = FlipClues (toTarget attrs) 1
       if null iids
         then push flipClue
         else
-          push $
-            chooseOne leadInvestigatorId $
-              Label "Do not spend 3 resources to cancel this effect" [flipClue]
-                : [targetLabel iid [SpendResources iid 3] | iid <- iids]
+          push
+            $ chooseOne leadInvestigatorId
+            $ Label "Do not spend 3 resources to cancel this effect" [flipClue]
+              : [targetLabel iid [SpendResources iid 3] | iid <- iids]
       pure l
     _ -> AncientHall <$> runMessage msg attrs

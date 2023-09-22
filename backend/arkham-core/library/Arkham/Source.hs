@@ -77,6 +77,9 @@ isProxySource _ _ = False
 toProxySource :: Sourceable a => a -> Source -> Source
 toProxySource a source = ProxySource source (toSource a)
 
+proxy :: (Sourceable a, Sourceable b) => a -> b -> Source
+proxy a b = ProxySource (toSource a) (toSource b)
+
 instance Sourceable Source where
   toSource = id
   isSource = (==)
@@ -108,6 +111,9 @@ instance Sourceable ChaosTokenFace where
 
 instance Sourceable PlayerCard where
   toSource = PlayerCardSource
+
+instance Sourceable AssetMatcher where
+  toSource = AssetMatcherSource
 
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource a n = case toSource a of

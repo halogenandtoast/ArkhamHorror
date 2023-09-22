@@ -22,11 +22,11 @@ agencyBackup5 = ally AgencyBackup5 Cards.agencyBackup5 (4, 4)
 
 instance HasModifiersFor AgencyBackup5 where
   getModifiersFor (InvestigatorTarget iid) (AgencyBackup5 a) | not (controlledBy a iid) = do
-    locationId <- field InvestigatorLocation iid
-    assetLocationId <- field AssetLocation (toId a)
+    location <- field InvestigatorLocation iid
+    assetLocation <- field AssetLocation (toId a)
     pure $ do
-      guard $ isJust locationId
-      guard $ locationId == assetLocationId
+      guard $ isJust location
+      guard $ location == assetLocation
       toModifiers a [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
   getModifiersFor _ _ = pure []
 
@@ -47,14 +47,14 @@ instance HasAbilities AgencyBackup5 where
 
 instance RunMessage AgencyBackup5 where
   runMessage msg a@(AgencyBackup5 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <-
-        selectList $
-          EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
-      push . chooseOne iid $
-        [ targetLabel target [EnemyDamage target $ nonAttack (toSource attrs) 1]
-        | target <- targets
-        ]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
+      targets <- selectList $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
+      push
+        . chooseOne iid
+        $ [ targetLabel target [EnemyDamage target $ nonAttack source 1]
+          | target <- targets
+          ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 2) 1 Nothing

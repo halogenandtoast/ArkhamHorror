@@ -11,9 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype RoyalEmissary = RoyalEmissary EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,12 +18,8 @@ newtype RoyalEmissary = RoyalEmissary EnemyAttrs
 
 royalEmissary :: EnemyCard RoyalEmissary
 royalEmissary =
-  enemyWith
-    RoyalEmissary
-    Cards.royalEmissary
-    (4, Static 4, 2)
-    (2, 0)
-    (preyL .~ Prey (InvestigatorWithLowestSkill SkillWillpower))
+  enemyWith RoyalEmissary Cards.royalEmissary (4, Static 4, 2) (2, 0)
+    $ preyL .~ Prey (InvestigatorWithLowestSkill #willpower)
 
 investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
 investigatorMatcher a =
@@ -37,19 +30,17 @@ investigatorMatcher a =
 
 instance HasAbilities RoyalEmissary where
   getAbilities (RoyalEmissary a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 (InvestigatorExists $ investigatorMatcher a) $
-          ForcedAbility $
-            PhaseEnds Timing.When $
-              PhaseIs EnemyPhase
-      ]
+    withBaseAbilities a
+      $ [ restrictedAbility a 1 (InvestigatorExists $ investigatorMatcher a)
+            $ ForcedAbility
+            $ PhaseEnds #when #enemy
+        ]
 
 instance RunMessage RoyalEmissary where
   runMessage msg e@(RoyalEmissary attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      iids <- selectList (investigatorMatcher attrs)
-      e
-        <$ pushAll
-          (map (\iid -> InvestigatorAssignDamage iid source DamageAny 0 1) iids)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
+      investigators <- selectList $ investigatorMatcher attrs
+      pushAll $ map (\investigator -> assignHorror investigator source 1) investigators
+      pure e
     _ -> RoyalEmissary <$> runMessage msg attrs

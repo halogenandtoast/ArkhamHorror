@@ -13,8 +13,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Name
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 import Control.Monad.Extra (findM)
 
 newtype StrangeGeometry = StrangeGeometry LocationAttrs
@@ -26,22 +24,21 @@ strangeGeometry = location StrangeGeometry Cards.strangeGeometry 4 (Static 1)
 
 instance HasAbilities StrangeGeometry where
   getAbilities (StrangeGeometry a) =
-    withRevealedAbilities
-      a
-      [ mkAbility a 1 $ ForcedAbility $ PhaseEnds Timing.After $ PhaseIs InvestigationPhase
-      , restrictedAbility
-          a
-          2
-          ( Here
-              <> CluesOnThis (EqualTo $ Static 0)
-              <> LocationExists (RevealedLocation <> NotLocation (LocationWithId $ toId a))
-          ) $
-          FastAbility Free
-      ]
+    withRevealedAbilities a
+      $ [ mkAbility a 1 $ ForcedAbility $ PhaseEnds #after #investigation
+        , restrictedAbility
+            a
+            2
+            ( Here
+                <> CluesOnThis (EqualTo $ Static 0)
+                <> LocationExists (RevealedLocation <> NotLocation (LocationWithId $ toId a))
+            )
+            $ FastAbility Free
+        ]
 
 instance RunMessage StrangeGeometry where
   runMessage msg l@(StrangeGeometry attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       push $ Move $ move attrs iid (toId attrs)
       let labels = [nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2]]
       availableLabel <- findM (selectNone . LocationWithLabel . mkLabel) labels
@@ -51,23 +48,18 @@ instance RunMessage StrangeGeometry where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       locationsWithMostClues <-
         selectList $ LocationWithMostClues $ NotLocation $ LocationWithId $ toId attrs
-      investigatorIds <- selectList $ investigatorAt $ toId attrs
-      enemyIds <- selectList $ UnengagedEnemy <> enemyAt (toId attrs)
+      investigators <- selectList $ investigatorAt $ toId attrs
+      enemies <- selectList $ UnengagedEnemy <> enemyAt (toId attrs)
       lead <- getLead
-      pushAll $
-        [ chooseOrRunOne
-          lead
-          [ targetLabel lid $
-            concatMap
-              ( \iid ->
-                  [Move $ move attrs iid lid, InvestigatorAssignDamage iid (toAbilitySource attrs 1) DamageAny 1 1]
-              )
-              investigatorIds
-              <> [Move $ move attrs eid lid | eid <- enemyIds]
-          | lid <- locationsWithMostClues
+      let source = toAbilitySource attrs 1
+      pushAll
+        $ [ chooseOrRunOne lead
+            $ targetLabels locationsWithMostClues
+            $ \lid ->
+              concatMap (\iid -> [Move $ move attrs iid lid, assignDamageAndHorror iid source 1 1]) investigators
+                <> [Move $ move attrs enemy lid | enemy <- enemies]
+          | notNull investigators || notNull enemies
           ]
-        | notNull investigatorIds || notNull enemyIds
-        ]
           <> [Discard (toSource attrs) (toTarget attrs)]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

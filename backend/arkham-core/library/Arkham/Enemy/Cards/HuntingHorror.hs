@@ -13,10 +13,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
 import Arkham.Placement
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
 
@@ -29,41 +27,28 @@ huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
 
 instance HasAbilities HuntingHorror where
   getAbilities (HuntingHorror x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            PhaseBegins Timing.When $
-              PhaseIs
-                EnemyPhase
-      , mkAbility x 2 $
-          ForcedAbility $
-            EnemyLeavesPlay Timing.When $
-              EnemyWithId $
-                toId x
-      ]
+    withBaseAbilities x
+      $ [ mkAbility x 1 $ ForcedAbility $ PhaseBegins #when #enemy
+        , mkAbility x 2 $ ForcedAbility $ EnemyLeavesPlay #when $ EnemyWithId (toId x)
+        ]
 
 instance RunMessage HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ RequestChaosTokens source Nothing (Reveal 1) SetAside
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ RequestChaosTokens (toAbilitySource attrs 1) Nothing (Reveal 1) SetAside
       pure e
-    RequestedChaosTokens source _ tokens | isSource attrs source -> do
+    RequestedChaosTokens (isSource attrs -> True) _ (map chaosTokenFace -> tokens) -> do
       push $ ResetChaosTokens (toSource attrs)
-      when
-        ( any
-            (`elem` map chaosTokenFace tokens)
-            [Skull, Cultist, Tablet, ElderThing, AutoFail]
-        )
-        (push (Ready $ toTarget attrs))
+      pushWhen (any (`elem` tokens) [#skull, #cultist, #tablet, #elderthing, #autofail])
+        $ Ready (toTarget attrs)
       pure e
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      pushAll (resolve $ PlaceEnemyInVoid enemyId)
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      pushAll $ resolve $ PlaceEnemyInVoid enemyId
       pure e
     When (PlaceEnemyInVoid eid) | eid == enemyId -> do
       pure
         . HuntingHorror
         $ attrs
-          & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
-          & (placementL .~ OutOfPlay VoidZone)
+        & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
+        & (placementL .~ OutOfPlay VoidZone)
     _ -> HuntingHorror <$> runMessage msg attrs

@@ -1,13 +1,12 @@
-module Arkham.Treachery.Cards.Damned
-  ( damned
-  , Damned(..)
-  )
+module Arkham.Treachery.Cards.Damned (
+  damned,
+  Damned (..),
+)
 where
 
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -19,4 +18,4 @@ damned :: TreacheryCard Damned
 damned = treachery Damned Cards.damned
 
 instance RunMessage Damned where
-  runMessage msg t@(Damned attrs) = Damned <$> runMessage msg attrs
+  runMessage msg (Damned attrs) = Damned <$> runMessage msg attrs

@@ -17,7 +17,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -36,14 +35,9 @@ instance HasModifiersFor RansackingTheManor where
 
 instance HasAbilities RansackingTheManor where
   getAbilities (RansackingTheManor attrs) =
-    [ mkAbility attrs 1 $
-        ForcedAbility $
-          PlacedCounterOnEnemy
-            Timing.After
-            AnyEnemy
-            AnySource
-            ClueCounter
-            AnyValue
+    [ mkAbility attrs 1
+        $ ForcedAbility
+        $ PlacedCounterOnEnemy #after AnyEnemy AnySource #clue AnyValue
     ]
 
 instance RunMessage RansackingTheManor where
@@ -52,20 +46,17 @@ instance RunMessage RansackingTheManor where
       spawnSebastienMoreau <- not <$> slain Enemies.sebastienMoreau
       spawnSebastienMoreauMessages <- do
         card <- genCard Enemies.sebastienMoreau
-        createEnemyAtLocationMatching_ card (LocationWithTitle "Entry Hall")
+        createEnemyAtLocationMatching_ card "Entry Hall"
       spawnPossessedOathspeaker <- do
         possessedOathspeaker <- getSetAsideCard Enemies.possessedOathspeaker
-        createEnemyAtLocationMatching_
-          possessedOathspeaker
-          (LocationWithTitle "Entry Hall")
+        createEnemyAtLocationMatching_ possessedOathspeaker "Entry Hall"
 
-      pushAll $
-        spawnPossessedOathspeaker
+      pushAll
+        $ spawnPossessedOathspeaker
           : [spawnSebastienMoreauMessages | spawnSebastienMoreau]
             <> [advanceAgendaDeck attrs]
       pure a
-    UseCardAbility _ source 1 [(windowType -> Window.PlacedClues _ target n)] _
-      | isSource attrs source -> do
-          pushAll [FlipClues target n]
-          pure a
+    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.PlacedClues _ target n)] _ -> do
+      push $ FlipClues target n
+      pure a
     _ -> RansackingTheManor <$> runMessage msg attrs

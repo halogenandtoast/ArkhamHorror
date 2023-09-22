@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
 import Arkham.Timing qualified as Timing
 
 newtype WizardOfTheOrder = WizardOfTheOrder EnemyAttrs
@@ -30,15 +29,11 @@ wizardOfTheOrder =
 instance HasAbilities WizardOfTheOrder where
   getAbilities (WizardOfTheOrder a) =
     withBaseAbilities a
-      $ [ restrictedAbility a 1 CanPlaceDoomOnThis
-            $ ForcedAbility
-            $ PhaseEnds Timing.When
-            $ PhaseIs MythosPhase
-        ]
+      $ [restrictedAbility a 1 CanPlaceDoomOnThis $ ForcedAbility $ PhaseEnds Timing.When #mythos]
 
 instance RunMessage WizardOfTheOrder where
   runMessage msg e@(WizardOfTheOrder attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+      push $ placeDoom (toAbilitySource attrs 1) attrs 1
       pure e
     _ -> WizardOfTheOrder <$> runMessage msg attrs

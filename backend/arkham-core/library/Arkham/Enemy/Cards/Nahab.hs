@@ -12,8 +12,6 @@ import Arkham.Helpers.Agenda
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 -- Do not remove doom from Nahab when the agenda advances.
@@ -33,12 +31,11 @@ instance HasModifiersFor Nahab where
 
 instance HasAbilities Nahab where
   getAbilities (Nahab attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 (EnemyCriteria $ ThisEnemy ReadyEnemy) $
-          ForcedAbility $
-            PhaseBegins Timing.After $
-              PhaseIs EnemyPhase
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 (EnemyCriteria $ ThisEnemy ReadyEnemy)
+            $ ForcedAbility
+            $ PhaseBegins #after #enemy
+        ]
 
 instance RunMessage Nahab where
   runMessage msg e@(Nahab attrs) = case msg of

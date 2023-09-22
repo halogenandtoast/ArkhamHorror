@@ -10,8 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (AssetDamage)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message (Message (AssetDamage))
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype PeterClover = PeterClover AssetAttrs
@@ -20,36 +18,27 @@ newtype PeterClover = PeterClover AssetAttrs
 
 peterClover :: AssetCard PeterClover
 peterClover =
-  allyWith PeterClover Cards.peterClover (3, 2) $
-    (slotsL .~ [])
-      . (isStoryL .~ True)
+  allyWith PeterClover Cards.peterClover (3, 2)
+    $ (slotsL .~ [])
+    . (isStoryL .~ True)
 
 instance HasAbilities PeterClover where
   getAbilities (PeterClover x) =
-    [ restrictedAbility x 1 Uncontrolled $
-        ForcedAbility $
-          PhaseBegins Timing.When $
-            PhaseIs EnemyPhase
+    [ restrictedAbility x 1 Uncontrolled $ ForcedAbility $ PhaseBegins #when #enemy
     , restrictedAbility
         x
         2
-        ( ControlsThis
-            <> EnemyCriteria
-              (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Criminal)
-        )
-        (FastAbility $ ExhaustCost $ toTarget x)
+        (ControlsThis <> enemyExists (EnemyAt YourLocation <> EnemyWithTrait Criminal))
+        (FastAbility $ exhaust x)
     ]
 
 instance RunMessage PeterClover where
   runMessage msg a@(PeterClover attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          a <$ push (AssetDamage (toId attrs) source 1 0)
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ AssetDamage (toId attrs) (toAbilitySource attrs 1) 1 0
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt YourLocation
-      push $
-        chooseOne
-          iid
-          [targetLabel eid [EnemyEvaded iid eid] | eid <- criminals]
+      push $ chooseOne iid $ targetLabels criminals (only . EnemyEvaded iid)
       pure a
     _ -> PeterClover <$> runMessage msg attrs

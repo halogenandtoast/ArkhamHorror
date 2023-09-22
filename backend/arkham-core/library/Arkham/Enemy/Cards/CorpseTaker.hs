@@ -11,9 +11,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
@@ -22,54 +20,38 @@ newtype CorpseTaker = CorpseTaker EnemyAttrs
 
 corpseTaker :: EnemyCard CorpseTaker
 corpseTaker =
-  enemyWith
-    CorpseTaker
-    Cards.corpseTaker
-    (4, Static 3, 3)
-    (1, 2)
-    (spawnAtL ?~ SpawnLocation (FarthestLocationFromYou EmptyLocation))
+  enemyWith CorpseTaker Cards.corpseTaker (4, Static 3, 3) (1, 2)
+    $ spawnAtL ?~ SpawnLocation (FarthestLocationFromYou EmptyLocation)
 
 instance HasAbilities CorpseTaker where
   getAbilities (CorpseTaker x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            PhaseEnds Timing.When $
-              PhaseIs
-                MythosPhase
-      , mkAbility x 2 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
-      ]
+    withBaseAbilities x
+      $ [ mkAbility x 1 $ ForcedAbility $ PhaseEnds #when #mythos
+        , mkAbility x 2 $ ForcedAbility $ PhaseEnds #when #enemy
+        ]
 
 instance RunMessage CorpseTaker where
-  runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ pure (PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Doom 1)
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      enemyLocation <- field EnemyLocation enemyId
+  runMessage msg e@(CorpseTaker attrs) = case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ placeDoom (toAbilitySource attrs 1) attrs 1
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      enemyLocation <- field EnemyLocation (toId attrs)
       case enemyLocation of
         Nothing -> pure e
         Just loc -> do
-          mRivertown <- selectOne (LocationWithTitle "Rivertown")
-          mMainPath <- selectOne (LocationWithTitle "Main Path")
-          let
-            locationId =
-              fromJustNote
-                "one of these has to exist"
-                (mRivertown <|> mMainPath)
-          if loc == locationId
+          mRivertown <- selectOne $ LocationWithTitle "Rivertown"
+          mMainPath <- selectOne $ LocationWithTitle "Main Path"
+          let location = fromJustNote "one of these has to exist" (mRivertown <|> mMainPath)
+          if loc == location
             then do
               pushAll $ replicate (enemyDoom attrs) PlaceDoomOnAgenda
               pure $ CorpseTaker $ attrs & tokensL %~ removeAllTokens Doom
             else do
               lead <- getLead
-              closestLocationIds <- selectList $ ClosestPathLocation loc locationId
-              case closestLocationIds of
-                [lid] -> push $ EnemyMove enemyId lid
-                lids ->
-                  push $
-                    chooseOne
-                      lead
-                      [targetLabel lid [EnemyMove enemyId lid] | lid <- lids]
+              locations <- selectList $ ClosestPathLocation loc location
+              pushWhen (notNull locations)
+                $ chooseOrRunOne lead
+                $ targetLabels locations (only . EnemyMove (toId attrs))
               pure e
     _ -> CorpseTaker <$> runMessage msg attrs

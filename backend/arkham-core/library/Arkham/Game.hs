@@ -268,6 +268,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty include
         , gameTurnPlayerInvestigatorId = Nothing
         , gameLeadInvestigatorId = initialInvestigatorId
         , gamePhase = CampaignPhase
+        , gamePhaseStep = Nothing
         , gameSkillTest = Nothing
         , gameGameState = state
         , gameFocusedCards = mempty
@@ -566,6 +567,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
       , "playerOrder" .= toJSON gamePlayerOrder
       , "phase" .= toJSON gamePhase
+      , "phaseStep" .= toJSON gamePhaseStep
       , "skillTest" .= toJSON gameSkillTest
       , "skillTestChaosTokens"
           .= toJSON
@@ -2192,7 +2194,7 @@ enemyMatcherFilter = \case
               _ -> Nothing
           )
           modifiers'
-      window = mkWindow Timing.When Window.NonFast
+      window = mkWindow #when Window.NonFast
       overrideFunc = case overrides of
         [] -> id
         [o] -> overrideAbilityCriteria o
@@ -2226,7 +2228,7 @@ enemyMatcherFilter = \case
               _ -> Nothing
           )
           modifiers'
-      window = mkWindow Timing.When Window.NonFast
+      window = mkWindow #when Window.NonFast
     excluded <-
       member (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
@@ -2267,7 +2269,7 @@ enemyMatcherFilter = \case
               _ -> Nothing
           )
           modifiers'
-      window = mkWindow Timing.When (Window.DuringTurn iid)
+      window = mkWindow #when (Window.DuringTurn iid)
       overrideFunc = case overrides of
         [] -> id
         [o] -> overrideAbilityCriteria o
@@ -2299,7 +2301,7 @@ enemyMatcherFilter = \case
               _ -> Nothing
           )
           modifiers'
-      window = mkWindow Timing.When Window.NonFast
+      window = mkWindow #when Window.NonFast
     excluded <-
       member (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
@@ -2320,7 +2322,7 @@ enemyMatcherFilter = \case
           (getAbilities enemy)
   CanEngageEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    let window = mkWindow Timing.When Window.NonFast
+    let window = mkWindow #when Window.NonFast
     anyM
       ( andM
           . sequence
@@ -3402,12 +3404,12 @@ runMessages mLogger = do
     mmsg <- popMessage
     case mmsg of
       Nothing -> case gamePhase g of
-        CampaignPhase -> pure ()
-        ResolutionPhase -> pure ()
-        MythosPhase -> pure ()
-        EnemyPhase -> pure ()
-        UpkeepPhase -> pure ()
-        InvestigationPhase -> do
+        CampaignPhase {} -> pure ()
+        ResolutionPhase {} -> pure ()
+        MythosPhase {} -> pure ()
+        EnemyPhase {} -> pure ()
+        UpkeepPhase {} -> pure ()
+        InvestigationPhase {} -> do
           mTurnInvestigator <-
             runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
           let
@@ -3441,7 +3443,11 @@ runMessages mLogger = do
               runMessages mLogger
             else do
               let turnPlayer = fromJustNote "verified above" mTurnInvestigator
-              pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
+              pushAllEnd
+                [ Msg.PhaseStep
+                    (InvestigationPhaseStep InvestigatorTakesActionStep)
+                    [PlayerWindow (toId turnPlayer) [] False]
+                ]
                 >> runMessages mLogger
       Just msg -> do
         when (debugLevel == 1) $ do
@@ -3649,7 +3655,7 @@ runGameMessage msg g = case msg of
     -- The gameActionDiff will be empty after this so we do not need the diffs to store any data
     pure $ foldl' unsafePatch g (gameActionDiff g)
   EndOfGame mNextCampaignStep -> do
-    window <- checkWindows [mkWindow Timing.When Window.EndOfGame]
+    window <- checkWindows [mkWindow #when Window.EndOfGame]
     push window
     pushEnd $ EndOfScenario mNextCampaignStep
     pure g
@@ -3741,18 +3747,17 @@ runGameMessage msg g = case msg of
              ]
     pure $ g & (phaseL .~ InvestigationPhase)
   BeginGame -> do
-    whenWindow <- checkWindows [mkWindow Timing.When Window.GameBegins]
-    afterWindow <- checkWindows [mkWindow Timing.After Window.GameBegins]
-    pushAll [whenWindow, afterWindow]
+    (before, _, after) <- frame $ Window.GameBegins
+    pushAll [before, after]
     pure g
   InvestigatorsMulligan ->
     g <$ pushAll [InvestigatorMulligan iid | iid <- g ^. playerOrderL]
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
   Will (MoveFrom _ iid lid) -> do
-    window <- checkWindows [mkWindow Timing.When (Window.Leaving iid lid)]
+    window <- checkWindows [mkWindow #when (Window.Leaving iid lid)]
     g <$ push window
   After (MoveFrom _ iid lid) -> do
-    window <- checkWindows [mkWindow Timing.After (Window.Leaving iid lid)]
+    window <- checkWindows [mkWindow #after (Window.Leaving iid lid)]
     g <$ push window
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
@@ -3976,7 +3981,7 @@ runGameMessage msg g = case msg of
     enemies <- selectList $ enemyAt lid
     afterPutIntoPlayWindow <-
       checkWindows
-        [mkWindow Timing.After (Window.PutLocationIntoPlay lead lid)]
+        [mkWindow #after (Window.PutLocationIntoPlay lead lid)]
     if replaceStrategy == Swap
       then pushAll $ map EnemyCheckEngagement enemies
       else
@@ -4001,7 +4006,7 @@ runGameMessage msg g = case msg of
   When (RemoveEnemy enemy) -> do
     pushM
       $ checkWindows
-        [mkWindow Timing.When (Window.LeavePlay $ toTarget enemy)]
+        [mkWindow #when (Window.LeavePlay $ toTarget enemy)]
     pure g
   RemoveTreachery tid -> do
     popMessageMatching_ $ \case
@@ -4011,7 +4016,7 @@ runGameMessage msg g = case msg of
   When (RemoveLocation lid) -> do
     pushM
       $ checkWindows
-        [mkWindow Timing.When (Window.LeavePlay $ toTarget lid)]
+        [mkWindow #when (Window.LeavePlay $ toTarget lid)]
     pure g
   RemovedLocation lid -> do
     treacheries <- selectList $ TreacheryAt $ LocationWithId lid
@@ -4411,7 +4416,7 @@ runGameMessage msg g = case msg of
   CancelEachNext source msgTypes -> do
     push
       =<< checkWindows
-        [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
+        [mkWindow #after (Window.CancelledOrIgnoredCardOrGameEffect source)]
     for_ msgTypes $ \msgType -> do
       mRemovedMsg <- withQueue $ \queue ->
         let
@@ -4442,10 +4447,10 @@ runGameMessage msg g = case msg of
 
     pure g
   EngageEnemy iid eid False -> do
-    push =<< checkWindows [mkWindow Timing.After (Window.EnemyEngaged iid eid)]
+    push =<< checkWindows [mkWindow #after (Window.EnemyEngaged iid eid)]
     pure g
   EnemyEngageInvestigator eid iid -> do
-    push =<< checkWindows [mkWindow Timing.After (Window.EnemyEngaged iid eid)]
+    push =<< checkWindows [mkWindow #after (Window.EnemyEngaged iid eid)]
     pure g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage
@@ -4692,32 +4697,39 @@ runGameMessage msg g = case msg of
     pure g
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   Begin InvestigationPhase -> do
+    let phaseStep step msgs = Msg.PhaseStep (InvestigationPhaseStep step) msgs
     investigatorIds <- getInvestigatorIds
     phaseBeginsWindow <-
       checkWindows
-        [ mkWindow Timing.When Window.AnyPhaseBegins
-        , mkWindow Timing.When (Window.PhaseBegins InvestigationPhase)
-        , mkWindow Timing.After Window.AnyPhaseBegins
-        , mkWindow Timing.After (Window.PhaseBegins InvestigationPhase)
-        , mkWindow Timing.When Window.FastPlayerWindow
+        [ mkWindow #when Window.AnyPhaseBegins
+        , mkWindow #when (Window.PhaseBegins #investigation)
+        , mkWindow #after Window.AnyPhaseBegins
+        , mkWindow #after (Window.PhaseBegins #investigation)
         ]
+
+    fastWindow <- checkWindows [mkWindow #when Window.FastPlayerWindow]
     case investigatorIds of
       [] -> error "no investigators"
-      [iid] -> pushAll [phaseBeginsWindow, ChoosePlayer iid SetTurnPlayer]
+      [iid] ->
+        pushAll
+          [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow]
+          , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
+          , phaseStep NextInvestigatorsTurnBeginsStep [ChoosePlayer iid SetTurnPlayer]
+          ]
       xs ->
         pushAll
-          [ phaseBeginsWindow
-          , questionLabel "Choose player to take turn" (g ^. leadInvestigatorIdL)
-              $ ChooseOne
-                [PortraitLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs]
+          [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow]
+          , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
+          , phaseStep
+              NextInvestigatorsTurnBeginsStep
+              [ questionLabel "Choose player to take turn" (g ^. leadInvestigatorIdL)
+                  $ ChooseOne
+                    [PortraitLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs]
+              ]
           ]
     pure $ g & phaseL .~ InvestigationPhase
   BeginTurn x -> do
-    push
-      =<< checkWindows
-        [ mkWindow Timing.When (Window.TurnBegins x)
-        , mkWindow Timing.After (Window.TurnBegins x)
-        ]
+    pushM $ checkWindows [mkWindow #when (Window.TurnBegins x), mkWindow #after (Window.TurnBegins x)]
     pure $ g & activeInvestigatorIdL .~ x & turnPlayerInvestigatorIdL ?~ x
   ChoosePlayerOrder [x] [] -> do
     pure $ g & playerOrderL .~ [x]
@@ -4747,12 +4759,12 @@ runGameMessage msg g = case msg of
   After EndPhase -> do
     clearQueue
     case g ^. phaseL of
-      MythosPhase -> pushEnd $ Begin InvestigationPhase
-      InvestigationPhase -> pushEnd $ Begin EnemyPhase
-      EnemyPhase -> pushEnd $ Begin UpkeepPhase
-      UpkeepPhase -> pushAllEnd [EndRoundWindow, EndRound]
-      ResolutionPhase -> error "should not be called in this situation"
-      CampaignPhase -> error "should not be called in this situation"
+      MythosPhase {} -> pushEnd $ Begin InvestigationPhase
+      InvestigationPhase {} -> pushEnd $ Begin EnemyPhase
+      EnemyPhase {} -> pushEnd $ Begin UpkeepPhase
+      UpkeepPhase {} -> pushAllEnd [EndRoundWindow, EndRound]
+      ResolutionPhase {} -> error "should not be called in this situation"
+      CampaignPhase {} -> error "should not be called in this situation"
     pure
       $ g
       & (roundHistoryL %~ (<> view phaseHistoryL g))
@@ -4760,10 +4772,10 @@ runGameMessage msg g = case msg of
   EndInvestigation -> do
     whenWindow <-
       checkWindows
-        [mkWindow Timing.When (Window.PhaseEnds InvestigationPhase)]
+        [mkWindow #when (Window.PhaseEnds InvestigationPhase)]
     afterWindow <-
       checkWindows
-        [mkWindow Timing.After (Window.PhaseEnds InvestigationPhase)]
+        [mkWindow #after (Window.PhaseEnds InvestigationPhase)]
 
     pushAll [whenWindow, EndPhase, afterWindow, After EndPhase]
     pure
@@ -4773,24 +4785,24 @@ runGameMessage msg g = case msg of
   Begin EnemyPhase -> do
     phaseBeginsWindow <-
       checkWindows
-        [ mkWindow Timing.When Window.AnyPhaseBegins
-        , mkWindow Timing.When (Window.PhaseBegins EnemyPhase)
-        , mkWindow Timing.After Window.AnyPhaseBegins
-        , mkWindow Timing.After (Window.PhaseBegins EnemyPhase)
+        [ mkWindow #when Window.AnyPhaseBegins
+        , mkWindow #when (Window.PhaseBegins EnemyPhase)
+        , mkWindow #after Window.AnyPhaseBegins
+        , mkWindow #after (Window.PhaseBegins EnemyPhase)
         ]
     enemiesAttackWindow <-
       checkWindows
-        [mkWindow Timing.When Window.EnemiesAttackStep]
+        [mkWindow #when Window.EnemiesAttackStep]
     afterHuntersMoveWindow <-
       checkWindows
-        [mkWindow Timing.After Window.HuntersMoveStep]
+        [mkWindow #after Window.HuntersMoveStep]
+    let phaseStep step msgs = Msg.PhaseStep (EnemyPhaseStep step) msgs
     pushAllEnd
-      [ phaseBeginsWindow
-      , HuntersMove
-      , afterHuntersMoveWindow
-      , enemiesAttackWindow
-      , EnemiesAttack
-      , EndEnemy
+      [ phaseStep EnemyPhaseBeginsStep [phaseBeginsWindow]
+      , phaseStep HunterEnemiesMoveStep [HuntersMove, afterHuntersMoveWindow]
+      , phaseStep ResolveAttacksWindow [enemiesAttackWindow]
+      , phaseStep ResolveAttacksStep [EnemiesAttack]
+      , phaseStep EnemyPhaseEndsStep [EndEnemy]
       ]
     pure $ g & phaseL .~ EnemyPhase
   EnemyAttackFromDiscard iid source card -> do
@@ -4806,69 +4818,75 @@ runGameMessage msg g = case msg of
     pushAll
       . (: [EndPhase, After EndPhase])
         =<< checkWindows
-          [mkWindow Timing.When (Window.PhaseEnds EnemyPhase)]
+          [mkWindow #when (Window.PhaseEnds EnemyPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   Begin UpkeepPhase -> do
+    let phaseStep step msgs = Msg.PhaseStep (UpkeepPhaseStep step) msgs
     phaseBeginsWindow <-
       checkWindows
-        [ mkWindow Timing.When Window.AnyPhaseBegins
-        , mkWindow Timing.When (Window.PhaseBegins UpkeepPhase)
-        , mkWindow Timing.After Window.AnyPhaseBegins
-        , mkWindow Timing.After (Window.PhaseBegins UpkeepPhase)
+        [ mkWindow #when Window.AnyPhaseBegins
+        , mkWindow #when (Window.PhaseBegins UpkeepPhase)
+        , mkWindow #after Window.AnyPhaseBegins
+        , mkWindow #after (Window.PhaseBegins UpkeepPhase)
         ]
+    fastWindow <- checkWindows [mkWindow #when Window.FastPlayerWindow]
     pushAllEnd
-      [ phaseBeginsWindow
-      , ReadyExhausted
-      , AllDrawCardAndResource
-      , AllCheckHandSize
-      , EndUpkeep
+      [ phaseStep UpkeepPhaseBeginsStep [phaseBeginsWindow]
+      , phaseStep UpkeepPhaseBeginsWindow [fastWindow]
+      , phaseStep ResetActionsStep []
+      , phaseStep ReadyExhaustedStep [ReadyExhausted]
+      , phaseStep DrawCardAndGainResourceStep [AllDrawCardAndResource]
+      , phaseStep CheckHandSizeStep [AllCheckHandSize]
+      , phaseStep UpkeepPhaseEndsStep [EndUpkeep]
       ]
     pure $ g & phaseL .~ UpkeepPhase
   EndUpkeep -> do
     pushAll
       . (: [EndPhase, After EndPhase])
         =<< checkWindows
-          [mkWindow Timing.When (Window.PhaseEnds UpkeepPhase)]
+          [mkWindow #when (Window.PhaseEnds UpkeepPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   EndRoundWindow -> do
     windows' <-
       traverse
         (\t -> checkWindows [mkWindow t Window.AtEndOfRound])
-        [Timing.When, Timing.AtIf, Timing.After]
+        [#when, Timing.AtIf, #after]
     pushAll windows'
     pure g
   EndRound -> do
     pushAllEnd [BeginRound, Begin MythosPhase]
     pure $ g & (roundHistoryL .~ mempty)
-  Begin MythosPhase -> do
+  Begin MythosPhase {} -> do
     phaseBeginsWindow <-
       checkWindows
-        [ mkWindow Timing.When Window.AnyPhaseBegins
-        , mkWindow Timing.When (Window.PhaseBegins MythosPhase)
-        , mkWindow Timing.After Window.AnyPhaseBegins
-        , mkWindow Timing.After (Window.PhaseBegins MythosPhase)
+        [ mkWindow #when Window.AnyPhaseBegins
+        , mkWindow #when (Window.PhaseBegins MythosPhase)
+        , mkWindow #after Window.AnyPhaseBegins
+        , mkWindow #after (Window.PhaseBegins MythosPhase)
         ]
     allDrawWindow <-
       checkWindows
-        [mkWindow Timing.When Window.AllDrawEncounterCard]
+        [mkWindow #when Window.AllDrawEncounterCard]
     afterCheckDoomThreshold <-
       checkWindows
-        [mkWindow Timing.When Window.AfterCheckDoomThreshold]
-    fastWindow <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
+        [mkWindow #when Window.AfterCheckDoomThreshold]
+    fastWindow <- checkWindows [mkWindow #when Window.FastPlayerWindow]
     modifiers <- getModifiers (PhaseTarget MythosPhase)
+    let phaseStep s msgs = Msg.PhaseStep (MythosPhaseStep s) msgs
     pushAllEnd
-      $ phaseBeginsWindow
-        : [ PlaceDoomOnAgenda
+      $ phaseStep MythosPhaseBeginsStep [phaseBeginsWindow]
+        : [ phaseStep PlaceDoomOnAgendaStep [PlaceDoomOnAgenda]
           | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
           ]
-          <> [ AdvanceAgendaIfThresholdSatisfied
-             , afterCheckDoomThreshold
-             , allDrawWindow
-             , AllDrawEncounterCard
-             , fastWindow
-             , EndMythos
+          <> [ phaseStep CheckDoomThresholdStep [AdvanceAgendaIfThresholdSatisfied, afterCheckDoomThreshold]
+             , phaseStep EachInvestigatorDrawsEncounterCardStep [allDrawWindow, AllDrawEncounterCard]
+             , phaseStep MythosPhaseWindow [fastWindow]
+             , phaseStep MythosPhaseEndsStep [EndMythos]
              ]
-    pure $ g & phaseL .~ MythosPhase
+    pure $ g & phaseL .~ MythosPhase & phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep
+  Msg.PhaseStep step msgs -> do
+    pushAll msgs
+    pure $ g & phaseStepL ?~ step
   AllDrawEncounterCard -> do
     playerIds <- filterM (fmap not . isEliminated) (view playerOrderL g)
     pushAll
@@ -4885,8 +4903,7 @@ runGameMessage msg g = case msg of
   EndMythos -> do
     pushAll
       . (: [EndPhase, After EndPhase])
-        =<< checkWindows
-          [mkWindow Timing.When (Window.PhaseEnds MythosPhase)]
+        =<< checkWindows [mkWindow #when (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   BeginSkillTest skillTest -> do
     windows' <- windows [Window.InitiatedSkillTest skillTest]
@@ -4895,7 +4912,7 @@ runGameMessage msg g = case msg of
     performRevelationSkillTestWindow <-
       checkWindows
         [ mkWindow
-            Timing.When
+            #when
             ( Window.WouldPerformRevelationSkillTest
                 (skillTestInvestigator skillTest)
             )
@@ -4979,7 +4996,7 @@ runGameMessage msg g = case msg of
   BeforeSkillTest skillTest ->
     pure $ g & activeInvestigatorIdL .~ skillTestInvestigator skillTest
   BeginSkillTestAfterFast skillTest -> do
-    windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
+    windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
     pushAll [windowMsg, BeforeSkillTest skillTest, EndSkillTestWindow]
     pure $ g & (skillTestL ?~ skillTest)
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
@@ -5067,10 +5084,10 @@ runGameMessage msg g = case msg of
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   When (EnemySpawn _ lid eid) -> do
-    windowMsg <- checkWindows [mkWindow Timing.When (Window.EnemySpawns eid lid)]
+    windowMsg <- checkWindows [mkWindow #when (Window.EnemySpawns eid lid)]
     g <$ push windowMsg
   After (EnemySpawn _ lid eid) -> do
-    windowMsg <- checkWindows [mkWindow Timing.After (Window.EnemySpawns eid lid)]
+    windowMsg <- checkWindows [mkWindow #after (Window.EnemySpawns eid lid)]
     g <$ push windowMsg
   -- TODO: CHECK SpawnEnemyAt and SpawnEnemyAtEngagedWith
   SpawnEnemyAt card lid -> do
@@ -5130,7 +5147,7 @@ runGameMessage msg g = case msg of
             <> enemyCreationAfter enemyCreation
             <> [After (EnemySpawn (Just iid) lid enemyId)]
       SpawnAtLocation lid -> do
-        windows' <- checkWindows [mkWindow Timing.When (Window.EnemyWouldSpawnAt enemyId lid)]
+        windows' <- checkWindows [mkWindow #when (Window.EnemyWouldSpawnAt enemyId lid)]
         pushAll
           $ windows'
             : [ Will (EnemySpawn Nothing lid enemyId)
@@ -5183,7 +5200,7 @@ runGameMessage msg g = case msg of
     pushM
       $ checkWindows
       $ (`mkWindow` Window.Discarded iid source card)
-        <$> [Timing.When, Timing.After]
+        <$> [#when, #after]
     pure g
   InvestigatorAssignDamage iid' (InvestigatorSource iid) _ n 0 | n > 0 -> do
     let
@@ -5246,7 +5263,7 @@ runGameMessage msg g = case msg of
   InvestigatorDrawEncounterCard iid -> do
     drawEncounterCardWindow <-
       checkWindows
-        [mkWindow Timing.When (Window.WouldDrawEncounterCard iid $ g ^. phaseL)]
+        [mkWindow #when (Window.WouldDrawEncounterCard iid $ g ^. phaseL)]
     pushAll
       [ SetActiveInvestigator iid
       , drawEncounterCardWindow
@@ -5326,7 +5343,7 @@ runGameMessage msg g = case msg of
         checkWindowMessage <-
           checkWindows
             [ mkWindow
-                Timing.When
+                #when
                 (Window.DrawCard iid (toCard card) Deck.EncounterDeck)
             ]
         pushAll
@@ -5390,7 +5407,7 @@ runGameMessage msg g = case msg of
     checkWindowMessage <-
       checkWindows
         [ mkWindow
-            Timing.When
+            #when
             (Window.DrawCard iid (toCard treachery) Deck.EncounterDeck)
         ]
 

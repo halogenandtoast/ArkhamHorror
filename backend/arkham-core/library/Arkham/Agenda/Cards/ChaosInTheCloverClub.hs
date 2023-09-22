@@ -12,9 +12,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs
@@ -26,24 +23,17 @@ chaosInTheCloverClub =
   agenda (3, A) ChaosInTheCloverClub Cards.chaosInTheCloverClub (Static 7)
 
 instance HasAbilities ChaosInTheCloverClub where
-  getAbilities (ChaosInTheCloverClub x) =
-    [ mkAbility x 1 $
-      ForcedAbility $
-        PhaseBegins Timing.When $
-          PhaseIs
-            EnemyPhase
-    | onSide A x
-    ]
+  getAbilities (ChaosInTheCloverClub x) = [mkAbility x 1 $ ForcedAbility $ PhaseBegins #when #enemy | onSide A x]
 
 instance RunMessage ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       criminals <-
         selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
-      pushAll [Discard (toSource attrs) $ EnemyTarget eid | eid <- criminals]
+      pushAll $ map (Discard (toSource attrs) . toTarget) criminals
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [Label "Continue" [ScenarioResolution $ Resolution 4]]
+      lead <- getLead
+      push $ chooseOne lead [Label "Continue" [R4]]
       pure a
     _ -> ChaosInTheCloverClub <$> runMessage msg attrs

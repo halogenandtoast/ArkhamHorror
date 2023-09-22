@@ -10,9 +10,9 @@ import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyAttacks)
-import Arkham.Timing qualified as Timing
+import Arkham.Message hiding (EnemyAttacks, PhaseStep)
 import Arkham.Trait
 
 newtype EztliGuardian = EztliGuardian EnemyAttrs
@@ -21,47 +21,30 @@ newtype EztliGuardian = EztliGuardian EnemyAttrs
 
 eztliGuardian :: EnemyCard EztliGuardian
 eztliGuardian =
-  enemyWith
-    EztliGuardian
-    Cards.eztliGuardian
-    (4, Static 2, 2)
-    (1, 0)
-    ( spawnAtL
-        ?~ SpawnLocation
-          (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
-    )
+  enemyWith EztliGuardian Cards.eztliGuardian (4, Static 2, 2) (1, 0)
+    $ spawnAtL
+      ?~ SpawnLocation
+        (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
+
+investigatorMatcher :: EnemyId -> InvestigatorMatcher
+investigatorMatcher eid = InvestigatorAt $ ConnectedFrom $ locationWithEnemy eid
 
 instance HasAbilities EztliGuardian where
   getAbilities (EztliGuardian a) =
-    withBaseAbilities
-      a
-      [ limitedAbility (GroupLimit PerPhase 1)
-          $ restrictedAbility
-            a
-            1
-            ( InvestigatorExists $
-                InvestigatorAt $
-                  ConnectedFrom $
-                    LocationWithEnemy $
-                      EnemyWithId $
-                        toId a
-            )
-          $ ForcedAbility
-          $ PhaseStep Timing.When EnemiesAttackStep
-      ]
+    withBaseAbilities a
+      $ [ groupLimit PerPhase
+            $ restrictedAbility a 1 (InvestigatorExists $ investigatorMatcher $ toId a)
+            $ ForcedAbility
+            $ PhaseStep #when EnemiesAttackStep
+        ]
 
 instance RunMessage EztliGuardian where
   runMessage msg e@(EztliGuardian attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      adjacentInvestigators <-
-        selectList $
-          InvestigatorAt $
-            ConnectedFrom $
-              LocationWithEnemy
-                (EnemyWithId $ toId attrs)
+      adjacentInvestigators <- selectList $ investigatorMatcher $ toId attrs
       insertAfterMatching
-        [ EnemyWillAttack $
-          (enemyAttack (toId attrs) attrs iid)
+        [ EnemyWillAttack
+          $ (enemyAttack (toId attrs) attrs iid)
             { attackDamageStrategy = enemyDamageStrategy attrs
             }
         | iid <- adjacentInvestigators

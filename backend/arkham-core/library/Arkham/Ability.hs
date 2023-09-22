@@ -13,7 +13,6 @@ import Arkham.Cost as X
 import Arkham.Criteria as X
 
 import Arkham.Action hiding (Ability)
-import Arkham.Action qualified as Action
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
@@ -94,19 +93,19 @@ fastAbility entity idx cost criteria =
 
 fightAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
 fightAbility entity idx cost criteria =
-  (mkAbility entity idx (ActionAbility (Just Action.Fight) cost))
+  (mkAbility entity idx (fightAction cost))
     { abilityCriteria = criteria
     }
 
 evadeAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
 evadeAbility entity idx cost criteria =
-  (mkAbility entity idx (ActionAbility (Just Action.Evade) cost))
+  (mkAbility entity idx (ActionAbility (Just #evade) cost))
     { abilityCriteria = criteria
     }
 
 investigateAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
 investigateAbility entity idx cost criteria =
-  (mkAbility entity idx (ActionAbility (Just Action.Investigate) cost))
+  (mkAbility entity idx (ActionAbility (Just #investigate) cost))
     { abilityCriteria = criteria
     }
 

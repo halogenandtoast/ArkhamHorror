@@ -13,9 +13,7 @@ import Arkham.Event.Runner
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
 import Arkham.Placement
-import Arkham.Timing qualified as Timing
 
 newtype HidingSpot = HidingSpot EventAttrs
   deriving anyclass (IsEvent)
@@ -35,27 +33,18 @@ instance HasModifiersFor HidingSpot where
 
 instance HasAbilities HidingSpot where
   getAbilities (HidingSpot x) =
-    [ restrictedAbility
-        x
-        1
-        (EnemyCriteria $ EnemyExistsAtAttachedLocation AnyEnemy)
+    [ restrictedAbility x 1 (EnemyCriteria $ EnemyExistsAtAttachedLocation AnyEnemy)
         $ ForcedAbility
-        $ PhaseEnds Timing.When
-        $ PhaseIs EnemyPhase
+        $ PhaseEnds #when #enemy
     ]
 
 instance RunMessage HidingSpot where
   runMessage msg e@(HidingSpot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       locations <- selectList Anywhere
-      push $
-        chooseOne
-          iid
-          [ targetLabel location [PlaceEvent iid eid (AttachedToLocation location)]
-          | location <- locations
-          ]
+      push $ chooseOne iid $ targetLabels locations (only . PlaceEvent iid eid . AttachedToLocation)
       pure e
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pure e
     _ -> HidingSpot <$> runMessage msg attrs

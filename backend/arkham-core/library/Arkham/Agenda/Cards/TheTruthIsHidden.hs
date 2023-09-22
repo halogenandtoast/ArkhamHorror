@@ -14,7 +14,6 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -33,24 +32,15 @@ instance HasModifiersFor TheTruthIsHidden where
 
 instance HasAbilities TheTruthIsHidden where
   getAbilities (TheTruthIsHidden attrs) =
-    [ mkAbility attrs 1 $
-        ForcedAbility $
-          PlacedCounterOnEnemy
-            Timing.After
-            AnyEnemy
-            AnySource
-            ClueCounter
-            AnyValue
+    [ mkAbility attrs 1 $ ForcedAbility $ PlacedCounterOnEnemy #after AnyEnemy AnySource #clue AnyValue
     ]
 
 instance RunMessage TheTruthIsHidden where
   runMessage msg a@(TheTruthIsHidden attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      pushAll
-        [ ShuffleEncounterDiscardBackIn
-        , advanceAgendaDeck attrs
-        ]
+      pushAll [ShuffleEncounterDiscardBackIn, advanceAgendaDeck attrs]
       pure a
-    UseCardAbility _ source 1 [(windowType -> Window.PlacedClues _ target n)] _
-      | isSource attrs source -> a <$ pushAll [FlipClues target n]
+    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.PlacedClues _ target n)] _ -> do
+      push $ FlipClues target n
+      pure a
     _ -> TheTruthIsHidden <$> runMessage msg attrs

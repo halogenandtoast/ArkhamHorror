@@ -14,10 +14,8 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
@@ -25,15 +23,14 @@ newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theyreGettingOut :: AgendaCard TheyreGettingOut
-theyreGettingOut =
-  agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static 10)
+theyreGettingOut = agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static 10)
 
 instance HasAbilities TheyreGettingOut where
   getAbilities (TheyreGettingOut x) =
-    [ forcedAbility x 1 $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
-    , forcedAbility x 2 (RoundEnds Timing.When)
+    [ forcedAbility x 1 $ PhaseEnds #when #enemy
+    , forcedAbility x 2 (RoundEnds #when)
         `withCriteria` enemyExists
-          (UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy (EnemyAt $ LocationWithTitle "Parlor"))
+          (UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy (EnemyAt "Parlor"))
     ]
 
 instance RunMessage TheyreGettingOut where
@@ -45,21 +42,14 @@ instance RunMessage TheyreGettingOut where
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       lead <- getLead
-      enemiesToMove <-
-        selectList
-          $ UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy (EnemyAt $ LocationWithTitle "Parlor")
+      enemiesToMove <- selectList $ UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy (EnemyAt "Parlor")
 
-      unless (null enemiesToMove)
-        $ push
+      pushWhen (notNull enemiesToMove)
         $ chooseOneAtATime lead
-        $ [ targetLabel enemy [MoveToward (toTarget enemy) (LocationWithTitle "Parlor")]
-          | enemy <- enemiesToMove
-          ]
+        $ targetLabels enemiesToMove (\enemy -> only $ MoveToward (toTarget enemy) "Parlor")
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      ghoulCount <-
-        selectCount
-          $ EnemyWithTrait Ghoul <> EnemyAt (LocationMatchAny $ map LocationWithTitle ["Parlor", "Hallway"])
+      ghoulCount <- selectCount $ EnemyWithTrait Ghoul <> EnemyAt (LocationMatchAny ["Parlor", "Hallway"])
       pushAll $ replicate ghoulCount PlaceDoomOnAgenda
       pure a
     _ -> TheyreGettingOut <$> runMessage msg attrs

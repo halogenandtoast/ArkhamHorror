@@ -12,8 +12,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 
 newtype PiperOfAzathoth = PiperOfAzathoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -23,11 +21,11 @@ piperOfAzathoth :: EnemyCard PiperOfAzathoth
 piperOfAzathoth = enemy PiperOfAzathoth Cards.piperOfAzathoth (5, Static 7, 2) (0, 2)
 
 instance HasAbilities PiperOfAzathoth where
-  getAbilities (PiperOfAzathoth a) = [mkAbility a 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
+  getAbilities (PiperOfAzathoth a) = [mkAbility a 1 $ ForcedAbility $ PhaseEnds #when #enemy]
 
 instance RunMessage PiperOfAzathoth where
   runMessage msg e@(PiperOfAzathoth attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigators <-
         selectList
           $ InvestigatorAt (locationWithEnemy $ toId e) <> NotInvestigator (investigatorEngagedWith $ toId e)

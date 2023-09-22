@@ -29,18 +29,17 @@ instance HasModifiersFor AbandonedChapelSpectral where
   getModifiersFor (InvestigatorTarget iid) (AbandonedChapelSpectral a) = do
     here <- iid <=~> investigatorAt (toId a)
     phase <- getPhase
-    pure $ toModifiers a [SkillModifier sType (-1) | here, phase == MythosPhase, sType <- allSkills]
+    pure $ toModifiers a [SkillModifier sType (-1) | here, isMythosPhase phase, sType <- allSkills]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AbandonedChapelSpectral where
   getAbilities (AbandonedChapelSpectral a) =
-    withRevealedAbilities
-      a
-      [haunted "Until the end of the round, you get -1 to each skill." a 1]
+    withRevealedAbilities a
+      $ [haunted "Until the end of the round, you get -1 to each skill." a 1]
 
 instance RunMessage AbandonedChapelSpectral where
   runMessage msg l@(AbandonedChapelSpectral attrs) = case msg of
-    Flip _ _ target | isTarget attrs target -> do
+    Flip _ _ (isTarget attrs -> True) -> do
       regular <- genCard Locations.abandonedChapel
       push $ ReplaceLocation (toId attrs) regular Swap
       pure l

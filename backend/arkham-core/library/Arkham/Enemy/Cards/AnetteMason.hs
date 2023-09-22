@@ -12,9 +12,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype AnetteMason = AnetteMason EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -23,25 +21,12 @@ newtype AnetteMason = AnetteMason EnemyAttrs
 anetteMason :: EnemyCard AnetteMason
 anetteMason = enemy AnetteMason Cards.anetteMason (4, PerPlayer 4, 4) (1, 1)
 
--- Forced - After the enemy phase begins: Discard the top 3 cards of the
--- encounter deck. Spawn each Witch enemy discarded by this effect at Anette
--- Mason's location. If no Witch enemies are discarded by this effect, ready
--- her.
-
 instance HasAbilities AnetteMason where
-  getAbilities (AnetteMason a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            PhaseBegins Timing.After $
-              PhaseIs
-                EnemyPhase
-      ]
+  getAbilities (AnetteMason a) = withBaseAbilities a [mkAbility a 1 $ ForcedAbility $ PhaseBegins #after #enemy]
 
 instance RunMessage AnetteMason where
   runMessage msg e@(AnetteMason attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ DiscardTopOfEncounterDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
       pure e
     DiscardedTopOfEncounterDeck _ cards _ (isTarget attrs -> True) -> do

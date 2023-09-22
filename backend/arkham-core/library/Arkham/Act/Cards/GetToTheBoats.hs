@@ -14,8 +14,6 @@ import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 
 newtype GetToTheBoats = GetToTheBoats ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -27,19 +25,11 @@ getToTheBoats = act (2, A) GetToTheBoats Cards.getToTheBoats Nothing
 instance HasAbilities GetToTheBoats where
   getAbilities (GetToTheBoats x)
     | onSide A x =
-        [ mkAbility x 1 $
-            ForcedAbility $
-              PhaseBegins Timing.After $
-                PhaseIs
-                  MythosPhase
+        [ mkAbility x 1 $ ForcedAbility $ PhaseBegins #after #mythos
         , restrictedAbility
             x
             2
-            ( EachUndefeatedInvestigator $
-                InvestigatorAt $
-                  LocationWithTitle
-                    "Canal-side"
-            )
+            (EachUndefeatedInvestigator $ InvestigatorAt "Canal-side")
             $ Objective
             $ ForcedAbility AnyWindow
         ]
@@ -50,23 +40,18 @@ instance RunMessage GetToTheBoats where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       gondola <- genEncounterCard Locations.gondola
       leadInvestigatorId <- getLeadInvestigatorId
-      a
-        <$ pushAll
-          [ InvestigatorDrewEncounterCard leadInvestigatorId gondola
-          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-          ]
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      targets <-
-        selectListMap
-          AssetTarget
-          (AssetWithTitle "Masked Carnevale-Goer")
-      unless (null targets) $
-        pushAll
-          [ chooseOne
-              iid
-              [TargetLabel target [Flip iid source target] | target <- targets]
-          ]
+      pushAll
+        [ InvestigatorDrewEncounterCard leadInvestigatorId gondola
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
+      targets <- selectTargets $ AssetWithTitle "Masked Carnevale-Goer"
+      unless (null targets) $ pushAll [chooseOne iid $ targetLabels targets (only . Flip iid source)]
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      let source = toAbilitySource attrs 2
+      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+      pure a
     _ -> GetToTheBoats <$> runMessage msg attrs

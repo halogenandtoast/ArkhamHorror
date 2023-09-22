@@ -10,9 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
-import Arkham.Timing qualified as Timing
 
 newtype JordanPerry = JordanPerry AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -26,35 +24,23 @@ instance HasAbilities JordanPerry where
     [ restrictedAbility
         a
         1
-        ( OnSameLocation
-            <> InvestigatorExists
-              (You <> InvestigatorWithResources (AtLeast $ Static 10))
-        )
-        $ ActionAbility Nothing
-        $ ActionCost 1
-    , mkAbility a 2 $
-        ForcedAbility $
-          LastClueRemovedFromAsset Timing.When $
-            AssetWithId $
-              toId a
+        (OnSameLocation <> InvestigatorExists (You <> InvestigatorWithResources (atLeast 10)))
+        actionAbility
+    , mkAbility a 2 $ ForcedAbility $ LastClueRemovedFromAsset #when $ AssetWithId (toId a)
     ]
 
 instance RunMessage JordanPerry where
   runMessage msg a@(JordanPerry attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid source attrs SkillIntellect 2
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 1) attrs #intellect 2
       pure a
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      let source = toAbilitySource attrs 1
       modifiers <- getModifiers iid
-      when
-        (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
-        ( pushAll
-            [ RemoveClues (toAbilitySource attrs 1) (toTarget attrs) 1
-            , GainClues iid (toAbilitySource attrs 1) 1
-            ]
-        )
+      when (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
+        $ pushAll [RemoveClues source (toTarget attrs) 1, GainClues iid source 1]
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       langneauPerdu <- genCard Story.langneauPerdu
       push $ ReadStory iid langneauPerdu ResolveIt (Just $ toTarget attrs)
       pure a

@@ -178,6 +178,9 @@ data AssetMatcher
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsString AssetMatcher where
+  fromString = AssetWithTitle . fromString
+
 instance IsLabel "ally" AssetMatcher where
   fromLabel = AssetWithTrait Ally
 
@@ -845,14 +848,20 @@ instance Semigroup ChaosTokenMatcher where
 instance Monoid ChaosTokenMatcher where
   mempty = AnyChaosToken
 
-data PhaseMatcher = AnyPhase | IsMythosPhase | IsEnemyPhase
+data PhaseMatcher = AnyPhase | IsMythosPhase | IsEnemyPhase | IsInvestigationPhase | IsUpkeepPhase
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "mythos" PhaseMatcher where
   fromLabel = IsMythosPhase
 
+instance IsLabel "upkeep" PhaseMatcher where
+  fromLabel = IsUpkeepPhase
+
 instance IsLabel "enemy" PhaseMatcher where
   fromLabel = IsEnemyPhase
+
+instance IsLabel "investigation" PhaseMatcher where
+  fromLabel = IsInvestigationPhase
 
 data WindowMythosStepMatcher
   = WhenAllDrawEncounterCard
@@ -861,6 +870,9 @@ data WindowMythosStepMatcher
 
 data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter | ResourceCounter
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "clue" CounterMatcher where
+  fromLabel = ClueCounter
 
 data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher]
   deriving stock (Show, Eq, Ord, Data)

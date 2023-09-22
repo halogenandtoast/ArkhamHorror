@@ -11,8 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 
 newtype TheExperiment = TheExperiment EnemyAttrs
   deriving anyclass (IsEnemy)
@@ -23,20 +21,10 @@ theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)
 
 instance HasAbilities TheExperiment where
   getAbilities (TheExperiment x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            PhaseBegins Timing.When $
-              PhaseIs
-                EnemyPhase
-      , mkAbility x 2 $
-          Objective $
-            ForcedAbility $
-              EnemyDefeated Timing.When You ByAny $
-                EnemyWithId $
-                  toId x
-      ]
+    withBaseAbilities x
+      $ [ mkAbility x 1 $ ForcedAbility $ PhaseBegins #when #enemy
+        , mkAbility x 2 $ Objective $ ForcedAbility $ EnemyDefeated #when You ByAny $ EnemyWithId (toId x)
+        ]
 
 instance HasModifiersFor TheExperiment where
   getModifiersFor target (TheExperiment attrs) | isTarget attrs target = do
@@ -46,10 +34,11 @@ instance HasModifiersFor TheExperiment where
 
 instance RunMessage TheExperiment where
   runMessage msg e@(TheExperiment attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          e <$ push (Ready $ toTarget attrs)
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Ready $ toTarget attrs
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       actId <- selectJust AnyAct
-      e <$ push (AdvanceAct actId (toSource attrs) AdvancedWithOther)
+      push $ AdvanceAct actId (toSource attrs) AdvancedWithOther
+      pure e
     _ -> TheExperiment <$> runMessage msg attrs

@@ -15,8 +15,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Act
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message
-import Arkham.Timing qualified as Timing
+import Arkham.Message hiding (PhaseStep)
 import Arkham.Trait (Trait (Humanoid, SilverTwilight, Spectral), toTraits)
 
 newtype OverTheThreshold = OverTheThreshold AgendaAttrs
@@ -26,10 +25,7 @@ newtype OverTheThreshold = OverTheThreshold AgendaAttrs
 instance HasModifiersFor OverTheThreshold where
   getModifiersFor (EnemyTarget eid) (OverTheThreshold a) = do
     isSilverTwilight <- eid <=~> EnemyWithTrait SilverTwilight
-    pure $
-      toModifiers
-        a
-        [CountsAsInvestigatorForHunterEnemies | isSilverTwilight]
+    pure $ toModifiers a [CountsAsInvestigatorForHunterEnemies | isSilverTwilight]
   getModifiersFor (CardIdTarget cid) (OverTheThreshold a) = do
     card <- getCard cid
     let isSilverTwilight = SilverTwilight `member` toTraits card
@@ -37,23 +33,18 @@ instance HasModifiersFor OverTheThreshold where
   getModifiersFor _ _ = pure []
 
 overTheThreshold :: AgendaCard OverTheThreshold
-overTheThreshold =
-  agenda (2, A) OverTheThreshold Cards.overTheThreshold (Static 11)
+overTheThreshold = agenda (2, A) OverTheThreshold Cards.overTheThreshold (Static 11)
 
 instance HasAbilities OverTheThreshold where
   getAbilities (OverTheThreshold a) =
     [ restrictedAbility
         a
         1
-        ( EnemyCriteria $
-            EnemyExists $
-              ReadyEnemy
-                <> EnemyWithTrait Spectral
-                <> EnemyAt
-                  (LocationWithEnemy $ EnemyWithTrait Humanoid)
+        ( enemyExists
+            $ ReadyEnemy <> EnemyWithTrait Spectral <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Humanoid)
         )
         $ ForcedAbility
-        $ PhaseStep Timing.After HuntersMoveStep
+        $ PhaseStep #after HuntersMoveStep
     ]
 
 instance RunMessage OverTheThreshold where
@@ -62,40 +53,25 @@ instance RunMessage OverTheThreshold where
       step <- getCurrentActStep
       iids <- getInvestigatorIds
       if step == 2
-        then push $ scenarioResolution 3
-        else
-          pushAll $
-            concatMap
-              ( \iid ->
-                  [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
-              )
-              iids
+        then push R3
+        else pushAll $ concatMap (\iid -> [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]) iids
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      spectralEnemies <-
-        selectWithField EnemyHealthDamage $
-          EnemyWithTrait Spectral <> ReadyEnemy
+      spectralEnemies <- selectWithField EnemyHealthDamage $ EnemyWithTrait Spectral <> ReadyEnemy
       enemyPairs <-
         catMaybes <$> for
           spectralEnemies
           \(enemy, damage) -> do
-            humanoids <-
-              selectList $
-                EnemyWithTrait Humanoid
-                  <> EnemyAt
-                    (locationWithEnemy enemy)
+            humanoids <- selectList $ EnemyWithTrait Humanoid <> EnemyAt (locationWithEnemy enemy)
             pure $ guard (notNull humanoids) $> (enemy, damage, humanoids)
       lead <- getLead
-      when (notNull enemyPairs) $
-        push $
-          chooseOrRunOneAtATime
-            lead
-            [ targetLabel
-              enemy
-              [ EnemyDamage humanoid $ nonAttack (EnemySource enemy) damage
+      pushWhen (notNull enemyPairs)
+        $ chooseOrRunOneAtATime lead
+        $ [ targetLabel enemy
+            $ [ EnemyDamage humanoid $ nonAttack (EnemySource enemy) damage
               | humanoid <- humanoids
               ]
-            | (enemy, damage, humanoids) <- enemyPairs
-            ]
+          | (enemy, damage, humanoids) <- enemyPairs
+          ]
       pure a
     _ -> OverTheThreshold <$> runMessage msg attrs

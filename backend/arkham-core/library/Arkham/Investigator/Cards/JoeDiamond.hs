@@ -53,11 +53,7 @@ instance HasModifiersFor JoeDiamond where
 
 instance HasAbilities JoeDiamond where
   getAbilities (JoeDiamond (a `With` _)) =
-    [ restrictedAbility a 1 Self
-        $ ForcedAbility
-        $ PhaseBegins Timing.When
-        $ PhaseIs InvestigationPhase
-    ]
+    [restrictedAbility a 1 Self $ ForcedAbility $ PhaseBegins #when #investigation]
 
 instance HasChaosTokenValue JoeDiamond where
   getChaosTokenValue iid ElderSign (JoeDiamond (attrs `With` _)) | attrs `is` iid = do
@@ -116,7 +112,7 @@ instance RunMessage JoeDiamond where
         x : _ | Just (toCardId x) == revealedHunchCard meta -> do
           wouldBeWindow <-
             checkWindows
-              [ mkWindow Timing.When (Window.WouldBeShuffledIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) x)
+              [ mkWindow #when (Window.WouldBeShuffledIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) x)
               ]
           pushAll [wouldBeWindow, ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [x]]
         _ -> pure ()

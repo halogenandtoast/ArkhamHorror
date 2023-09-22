@@ -59,6 +59,7 @@ data Game = Game
     gamePlayerOrder :: [InvestigatorId]
   , -- Game Details
     gamePhase :: Phase
+  , gamePhaseStep :: Maybe PhaseStep
   , gameSkillTest :: Maybe SkillTest
   , gameFocusedCards :: [Card]
   , gameFocusedTarotCards :: [TarotCard]

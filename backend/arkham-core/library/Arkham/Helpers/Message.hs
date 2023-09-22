@@ -354,6 +354,9 @@ gainResourcesIfCan iid source n = do
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage
 
+placeDoom :: (Sourceable source, Targetable target) => source -> target -> Int -> Message
+placeDoom (toSource -> source) (toTarget -> target) n = PlaceDoom source target n
+
 -- This is obviously very complicated, but it feels like it shouldn't be
 -- However we find the correct message and only remove the amount indicated
 cancelDoom :: HasQueue Message m => Target -> Int -> m ()

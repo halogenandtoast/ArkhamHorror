@@ -11,8 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 
 newtype JordanPerry = JordanPerry EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -23,17 +21,15 @@ jordanPerry = enemy JordanPerry Cards.jordanPerry (2, Static 8, 2) (1, 1)
 
 instance HasAbilities JordanPerry where
   getAbilities (JordanPerry a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy EnemyWithAnyDamage) $
-          ForcedAbility $
-            PhaseBegins Timing.When $
-              PhaseIs EnemyPhase
-      ]
+    withBaseAbilities a
+      $ [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy EnemyWithAnyDamage)
+            $ ForcedAbility
+            $ PhaseBegins #when #enemy
+        ]
 
 instance RunMessage JordanPerry where
   runMessage msg e@(JordanPerry attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ HealDamage (toTarget attrs) (toSource attrs) 1
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ HealDamage (toTarget attrs) (toAbilitySource attrs 1) 1
       pure e
     _ -> JordanPerry <$> runMessage msg attrs

@@ -12,8 +12,6 @@ import Arkham.Enemy.Runner hiding (EnemyEvade, EnemyFight)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Phase
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Humanoid))
 
 newtype SummonedBeast = SummonedBeast EnemyAttrs
@@ -36,33 +34,27 @@ instance HasAbilities SummonedBeast where
       [ restrictedAbility
           attrs
           1
-          ( enemyExists $
-              EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Humanoid
-          )
+          (enemyExists $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Humanoid)
           $ ForcedAbility
-          $ PhaseBegins Timing.When
-          $ PhaseIs
-            EnemyPhase
-      , mkAbility attrs 2 $
-          Objective $
-            ForcedAbility $
-              EnemyDefeated Timing.When Anyone ByAny $
-                EnemyWithId $
-                  toId attrs
+          $ PhaseBegins #when #enemy
+      , mkAbility attrs 2
+          $ Objective
+          $ ForcedAbility
+          $ EnemyDefeated #when Anyone ByAny (EnemyWithId $ toId attrs)
       ]
 
 instance RunMessage SummonedBeast where
   runMessage msg e@(SummonedBeast attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLead
       humanoids <- selectList $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Humanoid
       doom <- selectSum EnemyDoom $ EnemyOneOf $ map EnemyWithId humanoids
       defeatMessages <- for humanoids $ \humanoid -> do
         defeatEnemy humanoid lead (toAbilitySource attrs 1)
 
-      pushAll $ concat defeatMessages <> [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) doom]
+      pushAll $ concat defeatMessages <> [placeDoom (toAbilitySource attrs 1) attrs doom]
       pure e
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ scenarioResolution 3
+      push R3
       pure e
     _ -> SummonedBeast <$> runMessage msg attrs

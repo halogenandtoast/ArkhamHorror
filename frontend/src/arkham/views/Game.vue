@@ -751,6 +751,18 @@ header {
     padding-bottom: 15px;
     aspect-ratio: 5/7;
     perspective: 1000px;
+    &:nth-child(1) {
+      animation-delay: 0.3s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: 0.6s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.9s;
+    }
+
     :deep(.card-container) {
       transform: rotateY(-180deg);
       transform-style: preserve-3d;
@@ -761,19 +773,7 @@ header {
       animation: flip-front 0.3s linear;
       //animation-delay: 0.3s;
       animation-fill-mode: forwards;
-
-      &:nth-child(1) {
-        animation-delay: 0.3s;
-      }
-
-      &:nth-child(2) {
-        animation-delay: 0.6s;
-      }
-
-      &:nth-child(3) {
-        animation-delay: 0.9s;
-      }
-
+      animation-delay: inherit;
     }
 
     .card-container {
@@ -789,18 +789,7 @@ header {
       backface-visibility: hidden;
       animation: flip-back 0.3s linear;
       animation-fill-mode: forwards;
-
-      &:nth-child(1) {
-        animation-delay: 0.3s;
-      }
-
-      &:nth-child(2) {
-        animation-delay: 0.6s;
-      }
-
-      &:nth-child(3) {
-        animation-delay: 0.9s;
-      }
+      animation-delay: inherit;
     }
   }
 

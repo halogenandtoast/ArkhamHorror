@@ -350,6 +350,7 @@ data Message
   | -- Game State Control
     BeginGame
   | Begin Phase
+  | PhaseStep PhaseStep [Message]
   | BeginRound
   | BeginSkillTest SkillTest
   | BeginSkillTestAfterFast SkillTest

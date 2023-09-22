@@ -10,7 +10,7 @@ import { Campaign, campaignDecoder } from '@/arkham/types/Campaign';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Act, actDecoder } from '@/arkham/types/Act';
 import { Agenda, agendaDecoder } from '@/arkham/types/Agenda';
-import { Phase, phaseDecoder } from '@/arkham/types/Phase';
+import { Phase, phaseDecoder, PhaseStep, phaseStepDecoder } from '@/arkham/types/Phase';
 import { Asset, assetDecoder } from '@/arkham/types/Asset';
 import { Event, eventDecoder } from '@/arkham/types/Event';
 import { Question, questionDecoder } from '@/arkham/types/Question';
@@ -50,6 +50,7 @@ export interface Game {
   leadInvestigatorId: string;
   locations: Record<string, Location>;
   phase: Phase;
+  phaseStep: PhaseStep | null;
   playerOrder: string[];
   question: Record<string, Question>;
   scenario: Scenario | null;
@@ -154,6 +155,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     leadInvestigatorId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
+    phaseStep: JsonDecoder.nullable(phaseStepDecoder),
     playerOrder: JsonDecoder.array(JsonDecoder.string, 'PlayerOrder[]'),
     question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
     scenario: modeDecoder.map(mode => mode.That || null),

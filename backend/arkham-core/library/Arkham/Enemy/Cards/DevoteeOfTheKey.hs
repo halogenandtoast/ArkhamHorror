@@ -11,9 +11,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Phase
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,44 +19,28 @@ newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
 
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey
 devoteeOfTheKey =
-  enemyWith
-    DevoteeOfTheKey
-    Cards.devoteeOfTheKey
-    (3, Static 3, 3)
-    (1, 1)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Base of the Hill"))
+  enemyWith DevoteeOfTheKey Cards.devoteeOfTheKey (3, Static 3, 3) (1, 1)
+    $ spawnAtL ?~ SpawnLocation "Base of the Hill"
 
 instance HasAbilities DevoteeOfTheKey where
   getAbilities (DevoteeOfTheKey attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            PhaseEnds Timing.When $
-              PhaseIs
-                EnemyPhase
-      ]
+    withBaseAbilities attrs [mkAbility attrs 1 $ ForcedAbility $ PhaseEnds #when #enemy]
 
 instance RunMessage DevoteeOfTheKey where
-  runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      enemyLocation <- field EnemyLocation enemyId
+  runMessage msg e@(DevoteeOfTheKey attrs) = case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      enemyLocation <- field EnemyLocation (toId attrs)
       for_ enemyLocation $ \loc -> do
-        leadInvestigatorId <- getLeadInvestigatorId
         sentinelPeak <- selectJust (LocationWithTitle "Sentinel Peak")
         if loc == sentinelPeak
           then
             pushAll
               [Discard (toAbilitySource attrs 1) (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
           else do
+            lead <- getLead
             choices <- selectList $ ClosestPathLocation loc sentinelPeak
             case choices of
               [] -> error "should not happen"
-              [x] -> push (EnemyMove enemyId x)
-              xs ->
-                push $
-                  chooseOne
-                    leadInvestigatorId
-                    [targetLabel x [EnemyMove enemyId x] | x <- xs]
+              xs -> push $ chooseOrRunOne lead $ targetLabels xs (only . EnemyMove (toId attrs))
       pure e
     _ -> DevoteeOfTheKey <$> runMessage msg attrs

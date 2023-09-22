@@ -29,12 +29,12 @@ instance HasModifiersFor AbandonedChapel where
   getModifiersFor (InvestigatorTarget iid) (AbandonedChapel a) = do
     here <- iid <=~> investigatorAt (toId a)
     phase <- getPhase
-    pure $ toModifiers a [SkillModifier sType (-1) | here, phase == MythosPhase, sType <- allSkills]
+    pure $ toModifiers a [SkillModifier sType (-1) | here, isMythosPhase phase, sType <- allSkills]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AbandonedChapel where
   runMessage msg l@(AbandonedChapel attrs) = case msg of
-    Flip _ _ target | isTarget attrs target -> do
+    Flip _ _ (isTarget attrs -> True) -> do
       spectral <- genCard Locations.abandonedChapelSpectral
       push $ ReplaceLocation (toId attrs) spectral Swap
       pure l

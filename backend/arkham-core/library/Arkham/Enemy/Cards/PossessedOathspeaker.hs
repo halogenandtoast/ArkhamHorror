@@ -12,62 +12,41 @@ import Arkham.Enemy.Runner
 import Arkham.Helpers.Agenda
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Phase
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
-import Arkham.Token
 
 newtype PossessedOathspeaker = PossessedOathspeaker EnemyAttrs
   deriving anyclass (IsEnemy)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 possessedOathspeaker :: EnemyCard PossessedOathspeaker
-possessedOathspeaker =
-  enemy
-    PossessedOathspeaker
-    Cards.possessedOathspeaker
-    (4, PerPlayer 5, 3)
-    (2, 2)
+possessedOathspeaker = enemy PossessedOathspeaker Cards.possessedOathspeaker (4, PerPlayer 5, 3) (2, 2)
 
 instance HasModifiersFor PossessedOathspeaker where
-  getModifiersFor (EnemyTarget eid) (PossessedOathspeaker attrs)
-    | toId attrs == eid = do
-        step <- getCurrentAgendaStep
-        pure $ toModifiers attrs [CannotBeDamaged | step == 1 || step == 2]
+  getModifiersFor (EnemyTarget eid) (PossessedOathspeaker attrs) | toId attrs == eid = do
+    step <- getCurrentAgendaStep
+    pure $ toModifiers attrs [CannotBeDamaged | step `elem` [1, 2]]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PossessedOathspeaker where
   getAbilities (PossessedOathspeaker a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            PhaseBegins Timing.When $
-              PhaseIs
-                EnemyPhase
-      , mkAbility a 2 $
-          ForcedAbility $
-            EnemyDefeated Timing.When Anyone ByAny $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1 $ ForcedAbility $ PhaseBegins #when #enemy
+        , mkAbility a 2 $ ForcedAbility $ EnemyDefeated #when Anyone ByAny $ EnemyWithId $ toId a
+        ]
 
 instance RunMessage PossessedOathspeaker where
   runMessage msg e@(PossessedOathspeaker attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       leadInvestigatorIdL <- getLeadInvestigatorId
-      push $
-        if enemyExhausted attrs
-          then
-            chooseOne
-              leadInvestigatorIdL
-              [ Label "Ready Possessed Oathspeaker" [Ready (toTarget attrs)]
-              , Label
-                  "Place 1 doom on Possessed Oathspeaker"
-                  [PlaceTokens (toSource attrs) (toTarget attrs) Doom 1]
+      if enemyExhausted attrs
+        then
+          push
+            $ chooseOne leadInvestigatorIdL
+            $ [ Label "Ready Possessed Oathspeaker" [ready attrs]
+              , Label "Place 1 doom on Possessed Oathspeaker" [placeDoom (toAbilitySource attrs 1) attrs 1]
               ]
-          else PlaceTokens (toSource attrs) (toTarget attrs) Doom 1
+        else push $ placeDoom (toAbilitySource attrs 1) attrs 1
       pure e
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      e <$ push (ScenarioResolution $ Resolution 3)
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      push R3
+      pure e
     _ -> PossessedOathspeaker <$> runMessage msg attrs

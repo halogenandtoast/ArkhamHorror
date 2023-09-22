@@ -5,6 +5,7 @@ module Arkham.SlotType where
 import Arkham.Prelude
 
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 data SlotType
   = HandSlot
@@ -14,6 +15,24 @@ data SlotType
   | ArcaneSlot
   | TarotSlot
   deriving stock (Show, Ord, Eq, Bounded, Enum, Data)
+
+instance IsLabel "hand" SlotType where
+  fromLabel = HandSlot
+
+instance IsLabel "body" SlotType where
+  fromLabel = BodySlot
+
+instance IsLabel "ally" SlotType where
+  fromLabel = AllySlot
+
+instance IsLabel "accessory" SlotType where
+  fromLabel = AccessorySlot
+
+instance IsLabel "arcane" SlotType where
+  fromLabel = ArcaneSlot
+
+instance IsLabel "tarot" SlotType where
+  fromLabel = TarotSlot
 
 slotName :: SlotType -> Text
 slotName = \case

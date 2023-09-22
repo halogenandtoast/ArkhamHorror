@@ -22,8 +22,8 @@ abbessAllegriaDiBiase = ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (
 
 instance HasAbilities AbbessAllegriaDiBiase where
   getAbilities (AbbessAllegriaDiBiase attrs) =
-    [ fastAbility attrs 1 (exhaust attrs) $
-        AnyCriterion
+    [ fastAbility attrs 1 (exhaust attrs)
+        $ AnyCriterion
           [ OnSameLocation <> LocationExists AccessibleLocation
           , LocationExists $ YourLocation <> ConnectedTo (locationWithAsset attrs)
           ]
@@ -31,16 +31,15 @@ instance HasAbilities AbbessAllegriaDiBiase where
 
 instance RunMessage AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       location <- getJustLocation iid
       abbessLocation <- fieldJust AssetLocation attrs
       if location == abbessLocation
         then do
           connectedLocations <- selectList $ accessibleFrom location
-          push . chooseOrRunOne iid $
-            [ targetLabel connectedLocation [Move $ move attrs iid connectedLocation]
-            | connectedLocation <- connectedLocations
-            ]
+          push
+            $ chooseOrRunOne iid
+            $ targetLabels connectedLocations (only . Move . move attrs iid)
         else push $ Move $ move attrs iid abbessLocation
       pure a
     _ -> AbbessAllegriaDiBiase <$> runMessage msg attrs

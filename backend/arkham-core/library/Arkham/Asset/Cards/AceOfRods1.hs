@@ -10,13 +10,9 @@ import Arkham.Ability
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
-import Arkham.Window (defaultWindows)
 
 newtype AceOfRods1 = AceOfRods1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,20 +24,19 @@ aceOfRods1 = asset AceOfRods1 Cards.aceOfRods1
 instance HasAbilities AceOfRods1 where
   getAbilities (AceOfRods1 a) =
     [ restrictedAbility a 1 (ControlsThis <> DuringTurn You) $ FastAbility Free
-    , restrictedAbility a 2 InYourHand $
-        ReactionAbility (GameBegins Timing.When) Free
+    , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
     ]
 
 instance RunMessage AceOfRods1 where
   runMessage msg a@(AceOfRods1 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ RemoveFromGame (toTarget attrs)
         , createCardEffect Cards.aceOfRods1 Nothing attrs iid
         ]
       pure a
-    InHand _ (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> AceOfRods1 <$> runMessage msg attrs
 
@@ -70,8 +65,7 @@ instance RunMessage AceOfRods1Effect where
       CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == toId attrs -> do
         push
           $ GainAdditionalAction iid (toSource attrs)
-          $ EffectAction
-            "Use Ace of Rods (1) extra action with +2 to each skill"
+          $ EffectAction "Use Ace of Rods (1) extra action with +2 to each skill"
           $ toId attrs
         pure e
       UseEffectAction iid eid _ | eid == toId attrs -> do

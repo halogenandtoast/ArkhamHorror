@@ -3,7 +3,6 @@ module Arkham.Location.Cards.Parlor where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
@@ -30,22 +29,19 @@ instance HasAbilities Parlor where
       $ [ withTooltip "\"This is too much for me!\" You run out the front door, fleeing in panic."
             $ locationResignAction attrs
         , restrictedAbility
-            ( ProxySource
-                (AssetMatcherSource $ assetIs Cards.litaChantler)
-                (toSource attrs)
-            )
+            (proxy (assetIs Cards.litaChantler) attrs)
             1
             (Uncontrolled <> OnSameLocation)
-            $ ActionAbility (Just Action.Parley) (ActionCost 1)
+            #parley
         ]
 
 instance RunMessage Parlor where
   runMessage msg l@(Parlor attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
       aid <- selectJust $ assetIs Cards.litaChantler
-      push $ parley iid source aid #intellect 4
+      push $ parley iid attrs aid #intellect 4
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       aid <- selectJust $ assetIs Cards.litaChantler
       push $ TakeControlOfAsset iid aid
       pure l

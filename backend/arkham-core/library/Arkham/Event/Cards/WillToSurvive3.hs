@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Message
 
 newtype WillToSurvive3 = WillToSurvive3 EventAttrs
@@ -16,7 +17,7 @@ willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 
 instance RunMessage WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ CreateEffect "01085" Nothing (toSource attrs) (toTarget iid)
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      push $ turnModifier attrs iid DoNotDrawChaosTokensForSkillChecks
       pure e
     _ -> WillToSurvive3 <$> runMessage msg attrs

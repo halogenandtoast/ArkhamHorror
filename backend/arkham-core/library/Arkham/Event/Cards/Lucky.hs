@@ -17,10 +17,7 @@ lucky = event Lucky Cards.lucky
 
 instance RunMessage Lucky where
   runMessage msg e@(Lucky attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ skillTestModifier attrs iid (AnySkillValue 2)
-        , RerunSkillTest
-        ]
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      pushAll [skillTestModifier attrs iid (AnySkillValue 2), RerunSkillTest]
       pure e
     _ -> Lucky <$> runMessage msg attrs

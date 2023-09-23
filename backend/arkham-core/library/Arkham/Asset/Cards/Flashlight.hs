@@ -6,12 +6,10 @@ module Arkham.Asset.Cards.Flashlight (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
 import Arkham.Projection
 
 newtype Flashlight = Flashlight AssetAttrs
@@ -23,18 +21,15 @@ flashlight = asset Flashlight Cards.flashlight
 
 instance HasAbilities Flashlight where
   getAbilities (Flashlight x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
-    ]
+    [restrictedAbility x 1 ControlsThis $ investigateAction (assetUseCost x Supply 1)]
 
 instance RunMessage Flashlight where
   runMessage msg a@(Flashlight attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       lid <- fieldJust InvestigatorLocation iid
       skillType <- field LocationInvestigateSkill lid
       pushAll
-        [ skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-2))
+        [ skillTestModifier attrs lid (ShroudModifier (-2))
         , Investigate iid lid (toSource attrs) Nothing skillType False
         ]
       pure a

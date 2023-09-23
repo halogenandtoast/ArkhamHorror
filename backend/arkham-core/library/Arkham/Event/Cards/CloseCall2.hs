@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window
 
@@ -22,8 +21,7 @@ closeCall2 = event CloseCall2 Cards.closeCall2
 
 instance RunMessage CloseCall2 where
   runMessage msg e@(CloseCall2 attrs) = case msg of
-    InvestigatorPlayEvent _iid eid _ [Window Timing.After (Window.EnemyEvaded _ enemyId) _] _
-      | eid == toId attrs -> do
-          push $ ShuffleBackIntoEncounterDeck (toTarget enemyId)
-          pure e
+    InvestigatorPlayEvent _iid eid _ [(windowType -> Window.EnemyEvaded _ enemyId)] _ | attrs `is` eid -> do
+      push $ ShuffleBackIntoEncounterDeck (toTarget enemyId)
+      pure e
     _ -> CloseCall2 <$> runMessage msg attrs

@@ -368,6 +368,11 @@ data LocationMatcher
 
 instance Plated LocationMatcher
 
+class IsMatcher a
+instance IsMatcher LocationMatcher
+class IsMatcher b => Be a b where
+  be :: a -> b
+
 instance IsString LocationMatcher where
   fromString = LocationWithTitle . fromString
 
@@ -495,6 +500,9 @@ instance IsLabel "ally" ExtendedCardMatcher where
 instance IsLabel "asset" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #asset
 
+instance IsLabel "enemy" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #enemy
+
 instance IsLabel "treachery" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #treachery
 
@@ -541,6 +549,9 @@ instance IsLabel "treachery" CardMatcher where
 
 instance IsLabel "event" CardMatcher where
   fromLabel = CardWithType EventType
+
+instance IsLabel "enemy" CardMatcher where
+  fromLabel = CardWithType EnemyType
 
 instance IsLabel "asset" CardMatcher where
   fromLabel = CardWithType AssetType

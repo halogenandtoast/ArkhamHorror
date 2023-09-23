@@ -8,7 +8,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (attic)
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype Attic = Attic LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,12 +18,11 @@ attic = location Attic Cards.attic 1 (PerPlayer 2)
 
 instance HasAbilities Attic where
   getAbilities (Attic a) =
-    withRevealedAbilities a
-      $ [forcedAbility a 1 $ Enters Timing.After You $ LocationWithId (toId a)]
+    withRevealedAbilities a [forcedAbility a 1 $ Enters #after You $ be a]
 
 instance RunMessage Attic where
   runMessage msg a@(Attic attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ assignHorror iid (toAbilitySource attrs 1) 1
       pure a
     _ -> Attic <$> runMessage msg attrs

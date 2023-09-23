@@ -38,6 +38,7 @@ import Arkham.Key
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.Helpers
 import Arkham.Matcher (
+  Be (..),
   EnemyMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
@@ -521,3 +522,6 @@ enemyAtLocation eid attrs = member eid <$> select (enemyAt $ toId attrs)
 
 locationEnemiesWithTrait :: HasGame m => LocationAttrs -> Trait -> m [EnemyId]
 locationEnemiesWithTrait attrs trait = selectList $ enemyAt (toId attrs) <> EnemyWithTrait trait
+
+instance Be LocationAttrs LocationMatcher where
+  be = LocationWithId . toId

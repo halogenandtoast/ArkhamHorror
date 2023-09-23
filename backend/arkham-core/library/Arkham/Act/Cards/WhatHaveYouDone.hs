@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Timing qualified as Timing
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,14 +23,14 @@ instance HasAbilities WhatHaveYouDone where
     [ mkAbility x 1
         $ Objective
         $ ForcedAbility
-        $ EnemyDefeated Timing.After Anyone ByAny
+        $ EnemyDefeated #after Anyone ByAny
         $ enemyIs Cards.ghoulPriest
     ]
 
 instance RunMessage WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource iid) AdvancedWithOther
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ advanceVia #other attrs iid
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       lead <- getLead

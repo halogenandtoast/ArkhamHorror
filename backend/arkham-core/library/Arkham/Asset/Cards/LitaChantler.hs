@@ -7,7 +7,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -30,11 +29,11 @@ instance HasModifiersFor LitaChantler where
 instance HasAbilities LitaChantler where
   getAbilities (LitaChantler a) =
     [ restrictedAbility a 1 ControlsThis
-        $ (`ReactionAbility` Free)
+        $ freeReaction
         $ SkillTestResult
-          Timing.When
+          #when
           (InvestigatorAt YourLocation)
-          (WhileAttackingAnEnemy $ EnemyWithTrait Monster)
+          (WhileAttackingAnEnemy $ withTrait Monster)
           (SuccessResult AnyValue)
     ]
 

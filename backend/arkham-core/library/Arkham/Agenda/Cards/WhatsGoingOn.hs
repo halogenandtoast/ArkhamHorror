@@ -28,9 +28,7 @@ instance RunMessage WhatsGoingOn where
       canChooseDiscardOption <- selectAny InvestigatorWithNonEmptyHand
       pushAll
         [ chooseOne lead
-            $ Label
-              "The lead investigator takes 2 horror"
-              [assignHorror lead attrs 2]
+            $ Label "The lead investigator takes 2 horror" [assignHorror lead attrs 2]
             : [ Label
                 "Each investigator discards 1 card at random from his or her hand"
                 [AllRandomDiscard (toSource attrs) AnyCard]

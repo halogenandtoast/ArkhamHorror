@@ -23,31 +23,25 @@ survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
 instance RunMessage SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs) = case msg of
     PassedSkillTest iid (Just Action.Evade) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      engagedEnemyIds <- selectList $ enemyEngagedWith iid
-      unblockedConnectedLocationIds <- selectList AccessibleLocation
+      engagedEnemies <- selectList $ enemyEngagedWith iid
+      unblockedConnectedLocations <- selectList AccessibleLocation
       canMove <- iid <=~> InvestigatorCanMove
       canDisengage <- iid <=~> InvestigatorCanDisengage
       let
         moveOptions =
           chooseOrRunOne iid
             $ [Label "Do not move to a connecting location" []]
-              <> [ targetLabel lid [Move $ move attrs iid lid]
-                 | lid <- unblockedConnectedLocationIds
-                 ]
+              <> targetLabels unblockedConnectedLocations (only . Move . move attrs iid)
 
-      case engagedEnemyIds of
+      case engagedEnemies of
         es | notNull es && canDisengage -> do
           pushAll
-            $ [ chooseOne
-                  iid
-                  [ Label "Disengage from each other enemy"
-                      $ [DisengageEnemy iid eid | eid <- es]
-                  , Label "Skip" []
-                  ]
+            $ [ chooseOne iid
+                  $ [ Label "Disengage from each other enemy" $ map (DisengageEnemy iid) es
+                    , Label "Skip" []
+                    ]
               ]
-              <> [ moveOptions
-                 | notNull unblockedConnectedLocationIds && canMove
-                 ]
-        _ -> unless (null unblockedConnectedLocationIds) $ push moveOptions
+              <> [moveOptions | notNull unblockedConnectedLocations && canMove]
+        _ -> unless (null unblockedConnectedLocations) $ push moveOptions
       pure s
     _ -> SurvivalInstinct <$> runMessage msg attrs

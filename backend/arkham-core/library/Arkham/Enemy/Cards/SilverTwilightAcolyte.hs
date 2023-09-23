@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
-import Arkham.Timing qualified as Timing
 
 newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,20 +18,13 @@ newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
 
 silverTwilightAcolyte :: EnemyCard SilverTwilightAcolyte
 silverTwilightAcolyte =
-  enemyWith
-    SilverTwilightAcolyte
-    Cards.silverTwilightAcolyte
-    (2, Static 3, 3)
-    (1, 0)
-    (\a -> a & preyL .~ BearerOf (toId a))
+  enemyWith SilverTwilightAcolyte Cards.silverTwilightAcolyte (2, Static 3, 3) (1, 0)
+    $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasAbilities SilverTwilightAcolyte where
   getAbilities (SilverTwilightAcolyte a) =
     withBaseAbilities a
-      $ [ forcedAbility a 1
-            $ EnemyAttacks Timing.After Anyone AnyEnemyAttack
-            $ EnemyWithId (toId a)
-        ]
+      $ [forcedAbility a 1 $ EnemyAttacks #after Anyone AnyEnemyAttack $ EnemyWithId (toId a)]
 
 instance RunMessage SilverTwilightAcolyte where
   runMessage msg e@(SilverTwilightAcolyte attrs) = case msg of

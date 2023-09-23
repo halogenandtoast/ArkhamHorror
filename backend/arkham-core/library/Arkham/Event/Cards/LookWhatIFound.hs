@@ -3,6 +3,7 @@ module Arkham.Event.Cards.LookWhatIFound where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
@@ -17,8 +18,8 @@ lookWhatIFound = event LookWhatIFound Cards.lookWhatIFound
 
 instance RunMessage LookWhatIFound where
   runMessage msg e@(LookWhatIFound attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
       lid <- getJustLocation iid
-      push $ InvestigatorDiscoverClues iid lid (toSource attrs) 2 Nothing
+      pushMessage $ discover iid lid attrs 2
       pure e
     _ -> LookWhatIFound <$> runMessage msg attrs

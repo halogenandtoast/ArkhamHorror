@@ -18,13 +18,16 @@ fightAction :: Cost -> AbilityType
 fightAction cost = ActionAbility (Just Fight) (ActionCost 1 <> cost)
 
 fightAction_ :: AbilityType
-fightAction_ = ActionAbility (Just Fight) (ActionCost 1)
+fightAction_ = fightAction mempty
 
 instance IsLabel "fight" AbilityType where
   fromLabel = fightAction_
 
+parleyAction :: Cost -> AbilityType
+parleyAction cost = ActionAbility (Just Parley) (ActionCost 1 <> cost)
+
 parleyAction_ :: AbilityType
-parleyAction_ = ActionAbility (Just Parley) (ActionCost 1)
+parleyAction_ = parleyAction mempty
 
 instance IsLabel "parley" AbilityType where
   fromLabel = parleyAction_

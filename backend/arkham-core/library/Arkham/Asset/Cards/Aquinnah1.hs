@@ -9,12 +9,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Attack
-import Arkham.DamageEffect
 import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,17 +26,13 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
 instance HasAbilities Aquinnah1 where
   getAbilities (Aquinnah1 a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> EnemyCriteria
-              (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
-        )
+        (EnemyCriteria (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation)))
         $ ReactionAbility
-          (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
-        $ Costs
-          [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
+          (Matcher.EnemyAttacks #when You AnyEnemyAttack AnyEnemy)
+          (exhaust a <> HorrorCost (toSource a) (toTarget a) 1)
     ]
 
 -- TODO: Batch cancel
@@ -50,18 +44,13 @@ instance RunMessage Aquinnah1 where
         _ -> error "unhandled"
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId
-      enemyIds <- selectList $ EnemyAt (locationWithInvestigator iid) <> NotEnemy (EnemyWithId enemyId)
+      enemies <- selectList $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId enemyId)
 
-      when (null enemyIds) (error "other enemies had to be present")
+      when (null enemies) (error "other enemies had to be present")
 
       push
         $ chooseOne iid
-        $ [ targetLabel
-            eid
-            [ EnemyDamage eid $ nonAttack source healthDamage'
-            , assignHorror iid enemyId sanityDamage'
-            ]
-          | eid <- enemyIds
-          ]
+        $ targetLabels enemies
+        $ \eid -> [nonAttackEnemyDamage source healthDamage' eid, assignHorror iid enemyId sanityDamage']
       pure a
     _ -> Aquinnah1 <$> runMessage msg attrs

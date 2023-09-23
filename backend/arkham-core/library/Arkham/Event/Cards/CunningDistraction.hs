@@ -17,8 +17,8 @@ cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
 instance RunMessage CunningDistraction where
   runMessage msg e@(CunningDistraction attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemyIds <- selectList $ EnemyAt $ locationWithInvestigator iid
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      enemyIds <- selectList $ enemyAtLocationWith iid
       pushAll $ map (EnemyEvaded iid) enemyIds
       pure e
     _ -> CunningDistraction <$> runMessage msg attrs

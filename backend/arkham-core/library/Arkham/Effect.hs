@@ -223,7 +223,6 @@ allEffects =
     , ("01066", SomeEffect blindingLightEffect)
     , ("01069", SomeEffect blindingLight2Effect)
     , ("01074", SomeEffect baseballBatEffect)
-    , ("01085", SomeEffect willToSurvive3)
     , ("01151", SomeEffect arkhamWoodsTwistingPaths)
     , ("02028", SomeEffect riteOfSeeking)
     , ("02031", SomeEffect bindMonster2)

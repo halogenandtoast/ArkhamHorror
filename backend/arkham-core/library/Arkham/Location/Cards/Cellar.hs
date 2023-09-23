@@ -9,7 +9,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (cellar)
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype Cellar = Cellar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -20,8 +19,7 @@ cellar = location Cellar Cards.cellar 4 (PerPlayer 2)
 
 instance HasAbilities Cellar where
   getAbilities (Cellar a) =
-    withBaseAbilities a
-      $ [forcedAbility a 1 $ Enters Timing.After You $ LocationWithId $ toId a]
+    withBaseAbilities a [forcedAbility a 1 $ Enters #after You $ be a]
 
 instance RunMessage Cellar where
   runMessage msg a@(Cellar attrs) = case msg of

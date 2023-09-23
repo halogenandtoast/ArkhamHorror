@@ -12,7 +12,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Timing qualified as Timing
 
 newtype TheBarrier = TheBarrier ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -25,13 +24,13 @@ instance HasAbilities TheBarrier where
   getAbilities (TheBarrier x) =
     [ mkAbility x 1
         $ Objective
-        $ ReactionAbility (RoundEnds Timing.When)
+        $ ReactionAbility (RoundEnds #when)
         $ GroupClueCost (PerPlayer 3) "Hallway"
     ]
 
 instance RunMessage TheBarrier where
   runMessage msg a@(TheBarrier attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ advanceVia #clues a iid
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do

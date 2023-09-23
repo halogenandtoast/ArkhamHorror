@@ -185,6 +185,9 @@ pattern AttachTreachery :: TreacheryId -> Target -> Message
 pattern AttachTreachery tid target =
   PlaceTreachery tid (TreacheryAttachedTo target)
 
+pattern PlayThisEvent :: InvestigatorId -> EventId -> Message
+pattern PlayThisEvent iid eid <- InvestigatorPlayEvent iid eid _ _ _
+
 createCardEffect
   :: (Sourceable source, Targetable target)
   => CardDef
@@ -223,14 +226,15 @@ instance IsMessage (EnemyCreation Message) where
   {-# INLINE toMessage #-}
 
 instance IsMessage Discover where
-  toMessage discover = case discover.location of
+  toMessage discovery = case discovery.location of
     DiscoverYourLocation ->
       InvestigatorDiscoverCluesAtTheirLocation
-        discover.investigator
-        discover.source
-        discover.count
-        discover.action
-    DiscoverAtLocation lid -> DiscoverCluesAtLocation discover.investigator lid discover.source discover.count discover.action
+        discovery.investigator
+        discovery.source
+        discovery.count
+        discovery.action
+    DiscoverAtLocation lid ->
+      DiscoverCluesAtLocation discovery.investigator lid discovery.source discovery.count discovery.action
   {-# INLINE toMessage #-}
 
 data ReplaceStrategy = DefaultReplace | Swap

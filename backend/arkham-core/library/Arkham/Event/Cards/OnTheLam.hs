@@ -3,11 +3,9 @@ module Arkham.Event.Cards.OnTheLam where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Helpers.Event
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
@@ -21,7 +19,7 @@ onTheLam = event OnTheLam Cards.onTheLam
 
 instance RunMessage OnTheLam where
   runMessage msg e@(OnTheLam attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
       unshiftEffect attrs iid
       pure e
     _ -> OnTheLam <$> runMessage msg attrs
@@ -34,13 +32,13 @@ onTheLamEffect :: EffectArgs -> OnTheLamEffect
 onTheLamEffect = cardEffect OnTheLamEffect Cards.onTheLam
 
 instance HasModifiersFor OnTheLamEffect where
-  getModifiersFor target (OnTheLamEffect a) | target == effectTarget a = do
+  getModifiersFor target (OnTheLamEffect a) | a.target `is` target = do
     pure $ toModifiers a [CannotBeAttackedBy NonEliteEnemy]
   getModifiersFor _ _ = pure []
 
 instance RunMessage OnTheLamEffect where
   runMessage msg e@(OnTheLamEffect attrs) = case msg of
     EndRound -> do
-      push $ DisableEffect $ toId attrs
+      push $ disable attrs
       pure e
     _ -> OnTheLamEffect <$> runMessage msg attrs

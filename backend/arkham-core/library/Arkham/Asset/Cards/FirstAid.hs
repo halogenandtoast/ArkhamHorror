@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (allInvestigators)
-import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
@@ -23,14 +22,15 @@ firstAid = assetWith FirstAid Cards.firstAid (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities FirstAid where
   getAbilities (FirstAid x) =
-    [ withCriteria (mkAbility x 1 (actionAbilityWithCost $ assetUseCost x Supply 1))
-        $ ControlsThis
-          <> InvestigatorExists
-            ( AnyInvestigator
-                [ HealableInvestigator (toSource x) hType $ InvestigatorAt YourLocation
-                | hType <- [HorrorType, DamageType]
-                ]
-            )
+    [ controlledAbility
+        x
+        1
+        ( anyInvestigatorExists
+            [ HealableInvestigator (toAbilitySource x 1) hType $ InvestigatorAt YourLocation
+            | hType <- [#horror, #damage]
+            ]
+        )
+        (actionAbilityWithCost $ assetUseCost x Supply 1)
     ]
 
 instance RunMessage FirstAid where
@@ -38,18 +38,18 @@ instance RunMessage FirstAid where
     InDiscard _ msg'@(UseThisAbility _ (isSource attrs -> True) 1) -> runMessage msg' a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      horrorInvestigators <- select $ HealableInvestigator source HorrorType $ colocatedWith iid
-      damageInvestigators <- select $ HealableInvestigator source DamageType $ colocatedWith iid
+      horrorInvestigators <- select $ HealableInvestigator source #horror $ colocatedWith iid
+      damageInvestigators <- select $ HealableInvestigator source #damage $ colocatedWith iid
       let allInvestigators = toList $ horrorInvestigators <> damageInvestigators
       choices <- for allInvestigators $ \i -> do
         mHealHorror <-
           if i `member` horrorInvestigators then getHealHorrorMessage source 1 i else pure Nothing
         pure
           $ targetLabel i
-          $ [ chooseOrRunOne iid
-                $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `member` damageInvestigators]
-                  <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
-            ]
+          . only
+          $ chooseOrRunOne iid
+          $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `member` damageInvestigators]
+            <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
       push $ chooseOne iid choices
       pure a
     _ -> FirstAid <$> runMessage msg attrs

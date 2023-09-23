@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.FortyOneDerringer (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 
@@ -19,14 +18,11 @@ fortyOneDerringer = asset FortyOneDerringer Cards.fortyOneDerringer
 
 instance HasAbilities FortyOneDerringer where
   getAbilities (FortyOneDerringer a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ Costs [ActionCost 1, assetUseCost a Ammo 1]
-    ]
+    [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
 
 instance RunMessage FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 2)
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat

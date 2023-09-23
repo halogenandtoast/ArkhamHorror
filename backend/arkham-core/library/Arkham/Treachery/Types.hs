@@ -78,6 +78,9 @@ data TreacheryAttrs = TreacheryAttrs
 instance HasField "resources" TreacheryAttrs Int where
   getField = treacheryResources
 
+instance HasField "owner" TreacheryAttrs (Maybe InvestigatorId) where
+  getField = treacheryOwner
+
 treacheryDoom :: TreacheryAttrs -> Int
 treacheryDoom = countTokens Doom . treacheryTokens
 

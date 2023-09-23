@@ -8,7 +8,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.SkillType
 
 newtype Backstab = Backstab EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
@@ -29,7 +28,7 @@ instance HasModifiersFor Backstab where
 
 instance RunMessage Backstab where
   runMessage msg e@(Backstab attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ ChooseFightEnemy iid (toSource eid) Nothing SkillAgility mempty False
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      push $ chooseFightEnemy iid (toSource eid) #agility
       pure e
     _ -> Backstab <$> runMessage msg attrs

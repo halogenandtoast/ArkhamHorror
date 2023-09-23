@@ -18,6 +18,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
+import Arkham.Message hiding (AssetDamage, Damage)
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -28,6 +29,7 @@ import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Data.Data
+import GHC.Records
 
 data Asset = forall a. IsAsset a => Asset a
 
@@ -228,6 +230,13 @@ data AssetAttrs = AssetAttrs
   , assetKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)
+
+instance Is AssetAttrs AssetId where
+  is = (==) . toId
+  {-# INLINE is #-}
+
+instance HasField "horror" AssetAttrs Int where
+  getField = assetHorror
 
 assetDoom :: AssetAttrs -> Int
 assetDoom = countTokens Doom . assetTokens

@@ -79,6 +79,9 @@ data EventAttrs = EventAttrs
 allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
 
+instance Is EventAttrs EventId where
+  is = (==) . toId
+
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
 
@@ -112,8 +115,8 @@ event f cardDef =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (iid, eid) ->
-        f $
-          EventAttrs
+        f
+          $ EventAttrs
             { eventCardCode = toCardCode cardDef
             , eventCardId = cardId
             , eventOriginalCardCode = toCardCode cardDef

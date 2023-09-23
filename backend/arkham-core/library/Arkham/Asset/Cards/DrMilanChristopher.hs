@@ -6,7 +6,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
   deriving anyclass (IsAsset)
@@ -23,16 +22,12 @@ instance HasModifiersFor DrMilanChristopher where
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
-          ( SkillTestResult Timing.After You (WhileInvestigating Anywhere)
-              $ SuccessResult AnyValue
-          )
-          Free
+        $ freeReaction (SkillTestResult #after You (WhileInvestigating Anywhere) $ SuccessResult AnyValue)
     ]
 
 instance RunMessage DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ TakeResources iid 1 (toAbilitySource attrs 1) False
       pure a
     _ -> DrMilanChristopher <$> runMessage msg attrs

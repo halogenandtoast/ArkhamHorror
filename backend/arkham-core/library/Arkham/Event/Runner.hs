@@ -7,6 +7,7 @@ module Arkham.Event.Runner (
 import Arkham.Prelude
 
 import Arkham.Event.Types as X
+import Arkham.Helpers.Event as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X

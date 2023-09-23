@@ -8,40 +8,28 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
+import Arkham.Helpers.Message
 import Arkham.Message
 
 newtype NarrowShaft = NarrowShaft EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 narrowShaft :: EffectArgs -> NarrowShaft
-narrowShaft =
-  NarrowShaft . uncurry4 (baseAttrs "03254")
-
-instance HasModifiersFor NarrowShaft
+narrowShaft = NarrowShaft . uncurry4 (baseAttrs "03254")
 
 instance RunMessage NarrowShaft where
   runMessage msg e@(NarrowShaft attrs) = case msg of
-    PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
-      do
-        narrowShaftId <- getJustLocationByName "Narrow Shaft"
-        let disable = DisableEffect (effectId attrs)
-        e
-          <$ when
-            (lid == narrowShaftId)
-            ( case effectMetadata attrs of
-                Just (EffectMessages msgs) -> pushAll (msgs <> [disable])
-                _ -> push disable
-            )
-    FailedSkillTest iid _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
-      do
-        narrowShaftId <- getJustLocationByName "Narrow Shaft"
-        e
-          <$ when
-            (lid == narrowShaftId)
-            ( pushAll
-                [ InvestigatorAssignDamage iid (LocationSource narrowShaftId) DamageAny 1 0
-                , DisableEffect $ effectId attrs
-                ]
-            )
+    PassedThisSkillTest _ (LocationSource lid) -> do
+      narrowShaftId <- getJustLocationByName "Narrow Shaft"
+      when (lid == narrowShaftId)
+        $ case effectMetadata attrs of
+          Just (EffectMessages msgs) -> pushAll (msgs <> [disable attrs])
+          _ -> push $ disable attrs
+      pure e
+    FailedThisSkillTest iid (LocationSource lid) -> do
+      narrowShaftId <- getJustLocationByName "Narrow Shaft"
+      when (lid == narrowShaftId)
+        $ pushAll [assignDamage iid narrowShaftId 1, disable attrs]
+      pure e
     _ -> NarrowShaft <$> runMessage msg attrs

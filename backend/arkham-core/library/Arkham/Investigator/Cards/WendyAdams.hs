@@ -5,14 +5,12 @@ module Arkham.Investigator.Cards.WendyAdams (
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs
@@ -33,18 +31,17 @@ instance HasAbilities WendyAdams where
   getAbilities (WendyAdams attrs) =
     [ playerLimit PerTestOrAbility
         $ restrictedAbility attrs 1 Self
-        $ ReactionAbility (Matcher.RevealChaosToken Timing.When You AnyChaosToken)
+        $ ReactionAbility (Matcher.RevealChaosToken #when You AnyChaosToken)
         $ HandDiscardCost 1 AnyCard
     ]
 
 instance RunMessage WendyAdams where
   runMessage msg i@(WendyAdams attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
+      let source = toAbilitySource attrs 1
       cancelChaosToken token
       pushAll
-        [ CancelEachNext
-            (toAbilitySource attrs 1)
-            [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+        [ CancelEachNext source [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
         , ReturnChaosTokens [token]
         , UnfocusChaosTokens
         , DrawAnotherChaosToken iid

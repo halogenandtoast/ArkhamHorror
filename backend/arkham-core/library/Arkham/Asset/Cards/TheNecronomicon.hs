@@ -8,10 +8,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Token
-import Arkham.Window (defaultWindows)
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving anyclass (IsAsset)
@@ -33,17 +31,15 @@ instance HasModifiersFor TheNecronomicon where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheNecronomicon where
-  getAbilities (TheNecronomicon a) =
-    [restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis) actionAbility]
+  getAbilities (TheNecronomicon a) = [restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis) #action]
 
 instance RunMessage TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushWhen (assetHorror attrs <= 1)
-        $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      pushWhen (attrs.horror <= 1) $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       push $ MovedHorror (toAbilitySource attrs 1) (toTarget iid) 1
       pure a
     _ -> TheNecronomicon <$> runMessage msg attrs

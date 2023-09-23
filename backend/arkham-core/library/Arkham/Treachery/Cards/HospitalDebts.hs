@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -40,9 +39,7 @@ instance HasAbilities HospitalDebts where
           (OnSameLocation <> InvestigatorExists (You <> InvestigatorWithResources (atLeast 1)))
           $ FastAbility Free
       )
-      : [ restrictedAbility a 2 (ResourcesOnThis $ lessThan 6)
-          $ ForcedAbility
-          $ OrWindowMatcher [GameEnds Timing.When, InvestigatorEliminated Timing.When (InvestigatorWithId iid)]
+      : [ restrictedAbility a 2 (ResourcesOnThis $ lessThan 6) $ forcedOnElimination iid
         | iid <- toList (treacheryOwner a)
         ]
 

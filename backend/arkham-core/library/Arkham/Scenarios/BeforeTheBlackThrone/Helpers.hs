@@ -23,7 +23,6 @@ import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait (Cultist))
-import Control.Monad.Trans.Maybe (runMaybeT)
 import Data.Aeson (Result (..))
 
 getCosmos :: HasGame m => m (Cosmos Card LocationId)

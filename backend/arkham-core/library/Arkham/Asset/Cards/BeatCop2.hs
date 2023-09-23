@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.DamageEffect
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype BeatCop2 = BeatCop2 AssetAttrs
@@ -25,19 +24,17 @@ instance HasModifiersFor BeatCop2 where
 
 instance HasAbilities BeatCop2 where
   getAbilities (BeatCop2 x) =
-    [ restrictedAbility x 1 (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+    [ restrictedAbility x 1 (ControlsThis <> enemyExists (EnemyAt YourLocation))
         $ FastAbility
         $ Costs [exhaust x, DamageCost (toSource x) (toTarget x) 1]
     ]
 
 instance RunMessage BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enemies <- selectList $ enemyAtLocationWith iid
       push
         $ chooseOrRunOne iid
-        $ [ targetLabel eid [EnemyDamage eid $ nonAttack (toAbilitySource attrs 1) 1]
-          | eid <- enemies
-          ]
+        $ targetLabels enemies (only . nonAttackEnemyDamage (toAbilitySource attrs 1) 1)
       pure a
     _ -> BeatCop2 <$> runMessage msg attrs

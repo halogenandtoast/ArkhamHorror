@@ -157,6 +157,18 @@ data Criterion
 enemyExists :: EnemyMatcher -> Criterion
 enemyExists = EnemyCriteria . EnemyExists
 
+anyInvestigatorExists :: [InvestigatorMatcher] -> Criterion
+anyInvestigatorExists = InvestigatorExists . AnyInvestigator
+
+class Exists a where
+  exists :: a -> Criterion
+
+instance Exists InvestigatorMatcher where
+  exists = InvestigatorExists
+
+instance Exists EnemyMatcher where
+  exists = enemyExists
+
 pattern CanPlaceDoomOnThis :: Criterion
 pattern CanPlaceDoomOnThis <- Negate (SelfHasModifier CannotPlaceDoomOnThis)
   where

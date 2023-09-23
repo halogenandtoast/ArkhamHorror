@@ -7,8 +7,7 @@ module Arkham.Event.Cards.MindOverMatter (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
@@ -23,8 +22,8 @@ mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
 instance RunMessage MindOverMatter where
   runMessage msg e@(MindOverMatter attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ createCardEffect Cards.mindOverMatter Nothing attrs iid
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      unshiftEffect attrs iid
       pure e
     _ -> MindOverMatter <$> runMessage msg attrs
 
@@ -36,14 +35,13 @@ mindOverMatterEffect :: EffectArgs -> MindOverMatterEffect
 mindOverMatterEffect = cardEffect MindOverMatterEffect Cards.mindOverMatter
 
 instance HasModifiersFor MindOverMatterEffect where
-  getModifiersFor target (MindOverMatterEffect a) | target == effectTarget a = do
-    pure
-      $ toModifiers a [UseSkillInPlaceOf #combat #intellect, UseSkillInPlaceOf #agility #intellect]
+  getModifiersFor target (MindOverMatterEffect a) | a.target `is` target = do
+    pure $ toModifiers a [UseSkillInPlaceOf #combat #intellect, UseSkillInPlaceOf #agility #intellect]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MindOverMatterEffect where
   runMessage msg e@(MindOverMatterEffect attrs) = case msg of
     EndRound -> do
-      push $ DisableEffect $ effectId attrs
+      push $ disable attrs
       pure e
     _ -> MindOverMatterEffect <$> runMessage msg attrs

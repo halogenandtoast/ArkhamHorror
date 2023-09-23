@@ -3,10 +3,12 @@
 module Arkham.Treachery.Runner (
   module X,
   addHiddenToHand,
+  forcedOnElimination,
 ) where
 
 import Arkham.Prelude
 
+import Arkham.Helpers.Investigator as X (eliminationWindow)
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Placement as X
@@ -14,6 +16,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 import Arkham.Treachery.Types as X
 
+import Arkham.Ability.Type
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
@@ -23,6 +26,9 @@ import Arkham.Token
 
 addHiddenToHand :: InvestigatorId -> TreacheryAttrs -> Message
 addHiddenToHand iid a = PlaceTreachery (toId a) (TreacheryInHandOf iid)
+
+forcedOnElimination :: InvestigatorId -> AbilityType
+forcedOnElimination = ForcedAbility . eliminationWindow
 
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of

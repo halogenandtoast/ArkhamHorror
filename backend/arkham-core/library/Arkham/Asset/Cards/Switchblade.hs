@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.Switchblade (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 
@@ -18,11 +17,11 @@ switchblade :: AssetCard Switchblade
 switchblade = asset Switchblade Cards.switchblade
 
 instance HasAbilities Switchblade where
-  getAbilities (Switchblade a) = [restrictedAbility a 1 ControlsThis $ ActionAbility (Just Action.Fight) (ActionCost 1)]
+  getAbilities (Switchblade a) = [restrictedAbility a 1 ControlsThis fightAction_]
 
 instance RunMessage Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ chooseFightEnemy iid (toAbilitySource attrs 1) #combat
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

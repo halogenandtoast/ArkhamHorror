@@ -28,17 +28,11 @@ instance HasModifiersFor CatBurglar1 where
 instance HasAbilities CatBurglar1 where
   getAbilities (CatBurglar1 a) =
     [ doesNotProvokeAttacksOfOpportunity
-        $ restrictedAbility
+        $ controlledAbility
           a
           1
-          ( ControlsThis
-              <> AnyCriterion
-                [ EnemyCriteria $ EnemyExists EnemyEngagedWithYou
-                , LocationExists AccessibleLocation
-                ]
-          )
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, exhaust a]
+          (AnyCriterion [enemyExists EnemyEngagedWithYou, LocationExists AccessibleLocation])
+        $ actionAbilityWithCost (exhaust a)
     ]
 
 instance RunMessage CatBurglar1 where
@@ -46,18 +40,14 @@ instance RunMessage CatBurglar1 where
     InvestigatorPlayAsset iid aid | aid == toId attrs -> do
       push $ skillTestModifier attrs iid (SkillModifier #agility 1)
       CatBurglar1 <$> runMessage msg attrs
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       engagedEnemyIds <- selectList $ enemyEngagedWith iid
       canDisengage <- iid <=~> InvestigatorCanDisengage
       locationId <- fieldJust InvestigatorLocation iid
-      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId locationId
+      accessibleLocationIds <- selectList $ accessibleFrom locationId
       pushAll
         $ [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
-          <> [ chooseOne
-              iid
-              [ targetLabel lid [Move $ move attrs iid lid]
-              | lid <- accessibleLocationIds
-              ]
+          <> [ chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
              | notNull accessibleLocationIds
              ]
       pure $ CatBurglar1 $ attrs & exhaustedL .~ True

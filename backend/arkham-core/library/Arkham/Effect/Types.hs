@@ -165,3 +165,6 @@ data SomeEffect = forall a. IsEffect a => SomeEffect (EffectArgs -> a)
 
 disableEffect :: (AsId a, IdOf a ~ EffectId) => a -> Message
 disableEffect = DisableEffect . asId
+
+disable :: (AsId a, IdOf a ~ EffectId) => a -> Message
+disable = disableEffect

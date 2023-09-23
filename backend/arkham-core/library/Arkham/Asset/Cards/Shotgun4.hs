@@ -6,7 +6,6 @@ module Arkham.Asset.Cards.Shotgun4 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Effect.Window
@@ -20,15 +19,11 @@ shotgun4 :: AssetCard Shotgun4
 shotgun4 = asset Shotgun4 Cards.shotgun4
 
 instance HasAbilities Shotgun4 where
-  getAbilities (Shotgun4 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ Costs [ActionCost 1, assetUseCost a Ammo 1]
-    ]
+  getAbilities (Shotgun4 a) = [fightAbility a 1 (assetUseCost a Ammo 1) ControlsThis]
 
 instance RunMessage Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 3)
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat

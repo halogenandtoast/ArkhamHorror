@@ -23,9 +23,9 @@ instance RunMessage NoStoneUnturned where
   runMessage msg e@(NoStoneUnturned attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <-
-        selectList $
-          InvestigatorAt YourLocation
-            <> InvestigatorWithoutModifier CannotManipulateDeck
+        selectList
+          $ InvestigatorAt YourLocation
+          <> InvestigatorWithoutModifier CannotManipulateDeck
 
       pushAll
         [ chooseOne

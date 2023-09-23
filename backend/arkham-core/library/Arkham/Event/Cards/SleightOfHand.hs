@@ -25,11 +25,12 @@ instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       cards <-
-        selectList $
-          PlayableCard Cost.PaidCost $
-            InHandOf (InvestigatorWithId iid) <> BasicCardMatch (CardWithTrait Item)
-      push $
-        chooseOne
+        selectList
+          $ PlayableCard Cost.PaidCost
+          $ InHandOf (InvestigatorWithId iid)
+          <> BasicCardMatch (CardWithTrait Item)
+      push
+        $ chooseOne
           iid
           [ targetLabel
             (toCardId card)

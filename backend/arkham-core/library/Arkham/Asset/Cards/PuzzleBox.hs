@@ -27,9 +27,9 @@ puzzleBox =
 
 instance HasAbilities PuzzleBox where
   getAbilities (PuzzleBox attrs) =
-    [ restrictedAbility attrs 1 (ControlsThis <> InvestigatorExists (NotInvestigator You)) $
-        ForcedAbility $
-          InvestigatorDefeated Timing.When ByAny You
+    [ restrictedAbility attrs 1 (ControlsThis <> InvestigatorExists (NotInvestigator You))
+        $ ForcedAbility
+        $ InvestigatorDefeated Timing.When ByAny You
     , limitedAbility (GroupLimit PerGame 1)
         $ restrictedAbility
           attrs
@@ -54,18 +54,18 @@ instance RunMessage PuzzleBox where
       exhaustedSpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ExhaustedEnemy
       readySpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ReadyEnemy
       locationLit <- selectOne $ LocationWithBrazier Lit <> locationWithInvestigator iid
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Unlight a brazier at your location"
             [UpdateLocation location (LocationBrazier ?=. Unlit)]
           | location <- maybeToList locationLit
           ]
-            <> [ Label "Exhaust the Spectral Watcher" [Exhaust (toTarget enemyId)]
-               | enemyId <- maybeToList readySpectralWatcher
-               ]
-            <> [ Label "Deal 5 damage to the Spectral Watcher" [EnemyDamage enemyId $ nonAttack attrs 5]
-               | enemyId <- maybeToList exhaustedSpectralWatcher
-               ]
+        <> [ Label "Exhaust the Spectral Watcher" [Exhaust (toTarget enemyId)]
+           | enemyId <- maybeToList readySpectralWatcher
+           ]
+        <> [ Label "Deal 5 damage to the Spectral Watcher" [EnemyDamage enemyId $ nonAttack attrs 5]
+           | enemyId <- maybeToList exhaustedSpectralWatcher
+           ]
       pure a
     _ -> PuzzleBox <$> runMessage msg attrs

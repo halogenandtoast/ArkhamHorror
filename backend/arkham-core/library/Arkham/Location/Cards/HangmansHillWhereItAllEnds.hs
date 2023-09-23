@@ -32,8 +32,8 @@ instance RunMessage HangmansHillWhereItAllEnds where
       act <- selectJust AnyAct
       pushAll
         $ findAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait Witch)
-          : ( guard (breaches > 0)
-                *> [RemoveBreaches (toTarget attrs) breaches, PlaceBreaches (toTarget act) breaches]
-            )
+        : ( guard (breaches > 0)
+              *> [RemoveBreaches (toTarget attrs) breaches, PlaceBreaches (toTarget act) breaches]
+          )
       pure l
     _ -> HangmansHillWhereItAllEnds <$> runMessage msg attrs

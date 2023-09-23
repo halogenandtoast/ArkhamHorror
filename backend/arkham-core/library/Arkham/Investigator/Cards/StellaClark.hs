@@ -46,8 +46,8 @@ instance RunMessage StellaClark where
             , Label
                 "Automatically fail this skill test to heal 1 damage and 1 horror"
                 $ FailSkillTest
-                  : [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
-                    <> maybeToList mHealHorror
+                : [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
+                  <> maybeToList mHealHorror
             ]
       pure i
     _ -> StellaClark <$> runMessage msg attrs

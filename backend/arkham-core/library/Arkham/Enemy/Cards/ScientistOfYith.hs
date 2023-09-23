@@ -29,8 +29,8 @@ instance HasModifiersFor ScientistOfYith where
   getModifiersFor target (ScientistOfYith a) | isTarget a target = do
     activatedTheDevice <- remembered ActivatedTheDevice
     dissectedAnOrgan <- remembered DissectedAnOrgan
-    pure $
-      if activatedTheDevice || dissectedAnOrgan
+    pure
+      $ if activatedTheDevice || dissectedAnOrgan
         then
           toModifiers
             a

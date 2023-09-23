@@ -45,7 +45,7 @@ instance RunMessage AncientHall where
       iids <-
         selectList
           $ InvestigatorAt (LocationWithId $ toId attrs)
-            <> InvestigatorCanSpendResources (Static 3)
+          <> InvestigatorCanSpendResources (Static 3)
       leadInvestigatorId <- getLeadInvestigatorId
       let flipClue = FlipClues (toTarget attrs) 1
       if null iids
@@ -54,6 +54,6 @@ instance RunMessage AncientHall where
           push
             $ chooseOne leadInvestigatorId
             $ Label "Do not spend 3 resources to cancel this effect" [flipClue]
-              : [targetLabel iid [SpendResources iid 3] | iid <- iids]
+            : [targetLabel iid [SpendResources iid 3] | iid <- iids]
       pure l
     _ -> AncientHall <$> runMessage msg attrs

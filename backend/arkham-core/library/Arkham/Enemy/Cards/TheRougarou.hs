@@ -46,8 +46,8 @@ instance HasAbilities TheRougarou where
           attrs
           1
           (ValueIs (damagePerPhase meta) (EqualTo $ PerPlayer 1))
-          ( ForcedAbility $
-              EnemyDealtDamage
+          ( ForcedAbility
+              $ EnemyDealtDamage
                 Timing.After
                 AnyDamageEffect
                 (EnemyWithId $ toId attrs)
@@ -67,7 +67,7 @@ instance HasAbilities TheRougarou where
               )
               $ ActionAbility (Just Action.Engage)
               $ GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere
-                <> ActionCost 1
+              <> ActionCost 1
         forced : filter (not . isEngage) actions' <> [engageAction]
       else forced : actions'
 
@@ -82,8 +82,8 @@ instance RunMessage TheRougarou where
           [] -> error "can't happen"
           [x] -> push (MoveUntil x (EnemyTarget enemyId))
           xs ->
-            push $
-              chooseOne
+            push
+              $ chooseOne
                 leadInvestigatorId
                 [targetLabel x [MoveUntil x (EnemyTarget enemyId)] | x <- xs]
 
@@ -92,12 +92,12 @@ instance RunMessage TheRougarou where
                 TheRougarouMetadata
                   (damagePerPhase metadata `mod` damageThreshold)
             )
-          <$> runMessage msg attrs
+            <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
       Msg.EnemyDamage eid (damageAssignmentAmount -> n)
         | eid == enemyId ->
             TheRougarou
               . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
-              <$> runMessage msg attrs
+                <$> runMessage msg attrs
       _ -> TheRougarou . (`with` metadata) <$> runMessage msg attrs

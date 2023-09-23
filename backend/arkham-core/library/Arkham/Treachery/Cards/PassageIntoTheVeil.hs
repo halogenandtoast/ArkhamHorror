@@ -24,12 +24,12 @@ instance RunMessage PassageIntoTheVeil where
   runMessage msg t@(PassageIntoTheVeil attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       huntingHorrorAtYourLocation <-
-        selectAny $
-          enemyIs Enemies.huntingHorror
-            <> EnemyAt
-              (LocationWithInvestigator $ InvestigatorWithId iid)
-      push $
-        beginSkillTest
+        selectAny
+          $ enemyIs Enemies.huntingHorror
+          <> EnemyAt
+            (LocationWithInvestigator $ InvestigatorWithId iid)
+      push
+        $ beginSkillTest
           iid
           source
           (InvestigatorTarget iid)
@@ -39,8 +39,8 @@ instance RunMessage PassageIntoTheVeil where
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           assetIds <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label
                   "Discard the top 5 cards of your deck"

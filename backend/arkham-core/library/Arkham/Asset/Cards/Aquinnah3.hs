@@ -47,13 +47,13 @@ instance RunMessage Aquinnah3 where
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId
       enemyIds <-
-        selectList $
-          EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+        selectList
+          $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
 
       when (null enemyIds) (error "enemies have to be present")
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             eid

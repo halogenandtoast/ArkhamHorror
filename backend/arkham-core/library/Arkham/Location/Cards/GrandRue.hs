@@ -25,12 +25,12 @@ instance HasAbilities GrandRue where
   getAbilities (GrandRue a) =
     withRevealedAbilities
       a
-      [ restrictedAbility a 1 Here $
-          ForcedAbility $
-            SkillTestResult Timing.After You AnySkillTest $
-              SuccessResult $
-                AtMost $
-                  Static 1
+      [ restrictedAbility a 1 Here
+          $ ForcedAbility
+          $ SkillTestResult Timing.After You AnySkillTest
+          $ SuccessResult
+          $ AtMost
+          $ Static 1
       ]
 
 instance RunMessage GrandRue where
@@ -38,13 +38,13 @@ instance RunMessage GrandRue where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maxDoom <- fieldMax AgendaDoom AnyAgenda
       agendas <-
-        selectListMap AgendaTarget $
-          AgendaWithDoom $
-            EqualTo $
-              Static
-                maxDoom
-      push $
-        chooseOrRunOne
+        selectListMap AgendaTarget
+          $ AgendaWithDoom
+          $ EqualTo
+          $ Static
+            maxDoom
+      push
+        $ chooseOrRunOne
           iid
           [targetLabel target [PlaceDoom (toAbilitySource attrs 1) target 1] | target <- agendas]
       pure l

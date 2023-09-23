@@ -205,23 +205,23 @@ instance RunMessage BlackStarsRise where
 
       pushAll
         $ [story investigatorIds intro]
-          <> [story investigatorIds ashleighsInformation | ashleighInterviewed]
-          <> [ SearchCollectionForRandom
-              iid
-              (toSource attrs)
-              ( CardWithType PlayerTreacheryType
-                  <> CardWithOneOf
-                    ( map
-                        CardWithTrait
-                        [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]
-                    )
-              )
-             | iid <- investigatorIds
-             , not isStandalone
-             ]
-          <> [AddChaosToken tokenToAdd, SetAgendaDeck, SetEncounterDeck encounterDeck]
-          <> (placePorteDeLAvancee : otherPlacements)
-          <> [MoveAllTo (toSource attrs) porteDeLAvanceeId]
+        <> [story investigatorIds ashleighsInformation | ashleighInterviewed]
+        <> [ SearchCollectionForRandom
+            iid
+            (toSource attrs)
+            ( CardWithType PlayerTreacheryType
+                <> CardWithOneOf
+                  ( map
+                      CardWithTrait
+                      [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]
+                  )
+            )
+           | iid <- investigatorIds
+           , not isStandalone
+           ]
+        <> [AddChaosToken tokenToAdd, SetAgendaDeck, SetEncounterDeck encounterDeck]
+        <> (placePorteDeLAvancee : otherPlacements)
+        <> [MoveAllTo (toSource attrs) porteDeLAvanceeId]
 
       agendas1 <-
         genCards
@@ -263,7 +263,8 @@ instance RunMessage BlackStarsRise where
       when (chaosTokenFace token == ElderThing) $ do
         push
           $ findAndDrawEncounterCard iid
-          $ CardWithType EnemyType <> CardWithTrait Trait.Byakhee
+          $ CardWithType EnemyType
+          <> CardWithTrait Trait.Byakhee
       pure s
     ScenarioResolution res -> do
       ashleighSlain <- selectOne $ VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke
@@ -288,9 +289,9 @@ instance RunMessage BlackStarsRise where
               , AddChaosToken Tablet
               , AddChaosToken Tablet
               ]
-              <> updateSlain
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> updateSlain
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
             $ [ story iids resolution2
@@ -303,15 +304,15 @@ instance RunMessage BlackStarsRise where
               , AddChaosToken ElderThing
               , AddChaosToken ElderThing
               ]
-              <> updateSlain
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> updateSlain
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 3 -> do
           pushAll
             $ story iids resolution3
-              : Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
-              : map DrivenInsane iids
-                <> [GameOver]
+            : Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
+            : map DrivenInsane iids
+              <> [GameOver]
         _ -> error "Unknown resolution"
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do

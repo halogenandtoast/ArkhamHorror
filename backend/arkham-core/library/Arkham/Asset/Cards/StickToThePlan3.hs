@@ -25,27 +25,27 @@ stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3
 instance HasModifiersFor StickToThePlan3 where
   getModifiersFor (InvestigatorTarget iid) (StickToThePlan3 attrs)
     | controlledBy attrs iid =
-        pure $
-          toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+        pure
+          $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
   getModifiersFor (CardIdTarget cardId) (StickToThePlan3 attrs)
     | cardId `elem` map toCardId (assetCardsUnderneath attrs) =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StickToThePlan3 where
   getAbilities (StickToThePlan3 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ReactionAbility (DrawingStartingHand Timing.When You) Free
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ReactionAbility (DrawingStartingHand Timing.When You) Free
     ]
 
 instance RunMessage StickToThePlan3 where
   runMessage msg a@(StickToThePlan3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           (toSource attrs)
           (toTarget iid)
@@ -64,8 +64,8 @@ instance RunMessage StickToThePlan3 where
                 )
             )
             cards
-      push $
-        chooseUpToN
+      push
+        $ chooseUpToN
           iid
           3
           "Choose no more events"
@@ -83,8 +83,8 @@ instance RunMessage StickToThePlan3 where
           pushAll
             [ CreateWindowModifierEffect
                 EffectTurnWindow
-                ( EffectModifiers $
-                    toModifiers
+                ( EffectModifiers
+                    $ toModifiers
                       attrs
                       [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
                 )

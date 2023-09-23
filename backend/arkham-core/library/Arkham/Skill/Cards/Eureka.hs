@@ -21,8 +21,8 @@ eureka = skill Eureka Cards.eureka
 instance RunMessage Eureka where
   runMessage msg s@(Eureka attrs) = case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

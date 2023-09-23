@@ -21,10 +21,10 @@ ornateBow3 = asset OrnateBow3 Cards.ornateBow3
 
 instance HasAbilities OrnateBow3 where
   getAbilities (OrnateBow3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbilityWithSkill (Just Action.Fight) SkillAgility $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbilityWithSkill (Just Action.Fight) SkillAgility
+        $ ActionCost 1
+        <> UseCost (AssetWithId $ toId a) Ammo 1
     , restrictedAbility
         a
         2

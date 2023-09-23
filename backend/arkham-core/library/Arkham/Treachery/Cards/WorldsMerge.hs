@@ -39,10 +39,10 @@ instance RunMessage WorldsMerge where
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           n <- getStep =<< selectOne (AgendaWithSide AS.C)
-          pushAll $
-            InvestigatorAssignDamage iid source DamageAny 0 n
-              : replicate
-                n
-                (toMessage $ chooseAndDiscardCard iid attrs)
+          pushAll
+            $ InvestigatorAssignDamage iid source DamageAny 0 n
+            : replicate
+              n
+              (toMessage $ chooseAndDiscardCard iid attrs)
           pure t
     _ -> WorldsMerge <$> runMessage msg attrs

@@ -20,14 +20,14 @@ holeInTheWall = location HoleInTheWall Cards.holeInTheWall 1 (Static 0)
 
 instance HasAbilities HoleInTheWall where
   getAbilities (HoleInTheWall attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          RevealLocation Timing.After You $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage HoleInTheWall where
   runMessage msg l@(HoleInTheWall attrs) = case msg of

@@ -25,8 +25,8 @@ brackishWaters = location BrackishWaters Cards.brackishWaters 1 (Static 0)
 
 instance HasModifiersFor BrackishWaters where
   getModifiersFor (InvestigatorTarget iid) (BrackishWaters attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ CannotPlay (CardWithType AssetType)
         | iid `elem` locationInvestigators attrs

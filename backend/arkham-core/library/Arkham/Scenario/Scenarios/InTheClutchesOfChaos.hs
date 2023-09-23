@@ -66,9 +66,9 @@ instance RunMessage InTheClutchesOfChaos where
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
       pushAll
         $ [story investigators intro1]
-          <> [story investigators intro2 | neverSeenOrHeardFromAgain]
-          <> [story investigators intro3 | not neverSeenOrHeardFromAgain]
-          <> [story investigators intro4]
+        <> [story investigators intro2 | neverSeenOrHeardFromAgain]
+        <> [story investigators intro3 | not neverSeenOrHeardFromAgain]
+        <> [story investigators intro4]
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -92,19 +92,19 @@ instance RunMessage InTheClutchesOfChaos where
             , EncounterSet.AgentsOfAzathoth
             , EncounterSet.Nightgaunts
             ]
-            <> ( guard anetteMasonIsPossessedByEvil
-                  *> [ EncounterSet.MusicOfTheDamned
-                     , EncounterSet.AnettesCoven
-                     , EncounterSet.CityOfSins
-                     , EncounterSet.Witchcraft
-                     ]
-               )
-            <> ( guard carlSanfordPossessesTheSecretsOfTheUniverse
-                  *> [ EncounterSet.SecretsOfTheUniverse
-                     , EncounterSet.SilverTwilightLodge
-                     , EncounterSet.StrikingFear
-                     ]
-               )
+          <> ( guard anetteMasonIsPossessedByEvil
+                *> [ EncounterSet.MusicOfTheDamned
+                   , EncounterSet.AnettesCoven
+                   , EncounterSet.CityOfSins
+                   , EncounterSet.Witchcraft
+                   ]
+             )
+          <> ( guard carlSanfordPossessesTheSecretsOfTheUniverse
+                *> [ EncounterSet.SecretsOfTheUniverse
+                   , EncounterSet.SilverTwilightLodge
+                   , EncounterSet.StrikingFear
+                   ]
+             )
 
       midnightMasks <-
         traverse
@@ -153,8 +153,8 @@ instance RunMessage InTheClutchesOfChaos where
           , placeHangmansHill
           , placeSilverTwilightLodge
           ]
-          <> placeRest
-          <> [SetupStep (toTarget attrs) 1]
+        <> placeRest
+        <> [SetupStep (toTarget attrs) 1]
 
       agendas <- genCards [Agendas.theChariotVII]
 
@@ -225,15 +225,15 @@ instance RunMessage InTheClutchesOfChaos where
                         [Record TheInvestigatorsContinuedAlone]
                     , Label "“We will need your help to fix this.” " [Record TheInvestigatorsAskedAnetteForAssistance]
                     ]
-                    <> [ Label "“You are under arrest.”" [Record TheInvestigatorsArrestedAnette]
-                       | anyDetectivePoliceOrAgency
-                       ]
-                    <> [ Label "“Then teach me how to be stronger.”" [Record AnetteTaughtYouTheSpellsOfOld]
-                       | anySorcererMiskatonicOrScholar
-                       ]
+                  <> [ Label "“You are under arrest.”" [Record TheInvestigatorsArrestedAnette]
+                     | anyDetectivePoliceOrAgency
+                     ]
+                  <> [ Label "“Then teach me how to be stronger.”" [Record AnetteTaughtYouTheSpellsOfOld]
+                     | anySorcererMiskatonicOrScholar
+                     ]
               ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
           anySorcererSilverTwilightOrCultist <-
             selectAny
@@ -247,27 +247,27 @@ instance RunMessage InTheClutchesOfChaos where
                         [Record TheInvestigatorsContinuedAlone]
                     , Label "“We will need your help to fix this.” " [Record TheInvestigatorsAskedSanfordForAssistance]
                     ]
-                    <> [ Label "“You are under arrest.”" [Record TheInvestigatorsArrestedSanford]
-                       | anyDetectivePoliceOrAgency
-                       ]
-                    <> [ Label
-                        "“Then teach me how to be stronger.”"
-                        [Record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge]
-                       | anySorcererSilverTwilightOrCultist
-                       ]
+                  <> [ Label "“You are under arrest.”" [Record TheInvestigatorsArrestedSanford]
+                     | anyDetectivePoliceOrAgency
+                     ]
+                  <> [ Label
+                      "“Then teach me how to be stronger.”"
+                      [Record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge]
+                     | anySorcererSilverTwilightOrCultist
+                     ]
               ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 3 ->
           pushAll
             $ [story investigators resolution3, Record DoomDrawsEverCloser]
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 4 ->
           pushAll
             $ [story investigators resolution4, Record DoomDrawsEverCloser]
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "no such resolution"
       pure s
     _ -> InTheClutchesOfChaos <$> runMessage msg attrs

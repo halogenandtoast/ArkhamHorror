@@ -27,11 +27,11 @@ instance HasModifiersFor Cunning where
   getModifiersFor (CardIdTarget cid) (Cunning attrs) | toCardId attrs == cid =
     do
       resources <- field InvestigatorResources (skillOwner attrs)
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           attrs
-          [ AddSkillIcons $
-            if resources >= 10
+          [ AddSkillIcons
+            $ if resources >= 10
               then
                 [ SkillIcon SkillIntellect
                 , SkillIcon SkillIntellect

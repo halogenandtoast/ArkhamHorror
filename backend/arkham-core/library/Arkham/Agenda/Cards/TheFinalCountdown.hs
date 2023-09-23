@@ -25,7 +25,7 @@ theFinalCountdown :: AgendaCard TheFinalCountdown
 theFinalCountdown =
   agendaWith (3, A) TheFinalCountdown Cards.theFinalCountdown (Static 8)
     $ removeDoomMatchersL
-      %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
+    %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
 
 instance RunMessage TheFinalCountdown where
   runMessage msg a@(TheFinalCountdown attrs) =
@@ -37,8 +37,8 @@ instance RunMessage TheFinalCountdown where
         azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
         pushAll
           $ ritualSuicideMessages
-            <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
-            <> [RemoveDoom (toSource attrs) (toTarget azathoth) 1 | theCreatureRecognizesYou]
-            <> [advanceAgendaDeck attrs]
+          <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
+          <> [RemoveDoom (toSource attrs) (toTarget azathoth) 1 | theCreatureRecognizesYou]
+          <> [advanceAgendaDeck attrs]
         pure a
       _ -> TheFinalCountdown <$> runMessage msg attrs

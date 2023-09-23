@@ -27,16 +27,16 @@ instance RunMessage BlackStarsRise where
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
           hasAgenda <- selectAny AnyAgenda
-          push $
-            chooseOrRunOne iid $
-              [ Label
+          push
+            $ chooseOrRunOne iid
+            $ [ Label
                 "Place 1 doom on current agenda. This effect can cause the current agenda to advance."
                 [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
               | hasAgenda
               ]
-                <> [ Label
-                      ("Take " <> tshow n <> " horror")
-                      [InvestigatorAssignDamage iid source DamageAny 0 n]
-                   ]
+            <> [ Label
+                  ("Take " <> tshow n <> " horror")
+                  [InvestigatorAssignDamage iid source DamageAny 0 n]
+               ]
           pure t
     _ -> BlackStarsRise <$> runMessage msg attrs

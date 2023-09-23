@@ -31,12 +31,12 @@ instance HasAbilities CrazedShoggoth where
   getAbilities (CrazedShoggoth attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            InvestigatorDefeated
-              Timing.When
-              (BySource $ SourceIsEnemyAttack $ EnemyWithId $ toId attrs)
-              You
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ InvestigatorDefeated
+            Timing.When
+            (BySource $ SourceIsEnemyAttack $ EnemyWithId $ toId attrs)
+            You
       ]
 
 instance RunMessage CrazedShoggoth where

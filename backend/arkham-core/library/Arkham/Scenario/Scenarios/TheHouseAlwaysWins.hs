@@ -127,8 +127,8 @@ instance RunMessage TheHouseAlwaysWins where
       resourceCount <- getSpendableResources iid
       if resourceCount >= requiredResources
         then
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label
                   ( "Spend "
@@ -161,65 +161,65 @@ instance RunMessage TheHouseAlwaysWins where
     ScenarioResolution (Resolution 1) -> do
       investigatorIds <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story investigatorIds resolution1
-        , Record OBannionGangHasABoneToPickWithTheInvestigators
-        , Record DrFrancisMorganWasKidnapped
-        ]
-          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-          <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story investigatorIds resolution1
+          , Record OBannionGangHasABoneToPickWithTheInvestigators
+          , Record DrFrancisMorganWasKidnapped
+          ]
+        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
+        <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       lead <- getLead
       investigatorIds <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story investigatorIds resolution2
-        , Record OBannionGangHasABoneToPickWithTheInvestigators
-        , Record TheInvestigatorsRescuedDrFrancisMorgan
-        , chooseOne
-            lead
-            [ Label
-                "Add Dr. Francis Morgan to a deck"
-                [ chooseOne
-                    lead
-                    [ targetLabel
-                      iid
-                      [AddCampaignCardToDeck iid Assets.drFrancisMorgan]
-                    | iid <- investigatorIds
-                    ]
-                ]
-            , Label "Do not add Dr. Francis Morgan to any deck" []
-            ]
-        ]
-          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story investigatorIds resolution2
+          , Record OBannionGangHasABoneToPickWithTheInvestigators
+          , Record TheInvestigatorsRescuedDrFrancisMorgan
+          , chooseOne
+              lead
+              [ Label
+                  "Add Dr. Francis Morgan to a deck"
+                  [ chooseOne
+                      lead
+                      [ targetLabel
+                        iid
+                        [AddCampaignCardToDeck iid Assets.drFrancisMorgan]
+                      | iid <- investigatorIds
+                      ]
+                  ]
+              , Label "Do not add Dr. Francis Morgan to any deck" []
+              ]
+          ]
+        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids resolution3
-        , Record NaomiHasTheInvestigatorsBacks
-        , Record DrFrancisMorganWasKidnapped
-        ]
-          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution3
+          , Record NaomiHasTheInvestigatorsBacks
+          , Record DrFrancisMorganWasKidnapped
+          ]
+        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 4) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids resolution4
-        , Record OBannionGangHasABoneToPickWithTheInvestigators
-        , Record DrFrancisMorganWasKidnapped
-        , Record InvestigatorsWereUnconsciousForSeveralHours
-        ]
-          <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-          <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution4
+          , Record OBannionGangHasABoneToPickWithTheInvestigators
+          , Record DrFrancisMorganWasKidnapped
+          , Record InvestigatorsWereUnconsciousForSeveralHours
+          ]
+        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
+        <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     _ -> TheHouseAlwaysWins <$> runMessage msg attrs

@@ -25,13 +25,13 @@ northsideTrainStation =
 
 instance HasAbilities NorthsideTrainStation where
   getAbilities (NorthsideTrainStation attrs) =
-    withBaseAbilities attrs $
-      [ limitedAbility (PlayerLimit PerGame 1) $
-        restrictedAbility attrs 1 Here $
-          ActionAbility Nothing $
-            ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of

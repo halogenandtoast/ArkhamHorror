@@ -35,10 +35,10 @@ instance HasModifiersFor CreepingDarkness where
 
 instance HasAbilities CreepingDarkness where
   getAbilities (CreepingDarkness a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage CreepingDarkness where
@@ -52,12 +52,12 @@ instance RunMessage CreepingDarkness where
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasTorches <- getHasSupply iid Torches
-      push $
-        chooseOrRunOne iid $
-          Label
-            "Test {willpower} (3)"
-            [beginSkillTest iid attrs attrs SkillWillpower 3]
-            : [Label "Check supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches]
+      push
+        $ chooseOrRunOne iid
+        $ Label
+          "Test {willpower} (3)"
+          [beginSkillTest iid attrs attrs SkillWillpower 3]
+        : [Label "Check supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches]
       pure t
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

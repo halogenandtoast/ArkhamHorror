@@ -27,8 +27,8 @@ instance HasAbilities TenAcreMeadow_247 where
   getAbilities (TenAcreMeadow_247 attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (GroupLimit PerGame 1) $
-        restrictedAbility
+      [ limitedAbility (GroupLimit PerGame 1)
+        $ restrictedAbility
           attrs
           1
           ( Here

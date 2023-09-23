@@ -35,19 +35,19 @@ huntressOfTheEztli =
 instance HasAbilities HuntressOfTheEztli where
   getAbilities (HuntressOfTheEztli x)
     | onSide A x =
-        [ mkAbility x 1 $
-            Objective $
-              ForcedAbility $
-                EnemyDefeated Timing.After Anyone ByAny $
-                  EnemyWithTitle "Ichtaca"
+        [ mkAbility x 1
+            $ Objective
+            $ ForcedAbility
+            $ EnemyDefeated Timing.After Anyone ByAny
+            $ EnemyWithTitle "Ichtaca"
         , restrictedAbility
             x
             2
-            ( EnemyCriteria $
-                EnemyExists $
-                  EnemyWithTitle "Ichtaca"
-                    <> EnemyWithClues
-                      (AtLeast $ PerPlayer 1)
+            ( EnemyCriteria
+                $ EnemyExists
+                $ EnemyWithTitle "Ichtaca"
+                <> EnemyWithClues
+                  (AtLeast $ PerPlayer 1)
             )
             $ Objective
             $ ForcedAbility AnyWindow
@@ -72,7 +72,7 @@ instance RunMessage HuntressOfTheEztli where
           alejandroVela <-
             fromJustNote "Alejandro Vela was not set aside"
               . listToMaybe
-              <$> getSetAsideCardsMatching (CardWithTitle "Alejandro Vela")
+                <$> getSetAsideCardsMatching (CardWithTitle "Alejandro Vela")
           pushAll
             [ Remember YouFoughtWithIchtaca
             , chooseOne

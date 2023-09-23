@@ -28,9 +28,9 @@ instance RunMessage HorrificDescent where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       enemyMsgs <- getPlacePursuitEnemyMessages
       hasCanteen <- getAnyHasSupply Canteen
-      pushAll $
-        enemyMsgs
-          <> [Remember CollectedAStrangeLiquid | hasCanteen]
-          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll
+        $ enemyMsgs
+        <> [Remember CollectedAStrangeLiquid | hasCanteen]
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> HorrificDescent <$> runMessage msg attrs

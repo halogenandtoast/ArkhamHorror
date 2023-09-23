@@ -75,7 +75,7 @@ instance RunMessage PathwayIntoVoid where
             [toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 2)]
           | canDiscard
           ]
-          <> [Label "Take 1 Damage" [assignDamage iid (toAbilitySource attrs 2) 1]]
+        <> [Label "Take 1 Damage" [assignDamage iid (toAbilitySource attrs 2) 1]]
 
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do

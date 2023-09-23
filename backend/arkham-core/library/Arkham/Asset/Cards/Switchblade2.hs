@@ -20,8 +20,8 @@ switchblade2 = asset Switchblade2 Cards.switchblade2
 
 instance HasAbilities Switchblade2 where
   getAbilities (Switchblade2 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) (ActionCost 1)
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 
 instance RunMessage Switchblade2 where

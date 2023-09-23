@@ -68,8 +68,8 @@ instance HasChaosTokenValue DimCarcosa where
     Skull -> do
       remainingSanity <- field InvestigatorRemainingSanity iid
       horror <- field InvestigatorHorror iid
-      pure $
-        toChaosTokenValue
+      pure
+        $ toChaosTokenValue
           attrs
           Skull
           (if remainingSanity == 0 then 4 else 2)
@@ -132,8 +132,8 @@ instance RunMessage DimCarcosa where
       conviction <- getConviction
       leadInvestigatorId <- getLeadInvestigatorId
 
-      push $
-        if doubt + conviction <= 5
+      push
+        $ if doubt + conviction <= 5
           then SetupStep (toTarget attrs) 1
           else case compare doubt conviction of
             GT -> SetupStep (toTarget attrs) 2
@@ -237,16 +237,16 @@ instance RunMessage DimCarcosa where
           , Enemies.beastOfAldebaran
           ]
 
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        ]
-          <> (placeDarkSpires : placeShoresOfHali : placeRest)
-          <> [ MoveAllTo (toSource attrs) startingLocation
-             , RemoveFromBearersDeckOrDiscard theManInThePallidMask
-             ]
+      pushAll
+        $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          ]
+        <> (placeDarkSpires : placeShoresOfHali : placeRest)
+        <> [ MoveAllTo (toSource attrs) startingLocation
+           , RemoveFromBearersDeckOrDiscard theManInThePallidMask
+           ]
       agendas <-
         genCards
           [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
@@ -257,25 +257,25 @@ instance RunMessage DimCarcosa where
           ( attrs
               & ( setAsideCardsL
                     .~ PlayerCard theManInThePallidMask
-                      : ( setAsideCards
-                            <> setAsideBleakPlains
-                            <> setAsideRuinsOfCarcosa
-                            <> setAsideDimStreets
-                            <> setAsideDepthsOfDemhe
-                        )
+                    : ( setAsideCards
+                          <> setAsideBleakPlains
+                          <> setAsideRuinsOfCarcosa
+                          <> setAsideDimStreets
+                          <> setAsideDepthsOfDemhe
+                      )
                 )
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      when (chaosTokenFace token == Cultist) $
-        push $
-          InvestigatorAssignDamage
-            iid
-            (ChaosTokenEffectSource Cultist)
-            DamageAny
-            0
-            (if isEasyStandard attrs then 1 else 2)
+      when (chaosTokenFace token == Cultist)
+        $ push
+        $ InvestigatorAssignDamage
+          iid
+          (ChaosTokenEffectSource Cultist)
+          DamageAny
+          0
+          (if isEasyStandard attrs then 1 else 2)
       when (chaosTokenFace token == Tablet) $ do
         hasturInPlay <- selectAny $ EnemyWithTitle "Hastur"
         when hasturInPlay $ do
@@ -290,8 +290,8 @@ instance RunMessage DimCarcosa where
           | action `elem` [Action.Fight, Action.Evade] -> do
               isMonsterOrAncientOne <-
                 member eid <$> select (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
-              pushWhen isMonsterOrAncientOne $
-                LoseActions iid (ChaosTokenEffectSource ElderThing) 1
+              pushWhen isMonsterOrAncientOne
+                $ LoseActions iid (ChaosTokenEffectSource ElderThing) 1
         _ -> pure ()
       pure s
     ScenarioResolution res -> do
@@ -300,15 +300,15 @@ instance RunMessage DimCarcosa where
       doubt <- getDoubt
       gainXp <- toGainXp attrs $ getXpWithBonus 5
       possessed <-
-        selectList $
-          InvestigatorWithTreacheryInHand $
-            TreacheryOneOf $
-              map
-                treacheryIs
-                [ Treacheries.possessionMurderous
-                , Treacheries.possessionTraitorous
-                , Treacheries.possessionTorturous
-                ]
+        selectList
+          $ InvestigatorWithTreacheryInHand
+          $ TreacheryOneOf
+          $ map
+            treacheryIs
+            [ Treacheries.possessionMurderous
+            , Treacheries.possessionTraitorous
+            , Treacheries.possessionTorturous
+            ]
       let
         recordPossessed = recordSetInsert Possessed (map unInvestigatorId possessed)
       case res of
@@ -317,36 +317,36 @@ instance RunMessage DimCarcosa where
           EQ -> push $ scenarioResolution 4
           LT -> push $ scenarioResolution 5
         Resolution 1 -> do
-          pushAll $
-            [story investigatorIds resolution1]
-              <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
-              <> gainXp
-              <> [recordPossessed, EndOfGame Nothing]
+          pushAll
+            $ [story investigatorIds resolution1]
+            <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
+            <> gainXp
+            <> [recordPossessed, EndOfGame Nothing]
         Resolution 2 -> do
-          pushAll $
-            [story investigatorIds resolution2]
-              <> [SufferTrauma iid 0 2 | iid <- investigatorIds]
-              <> gainXp
-              <> [recordPossessed, EndOfGame Nothing]
+          pushAll
+            $ [story investigatorIds resolution2]
+            <> [SufferTrauma iid 0 2 | iid <- investigatorIds]
+            <> gainXp
+            <> [recordPossessed, EndOfGame Nothing]
         Resolution 3 -> do
-          pushAll $
-            [story investigatorIds resolution3]
-              <> [SufferTrauma iid 2 0 | iid <- investigatorIds]
-              <> gainXp
-              <> [recordPossessed, EndOfGame Nothing]
+          pushAll
+            $ [story investigatorIds resolution3]
+            <> [SufferTrauma iid 2 0 | iid <- investigatorIds]
+            <> gainXp
+            <> [recordPossessed, EndOfGame Nothing]
         Resolution 4 -> do
-          pushAll $
-            [ story investigatorIds resolution4
-            , Record
-                TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
-            ]
-              <> map DrivenInsane investigatorIds
-              <> [GameOver]
+          pushAll
+            $ [ story investigatorIds resolution4
+              , Record
+                  TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
+              ]
+            <> map DrivenInsane investigatorIds
+            <> [GameOver]
         Resolution 5 -> do
-          pushAll $
-            [story investigatorIds resolution5, Record HasturHasYouInHisGrasp]
-              <> map DrivenInsane investigatorIds
-              <> [GameOver]
+          pushAll
+            $ [story investigatorIds resolution5, Record HasturHasYouInHisGrasp]
+            <> map DrivenInsane investigatorIds
+            <> [GameOver]
         _ -> error "Unhandled resolution"
       pure s
     _ -> DimCarcosa <$> runMessage msg attrs

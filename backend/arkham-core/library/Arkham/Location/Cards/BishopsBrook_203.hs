@@ -21,8 +21,8 @@ bishopsBrook_203 =
 
 instance HasModifiersFor BishopsBrook_203 where
   getModifiersFor (InvestigatorTarget iid) (BishopsBrook_203 attrs@LocationAttrs {..}) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ CannotEnter (toId attrs)
         | iid `notElem` locationInvestigators && notNull locationInvestigators

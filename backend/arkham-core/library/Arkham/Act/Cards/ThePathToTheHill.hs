@@ -36,9 +36,9 @@ instance RunMessage ThePathToTheHill where
       ascendingPath <- selectJust $ LocationWithTitle "Ascending Path"
       pushAll
         $ map (RemoveAllClues (toSource attrs)) locations
-          <> [ RevealLocation Nothing ascendingPath
-             , advanceActDeck attrs
-             ]
+        <> [ RevealLocation Nothing ascendingPath
+           , advanceActDeck attrs
+           ]
 
       pure a
     _ -> ThePathToTheHill <$> runMessage msg attrs

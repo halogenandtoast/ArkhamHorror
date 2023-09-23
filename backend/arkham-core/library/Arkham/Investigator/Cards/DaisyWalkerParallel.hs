@@ -27,7 +27,8 @@ instance HasModifiersFor DaisyWalkerParallel where
     tomeCount <- selectCount $ assetControlledBy attrs.id <> withTrait Tome
     pure
       $ toModifiers attrs
-      $ guard (tomeCount > 0) *> [SkillModifier #willpower tomeCount, SanityModifier tomeCount]
+      $ guard (tomeCount > 0)
+      *> [SkillModifier #willpower tomeCount, SanityModifier tomeCount]
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue DaisyWalkerParallel where

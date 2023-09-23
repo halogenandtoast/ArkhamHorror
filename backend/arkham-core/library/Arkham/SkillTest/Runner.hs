@@ -236,30 +236,30 @@ instance RunMessage SkillTest where
       difficulty <- getModifiedSkillTestDifficulty s
       pushAll
         $ SkillTestResults resultsData
-          : [ Will
-              ( FailedSkillTest
-                  skillTestInvestigator
-                  skillTestAction
-                  skillTestSource
-                  target
-                  skillTestType
-                  difficulty
-              )
-            | target <- skillTestSubscribers
-            ]
-            <> [ Will
-                  ( FailedSkillTest
-                      skillTestInvestigator
-                      skillTestAction
-                      skillTestSource
-                      (SkillTestInitiatorTarget skillTestTarget)
-                      skillTestType
-                      difficulty
-                  )
-               , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
-               , SkillTestEnds skillTestInvestigator skillTestSource
-               , Do (SkillTestEnds skillTestInvestigator skillTestSource)
-               ]
+        : [ Will
+            ( FailedSkillTest
+                skillTestInvestigator
+                skillTestAction
+                skillTestSource
+                target
+                skillTestType
+                difficulty
+            )
+          | target <- skillTestSubscribers
+          ]
+          <> [ Will
+                ( FailedSkillTest
+                    skillTestInvestigator
+                    skillTestAction
+                    skillTestSource
+                    (SkillTestInitiatorTarget skillTestTarget)
+                    skillTestType
+                    difficulty
+                )
+             , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
+             , SkillTestEnds skillTestInvestigator skillTestSource
+             , Do (SkillTestEnds skillTestInvestigator skillTestSource)
+             ]
       pure $ s & resultL .~ FailedBy Automatic difficulty
     StartSkillTest _ -> do
       windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
@@ -293,9 +293,9 @@ instance RunMessage SkillTest where
           when canPay
             $ pushAll
             $ [SetActiveInvestigator iid | iid /= iid']
-              <> [PayForAbility (abilityEffect s $ mconcat additionalCosts) []]
-              <> [SetActiveInvestigator iid' | iid /= iid']
-              <> msgs
+            <> [PayForAbility (abilityEffect s $ mconcat additionalCosts) []]
+            <> [SetActiveInvestigator iid' | iid /= iid']
+            <> msgs
       pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
@@ -340,13 +340,13 @@ instance RunMessage SkillTest where
       skillTestEndsWindows <- windows [Window.SkillTestEnded s]
       pushAll
         $ ResetChaosTokens (toSource s)
-          : map (uncurry AddToDiscard) discards
-            <> skillTestEndsWindows
-            <> [ AfterSkillTestEnds
-                  skillTestSource
-                  skillTestTarget
-                  skillTestResult
-               ]
+        : map (uncurry AddToDiscard) discards
+          <> skillTestEndsWindows
+          <> [ AfterSkillTestEnds
+                skillTestSource
+                skillTestTarget
+                skillTestResult
+             ]
       pure s
     ReturnToHand _ (CardIdTarget cardId) -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
@@ -514,37 +514,37 @@ instance RunMessage SkillTest where
                 )
               | target <- skillTestSubscribers
               ]
-              <> [ When
-                    ( PassedSkillTest
-                        skillTestInvestigator
-                        skillTestAction
-                        skillTestSource
-                        (SkillTestInitiatorTarget skillTestTarget)
-                        skillTestType
-                        n
-                    )
-                 ]
-              <> ( cycleN
-                    successTimes
-                    ( [ PassedSkillTest
-                        skillTestInvestigator
-                        skillTestAction
-                        skillTestSource
-                        target
-                        skillTestType
-                        n
-                      | target <- skillTestSubscribers
-                      ]
-                        <> [ PassedSkillTest
-                              skillTestInvestigator
-                              skillTestAction
-                              skillTestSource
-                              (SkillTestInitiatorTarget skillTestTarget)
-                              skillTestType
-                              n
-                           ]
-                    )
-                 )
+            <> [ When
+                  ( PassedSkillTest
+                      skillTestInvestigator
+                      skillTestAction
+                      skillTestSource
+                      (SkillTestInitiatorTarget skillTestTarget)
+                      skillTestType
+                      n
+                  )
+               ]
+            <> ( cycleN
+                  successTimes
+                  ( [ PassedSkillTest
+                      skillTestInvestigator
+                      skillTestAction
+                      skillTestSource
+                      target
+                      skillTestType
+                      n
+                    | target <- skillTestSubscribers
+                    ]
+                      <> [ PassedSkillTest
+                            skillTestInvestigator
+                            skillTestAction
+                            skillTestSource
+                            (SkillTestInitiatorTarget skillTestTarget)
+                            skillTestType
+                            n
+                         ]
+                  )
+               )
         FailedBy _ n -> do
           hauntedAbilities <- case (skillTestTarget, skillTestAction) of
             (LocationTarget lid, Just Action.Investigate) -> selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
@@ -560,39 +560,39 @@ instance RunMessage SkillTest where
                       n
                   )
               ]
-              <> [ When
-                  ( FailedSkillTest
-                      skillTestInvestigator
-                      skillTestAction
-                      skillTestSource
-                      target
-                      skillTestType
-                      n
-                  )
-                 | target <- skillTestSubscribers
-                 ]
-              <> [ FailedSkillTest
-                  skillTestInvestigator
-                  skillTestAction
-                  skillTestSource
-                  target
-                  skillTestType
-                  n
-                 | target <- skillTestSubscribers
-                 ]
-              <> [ FailedSkillTest
+            <> [ When
+                ( FailedSkillTest
                     skillTestInvestigator
                     skillTestAction
                     skillTestSource
-                    (SkillTestInitiatorTarget skillTestTarget)
+                    target
                     skillTestType
                     n
-                 ]
-              <> [ chooseOneAtATime
+                )
+               | target <- skillTestSubscribers
+               ]
+            <> [ FailedSkillTest
+                skillTestInvestigator
+                skillTestAction
+                skillTestSource
+                target
+                skillTestType
+                n
+               | target <- skillTestSubscribers
+               ]
+            <> [ FailedSkillTest
                   skillTestInvestigator
-                  [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities]
-                 | notNull hauntedAbilities
-                 ]
+                  skillTestAction
+                  skillTestSource
+                  (SkillTestInitiatorTarget skillTestTarget)
+                  skillTestType
+                  n
+               ]
+            <> [ chooseOneAtATime
+                skillTestInvestigator
+                [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities]
+               | notNull hauntedAbilities
+               ]
         Unrun -> pure ()
       pure s
     RerunSkillTest -> case skillTestResult of

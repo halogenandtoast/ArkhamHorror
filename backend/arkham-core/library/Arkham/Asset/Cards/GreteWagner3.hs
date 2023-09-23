@@ -22,8 +22,8 @@ greteWagner3 = ally GreteWagner3 Cards.greteWagner3 (4, 2)
 instance HasModifiersFor GreteWagner3 where
   getModifiersFor (InvestigatorTarget iid) (GreteWagner3 a)
     | controlledBy a iid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [SkillModifier SkillCombat 1, SkillModifier SkillIntellect 1]
   getModifiersFor _ _ = pure []

@@ -24,16 +24,16 @@ instance RunMessage RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       targetInvestigators <-
-        selectList $
-          InvestigatorAt $
-            LocationWithEnemy $
-              EnemyWithTitle
-                broodTitle
-      pushAll $
-        [ beginSkillTest iid' source (InvestigatorTarget iid') SkillAgility 3
-        | iid' <- targetInvestigators
-        ]
-          <> [gainSurge attrs | null targetInvestigators]
+        selectList
+          $ InvestigatorAt
+          $ LocationWithEnemy
+          $ EnemyWithTitle
+            broodTitle
+      pushAll
+        $ [ beginSkillTest iid' source (InvestigatorTarget iid') SkillAgility 3
+          | iid' <- targetInvestigators
+          ]
+        <> [gainSurge attrs | null targetInvestigators]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source ->

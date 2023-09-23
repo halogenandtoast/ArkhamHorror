@@ -21,13 +21,13 @@ arkhamWoodsGreatWillow =
 
 instance HasAbilities ArkhamWoodsGreatWillow where
   getAbilities (ArkhamWoodsGreatWillow attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $
-        ForcedAbility $
-          SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery) $
-            SuccessResult AnyValue
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here
+          $ ForcedAbility
+          $ SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery)
+          $ SuccessResult AnyValue
+        | locationRevealed attrs
+        ]
 
 instance RunMessage ArkhamWoodsGreatWillow where
   runMessage msg l@(ArkhamWoodsGreatWillow attrs) = case msg of

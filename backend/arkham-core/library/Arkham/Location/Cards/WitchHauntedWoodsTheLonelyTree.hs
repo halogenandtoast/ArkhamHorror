@@ -32,8 +32,8 @@ instance HasModifiersFor WitchHauntedWoodsTheLonelyTree where
   getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsTheLonelyTree a) =
     do
       handLength <- fieldMap InvestigatorHand length iid
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           a
           [ CannotInvestigateLocation (toId a)
           | handLength >= 3 && handLength <= 5
@@ -70,19 +70,19 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
       canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
 
       iidsForDraw <-
-        selectList $
-          InvestigatorCanDrawCards $
-            InvestigatorAt $
-              LocationWithTitle "Witch-Haunted Woods"
-                <> NotLocation (locationWithInvestigator iid)
+        selectList
+          $ InvestigatorCanDrawCards
+          $ InvestigatorAt
+          $ LocationWithTitle "Witch-Haunted Woods"
+          <> NotLocation (locationWithInvestigator iid)
 
       iidsForDiscard <-
-        selectList $
-          InvestigatorWithDiscardableCard
-            <> InvestigatorAt
-              ( LocationWithTitle "Witch-Haunted Woods"
-                  <> NotLocation (locationWithInvestigator iid)
-              )
+        selectList
+          $ InvestigatorWithDiscardableCard
+          <> InvestigatorAt
+            ( LocationWithTitle "Witch-Haunted Woods"
+                <> NotLocation (locationWithInvestigator iid)
+            )
 
       chooseOtherDraw <- for iidsForDraw $ \other -> do
         drawing <- newCardDraw other attrs 1
@@ -90,12 +90,12 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
 
       drawing <- newCardDraw iid attrs 1
 
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
-            [ toMessage $
-                (chooseAndDiscardCard iid attrs)
+            [ toMessage
+                $ (chooseAndDiscardCard iid attrs)
                   { discardThen =
                       guard (notNull chooseOtherDraw)
                         $> chooseOrRunOne iid chooseOtherDraw
@@ -103,21 +103,21 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
             ]
           | handLength > 0
           ]
-            <> [ Label
-                "vice versa"
-                [ chooseOrRunOne
-                    iid
-                    [ targetLabel
-                      other
-                      [ toMessage $
-                          (chooseAndDiscardCard other attrs)
-                            { discardThen = Just $ DrawCards drawing
-                            }
-                      ]
-                    | other <- iidsForDiscard
-                    ]
+        <> [ Label
+            "vice versa"
+            [ chooseOrRunOne
+                iid
+                [ targetLabel
+                  other
+                  [ toMessage
+                      $ (chooseAndDiscardCard other attrs)
+                        { discardThen = Just $ DrawCards drawing
+                        }
+                  ]
+                | other <- iidsForDiscard
                 ]
-               | notNull iidsForDiscard && canDraw
-               ]
+            ]
+           | notNull iidsForDiscard && canDraw
+           ]
       pure l
     _ -> WitchHauntedWoodsTheLonelyTree <$> runMessage msg attrs

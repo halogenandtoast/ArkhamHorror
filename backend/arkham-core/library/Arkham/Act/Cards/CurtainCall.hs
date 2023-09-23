@@ -42,16 +42,16 @@ instance HasAbilities CurtainCall where
     , restrictedAbility
         attrs
         2
-        ( LocationExists $
-            LocationWithoutHorror
-              <> AccessibleTo LocationWithAnyHorror
+        ( LocationExists
+            $ LocationWithoutHorror
+            <> AccessibleTo LocationWithAnyHorror
         )
         $ ForcedAbility
         $ RoundEnds Timing.When
     ]
-      <> [ restrictedAbility attrs 3 AllUndefeatedInvestigatorsResigned $
-          Objective $
-            ForcedAbility AnyWindow
+      <> [ restrictedAbility attrs 3 AllUndefeatedInvestigatorsResigned
+          $ Objective
+          $ ForcedAbility AnyWindow
          | onSide A attrs
          ]
 
@@ -62,9 +62,9 @@ instance RunMessage CurtainCall where
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       targets <-
-        selectListMap LocationTarget $
-          LocationWithoutHorror
-            <> AccessibleTo LocationWithAnyHorror
+        selectListMap LocationTarget
+          $ LocationWithoutHorror
+          <> AccessibleTo LocationWithAnyHorror
       pushAll $ map (\t -> PlaceHorror (toAbilitySource attrs 3) t 1) targets
       pure a
     UseCardAbility _ source 3 _ _ | isSource attrs source -> do
@@ -72,8 +72,8 @@ instance RunMessage CurtainCall where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOne
+      push
+        $ chooseOne
           leadInvestigatorId
           [ Label
               "We have to warn the police about what's going on! (-> R1)"

@@ -30,17 +30,17 @@ instance HasAbilities AngeredSpirits where
       a
       1
       OnSameLocation
-      ( FastAbility $
-          ExhaustAssetCost $
-            AssetWithTrait Spell
-              <> AssetControlledBy You
+      ( FastAbility
+          $ ExhaustAssetCost
+          $ AssetWithTrait Spell
+          <> AssetControlledBy You
       )
-      : [ restrictedAbility a 2 (ChargesOnThis $ EqualTo $ Static 0) $
-          ForcedAbility $
-            OrWindowMatcher
-              [ GameEnds Timing.When
-              , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
-              ]
+      : [ restrictedAbility a 2 (ChargesOnThis $ EqualTo $ Static 0)
+          $ ForcedAbility
+          $ OrWindowMatcher
+            [ GameEnds Timing.When
+            , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+            ]
         | iid <- maybeToList (treacheryOwner a)
         ]
 
@@ -58,6 +58,6 @@ instance RunMessage AngeredSpirits where
             [SpendUses target Charge 1, PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1]
           pure t
     UseCardAbility _ source 2 _ _ | isSource attrs source ->
-      withTreacheryInvestigator attrs $
-        \tormented -> t <$ push (SufferTrauma tormented 1 0)
+      withTreacheryInvestigator attrs
+        $ \tormented -> t <$ push (SufferTrauma tormented 1 0)
     _ -> AngeredSpirits <$> runMessage msg attrs

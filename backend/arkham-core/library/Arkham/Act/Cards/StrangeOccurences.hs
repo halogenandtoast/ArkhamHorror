@@ -42,8 +42,8 @@ instance HasModifiersFor StrangeOccurences where
           selectAny $ locationWithInvestigator iid <> IsIchtacasDestination
         treacheriesDrawnCount <-
           length . historyTreacheriesDrawn <$> getHistory TurnHistory iid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ AddKeyword Keyword.Surge
             | atIchtacasDestination && treacheriesDrawnCount == 1
@@ -74,12 +74,12 @@ instance RunMessage StrangeOccurences where
         selectAny $ locationIs Locations.townHall <> IsIchtacasDestination
       ichtaca <- genCard Assets.ichtacaTheForgottenGuardian
       iids <-
-        selectList $
-          NearestToLocation $
-            locationIs $
-              if isTownHall
-                then Locations.townHall
-                else Locations.rivertown
+        selectList
+          $ NearestToLocation
+          $ locationIs
+          $ if isTownHall
+            then Locations.townHall
+            else Locations.rivertown
       let
         takeControlMessage =
           chooseOrRunOne

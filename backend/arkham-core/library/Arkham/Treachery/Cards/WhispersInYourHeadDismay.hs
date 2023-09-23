@@ -25,8 +25,8 @@ whispersInYourHeadDismay =
 
 instance HasModifiersFor WhispersInYourHeadDismay where
   getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDismay a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ CannotCommitCards $ CardWithType SkillType
         | treacheryInHandOf a == Just iid

@@ -53,9 +53,9 @@ instance RunMessage NobodysHome where
       mLocation <- field InvestigatorLocation iid
       for_ mLocation $ \lid -> do
         clueless <- fieldP LocationClues (== 0) lid
-        pushAll $
-          AttachTreachery (toId attrs) (LocationTarget lid)
-            : [gainSurge attrs | clueless]
+        pushAll
+          $ AttachTreachery (toId attrs) (LocationTarget lid)
+          : [gainSurge attrs | clueless]
       pure t
     UseCardAbility _ source 1 _ _
       | isSource attrs source ->

@@ -34,11 +34,11 @@ instance HasAbilities WitchHauntedWoodsChildsTreeHouse where
   getAbilities (WitchHauntedWoodsChildsTreeHouse a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            DiscoveringLastClue Timing.After Anyone $
-              LocationWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ DiscoveringLastClue Timing.After Anyone
+          $ LocationWithId
+          $ toId a
       ]
 
 instance RunMessage WitchHauntedWoodsChildsTreeHouse where

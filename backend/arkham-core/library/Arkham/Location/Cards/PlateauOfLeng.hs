@@ -25,10 +25,10 @@ instance HasAbilities PlateauOfLeng where
   getAbilities (PlateauOfLeng attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 (Here <> DuringSkillTest AnySkillTest) $
-          ForcedAbility $
-            RevealChaosToken Timing.AtIf You $
-              ChaosTokenFaceIs ElderThing
+      [ restrictedAbility attrs 1 (Here <> DuringSkillTest AnySkillTest)
+          $ ForcedAbility
+          $ RevealChaosToken Timing.AtIf You
+          $ ChaosTokenFaceIs ElderThing
       ]
 
 instance RunMessage PlateauOfLeng where

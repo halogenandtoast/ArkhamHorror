@@ -21,8 +21,8 @@ darkHorse = asset DarkHorse Cards.darkHorse
 instance HasModifiersFor DarkHorse where
   getModifiersFor (InvestigatorTarget iid) (DarkHorse a) | controlledBy a iid = do
     resourceCount <- field InvestigatorResources iid
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         ( if resourceCount == 0
             then

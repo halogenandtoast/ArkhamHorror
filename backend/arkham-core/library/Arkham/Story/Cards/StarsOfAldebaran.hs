@@ -33,14 +33,14 @@ instance RunMessage StarsOfAldebaran where
             enemy
             [Msg.EnemyDamage enemy $ storyDamage iid 4]
       setAsideBleakPlains <-
-        getSetAsideCardsMatching $
-          CardWithTitle "Bleak Plains"
+        getSetAsideCardsMatching
+          $ CardWithTitle "Bleak Plains"
       otherBleakPlain <- case setAsideBleakPlains of
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
-      pushAll $
-        healMessages
-          <> [chooseOrRunOne iid $ map damageEnemy enemies | notNull enemies]
-          <> [ReplaceLocation bleakPlains otherBleakPlain DefaultReplace]
+      pushAll
+        $ healMessages
+        <> [chooseOrRunOne iid $ map damageEnemy enemies | notNull enemies]
+        <> [ReplaceLocation bleakPlains otherBleakPlain DefaultReplace]
       pure s
     _ -> StarsOfAldebaran <$> runMessage msg attrs

@@ -43,11 +43,11 @@ instance RunMessage IntoTheDarkness where
           , DiscardUntilFirst lead (ActSource actId) Deck.EncounterDeck
               $ BasicCardMatch (CardWithType EnemyType)
           ]
-          <> [ DiscardUntilFirst lead (ActSource actId) Deck.EncounterDeck
-              $ BasicCardMatch (CardWithType EnemyType)
-             | playerCount > 3
-             ]
-          <> [advanceActDeck attrs]
+        <> [ DiscardUntilFirst lead (ActSource actId) Deck.EncounterDeck
+            $ BasicCardMatch (CardWithType EnemyType)
+           | playerCount > 3
+           ]
+        <> [advanceActDeck attrs]
       pure a
     RequestedEncounterCard (ActSource aid) _ mcard | aid == actId -> do
       for_ mcard \card -> do

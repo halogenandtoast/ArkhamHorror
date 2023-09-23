@@ -45,12 +45,12 @@ instance RunMessage SeekingAnswers2 where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       lids <-
-        selectList $
-          LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
-            <> locationWithDiscoverableCluesBy iid
+        selectList
+          $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
+          <> locationWithDiscoverableCluesBy iid
       when (notNull lids) $ do
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             iid
             [ targetLabel
               lid'

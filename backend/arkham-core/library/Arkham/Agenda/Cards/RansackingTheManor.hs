@@ -53,8 +53,8 @@ instance RunMessage RansackingTheManor where
 
       pushAll
         $ spawnPossessedOathspeaker
-          : [spawnSebastienMoreauMessages | spawnSebastienMoreau]
-            <> [advanceAgendaDeck attrs]
+        : [spawnSebastienMoreauMessages | spawnSebastienMoreau]
+          <> [advanceAgendaDeck attrs]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.PlacedClues _ target n)] _ -> do
       push $ FlipClues target n

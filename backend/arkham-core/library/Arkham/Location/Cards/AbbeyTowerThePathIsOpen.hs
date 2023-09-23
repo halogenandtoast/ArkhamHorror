@@ -30,8 +30,8 @@ instance HasModifiersFor AbbeyTowerThePathIsOpen where
   getModifiersFor target (AbbeyTowerThePathIsOpen attrs)
     | isTarget attrs target = do
         foundAGuide <- remembered FoundTheTowerKey
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [Blocked | not (locationRevealed attrs) && not foundAGuide]
   getModifiersFor (InvestigatorTarget iid) (AbbeyTowerThePathIsOpen attrs)
@@ -56,11 +56,11 @@ instance RunMessage AbbeyTowerThePathIsOpen where
   runMessage msg l@(AbbeyTowerThePathIsOpen attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maxDiscardAmount <-
-        selectCount $
-          InHandOf (InvestigatorWithId iid)
-            <> BasicCardMatch NonWeakness
-      push $
-        chooseAmounts
+        selectCount
+          $ InHandOf (InvestigatorWithId iid)
+          <> BasicCardMatch NonWeakness
+      push
+        $ chooseAmounts
           iid
           "Discard up to 3 cards from your hand"
           (MaxAmountTarget 3)
@@ -70,10 +70,10 @@ instance RunMessage AbbeyTowerThePathIsOpen where
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let
         discardAmount = getChoiceAmount "Cards" choices
-      when (discardAmount > 0) $
-        pushAll $
-          replicate
-            discardAmount
-            (toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1))
+      when (discardAmount > 0)
+        $ pushAll
+        $ replicate
+          discardAmount
+          (toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1))
       pure l
     _ -> AbbeyTowerThePathIsOpen <$> runMessage msg attrs

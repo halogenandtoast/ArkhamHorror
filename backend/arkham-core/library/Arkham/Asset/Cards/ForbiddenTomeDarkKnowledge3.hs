@@ -37,8 +37,8 @@ instance HasAbilities ForbiddenTomeDarkKnowledge3 where
             <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation)
             <> AnyCriterion
               [ InvestigatorExists
-                  ( HealableInvestigator (toSource a) DamageType $
-                      InvestigatorAt YourLocation
+                  ( HealableInvestigator (toSource a) DamageType
+                      $ InvestigatorAt YourLocation
                   )
               , AssetExists
                   ( HealableAsset (toSource a) DamageType $ AssetAt YourLocation
@@ -47,27 +47,27 @@ instance HasAbilities ForbiddenTomeDarkKnowledge3 where
         )
         $ ActionAbility Nothing
         $ ActionCost 4
-          <> ExhaustCost (toTarget a)
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage ForbiddenTomeDarkKnowledge3 where
   runMessage msg a@(ForbiddenTomeDarkKnowledge3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       investigators <-
-        selectListMap InvestigatorTarget $
-          HealableInvestigator (toSource attrs) DamageType $
-            colocatedWith iid
+        selectListMap InvestigatorTarget
+          $ HealableInvestigator (toSource attrs) DamageType
+          $ colocatedWith iid
       assets <-
-        selectListMap AssetTarget $
-          HealableAsset (toSource attrs) DamageType $
-            AssetAt (locationWithInvestigator iid)
+        selectListMap AssetTarget
+          $ HealableAsset (toSource attrs) DamageType
+          $ AssetAt (locationWithInvestigator iid)
       enemies <-
-        selectListMap EnemyTarget $
-          EnemyAt $
-            locationWithInvestigator
-              iid
-      push $
-        chooseOne
+        selectListMap EnemyTarget
+          $ EnemyAt
+          $ locationWithInvestigator
+            iid
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             target

@@ -31,21 +31,21 @@ instance HasModifiersFor Newspaper2 where
   getModifiersFor (InvestigatorTarget iid) (Newspaper2 (a `With` metadata))
     | controlledBy a iid = do
         clueCount <- field InvestigatorClues iid
-        pure $
-          toModifiers a $
-            [ ActionSkillModifier Action.Investigate SkillIntellect 2
+        pure
+          $ toModifiers a
+          $ [ ActionSkillModifier Action.Investigate SkillIntellect 2
             | clueCount == 0
             ]
-              <> [DiscoveredClues 1 | active metadata]
+          <> [DiscoveredClues 1 | active metadata]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Newspaper2 where
   getAbilities (Newspaper2 (a `With` _)) =
-    [ restrictedAbility a 1 (InvestigatorExists investigatorMatcher) $
-        flip ReactionAbility Free $
-          Matcher.DiscoverClues Timing.When You YourLocation $
-            AtLeast $
-              Static 1
+    [ restrictedAbility a 1 (InvestigatorExists investigatorMatcher)
+        $ flip ReactionAbility Free
+        $ Matcher.DiscoverClues Timing.When You YourLocation
+        $ AtLeast
+        $ Static 1
     ]
    where
     investigatorMatcher =

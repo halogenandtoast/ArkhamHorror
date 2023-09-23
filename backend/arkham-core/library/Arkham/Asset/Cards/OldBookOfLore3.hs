@@ -44,8 +44,8 @@ instance RunMessage OldBookOfLore3 where
   runMessage msg a@(OldBookOfLore3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorIds <- selectList $ colocatedWith iid
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             iid'
@@ -79,26 +79,26 @@ instance RunMessage OldBookOfLore3 where
                   UnpaidCost
                   windows'
                   card
-              pure $
-                targetLabel (toCardId card) $
-                  AddFocusedToHand iid (toTarget iid') FromDeck (toCardId card)
-                    : endSearch
-                    : [ chooseOne
-                        iid
-                        [ Label
-                            "Spend secret"
-                            [ SpendUses (toTarget attrs) Secret 1
-                            , createCardEffect
-                                Cards.oldBookOfLore3
-                                Nothing
-                                (toSource attrs)
-                                (CardIdTarget $ toCardId card)
-                            , PayCardCost iid' card windows'
-                            ]
-                        , Label "Do not spend secret" []
+              pure
+                $ targetLabel (toCardId card)
+                $ AddFocusedToHand iid (toTarget iid') FromDeck (toCardId card)
+                : endSearch
+                : [ chooseOne
+                    iid
+                    [ Label
+                        "Spend secret"
+                        [ SpendUses (toTarget attrs) Secret 1
+                        , createCardEffect
+                            Cards.oldBookOfLore3
+                            Nothing
+                            (toSource attrs)
+                            (CardIdTarget $ toCardId card)
+                        , PayCardCost iid' card windows'
                         ]
-                      | playable && useCount (assetUses attrs) > 0
-                      ]
+                    , Label "Do not spend secret" []
+                    ]
+                  | playable && useCount (assetUses attrs) > 0
+                  ]
             push $ chooseOne iid' choices
         pure a
     _ -> OldBookOfLore3 <$> runMessage msg attrs
@@ -113,8 +113,8 @@ oldBookOfLore3Effect = OldBookOfLore3Effect . uncurry4 (baseAttrs "03033")
 instance HasModifiersFor OldBookOfLore3Effect where
   getModifiersFor target@(CardIdTarget cid) (OldBookOfLore3Effect attrs)
     | effectTarget attrs == target =
-        pure $
-          toModifiers attrs [ReduceCostOf (CardWithId cid) 2]
+        pure
+          $ toModifiers attrs [ReduceCostOf (CardWithId cid) 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage OldBookOfLore3Effect where

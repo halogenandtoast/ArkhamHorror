@@ -20,14 +20,14 @@ audubonPark = location AudubonPark Cards.audubonPark 3 (PerPlayer 1)
 
 instance HasAbilities AudubonPark where
   getAbilities (AudubonPark attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $
-        ForcedAbility $
-          EnemyEvaded Timing.When You $
-            enemyAt $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here
+          $ ForcedAbility
+          $ EnemyEvaded Timing.When You
+          $ enemyAt
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage AudubonPark where
   runMessage msg l@(AudubonPark attrs) = case msg of

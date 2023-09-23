@@ -27,12 +27,12 @@ instance HasAbilities TheyMustBeDestroyed where
         [ restrictedAbility
             x
             1
-            ( Negate $
-                AnyCriterion
-                  [ EnemyCriteria $
-                      EnemyExists $
-                        EnemyWithTitle
-                          "Brood of Yog-Sothoth"
+            ( Negate
+                $ AnyCriterion
+                  [ EnemyCriteria
+                      $ EnemyExists
+                      $ EnemyWithTitle
+                        "Brood of Yog-Sothoth"
                   , SetAsideCardExists $ CardWithTitle "Brood of Yog-Sothoth"
                   ]
             )

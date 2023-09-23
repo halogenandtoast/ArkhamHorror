@@ -28,21 +28,21 @@ instance RunMessage RitesHowled where
   runMessage msg t@(RitesHowled attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
-      pushAll $
-        [ DiscardTopOfDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
-        | iid <- investigatorIds
-        ]
+      pushAll
+        $ [ DiscardTopOfDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
+          | iid <- investigatorIds
+          ]
       pure t
     DiscardedTopOfDeck iid _cards _ target | isTarget attrs target -> do
       isAltered <-
         selectAny $ LocationWithTrait Altered <> locationWithInvestigator iid
       when isAltered $ do
         discardPile <- field InvestigatorDiscard iid
-        push $
-          ShuffleCardsIntoDeck
+        push
+          $ ShuffleCardsIntoDeck
             (Deck.InvestigatorDeck iid)
-            ( map PlayerCard $
-                filter (isJust . cdCardSubType . toCardDef) discardPile
+            ( map PlayerCard
+                $ filter (isJust . cdCardSubType . toCardDef) discardPile
             )
       pure t
     _ -> RitesHowled <$> runMessage msg attrs

@@ -23,8 +23,8 @@ henryDeveau =
 
 instance HasAbilities HenryDeveau where
   getAbilities (HenryDeveau a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility
           (Just Action.Parley)
           (ActionCost 1 <> DiscardFromCost 1 (FromHandOf You) AnyCard)
     ]

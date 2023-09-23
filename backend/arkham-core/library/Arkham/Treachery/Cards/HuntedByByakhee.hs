@@ -57,10 +57,10 @@ instance RunMessage HuntedByByakhee where
                   ]
               , UnfocusCards
               ]
-      pushAll $
-        byakheeMsgs
-          <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-             | not (null omens)
-             ]
+      pushAll
+        $ byakheeMsgs
+        <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+           | not (null omens)
+           ]
       pure t
     _ -> HuntedByByakhee <$> runMessage msg attrs

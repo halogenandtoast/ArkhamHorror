@@ -51,10 +51,10 @@ instance RunMessage MoldyHallsEarlierTonight where
       MoldyHallsEarlierTonight <$> runMessage msg (attrs & labelL .~ "moldyHallsEarlierTonight")
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <-
-        selectList $
-          investigatorAt (toId attrs)
-            <> DiscardWith AnyCards
-            <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
+        selectList
+          $ investigatorAt (toId attrs)
+          <> DiscardWith AnyCards
+          <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
 
       iidsWithDetails <- for iids $ \iid -> do
         name <- field InvestigatorName iid

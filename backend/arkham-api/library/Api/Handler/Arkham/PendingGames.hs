@@ -42,8 +42,8 @@ putApiV1ArkhamPendingGameR gameId = do
   (iid, decklist) <-
     runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ loadDecklist (arkhamDeckList deck)
 
-  when (iid `Map.member` gameInvestigators arkhamGameCurrentData) $
-    invalidArgs ["Investigator already taken"]
+  when (iid `Map.member` gameInvestigators arkhamGameCurrentData)
+    $ invalidArgs ["Investigator already taken"]
 
   runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)
 
@@ -55,15 +55,15 @@ putApiV1ArkhamPendingGameR gameId = do
   updatedQueue <- readIORef (queueToRef queueRef)
 
   writeChannel <- getChannel gameId
-  atomically $
-    writeTChan writeChannel $
-      encode $
-        GameUpdate $
-          PublicGame
-            gameId
-            arkhamGameName
-            []
-            updatedGame
+  atomically
+    $ writeTChan writeChannel
+    $ encode
+    $ GameUpdate
+    $ PublicGame
+      gameId
+      arkhamGameName
+      []
+      updatedGame
 
   now <- liftIO getCurrentTime
 
@@ -79,7 +79,11 @@ putApiV1ArkhamPendingGameR gameId = do
 
   runDB $ do
     replace gameId game'
-    insert_ $
-      ArkhamStep gameId (Choice mempty updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL updatedGame)
+    insert_
+      $ ArkhamStep
+        gameId
+        (Choice mempty updatedQueue)
+        (arkhamGameStep + 1)
+        (ActionDiff $ view actionDiffL updatedGame)
 
   pure $ toPublicGame (Entity gameId game') mempty

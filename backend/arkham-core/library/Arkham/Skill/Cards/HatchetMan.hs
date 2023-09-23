@@ -30,8 +30,8 @@ instance RunMessage HatchetMan where
         target <- getSkillTestTarget
         case target of
           Just (EnemyTarget eid) ->
-            push $
-              createCardEffect
+            push
+              $ createCardEffect
                 Cards.hatchetMan
                 Nothing
                 (toSource attrs)

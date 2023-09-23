@@ -43,13 +43,13 @@ instance RunMessage TheHangedManXII where
         watchersGrasps <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
         spectralDiscards <- getSpectralDiscards
 
-        pushAll $
-          [Flip lead (toSource attrs) (toTarget location) | location <- flippableLocations]
-            <> [ createSpectralWatcher
-               , ShuffleCardsIntoDeck
-                  (EncounterDeckByKey SpectralEncounterDeck)
-                  (watchersGrasps <> map EncounterCard spectralDiscards)
-               , advanceAgendaDeck attrs
-               ]
+        pushAll
+          $ [Flip lead (toSource attrs) (toTarget location) | location <- flippableLocations]
+          <> [ createSpectralWatcher
+             , ShuffleCardsIntoDeck
+                (EncounterDeckByKey SpectralEncounterDeck)
+                (watchersGrasps <> map EncounterCard spectralDiscards)
+             , advanceAgendaDeck attrs
+             ]
         pure a
       _ -> TheHangedManXII <$> runMessage msg attrs

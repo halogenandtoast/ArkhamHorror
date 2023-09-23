@@ -35,10 +35,10 @@ instance RunMessage Story where
 instance RunMessage StoryAttrs where
   runMessage msg attrs = case msg of
     ResolvedStory _ story' | story' == toId attrs -> do
-      when (storyPlacement attrs == Unplaced) $
-        push $
-          RemoveStory $
-            toId attrs
+      when (storyPlacement attrs == Unplaced)
+        $ push
+        $ RemoveStory
+        $ toId attrs
       pure attrs
     ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
       push $ chooseOne iid [targetLabel (toTarget attrs) []]

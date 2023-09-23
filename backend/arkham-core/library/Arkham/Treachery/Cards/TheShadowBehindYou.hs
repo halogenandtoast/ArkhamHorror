@@ -66,19 +66,19 @@ instance RunMessage TheShadowBehindYou where
         hasNonHiddenCards = any (notElem Hidden . toKeywords) handCards
         hasHiddenCards = any (elem Hidden . toKeywords) handCards
 
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Discard all cards in your hand"
             $ DiscardHand iid (toSource attrs)
-              : [Discard (toAbilitySource attrs 2) (toTarget attrs) | not hasHiddenCards]
+            : [Discard (toAbilitySource attrs 2) (toTarget attrs) | not hasHiddenCards]
           | hasNonHiddenCards
           ]
-            <> [ Label
-                "Lose all resources"
-                [LoseAllResources iid, Discard (toAbilitySource attrs 2) (toTarget attrs)]
-               | hasResources
-               ]
+        <> [ Label
+            "Lose all resources"
+            [LoseAllResources iid, Discard (toAbilitySource attrs 2) (toTarget attrs)]
+           | hasResources
+           ]
       pure t
     EndTurn iid
       | treacheryOnInvestigator iid attrs ->

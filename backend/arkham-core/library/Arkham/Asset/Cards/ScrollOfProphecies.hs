@@ -21,7 +21,8 @@ instance HasAbilities ScrollOfProphecies where
   getAbilities (ScrollOfProphecies x) =
     [ restrictedAbility x 1 ControlsThis
         $ ActionAbility Nothing
-        $ ActionCost 1 <> assetUseCost x Secret 1
+        $ ActionCost 1
+        <> assetUseCost x Secret 1
     ]
 
 instance RunMessage ScrollOfProphecies where

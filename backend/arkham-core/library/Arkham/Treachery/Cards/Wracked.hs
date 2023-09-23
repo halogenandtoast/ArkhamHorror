@@ -35,15 +35,15 @@ instance HasModifiersFor Wracked where
         hasExhaustedWitch <-
           selectAny
             $ ExhaustedEnemy
-              <> EnemyWithTrait Witch
-              <> EnemyAt
-                (locationWithInvestigator iid)
+            <> EnemyWithTrait Witch
+            <> EnemyAt
+              (locationWithInvestigator iid)
         pure
           $ toModifiers attrs
           $ [AnySkillValue (-1) | null performed && treacheryOnInvestigator iid attrs]
-            <> [ SkillTestAutomaticallySucceeds
-               | hasExhaustedWitch && isSource attrs source
-               ]
+          <> [ SkillTestAutomaticallySucceeds
+             | hasExhaustedWitch && isSource attrs source
+             ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

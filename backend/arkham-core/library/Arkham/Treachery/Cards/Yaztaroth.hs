@@ -30,10 +30,10 @@ instance HasModifiersFor Yaztaroth where
 
 instance HasAbilities Yaztaroth where
   getAbilities (Yaztaroth a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage Yaztaroth where

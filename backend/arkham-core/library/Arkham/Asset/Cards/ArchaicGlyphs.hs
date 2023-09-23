@@ -27,10 +27,10 @@ archaicGlyphs =
 
 instance HasAbilities ArchaicGlyphs where
   getAbilities (ArchaicGlyphs (attrs `With` meta)) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> SkillIconCost 1 (singleton $ SkillIcon SkillIntellect)
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> SkillIconCost 1 (singleton $ SkillIcon SkillIntellect)
     , restrictedAbility attrs 2 ability2Criteria $ ForcedAbility AnyWindow
     ]
    where

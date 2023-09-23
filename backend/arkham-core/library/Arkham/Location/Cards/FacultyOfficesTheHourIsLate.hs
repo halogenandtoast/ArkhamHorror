@@ -23,8 +23,8 @@ facultyOfficesTheHourIsLate =
 instance HasModifiersFor FacultyOfficesTheHourIsLate where
   getModifiersFor target (FacultyOfficesTheHourIsLate attrs)
     | isTarget attrs target =
-        pure $
-          toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        pure
+          $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FacultyOfficesTheHourIsLate where

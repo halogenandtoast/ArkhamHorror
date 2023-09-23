@@ -31,16 +31,16 @@ instance HasAbilities Fanatic where
   getAbilities (Fanatic a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemySpawns Timing.After LocationWithAnyClues $
-              EnemyWithId $
-                toId a
-      , mkAbility a 2 $
-          ForcedAbility $
-            EnemyDefeated Timing.When You ByAny $
-              EnemyWithId (toId a)
-                <> EnemyWithAnyClues
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemySpawns Timing.After LocationWithAnyClues
+          $ EnemyWithId
+          $ toId a
+      , mkAbility a 2
+          $ ForcedAbility
+          $ EnemyDefeated Timing.When You ByAny
+          $ EnemyWithId (toId a)
+          <> EnemyWithAnyClues
       ]
 
 instance RunMessage Fanatic where

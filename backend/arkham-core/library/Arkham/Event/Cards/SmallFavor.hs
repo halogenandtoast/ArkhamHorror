@@ -39,11 +39,11 @@ instance HasAbilities SmallFavor where
         "{reaction} When you play Small Favor, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
         $ restrictedAbility a 2 InYourHand
         $ ForcedWhen
-          ( Negate $
-              EnemyCriteria $
-                EnemyExists $
-                  EnemyAt YourLocation
-                    <> NonEliteEnemy
+          ( Negate
+              $ EnemyCriteria
+              $ EnemyExists
+              $ EnemyAt YourLocation
+              <> NonEliteEnemy
           )
         $ ReactionAbility
           (PlayCard Timing.When You (BasicCardMatch $ CardWithId $ toCardId a))
@@ -72,29 +72,29 @@ instance RunMessage SmallFavor where
         upToTwoAway = foldl' updateUpToTwoAway False modifiers'
 
       enemies <-
-        selectList $
-          NonEliteEnemy
-            <> EnemyOneOf
-              ( EnemyAt (locationWithInvestigator iid)
-                  : [ EnemyAt (LocationWithDistanceFrom n Anywhere)
-                    | upToTwoAway
-                    , n <- [1 .. 2]
-                    ]
-              )
+        selectList
+          $ NonEliteEnemy
+          <> EnemyOneOf
+            ( EnemyAt (locationWithInvestigator iid)
+                : [ EnemyAt (LocationWithDistanceFrom n Anywhere)
+                  | upToTwoAway
+                  , n <- [1 .. 2]
+                  ]
+            )
 
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs damageCount]
           | enemy <- enemies
           ]
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
-      push $
-        CreateWindowModifierEffect
+      push
+        $ CreateWindowModifierEffect
           EffectEventWindow
-          ( EffectModifiers $
-              toModifiers
+          ( EffectModifiers
+              $ toModifiers
                 attrs
                 [MetaModifier $ object ["damageCount" .= (2 :: Int)]]
           )
@@ -102,11 +102,11 @@ instance RunMessage SmallFavor where
           (CardIdTarget $ toCardId attrs)
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 2 _ _) -> do
-      push $
-        CreateWindowModifierEffect
+      push
+        $ CreateWindowModifierEffect
           EffectEventWindow
-          ( EffectModifiers $
-              toModifiers attrs [MetaModifier $ object ["upToTwoAway" .= True]]
+          ( EffectModifiers
+              $ toModifiers attrs [MetaModifier $ object ["upToTwoAway" .= True]]
           )
           (toSource attrs)
           (CardIdTarget $ toCardId attrs)

@@ -38,15 +38,15 @@ instance RunMessage TrophyRoomSpectral where
       let
         resourcesToLose = min resources 2
         horrorToTake = 2 - resourcesToLose
-      pushAll $
-        LoseResources iid (toSource attrs) resourcesToLose
-          : [ InvestigatorAssignDamage
-              iid
-              (toSource attrs)
-              DamageAny
-              0
-              horrorToTake
-            | horrorToTake > 0
-            ]
+      pushAll
+        $ LoseResources iid (toSource attrs) resourcesToLose
+        : [ InvestigatorAssignDamage
+            iid
+            (toSource attrs)
+            DamageAny
+            0
+            horrorToTake
+          | horrorToTake > 0
+          ]
       pure l
     _ -> TrophyRoomSpectral <$> runMessage msg attrs

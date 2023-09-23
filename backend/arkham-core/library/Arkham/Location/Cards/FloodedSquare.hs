@@ -30,20 +30,20 @@ floodedSquare =
 
 instance HasAbilities FloodedSquare where
   getAbilities (FloodedSquare attrs) =
-    withRevealedAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> enemyExists
-                ( NonEliteEnemy
-                    <> EnemyAt
-                      (LocationInDirection RightOf $ LocationWithId $ toId attrs)
-                )
-          )
-          $ ActionAbility Nothing
-          $ ActionCost 1
-      ]
+    withRevealedAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            ( Here
+                <> enemyExists
+                  ( NonEliteEnemy
+                      <> EnemyAt
+                        (LocationInDirection RightOf $ LocationWithId $ toId attrs)
+                  )
+            )
+            $ ActionAbility Nothing
+            $ ActionCost 1
+        ]
 
 instance RunMessage FloodedSquare where
   runMessage msg l@(FloodedSquare attrs) = case msg of
@@ -51,8 +51,8 @@ instance RunMessage FloodedSquare where
       mCounterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       for_ mCounterClockwiseLocation $ \counterClockwiseLocation -> do
         nonEliteEnemies <- selectList $ NonEliteEnemy <> enemyAt counterClockwiseLocation
-        push $
-          chooseOne
+        push
+          $ chooseOne
             iid
             [targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- nonEliteEnemies]
       pure l

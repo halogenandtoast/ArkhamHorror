@@ -28,10 +28,10 @@ instance HasAbilities Relentless where
           )
         $ ExhaustCost
         $ toTarget a
-    , restrictedAbility a 2 (ControlsThis <> AnyDamageOnThis) $
-        FastAbility $
-          DiscardCost FromPlay $
-            toTarget a
+    , restrictedAbility a 2 (ControlsThis <> AnyDamageOnThis)
+        $ FastAbility
+        $ DiscardCost FromPlay
+        $ toTarget a
     ]
 
 toExcessDamage :: [Window] -> Int

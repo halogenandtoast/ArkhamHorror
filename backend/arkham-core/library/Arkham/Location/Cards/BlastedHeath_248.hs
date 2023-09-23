@@ -37,7 +37,7 @@ instance HasAbilities BlastedHeath_248 where
                 <> EnemyCriteria
                   ( EnemyExists
                       $ EnemyAt YourLocation
-                        <> EnemyWithTrait Abomination
+                      <> EnemyWithTrait Abomination
                   )
             )
             (FastAbility Free)
@@ -50,7 +50,7 @@ instance RunMessage BlastedHeath_248 where
       investigatorWithCluePairs <-
         selectWithField InvestigatorClues
           $ investigatorAt (toId attrs)
-            <> InvestigatorWithAnyClues
+          <> InvestigatorWithAnyClues
       abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
       when
         (null investigatorWithCluePairs || null abominations)
@@ -67,12 +67,12 @@ instance RunMessage BlastedHeath_248 where
 
       pushAll
         $ placeClueOnAbomination
-          : [ chooseOne
-              iid
-              [ Label "Spend a second clue" [placeClueOnAbomination]
-              , Label "Do not spend a second clue" []
-              ]
-            | totalClues > 1
+        : [ chooseOne
+            iid
+            [ Label "Spend a second clue" [placeClueOnAbomination]
+            , Label "Do not spend a second clue" []
             ]
+          | totalClues > 1
+          ]
       pure l
     _ -> BlastedHeath_248 <$> runMessage msg attrs

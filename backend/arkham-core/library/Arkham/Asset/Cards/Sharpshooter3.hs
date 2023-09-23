@@ -25,11 +25,11 @@ sharpshooter3 = asset Sharpshooter3 Cards.sharpshooter3
 
 instance HasAbilities Sharpshooter3 where
   getAbilities (Sharpshooter3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
-          ( ActivateAbility Timing.When You $
-              AssetAbility (AssetWithTrait Firearm)
-                <> AbilityIsAction Action.Fight
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
+          ( ActivateAbility Timing.When You
+              $ AssetAbility (AssetWithTrait Firearm)
+              <> AbilityIsAction Action.Fight
           )
           (ExhaustCost (toTarget a))
     ]
@@ -50,27 +50,27 @@ instance RunMessage Sharpshooter3 where
               , SkillModifiersAffectOtherSkill SkillCombat SkillAgility
               ]
           ]
-          : ( if anyFightableWithEvade
-                then
-                  [ Label
-                      "Use the attacked enemy's evade value for this attack, instead of their fight value."
-                      [ skillTestModifier
-                          attrs
-                          iid
-                          (AlternateFightField (SomeField Field.EnemyEvade))
-                      ]
-                  , Label
-                      "Do both"
-                      [ skillTestModifiers
-                          attrs
-                          iid
-                          [ UseSkillInsteadOf SkillCombat SkillAgility
-                          , SkillModifiersAffectOtherSkill SkillCombat SkillAgility
-                          , AlternateFightField (SomeField Field.EnemyEvade)
-                          ]
-                      ]
-                  ]
-                else []
-            )
+        : ( if anyFightableWithEvade
+              then
+                [ Label
+                    "Use the attacked enemy's evade value for this attack, instead of their fight value."
+                    [ skillTestModifier
+                        attrs
+                        iid
+                        (AlternateFightField (SomeField Field.EnemyEvade))
+                    ]
+                , Label
+                    "Do both"
+                    [ skillTestModifiers
+                        attrs
+                        iid
+                        [ UseSkillInsteadOf SkillCombat SkillAgility
+                        , SkillModifiersAffectOtherSkill SkillCombat SkillAgility
+                        , AlternateFightField (SomeField Field.EnemyEvade)
+                        ]
+                    ]
+                ]
+              else []
+          )
       pure a
     _ -> Sharpshooter3 <$> runMessage msg attrs

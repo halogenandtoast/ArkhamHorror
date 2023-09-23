@@ -86,8 +86,8 @@ standaloneChaosTokens =
 
 gatherTheMidnightMasks :: CardGen m => Int -> Int -> m [EncounterCard]
 gatherTheMidnightMasks conviction doubt = do
-  traverse genEncounterCard $
-    if conviction > doubt
+  traverse genEncounterCard
+    $ if conviction > doubt
       then
         [ Treacheries.huntingShadow
         , Treacheries.huntingShadow
@@ -102,15 +102,16 @@ cultistEffect = do
   byakheePairs <- forToSnd byakhee investigatorsNearestToEnemy
   let
     minDistance =
-      fromJustNote "error" . minimumMay $
-        map
-          (unDistance . fst . snd)
-          byakheePairs
+      fromJustNote "error"
+        . minimumMay
+          $ map
+            (unDistance . fst . snd)
+            byakheePairs
     hset =
-      concatMap (snd . snd) $
-        filter ((== minDistance) . unDistance . fst . snd) byakheePairs
-  push $
-    chooseOneAtATime
+      concatMap (snd . snd)
+        $ filter ((== minDistance) . unDistance . fst . snd) byakheePairs
+  push
+    $ chooseOneAtATime
       lead
       [ targetLabel eid (moveTowardMessages lead eid hset)
       | (eid, _) <- byakheePairs
@@ -186,35 +187,35 @@ instance RunMessage APhantomOfTruth where
       lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
       standalone <- getIsStandalone
 
-      pushAll $
-        story investigatorIds intro
-          : map (story investigatorIds) dreamPath
-            <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) [lostSoul]
-               | not standalone
-               , (iid, lostSoul) <- zip investigatorIds lostSouls
-               ]
-            <> [ chooseOne
-                lead
-                [ targetLabel
-                  iid
-                  [ShuffleCardsIntoDeck (InvestigatorDeck iid) [paranoia]]
-                | iid <- investigatorIds
-                ]
-               | showDream4
-               ]
-            <> [SufferTrauma iid 0 1 | showDream7, iid <- investigatorIds]
-            <> [ chooseOne
-                lead
-                [ Label
-                    "“How could any of this be beautiful to you?”"
-                    [SetupStep (toTarget attrs) 11]
-                , Label
-                    "“What exactly am I looking at?”"
-                    [SetupStep (toTarget attrs) 12]
-                ]
-               | chasingTheStranger > 3
-               ]
-            <> [SetupStep (toTarget attrs) 13 | chasingTheStranger <= 3]
+      pushAll
+        $ story investigatorIds intro
+        : map (story investigatorIds) dreamPath
+          <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) [lostSoul]
+             | not standalone
+             , (iid, lostSoul) <- zip investigatorIds lostSouls
+             ]
+          <> [ chooseOne
+              lead
+              [ targetLabel
+                iid
+                [ShuffleCardsIntoDeck (InvestigatorDeck iid) [paranoia]]
+              | iid <- investigatorIds
+              ]
+             | showDream4
+             ]
+          <> [SufferTrauma iid 0 1 | showDream7, iid <- investigatorIds]
+          <> [ chooseOne
+              lead
+              [ Label
+                  "“How could any of this be beautiful to you?”"
+                  [SetupStep (toTarget attrs) 11]
+              , Label
+                  "“What exactly am I looking at?”"
+                  [SetupStep (toTarget attrs) 12]
+              ]
+             | chasingTheStranger > 3
+             ]
+          <> [SetupStep (toTarget attrs) 13 | chasingTheStranger <= 3]
       APhantomOfTruth <$> runMessage msg attrs
     SetupStep (isTarget attrs -> True) n -> do
       conviction <- getRecordCount Conviction
@@ -295,23 +296,23 @@ instance RunMessage APhantomOfTruth where
           , gardensOfLuxembourg
           ]
 
-      pushAll $
-        [story investigatorIds dream11 | n == 11]
-          <> [story investigatorIds dream12 | n == 12]
-          <> [RecordCount Doubt (doubt + 1) | n == 12]
-          <> [story investigatorIds dream13, story investigatorIds awakening]
-          <> [story investigatorIds jordansInformation | jordanInterviewed]
-          <> [ CreateWindowModifierEffect
-              EffectSetupWindow
-              (EffectModifiers $ toModifiers attrs [StartingResources 3])
-              (toSource attrs)
-              (InvestigatorTarget iid)
-             | jordanInterviewed
-             , iid <- investigatorIds
-             ]
-          <> [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-          <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
-          <> [MoveAllTo (toSource attrs) startingLocation]
+      pushAll
+        $ [story investigatorIds dream11 | n == 11]
+        <> [story investigatorIds dream12 | n == 12]
+        <> [RecordCount Doubt (doubt + 1) | n == 12]
+        <> [story investigatorIds dream13, story investigatorIds awakening]
+        <> [story investigatorIds jordansInformation | jordanInterviewed]
+        <> [ CreateWindowModifierEffect
+            EffectSetupWindow
+            (EffectModifiers $ toModifiers attrs [StartingResources 3])
+            (toSource attrs)
+            (InvestigatorTarget iid)
+           | jordanInterviewed
+           , iid <- investigatorIds
+           ]
+        <> [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
+        <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
+        <> [MoveAllTo (toSource attrs) startingLocation]
 
       acts <- genCards [act1, act2]
       agendas <-
@@ -351,8 +352,8 @@ instance RunMessage APhantomOfTruth where
         selectOne
           (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry)
       gainXp <-
-        toGainXp attrs $
-          getXpWithBonus (if res == Resolution 2 then 2 else 0)
+        toGainXp attrs
+          $ getXpWithBonus (if res == Resolution 2 then 2 else 0)
       let
         updateSlain =
           [ recordSetInsert VIPsSlain [toCardCode jordan]
@@ -369,17 +370,17 @@ instance RunMessage APhantomOfTruth where
           Resolution 2 -> (resolution2, YouFoundNigelEngram, Tablet)
           Resolution 3 -> (resolution3, YouWereUnableToFindNigel, ElderThing)
           _ -> error "Invalid resolution"
-      pushAll $
-        [story investigatorIds storyText, Record record]
-          <> sufferTrauma
-          <> [ RemoveAllChaosTokens Cultist
-             , RemoveAllChaosTokens Tablet
-             , RemoveAllChaosTokens ElderThing
-             , AddChaosToken token
-             , AddChaosToken token
-             ]
-          <> updateSlain
-          <> gainXp
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [story investigatorIds storyText, Record record]
+        <> sufferTrauma
+        <> [ RemoveAllChaosTokens Cultist
+           , RemoveAllChaosTokens Tablet
+           , RemoveAllChaosTokens ElderThing
+           , AddChaosToken token
+           , AddChaosToken token
+           ]
+        <> updateSlain
+        <> gainXp
+        <> [EndOfGame Nothing]
       pure s
     _ -> APhantomOfTruth <$> runMessage msg attrs

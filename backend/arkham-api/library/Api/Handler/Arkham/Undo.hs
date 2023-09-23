@@ -37,45 +37,47 @@ putApiV1ArkhamGameUndoR gameId = do
       -- never delete the initial step as it can not be redone
       -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
       when
-        (arkhamStepStep step > 0 && not (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step)) $ do
-        writeChannel <- getChannel gameId
+        (arkhamStepStep step > 0 && not (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step))
+        $ do
+          writeChannel <- getChannel gameId
 
-        case patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) of
-          Error e -> error $ T.pack e
-          Success ge -> do
-            -- TODO: We need to add back the gameActionDiff
-            gameLog <- fmap (fmap unValue) . runDB $ select $ do
-              entries <- from $ table @ArkhamLogEntry
-              where_ $ entries.arkhamGameId ==. val gameId
-              where_ $ entries.step <. val (arkhamGameStep - 1)
-              orderBy [desc entries.createdAt]
-              pure $ entries.body
-            atomically $
-              writeTChan writeChannel $
-                encode $
-                  GameUpdate $
-                    PublicGame gameId arkhamGameName gameLog ge
-            runDB $ do
-              replace gameId $
-                ArkhamGame
-                  arkhamGameName
-                  ge
-                  (arkhamGameStep - 1)
-                  arkhamGameMultiplayerVariant
-                  arkhamGameCreatedAt
-                  now
-              delete $ do
-                entries <- from $ table @ArkhamLogEntry
-                where_ $ entries.arkhamGameId ==. val gameId
-                where_ $ entries.step >=. val (arkhamGameStep - 1)
-              deleteKey stepId
+          case patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) of
+            Error e -> error $ T.pack e
+            Success ge -> do
+              -- TODO: We need to add back the gameActionDiff
+              gameLog <- fmap (fmap unValue)
+                . runDB $ select $ do
+                  entries <- from $ table @ArkhamLogEntry
+                  where_ $ entries.arkhamGameId ==. val gameId
+                  where_ $ entries.step <. val (arkhamGameStep - 1)
+                  orderBy [desc entries.createdAt]
+                  pure $ entries.body
+              atomically
+                $ writeTChan writeChannel
+                $ encode
+                $ GameUpdate
+                $ PublicGame gameId arkhamGameName gameLog ge
+              runDB $ do
+                replace gameId
+                  $ ArkhamGame
+                    arkhamGameName
+                    ge
+                    (arkhamGameStep - 1)
+                    arkhamGameMultiplayerVariant
+                    arkhamGameCreatedAt
+                    now
+                delete $ do
+                  entries <- from $ table @ArkhamLogEntry
+                  where_ $ entries.arkhamGameId ==. val gameId
+                  where_ $ entries.step >=. val (arkhamGameStep - 1)
+                deleteKey stepId
 
-              case arkhamGameMultiplayerVariant of
-                Solo ->
-                  replace pid $
-                    arkhamPlayer
-                      { arkhamPlayerInvestigatorId =
-                          coerce
-                            (view activeInvestigatorIdL ge)
-                      }
-                WithFriends -> pure ()
+                case arkhamGameMultiplayerVariant of
+                  Solo ->
+                    replace pid
+                      $ arkhamPlayer
+                        { arkhamPlayerInvestigatorId =
+                            coerce
+                              (view activeInvestigatorIdL ge)
+                        }
+                  WithFriends -> pure ()

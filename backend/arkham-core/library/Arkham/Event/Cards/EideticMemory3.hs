@@ -43,8 +43,8 @@ instance RunMessage EideticMemory3 where
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)
           candidates
-      push $
-        InitiatePlayCardAsChoose
+      push
+        $ InitiatePlayCardAsChoose
           iid
           (toCard attrs)
           playableCards

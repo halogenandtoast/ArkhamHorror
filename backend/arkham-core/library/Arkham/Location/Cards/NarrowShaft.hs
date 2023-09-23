@@ -39,24 +39,24 @@ narrowShaft =
 
 instance HasAbilities NarrowShaft where
   getAbilities (NarrowShaft attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                Moves
-                  Timing.When
-                  You
-                  AnySource
-                  (LocationWithId $ toId attrs)
-                  UnrevealedLocation
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ Moves
+                Timing.When
+                You
+                AnySource
+                (LocationWithId $ toId attrs)
+                UnrevealedLocation
           , restrictedAbility
               attrs
               2
               ( AnyCriterion
                   [ Negate
-                    ( LocationExists $
-                        LocationInDirection dir (LocationWithId $ toId attrs)
+                    ( LocationExists
+                        $ LocationInDirection dir (LocationWithId $ toId attrs)
                     )
                   | dir <- [Above, Below, RightOf]
                   ]
@@ -95,10 +95,10 @@ instance RunMessage NarrowShaft where
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
-          push $
-            chooseOrRunOne iid $
-              [Label "Place Above" placeAbove | aboveEmpty]
-                <> [Label "Place to the Right" placeRight | rightEmpty]
+          push
+            $ chooseOrRunOne iid
+            $ [Label "Place Above" placeAbove | aboveEmpty]
+            <> [Label "Place to the Right" placeRight | rightEmpty]
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

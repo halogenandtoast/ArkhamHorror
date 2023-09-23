@@ -27,11 +27,11 @@ theStrangerThePathIsMine =
 
 instance HasAbilities TheStrangerThePathIsMine where
   getAbilities (TheStrangerThePathIsMine a) =
-    [ mkAbility a 1 $
-        Objective $
-          ForcedAbility $
-            EnemyWouldBeDiscarded Timing.When $
-              enemyIs Enemies.theManInThePallidMask
+    [ mkAbility a 1
+        $ Objective
+        $ ForcedAbility
+        $ EnemyWouldBeDiscarded Timing.When
+        $ enemyIs Enemies.theManInThePallidMask
     ]
 
 instance RunMessage TheStrangerThePathIsMine where

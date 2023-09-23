@@ -34,8 +34,8 @@ instance HasModifiersFor Reliable1 where
           then do
             abilities <- getActiveAbilities
             let isAttachedTargetAbility = (== AssetSource aid) . abilitySource
-            pure $
-              toModifiers
+            pure
+              $ toModifiers
                 a
                 [ AnySkillValue 1
                 | any
@@ -50,8 +50,8 @@ instance RunMessage Reliable1 where
   runMessage msg e@(Reliable1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetWithTrait Item
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
           | asset <- assets

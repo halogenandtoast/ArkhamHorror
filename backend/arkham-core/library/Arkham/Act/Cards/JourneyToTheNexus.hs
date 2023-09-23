@@ -37,10 +37,10 @@ instance HasAbilities JourneyToTheNexus where
         (LocationExists $ YourLocation <> LocationWithoutClues)
         $ ActionAbility (Just Action.Explore)
         $ ActionCost 1
-    , mkAbility a 2 $
-        Objective $
-          ReactionAbility (RoundEnds Timing.When) $
-            GroupClueCost (PerPlayer 3) (LocationWithTitle "Steps of Yoth")
+    , mkAbility a 2
+        $ Objective
+        $ ReactionAbility (RoundEnds Timing.When)
+        $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Steps of Yoth")
     ]
 
 journeyToTheNexus :: ActCard JourneyToTheNexus
@@ -51,8 +51,8 @@ instance RunMessage JourneyToTheNexus where
   runMessage msg a@(JourneyToTheNexus attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           (toSource attrs)
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
@@ -75,20 +75,20 @@ instance RunMessage JourneyToTheNexus where
         then push $ ScenarioResolution $ Resolution 2
         else do
           defeated <-
-            selectList $
-              NotInvestigator $
-                InvestigatorAt $
-                  locationIs
-                    Locations.stepsOfYoth
+            selectList
+              $ NotInvestigator
+              $ InvestigatorAt
+              $ locationIs
+                Locations.stepsOfYoth
           enemies <- selectList AnyEnemy
           explorationDeck <- getExplorationDeck
           stepsOfYoth <- selectJust $ locationIs Locations.stepsOfYoth
           stepsOfYothCard <- field LocationCard stepsOfYoth
           otherLocations <-
-            selectList $
-              NotLocation $
-                LocationWithId
-                  stepsOfYoth
+            selectList
+              $ NotLocation
+              $ LocationWithId
+                stepsOfYoth
           locationCards <- traverse (field LocationCard) otherLocations
           let notStepsOfYoth = locationCards <> explorationDeck
           (newStart, rest) <- do
@@ -98,21 +98,21 @@ instance RunMessage JourneyToTheNexus where
               (x : xs) -> pure (x, xs)
           newExplorationDeck <- shuffleM (stepsOfYothCard : rest)
           (newStartId, placeNewStart) <- placeLocation newStart
-          pushAll $
-            map (InvestigatorDefeated (toSource attrs)) defeated
-              <> map (InvestigatorDiscardAllClues (toSource attrs)) defeated
-              <> map (\e -> PlaceEnemy e (OutOfPlay PursuitZone)) enemies
-              <> map
-                (RemoveAllDoom (toSource attrs) . LocationTarget)
-                (stepsOfYoth : otherLocations)
-              <> map RemoveLocation otherLocations
-              <> [ placeNewStart
-                 , MoveAllTo (toSource attrs) newStartId
-                 , RemoveLocation stepsOfYoth
-                 , SetScenarioDeck ExplorationDeck newExplorationDeck
-                 , SetScenarioMeta $ toMeta newStartId
-                 , RevertAct $ toId attrs
-                 ]
+          pushAll
+            $ map (InvestigatorDefeated (toSource attrs)) defeated
+            <> map (InvestigatorDiscardAllClues (toSource attrs)) defeated
+            <> map (\e -> PlaceEnemy e (OutOfPlay PursuitZone)) enemies
+            <> map
+              (RemoveAllDoom (toSource attrs) . LocationTarget)
+              (stepsOfYoth : otherLocations)
+            <> map RemoveLocation otherLocations
+            <> [ placeNewStart
+               , MoveAllTo (toSource attrs) newStartId
+               , RemoveLocation stepsOfYoth
+               , SetScenarioDeck ExplorationDeck newExplorationDeck
+               , SetScenarioMeta $ toMeta newStartId
+               , RevertAct $ toId attrs
+               ]
       pure a
     RevertAct aid
       | aid == toId attrs && onSide B attrs ->

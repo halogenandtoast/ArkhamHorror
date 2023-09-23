@@ -26,15 +26,15 @@ anotherDimension =
 
 instance HasAbilities AnotherDimension where
   getAbilities (AnotherDimension attrs) =
-    withBaseAbilities attrs $
-      [ uncancellable $
-        mkAbility attrs 1 $
-          ForcedAbility $
-            LocationLeavesPlay Timing.When $
-              LocationMatchAny
-                [LocationWithEnemy AnyEnemy, LocationWithInvestigator Anyone]
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ uncancellable
+          $ mkAbility attrs 1
+          $ ForcedAbility
+          $ LocationLeavesPlay Timing.When
+          $ LocationMatchAny
+            [LocationWithEnemy AnyEnemy, LocationWithInvestigator Anyone]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
@@ -42,10 +42,10 @@ instance RunMessage AnotherDimension where
       | isSource attrs source -> do
           investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
           enemyIds <- selectList $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
-          pushAll $
-            [ MoveTo $ uncancellableMove $ move attrs iid (toId attrs)
-            | iid <- investigatorIds
-            ]
-              <> [EnemyMove eid (toId attrs) | eid <- enemyIds]
+          pushAll
+            $ [ MoveTo $ uncancellableMove $ move attrs iid (toId attrs)
+              | iid <- investigatorIds
+              ]
+            <> [EnemyMove eid (toId attrs) | eid <- enemyIds]
           pure l
     _ -> AnotherDimension <$> runMessage msg attrs

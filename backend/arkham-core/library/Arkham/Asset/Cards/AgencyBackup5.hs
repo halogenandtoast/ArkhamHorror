@@ -36,13 +36,13 @@ instance HasAbilities AgencyBackup5 where
         "{fast} Exhaust Agency Backup and deal 1 damage to it: Deal 1 damage to an enemy at your location."
         $ fastAbility a 1 (exhaust a <> DamageCost (toSource a) (toTarget a) 1)
         $ ControlsThis
-          <> enemyExists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource a))
+        <> enemyExists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource a))
     , withTooltip
         "{fast} Exhaust Agency Backup and deal 1 horror to it: Discover 1 clue at your location."
         $ fastAbility a 2 (exhaust a <> HorrorCost (toSource a) (toTarget a) 1)
         $ ControlsThis
-          <> CanDiscoverCluesAt YourLocation
-          <> OnLocation LocationWithAnyClues
+        <> CanDiscoverCluesAt YourLocation
+        <> OnLocation LocationWithAnyClues
     ]
 
 instance RunMessage AgencyBackup5 where
@@ -52,9 +52,9 @@ instance RunMessage AgencyBackup5 where
       targets <- selectList $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
       push
         . chooseOne iid
-        $ [ targetLabel target [EnemyDamage target $ nonAttack source 1]
-          | target <- targets
-          ]
+          $ [ targetLabel target [EnemyDamage target $ nonAttack source 1]
+            | target <- targets
+            ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 2) 1 Nothing

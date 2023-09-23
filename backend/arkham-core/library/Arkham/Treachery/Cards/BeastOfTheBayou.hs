@@ -27,12 +27,12 @@ instance RunMessage BeastOfTheBayou where
           locationId <- selectJust $ locationWithEnemy eid
           connectedLocationIds <- selectList $ accessibleFrom locationId
           investigatorIds <-
-            selectList $
-              InvestigatorAt $
-                LocationMatchAny $
-                  map
-                    LocationWithId
-                    (locationId : connectedLocationIds)
+            selectList
+              $ InvestigatorAt
+              $ LocationMatchAny
+              $ map
+                LocationWithId
+                (locationId : connectedLocationIds)
           case investigatorIds of
             [] -> pushAll [PlaceDoomOnAgenda]
             xs -> pushAll $ map (EnemyAttack . enemyAttack eid attrs) xs

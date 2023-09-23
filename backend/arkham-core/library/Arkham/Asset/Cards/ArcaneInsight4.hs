@@ -23,10 +23,10 @@ arcaneInsight4 = asset ArcaneInsight4 Cards.arcaneInsight4
 
 instance HasAbilities ArcaneInsight4 where
   getAbilities (ArcaneInsight4 a) =
-    [ limitedAbility (PlayerLimit PerTurn 1) $
-        restrictedAbility a 1 (ControlsThis <> DuringTurn Anyone) $
-          FastAbility $
-            UseCost (AssetWithId $ toId a) Charge 1
+    [ limitedAbility (PlayerLimit PerTurn 1)
+        $ restrictedAbility a 1 (ControlsThis <> DuringTurn Anyone)
+        $ FastAbility
+        $ UseCost (AssetWithId $ toId a) Charge 1
     ]
 
 instance RunMessage ArcaneInsight4 where
@@ -34,8 +34,8 @@ instance RunMessage ArcaneInsight4 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid ->
-        push $
-          CreateWindowModifierEffect
+        push
+          $ CreateWindowModifierEffect
             EffectTurnWindow
             (EffectModifiers $ toModifiers attrs [ShroudModifier (-2)])
             (toSource attrs)

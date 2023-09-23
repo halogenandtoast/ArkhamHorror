@@ -36,10 +36,10 @@ instance HasAbilities LeadingTheWay where
         [ restrictedAbility
             a
             1
-            ( EachUndefeatedInvestigator $
-                InvestigatorAt $
-                  locationIs
-                    Locations.blockedPassage
+            ( EachUndefeatedInvestigator
+                $ InvestigatorAt
+                $ locationIs
+                  Locations.blockedPassage
             )
             $ Objective
             $ ForcedAbility AnyWindow

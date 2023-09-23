@@ -39,13 +39,13 @@ instance HasModifiersFor SleepingCar where
 
 instance HasAbilities SleepingCar where
   getAbilities (SleepingCar attrs) =
-    withBaseAbilities attrs $
-      [ limitedAbility (GroupLimit PerGame 1) $
-        restrictedAbility attrs 1 Here $
-          ActionAbility Nothing $
-            ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage SleepingCar where
   runMessage msg l@(SleepingCar attrs) = case msg of

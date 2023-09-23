@@ -26,11 +26,11 @@ instance HasAbilities Ballroom where
   getAbilities (Ballroom attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (GroupLimit PerPhase 1) $
-        restrictedAbility attrs 1 Here $
-          ReactionAbility
-            (PerformAction Timing.After You $ ActionIs Action.Parley)
-            Free
+      [ limitedAbility (GroupLimit PerPhase 1)
+        $ restrictedAbility attrs 1 Here
+        $ ReactionAbility
+          (PerformAction Timing.After You $ ActionIs Action.Parley)
+          Free
       | locationRevealed attrs
       ]
 

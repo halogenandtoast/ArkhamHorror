@@ -36,11 +36,11 @@ crossingTheThreshold =
 
 instance HasAbilities CrossingTheThreshold where
   getAbilities (CrossingTheThreshold (a `With` _)) =
-    [ mkAbility a 1 $
-      Objective $
-        ForcedAbility $
-          Explored Timing.After You $
-            SuccessfulExplore Anywhere
+    [ mkAbility a 1
+      $ Objective
+      $ ForcedAbility
+      $ Explored Timing.After You
+      $ SuccessfulExplore Anywhere
     | onSide A a
     ]
 
@@ -52,8 +52,8 @@ instance RunMessage CrossingTheThreshold where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       let
         iid =
-          fromJustNote "no advancing investigator" $
-            advancingInvestigator metadata
+          fromJustNote "no advancing investigator"
+            $ advancingInvestigator metadata
       pushAll
         [ beginSkillTest
             iid
@@ -66,10 +66,10 @@ instance RunMessage CrossingTheThreshold where
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
-        push $
-          SearchCollectionForRandom iid (toSource attrs) $
-            PlayerTreachery
-              <> CardWithOneOf (map CardWithTrait [Madness, Injury])
+        push
+          $ SearchCollectionForRandom iid (toSource attrs)
+          $ PlayerTreachery
+          <> CardWithOneOf (map CardWithTrait [Madness, Injury])
         pure a
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
       push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]

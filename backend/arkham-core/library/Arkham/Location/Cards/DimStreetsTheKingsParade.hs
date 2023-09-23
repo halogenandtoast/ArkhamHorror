@@ -33,12 +33,12 @@ instance HasAbilities DimStreetsTheKingsParade where
   getAbilities (DimStreetsTheKingsParade a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            DiscoveringLastClue
-              Timing.After
-              You
-              (LocationWithId $ toId a)
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ DiscoveringLastClue
+            Timing.After
+            You
+            (LocationWithId $ toId a)
       ]
 
 instance RunMessage DimStreetsTheKingsParade where
@@ -53,8 +53,8 @@ instance RunMessage DimStreetsTheKingsParade where
       | isSource attrs source -> do
           hastur <- selectJust $ EnemyWithTitle "Hastur"
           investigatorIds <- selectList $ investigatorEngagedWith hastur
-          pushAll $
-            Exhaust (EnemyTarget hastur)
-              : [DisengageEnemy iid' hastur | iid' <- investigatorIds]
+          pushAll
+            $ Exhaust (EnemyTarget hastur)
+            : [DisengageEnemy iid' hastur | iid' <- investigatorIds]
           pure l
     _ -> DimStreetsTheKingsParade <$> runMessage msg attrs

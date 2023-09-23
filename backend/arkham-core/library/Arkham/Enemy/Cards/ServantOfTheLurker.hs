@@ -31,11 +31,11 @@ instance HasAbilities ServantOfTheLurker where
   getAbilities (ServantOfTheLurker x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.When You AnyEnemyAttack $
-              EnemyWithId $
-                toId x
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.When You AnyEnemyAttack
+          $ EnemyWithId
+          $ toId x
       ]
 
 instance RunMessage ServantOfTheLurker where

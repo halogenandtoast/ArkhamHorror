@@ -36,13 +36,13 @@ instance HasModifiersFor CircuitousTrail where
               (colocatedWith iid)
         case abilityAction ab of
           Just Action.Investigate ->
-            pure $
-              toModifiers
+            pure
+              $ toModifiers
                 attrs
                 [AdditionalCost (ResourceCost 3) | not anyWithCompass]
           Just Action.Explore ->
-            pure $
-              toModifiers
+            pure
+              $ toModifiers
                 attrs
                 [AdditionalCost (ResourceCost 3) | not anyWithCompass]
           _ -> pure []

@@ -31,27 +31,27 @@ instance HasModifiersFor CruelInterrogations where
 
 instance HasAbilities CruelInterrogations where
   getAbilities (CruelInterrogations a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            1
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          1
     ]
 
 instance RunMessage CruelInterrogations where
   runMessage msg t@(CruelInterrogations attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       interviewedASubject <- remembered InterviewedASubject
-      pushAll $
-        AttachTreachery (toId t) (InvestigatorTarget iid)
-          : ( guard interviewedASubject
-                *> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-                   , gainSurge attrs
-                   ]
-            )
+      pushAll
+        $ AttachTreachery (toId t) (InvestigatorTarget iid)
+        : ( guard interviewedASubject
+              *> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+                 , gainSurge attrs
+                 ]
+          )
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           (toAbilitySource attrs 1)
           (toTarget iid)

@@ -34,10 +34,10 @@ straitjacket =
 
 instance HasAbilities Straitjacket where
   getAbilities (Straitjacket a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage Straitjacket where

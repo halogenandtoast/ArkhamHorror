@@ -24,8 +24,8 @@ instance RunMessage TheArchway where
   runMessage msg s@(TheArchway attrs) = case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       setAsideDimStreets <-
-        getSetAsideCardsMatching $
-          CardWithTitle "Dim Streets"
+        getSetAsideCardsMatching
+          $ CardWithTitle "Dim Streets"
       otherDimStreets <- case nonEmpty setAsideDimStreets of
         Nothing -> error "missing"
         Just xs -> sample xs

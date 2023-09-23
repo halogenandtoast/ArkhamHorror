@@ -30,7 +30,8 @@ instance HasAbilities MetropolitanCathedral where
     withRevealedAbilities attrs
       $ [ restrictedAbility attrs 1 Here
             $ ActionAbility Nothing
-            $ ActionCost 1 <> HorrorCost (toSource attrs) YouTarget 1
+            $ ActionCost 1
+            <> HorrorCost (toSource attrs) YouTarget 1
         , restrictedAbility
             attrs
             2

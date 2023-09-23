@@ -40,10 +40,10 @@ instance RunMessage AccursedFate where
                 , RemoveTreachery (toId attrs)
                 ]
         else do
-          pushAll $
-            [ InvestigatorAssignDamage iid source DamageAny 0 2
-            , Record TheHourIsNigh
-            ]
+          pushAll
+            $ [ InvestigatorAssignDamage iid source DamageAny 0 2
+              , Record TheHourIsNigh
+              ]
 
       pure t
     _ -> AccursedFate <$> runMessage msg attrs

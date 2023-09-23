@@ -33,18 +33,18 @@ instance HasModifiersFor ShoresOfRlyeh where
     assetDoom <- selectAgg Sum AssetDoom $ assetAt (toId a)
     investigatorDoom <- selectAgg Sum InvestigatorDoom $ investigatorAt (toId a)
     doomOnSelf <- fieldMap LocationDoom Sum (toId a)
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
-        [ ShroudModifier $
-            getSum $
-              fold
-                [ enemyDoom
-                , treacheryDoom
-                , assetDoom
-                , investigatorDoom
-                , doomOnSelf
-                ]
+        [ ShroudModifier
+            $ getSum
+            $ fold
+              [ enemyDoom
+              , treacheryDoom
+              , assetDoom
+              , investigatorDoom
+              , doomOnSelf
+              ]
         ]
   getModifiersFor _ _ = pure []
 
@@ -52,11 +52,11 @@ instance HasAbilities ShoresOfRlyeh where
   getAbilities (ShoresOfRlyeh a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            PutLocationIntoPlay Timing.After Anyone $
-              LocationWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ PutLocationIntoPlay Timing.After Anyone
+          $ LocationWithId
+          $ toId a
       ]
 
 instance RunMessage ShoresOfRlyeh where

@@ -30,17 +30,17 @@ hawkEyeFoldingCamera =
 instance HasModifiersFor HawkEyeFoldingCamera where
   getModifiersFor (InvestigatorTarget iid) (HawkEyeFoldingCamera (a `With` _))
     | controlledBy a iid = do
-        pure $
-          toModifiers a $
-            [SkillModifier SkillWillpower 1 | assetResources a >= 1]
-              <> [SkillModifier SkillIntellect 1 | assetResources a >= 2]
-              <> [SanityModifier 1 | assetResources a >= 3]
+        pure
+          $ toModifiers a
+          $ [SkillModifier SkillWillpower 1 | assetResources a >= 1]
+          <> [SkillModifier SkillIntellect 1 | assetResources a >= 2]
+          <> [SanityModifier 1 | assetResources a >= 3]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HawkEyeFoldingCamera where
   getAbilities (HawkEyeFoldingCamera (a `With` meta)) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (DiscoveringLastClue Timing.After You locationMatcher)
           Free
     ]

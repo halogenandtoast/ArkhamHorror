@@ -66,22 +66,22 @@ instance RunMessage BeyondTheMistV4 where
             josef <- getSetAsideCard Enemies.josefMeiger
             josefCreation <- createEnemyAt_ josef geistTrap Nothing
             investigators <- getInvestigators
-            pure $
-              josefCreation
-                : [ gameModifier
-                    attrs
-                    iid
-                    $ CannotParleyWith
-                    $ enemyIs Enemies.josefMeiger
-                  | iid <- investigators
-                  ]
+            pure
+              $ josefCreation
+              : [ gameModifier
+                  attrs
+                  iid
+                  $ CannotParleyWith
+                  $ enemyIs Enemies.josefMeiger
+                | iid <- investigators
+                ]
           else pure []
 
-      pushAll $
-        RevealLocation Nothing geistTrap
-          : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
-            <> [ShuffleCardsIntoDeck Deck.EncounterDeck silverTwilightLodge, ShuffleEncounterDiscardBackIn]
-            <> josefMessages
-            <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
+      pushAll
+        $ RevealLocation Nothing geistTrap
+        : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
+          <> [ShuffleCardsIntoDeck Deck.EncounterDeck silverTwilightLodge, ShuffleEncounterDiscardBackIn]
+          <> josefMessages
+          <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
       pure a
     _ -> BeyondTheMistV4 <$> runMessage msg attrs

@@ -26,26 +26,26 @@ dimensionalDoorway =
 
 instance HasAbilities DimensionalDoorway where
   getAbilities (DimensionalDoorway attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $
-        ForcedAbility $
-          TurnEnds
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here
+          $ ForcedAbility
+          $ TurnEnds
             Timing.When
             You
-      | locationRevealed attrs
-      ]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage DimensionalDoorway where
   runMessage msg l@(DimensionalDoorway attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- scenarioField ScenarioDiscard
-      for_ (find (member Hex . toTraits) encounterDiscard) $
-        \hexCard -> push $ InvestigatorDrewEncounterCard iid hexCard
+      for_ (find (member Hex . toTraits) encounterDiscard)
+        $ \hexCard -> push $ InvestigatorDrewEncounterCard iid hexCard
       DimensionalDoorway <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       resourceCount <- getSpendableResources iid
-      push $
-        if resourceCount >= 2
+      push
+        $ if resourceCount >= 2
           then
             chooseOne
               iid

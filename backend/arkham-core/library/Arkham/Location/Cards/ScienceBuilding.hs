@@ -22,8 +22,8 @@ scienceBuilding =
 
 instance HasAbilities ScienceBuilding where
   getAbilities (ScienceBuilding x) =
-    withBaseAbilities x $
-      if locationRevealed x
+    withBaseAbilities x
+      $ if locationRevealed x
         then
           [ restrictedAbility
               x
@@ -33,13 +33,13 @@ instance HasAbilities ScienceBuilding where
               $ RevealLocation Timing.After You
               $ LocationWithId
               $ toId x
-          , restrictedAbility x 2 Here $
-              ForcedAbility $
-                SkillTestResult
-                  Timing.When
-                  You
-                  (SkillTestWithSkillType SkillWillpower)
-                  (FailureResult AnyValue)
+          , restrictedAbility x 2 Here
+              $ ForcedAbility
+              $ SkillTestResult
+                Timing.When
+                You
+                (SkillTestWithSkillType SkillWillpower)
+                (FailureResult AnyValue)
           ]
         else []
 

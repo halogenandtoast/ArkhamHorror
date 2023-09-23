@@ -23,7 +23,7 @@ instance RunMessage OccultLexicon where
       canShuffleDeck <- getCanShuffleDeck iid
       pushAll
         $ addToHand iid handBloodRite
-          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
+        : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
       let iid = getOwner attrs

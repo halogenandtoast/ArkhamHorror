@@ -31,12 +31,12 @@ instance HasAbilities PatientConfinementDanielsCell where
   getAbilities (PatientConfinementDanielsCell attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          RevealLocation
-            Timing.After
-            Anyone
-            (LocationWithId $ toId attrs)
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation
+          Timing.After
+          Anyone
+          (LocationWithId $ toId attrs)
       | locationRevealed attrs
       ]
 

@@ -25,8 +25,8 @@ ancientStone1 = asset AncientStone1 Cards.ancientStone1
 
 instance HasAbilities AncientStone1 where
   getAbilities (AncientStone1 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) (ActionCost 1)
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate) (ActionCost 1)
     ]
 
 instance RunMessage AncientStone1 where
@@ -50,10 +50,10 @@ instance RunMessage AncientStone1 where
           difficulty <-
             skillTestDifficulty . fromJustNote "no skill test" <$> getSkillTest
           shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
-          pushAll $
-            [ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) amount (Just Action.Investigate)
-            , Discard (toAbilitySource attrs 1) (toTarget attrs)
-            ]
-              <> [RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord]
+          pushAll
+            $ [ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) amount (Just Action.Investigate)
+              , Discard (toAbilitySource attrs 1) (toTarget attrs)
+              ]
+            <> [RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord]
           pure a
     _ -> AncientStone1 <$> runMessage msg attrs

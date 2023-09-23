@@ -40,10 +40,10 @@ instance RunMessage TheReallyBadOnesV1 where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigators <-
-        selectList $
-          InvestigatorAt $
-            locationIs
-              Locations.patientConfinementDanielsCell
+        selectList
+          $ InvestigatorAt
+          $ locationIs
+            Locations.patientConfinementDanielsCell
       danielChesterfield <-
         PlayerCard
           <$> genPlayerCard Assets.danielChesterfield

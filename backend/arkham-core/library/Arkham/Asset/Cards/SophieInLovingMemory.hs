@@ -54,8 +54,8 @@ instance RunMessage SophieInLovingMemory where
     Flip _ _ target | isTarget attrs target -> do
       let
         sophieItWasAllMyFault =
-          PlayerCard $
-            lookupPlayerCard Cards.sophieItWasAllMyFault (toCardId attrs)
+          PlayerCard
+            $ lookupPlayerCard Cards.sophieItWasAllMyFault (toCardId attrs)
         markId = getController attrs
       a <$ pushAll [ReplaceInvestigatorAsset markId sophieItWasAllMyFault]
     _ -> SophieInLovingMemory <$> runMessage msg attrs

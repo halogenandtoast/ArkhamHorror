@@ -26,6 +26,11 @@ newtype MarieLambeau = MarieLambeau (InvestigatorAttrs `With` Meta)
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+pattern MarieAction :: AdditionalAction
+pattern MarieAction <- TraitRestrictedAdditionalAction Spell Additional.NoRestriction
+  where
+    MarieAction = TraitRestrictedAdditionalAction Spell Additional.NoRestriction
+
 marieLambeau :: InvestigatorCard MarieLambeau
 marieLambeau =
   investigator (MarieLambeau . (`with` Meta False)) Cards.marieLambeau
@@ -35,9 +40,7 @@ marieLambeau =
 instance HasModifiersFor MarieLambeau where
   getModifiersFor target (MarieLambeau (a `With` _)) | a `is` target = do
     hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId a)
-    pure
-      $ toModifiers a
-      $ [GiveAdditionalAction (TraitRestrictedAdditionalAction Spell Additional.NoRestriction) | hasDoom]
+    pure $ toModifiers a $ [GiveAdditionalAction MarieAction | hasDoom]
   getModifiersFor _ _ = pure []
 
 getDoomAmongstControlledCards :: HasGame m => InvestigatorId -> m Int
@@ -58,15 +61,9 @@ checkForAction attrs meta = do
   hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId attrs)
 
   pushWhen (hasDoom && not (additionalActionActive meta))
-    $ GainAdditionalAction
-      (toId attrs)
-      (toSource attrs)
-      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction)
+    $ GainAdditionalAction (toId attrs) (toSource attrs) MarieAction
   pushWhen (not hasDoom && additionalActionActive meta)
-    $ LoseAdditionalAction
-      (toId attrs)
-      (toSource attrs)
-      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction)
+    $ LoseAdditionalAction (toId attrs) (toSource attrs) MarieAction
 
 instance RunMessage MarieLambeau where
   runMessage msg i@(MarieLambeau (attrs `With` meta)) = case msg of
@@ -84,27 +81,21 @@ instance RunMessage MarieLambeau where
       push
         $ chooseOne iid
         $ Label "Add 1 doom" [chooseOrRunOne iid $ targetLabels adds (only . place)]
-          : ( mwhen (notNull removes)
-                $ [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels removes (only . remove)]]
-            )
-            <> [Label "Do Nothing" []]
+        : ( mwhen (notNull removes)
+              $ [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels removes (only . remove)]]
+          )
+          <> [Label "Do Nothing" []]
       pure i
     CheckWindow iids _ | toId attrs `elem` iids -> do
       attrs' <- runMessage msg attrs
       checkForAction attrs' meta
       pure $ MarieLambeau $ attrs' `with` meta
-    GainAdditionalAction
-      iid
-      (isSource attrs -> True)
-      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction) | attrs `is` iid -> do
-        attrs' <- runMessage msg attrs
-        pure $ MarieLambeau $ attrs' `with` Meta True
-    LoseAdditionalAction
-      iid
-      (isSource attrs -> True)
-      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction) | attrs `is` iid -> do
-        attrs' <- runMessage msg attrs
-        pure $ MarieLambeau $ attrs' `with` Meta False
+    GainAdditionalAction iid (isSource attrs -> True) MarieAction | attrs `is` iid -> do
+      attrs' <- runMessage msg attrs
+      pure $ MarieLambeau $ attrs' `with` Meta True
+    LoseAdditionalAction iid (isSource attrs -> True) MarieAction | attrs `is` iid -> do
+      attrs' <- runMessage msg attrs
+      pure $ MarieLambeau $ attrs' `with` Meta False
     PlayerWindow iid _ _ | attrs `is` iid -> do
       attrs' <- runMessage msg attrs
       checkForAction attrs' meta

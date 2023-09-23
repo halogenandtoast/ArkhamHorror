@@ -23,10 +23,10 @@ instance RunMessage CreepingPoison where
   runMessage msg t@(CreepingPoison attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       iids <-
-        selectList $
-          HasMatchingTreachery $
-            treacheryIs
-              Treacheries.poisoned
+        selectList
+          $ HasMatchingTreachery
+          $ treacheryIs
+            Treacheries.poisoned
       pushAll
         [InvestigatorAssignDamage iid source DamageAny 1 0 | iid <- iids]
       pure t

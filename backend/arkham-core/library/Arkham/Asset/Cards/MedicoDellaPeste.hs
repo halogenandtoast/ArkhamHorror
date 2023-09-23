@@ -38,8 +38,8 @@ instance HasAbilities MedicoDellaPeste where
         $ ReactionAbility
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
-    , restrictedAbility a 2 ControlsThis $
-        ReactionAbility
+    , restrictedAbility a 2 ControlsThis
+        $ ReactionAbility
           ( InitiatedSkillTest
               Timing.When
               You
@@ -54,16 +54,16 @@ instance RunMessage MedicoDellaPeste where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasDamage <- canHaveDamageHealed attrs iid
       mHealHorror <- getHealHorrorMessage attrs 1 iid
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Heal 1 damage"
             [HealDamage (InvestigatorTarget iid) (toSource attrs) 1]
           | hasDamage
           ]
-            <> [ Label "Heal 1 horror" [healHorror]
-               | healHorror <- maybeToList mHealHorror
-               ]
+        <> [ Label "Heal 1 horror" [healHorror]
+           | healHorror <- maybeToList mHealHorror
+           ]
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       replaceMessageMatching

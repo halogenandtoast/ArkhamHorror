@@ -86,12 +86,12 @@ instance RunMessage TheDunwichLegacy where
       leadInvestigatorId <- getLeadInvestigatorId
       if unconsciousForSeveralHours
         then
-          pushAll $
-            [ story investigatorIds armitagesFate1
-            , Record DrHenryArmitageWasKidnapped
-            ]
-              <> [GainXP iid CampaignSource 2 | iid <- investigatorIds]
-              <> [NextCampaignStep Nothing]
+          pushAll
+            $ [ story investigatorIds armitagesFate1
+              , Record DrHenryArmitageWasKidnapped
+              ]
+            <> [GainXP iid CampaignSource 2 | iid <- investigatorIds]
+            <> [NextCampaignStep Nothing]
         else
           pushAll
             [ story investigatorIds armitagesFate2
@@ -172,29 +172,29 @@ instance RunMessage TheDunwichLegacy where
               ( recorded (toCardCode Assets.earlSawyer)
                   `notElem` sacrificedToYogSothoth
               )
-      pushAll $
-        [story investigatorIds interlude2]
-          <> [ story investigatorIds interlude2DrHenryArmitage
-             | recorded @CardCode "02040" `notElem` sacrificedToYogSothoth
-             ]
-          <> addDrHenryArmitage
-          <> [ story investigatorIds interlude2ProfessorWarrenRice
-             | recorded @CardCode "02061" `notElem` sacrificedToYogSothoth
-             ]
-          <> addProfessorWarrenRice
-          <> [ story investigatorIds interlude2DrFrancisMorgan
-             | recorded @CardCode "02080" `notElem` sacrificedToYogSothoth
-             ]
-          <> addDrFrancisMorgan
-          <> [ story investigatorIds interlude2ZebulonWhateley
-             | recorded @CardCode "02217" `notElem` sacrificedToYogSothoth
-             ]
-          <> addZebulonWhateley
-          <> [ story investigatorIds interlude2EarlSawyer
-             | recorded @CardCode "02218" `notElem` sacrificedToYogSothoth
-             ]
-          <> addEarlSawyer
-          <> addPowderOfIbnGhazi
-          <> [NextCampaignStep Nothing]
+      pushAll
+        $ [story investigatorIds interlude2]
+        <> [ story investigatorIds interlude2DrHenryArmitage
+           | recorded @CardCode "02040" `notElem` sacrificedToYogSothoth
+           ]
+        <> addDrHenryArmitage
+        <> [ story investigatorIds interlude2ProfessorWarrenRice
+           | recorded @CardCode "02061" `notElem` sacrificedToYogSothoth
+           ]
+        <> addProfessorWarrenRice
+        <> [ story investigatorIds interlude2DrFrancisMorgan
+           | recorded @CardCode "02080" `notElem` sacrificedToYogSothoth
+           ]
+        <> addDrFrancisMorgan
+        <> [ story investigatorIds interlude2ZebulonWhateley
+           | recorded @CardCode "02217" `notElem` sacrificedToYogSothoth
+           ]
+        <> addZebulonWhateley
+        <> [ story investigatorIds interlude2EarlSawyer
+           | recorded @CardCode "02218" `notElem` sacrificedToYogSothoth
+           ]
+        <> addEarlSawyer
+        <> addPowderOfIbnGhazi
+        <> [NextCampaignStep Nothing]
       pure c
     _ -> defaultCampaignRunner msg c

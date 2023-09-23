@@ -31,12 +31,12 @@ pathsIntoTwilight =
 instance HasModifiersFor PathsIntoTwilight where
   getModifiersFor (LocationTarget lid) (PathsIntoTwilight a) = do
     mInFrontOf <- field LocationInFrontOf lid
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
-        [ ConnectedToWhen (LocationWithId lid) $
-          NotLocation (LocationWithId lid)
-            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        [ ConnectedToWhen (LocationWithId lid)
+          $ NotLocation (LocationWithId lid)
+          <> LocationIsInFrontOf (InvestigatorWithId iid)
         | iid <- maybeToList mInFrontOf
         ]
   getModifiersFor _ _ = pure []

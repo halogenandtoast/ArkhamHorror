@@ -143,10 +143,10 @@ instance RunMessage TheMidnightMasks where
           , placeDowntown
           , placeGraveyard
           ]
-          <> otherPlacements
-          <> startingLocationMessages
-          <> [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
-          <> spawnAcolyteMessages
+        <> otherPlacements
+        <> startingLocationMessages
+        <> [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
+        <> spawnAcolyteMessages
 
       agendas <- genCards [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
       acts <- genCards [Acts.uncoveringTheConspiracy]
@@ -198,10 +198,10 @@ instance RunMessage TheMidnightMasks where
           , recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
           , recordSetInsert CultistsWhoGotAway cultistsWhoGotAway
           ]
-          <> [Record ItIsPastMidnight | n == 2]
-          <> [CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated]
-          <> gainXp
-          <> [EndOfGame Nothing]
+        <> [Record ItIsPastMidnight | n == 2]
+        <> [CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated]
+        <> gainXp
+        <> [EndOfGame Nothing]
       pure s
     HandleOption option -> do
       whenM getIsStandalone $ do

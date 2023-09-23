@@ -20,10 +20,10 @@ newtype HarlanIsInDanger = HarlanIsInDanger ActAttrs
 
 harlanIsInDanger :: ActCard HarlanIsInDanger
 harlanIsInDanger =
-  act (1, A) HarlanIsInDanger Cards.harlanIsInDanger $
-    Just $
-      GroupClueCost (PerPlayer 2) $
-        LocationWithTitle "Miskatonic University"
+  act (1, A) HarlanIsInDanger Cards.harlanIsInDanger
+    $ Just
+    $ GroupClueCost (PerPlayer 2)
+    $ LocationWithTitle "Miskatonic University"
 
 instance RunMessage HarlanIsInDanger where
   runMessage msg a@(HarlanIsInDanger attrs) = case msg of

@@ -97,7 +97,7 @@ instance HasModifiersFor DexterDrakeEffect where
     pure
       $ toModifiers attrs
       $ [ReduceCostOf (CardWithId cid) 1]
-        <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
+      <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DexterDrakeEffect where

@@ -28,25 +28,26 @@ darkYoungHost =
     Cards.darkYoungHost
     (4, Static 5, 2)
     (2, 2)
-    $ spawnAtL ?~ SpawnLocation (LocationWithTrait Bayou)
+    $ spawnAtL
+    ?~ SpawnLocation (LocationWithTrait Bayou)
 
 instance HasAbilities DarkYoungHost where
   getAbilities (DarkYoungHost attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            PlacedCounterOnLocation
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+            $ ForcedAbility
+            $ PlacedCounterOnLocation
               Timing.When
               LocationOfThis
               AnySource
               ClueCounter
               (AtLeast $ Static 1)
-      , mkAbility attrs 2 $
-          ForcedAbility $
-            EnemyDefeated Timing.When Anyone ByAny $
-              EnemyWithId $
-                toId attrs
-      ]
+        , mkAbility attrs 2
+            $ ForcedAbility
+            $ EnemyDefeated Timing.When Anyone ByAny
+            $ EnemyWithId
+            $ toId attrs
+        ]
 
 instance RunMessage DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = case msg of

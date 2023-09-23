@@ -51,11 +51,13 @@ instance RunMessage SoothingMelody where
       damageAssets <-
         selectListMap AssetTarget
           $ HealableAsset (toSource attrs) DamageType
-          $ AssetAt YourLocation <> AllyAsset
+          $ AssetAt YourLocation
+          <> AllyAsset
       horrorAssets <-
         selectListMap AssetTarget
           $ HealableAsset (toSource attrs) HorrorType
-          $ AssetAt YourLocation <> AllyAsset
+          $ AssetAt YourLocation
+          <> AllyAsset
 
       let
         componentLabel component target = case target of
@@ -66,19 +68,19 @@ instance RunMessage SoothingMelody where
         investigatorDamageChoices =
           [ componentLabel DamageToken (toTarget i)
             $ HealDamage (toTarget i) (toSource attrs) 1
-              : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
+            : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
           | i <- damageInvestigators
           ]
         damageAssetChoices =
           [ componentLabel DamageToken asset
             $ HealDamage asset (toSource attrs) 1
-              : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
+            : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
           | asset <- damageAssets
           ]
         horrorAssetChoices =
           [ componentLabel HorrorToken asset
             $ HealHorror asset (toSource attrs) 1
-              : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
+            : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
           | asset <- horrorAssets
           ]
 

@@ -33,10 +33,10 @@ instance HasAbilities StrangeRelicsMariaDeSilva where
     [ restrictedAbility
       a
       1
-      ( AssetExists $
-          assetIs Assets.mariaDeSilva
-            <> AssetWithClues
-              (AtLeast $ PerPlayer 1)
+      ( AssetExists
+          $ assetIs Assets.mariaDeSilva
+          <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
       )
       $ Objective
       $ ForcedAbility AnyWindow

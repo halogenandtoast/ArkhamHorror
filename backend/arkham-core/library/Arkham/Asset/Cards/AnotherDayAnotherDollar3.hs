@@ -19,8 +19,8 @@ anotherDayAnotherDollar3 =
 
 instance HasModifiersFor AnotherDayAnotherDollar3 where
   getModifiersFor (InvestigatorTarget iid) (AnotherDayAnotherDollar3 attrs) =
-    pure $
-      toModifiersWith
+    pure
+      $ toModifiersWith
         attrs
         setActiveDuringSetup
         [StartingResources 2 | controlledBy attrs iid]

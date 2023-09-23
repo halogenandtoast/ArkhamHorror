@@ -28,8 +28,8 @@ giftOfMadnessMisery = treachery GiftOfMadnessMisery Cards.giftOfMadnessMisery
 
 instance HasModifiersFor GiftOfMadnessMisery where
   getModifiersFor (InvestigatorTarget iid) (GiftOfMadnessMisery a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
         | treacheryInHandOf a == Just iid

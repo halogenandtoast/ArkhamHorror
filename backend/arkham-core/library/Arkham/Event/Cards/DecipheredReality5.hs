@@ -52,10 +52,10 @@ instance RunMessage DecipheredReality5 where
           -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
           -- standard rewards for successfully investigating.
           locationIds <- selectList RevealedLocation
-          pushAll $
-            Successful (Action.Investigate, actionTarget) iid source target n
-              : [ InvestigatorDiscoverClues iid lid' (toSource attrs) 1 Nothing
-                | lid' <- locationIds
-                ]
+          pushAll
+            $ Successful (Action.Investigate, actionTarget) iid source target n
+            : [ InvestigatorDiscoverClues iid lid' (toSource attrs) 1 Nothing
+              | lid' <- locationIds
+              ]
           pure e
     _ -> DecipheredReality5 <$> runMessage msg attrs

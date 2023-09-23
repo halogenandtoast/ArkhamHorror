@@ -99,10 +99,10 @@ instance RunMessage TheDevourerBelow where
       randomSet <-
         sample
           $ EncounterSet.AgentsOfYogSothoth
-            :| [ EncounterSet.AgentsOfShubNiggurath
-               , EncounterSet.AgentsOfCthulhu
-               , EncounterSet.AgentsOfHastur
-               ]
+          :| [ EncounterSet.AgentsOfShubNiggurath
+             , EncounterSet.AgentsOfCthulhu
+             , EncounterSet.AgentsOfHastur
+             ]
 
       encounterDeck <-
         buildEncounterDeckExcluding
@@ -124,13 +124,13 @@ instance RunMessage TheDevourerBelow where
           , SetActDeck
           , placeMainPath
           ]
-          <> placeWoods
-          <> [ RevealLocation Nothing mainPath
-             , MoveAllTo (toSource attrs) mainPath
-             ]
-          <> [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
-          <> cultistsWhoGotAwayMessages
-          <> pastMidnightMessages
+        <> placeWoods
+        <> [ RevealLocation Nothing mainPath
+           , MoveAllTo (toSource attrs) mainPath
+           ]
+        <> [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
+        <> cultistsWhoGotAwayMessages
+        <> pastMidnightMessages
 
       setAsideCards <- genCards [Locations.ritualSite, Enemies.umordhoth]
 

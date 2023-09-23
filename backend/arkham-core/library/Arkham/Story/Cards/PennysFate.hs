@@ -53,14 +53,14 @@ instance RunMessage PennysFate where
         else when claimedBySpecters $ do
           penny <- genCard Enemies.pennyWhite
           createPenny <-
-            createEnemy penny $
-              if onTrail
+            createEnemy penny
+              $ if onTrail
                 then toEnemyCreationMethod location
                 else toEnemyCreationMethod iid
           pushAll
             [ RemoveStory (toId attrs)
-            , toMessage $
-                createPenny
+            , toMessage
+                $ createPenny
                   { enemyCreationExhausted = onTrail
                   }
             ]

@@ -25,8 +25,8 @@ closeTheRift =
     (3, A)
     CloseTheRift
     Cards.closeTheRift
-    ( Just $
-        GroupClueCost
+    ( Just
+        $ GroupClueCost
           (PerPlayer 3)
           (LocationWithTitle "The Edge of the Universe")
     )
@@ -38,8 +38,8 @@ instance HasAbilities CloseTheRift where
 instance RunMessage CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        DiscardTopOfEncounterDeck
+      push
+        $ DiscardTopOfEncounterDeck
           iid
           3
           (toSource attrs)
@@ -51,14 +51,14 @@ instance RunMessage CloseTheRift where
           "The Edge of the Universe"
       tearThroughTime <- getSetAsideCard Locations.tearThroughTime
       locationPlacement <- placeLocation_ tearThroughTime
-      pushAll $
-        resolve (RemoveLocation theEdgeOfTheUniverseId)
-          <> [locationPlacement, AdvanceActDeck actDeckId (toSource attrs)]
+      pushAll
+        $ resolve (RemoveLocation theEdgeOfTheUniverseId)
+        <> [locationPlacement, AdvanceActDeck actDeckId (toSource attrs)]
       pure a
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
-      unless (null locationCards) $
-        pushAll
+      unless (null locationCards)
+        $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
               iid

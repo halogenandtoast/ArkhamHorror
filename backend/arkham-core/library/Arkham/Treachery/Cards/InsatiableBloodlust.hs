@@ -23,21 +23,21 @@ insatiableBloodlust = treachery InsatiableBloodlust Cards.insatiableBloodlust
 instance HasModifiersFor InsatiableBloodlust where
   getModifiersFor (EnemyTarget eid) (InsatiableBloodlust attrs)
     | treacheryOnEnemy eid attrs =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities InsatiableBloodlust where
   getAbilities (InsatiableBloodlust x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          EnemyDealtDamage
-            Timing.After
-            AnyDamageEffect
-            (enemyIs Cards.theRougarou)
-            AnySource
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ EnemyDealtDamage
+          Timing.After
+          AnyDamageEffect
+          (enemyIs Cards.theRougarou)
+          AnySource
     ]
 
 instance RunMessage InsatiableBloodlust where

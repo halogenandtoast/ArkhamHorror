@@ -22,8 +22,8 @@ kukri = asset Kukri Cards.kukri
 
 instance HasAbilities Kukri where
   getAbilities (Kukri a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) (ActionCost 1)
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 
 instance RunMessage Kukri where
@@ -41,16 +41,16 @@ instance RunMessage Kukri where
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           actionRemainingCount <- field InvestigatorRemainingActions iid
-          when (actionRemainingCount > 0) $
-            push $
-              chooseOne
-                iid
-                [ Label
-                    "Spend 1 action to deal +1 damage"
-                    [ LoseActions iid source 1
-                    , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-                    ]
-                , Label "Skip additional Kukri damage" []
-                ]
+          when (actionRemainingCount > 0)
+            $ push
+            $ chooseOne
+              iid
+              [ Label
+                  "Spend 1 action to deal +1 damage"
+                  [ LoseActions iid source 1
+                  , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
+                  ]
+              , Label "Skip additional Kukri damage" []
+              ]
           pure a
     _ -> Kukri <$> runMessage msg attrs

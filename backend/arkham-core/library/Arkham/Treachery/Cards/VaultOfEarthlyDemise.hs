@@ -23,10 +23,10 @@ vaultOfEarthlyDemise =
 
 instance HasAbilities VaultOfEarthlyDemise where
   getAbilities (VaultOfEarthlyDemise attrs) =
-    [ mkAbility attrs 1 $
-        ForcedAbility $
-          EnemySpawns Timing.When Anywhere $
-            enemyIs Cards.umordhoth
+    [ mkAbility attrs 1
+        $ ForcedAbility
+        $ EnemySpawns Timing.When Anywhere
+        $ enemyIs Cards.umordhoth
     ]
 
 instance HasModifiersFor VaultOfEarthlyDemise where

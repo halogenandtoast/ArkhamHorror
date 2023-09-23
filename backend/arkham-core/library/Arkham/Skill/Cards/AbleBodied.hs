@@ -27,11 +27,11 @@ instance HasModifiersFor AbleBodied where
   getModifiersFor (CardIdTarget cid) (AbleBodied attrs) | toCardId attrs == cid =
     do
       itemAssets <- selectCount $ AssetWithTrait Item <> assetControlledBy (skillOwner attrs)
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           attrs
-          [ AddSkillIcons $
-            if itemAssets <= 1
+          [ AddSkillIcons
+            $ if itemAssets <= 1
               then
                 [ SkillIcon SkillCombat
                 , SkillIcon SkillCombat

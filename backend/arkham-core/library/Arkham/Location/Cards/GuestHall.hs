@@ -18,8 +18,8 @@ guestHall = location GuestHall Cards.guestHall 1 (Static 0)
 
 instance HasModifiersFor GuestHall where
   getModifiersFor (InvestigatorTarget iid) (GuestHall attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ CannotTakeAction (IsAction Draw)
         | iid `elem` locationInvestigators attrs

@@ -24,14 +24,14 @@ instance RunMessage MarkedByTheSign where
   runMessage msg t@(MarkedByTheSign attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       theManInThePallidMaskIsInPlay <-
-        selectAny $
-          enemyIs Cards.theManInThePallidMask
+        selectAny
+          $ enemyIs Cards.theManInThePallidMask
       let difficulty = if theManInThePallidMaskIsInPlay then 4 else 2
       t <$ push (RevelationSkillTest iid source SkillWillpower difficulty)
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do
       theManInThePallidMaskIsInPlay <-
-        selectAny $
-          enemyIs Cards.theManInThePallidMask
+        selectAny
+          $ enemyIs Cards.theManInThePallidMask
       t
         <$ if theManInThePallidMaskIsInPlay
           then push (InvestigatorDirectDamage iid source 0 2)

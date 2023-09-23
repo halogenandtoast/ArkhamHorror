@@ -25,9 +25,9 @@ theNightHowls = agenda (2, A) TheNightHowls Cards.theNightHowls (Static 12)
 
 instance HasAbilities TheNightHowls where
   getAbilities (TheNightHowls a) =
-    [ restrictedAbility a 1 (EnemyCriteria $ EnemyExists $ EnemyWithTrait Witch) $
-        ForcedAbility $
-          RoundEnds Timing.AtIf
+    [ restrictedAbility a 1 (EnemyCriteria $ EnemyExists $ EnemyWithTrait Witch)
+        $ ForcedAbility
+        $ RoundEnds Timing.AtIf
     ]
 
 instance RunMessage TheNightHowls where
@@ -40,33 +40,33 @@ instance RunMessage TheNightHowls where
           then pure [SufferTrauma iid 0 1 | iid <- iids]
           else do
             alreadyIncludedMap <-
-              matchingCardsAlreadyInDeck $
-                CardWithOneOf $
-                  map
-                    CardWithTrait
-                    [Omen, Curse]
-            pure $
-              [ SearchCollectionForRandom iid (toSource attrs) $
-                PlayerTreachery
+              matchingCardsAlreadyInDeck
+                $ CardWithOneOf
+                $ map
+                  CardWithTrait
+                  [Omen, Curse]
+            pure
+              $ [ SearchCollectionForRandom iid (toSource attrs)
+                  $ PlayerTreachery
                   <> CardWithOneOf (map CardWithTrait [Omen, Curse])
                   <> excludeMatcher
-              | iid <- iids
-              , let cardCodes = findWithDefault mempty iid alreadyIncludedMap
-              , let
-                  excludeMatcher =
-                    if null cardCodes
-                      then AnyCard
-                      else
-                        NotCard
-                          ( CardWithOneOf $
-                              map CardWithCardCode $
-                                setToList
+                | iid <- iids
+                , let cardCodes = findWithDefault mempty iid alreadyIncludedMap
+                , let
+                    excludeMatcher =
+                      if null cardCodes
+                        then AnyCard
+                        else
+                          NotCard
+                            ( CardWithOneOf
+                                $ map CardWithCardCode
+                                $ setToList
                                   cardCodes
-                          )
-              ]
-      pushAll $
-        msgs
-          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+                            )
+                ]
+      pushAll
+        $ msgs
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       case mcard of

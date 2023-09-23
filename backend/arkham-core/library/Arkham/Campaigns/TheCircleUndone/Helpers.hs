@@ -17,8 +17,8 @@ getHauntedAbilities :: HasGame m => InvestigatorId -> m [Ability]
 getHauntedAbilities iid =
   selectList
     $ HauntedAbility
-      <> AbilityOnLocation
-        (locationWithInvestigator iid)
+    <> AbilityOnLocation
+      (locationWithInvestigator iid)
 
 runHauntedAbilities :: InvestigatorId -> GameT ()
 runHauntedAbilities iid = do

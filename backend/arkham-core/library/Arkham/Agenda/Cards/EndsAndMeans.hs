@@ -43,21 +43,21 @@ instance RunMessage EndsAndMeans where
       acts <- selectList AnyAct
       summonedBeast <- getSetAsideCard Enemies.summonedBeast
       createSummonedBeast <-
-        createEnemyAtLocationMatching_ summonedBeast $
-          maybe
+        createEnemyAtLocationMatching_ summonedBeast
+          $ maybe
             (LocationWithTrait Sanctum)
             locationWithAsset
             mPuzzleBox
 
-      pushAll $
-        [Discard GameSource (toTarget act) | act <- acts]
-          <> [createSummonedBeast]
-          <> [RemoveFromGame (toTarget puzzleBox) | puzzleBox <- maybeToList mPuzzleBox]
+      pushAll
+        $ [Discard GameSource (toTarget act) | act <- acts]
+        <> [createSummonedBeast]
+        <> [RemoveFromGame (toTarget puzzleBox) | puzzleBox <- maybeToList mPuzzleBox]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> enemy) _ -> do
       enemiesWithDoom <- selectList $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
-      pushAll $
-        concat
+      pushAll
+        $ concat
           [[RemoveDoom (toSource attrs) (toTarget enemy') 1, PlaceDoomOnAgenda] | enemy' <- enemiesWithDoom]
       pure a
     _ -> EndsAndMeans <$> runMessage msg attrs

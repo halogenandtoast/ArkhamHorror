@@ -158,13 +158,13 @@ instance RunMessage TheWagesOfSin where
           , Locations.abandonedChapel
           ]
 
-      pushAll $
-        [ SetEncounterDeck $ Deck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        ]
-          <> placements
-          <> [placeHangmansBrook, MoveAllTo (toSource attrs) hangmansBrookId]
+      pushAll
+        $ [ SetEncounterDeck $ Deck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          ]
+        <> placements
+        <> [placeHangmansBrook, MoveAllTo (toSource attrs) hangmansBrookId]
 
       agendas <- genCards [Agendas.theHangedManXII, Agendas.deathsApproach]
       acts <- genCards [Acts.inPursuitOfTheDead, Acts.inPursuitOfTheLiving]
@@ -195,9 +195,9 @@ instance RunMessage TheWagesOfSin where
       case chaosTokenFace token of
         Tablet -> do
           abilities <-
-            selectList $
-              AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
-                <> AbilityIsForcedAbility
+            selectList
+              $ AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
+              <> AbilityIsForcedAbility
           unless (null abilities) $ do
             push $ chooseOne iid [AbilityLabel iid ability [] [] | ability <- abilities]
         ElderThing | isEasyStandard attrs -> do
@@ -216,12 +216,12 @@ instance RunMessage TheWagesOfSin where
           step <- getCurrentActStep
           n <- if step == 1 then pure 4 else selectCount $ EnemyWithTitle "Heretic"
           xp <- toGainXp attrs getXp
-          pushAll $
-            story iids (if res == 1 then resolution1 else resolution2)
-              : [Record TheInvestigatorsSurvivedTheWatchersEmbrace | res == 2]
-                <> [RecordCount HereticsWereUnleashedUntoArkham n]
-                <> [recordSetInsert MementosDiscovered [WispOfSpectralMist] | n <= 3]
-                <> xp
+          pushAll
+            $ story iids (if res == 1 then resolution1 else resolution2)
+            : [Record TheInvestigatorsSurvivedTheWatchersEmbrace | res == 2]
+              <> [RecordCount HereticsWereUnleashedUntoArkham n]
+              <> [recordSetInsert MementosDiscovered [WispOfSpectralMist] | n <= 3]
+              <> xp
         _ -> error "invalid resolution"
       pure s
     _ -> TheWagesOfSin <$> runMessage msg attrs

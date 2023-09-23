@@ -24,8 +24,8 @@ stalkedByShadows = act (2, A) StalkedByShadows Cards.stalkedByShadows Nothing
 
 instance HasAbilities StalkedByShadows where
   getAbilities (StalkedByShadows a) =
-    [ restrictedAbility a 1 NoRestriction $
-        FastAbility (GroupClueCost (Static 1) Anywhere)
+    [ restrictedAbility a 1 NoRestriction
+        $ FastAbility (GroupClueCost (Static 1) Anywhere)
     ]
 
 instance RunMessage StalkedByShadows where
@@ -33,8 +33,8 @@ instance RunMessage StalkedByShadows where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       theOrganist <- getTheOrganist
       currentAgenda <- AgendaTarget <$> selectJust AnyAgenda
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label "Place 1 doom on the current agenda" [PlaceDoom (toAbilitySource attrs 1) currentAgenda 1]
           , Label "Automatically evade The Organist" [EnemyEvaded iid theOrganist]

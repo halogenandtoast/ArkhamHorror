@@ -48,8 +48,8 @@ instance RunMessage Vengeance where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       doom <- getDoomCount
       iids <- getInvestigatorIds
-      pushAll $
-        zipWith
+      pushAll
+        $ zipWith
           ($)
           ( replicate
               doom

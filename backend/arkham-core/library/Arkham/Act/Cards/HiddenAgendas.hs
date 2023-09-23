@@ -57,29 +57,29 @@ instance RunMessage HiddenAgendas where
           <$> getSetAsideEncounterSet EncounterSet.TheWatcher
       realmOfDeathSet <- getSetAsideEncounterSet EncounterSet.RealmOfDeath
 
-      pushAll $
-        map
+      pushAll
+        $ map
           (\iid -> Move $ move (toSource attrs) iid victorianHalls)
           investigatorIds
-          <> map
-            (\eid -> Move $ move (toSource attrs) eid victorianHalls)
-            enemyIds
-          <> [ ReplaceLocation entryHall entryHallSpectral DefaultReplace
-             , ReplaceLocation victorianHalls victorianHallsSpectral DefaultReplace
-             , ReplaceLocation balcony balconySpectral DefaultReplace
-             , ReplaceLocation office officeSpectral DefaultReplace
-             , ReplaceLocation billiardsRoom billiardsRoomSpectral DefaultReplace
-             , ReplaceLocation masterBedroom masterBedroomSpectral DefaultReplace
-             , ReplaceLocation trophyRoom trophyRoomSpectral DefaultReplace
-             , NextAdvanceActStep (toId a) 0
-             , NextAdvanceActStep (toId a) 1
-             , SpawnEnemyAt theSpectralWatcher entryHall
-             , ShuffleCardsIntoDeck
-                Deck.EncounterDeck
-                (theWatcherSet <> realmOfDeathSet)
-             , ShuffleEncounterDiscardBackIn
-             , advanceActDeck attrs
-             ]
+        <> map
+          (\eid -> Move $ move (toSource attrs) eid victorianHalls)
+          enemyIds
+        <> [ ReplaceLocation entryHall entryHallSpectral DefaultReplace
+           , ReplaceLocation victorianHalls victorianHallsSpectral DefaultReplace
+           , ReplaceLocation balcony balconySpectral DefaultReplace
+           , ReplaceLocation office officeSpectral DefaultReplace
+           , ReplaceLocation billiardsRoom billiardsRoomSpectral DefaultReplace
+           , ReplaceLocation masterBedroom masterBedroomSpectral DefaultReplace
+           , ReplaceLocation trophyRoom trophyRoomSpectral DefaultReplace
+           , NextAdvanceActStep (toId a) 0
+           , NextAdvanceActStep (toId a) 1
+           , SpawnEnemyAt theSpectralWatcher entryHall
+           , ShuffleCardsIntoDeck
+              Deck.EncounterDeck
+              (theWatcherSet <> realmOfDeathSet)
+           , ShuffleEncounterDiscardBackIn
+           , advanceActDeck attrs
+           ]
 
       pure a
     NextAdvanceActStep aid 0 | aid == toId a -> do

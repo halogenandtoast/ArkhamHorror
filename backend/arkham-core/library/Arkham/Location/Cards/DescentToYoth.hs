@@ -38,11 +38,11 @@ instance HasAbilities DescentToYoth where
   getAbilities (DescentToYoth (attrs `With` _)) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            PutLocationIntoPlay Timing.After Anyone $
-              LocationWithId $
-                toId attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ PutLocationIntoPlay Timing.After Anyone
+          $ LocationWithId
+          $ toId attrs
       , restrictedAbility
           attrs
           2

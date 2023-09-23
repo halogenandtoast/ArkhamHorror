@@ -24,18 +24,18 @@ wrackedByNightmares = treachery WrackedByNightmares Cards.wrackedByNightmares
 
 instance HasModifiersFor WrackedByNightmares where
   getModifiersFor (InvestigatorTarget iid) (WrackedByNightmares attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ControlledAssetsCannotReady | treacheryOnInvestigator iid attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WrackedByNightmares where
   getAbilities (WrackedByNightmares a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage WrackedByNightmares where

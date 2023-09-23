@@ -33,27 +33,27 @@ instance HasModifiersFor ParlorCar where
     case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- field LocationClues leftLocation
-        pure $
-          toModifiers l $
-            CannotInvestigate
-              : [Blocked | not locationRevealed && clueCount > 0]
+        pure
+          $ toModifiers l
+          $ CannotInvestigate
+          : [Blocked | not locationRevealed && clueCount > 0]
       Nothing -> pure $ toModifiers l [CannotInvestigate]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ParlorCar where
   getAbilities (ParlorCar attrs) =
-    withRevealedAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> CluesOnThis (AtLeast $ Static 1)
-              <> InvestigatorExists
-                (You <> InvestigatorCanDiscoverCluesAt YourLocation)
-          )
-          $ ActionAbility Nothing
-          $ Costs [ActionCost 1, ResourceCost 3]
-      ]
+    withRevealedAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            ( Here
+                <> CluesOnThis (AtLeast $ Static 1)
+                <> InvestigatorExists
+                  (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+            )
+            $ ActionAbility Nothing
+            $ Costs [ActionCost 1, ResourceCost 3]
+        ]
 
 instance RunMessage ParlorCar where
   runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of

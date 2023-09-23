@@ -24,18 +24,18 @@ instance HasAbilities Montmartre209 where
   getAbilities (Montmartre209 attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (GroupLimit PerRound 1) $
-        restrictedAbility attrs 1 Here $
-          ActionAbility Nothing $
-            ActionCost 1
+      [ limitedAbility (GroupLimit PerRound 1)
+        $ restrictedAbility attrs 1 Here
+        $ ActionAbility Nothing
+        $ ActionCost 1
       | locationRevealed attrs
       ]
 
 instance RunMessage Montmartre209 where
   runMessage msg a@(Montmartre209 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        CreateEffect
+      push
+        $ CreateEffect
           (toCardCode attrs)
           Nothing
           (toSource attrs)

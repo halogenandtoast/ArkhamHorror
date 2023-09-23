@@ -40,8 +40,9 @@ instance RunMessage Awakening where
 
       -- Advance to one of the 3 copies of act 2a, at random
       nextAct <-
-        sample $
-          Cards.theStrangerACityAflame :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
+        sample
+          $ Cards.theStrangerACityAflame
+          :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
 
       createTheManInThePallidMask <-
         createEnemyAt_ theManInThePallidMask locationId Nothing

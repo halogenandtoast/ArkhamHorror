@@ -39,8 +39,8 @@ instance HasModifiersFor TorrentOfPower where
         case mSkillTest of
           Just _ -> do
             let n = maybe 0 chargesSpent (skillAdditionalPayment attrs)
-            pure $
-              toModifiers
+            pure
+              $ toModifiers
                 attrs
                 [AddSkillIcons $ cycleN n [SkillIcon SkillWillpower, WildIcon]]
           _ -> pure []

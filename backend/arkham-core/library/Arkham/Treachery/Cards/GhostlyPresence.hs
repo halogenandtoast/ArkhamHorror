@@ -39,11 +39,11 @@ instance RunMessage GhostlyPresence where
         iids <- selectList $ InvestigatorAt $ locationWithEnemy nahab
         atSiteOfTheSacrifice <-
           selectAny $ locationIs Locations.siteOfTheSacrifice <> locationWithEnemy nahab
-        pushAll $
-          chooseOneAtATime
+        pushAll
+          $ chooseOneAtATime
             lead
             [targetLabel iid [InitiateEnemyAttack $ enemyAttack nahab attrs iid] | iid <- iids]
-            : [PlaceDoom (toSource attrs) (toTarget nahab) 1 | atSiteOfTheSacrifice]
+          : [PlaceDoom (toSource attrs) (toTarget nahab) 1 | atSiteOfTheSacrifice]
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) card -> do
       pushM $ createEnemy card (locationWithInvestigator iid)

@@ -26,8 +26,8 @@ slot attrs = Slot (toSource attrs) Nothing
 
 instance HasAbilities AnnaKaslow4 where
   getAbilities (AnnaKaslow4 a) =
-    [ restrictedAbility a 1 InYourHand $
-        ReactionAbility (GameBegins Timing.When) Free
+    [ restrictedAbility a 1 InYourHand
+        $ ReactionAbility (GameBegins Timing.When) Free
     , restrictedAbility
         a
         2

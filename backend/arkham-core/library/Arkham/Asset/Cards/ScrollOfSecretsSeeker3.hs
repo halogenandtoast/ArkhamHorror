@@ -22,21 +22,21 @@ scrollOfSecretsSeeker3 =
 
 instance HasAbilities ScrollOfSecretsSeeker3 where
   getAbilities (ScrollOfSecretsSeeker3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> ExhaustCost (toTarget a)
-            <> UseCost (AssetWithId $ toId a) Secret 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 instance RunMessage ScrollOfSecretsSeeker3 where
   runMessage msg a@(ScrollOfSecretsSeeker3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <-
-        selectTargets $
-          InvestigatorWithoutModifier CannotManipulateDeck
-      push $
-        chooseOne
+        selectTargets
+          $ InvestigatorWithoutModifier CannotManipulateDeck
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             target
@@ -67,22 +67,22 @@ instance RunMessage ScrollOfSecretsSeeker3 where
 
           pushAll
             [ FocusCards cards
-            , questionLabel "Discard 1 card?" iid $
-                ChooseOne $
-                  Label "Do not discard" [UnfocusCards, DoStep 2 msg']
-                    : [ targetLabel
-                        (toCardId card)
-                        [ UnfocusCards
-                        , discardMsg card
-                        , DoStep 2 $
-                            SearchFound
-                              iid
-                              (toTarget attrs)
-                              deck
-                              (deleteFirst card cards)
-                        ]
-                      | card <- cards
-                      ]
+            , questionLabel "Discard 1 card?" iid
+                $ ChooseOne
+                $ Label "Do not discard" [UnfocusCards, DoStep 2 msg']
+                : [ targetLabel
+                    (toCardId card)
+                    [ UnfocusCards
+                    , discardMsg card
+                    , DoStep 2
+                        $ SearchFound
+                          iid
+                          (toTarget attrs)
+                          deck
+                          (deleteFirst card cards)
+                    ]
+                  | card <- cards
+                  ]
             ]
           pure a
     DoStep 2 msg'@(SearchFound _ (isTarget attrs -> True) Deck.EncounterDeck _) ->
@@ -98,22 +98,22 @@ instance RunMessage ScrollOfSecretsSeeker3 where
               else
                 pushAll
                   [ FocusCards cards
-                  , questionLabel "Add 1 card to hand?" iid $
-                      ChooseOne $
-                        Label "Do not add to hand" [UnfocusCards, DoStep 3 msg']
-                          : [ targetLabel
-                              (toCardId card)
-                              [ UnfocusCards
-                              , addToHand iid' (PlayerCard card)
-                              , DoStep 3 $
-                                  SearchFound
-                                    iid
-                                    (toTarget attrs)
-                                    deck
-                                    (deleteFirst (PlayerCard card) cards)
-                              ]
-                            | card <- playerCards
-                            ]
+                  , questionLabel "Add 1 card to hand?" iid
+                      $ ChooseOne
+                      $ Label "Do not add to hand" [UnfocusCards, DoStep 3 msg']
+                      : [ targetLabel
+                          (toCardId card)
+                          [ UnfocusCards
+                          , addToHand iid' (PlayerCard card)
+                          , DoStep 3
+                              $ SearchFound
+                                iid
+                                (toTarget attrs)
+                                deck
+                                (deleteFirst (PlayerCard card) cards)
+                          ]
+                        | card <- playerCards
+                        ]
                   ]
             pure a
     DoStep 3 (SearchFound iid (isTarget attrs -> True) deck cards)
@@ -131,8 +131,8 @@ instance RunMessage ScrollOfSecretsSeeker3 where
                           [ UnfocusCards
                           , FocusCards [card]
                           , PutCardOnBottomOfDeck iid deck card
-                          , DoStep 3 $
-                              SearchFound
+                          , DoStep 3
+                              $ SearchFound
                                 iid
                                 (toTarget attrs)
                                 deck
@@ -143,8 +143,8 @@ instance RunMessage ScrollOfSecretsSeeker3 where
                           [ UnfocusCards
                           , FocusCards [card]
                           , PutCardOnTopOfDeck iid deck card
-                          , DoStep 3 $
-                              SearchFound
+                          , DoStep 3
+                              $ SearchFound
                                 iid
                                 (toTarget attrs)
                                 deck

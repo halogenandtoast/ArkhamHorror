@@ -25,13 +25,13 @@ endlessBridge = location EndlessBridge Cards.endlessBridge 4 (Static 2)
 
 instance HasAbilities EndlessBridge where
   getAbilities (EndlessBridge attrs) =
-    withRevealedAbilities attrs $
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            Leaves Timing.After Anyone $
-              LocationWithId $
-                toId attrs
-      ]
+    withRevealedAbilities attrs
+      $ [ mkAbility attrs 1
+            $ ForcedAbility
+            $ Leaves Timing.After Anyone
+            $ LocationWithId
+            $ toId attrs
+        ]
 
 instance RunMessage EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of
@@ -44,8 +44,8 @@ instance RunMessage EndlessBridge where
         Just label -> pure . EndlessBridge $ attrs & labelL .~ label
         Nothing -> error "could not find label"
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label "Place 1 doom on Endless Bridge" [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
           , Label "Discard Endless Bridge" [Discard (toAbilitySource attrs 1) (toTarget attrs)]

@@ -20,16 +20,16 @@ bathroom = location Bathroom Cards.bathroom 1 (PerPlayer 1)
 
 instance HasAbilities Bathroom where
   getAbilities (Bathroom attrs) =
-    withRevealedAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (DuringSkillTest $ WhileInvestigating $ LocationWithId $ toId attrs)
-          $ ForcedAbility
-          $ RevealChaosToken Timing.After You
-          $ ChaosTokenMatchesAny
-          $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, AutoFail]
-      ]
+    withRevealedAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (DuringSkillTest $ WhileInvestigating $ LocationWithId $ toId attrs)
+            $ ForcedAbility
+            $ RevealChaosToken Timing.After You
+            $ ChaosTokenMatchesAny
+            $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, AutoFail]
+        ]
 
 instance RunMessage Bathroom where
   runMessage msg l@(Bathroom attrs) = case msg of

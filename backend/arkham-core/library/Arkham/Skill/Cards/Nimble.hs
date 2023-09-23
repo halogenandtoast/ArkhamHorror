@@ -37,13 +37,13 @@ instance RunMessage Nimble where
     ResolveSkill sId | sId == toId attrs && moveCount meta > 0 -> do
       connectingLocations <- selectList AccessibleLocation
       unless (null connectingLocations) $ do
-        push $
-          chooseOne (skillOwner attrs) $
-            Label "Do not move" []
-              : [ targetLabel
-                  location
-                  [MoveTo $ move (toSource attrs) (skillOwner attrs) location, ResolveSkill (toId attrs)]
-                | location <- connectingLocations
-                ]
+        push
+          $ chooseOne (skillOwner attrs)
+          $ Label "Do not move" []
+          : [ targetLabel
+              location
+              [MoveTo $ move (toSource attrs) (skillOwner attrs) location, ResolveSkill (toId attrs)]
+            | location <- connectingLocations
+            ]
       pure $ Nimble $ attrs `with` Metadata (moveCount meta - 1)
     _ -> Nimble . (`with` meta) <$> runMessage msg attrs

@@ -33,8 +33,8 @@ instance RunMessage Abduction where
           case allies of
             [] -> push $ LoseAllResources iid
             targets ->
-              push $
-                chooseOne
+              push
+                $ chooseOne
                   iid
                   [ Label "Lose all resources" [LoseAllResources iid]
                   , Label

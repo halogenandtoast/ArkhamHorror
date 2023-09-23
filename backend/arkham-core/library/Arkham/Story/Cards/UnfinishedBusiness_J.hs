@@ -37,9 +37,9 @@ instance RunMessage UnfinishedBusiness_J where
         then do
           let card = lookupCard Enemies.heretic_I (toCardId attrs)
           send $ format card <> " was \"Banished\""
-          pushAll $
-            [RemoveEnemy enemy | enemy <- maybeToList mEnemy]
-              <> [ReplaceCard (toCardId attrs) (toCard attrs), AddToVictory (toTarget attrs)]
+          pushAll
+            $ [RemoveEnemy enemy | enemy <- maybeToList mEnemy]
+            <> [ReplaceCard (toCardId attrs) (toCard attrs), AddToVictory (toTarget attrs)]
         else case mEnemy of
           Just enemy -> do
             afterStoryResolution
@@ -79,13 +79,13 @@ unfinishedBusiness_JEffect = cardEffect UnfinishedBusiness_JEffect Cards.unfinis
 instance HasModifiersFor UnfinishedBusiness_JEffect where
   getModifiersFor target (UnfinishedBusiness_JEffect a) | effectTarget a == target =
     do
-      pure $
-        toModifiers a [CannotBeDefeated]
+      pure
+        $ toModifiers a [CannotBeDefeated]
   getModifiersFor (AbilityTarget _ ability) (UnfinishedBusiness_JEffect a) = do
     case abilitySource ability of
       EnemySource eid | EnemyTarget eid == effectTarget a && abilityIndex ability == 1 -> do
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ SetAbilityCost $ ClueCost (StaticWithPerPlayer 1 1)
             , SetAbilityCriteria

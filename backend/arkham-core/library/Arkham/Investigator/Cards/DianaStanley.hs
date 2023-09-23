@@ -63,7 +63,7 @@ instance RunMessage DianaStanley where
           [ FocusCards cardsUnderneath
           , chooseOrRunOne iid
               $ Label "Do not add any cards to your Hand" [UnfocusCards]
-                : [targetLabel (toCardId c) [UnfocusCards, addToHand iid c] | c <- cardsUnderneath]
+              : [targetLabel (toCardId c) [UnfocusCards, addToHand iid c] | c <- cardsUnderneath]
           ]
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (getCancelSource -> source) _ -> do
@@ -82,7 +82,7 @@ instance RunMessage DianaStanley where
       drawing <- drawCards iid (toAbilitySource attrs 1) 1
       pushAll
         $ [removeMsg | canLeavePlay]
-          <> [PlaceUnderneath (toTarget attrs) [card] | canLeavePlay]
-          <> [drawing, TakeResources iid 1 (toAbilitySource attrs 1) False]
+        <> [PlaceUnderneath (toTarget attrs) [card] | canLeavePlay]
+        <> [drawing, TakeResources iid 1 (toAbilitySource attrs 1) False]
       pure i
     _ -> DianaStanley <$> runMessage msg attrs

@@ -185,7 +185,7 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   _ ->
     error
       $ show (cdName $ toCardDef attrs)
-        <> " must be attached to an investigator"
+      <> " must be attached to an investigator"
 
 withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryOwner attrs f = case treacheryOwner attrs of
@@ -193,7 +193,7 @@ withTreacheryOwner attrs f = case treacheryOwner attrs of
   _ ->
     error
       $ show (cdName $ toCardDef attrs)
-        <> " must be owned by an investigator"
+      <> " must be owned by an investigator"
 
 treachery
   :: (TreacheryAttrs -> a)
@@ -212,20 +212,20 @@ treacheryWith f cardDef g =
     , cbCardBuilder = \cardId (iid, tid) ->
         f
           . g
-          $ TreacheryAttrs
-            { treacheryId = tid
-            , treacheryCardId = cardId
-            , treacheryCardCode = toCardCode cardDef
-            , treacheryPlacement = TreacheryLimbo
-            , treacheryOwner =
-                if isJust (cdCardSubType cardDef)
-                  then Just iid
-                  else Nothing
-            , treacheryDrawnBy = iid
-            , treacheryTokens = mempty
-            , treacheryCanBeCommitted = False
-            , treacheryDrawnFrom = Nothing
-            }
+            $ TreacheryAttrs
+              { treacheryId = tid
+              , treacheryCardId = cardId
+              , treacheryCardCode = toCardCode cardDef
+              , treacheryPlacement = TreacheryLimbo
+              , treacheryOwner =
+                  if isJust (cdCardSubType cardDef)
+                    then Just iid
+                    else Nothing
+              , treacheryDrawnBy = iid
+              , treacheryTokens = mempty
+              , treacheryCanBeCommitted = False
+              , treacheryDrawnFrom = Nothing
+              }
     }
 
 is :: Target -> TreacheryAttrs -> Bool

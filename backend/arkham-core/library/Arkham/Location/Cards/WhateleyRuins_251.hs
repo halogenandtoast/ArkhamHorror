@@ -27,18 +27,18 @@ whateleyRuins_251 =
 
 instance HasModifiersFor WhateleyRuins_251 where
   getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_251 attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [SkillModifier SkillWillpower (-1) | iid `on` attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhateleyRuins_251 where
   getAbilities (WhateleyRuins_251 attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
+        | locationRevealed attrs
+        ]
 
 instance RunMessage WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
@@ -61,8 +61,8 @@ instance RunMessage WhateleyRuins_251 where
               (abomination,locationId,)
                 <$> getEnemyAccessibleLocations abomination
 
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ targetLabel
                 eid

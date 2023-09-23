@@ -27,16 +27,16 @@ instance RunMessage AnotherWay where
   runMessage msg s@(AnotherWay attrs) = case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       alejandro <- selectJust $ enemyIs Enemies.alejandroVela
-      push $
-        chooseOne iid $
-          [ Label
+      push
+        $ chooseOne iid
+        $ [ Label
               "I could never turn my back on humanity"
               [ Exhaust (toTarget alejandro)
               , DisengageEnemyFromAll alejandro
               , CreateWindowModifierEffect
                   EffectGameWindow
-                  ( EffectModifiers $
-                      toModifiers
+                  ( EffectModifiers
+                      $ toModifiers
                         attrs
                         [CannotParleyWith $ enemyIs Enemies.alejandroVela]
                   )
@@ -49,8 +49,8 @@ instance RunMessage AnotherWay where
               , AdvanceToAct 1 Acts.timelock A (toSource attrs)
               , CreateWindowModifierEffect
                   EffectGameWindow
-                  ( EffectModifiers $
-                      toModifiers
+                  ( EffectModifiers
+                      $ toModifiers
                         attrs
                         [ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
                         , CannotBeAttackedBy $ EnemyWithTrait Trait.Cultist

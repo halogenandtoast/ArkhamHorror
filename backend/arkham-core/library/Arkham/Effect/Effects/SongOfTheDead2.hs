@@ -24,8 +24,8 @@ instance HasModifiersFor SongOfTheDead2
 instance RunMessage SongOfTheDead2 where
   runMessage msg e@(SongOfTheDead2 attrs@EffectAttrs {..}) = case msg of
     RevealChaosToken _ iid token@(ChaosToken _ Skull) | InvestigatorTarget iid == effectTarget -> do
-      push $
-        If
+      push
+        $ If
           (Window.RevealChaosTokenEffect iid token effectId)
           [skillTestModifier attrs effectTarget (DamageDealt 2)]
       pure e

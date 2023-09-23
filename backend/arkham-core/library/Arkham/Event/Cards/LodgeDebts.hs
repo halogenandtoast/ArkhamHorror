@@ -24,12 +24,12 @@ lodgeDebts =
 
 instance HasAbilities LodgeDebts where
   getAbilities (LodgeDebts a) =
-    [ restrictedAbility a 1 InYourHand $
-        ForcedAbility $
-          OrWindowMatcher
-            [ GameEnds Timing.When
-            , InvestigatorEliminated Timing.When (InvestigatorWithId $ eventOwner a)
-            ]
+    [ restrictedAbility a 1 InYourHand
+        $ ForcedAbility
+        $ OrWindowMatcher
+          [ GameEnds Timing.When
+          , InvestigatorEliminated Timing.When (InvestigatorWithId $ eventOwner a)
+          ]
     ]
 
 instance RunMessage LodgeDebts where

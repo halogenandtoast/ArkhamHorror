@@ -30,10 +30,10 @@ chaosAtTheCarnevale =
 
 instance HasAbilities ChaosAtTheCarnevale where
   getAbilities (ChaosAtTheCarnevale x) =
-    [ mkAbility x 1 $
-      ForcedAbility $
-        EnemySpawns Timing.After Anywhere $
-          enemyIs Enemies.writhingAppendage
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ EnemySpawns Timing.After Anywhere
+      $ enemyIs Enemies.writhingAppendage
     | onSide A x
     ]
 
@@ -44,13 +44,13 @@ instance RunMessage ChaosAtTheCarnevale where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
       cnidathquaId <- selectJust $ enemyIs Enemies.cnidathqua
-      pushAll $
-        [ EnemyAttack $
-          enemyAttack cnidathquaId attrs iid
+      pushAll
+        $ [ EnemyAttack
+            $ enemyAttack cnidathquaId attrs iid
             & damageStrategyL
-            .~ DamageFirst Assets.innocentReveler
-        | iid <- investigatorIds
-        ]
-          <> [RevertAgenda (toId attrs)]
+              .~ DamageFirst Assets.innocentReveler
+          | iid <- investigatorIds
+          ]
+        <> [RevertAgenda (toId attrs)]
       pure a
     _ -> ChaosAtTheCarnevale <$> runMessage msg attrs

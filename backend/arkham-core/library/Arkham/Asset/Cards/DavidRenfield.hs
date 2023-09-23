@@ -20,19 +20,19 @@ davidRenfield = ally DavidRenfield Cards.davidRenfield (2, 1)
 instance HasModifiersFor DavidRenfield where
   getModifiersFor (InvestigatorTarget iid) (DavidRenfield attrs)
     | attrs `controlledBy` iid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [SkillModifier SkillWillpower 1 | assetDoom attrs > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DavidRenfield where
   getAbilities (DavidRenfield a) =
-    [ restrictedAbility a 1 ControlsThis $
-        FastAbility $
-          ExhaustCost $
-            toTarget
-              a
+    [ restrictedAbility a 1 ControlsThis
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget
+          a
     ]
 
 instance RunMessage DavidRenfield where
@@ -41,8 +41,8 @@ instance RunMessage DavidRenfield where
       let
         resolveAbility =
           UseCardAbilityChoice iid source 1 NoAbilityMetadata windows' p
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Place doom on David Renfield"

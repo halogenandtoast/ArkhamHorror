@@ -28,8 +28,8 @@ wither4 = asset Wither4 Cards.wither4
 
 instance HasAbilities Wither4 where
   getAbilities (Wither4 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbilityWithSkill
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbilityWithSkill
           (Just Action.Fight)
           SkillWillpower
           (ActionCost 1)
@@ -65,8 +65,8 @@ instance RunMessage Wither4Effect where
                 (Window.RevealChaosTokenEffect iid token effectId)
                 [ CreateWindowModifierEffect
                     EffectTurnWindow
-                    ( EffectModifiers $
-                        toModifiers
+                    ( EffectModifiers
+                        $ toModifiers
                           attrs
                           [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
                     )

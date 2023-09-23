@@ -24,11 +24,11 @@ instance HasAbilities Mobster where
   getAbilities (Mobster x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After You AnyEnemyAttack $
-              EnemyWithId $
-                toId x
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.After You AnyEnemyAttack
+          $ EnemyWithId
+          $ toId x
       ]
 
 instance RunMessage Mobster where

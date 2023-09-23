@@ -33,20 +33,20 @@ instance HasAbilities ParadiseLost where
         [ restrictedAbility
             a
             1
-            ( InvestigatorExists $
-                You
-                  <> InvestigatorAt
-                    (LocationWithoutClues <> LocationWithTrait Shattered)
+            ( InvestigatorExists
+                $ You
+                <> InvestigatorAt
+                  (LocationWithoutClues <> LocationWithTrait Shattered)
             )
             $ ActionAbility Nothing
             $ ActionCost 1
         , restrictedAbility
             a
             2
-            ( AssetExists $
-                AssetWithTitle "Relic of Ages"
-                  <> AssetWithCardsUnderneath
-                    (HasCard $ cardIs Locations.valusia)
+            ( AssetExists
+                $ AssetWithTitle "Relic of Ages"
+                <> AssetWithCardsUnderneath
+                  (HasCard $ cardIs Locations.valusia)
             )
             $ Objective
             $ ForcedAbility AnyWindow
@@ -56,8 +56,8 @@ instance HasAbilities ParadiseLost where
 instance RunMessage ParadiseLost where
   runMessage msg a@(ParadiseLost attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ SkillLabel
             skillType
@@ -79,10 +79,10 @@ instance RunMessage ParadiseLost where
         enemyIds <- selectList $ UnengagedEnemy <> enemyAt lid
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         relic <- selectJust $ AssetWithTitle "Relic of Ages"
-        pushAll $
-          [MoveTo $ move (toSource attrs) iid' aPocketInTime | iid' <- iids]
-            <> [EnemyMove eid lid | eid <- enemyIds]
-            <> [RemoveLocation lid, PlaceUnderneath (AssetTarget relic) [card]]
+        pushAll
+          $ [MoveTo $ move (toSource attrs) iid' aPocketInTime | iid' <- iids]
+          <> [EnemyMove eid lid | eid <- enemyIds]
+          <> [RemoveLocation lid, PlaceUnderneath (AssetTarget relic) [card]]
         pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther

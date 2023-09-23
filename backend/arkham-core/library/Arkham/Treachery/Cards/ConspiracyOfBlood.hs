@@ -28,8 +28,8 @@ conspiracyOfBlood = treachery ConspiracyOfBlood Cards.conspiracyOfBlood
 instance HasModifiersFor ConspiracyOfBlood where
   getModifiersFor (AgendaTarget aid) (ConspiracyOfBlood a)
     | treacheryOnAgenda aid a =
-        pure $
-          toModifiers a [DoomThresholdModifier (-1)]
+        pure
+          $ toModifiers a [DoomThresholdModifier (-1)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ConspiracyOfBlood where

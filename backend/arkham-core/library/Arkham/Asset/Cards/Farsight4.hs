@@ -47,17 +47,17 @@ instance RunMessage Farsight4 where
       let
         events = filter ((== EventType) . cdCardType . toCardDef) handCards
         windows'' =
-          nub $
-            windows'
-              <> [ mkWindow Timing.When (Window.DuringTurn iid)
-                 , mkWindow Timing.When Window.FastPlayerWindow
-                 ]
+          nub
+            $ windows'
+            <> [ mkWindow Timing.When (Window.DuringTurn iid)
+               , mkWindow Timing.When Window.FastPlayerWindow
+               ]
       playableEvents <-
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost windows'')
           events
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             (CardIdTarget $ toCardId event)

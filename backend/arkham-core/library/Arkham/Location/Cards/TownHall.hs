@@ -26,8 +26,8 @@ townHall = location TownHall Cards.townHall 4 (PerPlayer 1)
 instance HasModifiersFor TownHall where
   getModifiersFor (LocationTarget lid) (TownHall a) = do
     isDowntown <- lid <=~> locationIs Cards.downtownFirstBankOfArkham
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
         | isDowntown
@@ -36,13 +36,13 @@ instance HasModifiersFor TownHall where
 
 instance HasAbilities TownHall where
   getAbilities (TownHall a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Enters Timing.After You $
-              LocationWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ Enters Timing.After You
+            $ LocationWithId
+            $ toId a
+        ]
 
 instance RunMessage TownHall where
   runMessage msg l@(TownHall attrs) = case msg of
@@ -51,11 +51,11 @@ instance RunMessage TownHall where
       let
         weaknessCount = count cardIsWeakness hand
         discardCount = min (length hand - 3) (length hand - weaknessCount)
-      pushAll $
-        replicate discardCount $
-          toMessage $
-            chooseAndDiscardCard
-              iid
-              (toAbilitySource attrs 1)
+      pushAll
+        $ replicate discardCount
+        $ toMessage
+        $ chooseAndDiscardCard
+          iid
+          (toAbilitySource attrs 1)
       pure l
     _ -> TownHall <$> runMessage msg attrs

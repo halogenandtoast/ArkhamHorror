@@ -25,10 +25,10 @@ osbornsGeneralStore_207 =
 instance HasAbilities OsbornsGeneralStore_207 where
   getAbilities (OsbornsGeneralStore_207 attrs) =
     let rest = withDrawCardUnderneathAction attrs
-    in  [ restrictedAbility attrs 1 Here $
-          ActionAbility Nothing $
-            Costs
-              [ActionCost 1, ResourceCost 1]
+     in [ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ Costs
+            [ActionCost 1, ResourceCost 1]
         | locationRevealed attrs
         ]
           <> rest
@@ -36,8 +36,8 @@ instance HasAbilities OsbornsGeneralStore_207 where
 instance RunMessage OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           source
           (InvestigatorTarget iid)

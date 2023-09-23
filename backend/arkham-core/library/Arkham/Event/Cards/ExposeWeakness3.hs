@@ -29,8 +29,8 @@ instance RunMessage ExposeWeakness3 where
   runMessage msg e@(ExposeWeakness3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
-        selectWithField EnemyFight $
-          EnemyAt (locationWithInvestigator iid)
+        selectWithField EnemyFight
+          $ EnemyAt (locationWithInvestigator iid)
       drawing <- drawCards iid attrs 1
       pushAll
         [ chooseOne
@@ -54,8 +54,8 @@ instance RunMessage ExposeWeakness3 where
         mtarget <- getSkillTestTarget
         case mtarget of
           Just (EnemyTarget enemyId) ->
-            push $
-              createCardEffect
+            push
+              $ createCardEffect
                 Cards.exposeWeakness3
                 Nothing
                 (toSource attrs)

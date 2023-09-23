@@ -34,12 +34,14 @@ instance HasAbilities WhatMustBeDone where
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
             $ ActionAbility Nothing
-            $ ActionCost 1 <> ClueCostX
+            $ ActionCost 1
+            <> ClueCostX
         , restrictedAbility
             attrs
             2
             ( InvestigatorExists
-                $ LeadInvestigator <> InvestigatorAt (LocationWithTitle "The Black Throne" <> LocationWithoutClues)
+                $ LeadInvestigator
+                <> InvestigatorAt (LocationWithTitle "The Black Throne" <> LocationWithoutClues)
             )
             $ Objective
             $ ForcedAbility AnyWindow

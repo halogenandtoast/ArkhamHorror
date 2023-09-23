@@ -33,8 +33,8 @@ instance HasAbilities MadnessDrowns where
         [ restrictedAbility
             a
             1
-            ( EnemyCriteria $
-                EnemyExists
+            ( EnemyCriteria
+                $ EnemyExists
                   ( EnemyWithTitle "Hastur"
                       <> EnemyWithDamage (AtLeast $ PerPlayer 5)
                   )

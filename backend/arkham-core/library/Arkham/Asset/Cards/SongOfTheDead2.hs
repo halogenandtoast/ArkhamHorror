@@ -21,10 +21,10 @@ songOfTheDead2 = asset SongOfTheDead2 Cards.songOfTheDead2
 
 instance HasAbilities SongOfTheDead2 where
   getAbilities (SongOfTheDead2 x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          Costs
-            [ActionCost 1, UseCost (AssetWithId $ toId x) Charge 1]
+    [ restrictedAbility x 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ Costs
+          [ActionCost 1, UseCost (AssetWithId $ toId x) Charge 1]
     ]
 
 instance RunMessage SongOfTheDead2 where

@@ -92,17 +92,17 @@ instance RunMessage CurtainCall where
           | lolaId <- maybeToList mLolaId
           ]
 
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeTheater
-        , placeBackstage
-        ]
-          <> placeRest
-          <> theatreMoveTo
-          <> backstageMoveTo
+      pushAll
+        $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeTheater
+          , placeBackstage
+          ]
+        <> placeRest
+        <> theatreMoveTo
+        <> backstageMoveTo
 
       setAsideCards <-
         genCards
@@ -149,11 +149,11 @@ instance RunMessage CurtainCall where
           ]
       s <$ case resolution of
         NoResolution ->
-          pushAll $
-            story investigatorIds noResolution
-              : theStrangerIsOnToYou
-                <> gainXP
-                <> [EndOfGame Nothing]
+          pushAll
+            $ story investigatorIds noResolution
+            : theStrangerIsOnToYou
+              <> gainXP
+              <> [EndOfGame Nothing]
         Resolution 1 ->
           pushAll
             ( [ story investigatorIds resolution1
@@ -181,8 +181,8 @@ instance RunMessage CurtainCall where
       | chaosTokenFace `elem` [Cultist, Tablet, ElderThing] -> do
           lid <- getJustLocation iid
           horrorCount <- field LocationHorror lid
-          push $
-            if horrorCount > 0
+          push
+            $ if horrorCount > 0
               then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
               else PlaceTokens (ChaosTokenEffectSource chaosTokenFace) (LocationTarget lid) Horror 1
           pure s

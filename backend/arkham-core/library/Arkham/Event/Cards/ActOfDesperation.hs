@@ -40,21 +40,21 @@ instance RunMessage ActOfDesperation where
               (toSource attrs)
               (InvestigatorTarget iid)
               (DamageDealt 1 : [SkillModifier SkillCombat n | n > 0])
-              : [ createCardEffect
-                  Cards.actOfDesperation
-                  (Just (EffectInt n))
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                | zone == FromPlay && n > 0
-                ]
-                <> [ ChooseFightEnemy
-                      iid
-                      (toSource attrs)
-                      Nothing
-                      SkillCombat
-                      mempty
-                      False
-                   ]
+            : [ createCardEffect
+                Cards.actOfDesperation
+                (Just (EffectInt n))
+                (toSource attrs)
+                (InvestigatorTarget iid)
+              | zone == FromPlay && n > 0
+              ]
+              <> [ ChooseFightEnemy
+                    iid
+                    (toSource attrs)
+                    Nothing
+                    SkillCombat
+                    mempty
+                    False
+                 ]
           pure e
     _ -> ActOfDesperation <$> runMessage msg attrs
 

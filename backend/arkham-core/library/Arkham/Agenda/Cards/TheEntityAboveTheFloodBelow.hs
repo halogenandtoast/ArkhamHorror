@@ -40,10 +40,10 @@ instance HasModifiersFor TheEntityAboveTheFloodBelow where
 
 instance HasAbilities TheEntityAboveTheFloodBelow where
   getAbilities (TheEntityAboveTheFloodBelow a) =
-    [ limitedAbility (GroupLimit PerRound 1) $
-        mkAbility a 1 $
-          FastAbility $
-            GroupClueCost (PerPlayer 1) Anywhere
+    [ limitedAbility (GroupLimit PerRound 1)
+        $ mkAbility a 1
+        $ FastAbility
+        $ GroupClueCost (PerPlayer 1) Anywhere
     ]
 
 instance RunMessage TheEntityAboveTheFloodBelow where
@@ -59,22 +59,22 @@ instance RunMessage TheEntityAboveTheFloodBelow where
         createAshleighClarke <- createEnemyAt_ card port Nothing
         pure [createAshleighClarke | spawnAshleighClarke]
 
-      createBeastOfAldebaran <- for (toList mChapel) $
-        \chapel -> createEnemyAt_ beast chapel Nothing
+      createBeastOfAldebaran <- for (toList mChapel)
+        $ \chapel -> createEnemyAt_ beast chapel Nothing
 
-      pushAll $
-        createBeastOfAldebaran
-          <> spawnAshleighClarkeMessages
-          <> [ RemoveAllCopiesOfCardFromGame lead "03282"
-             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ createBeastOfAldebaran
+        <> spawnAshleighClarkeMessages
+        <> [ RemoveAllCopiesOfCardFromGame lead "03282"
+           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+           ]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
-      pushAll $
-        [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-          <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
-             | iid <- investigatorIds
-             ]
+      pushAll
+        $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
+        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
+           | iid <- investigatorIds
+           ]
       pure a
     _ -> TheEntityAboveTheFloodBelow <$> runMessage msg attrs

@@ -34,12 +34,12 @@ instance HasAbilities DimStreetsTheArchway where
   getAbilities (DimStreetsTheArchway a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            DiscoveringLastClue
-              Timing.After
-              You
-              (LocationWithId $ toId a)
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ DiscoveringLastClue
+            Timing.After
+            You
+            (LocationWithId $ toId a)
       ]
 
 instance RunMessage DimStreetsTheArchway where

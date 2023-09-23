@@ -25,11 +25,11 @@ instance RunMessage Eavesdrop where
   runMessage msg e@(Eavesdrop attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectListMap EnemyTarget $
-          UnengagedEnemy
-            <> EnemyWithEvade
-            <> EnemyAt
-              (locationWithInvestigator iid)
+        selectListMap EnemyTarget
+          $ UnengagedEnemy
+          <> EnemyWithEvade
+          <> EnemyAt
+            (locationWithInvestigator iid)
       pushAll
         [ chooseOrRunOne
             iid
@@ -41,8 +41,8 @@ instance RunMessage Eavesdrop where
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source ->
       do
         n <- fromJustNote "Enemy must have evade" <$> field EnemyEvade eid
-        push $
-          beginSkillTest
+        push
+          $ beginSkillTest
             iid
             (toSource attrs)
             (toTarget attrs)

@@ -25,10 +25,10 @@ instance HasAbilities JoeMazurewiczsRoom where
   getAbilities (JoeMazurewiczsRoom a) =
     withBaseAbilities
       a
-      [ limitedAbility (GroupLimit PerGame 1) $
-          restrictedAbility a 1 Here $
-            ActionAbility Nothing $
-              ActionCost 1
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility a 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
       , haunted
           "You must either take 1 horror, or choose and discard an asset you control."
           a
@@ -38,8 +38,8 @@ instance HasAbilities JoeMazurewiczsRoom where
 instance RunMessage JoeMazurewiczsRoom where
   runMessage msg l@(JoeMazurewiczsRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
@@ -49,15 +49,15 @@ instance RunMessage JoeMazurewiczsRoom where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
-      push $
-        chooseOrRunOne iid $
-          Label
-            "Take 1 horror"
-            [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
-            : [ Label
-                "Choose and discard an asset you control"
-                [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
-              | hasAssets
-              ]
+      push
+        $ chooseOrRunOne iid
+        $ Label
+          "Take 1 horror"
+          [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
+        : [ Label
+            "Choose and discard an asset you control"
+            [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
+          | hasAssets
+          ]
       pure l
     _ -> JoeMazurewiczsRoom <$> runMessage msg attrs

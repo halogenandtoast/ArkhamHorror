@@ -22,10 +22,10 @@ highRoller2 = asset HighRoller2 Cards.highRoller2
 
 instance HasAbilities HighRoller2 where
   getAbilities (HighRoller2 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
-        FastAbility $
-          ResourceCost 3
-            <> ExhaustCost (toTarget a)
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility
+        $ ResourceCost 3
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage HighRoller2 where

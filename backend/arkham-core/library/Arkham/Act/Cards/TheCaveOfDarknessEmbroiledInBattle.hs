@@ -30,9 +30,9 @@ instance HasAbilities TheCaveOfDarknessEmbroiledInBattle where
     [ restrictedAbility
         attrs
         999
-        ( LocationExists $
-            LocationWithTitle "Black Cave"
-              <> LocationWithoutClues
+        ( LocationExists
+            $ LocationWithTitle "Black Cave"
+            <> LocationWithoutClues
         )
         $ Objective
         $ FastAbility
@@ -54,19 +54,19 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       deckCount <- getActDecksInPlayCount
       lead <- getLead
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck $ BasicCardMatch $ CardWithTrait Cultist
-        ]
-          <> [ DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck $ BasicCardMatch $ CardWithTrait Cultist
-             | deckCount <= 2
-             ]
-          <> [ AdvanceToAct
-                (actDeckId attrs)
-                Acts.theBrotherhoodIsRevealed
-                E
-                (toSource attrs)
-             ]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck $ BasicCardMatch $ CardWithTrait Cultist
+          ]
+        <> [ DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck $ BasicCardMatch $ CardWithTrait Cultist
+           | deckCount <= 2
+           ]
+        <> [ AdvanceToAct
+              (actDeckId attrs)
+              Acts.theBrotherhoodIsRevealed
+              E
+              (toSource attrs)
+           ]
       pure a
     RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
       blackCave <- selectJust $ locationIs Locations.blackCave

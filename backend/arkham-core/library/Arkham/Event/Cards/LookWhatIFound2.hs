@@ -25,11 +25,11 @@ instance RunMessage LookWhatIFound2 where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       locations <-
-        selectList $
-          LocationMatchAny [YourLocation, ConnectedLocation]
-            <> LocationWithAnyClues
-      push $
-        chooseOne
+        selectList
+          $ LocationMatchAny [YourLocation, ConnectedLocation]
+          <> LocationWithAnyClues
+      push
+        $ chooseOne
           iid
           [ targetLabel
             lid

@@ -27,8 +27,8 @@ watchersGrasp = treachery WatchersGrasp Cards.watchersGrasp
 instance HasModifiersFor WatchersGrasp where
   getModifiersFor (EnemyTarget eid) (WatchersGrasp a) = do
     isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ ForcePrey $ Prey $ InvestigatorWithId $ treacheryDrawnBy a
         | isTheSpectralWatcher
@@ -42,21 +42,21 @@ instance RunMessage WatchersGrasp where
       unengaged <- selectNone $ investigatorEngagedWith theSpectralWatcher
       leadInvestigatorId <- getLeadInvestigatorId
 
-      pushAll $
-        [ HealDamage (EnemyTarget theSpectralWatcher) (toSource attrs) 3
-        , Ready (EnemyTarget theSpectralWatcher)
-        ]
-          <> ( guard unengaged
-                *> [ CheckWindow
-                      [leadInvestigatorId]
-                      [ mkWindow
-                          Timing.When
-                          (Window.MovedFromHunter theSpectralWatcher)
-                      ]
-                   , HunterMove theSpectralWatcher
-                   ]
-             )
-          <> [RevelationChoice iid (toSource attrs) 1]
+      pushAll
+        $ [ HealDamage (EnemyTarget theSpectralWatcher) (toSource attrs) 3
+          , Ready (EnemyTarget theSpectralWatcher)
+          ]
+        <> ( guard unengaged
+              *> [ CheckWindow
+                    [leadInvestigatorId]
+                    [ mkWindow
+                        Timing.When
+                        (Window.MovedFromHunter theSpectralWatcher)
+                    ]
+                 , HunterMove theSpectralWatcher
+                 ]
+           )
+        <> [RevelationChoice iid (toSource attrs) 1]
       pure t
     RevelationChoice _ (isSource attrs -> True) _ -> do
       theSpectralWatcher <- selectJust (enemyIs Enemies.theSpectralWatcher)
@@ -64,11 +64,11 @@ instance RunMessage WatchersGrasp where
 
       modifiers' <- getModifiers (EnemyTarget theSpectralWatcher)
       unless (CannotAttack `elem` modifiers') $ do
-        pushAll $
-          map
+        pushAll
+          $ map
             ( \iid' ->
-                EnemyWillAttack $
-                  (enemyAttack theSpectralWatcher attrs iid')
+                EnemyWillAttack
+                  $ (enemyAttack theSpectralWatcher attrs iid')
                     { attackExhaustsEnemy = True
                     }
             )

@@ -28,7 +28,8 @@ instance HasAbilities Rivertown_292 where
       attrs
       [ restrictedAbility attrs 1 (withBreaches attrs Here)
           $ ActionAbility Nothing
-          $ ActionCost 1 <> HandDiscardCost 1 AnyCard
+          $ ActionCost 1
+          <> HandDiscardCost 1 AnyCard
       ]
 
 getCardPayment :: Payment -> Card

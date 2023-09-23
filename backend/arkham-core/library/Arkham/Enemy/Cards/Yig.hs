@@ -23,15 +23,15 @@ instance HasModifiersFor Yig where
   getModifiersFor target (Yig a) | isTarget a target = do
     n <- getPlayerCountValue (PerPlayer 6)
     cannotBeDamaged <-
-      selectAny $
-        ReadyEnemy
-          <> EnemyWithTrait Serpent
-          <> EnemyAt (LocationWithEnemy $ EnemyWithId $ toId a)
-          <> NotEnemy (EnemyWithId $ toId a)
-    pure $
-      toModifiers a $
-        [HealthModifier n]
-          <> [CannotBeDamaged | cannotBeDamaged]
+      selectAny
+        $ ReadyEnemy
+        <> EnemyWithTrait Serpent
+        <> EnemyAt (LocationWithEnemy $ EnemyWithId $ toId a)
+        <> NotEnemy (EnemyWithId $ toId a)
+    pure
+      $ toModifiers a
+      $ [HealthModifier n]
+      <> [CannotBeDamaged | cannotBeDamaged]
   getModifiersFor (EnemyTarget eid) (Yig a) = do
     isModified <-
       eid

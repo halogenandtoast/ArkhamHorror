@@ -51,10 +51,10 @@ instance RunMessage NotreDame where
             $ Label
               "Place 1 doom on current agenda"
               [PlaceDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
-              : [ Label
-                  "Remove 1 doom on current agenda"
-                  [RemoveDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
-                | hasDoom
-                ]
+            : [ Label
+                "Remove 1 doom on current agenda"
+                [RemoveDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
+              | hasDoom
+              ]
           pure l
     _ -> NotreDame <$> runMessage msg attrs

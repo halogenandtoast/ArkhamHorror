@@ -31,23 +31,23 @@ huntingTheRougarou =
 
 instance HasAbilities HuntingTheRougarou where
   getAbilities (HuntingTheRougarou a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          EnemyLeaves Timing.After Anywhere $
-            enemyIs Cards.theRougarou
-    , mkAbility a 2 $
-        Objective $
-          ForcedAbility $
-            EnemyDefeated Timing.When Anyone ByAny $
-              enemyIs Cards.theRougarou
-    , limitedAbility (PlayerLimit PerPhase 1) $
-        restrictedAbility
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ EnemyLeaves Timing.After Anywhere
+        $ enemyIs Cards.theRougarou
+    , mkAbility a 2
+        $ Objective
+        $ ForcedAbility
+        $ EnemyDefeated Timing.When Anyone ByAny
+        $ enemyIs Cards.theRougarou
+    , limitedAbility (PlayerLimit PerPhase 1)
+        $ restrictedAbility
           a
           3
-          ( InvestigatorExists $
-              You
-                <> InvestigatorEngagedWith
-                  (enemyIs Cards.theRougarou)
+          ( InvestigatorExists
+              $ You
+              <> InvestigatorEngagedWith
+                (enemyIs Cards.theRougarou)
           )
           (Objective $ FastAbility Free)
     ]
@@ -96,8 +96,8 @@ instance RunMessage HuntingTheRougarou where
         ]
         then push $ chooseOne leadInvestigatorId [Label "Resolution 3" [R3]]
         else
-          push $
-            chooseOne
+          push
+            $ chooseOne
               leadInvestigatorId
               [Label "Flip back to a side" [RevertAct $ toId attrs]]
       pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 B)

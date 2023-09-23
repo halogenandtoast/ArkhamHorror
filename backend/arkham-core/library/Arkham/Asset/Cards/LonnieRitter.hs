@@ -41,23 +41,25 @@ instance HasAbilities LonnieRitter where
               )
         )
         $ FastAbility
-        $ ExhaustCost (toTarget a) <> ResourceCost 1
+        $ ExhaustCost (toTarget a)
+        <> ResourceCost 1
     ]
 
 instance RunMessage LonnieRitter where
   runMessage msg a@(LonnieRitter attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       items <-
-        selectList $
-          HealableAsset (toSource attrs) DamageType $
-            AssetWithTrait Item <> AssetControlledBy (InvestigatorAt $ locationWithInvestigator iid)
+        selectList
+          $ HealableAsset (toSource attrs) DamageType
+          $ AssetWithTrait Item
+          <> AssetControlledBy (InvestigatorAt $ locationWithInvestigator iid)
       canHealHorror <- selectAny $ HealableAsset (toSource attrs) HorrorType (AssetWithId $ toId attrs)
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
-          [ targetLabel item $
-            HealDamage (AssetTarget item) (toSource attrs) 1
-              : [HealHorror (toTarget attrs) (toSource attrs) 1 | canHealHorror]
+          [ targetLabel item
+            $ HealDamage (AssetTarget item) (toSource attrs) 1
+            : [HealHorror (toTarget attrs) (toSource attrs) 1 | canHealHorror]
           | item <- items
           ]
       pure a

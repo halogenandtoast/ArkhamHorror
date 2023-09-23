@@ -58,26 +58,26 @@ instance RunMessage UnvisitedIsleForsakenWoods where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       whippoorwills <- selectList $ NearestEnemy $ enemyIs Enemies.whippoorwill
 
-      push $
-        chooseOrRunOne iid $
-          Label
-            "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location"
-            [ FindEncounterCard
+      push
+        $ chooseOrRunOne iid
+        $ Label
+          "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location"
+          [ FindEncounterCard
+              iid
+              (toTarget attrs)
+              [FromEncounterDeck, FromEncounterDiscard]
+              $ cardIs Enemies.whippoorwill
+          ]
+        : [ Label
+            "The nearest Whippoorwill attacks you"
+            [ chooseOrRunOne
                 iid
-                (toTarget attrs)
-                [FromEncounterDeck, FromEncounterDiscard]
-                $ cardIs Enemies.whippoorwill
-            ]
-            : [ Label
-                "The nearest Whippoorwill attacks you"
-                [ chooseOrRunOne
-                    iid
-                    [ targetLabel whippoorwill [EnemyAttack $ enemyAttack whippoorwill attrs iid]
-                    | whippoorwill <- whippoorwills
-                    ]
+                [ targetLabel whippoorwill [EnemyAttack $ enemyAttack whippoorwill attrs iid]
+                | whippoorwill <- whippoorwills
                 ]
-              | notNull whippoorwills
-              ]
+            ]
+          | notNull whippoorwills
+          ]
       pure l
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       passedCircleTest iid attrs

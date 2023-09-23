@@ -26,8 +26,8 @@ instance HasModifiersFor GrannyOrne where
 
 instance HasAbilities GrannyOrne where
   getAbilities (GrannyOrne a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( WouldHaveSkillTestResult
               Timing.When
               (InvestigatorAt YourLocation)
@@ -40,8 +40,8 @@ instance HasAbilities GrannyOrne where
 instance RunMessage GrannyOrne where
   runMessage msg a@(GrannyOrne attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Fail by 1 less"

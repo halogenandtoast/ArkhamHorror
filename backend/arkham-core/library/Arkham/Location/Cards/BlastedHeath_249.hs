@@ -24,14 +24,14 @@ blastedHeath_249 =
 
 instance HasAbilities BlastedHeath_249 where
   getAbilities (BlastedHeath_249 attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $
-        ForcedAbility $
-          TurnEnds
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here
+          $ ForcedAbility
+          $ TurnEnds
             Timing.When
             You
-      | locationRevealed attrs
-      ]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage BlastedHeath_249 where
   runMessage msg l@(BlastedHeath_249 attrs) = case msg of

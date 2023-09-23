@@ -37,8 +37,8 @@ instance HasModifiersFor LakeXochimilco_182 where
       Just iid -> do
         actionsRemaining <- field InvestigatorRemainingActions iid
         isBeingInvestigated <- getIsBeingInvestigated (toId a)
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ ShroudModifier (2 * actionsRemaining)
             | actionsRemaining > 0 && isBeingInvestigated

@@ -29,12 +29,12 @@ pastPresentAndFuture =
 
 instance HasAbilities PastPresentAndFuture where
   getAbilities (PastPresentAndFuture x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          MovedBy
-            Timing.After
-            You
-            Matcher.EncounterCardSource
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ MovedBy
+          Timing.After
+          You
+          Matcher.EncounterCardSource
     ]
 
 instance RunMessage PastPresentAndFuture where
@@ -45,24 +45,24 @@ instance RunMessage PastPresentAndFuture where
       sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
       investigatorIds <- getInvestigatorIds
       lead <- getLead
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , DiscardUntilFirst
-            lead
-            (toSource attrs)
-            Deck.EncounterDeck
-            (BasicCardMatch $ CardWithType LocationType)
-        ]
-          <> [ beginSkillTest
-              iid
-              attrs
-              iid
-              SkillWillpower
-              sacrificedToYogSothoth
-             | sacrificedToYogSothoth > 0
-             , iid <- investigatorIds
-             ]
-          <> [advanceAgendaDeck attrs]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , DiscardUntilFirst
+              lead
+              (toSource attrs)
+              Deck.EncounterDeck
+              (BasicCardMatch $ CardWithType LocationType)
+          ]
+        <> [ beginSkillTest
+            iid
+            attrs
+            iid
+            SkillWillpower
+            sacrificedToYogSothoth
+           | sacrificedToYogSothoth > 0
+           , iid <- investigatorIds
+           ]
+        <> [advanceAgendaDeck attrs]
       pure a
     RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
       lead <- getLead

@@ -33,11 +33,11 @@ instance HasAbilities InterstellarTraveler where
   getAbilities (InterstellarTraveler attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            EnemyEnters Timing.When Anywhere $
-              EnemyWithId $
-                toId attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemyEnters Timing.When Anywhere
+          $ EnemyWithId
+          $ toId attrs
       ]
 
 instance RunMessage InterstellarTraveler where

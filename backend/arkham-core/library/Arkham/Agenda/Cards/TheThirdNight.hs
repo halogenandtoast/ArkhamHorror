@@ -34,8 +34,8 @@ instance RunMessage TheThirdNight where
       conviction <- getConviction
       doubt <- getDoubt
       actId <- selectJust AnyAct
-      push $
-        if doubt >= conviction
+      push
+        $ if doubt >= conviction
           then ScenarioResolution $ Resolution 3
           else AdvanceAct actId (toSource attrs) AdvancedWithOther
       pure a

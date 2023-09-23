@@ -37,8 +37,8 @@ instance HasModifiersFor TemplesOfTenochtitlan_176 where
       Just iid -> do
         healthMatches <- fieldP InvestigatorRemainingHealth (<= 3) iid
         isBeingInvestigated <- getIsBeingInvestigated (toId a)
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ShroudModifier (-2) | healthMatches && isBeingInvestigated]
   getModifiersFor _ _ = pure []

@@ -31,11 +31,11 @@ instance RunMessage Trapped where
 
       pushAll
         $ [placeHallway, placeCellar, placeAttic, placeParlor]
-          <> map (toDiscard attrs) enemies
-          <> [ RevealLocation Nothing hallway
-             , MoveAllTo (toSource attrs) hallway
-             , RemoveLocation study
-             , advanceActDeck attrs
-             ]
+        <> map (toDiscard attrs) enemies
+        <> [ RevealLocation Nothing hallway
+           , MoveAllTo (toSource attrs) hallway
+           , RemoveLocation study
+           , advanceActDeck attrs
+           ]
       pure a
     _ -> Trapped <$> runMessage msg attrs

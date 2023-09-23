@@ -20,16 +20,16 @@ newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
 
 theParisianConspiracyV1 :: ActCard TheParisianConspiracyV1
 theParisianConspiracyV1 =
-  act (1, A) TheParisianConspiracyV1 Cards.theParisianConspiracyV1 $
-    Just $
-      GroupClueCost (PerPlayer 2) Anywhere
+  act (1, A) TheParisianConspiracyV1 Cards.theParisianConspiracyV1
+    $ Just
+    $ GroupClueCost (PerPlayer 2) Anywhere
 
 instance HasAbilities TheParisianConspiracyV1 where
   getAbilities (TheParisianConspiracyV1 a) =
-    [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3) $
-        Objective $
-          ForcedAbility $
-            RoundEnds When
+    [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
+        $ Objective
+        $ ForcedAbility
+        $ RoundEnds When
     ]
 
 instance RunMessage TheParisianConspiracyV1 where
@@ -38,7 +38,7 @@ instance RunMessage TheParisianConspiracyV1 where
       theOrganist <-
         fromJustNote "The Organist was not set aside"
           . listToMaybe
-          <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
+            <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
       case advanceMode of
         AdvancedWithClues -> do
           locationId <- selectJust LeadInvestigatorLocation
@@ -56,12 +56,12 @@ instance RunMessage TheParisianConspiracyV1 where
             createTheOrganist <- createEnemyAt_ theOrganist lid Nothing
             pure $ targetLabel lid [createTheOrganist]
 
-          pushAll $
-            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-            | iid <- investigatorIds
-            ]
-              <> [ chooseOrRunOne lead choices
-                 , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-                 ]
+          pushAll
+            $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+              | iid <- investigatorIds
+              ]
+            <> [ chooseOrRunOne lead choices
+               , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+               ]
       pure a
     _ -> TheParisianConspiracyV1 <$> runMessage msg attrs

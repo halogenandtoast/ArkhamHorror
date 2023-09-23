@@ -26,15 +26,15 @@ cursedShores = location CursedShores Cards.cursedShores 1 (Static 0)
 
 instance HasAbilities CursedShores where
   getAbilities (CursedShores attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
           [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
-          , mkAbility attrs 2 $
-              ForcedAbility $
-                Leaves Timing.When You $
-                  LocationWithId $
-                    toId attrs
+          , mkAbility attrs 2
+              $ ForcedAbility
+              $ Leaves Timing.When You
+              $ LocationWithId
+              $ toId attrs
           ]
         else []
 
@@ -57,8 +57,8 @@ instance RunMessage CursedShores where
         [] -> pure ()
         [x] -> push (DiscardCard iid (toAbilitySource attrs 2) x)
         xs ->
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [TargetLabel (CardIdTarget x) [DiscardCard iid (toAbilitySource attrs 2) x] | x <- xs]
       pure l

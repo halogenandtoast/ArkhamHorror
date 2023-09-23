@@ -30,17 +30,17 @@ instance HasModifiersFor BrotherXavier1 where
     | not (controlledBy a iid) = do
         locationId <- field InvestigatorLocation iid
         assetLocationId <- field AssetLocation (toId a)
-        pure $
-          toModifiers a $
-            if (locationId == assetLocationId) && isJust locationId
-              then [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
-              else []
+        pure
+          $ toModifiers a
+          $ if (locationId == assetLocationId) && isJust locationId
+            then [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
+            else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrotherXavier1 where
   getAbilities (BrotherXavier1 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (Matcher.AssetDefeated Timing.When ByAny $ AssetWithId $ toId a)
           Free
     ]
@@ -49,8 +49,8 @@ instance RunMessage BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel eid [EnemyDamage eid $ nonAttack source 2]
           | eid <- enemies

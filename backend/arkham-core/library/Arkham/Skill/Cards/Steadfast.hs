@@ -27,11 +27,11 @@ instance HasModifiersFor Steadfast where
       remainingHealth <- field InvestigatorRemainingHealth (skillOwner attrs)
       remainingSanity <- field InvestigatorRemainingSanity (skillOwner attrs)
       let total = remainingHealth + remainingSanity
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           attrs
-          [ AddSkillIcons $
-            if total >= 10
+          [ AddSkillIcons
+            $ if total >= 10
               then
                 [ SkillIcon SkillWillpower
                 , SkillIcon SkillWillpower

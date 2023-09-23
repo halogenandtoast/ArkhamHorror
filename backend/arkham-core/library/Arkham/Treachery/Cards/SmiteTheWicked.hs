@@ -23,12 +23,12 @@ smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
 instance HasAbilities SmiteTheWicked where
   getAbilities (SmiteTheWicked a) =
-    [ mkAbility a 1 $
-      ForcedAbility $
-        OrWindowMatcher
-          [ GameEnds Timing.When
-          , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
-          ]
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ OrWindowMatcher
+        [ GameEnds Timing.When
+        , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+        ]
     | iid <- maybeToList (treacheryOwner a)
     ]
 
@@ -36,8 +36,8 @@ instance RunMessage SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       key <- getEncounterDeckKey iid
-      push $
-        DiscardUntilFirst iid source (Deck.EncounterDeckByKey key) (BasicCardMatch $ CardWithType EnemyType)
+      push
+        $ DiscardUntilFirst iid source (Deck.EncounterDeckByKey key) (BasicCardMatch $ CardWithType EnemyType)
       pure t
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       for_ mcard $ \card -> do

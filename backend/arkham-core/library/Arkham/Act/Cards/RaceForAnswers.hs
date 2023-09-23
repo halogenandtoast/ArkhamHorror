@@ -28,15 +28,15 @@ instance RunMessage RaceForAnswers where
   runMessage msg a@(RaceForAnswers attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       locations <-
-        selectList $
-          RevealedLocation
-            <> LocationWithTitle
-              "Historical Society"
+        selectList
+          $ RevealedLocation
+          <> LocationWithTitle
+            "Historical Society"
       playerCount <- getPlayerCount
-      pushAll $
-        [ PlaceCluesUpToClueValue location (toSource attrs) playerCount
-        | location <- locations
-        ]
-          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll
+        $ [ PlaceCluesUpToClueValue location (toSource attrs) playerCount
+          | location <- locations
+          ]
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> RaceForAnswers <$> runMessage msg attrs

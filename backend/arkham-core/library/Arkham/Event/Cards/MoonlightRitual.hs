@@ -31,18 +31,18 @@ instance RunMessage MoonlightRitual where
         selectWithField EventDoom $ eventControlledBy iid <> EventWithAnyDoom
       investigatorDoomCount <- field InvestigatorDoom iid
       pushAll
-        [ chooseOne iid $
-            [ targetLabel
-              iid
-              [RemoveDoom (toSource attrs) (toTarget iid) investigatorDoomCount]
-            | investigatorDoomCount > 0
-            ]
-              <> [ targetLabel aid [RemoveDoom (toSource attrs) (toTarget aid) assetDoomCount]
-                 | (aid, assetDoomCount) <- assets
-                 ]
-              <> [ targetLabel eventId [RemoveDoom (toSource attrs) (toTarget eventId) eventDoomCount]
-                 | (eventId, eventDoomCount) <- events
-                 ]
+        [ chooseOne iid
+            $ [ targetLabel
+                iid
+                [RemoveDoom (toSource attrs) (toTarget iid) investigatorDoomCount]
+              | investigatorDoomCount > 0
+              ]
+            <> [ targetLabel aid [RemoveDoom (toSource attrs) (toTarget aid) assetDoomCount]
+               | (aid, assetDoomCount) <- assets
+               ]
+            <> [ targetLabel eventId [RemoveDoom (toSource attrs) (toTarget eventId) eventDoomCount]
+               | (eventId, eventDoomCount) <- events
+               ]
         ]
       pure e
     _ -> MoonlightRitual <$> runMessage msg attrs

@@ -28,8 +28,8 @@ instance HasModifiersFor Barricade3 where
   getModifiersFor (LocationTarget lid) (Barricade3 attrs) =
     if LocationTarget lid `elem` eventAttachedTarget attrs
       then
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [CannotBeEnteredByNonElite, SpawnNonEliteAtConnectingInstead]
       else pure []
@@ -38,11 +38,11 @@ instance HasModifiersFor Barricade3 where
 instance HasAbilities Barricade3 where
   getAbilities (Barricade3 x) = case eventAttachedTarget x of
     Just (LocationTarget lid) ->
-      [ mkAbility x 1 $
-          ForcedAbility $
-            Leaves Timing.When You $
-              LocationWithId
-                lid
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ Leaves Timing.When You
+          $ LocationWithId
+            lid
       ]
     _ -> []
 

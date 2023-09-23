@@ -76,7 +76,7 @@ commitRitualSuicide (toSource -> source) = do
   azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
   pure
     $ map (Discard source . toTarget) cultists
-      <> [PlaceDoom source (toTarget azathoth) doom]
+    <> [PlaceDoom source (toTarget azathoth) doom]
 
 getEmptySpaceCards :: HasGame m => m [Card]
 getEmptySpaceCards = cosmosEmptySpaceCards <$> getCosmos

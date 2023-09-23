@@ -30,11 +30,11 @@ instance HasAbilities RopeBridge where
   getAbilities (RopeBridge attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $
-          ForcedAbility $
-            AttemptExplore
-              Timing.When
-              You
+      [ restrictedAbility attrs 1 Here
+          $ ForcedAbility
+          $ AttemptExplore
+            Timing.When
+            You
       ]
 
 instance RunMessage RopeBridge where
@@ -50,13 +50,13 @@ instance RunMessage RopeBridge where
           (riverCanyonId, mPlacement) <- case mRiverCanyon of
             Just riverCanyon -> second Just <$> placeLocation riverCanyon
             Nothing -> (,Nothing) <$> selectJust (LocationWithTitle "River Canyon")
-          pushAll $
-            [ CancelNext (toSource attrs) ExploreMessage
-            , InvestigatorAssignDamage iid source DamageAny 2 0
-            , SetActions iid source 0
-            , ChooseEndTurn iid
-            ]
-              <> maybeToList mPlacement
-              <> [MoveTo $ move source iid riverCanyonId]
+          pushAll
+            $ [ CancelNext (toSource attrs) ExploreMessage
+              , InvestigatorAssignDamage iid source DamageAny 2 0
+              , SetActions iid source 0
+              , ChooseEndTurn iid
+              ]
+            <> maybeToList mPlacement
+            <> [MoveTo $ move source iid riverCanyonId]
           pure l
     _ -> RopeBridge <$> runMessage msg attrs

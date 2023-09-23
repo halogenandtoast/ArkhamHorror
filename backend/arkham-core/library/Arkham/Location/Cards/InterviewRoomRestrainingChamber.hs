@@ -30,16 +30,16 @@ instance HasAbilities InterviewRoomRestrainingChamber where
   getAbilities (InterviewRoomRestrainingChamber attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $
-          ActionAbility (Just Action.Parley) $
-            ActionCost 1
+      [ restrictedAbility attrs 1 Here
+          $ ActionAbility (Just Action.Parley)
+          $ ActionCost 1
       ]
 
 instance RunMessage InterviewRoomRestrainingChamber where
   runMessage msg l@(InterviewRoomRestrainingChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ SkillLabel SkillIntellect [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4]
           , SkillLabel SkillCombat [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4]

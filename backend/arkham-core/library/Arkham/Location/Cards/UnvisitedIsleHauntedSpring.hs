@@ -52,12 +52,12 @@ instance RunMessage UnvisitedIsleHauntedSpring where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
-      push $
-        chooseOrRunOne iid $
-          [ Label "Discard an asset you control" [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
+      push
+        $ chooseOrRunOne iid
+        $ [ Label "Discard an asset you control" [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
           | hasAssets
           ]
-            <> [Label "Take 1 damage" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]]
+        <> [Label "Take 1 damage" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]]
       pure l
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       passedCircleTest iid attrs

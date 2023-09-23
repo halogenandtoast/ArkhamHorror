@@ -26,16 +26,16 @@ theEndOfAllThings =
 
 instance HasAbilities TheEndOfAllThings where
   getAbilities (TheEndOfAllThings x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          MovedBy
-            Timing.After
-            You
-            Matcher.EncounterCardSource
-    , mkAbility x 2 $
-        ForcedAbility $
-          EnemyDefeated Timing.When Anyone ByAny $
-            EnemyWithTitle "Yog-Sothoth"
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ MovedBy
+          Timing.After
+          You
+          Matcher.EncounterCardSource
+    , mkAbility x 2
+        $ ForcedAbility
+        $ EnemyDefeated Timing.When Anyone ByAny
+        $ EnemyWithTitle "Yog-Sothoth"
     ]
 
 instance RunMessage TheEndOfAllThings where
@@ -47,8 +47,8 @@ instance RunMessage TheEndOfAllThings where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
       yogSothoth <- selectJust (EnemyWithTitle "Yog-Sothoth")
-      pushAll $
-        map (EnemyAttack . enemyAttack yogSothoth attrs) investigatorIds
-          <> [RevertAgenda aid]
+      pushAll
+        $ map (EnemyAttack . enemyAttack yogSothoth attrs) investigatorIds
+        <> [RevertAgenda aid]
       pure a
     _ -> TheEndOfAllThings <$> runMessage msg attrs

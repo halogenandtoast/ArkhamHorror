@@ -42,27 +42,27 @@ instance RunMessage CityOfTheGreatRace where
             lead <- getLeadInvestigatorId
             custodian <- selectJust $ assetIs Assets.theCustodian
             locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
-            pure $
-              [ chooseOrRunOne
-                  lead
-                  [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
-                  | lid <- locationWithMostClues
-                  ]
-              ]
+            pure
+              $ [ chooseOrRunOne
+                    lead
+                    [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
+                    | lid <- locationWithMostClues
+                    ]
+                ]
           else pure []
 
-      pushAll $
-        [ Search
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          [fromTopOfDeck 9]
-          (CardWithTrait Item)
-          (DrawFoundUpTo iid 2)
-        | iid <- iids
-        ]
-          <> [ShuffleEncounterDiscardBackIn]
-          <> custodianMessages
-          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll
+        $ [ Search
+            iid
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            [fromTopOfDeck 9]
+            (CardWithTrait Item)
+            (DrawFoundUpTo iid 2)
+          | iid <- iids
+          ]
+        <> [ShuffleEncounterDiscardBackIn]
+        <> custodianMessages
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> CityOfTheGreatRace <$> runMessage msg attrs

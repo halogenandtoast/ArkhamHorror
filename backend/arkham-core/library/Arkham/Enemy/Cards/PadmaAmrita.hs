@@ -25,8 +25,8 @@ padmaAmrita = enemy PadmaAmrita Cards.padmaAmrita (5, PerPlayer 3, 3) (0, 0)
 
 instance HasModifiersFor PadmaAmrita where
   getModifiersFor (InvestigatorTarget _) (PadmaAmrita a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ CannotDiscoverCluesAt (LocationWithTrait Ancient)
         | not (enemyExhausted a)
@@ -37,19 +37,19 @@ instance HasAbilities PadmaAmrita where
   getAbilities (PadmaAmrita a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After You AnyEnemyAttack $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.After You AnyEnemyAttack
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage PadmaAmrita where
   runMessage msg e@(PadmaAmrita attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasClues <- fieldP InvestigatorClues (> 0) iid
-      push $
-        if hasClues
+      push
+        $ if hasClues
           then FlipClues (InvestigatorTarget iid) 1
           else InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
       pure e

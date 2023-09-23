@@ -24,9 +24,9 @@ instance RunMessage CrossroadsOfFate where
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
         investigators <- getInvestigators
 
-        pushAll $
-          map (InvestigatorDefeated (toSource attrs)) investigators
-            <> [SufferTrauma investigator 1 0 | investigator <- investigators]
-            <> [R5]
+        pushAll
+          $ map (InvestigatorDefeated (toSource attrs)) investigators
+          <> [SufferTrauma investigator 1 0 | investigator <- investigators]
+          <> [R5]
         pure a
       _ -> CrossroadsOfFate <$> runMessage msg attrs

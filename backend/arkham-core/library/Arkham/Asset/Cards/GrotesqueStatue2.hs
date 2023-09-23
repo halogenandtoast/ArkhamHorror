@@ -24,9 +24,9 @@ grotesqueStatue2 =
 
 instance HasAbilities GrotesqueStatue2 where
   getAbilities (GrotesqueStatue2 x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility (WouldRevealChaosToken Timing.When You) $
-          UseCost (AssetWithId $ toId x) Charge 1
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility (WouldRevealChaosToken Timing.When You)
+        $ UseCost (AssetWithId $ toId x) Charge 1
     ]
 
 instance RunMessage GrotesqueStatue2 where
@@ -36,8 +36,8 @@ instance RunMessage GrotesqueStatue2 where
           ignoreWindow <-
             checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
           pushAll
-            [ ReplaceCurrentDraw drawSource iid $
-                Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] []
+            [ ReplaceCurrentDraw drawSource iid
+                $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] []
             , ignoreWindow
             ]
           pure a

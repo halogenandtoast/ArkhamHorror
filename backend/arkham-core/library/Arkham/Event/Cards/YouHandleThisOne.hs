@@ -22,18 +22,18 @@ instance RunMessage YouHandleThisOne where
   runMessage msg e@(YouHandleThisOne attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectListMap InvestigatorTarget $
-          NotInvestigator (InvestigatorWithId iid)
-      pushAll $
-        [ chooseOrRunOne
-            iid
-            [ TargetLabel
-              target
-              [HandleTargetChoice iid (toSource attrs) target]
-            | target <- targets
-            ]
-        ]
-          <> [TakeResources iid 1 (toSource attrs) False]
+        selectListMap InvestigatorTarget
+          $ NotInvestigator (InvestigatorWithId iid)
+      pushAll
+        $ [ chooseOrRunOne
+              iid
+              [ TargetLabel
+                target
+                [HandleTargetChoice iid (toSource attrs) target]
+              | target <- targets
+              ]
+          ]
+        <> [TakeResources iid 1 (toSource attrs) False]
       pure e
     HandleTargetChoice iid source (InvestigatorTarget iid')
       | isSource attrs source -> do

@@ -24,17 +24,17 @@ nihilism = treachery Nihilism Cards.nihilism
 
 instance HasAbilities Nihilism where
   getAbilities (Nihilism a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          OrWindowMatcher
-            [ RevealChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
-            , CancelChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
-            , IgnoreChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
-            ]
-    , restrictedAbility a 2 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ OrWindowMatcher
+          [ RevealChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
+          , CancelChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
+          , IgnoreChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
+          ]
+    , restrictedAbility a 2 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage Nihilism where

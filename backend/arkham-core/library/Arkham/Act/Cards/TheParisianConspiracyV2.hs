@@ -20,18 +20,18 @@ newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
 
 theParisianConspiracyV2 :: ActCard TheParisianConspiracyV2
 theParisianConspiracyV2 =
-  act (1, A) TheParisianConspiracyV2 Cards.theParisianConspiracyV2 $
-    Just $
-      GroupClueCost (PerPlayer 2) Anywhere
+  act (1, A) TheParisianConspiracyV2 Cards.theParisianConspiracyV2
+    $ Just
+    $ GroupClueCost (PerPlayer 2) Anywhere
 
 instance HasAbilities TheParisianConspiracyV2 where
   getAbilities (TheParisianConspiracyV2 a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3) $
-          Objective $
-            ForcedAbility $
-              RoundEnds When
+      [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
+          $ Objective
+          $ ForcedAbility
+          $ RoundEnds When
       ]
 
 instance RunMessage TheParisianConspiracyV2 where
@@ -40,7 +40,7 @@ instance RunMessage TheParisianConspiracyV2 where
       theOrganist <-
         fromJustNote "The Organist was not set aside"
           . listToMaybe
-          <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
+            <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
       case advanceMode of
         AdvancedWithClues -> do
           locationIds <- selectList $ FarthestLocationFromAll Anywhere
@@ -57,12 +57,12 @@ instance RunMessage TheParisianConspiracyV2 where
           investigatorIds <- getInvestigatorIds
           locationId <- selectJust LeadInvestigatorLocation
           createTheOrganist <- createEnemyAt_ theOrganist locationId Nothing
-          pushAll $
-            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-            | iid <- investigatorIds
-            ]
-              <> [ createTheOrganist
-                 , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-                 ]
+          pushAll
+            $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+              | iid <- investigatorIds
+              ]
+            <> [ createTheOrganist
+               , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+               ]
       pure a
     _ -> TheParisianConspiracyV2 <$> runMessage msg attrs

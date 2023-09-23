@@ -89,21 +89,21 @@ readInvestigatorDefeat = do
   if null defeatedInvestigatorIds
     then pure []
     else
-      pure $
-        [story defeatedInvestigatorIds investigatorDefeat]
-          <> [Record TheNecronomiconWasStolen | isJust mNecronomiconOwner]
-          <> [RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation]
-          <> [Record DrHenryArmitageWasKidnapped | isJust mDrHenryArmitageOwner]
-          <> [RemoveCampaignCard Assets.drHenryArmitage]
-          <> [ Record ProfessorWarrenRiceWasKidnapped
-             | isJust mProfessorWarrenRiceOwner
-             ]
-          <> [RemoveCampaignCard Assets.professorWarrenRice]
-          <> [Record DrFrancisMorganWasKidnapped | isJust mDrFrancisMorganOwner]
-          <> [RemoveCampaignCard Assets.drFrancisMorgan]
-          <> [ AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
-             | iid <- defeatedInvestigatorIds
-             ]
+      pure
+        $ [story defeatedInvestigatorIds investigatorDefeat]
+        <> [Record TheNecronomiconWasStolen | isJust mNecronomiconOwner]
+        <> [RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation]
+        <> [Record DrHenryArmitageWasKidnapped | isJust mDrHenryArmitageOwner]
+        <> [RemoveCampaignCard Assets.drHenryArmitage]
+        <> [ Record ProfessorWarrenRiceWasKidnapped
+           | isJust mProfessorWarrenRiceOwner
+           ]
+        <> [RemoveCampaignCard Assets.professorWarrenRice]
+        <> [Record DrFrancisMorganWasKidnapped | isJust mDrFrancisMorganOwner]
+        <> [RemoveCampaignCard Assets.drFrancisMorgan]
+        <> [ AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
+           | iid <- defeatedInvestigatorIds
+           ]
 
 instance RunMessage TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
@@ -156,9 +156,10 @@ instance RunMessage TheEssexCountyExpress where
         let
           start = fst . fromJustNote "No train cars?" $ headMay placeTrainCars
           end =
-            fst . fromJustNote "No train cars?" $
-              headMay
-                (reverse placeTrainCars)
+            fst
+              . fromJustNote "No train cars?"
+                $ headMay
+                  (reverse placeTrainCars)
           allCars = map fst placeTrainCars <> [engineCarId]
           token = case scenarioDifficulty of
             Easy -> MinusTwo
@@ -166,27 +167,27 @@ instance RunMessage TheEssexCountyExpress where
             Hard -> MinusFour
             Expert -> MinusFive
 
-        pushAll $
-          [ story investigatorIds intro
-          , AddChaosToken token
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          ]
-            <> concatMap snd placeTrainCars
-            <> [ PlacedLocationDirection l1 LeftOf l2
-               | (l1, l2) <- zip allCars (drop 1 allCars)
-               ]
-            <> [ placeEngineCar
-               , PlacedLocationDirection engineCarId RightOf end
-               , CreateWindowModifierEffect
-                  EffectSetupWindow
-                  (EffectModifiers [Modifier ScenarioSource Blank False])
-                  ScenarioSource
-                  (LocationTarget start)
-               , RevealLocation Nothing start
-               , MoveAllTo (toSource attrs) start
-               ]
+        pushAll
+          $ [ story investigatorIds intro
+            , AddChaosToken token
+            , SetEncounterDeck encounterDeck
+            , SetAgendaDeck
+            , SetActDeck
+            ]
+          <> concatMap snd placeTrainCars
+          <> [ PlacedLocationDirection l1 LeftOf l2
+             | (l1, l2) <- zip allCars (drop 1 allCars)
+             ]
+          <> [ placeEngineCar
+             , PlacedLocationDirection engineCarId RightOf end
+             , CreateWindowModifierEffect
+                EffectSetupWindow
+                (EffectModifiers [Modifier ScenarioSource Blank False])
+                ScenarioSource
+                (LocationTarget start)
+             , RevealLocation Nothing start
+             , MoveAllTo (toSource attrs) start
+             ]
 
         setAsideCards <-
           genCards
@@ -215,16 +216,16 @@ instance RunMessage TheEssexCountyExpress where
             )
       ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
         closestCultists <-
-          selectList $
-            NearestEnemyTo iid $
-              EnemyWithTrait
-                Trait.Cultist
+          selectList
+            $ NearestEnemyTo iid
+            $ EnemyWithTrait
+              Trait.Cultist
         s <$ case closestCultists of
           [] -> pure ()
           [x] -> push $ PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1
           xs ->
-            push $
-              chooseOne
+            push
+              $ chooseOne
                 iid
                 [targetLabel x [PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1] | x <- xs]
       ResolveChaosToken _ Tablet _ | isHardExpert attrs -> do
@@ -236,17 +237,17 @@ instance RunMessage TheEssexCountyExpress where
           Cultist ->
             pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
           ElderThing | isEasyStandard attrs -> do
-            push $
-              toMessage $
-                chooseAndDiscardCard
-                  iid
-                  (ChaosTokenEffectSource ElderThing)
+            push
+              $ toMessage
+              $ chooseAndDiscardCard
+                iid
+                (ChaosTokenEffectSource ElderThing)
           ElderThing | isHardExpert attrs -> do
-            pushAll $
-              replicate n $
-                toMessage $
-                  chooseAndDiscardCard iid $
-                    ChaosTokenEffectSource ElderThing
+            pushAll
+              $ replicate n
+              $ toMessage
+              $ chooseAndDiscardCard iid
+              $ ChaosTokenEffectSource ElderThing
           _ -> pure ()
         pure s
       ScenarioResolution NoResolution ->
@@ -256,33 +257,33 @@ instance RunMessage TheEssexCountyExpress where
         iids <- allInvestigatorIds
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
-        pushAll $
-          msgs
-            <> [story iids resolution1]
-            <> [ GainXP
-                iid
-                (toSource attrs)
-                (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-               | (iid, n) <- xp
-               ]
-            <> [EndOfGame Nothing]
+        pushAll
+          $ msgs
+          <> [story iids resolution1]
+          <> [ GainXP
+              iid
+              (toSource attrs)
+              (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+             | (iid, n) <- xp
+             ]
+          <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 2) -> do
         msgs <- readInvestigatorDefeat
         iids <- allInvestigatorIds
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
-        pushAll $
-          msgs
-            <> [ story iids resolution2
-               , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
-               ]
-            <> [ GainXP
-                iid
-                (toSource attrs)
-                (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-               | (iid, n) <- xp
-               ]
-            <> [EndOfGame Nothing]
+        pushAll
+          $ msgs
+          <> [ story iids resolution2
+             , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
+             ]
+          <> [ GainXP
+              iid
+              (toSource attrs)
+              (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+             | (iid, n) <- xp
+             ]
+          <> [EndOfGame Nothing]
         pure s
       _ -> TheEssexCountyExpress <$> runMessage msg attrs

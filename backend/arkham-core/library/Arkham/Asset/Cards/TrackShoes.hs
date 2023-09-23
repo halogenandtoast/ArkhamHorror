@@ -23,14 +23,14 @@ trackShoes = asset TrackShoes Cards.trackShoes
 instance HasModifiersFor TrackShoes where
   getModifiersFor (InvestigatorTarget iid) (TrackShoes attrs)
     | attrs `controlledBy` iid =
-        pure $
-          toModifiers attrs [SkillModifier SkillAgility 1]
+        pure
+          $ toModifiers attrs [SkillModifier SkillAgility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrackShoes where
   getAbilities (TrackShoes attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ReactionAbility
           (MovedButBeforeEnemyEngagement Timing.After You Anywhere)
           (ExhaustCost $ toTarget attrs)
     ]
@@ -43,8 +43,8 @@ instance RunMessage TrackShoes where
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           accessibleLocationIds <- selectList AccessibleLocation
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ TargetLabel (LocationTarget lid) [Move $ move attrs iid lid]
               | lid <- accessibleLocationIds

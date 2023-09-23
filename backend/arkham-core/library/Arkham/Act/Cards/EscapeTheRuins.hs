@@ -38,9 +38,9 @@ instance HasAbilities EscapeTheRuins where
   getAbilities (EscapeTheRuins x) =
     withBaseAbilities
       x
-      [ restrictedAbility x 1 AllUndefeatedInvestigatorsResigned $
-        Objective $
-          ForcedAbility AnyWindow
+      [ restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
+        $ Objective
+        $ ForcedAbility AnyWindow
       | onSide A x
       ]
 

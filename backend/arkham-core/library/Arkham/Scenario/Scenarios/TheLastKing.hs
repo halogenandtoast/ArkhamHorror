@@ -98,8 +98,8 @@ instance RunMessage TheLastKing where
   runMessage msg s@(TheLastKing attrs) = case msg of
     SetChaosTokensForScenario -> do
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      whenStandalone $
-        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
+      whenStandalone
+        $ push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -143,24 +143,24 @@ instance RunMessage TheLastKing where
       destinations <- shuffleM $ map fst otherPlacements
       investigatorIds <- allInvestigatorIds
 
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeFoyer
-        ]
-          <> map snd otherPlacements
-          <> [MoveAllTo (toSource attrs) foyerId]
-          <> zipWith
-            ( \(bystander, assetId) placement ->
-                CreateAssetAt assetId bystander placement
-            )
-            bystanders
-            (map AtLocation destinations)
-          <> [ PlaceTokens (toSource attrs) (toTarget assetId) Clue totalClues
-             | (_, assetId) <- bystanders
-             ]
+      pushAll
+        $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeFoyer
+          ]
+        <> map snd otherPlacements
+        <> [MoveAllTo (toSource attrs) foyerId]
+        <> zipWith
+          ( \(bystander, assetId) placement ->
+              CreateAssetAt assetId bystander placement
+          )
+          bystanders
+          (map AtLocation destinations)
+        <> [ PlaceTokens (toSource attrs) (toTarget assetId) Clue totalClues
+           | (_, assetId) <- bystanders
+           ]
 
       setAsideEncounterCards <- genCards [Enemies.dianneDevine]
 
@@ -200,13 +200,13 @@ instance RunMessage TheLastKing where
       case chaosTokenFace token of
         Skull -> do
           targets <-
-            selectListMap EnemyTarget $
-              if isEasyStandard attrs
+            selectListMap EnemyTarget
+              $ if isEasyStandard attrs
                 then EnemyWithTrait Trait.Lunatic
                 else EnemyWithMostRemainingHealth $ EnemyWithTrait Trait.Lunatic
           when (notNull targets) $ do
-            push $
-              chooseOrRunOne
+            push
+              $ chooseOrRunOne
                 iid
                 [targetLabel target [PlaceTokens (ChaosTokenEffectSource Skull) target Doom 1] | target <- targets]
         Cultist | isEasyStandard attrs -> do
@@ -236,10 +236,10 @@ instance RunMessage TheLastKing where
       lead <- getLead
       clueCounts <- traverse (field ActClues) =<< selectList AnyAct
       vipsSlain <-
-        selectListMap toCardCode $
-          VictoryDisplayCardMatch $
-            CardWithTrait
-              Trait.Lunatic
+        selectListMap toCardCode
+          $ VictoryDisplayCardMatch
+          $ CardWithTrait
+            Trait.Lunatic
       let
         interviewed =
           mapMaybe interviewedToCardCode (setToList $ scenarioLog attrs)
@@ -251,50 +251,50 @@ instance RunMessage TheLastKing where
             (EffectModifiers $ toModifiers (toSource attrs) [XPModifier amount])
             (toSource attrs)
             (InvestigatorTarget iid)
-      pushAll $
-        [assignXp assignedXp iid | iid <- investigatorIds]
-          <> [ chooseN
-                lead
-                remainingXp
-                [ Label ("Choose " <> display name <> " to gain 1 additional XP") [assignXp 1 iid]
-                | (iid, name) <- investigatorIdsWithNames
+      pushAll
+        $ [assignXp assignedXp iid | iid <- investigatorIds]
+        <> [ chooseN
+              lead
+              remainingXp
+              [ Label ("Choose " <> display name <> " to gain 1 additional XP") [assignXp 1 iid]
+              | (iid, name) <- investigatorIdsWithNames
+              ]
+           ]
+        <> [recordSetInsert VIPsInterviewed interviewed | notNull interviewed]
+        <> [recordSetInsert VIPsSlain vipsSlain | notNull vipsSlain]
+        <> ( if n == 2 || n == 3
+              then
+                [ RemoveAllChaosTokens Cultist
+                , RemoveAllChaosTokens Tablet
+                , RemoveAllChaosTokens ElderThing
+                , AddChaosToken Cultist
+                , AddChaosToken Tablet
+                , AddChaosToken ElderThing
                 ]
-             ]
-          <> [recordSetInsert VIPsInterviewed interviewed | notNull interviewed]
-          <> [recordSetInsert VIPsSlain vipsSlain | notNull vipsSlain]
-          <> ( if n == 2 || n == 3
-                then
-                  [ RemoveAllChaosTokens Cultist
-                  , RemoveAllChaosTokens Tablet
-                  , RemoveAllChaosTokens ElderThing
-                  , AddChaosToken Cultist
-                  , AddChaosToken Tablet
-                  , AddChaosToken ElderThing
-                  ]
-                else []
-             )
-          <> [crossOutRecordSetEntries VIPsInterviewed interviewed | n == 3]
-          <> [ScenarioResolutionStep 1 (Resolution n)]
+              else []
+           )
+        <> [crossOutRecordSetEntries VIPsInterviewed interviewed | n == 3]
+        <> [ScenarioResolutionStep 1 (Resolution n)]
       pure s
     ScenarioResolutionStep 1 (Resolution n) -> do
       investigatorIds <- allInvestigatorIds
       gainXp <- toGainXp attrs getXp
       case n of
         1 ->
-          pushAll $
-            [story investigatorIds resolution1]
-              <> gainXp
-              <> [EndOfGame (Just $ InterludeStep 1 Nothing)]
+          pushAll
+            $ [story investigatorIds resolution1]
+            <> gainXp
+            <> [EndOfGame (Just $ InterludeStep 1 Nothing)]
         2 ->
-          pushAll $
-            [story investigatorIds resolution2]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [story investigatorIds resolution2]
+            <> gainXp
+            <> [EndOfGame Nothing]
         3 ->
-          pushAll $
-            [story investigatorIds resolution3]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [story investigatorIds resolution3]
+            <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"
       pure s
     _ -> TheLastKing <$> runMessage msg attrs

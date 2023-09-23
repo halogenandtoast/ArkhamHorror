@@ -24,19 +24,19 @@ instance HasModifiersFor GuidingSpirit1 where
     | toId attrs == aid =
         pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor (InvestigatorTarget iid) (GuidingSpirit1 attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [SkillModifier SkillIntellect 1 | controlledBy attrs iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GuidingSpirit1 where
   getAbilities (GuidingSpirit1 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          AssetDefeated Timing.When ByHorror $
-            AssetWithId $
-              toId a
+    [ restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ AssetDefeated Timing.When ByHorror
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage GuidingSpirit1 where

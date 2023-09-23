@@ -22,8 +22,8 @@ uncageTheSoul = UncageTheSoul . uncurry4 (baseAttrs "03033")
 instance HasModifiersFor UncageTheSoul where
   getModifiersFor target@(CardIdTarget cid) (UncageTheSoul attrs)
     | effectTarget attrs == target =
-        pure $
-          toModifiers attrs [ReduceCostOf (CardWithId cid) 3]
+        pure
+          $ toModifiers attrs [ReduceCostOf (CardWithId cid) 3]
   getModifiersFor _ _ = pure []
 
 instance RunMessage UncageTheSoul where

@@ -31,11 +31,11 @@ instance HasAbilities BillyCooper where
   getAbilities (BillyCooper attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            EnemyDefeated Timing.After Anyone ByAny $
-              EnemyAt LocationOfThis
-                <> EnemyWithTrait Monster
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemyDefeated Timing.After Anyone ByAny
+          $ EnemyAt LocationOfThis
+          <> EnemyWithTrait Monster
       ]
 
 instance RunMessage BillyCooper where

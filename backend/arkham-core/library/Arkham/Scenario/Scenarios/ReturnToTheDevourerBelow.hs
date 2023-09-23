@@ -90,12 +90,12 @@ instance RunMessage ReturnToTheDevourerBelow where
         woodsLocations <- take 4 <$> shuffleM arkhamWoods
 
         randomSet <-
-          sample $
-            EncounterSet.AgentsOfYogSothoth
-              :| [ EncounterSet.AgentsOfShubNiggurath
-                 , EncounterSet.AgentsOfCthulhu
-                 , EncounterSet.AgentsOfHastur
-                 ]
+          sample
+            $ EncounterSet.AgentsOfYogSothoth
+            :| [ EncounterSet.AgentsOfShubNiggurath
+               , EncounterSet.AgentsOfCthulhu
+               , EncounterSet.AgentsOfHastur
+               ]
 
         encounterDeck <-
           buildEncounterDeckExcluding
@@ -114,21 +114,21 @@ instance RunMessage ReturnToTheDevourerBelow where
             (locationId, placement) <- placeLocation location
             pure [placement, SetLocationLabel locationId label]
 
-        pushAll $
-          [ story investigatorIds intro
-          , SetEncounterDeck encounterDeck
-          , AddChaosToken ElderThing
-          , SetAgendaDeck
-          , SetActDeck
-          , placeMainPath
-          ]
-            <> concat placeWoods
-            <> [ RevealLocation Nothing mainPathId
-               , MoveAllTo (toSource attrs) mainPathId
-               ]
-            <> ghoulPriestMessages
-            <> cultistsWhoGotAwayMessages
-            <> pastMidnightMessages
+        pushAll
+          $ [ story investigatorIds intro
+            , SetEncounterDeck encounterDeck
+            , AddChaosToken ElderThing
+            , SetAgendaDeck
+            , SetActDeck
+            , placeMainPath
+            ]
+          <> concat placeWoods
+          <> [ RevealLocation Nothing mainPathId
+             , MoveAllTo (toSource attrs) mainPathId
+             ]
+          <> ghoulPriestMessages
+          <> cultistsWhoGotAwayMessages
+          <> pastMidnightMessages
 
         setAsideEncounterCards <-
           genCards
@@ -139,19 +139,19 @@ instance RunMessage ReturnToTheDevourerBelow where
 
         ReturnToTheDevourerBelow
           . TheDevourerBelow
-          <$> runMessage
-            msg
-            ( attrs
-                & (setAsideCardsL .~ setAsideEncounterCards)
-                & (actStackL . at 1 ?~ acts)
-                & (agendaStackL . at 1 ?~ agendas)
-            )
+            <$> runMessage
+              msg
+              ( attrs
+                  & (setAsideCardsL .~ setAsideEncounterCards)
+                  & (actStackL . at 1 ?~ acts)
+                  & (agendaStackL . at 1 ?~ agendas)
+              )
       CreateEnemy creation@(enemyCreationMethod -> SpawnAtLocation lid) | toCardCode (enemyCreationCard creation) == "01157" -> do
         name <- field LocationName lid
         when (name == "Ritual Site") $ do
           vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
-          push $
-            AttachStoryTreacheryTo
+          push
+            $ AttachStoryTreacheryTo
               vaultOfEarthlyDemise
               (toTarget $ enemyCreationEnemyId creation)
         pure s

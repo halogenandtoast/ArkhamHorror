@@ -25,11 +25,11 @@ obtainingTheDevice = act (2, A) ObtainingTheDevice Cards.obtainingTheDevice Noth
 
 instance HasAbilities ObtainingTheDevice where
   getAbilities (ObtainingTheDevice attrs) =
-    [ mkAbility attrs 1 $
-        Objective $
-          ForcedAbility $
-            AddedToVictory Timing.AtIf $
-              cardIs Enemies.nathanWickMasterOfInitiation
+    [ mkAbility attrs 1
+        $ Objective
+        $ ForcedAbility
+        $ AddedToVictory Timing.AtIf
+        $ cardIs Enemies.nathanWickMasterOfInitiation
     ]
 
 instance RunMessage ObtainingTheDevice where

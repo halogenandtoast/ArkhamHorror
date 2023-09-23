@@ -65,10 +65,10 @@ instance RunMessage HypnoticGaze where
             faces
       when shouldDamageEnemy $ do
         healthDamage' <- field EnemyHealthDamage enemyId
-        when (healthDamage' > 0) $
-          push $
-            If
-              (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
-              [EnemyDamage enemyId $ nonAttack attrs healthDamage']
+        when (healthDamage' > 0)
+          $ push
+          $ If
+            (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
+            [EnemyDamage enemyId $ nonAttack attrs healthDamage']
       pure e
     _ -> HypnoticGaze . (`with` meta) <$> runMessage msg attrs

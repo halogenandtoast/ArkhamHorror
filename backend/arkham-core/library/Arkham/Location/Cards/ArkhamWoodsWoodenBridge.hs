@@ -19,14 +19,14 @@ arkhamWoodsWoodenBridge = location ArkhamWoodsWoodenBridge Cards.arkhamWoodsWood
 
 instance HasAbilities ArkhamWoodsWoodenBridge where
   getAbilities (ArkhamWoodsWoodenBridge attrs) =
-    withRevealedAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (Here <> DuringSkillTest (WhileEvadingAnEnemy AnyEnemy))
-          $ ForcedAbility
-          $ RevealChaosToken Timing.When You AnyChaosToken
-      ]
+    withRevealedAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (Here <> DuringSkillTest (WhileEvadingAnEnemy AnyEnemy))
+            $ ForcedAbility
+            $ RevealChaosToken Timing.When You AnyChaosToken
+        ]
 
 instance RunMessage ArkhamWoodsWoodenBridge where
   runMessage msg l@(ArkhamWoodsWoodenBridge attrs) = case msg of

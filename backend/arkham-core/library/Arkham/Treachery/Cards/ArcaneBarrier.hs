@@ -32,15 +32,15 @@ instance RunMessage ArcaneBarrier where
       pure t
     Will (MoveTo movement@(moveTarget -> InvestigatorTarget iid)) -> do
       shouldCostAdditional <-
-        selectAny $
-          locationWithTreachery (toId attrs)
-            <> LocationMatchAny
-              [locationWithInvestigator iid, moveToLocationMatcher movement]
+        selectAny
+          $ locationWithTreachery (toId attrs)
+          <> LocationMatchAny
+            [locationWithInvestigator iid, moveToLocationMatcher movement]
       when shouldCostAdditional $ do
         moveFromMessage <- fromJustNote "missing move from" <$> popMessage
         moveToMessage <- fromJustNote "missing move to" <$> popMessage
-        push $
-          CreateEffect
+        push
+          $ CreateEffect
             (toCardCode attrs)
             (Just $ EffectMessages [moveFromMessage, moveToMessage])
             (toSource attrs)

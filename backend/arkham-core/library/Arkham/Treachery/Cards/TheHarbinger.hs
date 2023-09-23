@@ -26,8 +26,8 @@ theHarbinger = treachery TheHarbinger Cards.theHarbinger
 instance HasModifiersFor TheHarbinger where
   getModifiersFor target (TheHarbinger a)
     | Just target == treacheryAttachedTarget a =
-        pure $
-          toModifiers a [CannotManipulateDeck]
+        pure
+          $ toModifiers a [CannotManipulateDeck]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheHarbinger where

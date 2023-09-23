@@ -31,8 +31,8 @@ instance HasAbilities GavriellaMizrah where
     [ restrictedAbility
         a
         1
-        (ControlsThis <> CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues) $
-        ReactionAbility (EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy) (exhaust a)
+        (ControlsThis <> CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues)
+        $ ReactionAbility (EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy) (exhaust a)
     ]
 
 instance RunMessage GavriellaMizrah where

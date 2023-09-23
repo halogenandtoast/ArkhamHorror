@@ -32,31 +32,32 @@ instance RunMessage WrackedByTime where
   runMessage msg t@(WrackedByTime (attrs `With` meta)) = case msg of
     Revelation iid source | isSource attrs source -> do
       others <-
-        selectList $
-          InvestigatorAt (LocationWithTrait Shattered)
-            <> NotInvestigator (InvestigatorWithId iid)
-      pushAll $
-        RevelationSkillTest iid (toSource attrs) SkillWillpower 3
-          : [ RevelationSkillTest iid' (toSource attrs) SkillWillpower 3
-            | iid' <- others
-            ]
+        selectList
+          $ InvestigatorAt (LocationWithTrait Shattered)
+          <> NotInvestigator (InvestigatorWithId iid)
+      pushAll
+        $ RevelationSkillTest iid (toSource attrs) SkillWillpower 3
+        : [ RevelationSkillTest iid' (toSource attrs) SkillWillpower 3
+          | iid' <- others
+          ]
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
         pure t
     AssetDamage aid (isSource attrs -> True) _ _ ->
-      pure . WrackedByTime $
-        attrs
+      pure
+        . WrackedByTime
+          $ attrs
           `with` Metadata
             (insertSet aid $ damagedAssets meta)
     After (Revelation _ (isSource attrs -> True)) -> do
       assets <-
-        selectWithField AssetOwner $
-          AssetOneOf $
-            map AssetWithId $
-              setToList
-                (damagedAssets meta)
+        selectWithField AssetOwner
+          $ AssetOneOf
+          $ map AssetWithId
+          $ setToList
+            (damagedAssets meta)
       pushAll
         [ ShuffleIntoDeck deck (AssetTarget aid)
         | (aid, mowner) <- assets

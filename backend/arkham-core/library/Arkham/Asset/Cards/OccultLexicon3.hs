@@ -42,7 +42,7 @@ instance RunMessage OccultLexicon3 where
       canShuffleDeck <- getCanShuffleDeck iid
       pushAll
         $ addToHand iid handBloodRite
-          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
+        : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
       OccultLexicon3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       push

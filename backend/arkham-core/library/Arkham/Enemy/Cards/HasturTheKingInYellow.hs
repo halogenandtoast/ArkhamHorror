@@ -23,7 +23,8 @@ newtype HasturTheKingInYellow = HasturTheKingInYellow EnemyAttrs
 hasturTheKingInYellow :: EnemyCard HasturTheKingInYellow
 hasturTheKingInYellow =
   enemyWith HasturTheKingInYellow Cards.hasturTheKingInYellow (4, PerPlayer 7, 2) (0, 2)
-    $ damageStrategyL .~ DamageFromHastur
+    $ damageStrategyL
+    .~ DamageFromHastur
 
 instance HasAbilities HasturTheKingInYellow where
   getAbilities (HasturTheKingInYellow a) =

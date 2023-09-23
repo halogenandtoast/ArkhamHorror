@@ -53,14 +53,14 @@ instance RunMessage GavriellasFate where
         else when claimedBySpecters $ do
           gavriella <- genCard Enemies.gavriellaMizrah
           createGavriella <-
-            createEnemy gavriella $
-              if onTrail
+            createEnemy gavriella
+              $ if onTrail
                 then toEnemyCreationMethod location
                 else toEnemyCreationMethod iid
           pushAll
             [ RemoveStory (toId attrs)
-            , toMessage $
-                createGavriella
+            , toMessage
+                $ createGavriella
                   { enemyCreationExhausted = onTrail
                   }
             ]

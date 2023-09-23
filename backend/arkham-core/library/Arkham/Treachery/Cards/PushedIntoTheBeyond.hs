@@ -27,20 +27,20 @@ instance RunMessage PushedIntoTheBeyond where
     Revelation iid source | isSource attrs source -> do
       targets <-
         selectWithField AssetCardCode $ AssetControlledBy You <> AssetNonStory
-      when (notNull targets) $
-        push $
-          chooseOne
-            iid
-            [ targetLabel
-              aid
-              [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
-              , CreateEffect
-                  (CardCode "02100")
-                  (Just (EffectCardCodes [cardCode]))
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-              ]
-            | (aid, cardCode) <- targets
+      when (notNull targets)
+        $ push
+        $ chooseOne
+          iid
+          [ targetLabel
+            aid
+            [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
+            , CreateEffect
+                (CardCode "02100")
+                (Just (EffectCardCodes [cardCode]))
+                (toSource attrs)
+                (InvestigatorTarget iid)
             ]
+          | (aid, cardCode) <- targets
+          ]
       pure t
     _ -> PushedIntoTheBeyond <$> runMessage msg attrs

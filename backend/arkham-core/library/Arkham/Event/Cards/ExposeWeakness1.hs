@@ -25,10 +25,10 @@ instance RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
-        selectWithField EnemyFight $
-          EnemyAt (locationWithInvestigator iid)
-      push $
-        chooseOne
+        selectWithField EnemyFight
+          $ EnemyAt (locationWithInvestigator iid)
+      push
+        $ chooseOne
           iid
           [ targetLabel
             enemy

@@ -35,11 +35,11 @@ instance HasAbilities MadPatient where
   getAbilities (MadPatient a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacked Timing.When You AnySource $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacked Timing.When You AnySource
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage MadPatient where

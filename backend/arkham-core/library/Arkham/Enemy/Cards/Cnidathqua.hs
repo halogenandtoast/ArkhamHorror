@@ -45,19 +45,19 @@ instance HasAbilities Cnidathqua where
             You
             (WhileAttackingAnEnemy $ EnemyWithId $ toId attrs)
           $ FailureResult AnyValue
-      , mkAbility attrs 2 $
-          Objective $
-            ForcedAbility $
-              EnemyDefeated Timing.When Anyone ByAny $
-                EnemyWithId $
-                  toId attrs
+      , mkAbility attrs 2
+          $ Objective
+          $ ForcedAbility
+          $ EnemyDefeated Timing.When Anyone ByAny
+          $ EnemyWithId
+          $ toId attrs
       ]
 
 instance RunMessage Cnidathqua where
   runMessage msg e@(Cnidathqua attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        FindEncounterCard
+      push
+        $ FindEncounterCard
           iid
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard]

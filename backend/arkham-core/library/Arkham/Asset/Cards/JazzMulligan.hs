@@ -30,9 +30,9 @@ jazzMulligan =
 
 instance HasAbilities JazzMulligan where
   getAbilities (JazzMulligan x) =
-    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) $
-        ActionAbility (Just Parley) $
-          ActionCost 1
+    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation)
+        $ ActionAbility (Just Parley)
+        $ ActionCost 1
     ]
 
 instance HasModifiersFor JazzMulligan where
@@ -58,8 +58,8 @@ instance RunMessage JazzMulligan where
           iid
       a <$ push (PlaceAsset assetId $ AtLocation lid)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        parley
+      push
+        $ parley
           iid
           source
           (toTarget attrs)

@@ -29,9 +29,9 @@ instance HasAbilities SearchingForTheTome where
         [ restrictedAbility
             x
             1
-            ( LocationExists $
-                locationIs Cards.exhibitHallRestrictedHall
-                  <> LocationWithoutClues
+            ( LocationExists
+                $ locationIs Cards.exhibitHallRestrictedHall
+                <> LocationWithoutClues
             )
             $ Objective
             $ ForcedAbility AnyWindow

@@ -35,9 +35,9 @@ instance HasAbilities FindTheRelic where
     [ restrictedAbility
       a
       1
-      ( LocationExists $
-          LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-            <> LocationWithoutClues
+      ( LocationExists
+          $ LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+          <> LocationWithoutClues
       )
       $ Objective
       $ ForcedAbility AnyWindow
@@ -54,11 +54,11 @@ instance RunMessage FindTheRelic where
       deckCount <- getActDecksInPlayCount
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       iids <-
-        selectList $
-          NearestToLocation $
-            LocationWithAsset $
-              assetIs
-                Assets.relicOfAgesADeviceOfSomeSort
+        selectList
+          $ NearestToLocation
+          $ LocationWithAsset
+          $ assetIs
+            Assets.relicOfAgesADeviceOfSomeSort
       let
         takeControlMessage =
           chooseOrRunOne

@@ -21,31 +21,31 @@ arcaneInitiate3 = ally ArcaneInitiate3 Cards.arcaneInitiate3 (1, 3)
 
 instance HasAbilities ArcaneInitiate3 where
   getAbilities (ArcaneInitiate3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          AssetEntersPlay Timing.When $
-            AssetWithId $
-              toId a
-    , restrictedAbility a 2 ControlsThis $
-        FastAbility $
-          ExhaustCost $
-            toTarget
-              a
+    [ restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ AssetEntersPlay Timing.When
+        $ AssetWithId
+        $ toId a
+    , restrictedAbility a 2 ControlsThis
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget
+          a
     ]
 
 instance RunMessage ArcaneInitiate3 where
   runMessage msg a@(ArcaneInitiate3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label "Place 1 doom" [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
           , Label "Place 2 horror" [PlaceHorror (toAbilitySource attrs 1) (toTarget attrs) 2]
           ]
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
               iid

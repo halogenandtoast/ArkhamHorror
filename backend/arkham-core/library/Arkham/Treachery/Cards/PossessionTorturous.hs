@@ -22,8 +22,8 @@ possessionTorturous = treachery PossessionTorturous Cards.possessionTorturous
 
 instance HasAbilities PossessionTorturous where
   getAbilities (PossessionTorturous a) =
-    [ restrictedAbility a 1 InYourHand $
-        ActionAbility Nothing (ActionCost 1 <> ResourceCost 5)
+    [ restrictedAbility a 1 InYourHand
+        $ ActionAbility Nothing (ActionCost 1 <> ResourceCost 5)
     ]
 
 instance RunMessage PossessionTorturous where
@@ -31,22 +31,22 @@ instance RunMessage PossessionTorturous where
     Revelation iid source | isSource attrs source -> do
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
-      when (horror > sanity * 2) $
-        push $
-          InvestigatorKilled
-            (toSource attrs)
-            iid
+      when (horror > sanity * 2)
+        $ push
+        $ InvestigatorKilled
+          (toSource attrs)
+          iid
       push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
       pure t
     EndCheckWindow {} -> case treacheryInHandOf attrs of
       Just iid -> do
         horror <- field InvestigatorHorror iid
         sanity <- field InvestigatorSanity iid
-        when (horror > sanity * 2) $
-          push $
-            InvestigatorKilled
-              (toSource attrs)
-              iid
+        when (horror > sanity * 2)
+          $ push
+          $ InvestigatorKilled
+            (toSource attrs)
+            iid
         pure t
       Nothing -> pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do

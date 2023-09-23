@@ -27,18 +27,18 @@ instance HasAbilities IntoTheBeyond where
     withBaseAbilities
       x
       [ mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1
-      , mkAbility x 2 $
-          Objective $
-            ForcedAbility $
-              Enters Timing.When Anyone $
-                LocationWithTitle "The Edge of the Universe"
+      , mkAbility x 2
+          $ Objective
+          $ ForcedAbility
+          $ Enters Timing.When Anyone
+          $ LocationWithTitle "The Edge of the Universe"
       ]
 
 instance RunMessage IntoTheBeyond where
   runMessage msg a@(IntoTheBeyond attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        DiscardTopOfEncounterDeck
+      push
+        $ DiscardTopOfEncounterDeck
           iid
           3
           (toSource attrs)
@@ -52,8 +52,8 @@ instance RunMessage IntoTheBeyond where
           a <$ push (AdvanceActDeck actDeckId (toSource attrs))
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
-      unless (null locationCards) $
-        pushAll
+      unless (null locationCards)
+        $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
               iid

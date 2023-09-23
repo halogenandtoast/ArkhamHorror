@@ -26,8 +26,8 @@ instance HasAbilities Fieldwork where
         1
         ControlsThis
         ( ReactionAbility
-            ( Enters Timing.After You $
-                LocationWithClues (GreaterThan $ Static 0)
+            ( Enters Timing.After You
+                $ LocationWithClues (GreaterThan $ Static 0)
             )
             $ ExhaustCost
             $ toTarget attrs
@@ -40,7 +40,7 @@ instance RunMessage Fieldwork where
       | isSource attrs source ->
           a
             <$ push
-              ( CreateEffect (toCardCode attrs) Nothing source $
-                  InvestigatorTarget iid
+              ( CreateEffect (toCardCode attrs) Nothing source
+                  $ InvestigatorTarget iid
               )
     _ -> Fieldwork <$> runMessage msg attrs

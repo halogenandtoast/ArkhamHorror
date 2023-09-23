@@ -54,10 +54,11 @@ instance HasChaosTokenValue AtDeathsDoorstep where
   getChaosTokenValue iid chaosTokenFace (AtDeathsDoorstep attrs) = case chaosTokenFace of
     Skull -> do
       isHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation
-      pure . uncurry (toChaosTokenValue attrs Skull) $
-        if isHaunted
-          then (1, 2)
-          else (3, 4)
+      pure
+        . uncurry (toChaosTokenValue attrs Skull)
+          $ if isHaunted
+            then (1, 2)
+            else (3, 4)
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs
@@ -213,30 +214,30 @@ instance RunMessage AtDeathsDoorstep where
                 )
                 (doSplit noTimes)
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeEntryHall
-        , placeOffice
-        , placeBilliardsRoom
-        , placeBalcony
-        , MoveAllTo (toSource attrs) entryHallId
-        ]
-          <> otherPlacements
-          <> [ PlaceTokens (toSource attrs) (toTarget entryHallId) Clue 6
-             | toCardCode Investigators.gavriellaMizrah `elem` missingPersons
-             ]
-          <> [ PlaceTokens (toSource attrs) (toTarget officeId) Clue 6
-             | toCardCode Investigators.jeromeDavids `elem` missingPersons
-             ]
-          <> [ PlaceTokens (toSource attrs) (toTarget billiardsRoomId) Clue 6
-             | toCardCode Investigators.valentinoRivas `elem` missingPersons
-             ]
-          <> [ PlaceTokens (toSource attrs) (toTarget balconyId) Clue 6
-             | toCardCode Investigators.pennyWhite `elem` missingPersons
-             ]
-          <> removeClues
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeEntryHall
+          , placeOffice
+          , placeBilliardsRoom
+          , placeBalcony
+          , MoveAllTo (toSource attrs) entryHallId
+          ]
+        <> otherPlacements
+        <> [ PlaceTokens (toSource attrs) (toTarget entryHallId) Clue 6
+           | toCardCode Investigators.gavriellaMizrah `elem` missingPersons
+           ]
+        <> [ PlaceTokens (toSource attrs) (toTarget officeId) Clue 6
+           | toCardCode Investigators.jeromeDavids `elem` missingPersons
+           ]
+        <> [ PlaceTokens (toSource attrs) (toTarget billiardsRoomId) Clue 6
+           | toCardCode Investigators.valentinoRivas `elem` missingPersons
+           ]
+        <> [ PlaceTokens (toSource attrs) (toTarget balconyId) Clue 6
+           | toCardCode Investigators.pennyWhite `elem` missingPersons
+           ]
+        <> removeClues
 
       AtDeathsDoorstep
         <$> runMessage
@@ -251,29 +252,29 @@ instance RunMessage AtDeathsDoorstep where
         Tablet | isEasyStandard attrs -> do
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
-            when (action `elem` [Action.Fight, Action.Evade]) $
-              runHauntedAbilities iid
+            when (action `elem` [Action.Fight, Action.Evade])
+              $ runHauntedAbilities iid
         _ -> pure ()
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       mAction <- getSkillTestAction
       for_ mAction $ \action ->
-        when (action `elem` [Action.Fight, Action.Evade]) $
-          runHauntedAbilities iid
+        when (action `elem` [Action.Fight, Action.Evade])
+          $ runHauntedAbilities iid
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       isSpectralEnemy <-
-        selectAny $
-          EnemyAt (locationWithInvestigator iid)
-            <> EnemyWithTrait Spectral
-      when isSpectralEnemy $
-        push $
-          InvestigatorAssignDamage
-            iid
-            (ChaosTokenEffectSource ElderThing)
-            DamageAny
-            1
-            (if isHardExpert attrs then 1 else 0)
+        selectAny
+          $ EnemyAt (locationWithInvestigator iid)
+          <> EnemyWithTrait Spectral
+      when isSpectralEnemy
+        $ push
+        $ InvestigatorAssignDamage
+          iid
+          (ChaosTokenEffectSource ElderThing)
+          DamageAny
+          1
+          (if isHardExpert attrs then 1 else 0)
       pure s
     ScenarioResolution NoResolution -> do
       step <- getCurrentActStep
@@ -333,9 +334,9 @@ instance RunMessage AtDeathsDoorstep where
             )
           _ -> error "Invalid resolution"
 
-      pushAll $
-        [story iids storyText, Record key]
-          <> gainXp
-          <> [EndOfGame (Just nextStep)]
+      pushAll
+        $ [story iids storyText, Record key]
+        <> gainXp
+        <> [EndOfGame (Just nextStep)]
       pure s
     _ -> AtDeathsDoorstep <$> runMessage msg attrs

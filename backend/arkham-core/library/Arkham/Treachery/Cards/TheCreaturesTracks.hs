@@ -26,8 +26,8 @@ instance RunMessage TheCreaturesTracks where
       if anyBroodOfYogSothoth
         then push $ InvestigatorAssignDamage iid source DamageAny 0 2
         else
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label
                   "Take 2 horror"

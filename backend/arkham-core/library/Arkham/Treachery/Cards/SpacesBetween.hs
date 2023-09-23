@@ -39,10 +39,10 @@ instance RunMessage SpacesBetween where
                         <> LocationWithTrait SentinelHill
                     )
 
-              pure $
-                [MoveTo $ move source iid destination | iid <- investigatorIds]
-                  <> [EnemyMove eid destination | eid <- enemyIds]
-                  <> [UnrevealLocation flipLocation]
+              pure
+                $ [MoveTo $ move source iid destination | iid <- investigatorIds]
+                <> [EnemyMove eid destination | eid <- enemyIds]
+                <> [UnrevealLocation flipLocation]
           )
           nonSentinelHillLocations
 

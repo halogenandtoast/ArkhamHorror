@@ -26,11 +26,11 @@ instance HasAbilities TheSpectralWatcher where
   getAbilities (TheSpectralWatcher a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyDefeated Timing.When Anyone ByAny $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyDefeated Timing.When Anyone ByAny
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage TheSpectralWatcher where

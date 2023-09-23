@@ -27,9 +27,10 @@ instance HasModifiersFor ValentinoRivas where
 
 instance HasAbilities ValentinoRivas where
   getAbilities (ValentinoRivas x) =
-    [ restrictedAbility x 1 (ControlsThis <> DuringSkillTest (YourSkillTest AnySkillTest)) $
-        FastAbility $
-          exhaust x <> ResourceCost 2
+    [ restrictedAbility x 1 (ControlsThis <> DuringSkillTest (YourSkillTest AnySkillTest))
+        $ FastAbility
+        $ exhaust x
+        <> ResourceCost 2
     ]
 
 instance RunMessage ValentinoRivas where

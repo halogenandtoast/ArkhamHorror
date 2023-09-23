@@ -20,11 +20,11 @@ leatherCoat1 = assetWith LeatherCoat1 Cards.leatherCoat1 (healthL ?~ 4)
 
 instance HasAbilities LeatherCoat1 where
   getAbilities (LeatherCoat1 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          AssetDefeated Timing.When ByDamage $
-            AssetWithId $
-              toId a
+    [ restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ AssetDefeated Timing.When ByDamage
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage LeatherCoat1 where

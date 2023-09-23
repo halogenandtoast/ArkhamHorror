@@ -26,9 +26,9 @@ newtype TheLonelyCaverns = TheLonelyCaverns AgendaAttrs
 
 theLonelyCaverns :: AgendaCard TheLonelyCaverns
 theLonelyCaverns =
-  agendaWith (1, A) TheLonelyCaverns Cards.theLonelyCaverns (Static 7) $
-    removeDoomMatchersL
-      %~ (\m -> m {removeDoomLocations = Nowhere})
+  agendaWith (1, A) TheLonelyCaverns Cards.theLonelyCaverns (Static 7)
+    $ removeDoomMatchersL
+    %~ (\m -> m {removeDoomLocations = Nowhere})
 
 instance HasAbilities TheLonelyCaverns where
   getAbilities (TheLonelyCaverns a) =
@@ -38,19 +38,19 @@ instance HasAbilities TheLonelyCaverns where
         (LocationExists $ YourLocation <> LocationWithoutClues)
         $ ActionAbility (Just Action.Explore)
         $ ActionCost 1
-    , mkAbility a 2 $
-        ForcedAbility $
-          AgendaAdvances Timing.When $
-            AgendaWithId $
-              toId a
+    , mkAbility a 2
+        $ ForcedAbility
+        $ AgendaAdvances Timing.When
+        $ AgendaWithId
+        $ toId a
     ]
 
 instance RunMessage TheLonelyCaverns where
   runMessage msg a@(TheLonelyCaverns attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           (toSource attrs)
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
@@ -70,17 +70,17 @@ instance RunMessage TheLonelyCaverns where
           harbinger
           locationId
           (Just $ toTarget attrs)
-      pushAll $
-        [createHarbinger | harbingerAlive]
-          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll
+        $ [createHarbinger | harbingerAlive]
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     CreatedEnemyAt harbingerId _ (isTarget attrs -> True) -> do
       startingDamage <- getRecordCount TheHarbingerIsStillAlive
-      when (startingDamage > 0) $
-        push $
-          PlaceDamage
-            (toSource attrs)
-            (toTarget harbingerId)
-            startingDamage
+      when (startingDamage > 0)
+        $ push
+        $ PlaceDamage
+          (toSource attrs)
+          (toTarget harbingerId)
+          startingDamage
       pure a
     _ -> TheLonelyCaverns <$> runMessage msg attrs

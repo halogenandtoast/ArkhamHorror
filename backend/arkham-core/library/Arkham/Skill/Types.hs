@@ -116,8 +116,8 @@ skill f cardDef =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (iid, sid) ->
-        f $
-          SkillAttrs
+        f
+          $ SkillAttrs
             { skillCardCode = toCardCode cardDef
             , skillCardId = cardId
             , skillId = sid

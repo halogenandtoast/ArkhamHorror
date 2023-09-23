@@ -25,18 +25,18 @@ kidnapped = treachery Kidnapped Cards.kidnapped
 instance HasAbilities Kidnapped where
   getAbilities (Kidnapped attrs) = case treacheryAttachedTarget attrs of
     Just (AgendaTarget aid) ->
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            AgendaAdvances Timing.When $
-              AgendaWithId aid
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ AgendaAdvances Timing.When
+          $ AgendaWithId aid
       ]
     _ -> []
 
 instance RunMessage Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Test {willpower} (4)"
@@ -51,8 +51,8 @@ instance RunMessage Kidnapped where
           allies <- selectList (AssetControlledBy You <> AllyAsset)
           if null allies
             then
-              push $
-                InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
+              push
+                $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
             else do
               agendaId <- selectJust AnyAgenda
               pushAll
@@ -67,8 +67,8 @@ instance RunMessage Kidnapped where
                 ]
           pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        DrawRandomFromScenarioDeck
+      push
+        $ DrawRandomFromScenarioDeck
           iid
           PotentialSacrifices
           (toTarget attrs)

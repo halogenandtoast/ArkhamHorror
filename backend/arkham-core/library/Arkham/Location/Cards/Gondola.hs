@@ -33,13 +33,13 @@ instance RunMessage Gondola where
   runMessage msg l@(Gondola attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       locationIds <- setToList . deleteSet (toId attrs) <$> select Anywhere
-      pushAll $
-        MoveAllTo (toSource attrs) (toId attrs)
-          : [RemoveLocation lid | lid <- locationIds]
+      pushAll
+        $ MoveAllTo (toSource attrs) (toId attrs)
+        : [RemoveLocation lid | lid <- locationIds]
       pure l
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label "Test {combat} (2)" [beginSkillTest iid attrs attrs SkillCombat 2]
           , Label "Test {agility} (2)" [beginSkillTest iid attrs attrs SkillAgility 2]

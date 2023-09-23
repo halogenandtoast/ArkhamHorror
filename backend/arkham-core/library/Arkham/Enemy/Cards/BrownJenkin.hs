@@ -45,7 +45,8 @@ instance RunMessage BrownJenkin where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigatorsWithHand <-
         selectWithField InvestigatorHand
-          $ InvestigatorAt (locationWithEnemy $ toId attrs) <> HandWith AnyCards
+          $ InvestigatorAt (locationWithEnemy $ toId attrs)
+          <> HandWith AnyCards
       for_ investigatorsWithHand $ \(iid, hand) -> do
         drawing <- drawCards iid (toAbilitySource attrs 1) (length hand)
         pushAll [DiscardHand iid (toSource attrs), drawing]

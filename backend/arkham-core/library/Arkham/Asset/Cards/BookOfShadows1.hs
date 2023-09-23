@@ -36,12 +36,12 @@ instance RunMessage BookOfShadows1 where
       spellAssetIds <-
         selectList
           (AssetControlledBy You <> AssetWithTrait Spell)
-      unless (null spellAssetIds) $
-        push $
-          chooseOne
-            iid
-            [ targetLabel aid' [AddUses aid' Charge 1]
-            | aid' <- spellAssetIds
-            ]
+      unless (null spellAssetIds)
+        $ push
+        $ chooseOne
+          iid
+          [ targetLabel aid' [AddUses aid' Charge 1]
+          | aid' <- spellAssetIds
+          ]
       pure a
     _ -> BookOfShadows1 <$> runMessage msg attrs

@@ -31,7 +31,7 @@ instance HasModifiersFor ScreechingByakhee where
     pure
       $ toModifiers attrs
       $ guard (minSanity <= 4)
-        *> [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
+      *> [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ScreechingByakhee where

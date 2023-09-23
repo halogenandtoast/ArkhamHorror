@@ -22,19 +22,19 @@ scrollOfSecretsMystic3 =
 
 instance HasAbilities ScrollOfSecretsMystic3 where
   getAbilities (ScrollOfSecretsMystic3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> ExhaustCost (toTarget a)
-            <> UseCost (AssetWithId $ toId a) Secret 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 instance RunMessage ScrollOfSecretsMystic3 where
   runMessage msg a@(ScrollOfSecretsMystic3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <-
-        selectTargets $
-          InvestigatorWithoutModifier CannotManipulateDeck
+        selectTargets
+          $ InvestigatorWithoutModifier CannotManipulateDeck
       let
         doSearch target x =
           Search
@@ -44,8 +44,8 @@ instance RunMessage ScrollOfSecretsMystic3 where
             [x 1]
             AnyCard
             (DeferSearchedToTarget $ toTarget attrs)
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             target

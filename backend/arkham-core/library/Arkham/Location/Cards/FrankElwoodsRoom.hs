@@ -29,13 +29,13 @@ instance RunMessage FrankElwoodsRoom where
   runMessage msg l@(FrankElwoodsRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Place 1 of your clues on Frank Elwood's Room"
             [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
           | hasClues
           ]
-            <> [Label "Place 1 doom on the current agenda" [PlaceDoomOnAgenda]]
+        <> [Label "Place 1 doom on the current agenda" [PlaceDoomOnAgenda]]
       pure l
     _ -> FrankElwoodsRoom <$> runMessage msg attrs

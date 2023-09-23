@@ -28,12 +28,12 @@ instance HasAbilities ArkhamWoodsQuietGlade where
       $ [ limitedAbility (PlayerLimit PerTurn 1)
             $ withCriteria (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
             $ Here
-              <> InvestigatorExists
-                ( AnyInvestigator
-                    [ HealableInvestigator (toSource attrs) HorrorType You
-                    , HealableInvestigator (toSource attrs) DamageType You
-                    ]
-                )
+            <> InvestigatorExists
+              ( AnyInvestigator
+                  [ HealableInvestigator (toSource attrs) HorrorType You
+                  , HealableInvestigator (toSource attrs) DamageType You
+                  ]
+              )
         ]
 
 instance RunMessage ArkhamWoodsQuietGlade where
@@ -45,6 +45,6 @@ instance RunMessage ArkhamWoodsQuietGlade where
         $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
           | canHealDamage
           ]
-          <> maybeToList mHealHorror
+        <> maybeToList mHealHorror
       pure l
     _ -> ArkhamWoodsQuietGlade <$> runMessage msg attrs

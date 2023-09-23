@@ -147,7 +147,7 @@ instance RunMessage ThePallidMask where
           Enemies.theManInThePallidMask
       pure
         . ThePallidMask
-        $ attrs
+          $ attrs
         & standaloneCampaignLogL
           .~ standaloneCampaignLog
     Setup -> do
@@ -216,20 +216,20 @@ instance RunMessage ThePallidMask where
 
       pushAll
         $ [story investigatorIds intro]
-          <> [story investigatorIds harukosInformation | harukoInterviewed]
-          <> [Remember YouOpenedASecretPassageway | harukoInterviewed]
-          <> [ SetEncounterDeck encounterDeck
-             , SetAgendaDeck
-             , SetActDeck
-             , placeStartingLocation
-             , SetLocationLabel
-                startingLocationId
-                (unLabel $ positionToLabel startPosition)
-             , PlaceTokens (toSource attrs) (toTarget startingLocationId) Resource 1
-             , MoveAllTo (toSource attrs) startingLocationId
-             , SetupStep (toTarget attrs) 1
-             , RemoveFromBearersDeckOrDiscard theManInThePallidMask
-             ]
+        <> [story investigatorIds harukosInformation | harukoInterviewed]
+        <> [Remember YouOpenedASecretPassageway | harukoInterviewed]
+        <> [ SetEncounterDeck encounterDeck
+           , SetAgendaDeck
+           , SetActDeck
+           , placeStartingLocation
+           , SetLocationLabel
+              startingLocationId
+              (unLabel $ positionToLabel startPosition)
+           , PlaceTokens (toSource attrs) (toTarget startingLocationId) Resource 1
+           , MoveAllTo (toSource attrs) startingLocationId
+           , SetupStep (toTarget attrs) 1
+           , RemoveFromBearersDeckOrDiscard theManInThePallidMask
+           ]
       agendas <- genCards [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
       acts <-
         genCards
@@ -315,7 +315,7 @@ instance RunMessage ThePallidMask where
         push
           $ findAndDrawEncounterCard iid
           $ CardWithType EnemyType
-            <> CardWithOneOf (map CardWithTrait [Ghoul, Geist])
+          <> CardWithOneOf (map CardWithTrait [Ghoul, Geist])
         pure s
       _ -> pure s
     ScenarioResolution res -> do
@@ -337,33 +337,33 @@ instance RunMessage ThePallidMask where
           _ -> error "Invalid resolution"
       pushAll
         $ [story investigatorIds story', Record YouKnowTheSiteOfTheGate]
-          <> [ chooseSome
-                leadInvestigatorId
-                "Done having investigators read Act II"
-                [ targetLabel
-                  iid
-                  [ recordSetInsert ReadActII [unInvestigatorId iid]
-                  , SearchCollectionForRandom
-                      iid
-                      (toSource attrs)
-                      ( CardWithType PlayerTreacheryType
-                          <> CardWithOneOf (map CardWithTrait [Madness, Pact])
-                      )
-                  ]
-                | iid <- investigatorIds
+        <> [ chooseSome
+              leadInvestigatorId
+              "Done having investigators read Act II"
+              [ targetLabel
+                iid
+                [ recordSetInsert ReadActII [unInvestigatorId iid]
+                , SearchCollectionForRandom
+                    iid
+                    (toSource attrs)
+                    ( CardWithType PlayerTreacheryType
+                        <> CardWithOneOf (map CardWithTrait [Madness, Pact])
+                    )
                 ]
-             ]
-          <> [ RemoveAllChaosTokens Cultist
-             , RemoveAllChaosTokens Tablet
-             , RemoveAllChaosTokens ElderThing
-             , AddChaosToken token
-             , AddChaosToken token
-             ]
-          <> [ RecordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
-             | res == Resolution 2
-             ]
-          <> updateSlain
-          <> [ScenarioResolutionStep 1 res]
+              | iid <- investigatorIds
+              ]
+           ]
+        <> [ RemoveAllChaosTokens Cultist
+           , RemoveAllChaosTokens Tablet
+           , RemoveAllChaosTokens ElderThing
+           , AddChaosToken token
+           , AddChaosToken token
+           ]
+        <> [ RecordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
+           | res == Resolution 2
+           ]
+        <> updateSlain
+        <> [ScenarioResolutionStep 1 res]
       pure s
     ScenarioResolutionStep 1 _ -> do
       gainXp <- toGainXp attrs getXp

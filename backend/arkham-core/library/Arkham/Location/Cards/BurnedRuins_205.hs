@@ -23,7 +23,7 @@ burnedRuins_205 = location BurnedRuins_205 Cards.burnedRuins_205 2 (Static 3)
 instance HasAbilities BurnedRuins_205 where
   getAbilities (BurnedRuins_205 x) =
     let rest = withDrawCardUnderneathAction x
-    in  rest
+     in rest
           <> [ mkAbility x 1
               $ ForcedAbility
               $ SkillTestResult
@@ -37,8 +37,8 @@ instance HasAbilities BurnedRuins_205 where
 instance RunMessage BurnedRuins_205 where
   runMessage msg l@(BurnedRuins_205 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      when (locationClues attrs > 0) $
-        pushAll
+      when (locationClues attrs > 0)
+        $ pushAll
           [ RemoveClues (toAbilitySource attrs 1) (toTarget attrs) 1
           , PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
           ]

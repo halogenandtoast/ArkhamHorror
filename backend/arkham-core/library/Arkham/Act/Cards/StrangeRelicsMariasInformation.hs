@@ -36,10 +36,10 @@ instance HasAbilities StrangeRelicsMariasInformation where
     [ restrictedAbility
       a
       1
-      ( AssetExists $
-          assetIs Assets.mariaDeSilva
-            <> AssetWithClues
-              (AtLeast $ PerPlayer 1)
+      ( AssetExists
+          $ assetIs Assets.mariaDeSilva
+          <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
       )
       $ Objective
       $ ForcedAbility AnyWindow
@@ -55,23 +55,23 @@ instance RunMessage StrangeRelicsMariasInformation where
       downtown <- selectJust $ locationIs Locations.downtownFirstBankOfArkham
       rivertown <- selectJust $ locationIs Locations.rivertown
       iids <- getInvestigatorIds
-      pushAll $
-        [ Remember $ IchtacasDestination (Labeled (toName Locations.downtownFirstBankOfArkham) downtown)
-        , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)
-        ]
-          <> [ DiscardTopOfEncounterDeck
-              iid
-              1
+      pushAll
+        $ [ Remember $ IchtacasDestination (Labeled (toName Locations.downtownFirstBankOfArkham) downtown)
+          , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)
+          ]
+        <> [ DiscardTopOfEncounterDeck
+            iid
+            1
+            (toSource attrs)
+            (Just $ toTarget attrs)
+           | iid <- iids
+           ]
+        <> [ AdvanceToAct
+              (actDeckId attrs)
+              Acts.strangeOccurences
+              E
               (toSource attrs)
-              (Just $ toTarget attrs)
-             | iid <- iids
-             ]
-          <> [ AdvanceToAct
-                (actDeckId attrs)
-                Acts.strangeOccurences
-                E
-                (toSource attrs)
-             ]
+           ]
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target ->
       do

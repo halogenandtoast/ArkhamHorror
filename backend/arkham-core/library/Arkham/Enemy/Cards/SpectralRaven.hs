@@ -41,22 +41,22 @@ instance RunMessage SpectralRaven where
   runMessage msg e@(SpectralRaven attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasHauntedAbilities <- selectAny $ locationWithInvestigator iid <> HauntedLocation
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Resolve each haunted ability on your location"
             [HandleTargetChoice iid (toSource attrs) (toTarget attrs)]
           | hasHauntedAbilities
           ]
-            <> [ Label
-                  "Spectral Raven gets +2 fight and +2 evade until the end of the investigation phase"
-                  [ createWindowModifierEffect
-                      (EffectPhaseWindowFor InvestigationPhase)
-                      attrs
-                      attrs
-                      [Mod.EnemyFight 2, Mod.EnemyEvade 2]
-                  ]
-               ]
+        <> [ Label
+              "Spectral Raven gets +2 fight and +2 evade until the end of the investigation phase"
+              [ createWindowModifierEffect
+                  (EffectPhaseWindowFor InvestigationPhase)
+                  attrs
+                  attrs
+                  [Mod.EnemyFight 2, Mod.EnemyEvade 2]
+              ]
+           ]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) _ -> do
       runHauntedAbilities iid

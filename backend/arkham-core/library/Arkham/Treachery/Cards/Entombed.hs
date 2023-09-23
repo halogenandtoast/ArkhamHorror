@@ -34,9 +34,9 @@ instance HasModifiersFor Entombed where
 
 instance HasAbilities Entombed where
   getAbilities (Entombed (a `With` _)) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ActionAbility Nothing $
-          ActionCost 1
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ActionAbility Nothing
+        $ ActionCost 1
     ]
 
 instance RunMessage Entombed where
@@ -57,11 +57,11 @@ instance RunMessage Entombed where
       | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-          pure $
-            Entombed $
-              attrs
-                `With` Metadata
-                  (difficultyReduction metadata + 1)
+          pure
+            $ Entombed
+            $ attrs
+            `With` Metadata
+              (difficultyReduction metadata + 1)
     EndRound -> do
       pure $ Entombed $ attrs `With` Metadata 0
     _ -> Entombed . (`with` metadata) <$> runMessage msg attrs

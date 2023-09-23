@@ -22,7 +22,9 @@ instance HasAbilities TheCustodian where
   getAbilities (TheCustodian a) =
     [ restrictedAbility a 1 ControlsThis $ freeReaction (PhaseBegins #when #investigation)
     , withCriteria (mkAbility a 2 #parley)
-        $ Uncontrolled <> OnSameLocation <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+        $ Uncontrolled
+        <> OnSameLocation
+        <> InvestigatorExists (You <> InvestigatorWithAnyClues)
     ]
 
 instance RunMessage TheCustodian where
@@ -39,7 +41,7 @@ instance RunMessage TheCustodian where
       takeControl <- (clueCount + 1 >=) <$> perPlayer 1
       pushAll
         $ InvestigatorSpendClues iid 1
-          : PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
-          : [TakeControlOfAsset iid (toId a) | takeControl]
+        : PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
+        : [TakeControlOfAsset iid (toId a) | takeControl]
       pure a
     _ -> TheCustodian <$> runMessage msg attrs

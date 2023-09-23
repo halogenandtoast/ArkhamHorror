@@ -36,8 +36,8 @@ instance HasAbilities KeziahsRoom where
   getAbilities (KeziahsRoom (a `With` _)) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ReactionAbility
+      [ mkAbility a 1
+          $ ReactionAbility
             ( SkillTestResult
                 Timing.When
                 You
@@ -57,16 +57,16 @@ instance RunMessage KeziahsRoom where
           pure $ KeziahsRoom $ attrs `with` Metadata False
     DrewFromScenarioDeck iid _ target [card] | isTarget attrs target -> do
       labels <-
-        selectFields LocationLabel $
-          LocationWithUnrevealedTitle "Unknown Places"
-            <> NotLocation RevealedLocation
+        selectFields LocationLabel
+          $ LocationWithUnrevealedTitle "Unknown Places"
+          <> NotLocation RevealedLocation
       let
         nextLabel =
-          fromJustNote "too many locations" $
-            find (`notElem` labels) $
-              map
-                (\n -> "unknownPlaces" <> tshow n)
-                ([1 .. 7] :: [Int])
+          fromJustNote "too many locations"
+            $ find (`notElem` labels)
+            $ map
+              (\n -> "unknownPlaces" <> tshow n)
+              ([1 .. 7] :: [Int])
       (lid, placement) <- placeLocation card
       pushAll
         [ placement

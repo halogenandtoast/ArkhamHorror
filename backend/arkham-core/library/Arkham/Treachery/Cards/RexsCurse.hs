@@ -31,12 +31,12 @@ instance HasAbilities RexsCurse where
         x
         1
         (InThreatAreaOf You)
-        ( ForcedAbility $
-            WouldHaveSkillTestResult Timing.When You AnySkillTest $
-              SuccessResult AnyValue
+        ( ForcedAbility
+            $ WouldHaveSkillTestResult Timing.When You AnySkillTest
+            $ SuccessResult AnyValue
         )
         & abilityLimitL
-        .~ PlayerLimit PerTestOrAbility 1
+          .~ PlayerLimit PerTestOrAbility 1
     ]
 
 instance RunMessage RexsCurse where
@@ -56,18 +56,18 @@ instance RunMessage RexsCurse where
             remaining = case after of
               [] -> []
               (_ : xs) -> xs
-          in
+           in
             (before <> remaining, remainingWillPass)
-        pushAll $
-          retainedMessages
-            <> [ReturnSkillTestRevealedChaosTokens, DrawAnotherChaosToken iid]
+        pushAll
+          $ retainedMessages
+          <> [ReturnSkillTestRevealedChaosTokens, DrawAnotherChaosToken iid]
         pure $ RexsCurse (attrs `with` Metadata True)
       FailedSkillTest iid _ _ _ _ _ | treacheryOnInvestigator iid attrs -> do
-        when (active metadata) $
-          push $
-            ShuffleIntoDeck
-              (Deck.InvestigatorDeck iid)
-              (toTarget attrs)
+        when (active metadata)
+          $ push
+          $ ShuffleIntoDeck
+            (Deck.InvestigatorDeck iid)
+            (toTarget attrs)
         pure $ RexsCurse (attrs `With` Metadata False)
       SkillTestEnds _ _ -> pure $ RexsCurse (attrs `With` Metadata False)
       _ -> RexsCurse . (`with` metadata) <$> runMessage msg attrs

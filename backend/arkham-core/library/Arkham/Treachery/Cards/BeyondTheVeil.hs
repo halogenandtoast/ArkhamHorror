@@ -22,21 +22,21 @@ beyondTheVeil = treachery BeyondTheVeil Cards.beyondTheVeil
 
 instance HasAbilities BeyondTheVeil where
   getAbilities (BeyondTheVeil x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          DeckHasNoCards Timing.When You
+    [ restrictedAbility x 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ DeckHasNoCards Timing.When You
     ]
 
 instance RunMessage BeyondTheVeil where
   runMessage msg t@(BeyondTheVeil attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       canAttach <-
-        selectNone $
-          treacheryIs Cards.beyondTheVeil
-            <> TreacheryInThreatAreaOf
-              (InvestigatorWithId iid)
-      when canAttach $
-        push (AttachTreachery treacheryId (InvestigatorTarget iid))
+        selectNone
+          $ treacheryIs Cards.beyondTheVeil
+          <> TreacheryInThreatAreaOf
+            (InvestigatorWithId iid)
+      when canAttach
+        $ push (AttachTreachery treacheryId (InvestigatorTarget iid))
       pure t
     UseCardAbility iid source 1 _ _
       | isSource attrs source ->

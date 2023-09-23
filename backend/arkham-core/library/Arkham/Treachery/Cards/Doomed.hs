@@ -43,10 +43,10 @@ instance RunMessage Doomed where
                 , RemoveTreachery (toId attrs)
                 ]
         else do
-          pushAll $
-            [ InvestigatorAssignDamage iid source DamageAny 0 1
-            , Record DoomApproaches
-            ]
+          pushAll
+            $ [ InvestigatorAssignDamage iid source DamageAny 0 1
+              , Record DoomApproaches
+              ]
 
       pure t
     _ -> Doomed <$> runMessage msg attrs

@@ -22,17 +22,17 @@ trenchKnife = asset TrenchKnife Cards.trenchKnife
 instance HasModifiersFor TrenchKnife where
   getModifiersFor (InvestigatorTarget iid) (TrenchKnife attrs)
     | attrs `controlledBy` iid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [ActionDoesNotCauseAttacksOfOpportunity Action.Engage]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrenchKnife where
   getAbilities (TrenchKnife attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
     ]
 
 instance RunMessage TrenchKnife where

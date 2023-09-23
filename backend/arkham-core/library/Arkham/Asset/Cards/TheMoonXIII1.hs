@@ -25,8 +25,8 @@ theMoonXiii1 =
 
 instance HasModifiersFor TheMoonXIII1 where
   getModifiersFor (InvestigatorTarget iid) (TheMoonXIII1 a) =
-    pure $
-      toModifiers a [SkillModifier SkillAgility 1 | controlledBy a iid]
+    pure
+      $ toModifiers a [SkillModifier SkillAgility 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheMoonXIII1 where

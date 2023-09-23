@@ -22,10 +22,10 @@ mollyMaxwell = ally MollyMaxwell Cards.mollyMaxwell (2, 4)
 
 instance HasAbilities MollyMaxwell where
   getAbilities (MollyMaxwell a) =
-    [ restrictedAbility a 1 ControlsThis $
-        FastAbility $
-          ExhaustCost (toTarget a)
-            <> HorrorCost (toSource a) (toTarget a) 1
+    [ restrictedAbility a 1 ControlsThis
+        $ FastAbility
+        $ ExhaustCost (toTarget a)
+        <> HorrorCost (toSource a) (toTarget a) 1
     ]
 
 instance RunMessage MollyMaxwell where
@@ -35,24 +35,24 @@ instance RunMessage MollyMaxwell where
         filter (`cardMatch` Matcher.AssetCard)
           <$> getKnownRemainingOriginalDeckCards iid
       let deckTraits = toList . unions $ map toTraits cards
-      push $
-        chooseOneDropDown iid $
-          ( "Trait that won't match"
+      push
+        $ chooseOneDropDown iid
+        $ ( "Trait that won't match"
           , RevealUntilFirst
               iid
               (toSource attrs)
               (InvestigatorDeck iid)
               (NotCard AnyCard)
           )
-            : [ ( tshow trait
-                , RevealUntilFirst
-                    iid
-                    (toSource attrs)
-                    (InvestigatorDeck iid)
-                    (CardWithTrait trait)
-                )
-              | trait <- deckTraits
-              ]
+        : [ ( tshow trait
+            , RevealUntilFirst
+                iid
+                (toSource attrs)
+                (InvestigatorDeck iid)
+                (CardWithTrait trait)
+            )
+          | trait <- deckTraits
+          ]
       pure a
     RevealedCards iid (isSource attrs -> True) _ mcard rest -> do
       pushAll $ case mcard of

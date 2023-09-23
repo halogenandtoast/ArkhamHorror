@@ -33,15 +33,15 @@ circleTest
   -> Int
   -> m ()
 circleTest iid source target skillTypes n =
-  push $
-    BeginSkillTest $
-      buildSkillTest
-        iid
-        source
-        target
-        (AndSkillTest skillTypes)
-        (AndSkillBaseValue skillTypes)
-        n
+  push
+    $ BeginSkillTest
+    $ buildSkillTest
+      iid
+      source
+      target
+      (AndSkillTest skillTypes)
+      (AndSkillBaseValue skillTypes)
+      n
 
 passedCircleTest :: HasQueue Message m => InvestigatorId -> LocationAttrs -> m ()
 passedCircleTest iid attrs = do

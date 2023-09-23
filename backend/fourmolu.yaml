@@ -19,6 +19,5 @@ fixities:
   - infixl 4  <$
   - infixl 1  >>, >>=
   - infixr 1  =<<
-  - infixl 0  $, $!
   - infixl 0  &
   - infixl 4 <*>, <*, *>, <**>

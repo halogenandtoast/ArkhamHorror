@@ -24,8 +24,8 @@ wormhole = treachery Wormhole Cards.wormhole
 instance RunMessage Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $
-        DiscardUntilFirst
+      push
+        $ DiscardUntilFirst
           iid
           source
           Deck.EncounterDeck

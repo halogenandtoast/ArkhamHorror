@@ -55,7 +55,7 @@ instance RunMessage TheEntityAboveTheVortexAbove where
       drawing <- for investigatorIds $ \iid -> drawCards iid (toAbilitySource attrs 1) 1
       pushAll
         $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-          : AdvanceAgendaIfThresholdSatisfied
-          : drawing
+        : AdvanceAgendaIfThresholdSatisfied
+        : drawing
       pure a
     _ -> TheEntityAboveTheVortexAbove <$> runMessage msg attrs

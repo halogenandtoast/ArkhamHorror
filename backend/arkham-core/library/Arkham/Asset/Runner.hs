@@ -76,8 +76,8 @@ instance RunMessage AssetAttrs where
     RemoveClues _ target n | isTarget a target -> do
       when (assetClues a - n <= 0)
         $ pushAll
-          =<< windows
-            [Window.LastClueRemovedFromAsset (toId a)]
+        =<< windows
+          [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & tokensL %~ subtractTokens Clue n
     CheckDefeated source -> do
       mDefeated <- defeated a source
@@ -89,7 +89,7 @@ instance RunMessage AssetAttrs where
     Msg.AssetDamage aid source damage horror | aid == assetId -> do
       pushAll
         $ [PlaceDamage source (toTarget a) damage | damage > 0]
-          <> [PlaceHorror source (toTarget a) horror | horror > 0]
+        <> [PlaceHorror source (toTarget a) horror | horror > 0]
       pure a
     PlaceDamage _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Token.Damage n
     PlaceHorror _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Horror n
@@ -172,8 +172,8 @@ instance RunMessage AssetAttrs where
           )
       pushAll
         $ windowMsg
-          : [UnsealChaosToken token | token <- assetSealedChaosTokens]
-            <> [RemovedFromPlay source]
+        : [UnsealChaosToken token | token <- assetSealedChaosTokens]
+          <> [RemovedFromPlay source]
       pure a
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & (keysL %~ insertSet k)
@@ -198,7 +198,7 @@ instance RunMessage AssetAttrs where
 
       pushAll
         $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
-          <> [whenEnterMsg, afterEnterMsg]
+        <> [whenEnterMsg, afterEnterMsg]
       pure
         $ a
         & (placementL .~ InPlayArea iid)

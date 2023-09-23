@@ -20,8 +20,8 @@ harlanEarnstone = asset HarlanEarnstone Cards.harlanEarnstone
 
 instance HasAbilities HarlanEarnstone where
   getAbilities (HarlanEarnstone a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility
           (Just Action.Parley)
           (ActionCost 1 <> DiscardTopOfDeckCost 3)
     ]

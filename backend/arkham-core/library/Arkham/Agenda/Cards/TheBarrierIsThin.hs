@@ -38,20 +38,20 @@ instance RunMessage TheBarrierIsThin where
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
 
-      pushAll $
-        map (AddToVictory . LocationTarget) tenochtitlanLocations
-          <> [NextAdvanceAgendaStep (toId attrs) 1]
-          <> map (InvestigatorDiscardAllClues (toSource attrs)) iids
-          <> [NextAdvanceAgendaStep (toId attrs) 2]
-          <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
-             , SetCurrentActDeck 1 [theReturnTrip]
-             ]
+      pushAll
+        $ map (AddToVictory . LocationTarget) tenochtitlanLocations
+        <> [NextAdvanceAgendaStep (toId attrs) 1]
+        <> map (InvestigatorDiscardAllClues (toSource attrs)) iids
+        <> [NextAdvanceAgendaStep (toId attrs) 2]
+        <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
+           , SetCurrentActDeck 1 [theReturnTrip]
+           ]
       pure a
     NextAdvanceAgendaStep aid 1 | aid == toId attrs && onSide B attrs -> do
       presentDayLocations <- selectList $ LocationWithTrait PresentDay
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOneAtATime
+      push
+        $ chooseOneAtATime
           leadInvestigatorId
           [ targetLabel
             lid

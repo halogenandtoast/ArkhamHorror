@@ -27,13 +27,13 @@ instance HasAbilities GreatLibrary where
   getAbilities (GreatLibrary attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $
-          ActionAbility Nothing $
-            ActionCost 1
-              <> ClueCost (PerPlayer 1)
-      , restrictedAbility attrs 2 (CluesOnThis $ LessThan $ Static 4) $
-          ForcedAbility $
-            RoundEnds Timing.When
+      [ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
+          <> ClueCost (PerPlayer 1)
+      , restrictedAbility attrs 2 (CluesOnThis $ LessThan $ Static 4)
+          $ ForcedAbility
+          $ RoundEnds Timing.When
       ]
 
 instance RunMessage GreatLibrary where

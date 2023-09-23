@@ -22,9 +22,9 @@ strangeSolutionFreezingVariant4 =
 
 instance HasAbilities StrangeSolutionFreezingVariant4 where
   getAbilities (StrangeSolutionFreezingVariant4 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility (Just Action.Evade) $
-          Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Supply 1]
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ActionAbility (Just Action.Evade)
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Supply 1]
     ]
 
 instance HasModifiersFor StrangeSolutionFreezingVariant4 where

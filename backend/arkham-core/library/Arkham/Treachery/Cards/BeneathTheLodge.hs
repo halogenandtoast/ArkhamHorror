@@ -48,8 +48,8 @@ instance RunMessage BeneathTheLodge where
     HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
     HandlePointOfFailure iid target n | isTarget attrs target -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
-      pushAll $
-        if hasClues
+      pushAll
+        $ if hasClues
           then
             [ chooseOne
                 iid

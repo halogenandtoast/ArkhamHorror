@@ -28,22 +28,22 @@ instance HasAbilities Poltergeist where
   getAbilities (Poltergeist a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 OnSameLocation $
-          ActionAbility (Just Action.Parley) $
-            ActionCost 1
+      [ restrictedAbility a 1 OnSameLocation
+          $ ActionAbility (Just Action.Parley)
+          $ ActionCost 1
       ]
 
 instance HasModifiersFor Poltergeist where
   getModifiersFor (EnemyTarget eid) (Poltergeist a)
     | toId a == eid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
-            [ CannotBeDamagedByPlayerSourcesExcept $
-                SourceMatchesAny $
-                  map
-                    SourceWithTrait
-                    [Spell, Relic]
+            [ CannotBeDamagedByPlayerSourcesExcept
+                $ SourceMatchesAny
+                $ map
+                  SourceWithTrait
+                  [Spell, Relic]
             ]
   getModifiersFor _ _ = pure []
 

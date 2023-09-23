@@ -34,11 +34,11 @@ instance HasAbilities ChamberOfTime where
   getAbilities (ChamberOfTime attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          PutLocationIntoPlay Timing.After Anyone $
-            LocationWithId $
-              toId attrs
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ PutLocationIntoPlay Timing.After Anyone
+        $ LocationWithId
+        $ toId attrs
       | locationRevealed attrs
       ]
 

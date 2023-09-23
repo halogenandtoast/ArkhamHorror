@@ -50,8 +50,8 @@ instance HasChaosTokenValue CurseOfTheRougarou where
   getChaosTokenValue iid chaosTokenFace (CurseOfTheRougarou attrs) = case chaosTokenFace of
     Skull -> do
       isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
-      pure $
-        if isBayou
+      pure
+        $ if isBayou
           then toChaosTokenValue attrs Skull 4 6
           else toChaosTokenValue attrs Skull 2 3
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
@@ -73,8 +73,8 @@ instance RunMessage CurseOfTheRougarou where
       startingLocationsWithLabel <- locationsWithLabels trait startingLocations
 
       setAsideLocations <-
-        genCards $
-          concatMap (\t -> findWithDefault [] t locationsByTrait) rest
+        genCards
+          $ concatMap (\t -> findWithDefault [] t locationsByTrait) rest
 
       setAsideCards <-
         genCards
@@ -91,14 +91,14 @@ instance RunMessage CurseOfTheRougarou where
         (locationId, placement) <- placeLocation card
         pure [placement, SetLocationLabel locationId label]
 
-      pushAll $
-        [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-          <> [placeBayou, SetLocationLabel bayouId bayouLabel]
-          <> concat otherPlacements
-          <> [ RevealLocation Nothing bayouId
-             , MoveAllTo (toSource attrs) bayouId
-             , story investigatorIds intro
-             ]
+      pushAll
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
+        <> [placeBayou, SetLocationLabel bayouId bayouLabel]
+        <> concat otherPlacements
+        <> [ RevealLocation Nothing bayouId
+           , MoveAllTo (toSource attrs) bayouId
+           , story investigatorIds intro
+           ]
       agendas <-
         genCards
           [ Agendas.aCreatureOfTheBayou
@@ -176,10 +176,10 @@ instance RunMessage CurseOfTheRougarou where
       s <$ push (SetChaosTokens tokens)
     ResolveChaosToken _ Cultist iid -> do
       rougarouAtYourLocation <-
-        selectAny $
-          enemyIs Enemies.theRougarou
-            <> EnemyAt
-              (locationWithInvestigator iid)
+        selectAny
+          $ enemyIs Enemies.theRougarou
+          <> EnemyAt
+            (locationWithInvestigator iid)
       s <$ when rougarouAtYourLocation (push $ DrawAnotherChaosToken iid)
     ResolveChaosToken _ ElderThing iid -> do
       if isEasyStandard attrs
@@ -190,16 +190,16 @@ instance RunMessage CurseOfTheRougarou where
           lid <- getJustLocation iid
           connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
           mrougarou <-
-            selectOne $
-              enemyIs Enemies.theRougarou
-                <> EnemyAt (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
+            selectOne
+              $ enemyIs Enemies.theRougarou
+              <> EnemyAt (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
           for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when
         (chaosTokenFace token == Tablet)
-        ( push $
-            CreateEffect
+        ( push
+            $ CreateEffect
               "81001"
               Nothing
               (ChaosTokenSource token)
@@ -211,40 +211,40 @@ instance RunMessage CurseOfTheRougarou where
     ScenarioResolution (Resolution 1) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [story iids resolution1, Record TheRougarouContinuesToHauntTheBayou]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [story iids resolution1, Record TheRougarouContinuesToHauntTheBayou]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       iids <- allInvestigatorIds
       lead <- getLead
       xp <- getXp
-      pushAll $
-        [ story iids resolution2
-        , Record TheRougarouIsDestroyed
-        , RemoveCampaignCard Treacheries.curseOfTheRougarou
-        , chooseOne
-            lead
-            [ Label
-                "Add Lady Esprit to your deck"
-                [AddCampaignCardToDeck lead Assets.ladyEsprit]
-            , Label "Do not add Lady Esprit to your deck" []
-            ]
-        ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution2
+          , Record TheRougarouIsDestroyed
+          , RemoveCampaignCard Treacheries.curseOfTheRougarou
+          , chooseOne
+              lead
+              [ Label
+                  "Add Lady Esprit to your deck"
+                  [AddCampaignCardToDeck lead Assets.ladyEsprit]
+              , Label "Do not add Lady Esprit to your deck" []
+              ]
+          ]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
       iids <- allInvestigatorIds
       lead <- getLead
       xp <- getXp
-      pushAll $
-        [ story iids resolution3
-        , Record TheRougarouEscapedAndYouEmbracedTheCurse
-        , AddCampaignCardToDeck lead Assets.monstrousTransformation
-        ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution3
+          , Record TheRougarouEscapedAndYouEmbracedTheCurse
+          , AddCampaignCardToDeck lead Assets.monstrousTransformation
+          ]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     _ -> CurseOfTheRougarou <$> runMessage msg attrs

@@ -27,18 +27,18 @@ instance HasAbilities ApexStrangleweed where
   getAbilities (ApexStrangleweed a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After You AttackOfOpportunityAttack $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.After You AttackOfOpportunityAttack
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage ApexStrangleweed where
   runMessage msg e@(ApexStrangleweed attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasPocketknife <- getHasSupply iid Pocketknife
-      unless hasPocketknife $
-        pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+      unless hasPocketknife
+        $ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
       pure e
     _ -> ApexStrangleweed <$> runMessage msg attrs

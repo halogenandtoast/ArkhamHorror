@@ -34,11 +34,11 @@ instance HasAbilities ConglomerationOfSpheres where
   getAbilities (ConglomerationOfSpheres x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            EnemyAttacked Timing.After You (SourceWithTrait Melee) $
-              EnemyWithId $
-                toId x
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ EnemyAttacked Timing.After You (SourceWithTrait Melee)
+          $ EnemyWithId
+          $ toId x
       ]
 
 instance RunMessage ConglomerationOfSpheres where
@@ -49,6 +49,6 @@ instance RunMessage ConglomerationOfSpheres where
       1
       [(windowType -> Window.EnemyAttacked _ attackSource _)]
       _ -> do
-      push $ Discard (toAbilitySource attrs 1) (sourceToTarget attackSource)
-      pure e
+        push $ Discard (toAbilitySource attrs 1) (sourceToTarget attackSource)
+        pure e
     _ -> ConglomerationOfSpheres <$> runMessage msg attrs

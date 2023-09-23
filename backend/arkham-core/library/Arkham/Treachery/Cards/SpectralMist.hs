@@ -43,12 +43,12 @@ instance RunMessage SpectralMist where
   runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-
-        selectTargets $
-          LocationWithTrait Bayou
-            <> NotLocation
-              (LocationWithTreachery $ treacheryIs Cards.spectralMist)
-      pushWhen (notNull targets) $
-        chooseOne
+        selectTargets
+          $ LocationWithTrait Bayou
+          <> NotLocation
+            (LocationWithTreachery $ treacheryIs Cards.spectralMist)
+      pushWhen (notNull targets)
+        $ chooseOne
           iid
           [ targetLabel target [AttachTreachery treacheryId target]
           | target <- targets

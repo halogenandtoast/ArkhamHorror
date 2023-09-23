@@ -32,14 +32,14 @@ theGuardedRuins =
 instance HasModifiersFor TheGuardedRuins where
   getModifiersFor (EnemyTarget eid) (TheGuardedRuins a) = do
     isEztliGuardian <- eid <=~> EnemyWithTitle "Eztli Guardian"
-    pure $
-      if isEztliGuardian
+    pure
+      $ if isEztliGuardian
         then toModifiers a [EnemyFight 1, EnemyEvade 1]
         else []
   getModifiersFor (CardIdTarget cardId) (TheGuardedRuins a) = do
     card <- getCard cardId
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ AddKeyword Keyword.Surge
         | card `isCard` Treacheries.arrowsFromTheTrees

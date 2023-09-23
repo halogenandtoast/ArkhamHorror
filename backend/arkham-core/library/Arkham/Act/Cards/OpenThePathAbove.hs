@@ -26,10 +26,10 @@ instance HasAbilities OpenThePathAbove where
         [ restrictedAbility
             x
             1
-            ( EachUndefeatedInvestigator $
-                InvestigatorAt $
-                  LocationWithTitle "Abbey Tower"
-                    <> LocationWithoutClues
+            ( EachUndefeatedInvestigator
+                $ InvestigatorAt
+                $ LocationWithTitle "Abbey Tower"
+                <> LocationWithoutClues
             )
             $ Objective
             $ ForcedAbility AnyWindow

@@ -32,15 +32,15 @@ serpentOfTenochtitlan =
 instance HasModifiersFor SerpentOfTenochtitlan where
   getModifiersFor target (SerpentOfTenochtitlan a) | isTarget a target = do
     atAncientLocation <-
-      selectAny $
-        EnemyWithId (toId a)
-          <> EnemyAt
-            (LocationWithTrait Ancient)
-    pure $
-      toModifiers a $
-        if atAncientLocation
-          then [AddKeyword Retaliate, AddKeyword Alert]
-          else [AddKeyword Hunter]
+      selectAny
+        $ EnemyWithId (toId a)
+        <> EnemyAt
+          (LocationWithTrait Ancient)
+    pure
+      $ toModifiers a
+      $ if atAncientLocation
+        then [AddKeyword Retaliate, AddKeyword Alert]
+        else [AddKeyword Hunter]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SerpentOfTenochtitlan where
@@ -50,10 +50,10 @@ instance HasAbilities SerpentOfTenochtitlan where
       [ restrictedAbility
           a
           1
-          ( InvestigatorExists $
-              You
-                <> NotInvestigator
-                  (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
+          ( InvestigatorExists
+              $ You
+              <> NotInvestigator
+                (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
           )
           $ ForcedAbility
           $ DealtDamage

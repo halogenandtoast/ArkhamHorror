@@ -124,9 +124,9 @@ instance RunMessage TheSecretName where
             ]
           | membersOfTheLodge
           ]
-          <> [story iids intro4 | enemiesOfTheLodge]
-          <> [story iids intro5 | learnedNothing]
-          <> [story iids intro6 | neverSeenOrHeardFromAgain]
+        <> [story iids intro4 | enemiesOfTheLodge]
+        <> [story iids intro5 | learnedNothing]
+        <> [story iids intro6 | neverSeenOrHeardFromAgain]
       pure s
     SetChaosTokensForScenario -> do
       whenM getIsStandalone $ push (SetChaosTokens standaloneChaosTokens)
@@ -183,10 +183,10 @@ instance RunMessage TheSecretName where
           , placeMoldyHalls
           , placeWalterGilmansRoom
           ]
-          <> concat decrepitDoorPlacements
-          <> [ RevealLocation Nothing moldyHallsId
-             , MoveAllTo (toSource attrs) moldyHallsId
-             ]
+        <> concat decrepitDoorPlacements
+        <> [ RevealLocation Nothing moldyHallsId
+           , MoveAllTo (toSource attrs) moldyHallsId
+           ]
 
       setAsideCards <-
         genCards
@@ -255,7 +255,7 @@ instance RunMessage TheSecretName where
       isNahab <- selectAny $ cardIs Enemies.nahab <> CardWithId cardId
       pure
         . TheSecretName
-        $ attrs
+          $ attrs
           `with` meta
             { brownJenkinDefeated = brownJenkinDefeated meta || isBrownJenkin
             , nahabDefeated = nahabDefeated meta || isNahab
@@ -270,38 +270,38 @@ instance RunMessage TheSecretName where
         addTheBlackBook =
           chooseOne lead
             $ Label "Do not add The Black Book" []
-              : [ targetLabel
-                  iid
-                  [ AddCampaignCardToDeck iid Assets.theBlackBook
-                  , AddChaosToken Skull
-                  ]
-                | iid <- iids
+            : [ targetLabel
+                iid
+                [ AddCampaignCardToDeck iid Assets.theBlackBook
+                , AddChaosToken Skull
                 ]
+              | iid <- iids
+              ]
       case resolution of
         NoResolution -> pushAll [story iids noResolution, scenarioResolution 1]
         Resolution 1 -> do
           gainXp <- toGainXp attrs $ getXpWithBonus (brownJenkinBonus + nahabBonus)
           pushAll
             $ story iids resolution1
-              : gainXp
-                <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
-                <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
-                <> [addTheBlackBook | step >= 2]
-                <> [EndOfGame Nothing]
+            : gainXp
+              <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
+              <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
+              <> [addTheBlackBook | step >= 2]
+              <> [EndOfGame Nothing]
         Resolution 2 -> do
           gainXp <- toGainXp attrs $ getXpWithBonus 2
           pushAll
             $ story iids resolution2
-              : gainXp
-                <> [ recordSetInsert
-                      MementosDiscovered
-                      [ Gilman'sJournal
-                      , Keziah'sFormulae
-                      , WornCrucifix
-                      ]
-                   , addTheBlackBook
-                   , EndOfGame Nothing
-                   ]
+            : gainXp
+              <> [ recordSetInsert
+                    MementosDiscovered
+                    [ Gilman'sJournal
+                    , Keziah'sFormulae
+                    , WornCrucifix
+                    ]
+                 , addTheBlackBook
+                 , EndOfGame Nothing
+                 ]
         _ -> error "invalid resolution"
       pure s
     _ -> TheSecretName . (`with` meta) <$> runMessage msg attrs

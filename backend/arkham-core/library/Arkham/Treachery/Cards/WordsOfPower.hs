@@ -29,8 +29,8 @@ instance HasModifiersFor WordsOfPower where
       Just iid -> do
         atSameLocation <- eid <=~> EnemyAt (locationWithInvestigator iid)
         hasDoom <- fieldP EnemyDoom (> 0) eid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ CannotBeDamagedByPlayerSources
               (SourceOwnedBy $ InvestigatorWithId iid)
@@ -40,8 +40,8 @@ instance HasModifiersFor WordsOfPower where
     | treacheryOnInvestigator iid a = do
         hasEnemiesWithDoom <-
           selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithAnyDoom
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ CannotDiscoverCluesAt (locationWithInvestigator iid)
             | hasEnemiesWithDoom
@@ -50,10 +50,10 @@ instance HasModifiersFor WordsOfPower where
 
 instance HasAbilities WordsOfPower where
   getAbilities (WordsOfPower a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage WordsOfPower where

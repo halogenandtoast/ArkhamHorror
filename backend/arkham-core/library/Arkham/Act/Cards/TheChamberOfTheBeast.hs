@@ -28,17 +28,17 @@ theChamberOfTheBeast =
 instance HasAbilities TheChamberOfTheBeast where
   getAbilities (TheChamberOfTheBeast x)
     | onSide A x =
-        [ mkAbility x 1 $
-            Objective $
-              ForcedAbility $
-                EnemyDefeated Timing.After Anyone ByAny $
-                  enemyIs Cards.silasBishop
+        [ mkAbility x 1
+            $ Objective
+            $ ForcedAbility
+            $ EnemyDefeated Timing.After Anyone ByAny
+            $ enemyIs Cards.silasBishop
         , restrictedAbility
             x
             2
-            ( LocationExists $
-                LocationWithTitle "The Hidden Chamber"
-                  <> LocationWithoutClues
+            ( LocationExists
+                $ LocationWithTitle "The Hidden Chamber"
+                <> LocationWithoutClues
             )
             $ Objective
             $ ForcedAbility AnyWindow

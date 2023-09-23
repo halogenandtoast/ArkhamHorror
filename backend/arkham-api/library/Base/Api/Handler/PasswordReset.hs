@@ -31,8 +31,8 @@ putApiV1PasswordResetR :: PasswordResetId -> Handler ()
 putApiV1PasswordResetR resetId = do
   payload <- requireCheckJsonBody
   mdigest <-
-    liftIO $
-      hashPasswordUsingPolicy
+    liftIO
+      $ hashPasswordUsingPolicy
         slowerBcryptHashingPolicy
         (TE.encodeUtf8 $ resetPassword payload)
   now <- liftIO getCurrentTime

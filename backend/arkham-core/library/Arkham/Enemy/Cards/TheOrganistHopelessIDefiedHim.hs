@@ -27,12 +27,12 @@ instance HasAbilities TheOrganistHopelessIDefiedHim where
   getAbilities (TheOrganistHopelessIDefiedHim attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (GroupLimit PerRound 1) $
-          mkAbility attrs 1 $
-            ForcedAbility $
-              MovedFromHunter Timing.After $
-                EnemyWithId $
-                  toId attrs
+      [ limitedAbility (GroupLimit PerRound 1)
+          $ mkAbility attrs 1
+          $ ForcedAbility
+          $ MovedFromHunter Timing.After
+          $ EnemyWithId
+          $ toId attrs
       ]
 
 theOrganistHopelessIDefiedHim :: EnemyCard TheOrganistHopelessIDefiedHim
@@ -47,10 +47,10 @@ instance RunMessage TheOrganistHopelessIDefiedHim where
   runMessage msg e@(TheOrganistHopelessIDefiedHim attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       isEngaged <-
-        selectAny $
-          InvestigatorEngagedWith (EnemyWithId $ toId attrs)
-      unless isEngaged $
-        pushAll
+        selectAny
+          $ InvestigatorEngagedWith (EnemyWithId $ toId attrs)
+      unless isEngaged
+        $ pushAll
           [ CreateEffect (toCardCode attrs) Nothing source (toTarget attrs)
           , HunterMove (toId attrs)
           ]

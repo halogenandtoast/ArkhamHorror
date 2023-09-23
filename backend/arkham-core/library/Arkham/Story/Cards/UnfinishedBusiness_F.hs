@@ -50,12 +50,12 @@ instance RunMessage UnfinishedBusiness_F where
         $ chooseOne
           iid
         $ [Label "Lose 2 resources" [LoseResources iid (toSource attrs) 2] | hasEnoughResources]
-          <> [ Label "Flip this back over" [Flip iid (toAbilitySource attrs 1) (toTarget attrs)]
-             ]
+        <> [ Label "Flip this back over" [Flip iid (toAbilitySource attrs 1) (toTarget attrs)]
+           ]
       pure s
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ SkillLabel sType [beginSkillTest iid attrs attrs sType 4] | sType <- [SkillIntellect, SkillAgility]
           ]

@@ -53,14 +53,14 @@ instance RunMessage JeromesFate where
         else when claimedBySpecters $ do
           jerome <- genCard Enemies.jeromeDavids
           createJerome <-
-            createEnemy jerome $
-              if onTrail
+            createEnemy jerome
+              $ if onTrail
                 then toEnemyCreationMethod location
                 else toEnemyCreationMethod iid
           pushAll
             [ RemoveStory (toId attrs)
-            , toMessage $
-                createJerome
+            , toMessage
+                $ createJerome
                   { enemyCreationExhausted = onTrail
                   }
             ]

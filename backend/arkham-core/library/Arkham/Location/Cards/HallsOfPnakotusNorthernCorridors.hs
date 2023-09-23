@@ -31,21 +31,21 @@ instance HasAbilities HallsOfPnakotusNorthernCorridors where
   getAbilities (HallsOfPnakotusNorthernCorridors attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 (Here <> DuringTurn You) $
-          FastAbility $
-            HandDiscardCost 1 AnyCard
+      [ restrictedAbility attrs 1 (Here <> DuringTurn You)
+          $ FastAbility
+          $ HandDiscardCost 1 AnyCard
       ]
 
 instance RunMessage HallsOfPnakotusNorthernCorridors where
   runMessage msg l@(HallsOfPnakotusNorthernCorridors attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       otherHalls <-
-        selectList $
-          LocationWithTitle "Halls of Pnakotus"
-            <> NotLocation
-              (LocationWithId $ toId attrs)
-      push $
-        chooseOne
+        selectList
+          $ LocationWithTitle "Halls of Pnakotus"
+          <> NotLocation
+            (LocationWithId $ toId attrs)
+      push
+        $ chooseOne
           iid
           [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
           | lid <- otherHalls

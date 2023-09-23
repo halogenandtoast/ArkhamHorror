@@ -32,16 +32,16 @@ impromptuBarrier =
 instance RunMessage ImpromptuBarrier where
   runMessage msg e@(ImpromptuBarrier (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      pushAll $
-        [ ChooseEvadeEnemy
-            iid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            SkillCombat
-            mempty
-            False
-        ]
-          <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard]
+      pushAll
+        $ [ ChooseEvadeEnemy
+              iid
+              (toSource attrs)
+              (Just $ toTarget attrs)
+              SkillCombat
+              mempty
+              False
+          ]
+        <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard]
       pure . ImpromptuBarrier $ attrs `with` Metadata (zone == FromDiscard)
     ChosenEvadeEnemy (isSource attrs -> True) eid -> do
       push $ skillTestModifier attrs (EnemyTarget eid) (EnemyEvade (-1))
@@ -49,28 +49,28 @@ instance RunMessage ImpromptuBarrier where
     Successful (Action.Evade, EnemyTarget enemyId) iid _ (isTarget attrs -> True) n ->
       do
         enemies <-
-          selectWithField Enemy.EnemyEvade $
-            EnemyAt (locationWithEnemy enemyId)
-              <> NotEnemy (EnemyWithId enemyId)
+          selectWithField Enemy.EnemyEvade
+            $ EnemyAt (locationWithEnemy enemyId)
+            <> NotEnemy (EnemyWithId enemyId)
         let enemies' = map fst $ filter (\(_, x) -> maybe False (<= n) x) enemies
-        pushAll $
-          EnemyEvaded iid enemyId
-            : [ chooseOne
-                iid
-                [ Label "Do not evade another enemy" []
-                , Label
-                    "Evade Another Enemy"
-                    [ ChooseEvadeEnemy
-                        iid
-                        (toSource attrs)
-                        Nothing
-                        SkillCombat
-                        (EnemyOneOf $ map EnemyWithId enemies')
-                        False
-                    ]
-                ]
-              | notNull enemies'
+        pushAll
+          $ EnemyEvaded iid enemyId
+          : [ chooseOne
+              iid
+              [ Label "Do not evade another enemy" []
+              , Label
+                  "Evade Another Enemy"
+                  [ ChooseEvadeEnemy
+                      iid
+                      (toSource attrs)
+                      Nothing
+                      SkillCombat
+                      (EnemyOneOf $ map EnemyWithId enemies')
+                      False
+                  ]
               ]
+            | notNull enemies'
+            ]
 
         pure e
     _ -> ImpromptuBarrier . (`with` meta) <$> runMessage msg attrs

@@ -45,7 +45,8 @@ instance HasAbilities CosmicGate where
               <> InvestigatorExists (InvestigatorAt $ LocationWithId (toId attrs))
           )
           $ ActionAbility Nothing
-          $ ActionCost 1 <> ScenarioResourceCost 1
+          $ ActionCost 1
+          <> ScenarioResourceCost 1
       ]
 
 -- withRevealedAbilities attrs []
@@ -76,7 +77,7 @@ instance RunMessage CosmicGate where
       push
         $ chooseOrRunOne iid
         $ [Label "Spend 1 Clue" [SpendClues 1 [iid]] | n >= 1]
-          <> [Label "Take 1 Horror" [assignHorror iid (toAbilitySource attrs 2) 1]]
+        <> [Label "Take 1 Horror" [assignHorror iid (toAbilitySource attrs 2) 1]]
 
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do

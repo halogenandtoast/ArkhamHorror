@@ -53,10 +53,10 @@ instance RunMessage IveHadWorse4 where
         horrorAmount = getChoiceAmount "Horror" choices
       ignoreWindow <-
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      pushAll $
-        [CancelDamage iid damageAmount | damageAmount > 0]
-          <> [CancelHorror iid horrorAmount | horrorAmount > 0]
-          <> [TakeResources iid (damageAmount + horrorAmount) (toSource attrs) False]
-          <> [ignoreWindow | damageAmount + horrorAmount > 0]
+      pushAll
+        $ [CancelDamage iid damageAmount | damageAmount > 0]
+        <> [CancelHorror iid horrorAmount | horrorAmount > 0]
+        <> [TakeResources iid (damageAmount + horrorAmount) (toSource attrs) False]
+        <> [ignoreWindow | damageAmount + horrorAmount > 0]
       pure e
     _ -> IveHadWorse4 <$> runMessage msg attrs

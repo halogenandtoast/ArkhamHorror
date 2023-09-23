@@ -66,13 +66,13 @@ instance RunMessage BloodRite where
                 ]
               | card <- cards
               ]
-              <> [ Label
-                    ( "Continue having discarded "
-                        <> tshow (length discardedCards)
-                        <> " cards"
-                    )
-                    [UseCardAbility iid source 1 windows payment]
-                 ]
+            <> [ Label
+                  ( "Continue having discarded "
+                      <> tshow (length discardedCards)
+                      <> " cards"
+                  )
+                  [UseCardAbility iid source 1 windows payment]
+               ]
       pure e
     UseCardAbility iid source 1 _ (DiscardCardPayment xs) | isSource attrs source -> do
       enemyIds <- selectList $ enemyAtLocationWith iid
@@ -80,11 +80,11 @@ instance RunMessage BloodRite where
         $ replicate (length xs)
         $ chooseOne iid
         $ [Label "Gain Resource" [TakeResources iid 1 (toAbilitySource attrs 1) False]]
-          <> [ Label "Spend Resource and Deal 1 Damage To Enemy At Your Location"
-              $ [ SpendResources iid 1
-                , chooseOne iid [targetLabel enemyId [EnemyDamage enemyId $ nonAttack source 1] | enemyId <- enemyIds]
-                ]
-             | notNull enemyIds
-             ]
+        <> [ Label "Spend Resource and Deal 1 Damage To Enemy At Your Location"
+            $ [ SpendResources iid 1
+              , chooseOne iid [targetLabel enemyId [EnemyDamage enemyId $ nonAttack source 1] | enemyId <- enemyIds]
+              ]
+           | notNull enemyIds
+           ]
       pure e
     _ -> BloodRite <$> runMessage msg attrs

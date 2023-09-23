@@ -55,17 +55,17 @@ instance RunMessage AncientStoneMindsInHarmony4 where
         getInvestigatorsWithHealHorror attrs amount $ colocatedWith iid
 
       assets <-
-        selectListMap AssetTarget $
-          HealableAsset (toSource attrs) HorrorType $
-            AssetAt (locationWithInvestigator iid)
+        selectListMap AssetTarget
+          $ HealableAsset (toSource attrs) HorrorType
+          $ AssetAt (locationWithInvestigator iid)
 
-      push $
-        chooseOrRunOne iid $
-          [ TargetLabel target [HealHorror target (toSource attrs) amount]
+      push
+        $ chooseOrRunOne iid
+        $ [ TargetLabel target [HealHorror target (toSource attrs) amount]
           | target <- assets
           ]
-            <> [ targetLabel target [healHorror]
-               | (target, healHorror) <- investigatorsWithHealMessage
-               ]
+        <> [ targetLabel target [healHorror]
+           | (target, healHorror) <- investigatorsWithHealMessage
+           ]
       pure a
     _ -> AncientStoneMindsInHarmony4 <$> runMessage msg attrs

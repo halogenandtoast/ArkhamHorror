@@ -25,13 +25,13 @@ instance HasAbilities RehearsalRoom where
   getAbilities (RehearsalRoom attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-            (SuccessResult $ AtLeast $ Static 2)
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ SkillTestResult
+          Timing.After
+          You
+          (WhileInvestigating $ LocationWithId $ toId attrs)
+          (SuccessResult $ AtLeast $ Static 2)
       | locationRevealed attrs
       ]
 

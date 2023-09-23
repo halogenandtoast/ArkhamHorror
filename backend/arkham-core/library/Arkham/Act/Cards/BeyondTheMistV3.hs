@@ -69,23 +69,23 @@ instance RunMessage BeyondTheMistV3 where
             josef <- getSetAsideCard Enemies.josefMeiger
             josefCreation <- createEnemyAt_ josef geistTrap Nothing
             investigators <- getInvestigators
-            pure $
-              josefCreation
-                : [ gameModifier
-                    attrs
-                    iid
-                    $ CannotParleyWith
-                    $ enemyIs Enemies.josefMeiger
-                  | iid <- investigators
-                  ]
+            pure
+              $ josefCreation
+              : [ gameModifier
+                  attrs
+                  iid
+                  $ CannotParleyWith
+                  $ enemyIs Enemies.josefMeiger
+                | iid <- investigators
+                ]
           else pure []
 
-      pushAll $
-        RevealLocation Nothing geistTrap
-          : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
-            <> creationMessages
-            <> josefMessages
-            <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
+      pushAll
+        $ RevealLocation Nothing geistTrap
+        : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
+          <> creationMessages
+          <> josefMessages
+          <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
       pure a
     NextAdvanceActStep aid 1 | aid == toId attrs -> do
       rest <- getSetAsideCardsMatching (CardFromEncounterSet SilverTwilightLodge)

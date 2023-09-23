@@ -62,6 +62,6 @@ instance RunMessage FatherMateoElderSignEffect where
         push
           $ chooseOrRunOne iid
           $ Label "Draw 1 card and gain 1 resource" [drawing, TakeResources iid 1 (toSource ElderSign) False]
-            : [Label "Take an additional action this turn" [GainActions iid (toSource attrs) 1] | isTurn]
+          : [Label "Take an additional action this turn" [GainActions iid (toSource attrs) 1] | isTurn]
       pure e
     _ -> FatherMateoElderSignEffect <$> runMessage msg attrs

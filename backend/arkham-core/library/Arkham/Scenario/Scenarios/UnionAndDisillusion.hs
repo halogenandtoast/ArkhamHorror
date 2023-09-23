@@ -160,21 +160,21 @@ instance RunMessage UnionAndDisillusion where
             [ concatMapM
                 (fmap (map toCard) . gatherEncounterSet)
                 [EncounterSet.AnettesCoven, EncounterSet.SilverTwilightLodge, EncounterSet.TheWatcher]
-            , genCards $
-                [Locations.theGeistTrap, Treacheries.watchersGaze, Enemies.anetteMason, Enemies.josefMeiger]
-                  <> [Assets.gavriellaMizrah | "05046" `elem` missingPersons]
-                  <> [Assets.jeromeDavids | "05047" `elem` missingPersons]
-                  <> [Assets.valentinoRivas | "05048" `elem` missingPersons]
-                  <> [Assets.pennyWhite | "05049" `elem` missingPersons]
+            , genCards
+                $ [Locations.theGeistTrap, Treacheries.watchersGaze, Enemies.anetteMason, Enemies.josefMeiger]
+                <> [Assets.gavriellaMizrah | "05046" `elem` missingPersons]
+                <> [Assets.jeromeDavids | "05047" `elem` missingPersons]
+                <> [Assets.valentinoRivas | "05048" `elem` missingPersons]
+                <> [Assets.pennyWhite | "05049" `elem` missingPersons]
             , genCards unplaceUnvisitedIsles
             ]
 
       storyCards <-
-        genCards $
-          [Stories.gavriellasFate | "05046" `elem` missingPersons]
-            <> [Stories.jeromesFate | "05047" `elem` missingPersons]
-            <> [Stories.valentinosFate | "05048" `elem` missingPersons]
-            <> [Stories.pennysFate | "05049" `elem` missingPersons]
+        genCards
+          $ [Stories.gavriellasFate | "05046" `elem` missingPersons]
+          <> [Stories.jeromesFate | "05047" `elem` missingPersons]
+          <> [Stories.valentinosFate | "05048" `elem` missingPersons]
+          <> [Stories.pennysFate | "05049" `elem` missingPersons]
 
       sidedWithTheLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
@@ -191,13 +191,13 @@ instance RunMessage UnionAndDisillusion where
       theWatcher <- genCard Enemies.theSpectralWatcher
       placeTheWatcher <- createEnemyWithPlacement_ theWatcher (OutOfPlay SetAsideZone)
 
-      pushAll $
-        [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-          <> replicate hereticCount PlaceDoomOnAgenda
-          <> [placeMiskatonicRiver, MoveAllTo (toSource attrs) miskatonicRiver, placeForbiddingShore]
-          <> placeUnvisitedIsles
-          <> (if sidedWithTheCoven then map lightBrazier (forbiddingShore : unvisitedIsles) else [])
-          <> [placeTheWatcher]
+      pushAll
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
+        <> replicate hereticCount PlaceDoomOnAgenda
+        <> [placeMiskatonicRiver, MoveAllTo (toSource attrs) miskatonicRiver, placeForbiddingShore]
+        <> placeUnvisitedIsles
+        <> (if sidedWithTheCoven then map lightBrazier (forbiddingShore : unvisitedIsles) else [])
+        <> [placeTheWatcher]
 
       let
         (act3, act4)
@@ -236,8 +236,8 @@ instance RunMessage UnionAndDisillusion where
       damage <- field InvestigatorDamage iid
       horror <- field InvestigatorHorror iid
       when (damage == 0 || horror == 0) $ do
-        push $
-          InvestigatorAssignDamage
+        push
+          $ InvestigatorAssignDamage
             iid
             (ChaosTokenEffectSource Cultist)
             DamageAny
@@ -247,8 +247,8 @@ instance RunMessage UnionAndDisillusion where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       enemies <- selectList $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
       unless (null enemies) $ do
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             iid
             [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy (ChaosTokenEffectSource Tablet) iid]
             | enemy <- enemies
@@ -267,9 +267,10 @@ instance RunMessage UnionAndDisillusion where
           inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
           deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
 
-          push $
-            storyWithChooseOne lead investigators resolution1 $
-              [Label "Yes" [R2] | inductedIntoTheInnerCircle && not deceivingTheLodge] <> [Label "No" [R3]]
+          push
+            $ storyWithChooseOne lead investigators resolution1
+            $ [Label "Yes" [R2] | inductedIntoTheInnerCircle && not deceivingTheLodge]
+            <> [Label "No" [R3]]
         Resolution 2 ->
           pushAll
             [story investigators resolution2, Record TheTrueWorkOfTheSilverTwilightLodgeHasBegun, GameOver]
@@ -293,18 +294,18 @@ instance RunMessage UnionAndDisillusion where
           jeromeIsAlive <- getHasRecord JeromeIsAlive
           pennyIsAlive <- getHasRecord PennyIsAlive
           valentinoIsAlive <- getHasRecord ValentinoIsAlive
-          pushAll $
-            [story investigators resolution8, RemoveCampaignCard Assets.puzzleBox]
-              <> [addCampaignCardToDeckChoice lead investigators Assets.gavriellaMizrah | gavriellaIsAlive]
-              <> [Record GavriellaIsDead | not gavriellaIsAlive]
-              <> [addCampaignCardToDeckChoice lead investigators Assets.jeromeDavids | jeromeIsAlive]
-              <> [Record JeromeIsDead | not jeromeIsAlive]
-              <> [addCampaignCardToDeckChoice lead investigators Assets.pennyWhite | pennyIsAlive]
-              <> [Record PennyIsDead | not pennyIsAlive]
-              <> [addCampaignCardToDeckChoice lead investigators Assets.valentinoRivas | valentinoIsAlive]
-              <> [Record ValentinoIsDead | not valentinoIsAlive]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [story investigators resolution8, RemoveCampaignCard Assets.puzzleBox]
+            <> [addCampaignCardToDeckChoice lead investigators Assets.gavriellaMizrah | gavriellaIsAlive]
+            <> [Record GavriellaIsDead | not gavriellaIsAlive]
+            <> [addCampaignCardToDeckChoice lead investigators Assets.jeromeDavids | jeromeIsAlive]
+            <> [Record JeromeIsDead | not jeromeIsAlive]
+            <> [addCampaignCardToDeckChoice lead investigators Assets.pennyWhite | pennyIsAlive]
+            <> [Record PennyIsDead | not pennyIsAlive]
+            <> [addCampaignCardToDeckChoice lead investigators Assets.valentinoRivas | valentinoIsAlive]
+            <> [Record ValentinoIsDead | not valentinoIsAlive]
+            <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"
       pure s
     _ -> UnionAndDisillusion <$> runMessage msg attrs

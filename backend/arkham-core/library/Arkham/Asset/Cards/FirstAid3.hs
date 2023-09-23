@@ -26,15 +26,15 @@ instance HasAbilities FirstAid3 where
         1
         ( ControlsThis
             <> AnyCriterion
-              [ InvestigatorExists $
-                  AnyInvestigator
-                    [ HealableInvestigator (toSource x) HorrorType $
-                        InvestigatorAt YourLocation
-                    , HealableInvestigator (toSource x) DamageType $
-                        InvestigatorAt YourLocation
+              [ InvestigatorExists
+                  $ AnyInvestigator
+                    [ HealableInvestigator (toSource x) HorrorType
+                        $ InvestigatorAt YourLocation
+                    , HealableInvestigator (toSource x) DamageType
+                        $ InvestigatorAt YourLocation
                     ]
-              , AssetExists $
-                  AssetOneOf
+              , AssetExists
+                  $ AssetOneOf
                     [ HealableAsset (toSource x) HorrorType $ AssetAt YourLocation
                     , HealableAsset (toSource x) DamageType $ AssetAt YourLocation
                     ]
@@ -56,44 +56,44 @@ instance RunMessage FirstAid3 where
 
       assetChoices <- do
         horrorAssets <-
-          select $
-            HealableAsset (toSource attrs) HorrorType $
-              AssetAt $
-                locationWithInvestigator iid
+          select
+            $ HealableAsset (toSource attrs) HorrorType
+            $ AssetAt
+            $ locationWithInvestigator iid
         damageAssets <-
-          select $
-            HealableAsset (toSource attrs) DamageType $
-              AssetAt $
-                locationWithInvestigator iid
+          select
+            $ HealableAsset (toSource attrs) DamageType
+            $ AssetAt
+            $ locationWithInvestigator iid
         let allAssets = setToList $ horrorAssets <> damageAssets
         pure $ flip map allAssets $ \asset' ->
           let target = AssetTarget asset'
-          in  targetLabel
+           in targetLabel
                 asset'
-                [ chooseOneAtATime iid $
-                    [ componentLabel
-                      DamageToken
-                      target
-                      [HealDamage target (toSource attrs) 1]
-                    | asset' `member` damageAssets
-                    ]
-                      <> [ componentLabel
-                          HorrorToken
-                          target
-                          [HealHorror target (toSource attrs) 1]
-                         | asset' `member` horrorAssets
-                         ]
+                [ chooseOneAtATime iid
+                    $ [ componentLabel
+                        DamageToken
+                        target
+                        [HealDamage target (toSource attrs) 1]
+                      | asset' `member` damageAssets
+                      ]
+                    <> [ componentLabel
+                        HorrorToken
+                        target
+                        [HealHorror target (toSource attrs) 1]
+                       | asset' `member` horrorAssets
+                       ]
                 ]
 
       investigatorChoices <- do
         horrorInvestigators <-
-          select $
-            HealableInvestigator (toSource attrs) HorrorType $
-              colocatedWith iid
+          select
+            $ HealableInvestigator (toSource attrs) HorrorType
+            $ colocatedWith iid
         damageInvestigators <-
-          select $
-            HealableInvestigator (toSource attrs) DamageType $
-              colocatedWith iid
+          select
+            $ HealableInvestigator (toSource attrs) DamageType
+            $ colocatedWith iid
         let
           allInvestigators =
             setToList $ horrorInvestigators <> damageInvestigators
@@ -103,19 +103,19 @@ instance RunMessage FirstAid3 where
             if i `member` horrorInvestigators
               then getHealHorrorMessage attrs 1 i
               else pure Nothing
-          pure $
-            targetLabel
+          pure
+            $ targetLabel
               i
-              [ chooseOneAtATime iid $
-                  [ componentLabel
-                    DamageToken
-                    target
-                    [HealDamage target (toSource attrs) 1]
-                  | i `member` damageInvestigators
-                  ]
-                    <> [ componentLabel HorrorToken target [healHorror]
-                       | healHorror <- maybeToList mHealHorror
-                       ]
+              [ chooseOneAtATime iid
+                  $ [ componentLabel
+                      DamageToken
+                      target
+                      [HealDamage target (toSource attrs) 1]
+                    | i `member` damageInvestigators
+                    ]
+                  <> [ componentLabel HorrorToken target [healHorror]
+                     | healHorror <- maybeToList mHealHorror
+                     ]
               ]
 
       push $ chooseOne iid $ assetChoices <> investigatorChoices

@@ -52,12 +52,12 @@ instance RunMessage DelayTheInevitable where
         [ Discard (toAbilitySource attrs 1) (toTarget attrs)
         , chooseOrRunOne iid
             $ [Label "Cancel Damage" [CancelDamage iid damage] | damage > 0]
-              <> [Label "Cancel Horror" [CancelHorror iid horror] | horror > 0]
-              <> [ Label
-                  "Cancel Horror and Damage"
-                  [CancelDamage iid damage, CancelHorror iid horror]
-                 | damage > 0 && horror > 0
-                 ]
+            <> [Label "Cancel Horror" [CancelHorror iid horror] | horror > 0]
+            <> [ Label
+                "Cancel Horror and Damage"
+                [CancelDamage iid damage, CancelHorror iid horror]
+               | damage > 0 && horror > 0
+               ]
         ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
@@ -65,9 +65,9 @@ instance RunMessage DelayTheInevitable where
       push
         $ chooseOrRunOne iid
         $ [Label "Spend 2 Resources" [SpendResources iid 2] | canAfford]
-          <> [ Label
-                "Discard Delay the Invevitabe"
-                [Discard (toAbilitySource attrs 2) (toTarget attrs)]
-             ]
+        <> [ Label
+              "Discard Delay the Invevitabe"
+              [Discard (toAbilitySource attrs 2) (toTarget attrs)]
+           ]
       pure e
     _ -> DelayTheInevitable <$> runMessage msg attrs

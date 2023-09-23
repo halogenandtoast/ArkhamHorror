@@ -41,25 +41,26 @@ instance HasModifiersFor TelescopicSight3 where
               Nothing -> pure []
               Just lid -> do
                 engaged <- selectAny $ enemyEngagedWith iid
-                pure . toModifiers a $
-                  if engaged
-                    then [EnemyFightActionCriteria $ CriteriaOverride Never]
-                    else
-                      [ CanModify $
-                          EnemyFightActionCriteria $
-                            CriteriaOverride $
-                              EnemyCriteria $
-                                ThisEnemy $
-                                  EnemyWithoutModifier CannotBeAttacked
-                                    <> NonEliteEnemy
-                                    <> EnemyAt
-                                      ( LocationMatchAny
-                                          [ LocationWithId lid
-                                          , ConnectedTo $ LocationWithId lid
-                                          ]
-                                      )
-                                    <> NotEnemy (enemyEngagedWith $ eventOwner a)
-                      ]
+                pure
+                  . toModifiers a
+                    $ if engaged
+                      then [EnemyFightActionCriteria $ CriteriaOverride Never]
+                      else
+                        [ CanModify
+                            $ EnemyFightActionCriteria
+                            $ CriteriaOverride
+                            $ EnemyCriteria
+                            $ ThisEnemy
+                            $ EnemyWithoutModifier CannotBeAttacked
+                            <> NonEliteEnemy
+                            <> EnemyAt
+                              ( LocationMatchAny
+                                  [ LocationWithId lid
+                                  , ConnectedTo $ LocationWithId lid
+                                  ]
+                              )
+                            <> NotEnemy (enemyEngagedWith $ eventOwner a)
+                        ]
           _ -> pure []
       _ -> pure []
   getModifiersFor _ _ = pure []
@@ -67,11 +68,11 @@ instance HasModifiersFor TelescopicSight3 where
 instance HasAbilities TelescopicSight3 where
   getAbilities (TelescopicSight3 a) = case eventPlacement a of
     AttachedToAsset aid _ ->
-      [ restrictedAbility a 1 ControlsThis $
-          ReactionAbility
-            ( ActivateAbility Timing.When You $
-                AssetAbility (AssetWithId aid)
-                  <> AbilityIsAction Action.Fight
+      [ restrictedAbility a 1 ControlsThis
+          $ ReactionAbility
+            ( ActivateAbility Timing.When You
+                $ AssetAbility (AssetWithId aid)
+                <> AbilityIsAction Action.Fight
             )
             (ExhaustCost (toTarget a))
       ]
@@ -81,8 +82,8 @@ instance RunMessage TelescopicSight3 where
   runMessage msg e@(TelescopicSight3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetInTwoHandSlots
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
           | asset <- assets
@@ -121,23 +122,23 @@ instance HasModifiersFor TelescopicSight3Effect where
     case effectTarget a of
       InvestigatorTarget iid'
         | iid == iid' ->
-            pure $
-              toModifiers
+            pure
+              $ toModifiers
                 a
-                [ EnemyFightActionCriteria $
-                    CriteriaOverride $
-                      EnemyCriteria
-                        ( ThisEnemy $
-                            EnemyWithoutModifier CannotBeAttacked
-                              <> NonEliteEnemy
-                              <> EnemyAt
-                                ( LocationMatchAny
-                                    [ locationWithInvestigator iid
-                                    , ConnectedTo $ locationWithInvestigator iid
-                                    ]
-                                )
-                              <> NotEnemy (enemyEngagedWith iid)
-                        )
+                [ EnemyFightActionCriteria
+                    $ CriteriaOverride
+                    $ EnemyCriteria
+                      ( ThisEnemy
+                          $ EnemyWithoutModifier CannotBeAttacked
+                          <> NonEliteEnemy
+                          <> EnemyAt
+                            ( LocationMatchAny
+                                [ locationWithInvestigator iid
+                                , ConnectedTo $ locationWithInvestigator iid
+                                ]
+                            )
+                          <> NotEnemy (enemyEngagedWith iid)
+                      )
                 ]
       _ -> pure []
   getModifiersFor _ _ = pure []
@@ -147,22 +148,22 @@ instance RunMessage TelescopicSight3Effect where
     case msg of
       FightEnemy iid eid _ _ _ _ -> do
         ignored <-
-          selectAny $
-            EnemyWithId eid
-              <> EnemyOneOf
-                [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
+          selectAny
+            $ EnemyWithId eid
+            <> EnemyOneOf
+              [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
         ignoreWindow <-
           checkWindows
             [ mkWindow
                 Timing.After
                 (Window.CancelledOrIgnoredCardOrGameEffect effectSource)
             ]
-        pushAll $
-          skillTestModifiers
+        pushAll
+          $ skillTestModifiers
             (toSource attrs)
             (InvestigatorTarget iid)
             [IgnoreRetaliate, IgnoreAloof]
-            : [ignoreWindow | ignored]
+          : [ignoreWindow | ignored]
         pure . TelescopicSight3Effect $ attrs & targetL .~ EnemyTarget eid
       SkillTestEnds _ _ -> do
         push $ DisableEffect effectId

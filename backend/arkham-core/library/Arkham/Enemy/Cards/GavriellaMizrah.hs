@@ -22,13 +22,13 @@ gavriellaMizrah = enemy GavriellaMizrah Cards.gavriellaMizrah (5, Static 4, 2) (
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttackedSuccessfully Timing.After You $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ EnemyAttackedSuccessfully Timing.After You
+            $ EnemyWithId
+            $ toId a
+        ]
 
 instance RunMessage GavriellaMizrah where
   runMessage msg e@(GavriellaMizrah attrs) = case msg of

@@ -27,16 +27,16 @@ darkFuture = treachery DarkFuture Cards.darkFuture
 
 instance HasModifiersFor DarkFuture where
   getModifiersFor (InvestigatorTarget iid) (DarkFuture a) | treacheryOnInvestigator iid a = do
-    pure $
-      toModifiers a $
-        map CannotCancelOrIgnoreChaosToken [ElderSign, Skull, Cultist, Tablet, ElderThing, AutoFail]
+    pure
+      $ toModifiers a
+      $ map CannotCancelOrIgnoreChaosToken [ElderSign, Skull, Cultist, Tablet, ElderThing, AutoFail]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DarkFuture where
   getAbilities (DarkFuture a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds Timing.After You
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds Timing.After You
     ]
 
 instance RunMessage DarkFuture where
@@ -50,7 +50,7 @@ instance RunMessage DarkFuture where
     RequestedChaosTokens source _ tokens | isSource attrs source -> do
       chaosTokenFaces <- getModifiedChaosTokenFaces tokens
       push $ ResetChaosTokens source
-      when (ElderSign `elem` chaosTokenFaces) $
-        push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+      when (ElderSign `elem` chaosTokenFaces)
+        $ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
       pure t
     _ -> DarkFuture <$> runMessage msg attrs

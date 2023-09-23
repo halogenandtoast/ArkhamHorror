@@ -31,9 +31,9 @@ instance HasAbilities Garden where
   getAbilities (Garden attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis) $
-        ActionAbility Nothing $
-          ActionCost 1
+      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
+        $ ActionAbility Nothing
+        $ ActionCost 1
       | locationRevealed attrs
       ]
 

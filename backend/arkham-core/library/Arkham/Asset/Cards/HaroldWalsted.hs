@@ -29,11 +29,11 @@ haroldWalsted =
 
 instance HasAbilities HaroldWalsted where
   getAbilities (HaroldWalsted x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          AssetLeavesPlay Timing.When $
-            AssetWithId $
-              toId x
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ AssetLeavesPlay Timing.When
+        $ AssetWithId
+        $ toId x
     ]
 
 instance HasModifiersFor HaroldWalsted where
@@ -42,11 +42,11 @@ instance HasModifiersFor HaroldWalsted where
     case mAction of
       Just Action.Investigate -> do
         isMiskatonic <-
-          selectAny $
-            LocationWithInvestigator (InvestigatorWithId iid)
-              <> LocationWithTrait Miskatonic
-        pure $
-          toModifiers
+          selectAny
+            $ LocationWithInvestigator (InvestigatorWithId iid)
+            <> LocationWithTrait Miskatonic
+        pure
+          $ toModifiers
             attrs
             [ SkillModifier SkillIntellect 2
             | isMiskatonic && controlledBy attrs iid

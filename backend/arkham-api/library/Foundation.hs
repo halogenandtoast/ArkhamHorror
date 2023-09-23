@@ -107,12 +107,12 @@ instance Yesod App where
   -- in development, and warnings and errors in production.
   shouldLogIO :: App -> LogSource -> LogLevel -> IO Bool
   shouldLogIO app _source level =
-    pure $
-      appShouldLogAll (appSettings app)
-        || level
-          == LevelWarn
-        || level
-          == LevelError
+    pure
+      $ appShouldLogAll (appSettings app)
+      || level
+      == LevelWarn
+      || level
+      == LevelError
 
   makeLogger :: App -> IO Logger
   makeLogger = pure . appLogger

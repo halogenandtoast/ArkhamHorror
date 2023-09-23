@@ -27,25 +27,25 @@ instance RunMessage EmergencyAid where
 
       choices <- flip mapMaybeM iids $ \iid' -> do
         healableAllies <-
-          selectList $
-            HealableAsset (toSource attrs) DamageType $
-              AllyAsset
-                <> assetControlledBy iid'
+          selectList
+            $ HealableAsset (toSource attrs) DamageType
+            $ AllyAsset
+            <> assetControlledBy iid'
         healable <- canHaveDamageHealed attrs iid'
 
-        pure $
-          if healable || notNull healableAllies
+        pure
+          $ if healable || notNull healableAllies
             then
-              Just $
-                targetLabel
+              Just
+                $ targetLabel
                   iid'
-                  [ chooseOrRunOne iid $
-                      [ targetLabel iid' [HealDamage (InvestigatorTarget iid') (toSource attrs) 2]
-                      | healable
-                      ]
-                        <> [ targetLabel asset [HealDamage (AssetTarget asset) (toSource attrs) 2]
-                           | asset <- healableAllies
-                           ]
+                  [ chooseOrRunOne iid
+                      $ [ targetLabel iid' [HealDamage (InvestigatorTarget iid') (toSource attrs) 2]
+                        | healable
+                        ]
+                      <> [ targetLabel asset [HealDamage (AssetTarget asset) (toSource attrs) 2]
+                         | asset <- healableAllies
+                         ]
                   ]
             else Nothing
 

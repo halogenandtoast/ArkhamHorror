@@ -27,9 +27,9 @@ instance RunMessage StalkedInTheDark where
       case mHuntingHorrorId of
         Just eid -> do
           iids <- selectList $ colocatedWith iid
-          pushAll $
-            [Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
-              <> map (EnemyAttack . enemyAttack eid attrs) iids
+          pushAll
+            $ [Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
+            <> map (EnemyAttack . enemyAttack eid attrs) iids
         Nothing -> push $ gainSurge attrs
       pure t
     _ -> StalkedInTheDark <$> runMessage msg attrs

@@ -25,8 +25,8 @@ instance HasModifiersFor CharlesRossEsq where
   getModifiersFor (InvestigatorTarget iid) (CharlesRossEsq attrs)
     | attrs `controlledBy` iid = do
         mlid <- field AssetLocation (toId attrs)
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [ CanSpendResourcesOnCardFromInvestigator
               (InvestigatorAt $ LocationWithId lid)
@@ -37,11 +37,11 @@ instance HasModifiersFor CharlesRossEsq where
 
 instance HasAbilities CharlesRossEsq where
   getAbilities (CharlesRossEsq attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        FastAbility $
-          ExhaustCost $
-            toTarget
-              attrs
+    [ restrictedAbility attrs 1 ControlsThis
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget
+          attrs
     ]
 
 instance RunMessage CharlesRossEsq where

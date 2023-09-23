@@ -27,11 +27,11 @@ nightAtTheMuseum = act (2, A) NightAtTheMuseum Cards.nightAtTheMuseum Nothing
 
 instance HasAbilities NightAtTheMuseum where
   getAbilities (NightAtTheMuseum x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          Enters Timing.When You $
-            locationIs
-              Cards.exhibitHallRestrictedHall
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ Enters Timing.When You
+        $ locationIs
+          Cards.exhibitHallRestrictedHall
     ]
 
 instance RunMessage NightAtTheMuseum where
@@ -51,8 +51,8 @@ instance RunMessage NightAtTheMuseum where
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
         Nothing ->
-          push $
-            FindEncounterCard
+          push
+            $ FindEncounterCard
               leadInvestigatorId
               (toTarget attrs)
               [FromEncounterDeck, FromEncounterDiscard, FromVoid]

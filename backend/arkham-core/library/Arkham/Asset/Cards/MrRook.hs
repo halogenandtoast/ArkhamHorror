@@ -27,7 +27,7 @@ instance HasAbilities MrRook where
     [ restrictedAbility a 1 ControlsThis
         $ FastAbility
         $ ExhaustCost (toTarget a)
-          <> UseCost (AssetWithId $ toId a) Secret 1
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 instance RunMessage MrRook where
@@ -64,13 +64,13 @@ instance RunMessage MrRook where
                     iid
                     (toSource attrs)
                     (CardTarget card)
-                    : [ if anyWeaknesses
-                          then
-                            DoStep
-                              (if card `cardMatch` WeaknessCard then 1 else 2)
-                              (nextStep $ deleteFirst card cards)
-                          else DoStep 3 msg
-                      ]
+                  : [ if anyWeaknesses
+                        then
+                          DoStep
+                            (if card `cardMatch` WeaknessCard then 1 else 2)
+                            (nextStep $ deleteFirst card cards)
+                        else DoStep 3 msg
+                    ]
                 | card <- cards
                 ]
             , UnfocusCards
@@ -118,7 +118,7 @@ instance RunMessage MrRook where
       pure
         $ MrRook
         $ attrs
-          `with` Metadata
-            { chosenCards = card : chosenCards meta
-            }
+        `with` Metadata
+          { chosenCards = card : chosenCards meta
+          }
     _ -> MrRook . (`with` meta) <$> runMessage msg attrs

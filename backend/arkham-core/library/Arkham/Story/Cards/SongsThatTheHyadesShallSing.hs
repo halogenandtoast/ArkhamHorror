@@ -25,10 +25,10 @@ instance RunMessage SongsThatTheHyadesShallSing where
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       investigatorIds <- selectList $ investigatorEngagedWith hastur
       n <- perPlayer 1
-      pushAll $
-        [ Msg.EnemyDamage hastur $ storyDamage iid n
-        , Exhaust (EnemyTarget hastur)
-        ]
-          <> [DisengageEnemy iid' hastur | iid' <- investigatorIds]
+      pushAll
+        $ [ Msg.EnemyDamage hastur $ storyDamage iid n
+          , Exhaust (EnemyTarget hastur)
+          ]
+        <> [DisengageEnemy iid' hastur | iid' <- investigatorIds]
       pure s
     _ -> SongsThatTheHyadesShallSing <$> runMessage msg attrs

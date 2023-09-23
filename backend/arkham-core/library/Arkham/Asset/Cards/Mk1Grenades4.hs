@@ -26,7 +26,7 @@ instance HasAbilities Mk1Grenades4 where
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Fight)
         $ ActionCost 1
-          <> UseCost (AssetWithId $ toId a) Supply 1
+        <> UseCost (AssetWithId $ toId a) Supply 1
     ]
 
 instance RunMessage Mk1Grenades4 where
@@ -59,8 +59,8 @@ instance RunMessage Mk1Grenades4 where
           iids <-
             selectList
               $ colocatedWith iid
-                <> NotInvestigator
-                  (InvestigatorWithId iid)
+              <> NotInvestigator
+                (InvestigatorWithId iid)
           msgs <- selectListMap toMsg $ EnemyAt (locationWithInvestigator iid)
           pushAll
             [ chooseOneAtATime

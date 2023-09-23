@@ -22,9 +22,9 @@ chainsaw4 = asset Chainsaw4 Cards.chainsaw4
 
 instance HasAbilities Chainsaw4 where
   getAbilities (Chainsaw4 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          UseCost (AssetWithId $ toId a) Supply 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ UseCost (AssetWithId $ toId a) Supply 1
     ]
 
 instance RunMessage Chainsaw4 where
@@ -43,8 +43,8 @@ instance RunMessage Chainsaw4 where
           mTarget <- getSkillTestTarget
           case mTarget of
             Just (EnemyTarget eid) ->
-              push $
-                chooseOne
+              push
+                $ chooseOne
                   iid
                   [ Label
                       "Place 1 supply on Chainsaw"

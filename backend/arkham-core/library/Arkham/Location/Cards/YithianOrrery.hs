@@ -30,9 +30,9 @@ instance HasAbilities YithianOrrery where
   getAbilities (YithianOrrery attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis) $
-          ActionAbility Nothing $
-            ActionCost 2
+      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
+          $ ActionAbility Nothing
+          $ ActionCost 2
       ]
 
 instance RunMessage YithianOrrery where

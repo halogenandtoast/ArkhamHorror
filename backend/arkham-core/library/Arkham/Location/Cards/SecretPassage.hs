@@ -35,8 +35,8 @@ instance HasAbilities SecretPassage where
       [ restrictedAbility
           attrs
           1
-          ( Negate $
-              InvestigatorExists
+          ( Negate
+              $ InvestigatorExists
                 (investigatorAt (toId attrs) <> InvestigatorWithSupply Rope)
           )
           $ ForcedAbility
@@ -48,8 +48,8 @@ instance HasAbilities SecretPassage where
 instance RunMessage SecretPassage where
   runMessage msg l@(SecretPassage attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Take 1 horror and 1 damage"

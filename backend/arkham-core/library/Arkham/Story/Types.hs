@@ -58,13 +58,14 @@ storyWith f cardDef g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (mTarget, sid) ->
-        f . g $
-          StoryAttrs
-            { storyId = sid
-            , storyCardId = cardId
-            , storyPlacement = Unplaced
-            , storyOtherSide = mTarget
-            }
+        f
+          . g
+            $ StoryAttrs
+              { storyId = sid
+              , storyCardId = cardId
+              , storyPlacement = Unplaced
+              , storyOtherSide = mTarget
+              }
     }
 
 story

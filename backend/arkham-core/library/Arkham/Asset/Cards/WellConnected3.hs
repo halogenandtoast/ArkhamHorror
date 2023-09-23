@@ -26,14 +26,14 @@ wellConnected3 =
 
 instance HasAbilities WellConnected3 where
   getAbilities (WellConnected3 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
-        FastAbility $
-          ExhaustCost $
-            toTarget a
-    , limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility a 2 ControlsThis $
-          FastAbility $
-            ResourceCost 2
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget a
+    , limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility a 2 ControlsThis
+        $ FastAbility
+        $ ResourceCost 2
     ]
 
 instance RunMessage WellConnected3 where

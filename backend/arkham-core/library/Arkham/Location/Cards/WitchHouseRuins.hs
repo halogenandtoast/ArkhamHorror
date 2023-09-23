@@ -23,10 +23,10 @@ instance HasAbilities WitchHouseRuins where
   getAbilities (WitchHouseRuins a) =
     withRevealedAbilities
       a
-      [ limitedAbility (PlayerLimit PerGame 1) $
-          restrictedAbility a 1 Here $
-            ActionAbility (Just Action.Investigate) $
-              ActionCost 1
+      [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility a 1 Here
+          $ ActionAbility (Just Action.Investigate)
+          $ ActionCost 1
       , haunted "Lose 1 action." a 2
       ]
 
@@ -35,8 +35,8 @@ instance RunMessage WitchHouseRuins where
     Msg.RevealLocation _ lid | lid == toId attrs -> do
       WitchHouseRuins <$> runMessage msg (attrs & labelL .~ "witchHouseRuins")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        Investigate
+      push
+        $ Investigate
           iid
           (toId attrs)
           (toAbilitySource attrs 1)

@@ -70,9 +70,9 @@ instance HasChaosTokenValue TheBoundaryBeyond where
   getChaosTokenValue iid chaosTokenFace (TheBoundaryBeyond attrs) = case chaosTokenFace of
     Skull -> do
       atAncientLocation <-
-        selectAny $
-          LocationWithTrait Trait.Ancient
-            <> locationWithInvestigator iid
+        selectAny
+          $ LocationWithTrait Trait.Ancient
+          <> locationWithInvestigator iid
       let n = if atAncientLocation then 2 else 0
       pure $ toChaosTokenValue attrs Skull (1 + n) (2 + n)
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
@@ -115,61 +115,61 @@ instance RunMessage TheBoundaryBeyond where
       if isStandalone
         then pushAll [story iids introPart1, story iids introPart2]
         else
-          pushAll $
-            [story iids introPart1]
-              <> ( if forgedABondWithIchtaca
-                    then [story iids ichtacasQuest]
-                    else
-                      story iids silentJourney
-                        : [ CreateWindowModifierEffect
-                            EffectSetupWindow
-                            ( EffectModifiers $
-                                toModifiers attrs [StartingHand (-2)]
-                            )
-                            (toSource attrs)
-                            (InvestigatorTarget iid)
-                          | iid <- iids
-                          ]
-                 )
-              <> ( if foundTheMissingRelic
-                    then
-                      story iids arcaneThrumming
-                        : RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-                        : [ AddCampaignCardToDeck
-                            ownerId
-                            Assets.relicOfAgesForestallingTheFuture
-                          | ownerId <- maybeToList mRelicOwner
-                          ]
-                    else [story iids growingConcern]
-                 )
-              <> ( if rescuedAlejandro
-                    then
-                      story iids alejandrosThoughts
-                        : [ CreateWindowModifierEffect
-                            EffectSetupWindow
-                            ( EffectModifiers $
-                                toModifiers attrs [StartingResources 2]
-                            )
-                            (toSource attrs)
-                            (InvestigatorTarget iid)
-                          | iid <- iids
-                          ]
-                    else [story iids anEmptySeat]
-                 )
-              <> ( if isNothing withGasoline
-                    then
-                      story iids outOfGas
-                        : [ CreateWindowModifierEffect
-                            EffectSetupWindow
-                            (EffectModifiers $ toModifiers attrs [CannotMulligan])
-                            (toSource attrs)
-                            (InvestigatorTarget iid)
-                          | iid <- iids
-                          ]
-                    else []
-                 )
-              <> [UseSupply iid Gasoline | iid <- maybeToList withGasoline]
-              <> [story iids introPart2]
+          pushAll
+            $ [story iids introPart1]
+            <> ( if forgedABondWithIchtaca
+                  then [story iids ichtacasQuest]
+                  else
+                    story iids silentJourney
+                      : [ CreateWindowModifierEffect
+                          EffectSetupWindow
+                          ( EffectModifiers
+                              $ toModifiers attrs [StartingHand (-2)]
+                          )
+                          (toSource attrs)
+                          (InvestigatorTarget iid)
+                        | iid <- iids
+                        ]
+               )
+            <> ( if foundTheMissingRelic
+                  then
+                    story iids arcaneThrumming
+                      : RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+                      : [ AddCampaignCardToDeck
+                          ownerId
+                          Assets.relicOfAgesForestallingTheFuture
+                        | ownerId <- maybeToList mRelicOwner
+                        ]
+                  else [story iids growingConcern]
+               )
+            <> ( if rescuedAlejandro
+                  then
+                    story iids alejandrosThoughts
+                      : [ CreateWindowModifierEffect
+                          EffectSetupWindow
+                          ( EffectModifiers
+                              $ toModifiers attrs [StartingResources 2]
+                          )
+                          (toSource attrs)
+                          (InvestigatorTarget iid)
+                        | iid <- iids
+                        ]
+                  else [story iids anEmptySeat]
+               )
+            <> ( if isNothing withGasoline
+                  then
+                    story iids outOfGas
+                      : [ CreateWindowModifierEffect
+                          EffectSetupWindow
+                          (EffectModifiers $ toModifiers attrs [CannotMulligan])
+                          (toSource attrs)
+                          (InvestigatorTarget iid)
+                        | iid <- iids
+                        ]
+                  else []
+               )
+            <> [UseSupply iid Gasoline | iid <- maybeToList withGasoline]
+            <> [story iids introPart2]
       pure s
     SetChaosTokensForScenario -> do
       whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
@@ -224,7 +224,7 @@ instance RunMessage TheBoundaryBeyond where
             , EncounterSet.TemporalFlux
             , EncounterSet.Poison
             ]
-            <> additionalSets
+          <> additionalSets
 
       let
         encounterDeck =
@@ -244,28 +244,28 @@ instance RunMessage TheBoundaryBeyond where
           =<< genCards (explorationDeckLocations <> explorationDeckTreacheries)
 
       setAsideCards <-
-        genCards $
-          [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
-            <> replicate setAsidePoisonedCount Treacheries.poisoned
+        genCards
+          $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
+          <> replicate setAsidePoisonedCount Treacheries.poisoned
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeMetropolitanCathedral
-        , placeZocalo
-        , placeTempleRuins
-        , placeXochimilco
-        , placeChapultepecPark
-        , placeCoyoacan
-        ]
-          <> [ chooseOne
-              iid
-              [ targetLabel lid [MoveTo $ move attrs iid lid]
-              | lid <- [zocaloId, coyoacanId]
-              ]
-             | iid <- iids
-             ]
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeMetropolitanCathedral
+          , placeZocalo
+          , placeTempleRuins
+          , placeXochimilco
+          , placeChapultepecPark
+          , placeCoyoacan
+          ]
+        <> [ chooseOne
+            iid
+            [ targetLabel lid [MoveTo $ move attrs iid lid]
+            | lid <- [zocaloId, coyoacanId]
+            ]
+           | iid <- iids
+           ]
       agendas <- genCards [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
       acts <- genCards [Acts.crossingTheThreshold, Acts.pastAndPresent]
       TheBoundaryBeyond
@@ -304,39 +304,39 @@ instance RunMessage TheBoundaryBeyond where
       pure s
     ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
       targets <-
-        selectListMap LocationTarget $
-          NearestLocationToYou $
-            LocationWithTrait
-              Trait.Ancient
-      unless (null targets) $
-        push $
-          chooseOrRunOne
-            iid
-            [targetLabel target [PlaceTokens (toSource attrs) target Clue 1] | target <- targets]
+        selectListMap LocationTarget
+          $ NearestLocationToYou
+          $ LocationWithTrait
+            Trait.Ancient
+      unless (null targets)
+        $ push
+        $ chooseOrRunOne
+          iid
+          [targetLabel target [PlaceTokens (toSource attrs) target Clue 1] | target <- targets]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Cultist -> do
           targets <- selectListMap EnemyTarget $ EnemyWithTrait Trait.Cultist
-          when (notNull targets) $
-            if isEasyStandard attrs
+          when (notNull targets)
+            $ if isEasyStandard attrs
               then
-                push $
-                  chooseOne
+                push
+                  $ chooseOne
                     iid
                     [targetLabel target [PlaceTokens (toSource attrs) target Doom 1] | target <- targets]
               else pushAll $ map (\t -> PlaceTokens (toSource attrs) t Doom 1) targets
         Tablet -> do
           serpents <-
-            selectList $
-              EnemyWithTrait Trait.Serpent
-                <> EnemyAt
-                  (locationWithInvestigator iid)
-          when (notNull serpents) $
-            if isEasyStandard attrs
+            selectList
+              $ EnemyWithTrait Trait.Serpent
+              <> EnemyAt
+                (locationWithInvestigator iid)
+          when (notNull serpents)
+            $ if isEasyStandard attrs
               then
-                push $
-                  chooseOne
+                push
+                  $ chooseOne
                     iid
                     [ targetLabel serpent [EnemyAttack $ enemyAttack serpent attrs iid]
                     | serpent <- serpents
@@ -346,16 +346,16 @@ instance RunMessage TheBoundaryBeyond where
                   [EnemyAttack $ enemyAttack serpent attrs iid | serpent <- serpents]
         ElderThing | isEasyStandard attrs -> do
           targets <-
-            selectListMap LocationTarget $
-              NearestLocationToYou $
-                LocationWithTrait Trait.Ancient
-          unless (null targets) $
-            push $
-              chooseOrRunOne
-                iid
-                [ targetLabel target [PlaceTokens (ChaosTokenEffectSource ElderThing) target Clue 1]
-                | target <- targets
-                ]
+            selectListMap LocationTarget
+              $ NearestLocationToYou
+              $ LocationWithTrait Trait.Ancient
+          unless (null targets)
+            $ push
+            $ chooseOrRunOne
+              iid
+              [ targetLabel target [PlaceTokens (ChaosTokenEffectSource ElderThing) target Clue 1]
+              | target <- targets
+              ]
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
@@ -363,19 +363,19 @@ instance RunMessage TheBoundaryBeyond where
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
       inVictory <-
-        selectAny $
-          VictoryDisplayCardMatch $
-            cardIs
-              Enemies.harbingerOfValusia
+        selectAny
+          $ VictoryDisplayCardMatch
+          $ cardIs
+            Enemies.harbingerOfValusia
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       damage <- case inPlayHarbinger of
         Just eid -> field EnemyDamage eid
         Nothing -> getRecordCount TheHarbingerIsStillAlive
       step <- getCurrentActStep
       locations <-
-        selectListMap LocationTarget $
-          LocationWithTrait Trait.Tenochtitlan
-            <> LocationWithoutClues
+        selectListMap LocationTarget
+          $ LocationWithTrait Trait.Tenochtitlan
+          <> LocationWithoutClues
 
       let
         storyPassage = case resolution of
@@ -390,27 +390,27 @@ instance RunMessage TheBoundaryBeyond where
             , resolution `elem` [NoResolution, Resolution 2]
             ]
 
-      pushAll $
-        [story iids storyPassage]
-          <> (if addLocationsToVictory then map AddToVictory locations else [])
-          <> [ScenarioResolutionStep 1 resolution]
-          <> [RecordCount YigsFury (yigsFury + vengeance)]
-          <> [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
-          <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [story iids storyPassage]
+        <> (if addLocationsToVictory then map AddToVictory locations else [])
+        <> [ScenarioResolutionStep 1 resolution]
+        <> [RecordCount YigsFury (yigsFury + vengeance)]
+        <> [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
+        <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolutionStep 1 resolution -> do
       n <-
-        selectCount $
-          VictoryDisplayCardMatch $
-            CardWithTrait
-              Trait.Tenochtitlan
+        selectCount
+          $ VictoryDisplayCardMatch
+          $ CardWithTrait
+            Trait.Tenochtitlan
       gainXp <- toGainXp attrs $ getXpWithBonus n
-      pushAll $
-        RecordCount PathsAreKnownToYou n
-          : [ Record IchtacaHasConfidenceInYou
-            | n >= 3 && resolution == Resolution 1
-            ]
-            <> gainXp
+      pushAll
+        $ RecordCount PathsAreKnownToYou n
+        : [ Record IchtacaHasConfidenceInYou
+          | n >= 3 && resolution == Resolution 1
+          ]
+          <> gainXp
       pure s
     _ -> TheBoundaryBeyond <$> runMessage msg attrs

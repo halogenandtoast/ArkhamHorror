@@ -28,9 +28,9 @@ sixthSense4 = asset SixthSense4 Cards.sixthSense4
 
 instance HasAbilities SixthSense4 where
   getAbilities (SixthSense4 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          ActionCost 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
     ]
 
 instance RunMessage SixthSense4 where
@@ -66,41 +66,41 @@ instance RunMessage SixthSense4Effect where
         when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
           currentShroud <- field LocationShroud lid
           locations <-
-            selectWithField LocationShroud $
-              RevealedLocation
-                <> LocationMatchAny
-                  [ LocationWithDistanceFrom n Anywhere
-                  | n <- [1 .. 2]
-                  ]
+            selectWithField LocationShroud
+              $ RevealedLocation
+              <> LocationMatchAny
+                [ LocationWithDistanceFrom n Anywhere
+                | n <- [1 .. 2]
+                ]
           pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token effectId)
-                [ chooseOne iid $
-                    Label "Do not choose other location" []
-                      : [ targetLabel
-                          location
-                          [ SetSkillTestTarget
-                              (BothTarget (toTarget location) (toTarget lid))
-                          , chooseOne
-                              iid
-                              [ Label
-                                  "Use new location's shroud"
-                                  [ skillTestModifier
-                                      (AbilitySource effectSource 1)
-                                      SkillTestTarget
-                                      (SetDifficulty shroud)
-                                  ]
-                              , Label
-                                  "Use original locations shroud"
-                                  [ skillTestModifier
-                                      (AbilitySource effectSource 1)
-                                      SkillTestTarget
-                                      (SetDifficulty currentShroud)
-                                  ]
-                              ]
-                          ]
-                        | (location, shroud) <- locations
+                [ chooseOne iid
+                    $ Label "Do not choose other location" []
+                    : [ targetLabel
+                        location
+                        [ SetSkillTestTarget
+                            (BothTarget (toTarget location) (toTarget lid))
+                        , chooseOne
+                            iid
+                            [ Label
+                                "Use new location's shroud"
+                                [ skillTestModifier
+                                    (AbilitySource effectSource 1)
+                                    SkillTestTarget
+                                    (SetDifficulty shroud)
+                                ]
+                            , Label
+                                "Use original locations shroud"
+                                [ skillTestModifier
+                                    (AbilitySource effectSource 1)
+                                    SkillTestTarget
+                                    (SetDifficulty currentShroud)
+                                ]
+                            ]
                         ]
+                      | (location, shroud) <- locations
+                      ]
                 ]
             , DisableEffect effectId
             ]

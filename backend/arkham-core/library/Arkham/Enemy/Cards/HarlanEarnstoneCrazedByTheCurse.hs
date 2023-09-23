@@ -29,13 +29,13 @@ instance HasAbilities HarlanEarnstoneCrazedByTheCurse where
   getAbilities (HarlanEarnstoneCrazedByTheCurse a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            SkillTestResult
-              Timing.After
-              You
-              (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-              (SuccessResult $ AtLeast $ Static 3)
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
+            (SuccessResult $ AtLeast $ Static 3)
       ]
 
 instance RunMessage HarlanEarnstoneCrazedByTheCurse where

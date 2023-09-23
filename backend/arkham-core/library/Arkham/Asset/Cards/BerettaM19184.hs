@@ -21,7 +21,9 @@ instance HasAbilities BerettaM19184 where
   getAbilities (BerettaM19184 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Fight)
-        $ ActionCost 1 <> exhaust a <> assetUseCost a Ammo 1
+        $ ActionCost 1
+        <> exhaust a
+        <> assetUseCost a Ammo 1
     ]
 
 instance RunMessage BerettaM19184 where

@@ -22,10 +22,10 @@ theGoldPocketWatch4 = asset TheGoldPocketWatch4 Cards.theGoldPocketWatch4
 
 instance HasAbilities TheGoldPocketWatch4 where
   getAbilities (TheGoldPocketWatch4 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ReactionAbility (PhaseBegins Timing.When AnyPhase) Free
-    , restrictedAbility attrs 2 ControlsThis $
-        ReactionAbility (PhaseEnds Timing.When AnyPhase) Free
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ReactionAbility (PhaseBegins Timing.When AnyPhase) Free
+    , restrictedAbility attrs 2 ControlsThis
+        $ ReactionAbility (PhaseEnds Timing.When AnyPhase) Free
     ]
 
 instance RunMessage TheGoldPocketWatch4 where

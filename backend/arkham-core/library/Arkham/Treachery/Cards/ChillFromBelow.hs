@@ -25,10 +25,10 @@ instance RunMessage ChillFromBelow where
     FailedSkillTest iid _ source@(isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
       do
         handCount <- fieldMap InvestigatorHand length iid
-        pushAll $
-          toMessage (randomDiscardN iid attrs (min n handCount))
-            : [ InvestigatorAssignDamage iid source DamageAny (n - handCount) 0
-              | n - handCount > 0
-              ]
+        pushAll
+          $ toMessage (randomDiscardN iid attrs (min n handCount))
+          : [ InvestigatorAssignDamage iid source DamageAny (n - handCount) 0
+            | n - handCount > 0
+            ]
         pure t
     _ -> ChillFromBelow <$> runMessage msg attrs

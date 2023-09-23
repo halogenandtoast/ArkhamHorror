@@ -65,22 +65,22 @@ instance RunMessage Decoy where
         upToTwoAway = foldl' updateUpToTwoAway False modifiers'
 
       enemies <-
-        selectList $
-          NonEliteEnemy
-            <> EnemyOneOf
-              ( EnemyAt (locationWithInvestigator iid)
-                  : [ EnemyAt (LocationWithDistanceFrom n Anywhere)
-                    | upToTwoAway
-                    , n <- [1 .. 2]
-                    ]
-              )
+        selectList
+          $ NonEliteEnemy
+          <> EnemyOneOf
+            ( EnemyAt (locationWithInvestigator iid)
+                : [ EnemyAt (LocationWithDistanceFrom n Anywhere)
+                  | upToTwoAway
+                  , n <- [1 .. 2]
+                  ]
+            )
 
       let
         targets = [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]
         evadeOneEnemy = chooseOrRunOne iid targets
 
-      push $
-        if enemyCount == 2 && length targets > 1
+      push
+        $ if enemyCount == 2 && length targets > 1
           then
             chooseOne
               iid
@@ -88,11 +88,11 @@ instance RunMessage Decoy where
           else evadeOneEnemy
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
-      push $
-        CreateWindowModifierEffect
+      push
+        $ CreateWindowModifierEffect
           EffectEventWindow
-          ( EffectModifiers $
-              toModifiers
+          ( EffectModifiers
+              $ toModifiers
                 attrs
                 [MetaModifier $ object ["enemyCount" .= (2 :: Int)]]
           )
@@ -100,11 +100,11 @@ instance RunMessage Decoy where
           (CardIdTarget $ toCardId attrs)
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 2 _ _) -> do
-      push $
-        CreateWindowModifierEffect
+      push
+        $ CreateWindowModifierEffect
           EffectEventWindow
-          ( EffectModifiers $
-              toModifiers
+          ( EffectModifiers
+              $ toModifiers
                 attrs
                 [MetaModifier $ object ["upToTwoAway" .= True]]
           )

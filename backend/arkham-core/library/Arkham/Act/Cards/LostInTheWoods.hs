@@ -31,27 +31,27 @@ newtype LostInTheWoods = LostInTheWoods ActAttrs
 instance HasModifiersFor LostInTheWoods where
   getModifiersFor (LocationTarget lid) (LostInTheWoods a) = do
     mInFrontOf <- field LocationInFrontOf lid
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
-        [ ConnectedToWhen (LocationWithId lid) $
-          NotLocation (LocationWithId lid)
-            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        [ ConnectedToWhen (LocationWithId lid)
+          $ NotLocation (LocationWithId lid)
+          <> LocationIsInFrontOf (InvestigatorWithId iid)
         | iid <- maybeToList mInFrontOf
         ]
   getModifiersFor (InvestigatorTarget iid) (LostInTheWoods a) = do
     lids <-
-      selectList $
-        LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
+      selectList
+        $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
     pure $ toModifiers a $ map CannotEnter lids
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LostInTheWoods where
   getAbilities (LostInTheWoods a) =
-    [ mkAbility a 1 $
-        Objective $
-          ReactionAbility (RoundEnds Timing.When) $
-            GroupClueCost (PerPlayer 2) Anywhere
+    [ mkAbility a 1
+        $ Objective
+        $ ReactionAbility (RoundEnds Timing.When)
+        $ GroupClueCost (PerPlayer 2) Anywhere
     ]
 
 lostInTheWoods :: ActCard LostInTheWoods
@@ -113,11 +113,11 @@ instance RunMessage LostInTheWoods where
             ShuffleCardsIntoDeck EncounterDeck [EncounterCard x]
               : map AddToEncounterDiscard xs
 
-      pushAll $
-        msgs
-          <> enemyMsgs
-          <> pipingMsgs
-          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll
+        $ msgs
+        <> enemyMsgs
+        <> pipingMsgs
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

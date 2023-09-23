@@ -23,8 +23,8 @@ instance RunMessage TwistedToHisWill where
   runMessage msg t@(TwistedToHisWill attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       doomCount <- getDoomCount
-      push $
-        if doomCount > 0
+      push
+        $ if doomCount > 0
           then RevelationSkillTest iid source SkillWillpower doomCount
           else gainSurge attrs
       pure t

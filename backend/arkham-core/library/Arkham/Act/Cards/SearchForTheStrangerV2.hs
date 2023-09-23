@@ -30,8 +30,8 @@ instance HasModifiersFor SearchForTheStrangerV2 where
     isTheManInThePallidMask <-
       eid
         `isMatch` enemyIs Enemies.theManInThePallidMask
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [CanOnlyBeDefeatedBy (EnemySource eid) | isTheManInThePallidMask]
   getModifiersFor (InvestigatorTarget _) (SearchForTheStrangerV2 a) =
@@ -40,11 +40,11 @@ instance HasModifiersFor SearchForTheStrangerV2 where
 
 instance HasAbilities SearchForTheStrangerV2 where
   getAbilities (SearchForTheStrangerV2 x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          EnemyWouldBeDefeated Timing.When $
-            enemyIs
-              Enemies.theManInThePallidMask
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ EnemyWouldBeDefeated Timing.When
+        $ enemyIs
+          Enemies.theManInThePallidMask
     ]
 
 instance RunMessage SearchForTheStrangerV2 where

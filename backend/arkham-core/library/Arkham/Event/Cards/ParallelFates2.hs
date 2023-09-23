@@ -30,10 +30,10 @@ instance RunMessage ParallelFates2 where
   runMessage msg e@(ParallelFates2 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectTargets $
-          InvestigatorWithoutModifier CannotManipulateDeck
-      push $
-        chooseOne
+        selectTargets
+          $ InvestigatorWithoutModifier CannotManipulateDeck
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             target

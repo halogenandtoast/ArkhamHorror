@@ -30,14 +30,14 @@ instance HasAbilities TheBindingRite where
   getAbilities (TheBindingRite x)
     | onSide A x =
         [ restrictedAbility x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
-        , mkAbility x 2 $
-            Objective $
-              ReactionAbility
-                ( Matcher.EnemyDefeated Timing.When Anyone ByAny $
-                    EnemyAt (locationIs Locations.theGeistTrap <> LocationWithBrazier Lit)
-                      <> enemyIs Enemies.theSpectralWatcher
-                )
-                Free
+        , mkAbility x 2
+            $ Objective
+            $ ReactionAbility
+              ( Matcher.EnemyDefeated Timing.When Anyone ByAny
+                  $ EnemyAt (locationIs Locations.theGeistTrap <> LocationWithBrazier Lit)
+                  <> enemyIs Enemies.theSpectralWatcher
+              )
+              Free
         ]
   getAbilities _ = []
 

@@ -42,8 +42,8 @@ instance RunMessage Backstab3 where
       push $ ChooseFightEnemy iid (EventSource eid) Nothing SkillAgility mempty False
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
-      push $
-        createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
+      push
+        $ createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       pure e
     _ -> Backstab3 <$> runMessage msg attrs
 

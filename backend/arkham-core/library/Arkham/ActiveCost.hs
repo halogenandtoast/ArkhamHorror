@@ -142,7 +142,8 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     AbilityEffect cost -> push (PayCost activeCostId iid False cost)
     FastAbility' cost mAction ->
       pushAll
-        $ PayCost activeCostId iid False cost : [PerformedAction iid action | action <- toList mAction]
+        $ PayCost activeCostId iid False cost
+        : [PerformedAction iid action | action <- toList mAction]
     ForcedWhen _ aType ->
       startAbilityPayment
         activeCost
@@ -169,14 +170,14 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
         then
           pushAll
             $ PayCost activeCostId iid False cost
-              : [TakenAction iid action | action <- maybeToList mAction]
-                <> [ CheckAttackOfOpportunity iid False
-                   | not abilityDoesNotProvokeAttacksOfOpportunity
-                   ]
+            : [TakenAction iid action | action <- maybeToList mAction]
+              <> [ CheckAttackOfOpportunity iid False
+                 | not abilityDoesNotProvokeAttacksOfOpportunity
+                 ]
         else
           pushAll
             $ PayCost activeCostId iid False cost
-              : [TakenAction iid action | action <- maybeToList mAction]
+            : [TakenAction iid action | action <- maybeToList mAction]
     ActionAbility mAction cost -> do
       let action = fromMaybe Action.Ability $ mAction
       beforeWindowMsg <-
@@ -234,16 +235,16 @@ instance RunMessage ActiveCost where
               , beforeWindowMsg
               , PayCost acId iid False (activeCostCosts c)
               ]
-              <> map (TakenAction iid) actions
-              <> [ CheckAttackOfOpportunity iid False
-                 | not modifiersPreventAttackOfOpportunity
-                    && ( DoesNotProvokeAttacksOfOpportunity
-                          `notElem` (cdAttackOfOpportunityModifiers cardDef)
-                       )
-                    && (isNothing $ cdFastWindow cardDef)
-                    && (any (`notElem` nonAttackOfOpportunityActions) actions)
-                 ]
-              <> [PayCostFinished acId]
+            <> map (TakenAction iid) actions
+            <> [ CheckAttackOfOpportunity iid False
+               | not modifiersPreventAttackOfOpportunity
+                  && ( DoesNotProvokeAttacksOfOpportunity
+                        `notElem` (cdAttackOfOpportunityModifiers cardDef)
+                     )
+                  && (isNothing $ cdFastWindow cardDef)
+                  && (any (`notElem` nonAttackOfOpportunityActions) actions)
+               ]
+            <> [PayCostFinished acId]
           pure c
         ForAbility a@Ability {..} -> do
           modifiers' <- getModifiers (InvestigatorTarget iid)
@@ -276,8 +277,8 @@ instance RunMessage ActiveCost where
           hauntedAbilities <-
             selectList
               $ HauntedAbility
-                <> AbilityOnLocation
-                  (LocationWithId lid)
+              <> AbilityOnLocation
+                (LocationWithId lid)
           when (notNull hauntedAbilities)
             $ push
             $ chooseOneAtATime
@@ -693,7 +694,7 @@ instance RunMessage ActiveCost where
           iids <-
             selectList
               $ InvestigatorAt locationMatcher
-                <> InvestigatorWithAnyClues
+              <> InvestigatorWithAnyClues
           iidsWithClues <-
             filter ((> 0) . snd)
               <$> forToSnd iids (getSpendableClueCount . pure)
@@ -975,23 +976,23 @@ instance RunMessage ActiveCost where
           isForced <- isForcedAbility iid ability
           pushAll
             $ [whenActivateAbilityWindow | not isForced]
-              <> [ UseCardAbility
-                    iid
-                    (abilitySource ability)
-                    (abilityIndex ability)
-                    (activeCostWindows c)
-                    (activeCostPayments c)
-                 ]
-              <> afterMsgs
-              <> [afterActivateAbilityWindow | not isForced]
+            <> [ UseCardAbility
+                  iid
+                  (abilitySource ability)
+                  (abilityIndex ability)
+                  (activeCostWindows c)
+                  (activeCostPayments c)
+               ]
+            <> afterMsgs
+            <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do
           let iid = activeCostInvestigator c
           pushAll
             $ [ PlayCard iid card Nothing (activeCostWindows c) False
               , PaidForCardCost iid card (activeCostPayments c)
               ]
-              <> [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
-              <> [FinishAction | isPlayAction == IsPlayAction]
+            <> [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
+            <> [FinishAction | isPlayAction == IsPlayAction]
         ForCost card ->
           pushAll
             [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]

@@ -27,13 +27,13 @@ instance HasAbilities WitchHauntedWoodsHermitsHouse where
   getAbilities (WitchHauntedWoodsHermitsHouse a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (InvestigatorExists $ investigatorAt $ toId a) $
-          ForcedAbility $
-            DiscoverClues
-              Timing.After
-              You
-              (LocationWithId $ toId a)
-              (AtLeast $ Static 1)
+      [ restrictedAbility a 1 (InvestigatorExists $ investigatorAt $ toId a)
+          $ ForcedAbility
+          $ DiscoverClues
+            Timing.After
+            You
+            (LocationWithId $ toId a)
+            (AtLeast $ Static 1)
       ]
 
 getCount :: [Window] -> Int

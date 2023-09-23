@@ -33,12 +33,12 @@ instance RunMessage Recharge4 where
   runMessage msg e@(Recharge4 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <-
-        selectListMap AssetTarget $
-          AssetControlledBy
+        selectListMap AssetTarget
+          $ AssetControlledBy
             (InvestigatorAt $ LocationWithInvestigator $ InvestigatorWithId iid)
-            <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
-      push $
-        chooseOne
+          <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
+      push
+        $ chooseOne
           iid
           [ TargetLabel target [ResolveEvent iid eid (Just target) windows']
           | target <- assets
@@ -58,8 +58,8 @@ instance RunMessage Recharge4 where
             )
             tokens
             then
-              push $
-                If
+              push
+                $ If
                   ( Window.RevealChaosTokenEventEffect
                       (eventOwner attrs)
                       tokens

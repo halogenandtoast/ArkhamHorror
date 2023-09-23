@@ -30,8 +30,8 @@ instance RunMessage LostInVenice where
         Nothing -> push take2damage
         Just lid -> do
           acrossLocationId <- getAcrossLocation lid
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label "Take 2 damage" [take2damage]
               , Label

@@ -33,22 +33,22 @@ instance RunMessage TerrorFromBeyond where
         secondCopy =
           count (== toCardCode attrs) (historyTreacheriesDrawn phaseHistory) > 1
       iidsWithAssets <-
-        forToSnd iids $
-          fieldMap
+        forToSnd iids
+          $ fieldMap
             InvestigatorHand
             (map toCardId . filter (`cardMatch` AssetCard))
       iidsWithEvents <-
-        forToSnd iids $
-          fieldMap
+        forToSnd iids
+          $ fieldMap
             InvestigatorHand
             (map toCardId . filter (`cardMatch` EventCard))
       iidsWithSkills <-
-        forToSnd iids $
-          fieldMap
+        forToSnd iids
+          $ fieldMap
             InvestigatorHand
             (map toCardId . filter (`cardMatch` SkillCard))
-      push $
-        chooseN
+      push
+        $ chooseN
           iid
           (if secondCopy then 2 else 1)
           [ Label

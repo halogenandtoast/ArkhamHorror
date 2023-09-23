@@ -22,8 +22,8 @@ velmasDiner = location VelmasDiner Cards.velmasDiner 2 (Static 0)
 instance HasModifiersFor VelmasDiner where
   getModifiersFor (LocationTarget lid) (VelmasDiner a) = do
     isEasttown <- lid <=~> locationIs Cards.easttown
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
         | isEasttown
@@ -34,10 +34,10 @@ instance HasAbilities VelmasDiner where
   getAbilities (VelmasDiner attrs) =
     withRevealedAbilities
       attrs
-      [ limitedAbility (PlayerLimit PerGame 1) $
-          restrictedAbility attrs 1 Here $
-            ActionAbility Nothing $
-              ActionCost 3
+      [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 3
       ]
 
 instance RunMessage VelmasDiner where

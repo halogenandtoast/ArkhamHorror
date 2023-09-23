@@ -162,10 +162,10 @@ getAsIfInHandCards iid = do
     $ map
       (PlayerCard . fst)
       (filter modifiersPermitPlayOfDiscard (zip discard [0 :: Int ..]))
-      <> map
-        (PlayerCard . fst)
-        (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
-      <> cardsAddedViaModifiers
+    <> map
+      (PlayerCard . fst)
+      (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
+    <> cardsAddedViaModifiers
 
 getCanPerformAbility
   :: HasGame m => InvestigatorId -> Window -> Ability -> m Bool
@@ -411,9 +411,9 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         pure
           . (< n)
           . maybe 0 usedTimes
-          $ find
-            ((== ability) . usedAbility)
-            usedAbilities
+            $ find
+              ((== ability) . usedAbility)
+              usedAbilities
       PerCopyLimit cardDef _ n -> do
         let
           abilityCardDef = \case
@@ -423,9 +423,9 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
           . (< n)
           . getSum
           . foldMap (Sum . usedTimes)
-          $ filter
-            ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
-            usedAbilities
+            $ filter
+              ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+              usedAbilities
       PerInvestigatorLimit _ n -> do
         -- This is difficult and based on the window, so we need to match out the
         -- relevant investigator ids from the window. If this becomes more prevalent
@@ -999,24 +999,24 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
 
     pure
       $ (cdCardType pcDef /= SkillType)
-        && ((costStatus == PaidCost) || canAffordCost)
-        && none prevents modifiers
-        && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-        && ( Action.Evade
-              `notElem` cdActions pcDef
-              || canEvade
-              || cdOverrideActionPlayableIfCriteriaMet pcDef
-           )
-        && ( Action.Fight
-              `notElem` cdActions pcDef
-              || canFight
-              || cdOverrideActionPlayableIfCriteriaMet pcDef
-           )
-        && passesCriterias
-        && passesLimits
-        && passesUnique
-        && passesSlots
-        && canAffordAdditionalCosts
+      && ((costStatus == PaidCost) || canAffordCost)
+      && none prevents modifiers
+      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
+      && ( Action.Evade
+            `notElem` cdActions pcDef
+            || canEvade
+            || cdOverrideActionPlayableIfCriteriaMet pcDef
+         )
+      && ( Action.Fight
+            `notElem` cdActions pcDef
+            || canFight
+            || cdOverrideActionPlayableIfCriteriaMet pcDef
+         )
+      && passesCriterias
+      && passesLimits
+      && passesUnique
+      && passesSlots
+      && canAffordAdditionalCosts
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =
@@ -1170,8 +1170,8 @@ passesCriteria iid mcard source windows' = \case
       _ ->
         error
           $ "Can not check if "
-            <> show source
-            <> " is in players threat area"
+          <> show source
+          <> " is in players threat area"
   Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False
@@ -1398,7 +1398,8 @@ passesCriteria iid mcard source windows' = \case
     Nothing -> pure False
     Just aid -> do
       selectAny
-        $ Matcher.NotAsset (Matcher.AssetWithId aid) <> Matcher.resolveAssetMatcher iid matcher
+        $ Matcher.NotAsset (Matcher.AssetWithId aid)
+        <> Matcher.resolveAssetMatcher iid matcher
   Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace

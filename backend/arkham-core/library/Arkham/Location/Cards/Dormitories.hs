@@ -26,12 +26,12 @@ instance HasModifiersFor Dormitories where
 
 instance HasAbilities Dormitories where
   getAbilities (Dormitories attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $
-          Objective $
-            FastAbility $
-              GroupClueCost (PerPlayer 3) (LocationWithTitle "Dormitories")
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here
+            $ Objective
+            $ FastAbility
+            $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Dormitories")
+        ]
 
 instance RunMessage Dormitories where
   runMessage msg l@(Dormitories attrs) = case msg of

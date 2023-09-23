@@ -29,11 +29,11 @@ instance HasModifiersFor TheMaskedHunter where
     pure $ toModifiers a [HealthModifier healthModifier]
   getModifiersFor (InvestigatorTarget iid) (TheMaskedHunter a) = do
     affected <- iid <=~> investigatorEngagedWith (toId a)
-    pure $
-      toModifiers a $
-        if affected
-          then [CannotDiscoverClues, CannotSpendClues]
-          else []
+    pure
+      $ toModifiers a
+      $ if affected
+        then [CannotDiscoverClues, CannotSpendClues]
+        else []
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheMaskedHunter where

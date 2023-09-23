@@ -25,16 +25,16 @@ instance HasAbilities NathanWickMasterOfInitiation where
   getAbilities (NathanWickMasterOfInitiation attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 OnSameLocation $
-          ActionAbility (Just Action.Parley) $
-            ActionCost 1
+      [ restrictedAbility attrs 1 OnSameLocation
+          $ ActionAbility (Just Action.Parley)
+          $ ActionCost 1
       ]
 
 instance RunMessage NathanWickMasterOfInitiation where
   runMessage msg e@(NathanWickMasterOfInitiation attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        parley
+      push
+        $ parley
           iid
           (toAbilitySource attrs 1)
           iid
@@ -43,9 +43,9 @@ instance RunMessage NathanWickMasterOfInitiation where
       pure e
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       n <- perPlayer 1
-      pushAll $
-        PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1
-          : [AddToVictory (toTarget attrs) | enemyResources attrs + 1 >= n]
+      pushAll
+        $ PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1
+        : [AddToVictory (toTarget attrs) | enemyResources attrs + 1 >= n]
       pure e
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid

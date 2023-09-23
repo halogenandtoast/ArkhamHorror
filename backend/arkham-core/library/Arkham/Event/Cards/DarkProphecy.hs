@@ -31,15 +31,15 @@ instance RunMessage DarkProphecy where
           ignoreWindow <-
             checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
           pushAll
-            [ ReplaceCurrentDraw drawSource iid $
-                ChooseMatch
+            [ ReplaceCurrentDraw drawSource iid
+                $ ChooseMatch
                   (toSource attrs)
                   1
                   ResolveChoice
                   (replicate 5 $ Undecided Draw)
                   []
-                  ( ChaosTokenMatchesAny $
-                      map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
+                  ( ChaosTokenMatchesAny
+                      $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
                   )
             , ignoreWindow
             ]

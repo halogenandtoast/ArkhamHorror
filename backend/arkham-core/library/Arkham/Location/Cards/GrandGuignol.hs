@@ -38,10 +38,10 @@ instance RunMessage GrandGuignol where
       push
         $ chooseOrRunOne iid
         $ Label "Take 2 Horror" [assignHorror iid (toAbilitySource attrs 1) 2]
-          : [ Label
-              "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
-              (map (DiscardCard iid (toAbilitySource attrs 1)) nonWeaknessCards <> [drawing])
-            | not (null nonWeaknessCards)
-            ]
+        : [ Label
+            "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
+            (map (DiscardCard iid (toAbilitySource attrs 1)) nonWeaknessCards <> [drawing])
+          | not (null nonWeaknessCards)
+          ]
       pure a
     _ -> GrandGuignol <$> runMessage msg attrs

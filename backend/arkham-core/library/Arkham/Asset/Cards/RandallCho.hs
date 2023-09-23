@@ -24,8 +24,8 @@ randallCho = ally RandallCho Cards.randallCho (1, 3)
 
 instance HasAbilities RandallCho where
   getAbilities (RandallCho x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
           (AssetEntersPlay Timing.After $ AssetWithId $ toId x)
           Free
     ]
@@ -34,25 +34,25 @@ instance RunMessage RandallCho where
   runMessage msg a@(RandallCho attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       damage <- canHaveDamageHealed attrs iid
-      push $
-        chooseOrRunOne iid $
-          catMaybes
-            [ Label
-                "Heal 3 damage"
-                [HealDamage (InvestigatorTarget iid) (toSource attrs) 3]
-                <$ guard damage
-            , Just $
-                Label
-                  "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
-                  [ Search
-                      iid
-                      (toSource attrs)
-                      (InvestigatorTarget iid)
-                      [(Zone.FromDeck, ShuffleBackIn), (Zone.FromDiscard, PutBack)]
-                      (CardWithType AssetType <> CardWithTrait Weapon)
-                      (PlayFound iid 1)
-                  ]
-            ]
+      push
+        $ chooseOrRunOne iid
+        $ catMaybes
+          [ Label
+              "Heal 3 damage"
+              [HealDamage (InvestigatorTarget iid) (toSource attrs) 3]
+              <$ guard damage
+          , Just
+              $ Label
+                "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
+                [ Search
+                    iid
+                    (toSource attrs)
+                    (InvestigatorTarget iid)
+                    [(Zone.FromDeck, ShuffleBackIn), (Zone.FromDiscard, PutBack)]
+                    (CardWithType AssetType <> CardWithTrait Weapon)
+                    (PlayFound iid 1)
+                ]
+          ]
 
       pure a
     _ -> RandallCho <$> runMessage msg attrs

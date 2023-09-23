@@ -21,8 +21,8 @@ osbornsGeneralStore_206 =
 
 instance HasModifiersFor OsbornsGeneralStore_206 where
   getModifiersFor (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [CannotGainResources | iid `member` locationInvestigators attrs]
   getModifiersFor _ _ = pure []

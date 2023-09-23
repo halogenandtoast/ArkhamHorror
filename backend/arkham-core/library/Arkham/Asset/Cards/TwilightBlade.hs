@@ -67,8 +67,8 @@ twilightBladeEffect = cardEffect TwilightBladeEffect Cards.twilightBlade
 instance HasModifiersFor TwilightBladeEffect where
   getModifiersFor target (TwilightBladeEffect a@EffectAttrs {..})
     | target == effectTarget =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ UseSkillInPlaceOf SkillCombat SkillWillpower
             ]

@@ -21,7 +21,8 @@ newtype MuseumHalls = MuseumHalls LocationAttrs
 museumHalls :: LocationCard MuseumHalls
 museumHalls =
   locationWith MuseumHalls Cards.museumHalls 2 (Static 0)
-    $ revealedConnectedMatchersL <>~ ["Exhibit Hall"]
+    $ revealedConnectedMatchersL
+    <>~ ["Exhibit Hall"]
 
 instance HasModifiersFor MuseumHalls where
   getModifiersFor target (MuseumHalls l) | l `is` target = do

@@ -29,8 +29,8 @@ unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
 instance HasModifiersFor UnhallowedCountry where
   getModifiersFor (InvestigatorTarget iid) (UnhallowedCountry attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ CannotPlay (CardWithType AssetType <> CardWithTrait Ally)
         | treacheryOnInvestigator iid attrs
@@ -48,11 +48,11 @@ instance HasModifiersFor UnhallowedCountry where
 
 instance HasAbilities UnhallowedCountry where
   getAbilities (UnhallowedCountry x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds
-            Timing.When
-            You
+    [ restrictedAbility x 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds
+          Timing.When
+          You
     ]
 
 instance RunMessage UnhallowedCountry where

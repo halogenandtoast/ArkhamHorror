@@ -26,8 +26,8 @@ instance HasAbilities Cloister where
   getAbilities (Cloister a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (Here <> NoCluesOnThis) $
-          ActionAbility (Just Action.Parley) Free
+      [ restrictedAbility a 1 (Here <> NoCluesOnThis)
+          $ ActionAbility (Just Action.Parley) Free
       ]
 
 instance RunMessage Cloister where

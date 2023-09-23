@@ -26,15 +26,15 @@ tearThroughSpace =
 
 instance HasAbilities TearThroughSpace where
   getAbilities (TearThroughSpace attrs) =
-    withRevealedAbilities attrs $
-      [ mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When
-      ]
+    withRevealedAbilities attrs
+      $ [ mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When
+        ]
 
 instance RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Place 1 doom on Tear through Space"

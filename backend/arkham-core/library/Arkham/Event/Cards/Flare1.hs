@@ -48,8 +48,8 @@ instance RunMessage Flare1 where
         <$ if null fightableEnemies
           then pushAll $ findAllyMessages iid investigatorIds e
           else
-            push $
-              chooseOne
+            push
+              $ chooseOne
                 iid
                 [ Label
                     "Fight"

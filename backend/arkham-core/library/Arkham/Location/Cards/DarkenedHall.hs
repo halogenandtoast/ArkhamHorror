@@ -25,11 +25,11 @@ instance HasAbilities DarkenedHall where
   getAbilities (DarkenedHall x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $
-        ForcedAbility $
-          RevealLocation Timing.After Anyone $
-            LocationWithId $
-              toId x
+      [ mkAbility x 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After Anyone
+        $ LocationWithId
+        $ toId x
       | locationRevealed x
       ]
 
@@ -41,8 +41,8 @@ instance RunMessage DarkenedHall where
 
       let placementsWithLabel = zip ["backHallDoorway1", "backHallDoorway2", "backHallDoorway3"] placements
 
-      pushAll $
-        concat
+      pushAll
+        $ concat
           [ [ locationPlacement
             , SetLocationLabel locationId label'
             ]

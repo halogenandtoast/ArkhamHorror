@@ -27,8 +27,8 @@ buildEntity nm = do
     ]
  where
   extractCon (InstanceD _ _ (AppT _ con@(ConT name)) _) =
-    Just $
-      NormalC
+    Just
+      $ NormalC
         (TH.mkName $ nameBase name ++ "'")
         [(Bang TH.NoSourceUnpackedness TH.NoSourceStrictness, con)]
   extractCon _ = Nothing
@@ -40,8 +40,8 @@ buildEntityLookupList nm = do
   pure $ ListE conz
  where
   extractCon (InstanceD _ _ (AppT _ (ConT name)) _) =
-    Just $
-      AppE
+    Just
+      $ AppE
         (AppE (VarE 'fmap) (ConE $ TH.mkName $ nameBase name ++ "'"))
         (VarE $ toFunName $ nameBase name)
   extractCon _ = Nothing
@@ -55,8 +55,8 @@ buildEntityLookupList2 nm = do
   pure $ ListE conz
  where
   extractCon (InstanceD _ _ (AppT _ (ConT name)) _) =
-    Just $
-      AppE
+    Just
+      $ AppE
         (AppE (VarE 'fmap) (ConE nm))
         (VarE $ toFunName $ nameBase name)
   extractCon _ = Nothing
@@ -73,11 +73,11 @@ entityRunMessage nm = do
   pure $ LamE [VarP msg, VarP a] $ CaseE (VarE a) matches
  where
   toMatch msg x (InstanceD _ _ (AppT _ (ConT name)) _) =
-    Just $
-      Match
+    Just
+      $ Match
         (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
-        ( NormalB $
-            AppE
+        ( NormalB
+            $ AppE
               (AppE (VarE 'fmap) (ConE $ TH.mkName $ nameBase name ++ "'"))
               (AppE (AppE (VarE $ TH.mkName "runMessage") (VarE msg)) (VarE x))
         )
@@ -93,8 +93,8 @@ entityF nm f = do
   pure $ LamE [VarP a] $ CaseE (VarE a) matches
  where
   toMatch g x (InstanceD _ _ (AppT _ (ConT name)) _) =
-    Just $
-      Match
+    Just
+      $ Match
         (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
         (NormalB $ AppE (VarE g) (VarE x))
         []
@@ -111,8 +111,8 @@ entityF2 nm f = do
   pure $ LamE [VarP p1, VarP p2, VarP a] $ CaseE (VarE a) matches
  where
   toMatch g p1 p2 x (InstanceD _ _ (AppT _ (ConT name)) _) =
-    Just $
-      Match
+    Just
+      $ Match
         (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
         (NormalB $ AppE (AppE (AppE (VarE g) (VarE p1)) (VarE p2)) (VarE x))
         []
@@ -128,8 +128,8 @@ entityF1 nm f = do
   pure $ LamE [VarP p1, VarP a] $ CaseE (VarE a) matches
  where
   toMatch g p1 x (InstanceD _ _ (AppT _ (ConT name)) _) =
-    Just $
-      Match
+    Just
+      $ Match
         (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
         (NormalB $ AppE (AppE (VarE g) (VarE p1)) (VarE x))
         []

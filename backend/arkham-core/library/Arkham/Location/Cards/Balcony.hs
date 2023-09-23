@@ -24,13 +24,13 @@ instance HasAbilities Balcony where
   getAbilities (Balcony attrs) =
     withRevealedAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            MoveAction
-              Timing.After
-              You
-              (LocationWithId $ toId attrs)
-              (locationIs Cards.theatre)
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ MoveAction
+            Timing.After
+            You
+            (LocationWithId $ toId attrs)
+            (locationIs Cards.theatre)
       ]
 
 instance RunMessage Balcony where

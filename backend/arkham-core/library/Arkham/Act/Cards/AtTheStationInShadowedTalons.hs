@@ -24,10 +24,10 @@ newtype AtTheStationInShadowedTalons = AtTheStationInShadowedTalons ActAttrs
 
 atTheStationInShadowedTalons :: ActCard AtTheStationInShadowedTalons
 atTheStationInShadowedTalons =
-  act (2, C) AtTheStationInShadowedTalons Cards.atTheStationInShadowedTalons $
-    Just $
-      GroupClueCost (PerPlayer 2) $
-        LocationWithTitle "Arkham Police Station"
+  act (2, C) AtTheStationInShadowedTalons Cards.atTheStationInShadowedTalons
+    $ Just
+    $ GroupClueCost (PerPlayer 2)
+    $ LocationWithTitle "Arkham Police Station"
 
 instance RunMessage AtTheStationInShadowedTalons where
   runMessage msg a@(AtTheStationInShadowedTalons attrs) = case msg of
@@ -51,36 +51,36 @@ instance RunMessage AtTheStationInShadowedTalons where
       leadInvestigatorId <- getLeadInvestigatorId
       huntingNightgaunts <- selectList $ enemyIs Enemies.huntingNightgaunt
       farthestHuntingNightGaunts <-
-        selectList $
-          FarthestEnemyFromAll $
-            enemyIs
-              Enemies.huntingNightgaunt
+        selectList
+          $ FarthestEnemyFromAll
+          $ enemyIs
+            Enemies.huntingNightgaunt
       deckCount <- getActDecksInPlayCount
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       assetId <- getRandom
-      pushAll $
-        map
+      pushAll
+        $ map
           ((`HealAllDamage` toSource attrs) . EnemyTarget)
           huntingNightgaunts
-          <> [ chooseOrRunOne
-                leadInvestigatorId
-                [ targetLabel huntingNightgaunt $
-                  CreateAssetAt
-                    assetId
-                    alejandroVela
-                    (AttachedToEnemy huntingNightgaunt)
-                    : [ PlaceDoom (toSource attrs) (EnemyTarget huntingNightgaunt) 1
-                      | deckCount <= 2
-                      ]
-                | huntingNightgaunt <- farthestHuntingNightGaunts
-                ]
-             ]
+        <> [ chooseOrRunOne
+              leadInvestigatorId
+              [ targetLabel huntingNightgaunt
+                $ CreateAssetAt
+                  assetId
+                  alejandroVela
+                  (AttachedToEnemy huntingNightgaunt)
+                : [ PlaceDoom (toSource attrs) (EnemyTarget huntingNightgaunt) 1
+                  | deckCount <= 2
+                  ]
+              | huntingNightgaunt <- farthestHuntingNightGaunts
+              ]
+           ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       locations <- selectList $ FarthestLocationFromAll Anywhere
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           leadInvestigatorId
           [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
           | location <- locations

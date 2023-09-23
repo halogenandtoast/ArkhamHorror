@@ -30,7 +30,9 @@ evasionCriteria =
     $ CriteriaOverride
     $ EnemyCriteria
     $ ThisEnemy
-    $ ExhaustedEnemy <> UnengagedEnemy <> EnemyAt YourLocation
+    $ ExhaustedEnemy
+    <> UnengagedEnemy
+    <> EnemyAt YourLocation
 
 instance HasModifiersFor UnspeakableOathCowardice where
   getModifiersFor (AbilityTarget iid ability) (UnspeakableOathCowardice a)

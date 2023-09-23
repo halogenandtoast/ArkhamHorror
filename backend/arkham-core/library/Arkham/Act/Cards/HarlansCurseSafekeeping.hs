@@ -33,10 +33,10 @@ instance HasAbilities HarlansCurseSafekeeping where
     [ restrictedAbility
       a
       1
-      ( AssetExists $
-          assetIs Assets.harlanEarnstone
-            <> AssetWithClues
-              (AtLeast $ PerPlayer 1)
+      ( AssetExists
+          $ assetIs Assets.harlanEarnstone
+          <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
       )
       $ Objective
       $ ForcedAbility AnyWindow
@@ -58,17 +58,17 @@ instance RunMessage HarlansCurseSafekeeping where
           then getPlayerCountValue (ByPlayerCount 1 1 2 2)
           else pure 0
       assetId <- getRandom
-      pushAll $
-        CreateAssetAt assetId relicOfAges (AttachedToLocation curiositieShoppe)
-          : replicate
-            acolyteCount
-            ( FindEncounterCard
-                leadInvestigatorId
-                (toTarget attrs)
-                [FromEncounterDeck]
-                (cardIs Enemies.acolyte)
-            )
-            <> [AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)]
+      pushAll
+        $ CreateAssetAt assetId relicOfAges (AttachedToLocation curiositieShoppe)
+        : replicate
+          acolyteCount
+          ( FindEncounterCard
+              leadInvestigatorId
+              (toTarget attrs)
+              [FromEncounterDeck]
+              (cardIs Enemies.acolyte)
+          )
+          <> [AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       curiositieShoppe <- selectJust $ locationIs Locations.curiositieShoppe

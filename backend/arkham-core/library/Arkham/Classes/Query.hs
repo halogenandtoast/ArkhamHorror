@@ -215,11 +215,11 @@ selectOnlyOne matcher =
     xs ->
       error
         $ "Expected only one "
-          <> show (typeRep (Proxy @(QueryElement a)))
-          <> " result for: "
-          <> show matcher
-          <> ", got: "
-          <> show (length xs)
+        <> show (typeRep (Proxy @(QueryElement a)))
+        <> " result for: "
+        <> show matcher
+        <> ", got: "
+        <> show (length xs)
 
 isMatch
   :: (HasCallStack, Query matcher, HasGame m)

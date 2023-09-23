@@ -40,7 +40,8 @@ instance RunMessage WilliamYorick where
       let
         windows'' =
           nub
-            $ windows' <> [mkWindow Timing.When Window.NonFast, mkWindow Timing.When (Window.DuringTurn iid)]
+            $ windows'
+            <> [mkWindow Timing.When Window.NonFast, mkWindow Timing.When (Window.DuringTurn iid)]
         targets = filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
         playCardMsgs c =
           [addToHand iid c]

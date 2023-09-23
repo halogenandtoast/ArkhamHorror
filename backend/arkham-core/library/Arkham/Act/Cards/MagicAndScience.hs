@@ -45,9 +45,9 @@ instance HasAbilities MagicAndScience where
   getAbilities (MagicAndScience a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
-          ActionAbility (Just Action.Explore) $
-            ActionCost 1
+      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+          $ ActionAbility (Just Action.Explore)
+          $ ActionCost 1
       ]
 
 data LocationCandidate = LocationCandidate
@@ -60,8 +60,8 @@ instance RunMessage MagicAndScience where
   runMessage msg a@(MagicAndScience attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           source
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
@@ -73,18 +73,18 @@ instance RunMessage MagicAndScience where
       investigators <- selectList $ investigatorAt chamberOfTime
       entryway <- selectJust $ locationIs Locations.entryway
       otherLocations <-
-        selectList $
-          NotLocation $
-            LocationMatchAny
-              [LocationWithId chamberOfTime, LocationWithId entryway]
+        selectList
+          $ NotLocation
+          $ LocationMatchAny
+            [LocationWithId chamberOfTime, LocationWithId entryway]
       candidates <- for otherLocations $ \location -> do
         LocationCandidate location
           <$> field LocationDoom location
           <*> field LocationCard location
       let
         candidateGroups =
-          groupBy ((==) `on` locationCandidateDoom) $
-            sortBy (compare `on` locationCandidateDoom) candidates
+          groupBy ((==) `on` locationCandidateDoom)
+            $ sortBy (compare `on` locationCandidateDoom) candidates
         handleCandidateGroup [] = error "Unhandled"
         handleCandidateGroup [c] =
           [ HandleTargetChoice
@@ -107,22 +107,22 @@ instance RunMessage MagicAndScience where
               ]
           , UnfocusCards
           ]
-      pushAll $
-        [ chooseOrRunOne
-            leadInvestigatorId
-            [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
-            | iid <- investigators
-            ]
-        , SetConnections chamberOfTime []
-        , SetLocationLabel chamberOfTime "pos1"
-        , SetConnections entryway []
-        , SetLocationLabel entryway "pos7"
-        ]
-          <> [SetConnections lid [] | lid <- otherLocations]
-          <> concatMap handleCandidateGroup candidateGroups
-          <> [ NextAdvanceActStep (toId attrs) 1
-             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ [ chooseOrRunOne
+              leadInvestigatorId
+              [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
+              | iid <- investigators
+              ]
+          , SetConnections chamberOfTime []
+          , SetLocationLabel chamberOfTime "pos1"
+          , SetConnections entryway []
+          , SetLocationLabel entryway "pos7"
+          ]
+        <> [SetConnections lid [] | lid <- otherLocations]
+        <> concatMap handleCandidateGroup candidateGroups
+        <> [ NextAdvanceActStep (toId attrs) 1
+           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+           ]
       pure a
     HandleTargetChoice _ source (LocationTarget lid) | isSource attrs source ->
       do
@@ -152,7 +152,7 @@ instance RunMessage MagicAndScience where
       mposition <-
         getLast
           . foldMap Last
-          <$> traverse (selectOne . LocationWithLabel . Label) positions
+            <$> traverse (selectOne . LocationWithLabel . Label) positions
       case mposition of
         Nothing -> error "invalid logic"
         Just pos -> do

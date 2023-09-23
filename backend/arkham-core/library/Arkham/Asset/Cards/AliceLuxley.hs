@@ -34,9 +34,9 @@ instance HasAbilities AliceLuxley where
         1
         ( ControlsThis
             <> EnemyCriteria
-              ( EnemyExists $
-                  EnemyAt YourLocation
-                    <> EnemyCanBeDamagedBySource (toAbilitySource a 1)
+              ( EnemyExists
+                  $ EnemyAt YourLocation
+                  <> EnemyCanBeDamagedBySource (toAbilitySource a 1)
               )
         )
         $ ReactionAbility
@@ -48,11 +48,11 @@ instance RunMessage AliceLuxley where
   runMessage msg a@(AliceLuxley attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemies <-
-        selectList $
-          EnemyAt (locationWithInvestigator iid)
-            <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
-      push $
-        chooseOrRunOne
+        selectList
+          $ EnemyAt (locationWithInvestigator iid)
+          <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 1]
           | enemy <- enemies

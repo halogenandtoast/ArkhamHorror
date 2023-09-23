@@ -20,8 +20,8 @@ instance RunMessage MindWipe3 where
   runMessage msg e@(MindWipe3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
-      unless (null enemyIds) $
-        pushAll
+      unless (null enemyIds)
+        $ pushAll
           [ chooseOne
               iid
               [ TargetLabel

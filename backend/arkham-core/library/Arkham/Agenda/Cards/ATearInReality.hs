@@ -33,9 +33,9 @@ instance RunMessage ATearInReality where
           (fromJustNote "must be at location")
           leadInvestigatorId
       lid <- leftmostLocation locationId
-      pushAll $
-        RemoveLocation lid
-          : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
-            <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      pushAll
+        $ RemoveLocation lid
+        : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
+          <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
       pure a
     _ -> ATearInReality <$> runMessage msg attrs

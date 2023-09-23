@@ -30,42 +30,42 @@ instance RunMessage YigsMercy where
     ResolveStory iid _ story' | story' == toId attrs -> do
       ichtaca <- selectJust $ enemyIs Enemies.ichtacaScionOfYig
       yigsFury <- getRecordCount YigsFury
-      push $
-        chooseOne iid $
-          if yigsFury >= 16
-            then [Label "Ichtaca refuses your plea" []]
-            else
-              [ Label
-                  "I could never turn my back on humanity"
-                  [ Exhaust (toTarget ichtaca)
-                  , DisengageEnemyFromAll ichtaca
-                  , CreateWindowModifierEffect
-                      EffectGameWindow
-                      ( EffectModifiers $
-                          toModifiers
-                            attrs
-                            [CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig]
-                      )
-                      (toSource attrs)
-                      (InvestigatorTarget iid)
-                  ]
-              , Label
-                  "I accept"
-                  [ RemoveEnemy ichtaca
-                  , AdvanceToAct 1 Acts.timelock A (toSource attrs)
-                  , CreateWindowModifierEffect
-                      EffectGameWindow
-                      ( EffectModifiers $
-                          toModifiers
-                            attrs
-                            [ CannotParleyWith $ enemyIs Enemies.alejandroVela
-                            , CannotBeAttackedBy $ EnemyWithTrait Trait.Cultist
-                            , CannotBeEngagedBy $ EnemyWithTrait Trait.Cultist
-                            ]
-                      )
-                      (toSource attrs)
-                      (InvestigatorTarget iid)
-                  ]
-              ]
+      push
+        $ chooseOne iid
+        $ if yigsFury >= 16
+          then [Label "Ichtaca refuses your plea" []]
+          else
+            [ Label
+                "I could never turn my back on humanity"
+                [ Exhaust (toTarget ichtaca)
+                , DisengageEnemyFromAll ichtaca
+                , CreateWindowModifierEffect
+                    EffectGameWindow
+                    ( EffectModifiers
+                        $ toModifiers
+                          attrs
+                          [CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig]
+                    )
+                    (toSource attrs)
+                    (InvestigatorTarget iid)
+                ]
+            , Label
+                "I accept"
+                [ RemoveEnemy ichtaca
+                , AdvanceToAct 1 Acts.timelock A (toSource attrs)
+                , CreateWindowModifierEffect
+                    EffectGameWindow
+                    ( EffectModifiers
+                        $ toModifiers
+                          attrs
+                          [ CannotParleyWith $ enemyIs Enemies.alejandroVela
+                          , CannotBeAttackedBy $ EnemyWithTrait Trait.Cultist
+                          , CannotBeEngagedBy $ EnemyWithTrait Trait.Cultist
+                          ]
+                    )
+                    (toSource attrs)
+                    (InvestigatorTarget iid)
+                ]
+            ]
       pure s
     _ -> YigsMercy <$> runMessage msg attrs

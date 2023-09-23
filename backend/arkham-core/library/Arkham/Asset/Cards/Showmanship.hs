@@ -40,8 +40,8 @@ toAsset (_ : xs) = toAsset xs
 instance RunMessage Showmanship where
   runMessage msg a@(Showmanship attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (toAsset -> aid) _ -> do
-      push $
-        createCardEffect
+      push
+        $ createCardEffect
           Cards.showmanship
           (Just $ EffectMetaTarget $ toTarget aid)
           (toSource attrs)

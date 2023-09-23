@@ -28,8 +28,8 @@ instance RunMessage CallingInFavors where
       allies <-
         selectList
           $ AllyAsset
-            <> AssetControlledBy
-              (InvestigatorWithId iid)
+          <> AssetControlledBy
+            (InvestigatorWithId iid)
       targetsWithCosts <- for
         allies
         \ally -> do

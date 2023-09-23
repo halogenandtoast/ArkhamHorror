@@ -35,10 +35,10 @@ instance HasModifiersFor FireAxe where
 instance HasAbilities FireAxe where
   getAbilities (FireAxe a) =
     [ fightAbility a 1 (ActionCost 1) ControlsThis
-    , limitedAbility (PlayerLimit PerTestOrAbility 3) $
-        fastAbility a 2 (ResourceCost 1) $
-          ControlsThis
-            <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
+    , limitedAbility (PlayerLimit PerTestOrAbility 3)
+        $ fastAbility a 2 (ResourceCost 1)
+        $ ControlsThis
+        <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
     ]
 
 instance RunMessage FireAxe where

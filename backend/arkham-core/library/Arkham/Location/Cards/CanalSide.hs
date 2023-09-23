@@ -30,13 +30,13 @@ canalSide =
 
 instance HasAbilities CanalSide where
   getAbilities (CanalSide attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ReactionAbility
-          (Enters Timing.After You $ LocationWithId $ toId attrs)
-          Free
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ReactionAbility
+            (Enters Timing.After You $ LocationWithId $ toId attrs)
+            Free
+        | locationRevealed attrs
+        ]
 
 instance RunMessage CanalSide where
   runMessage msg l@(CanalSide attrs) = case msg of

@@ -50,12 +50,12 @@ instance HasChaosTokenValue TheMiskatonicMuseum where
   getChaosTokenValue iid chaosTokenFace (TheMiskatonicMuseum attrs) = case chaosTokenFace of
     Skull -> do
       huntingHorrorAtYourLocation <-
-        selectAny $
-          enemyIs Enemies.huntingHorror
-            <> EnemyAt
-              (LocationWithInvestigator $ InvestigatorWithId iid)
-      pure $
-        if huntingHorrorAtYourLocation
+        selectAny
+          $ enemyIs Enemies.huntingHorror
+          <> EnemyAt
+            (LocationWithInvestigator $ InvestigatorWithId iid)
+      pure
+        $ if huntingHorrorAtYourLocation
           then toChaosTokenValue attrs Skull 3 4
           else toChaosTokenValue attrs Skull 1 2
     Cultist -> pure $ toChaosTokenValue attrs Cultist 1 3
@@ -206,15 +206,15 @@ instance RunMessage TheMiskatonicMuseum where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
       s <$ case chaosTokenFace token of
         Cultist ->
-          push $
-            FindEncounterCard
+          push
+            $ FindEncounterCard
               iid
               (toTarget attrs)
               [FromEncounterDeck, FromEncounterDiscard, FromVoid]
               (cardIs Enemies.huntingHorror)
         ElderThing ->
-          push $
-            ChooseAndDiscardAsset iid (ChaosTokenEffectSource ElderThing) AnyAsset
+          push
+            $ ChooseAndDiscardAsset iid (ChaosTokenEffectSource ElderThing) AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getJustLocation iid
@@ -225,52 +225,52 @@ instance RunMessage TheMiskatonicMuseum where
     ScenarioResolution NoResolution -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids noResolution
-        , Record TheInvestigatorsFailedToRecoverTheNecronomicon
-        ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids noResolution
+          , Record TheInvestigatorsFailedToRecoverTheNecronomicon
+          ]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
       iids <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story iids resolution1
-        , Record TheInvestigatorsDestroyedTheNecronomicon
-        ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution1
+          , Record TheInvestigatorsDestroyedTheNecronomicon
+          ]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       lead <- getLead
       investigatorIds <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [ story investigatorIds resolution2
-        , Record TheInvestigatorsTookCustodyOfTheNecronomicon
-        , chooseOne
-            lead
-            [ Label
-                "Add The Necronomicon (Olaus Wormius Translation) to a deck"
-                [ chooseOne
-                    lead
-                    [ targetLabel
-                      iid
-                      [ AddCampaignCardToDeck
-                          iid
-                          Assets.theNecronomiconOlausWormiusTranslation
+      pushAll
+        $ [ story investigatorIds resolution2
+          , Record TheInvestigatorsTookCustodyOfTheNecronomicon
+          , chooseOne
+              lead
+              [ Label
+                  "Add The Necronomicon (Olaus Wormius Translation) to a deck"
+                  [ chooseOne
+                      lead
+                      [ targetLabel
+                        iid
+                        [ AddCampaignCardToDeck
+                            iid
+                            Assets.theNecronomiconOlausWormiusTranslation
+                        ]
+                      | iid <- investigatorIds
                       ]
-                    | iid <- investigatorIds
-                    ]
-                ]
-            , Label
-                "Do not add The Necronomicon (Olaus Wormius Translation) to a deck"
-                []
-            ]
-        , AddChaosToken ElderThing
-        ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+                  ]
+              , Label
+                  "Do not add The Necronomicon (Olaus Wormius Translation) to a deck"
+                  []
+              ]
+          , AddChaosToken ElderThing
+          ]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     _ -> TheMiskatonicMuseum <$> runMessage msg attrs

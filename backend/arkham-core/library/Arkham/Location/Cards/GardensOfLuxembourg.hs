@@ -30,8 +30,8 @@ instance HasModifiersFor GardensOfLuxembourg where
         byakheeIsMoving <-
           selectAny
             (MovingEnemy <> EnemyWithTrait Byakhee <> EnemyAt (LocationWithId lid))
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId attrs)
             | byakheeIsMoving

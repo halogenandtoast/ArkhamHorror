@@ -25,10 +25,10 @@ instance RunMessage Contraband where
   runMessage msg e@(Contraband attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <-
-        selectList $
-          InvestigatorAt $
-            LocationWithInvestigator $
-              InvestigatorWithId iid
+        selectList
+          $ InvestigatorAt
+          $ LocationWithInvestigator
+          $ InvestigatorWithId iid
 
       ammoAssets <-
         selectList

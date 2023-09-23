@@ -32,11 +32,11 @@ instance HasAbilities IshimaruHaruko where
         )
         $ ActionAbility Nothing
         $ ActionCost 1
-    , mkAbility a 2 $
-        ForcedAbility $
-          LastClueRemovedFromAsset Timing.When $
-            AssetWithId $
-              toId a
+    , mkAbility a 2
+        $ ForcedAbility
+        $ LastClueRemovedFromAsset Timing.When
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage IshimaruHaruko where

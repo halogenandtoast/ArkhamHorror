@@ -34,14 +34,14 @@ worldsBeyond =
 
 instance HasAbilities WorldsBeyond where
   getAbilities (WorldsBeyond a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttemptsToSpawnAt
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ EnemyAttemptsToSpawnAt
               Timing.When
               AnyEnemy
               LocationNotInPlay
-      ]
+        ]
 
 instance RunMessage WorldsBeyond where
   runMessage msg a@(WorldsBeyond attrs) = case msg of

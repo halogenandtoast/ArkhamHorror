@@ -77,7 +77,7 @@ readInvestigatorDefeat = do
     else
       pure
         $ [story defeatedInvestigatorIds investigatorDefeat]
-          <> map DrivenInsane defeatedInvestigatorIds
+        <> map DrivenInsane defeatedInvestigatorIds
 
 instance RunMessage BeforeTheBlackThrone where
   runMessage msg s@(BeforeTheBlackThrone attrs) = case msg of
@@ -167,8 +167,8 @@ instance RunMessage BeforeTheBlackThrone where
           , MoveAllTo (toSource attrs) cosmicIngress
           , createAzathoth
           ]
-          <> map (ObtainCard . toCard) cards
-          <> placeEmptySpaces
+        <> map (ObtainCard . toCard) cards
+        <> placeEmptySpaces
 
       setAsideCards <-
         genCards [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
@@ -224,14 +224,14 @@ instance RunMessage BeforeTheBlackThrone where
         _ -> pure []
       pushAll
         $ currentMsgs
-          <> [ LocationMoved lid
-             , SetLocationLabel lid (cosmicLabel pos)
-             , SetScenarioMeta (toJSON cosmos'')
-             ]
-          <> [PlacedLocationDirection lid Below topLocation | topLocation <- maybeToList mTopLocation]
-          <> [PlacedLocationDirection lid Above bottomLocation | bottomLocation <- maybeToList mBottomLocation]
-          <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
-          <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
+        <> [ LocationMoved lid
+           , SetLocationLabel lid (cosmicLabel pos)
+           , SetScenarioMeta (toJSON cosmos'')
+           ]
+        <> [PlacedLocationDirection lid Below topLocation | topLocation <- maybeToList mTopLocation]
+        <> [PlacedLocationDirection lid Above bottomLocation | bottomLocation <- maybeToList mBottomLocation]
+        <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
+        <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
 
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
@@ -255,45 +255,45 @@ instance RunMessage BeforeTheBlackThrone where
           msgs <- if x == 1 then readInvestigatorDefeat else pure []
           pushAll
             $ msgs
-              <> [story investigators resolution1, Record AzathothDevouredTheUniverse]
-              <> map (InvestigatorKilled (toSource attrs)) investigators
-              <> [GameOver]
+            <> [story investigators resolution1, Record AzathothDevouredTheUniverse]
+            <> map (InvestigatorKilled (toSource attrs)) investigators
+            <> [GameOver]
         Resolution 2 -> do
           lead <- getLead
           msgs <- readInvestigatorDefeat
           gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
           pushAll
             $ msgs
-              <> [ story investigators resolution2
-                 , Record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
-                 , Record AzathothSlumbersForNow
-                 , DrivenInsane lead
-                 ]
-              <> gainXp
-              <> [SufferTrauma investigator 0 2 | investigator <- investigators]
-              <> [EndOfGame Nothing]
+            <> [ story investigators resolution2
+               , Record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
+               , Record AzathothSlumbersForNow
+               , DrivenInsane lead
+               ]
+            <> gainXp
+            <> [SufferTrauma investigator 0 2 | investigator <- investigators]
+            <> [EndOfGame Nothing]
         Resolution 3 -> do
           msgs <- readInvestigatorDefeat
           gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
           pushAll
             $ msgs
-              <> [ story investigators resolution3
-                 , Record AzathothSlumbersForNow
-                 ]
-              <> gainXp
-              <> [SufferTrauma investigator 2 0 | investigator <- investigators]
-              <> [EndOfGame Nothing]
+            <> [ story investigators resolution3
+               , Record AzathothSlumbersForNow
+               ]
+            <> gainXp
+            <> [SufferTrauma investigator 2 0 | investigator <- investigators]
+            <> [EndOfGame Nothing]
         Resolution 4 -> do
           msgs <- readInvestigatorDefeat
           lead <- getLead
           pushAll
             $ msgs
-              <> [ storyWithChooseOne
-                    lead
-                    investigators
-                    resolution4
-                    [Label "It must be done." [R5], Label "I refuse" [ScenarioResolution (Resolution 11)]]
-                 ]
+            <> [ storyWithChooseOne
+                  lead
+                  investigators
+                  resolution4
+                  [Label "It must be done." [R5], Label "I refuse" [ScenarioResolution (Resolution 11)]]
+               ]
         Resolution 5 -> do
           gainXp <- toGainXp (toSource attrs) (getXpWithBonus 10)
           pushAll
@@ -301,9 +301,9 @@ instance RunMessage BeforeTheBlackThrone where
               , Record AzathothSlumbersForNow
               , Record TheInvestigatorsSignedTheBlackBookOfAzathoth
               ]
-              <> gainXp
-              <> [SufferTrauma investigator 2 2 | investigator <- investigators]
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [SufferTrauma investigator 2 2 | investigator <- investigators]
+            <> [EndOfGame Nothing]
         _ -> error "unknown resolution"
       pure s
     _ -> BeforeTheBlackThrone <$> runMessage msg attrs

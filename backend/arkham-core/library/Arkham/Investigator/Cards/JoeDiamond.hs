@@ -75,7 +75,7 @@ instance RunMessage JoeDiamond where
           pure
             $ JoeDiamond
             . (`with` Metadata (revealedHunchCard meta))
-            $ attrs'
+              $ attrs'
             & (deckL %~ withDeck (filter (`notElem` insights)))
             & (decksL . at HunchDeck ?~ hunchDeck')
         else do
@@ -101,7 +101,7 @@ instance RunMessage JoeDiamond where
       pure
         $ JoeDiamond
         . (`with` Metadata Nothing)
-        $ attrs
+          $ attrs
         & deckL %~ filter ((/= insight) . toCard)
         & (decksL . at HunchDeck ?~ hunchDeck')
     RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] | attrs `is` iid -> do
@@ -127,10 +127,10 @@ instance RunMessage JoeDiamond where
       pushIfAny insights
         $ chooseOne iid
         $ Label "Do not move an insight" []
-          : [ targetLabel (toCardId insight)
-              $ [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
-            | insight <- insights
-            ]
+        : [ targetLabel (toCardId insight)
+            $ [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
+          | insight <- insights
+          ]
       pure i
     PutCardOnBottomOfDeck _ (Deck.HunchDeck iid) insight | attrs `is` iid -> do
       attrs' <- runMessage msg attrs

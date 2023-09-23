@@ -21,25 +21,25 @@ newtype CrumblingPrecipice = CrumblingPrecipice LocationAttrs
 
 crumblingPrecipice :: LocationCard CrumblingPrecipice
 crumblingPrecipice =
-  symbolLabel $
-    location CrumblingPrecipice Cards.crumblingPrecipice 4 (Static 0)
+  symbolLabel
+    $ location CrumblingPrecipice Cards.crumblingPrecipice 4 (Static 0)
 
 instance HasAbilities CrumblingPrecipice where
   getAbilities (CrumblingPrecipice a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 Here $
-          ForcedAbility $
-            AttemptExplore
-              Timing.When
-              You
+      [ restrictedAbility a 1 Here
+          $ ForcedAbility
+          $ AttemptExplore
+            Timing.When
+            You
       ]
 
 instance RunMessage CrumblingPrecipice where
   runMessage msg l@(CrumblingPrecipice attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
@@ -47,8 +47,8 @@ instance RunMessage CrumblingPrecipice where
           4
       pure l
     FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillWillpower) _ -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
@@ -56,8 +56,8 @@ instance RunMessage CrumblingPrecipice where
           3
       pure l
     FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillAgility) _ -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

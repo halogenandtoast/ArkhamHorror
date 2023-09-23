@@ -34,8 +34,8 @@ oneTwoPunch5 = event (OneTwoPunch5 . (`with` Metadata True)) Cards.oneTwoPunch5
 instance HasModifiersFor OneTwoPunch5 where
   getModifiersFor (InvestigatorTarget iid) (OneTwoPunch5 (a `With` metadata))
     | eventOwner a == iid && isFirst metadata =
-        pure $
-          toModifiers a [SkillTestAutomaticallySucceeds]
+        pure
+          $ toModifiers a [SkillTestAutomaticallySucceeds]
   getModifiersFor _ _ = pure []
 
 -- TODO: Also need to handle the repeat being tied to success in order to handle
@@ -74,9 +74,9 @@ instance RunMessage OneTwoPunch5Effect where
           case (skillTestResult skillTest, skillTestTarget skillTest) of
             (SucceededBy {}, EnemyTarget eid) -> do
               isStillAlive <- selectAny $ EnemyWithId eid
-              push $
-                chooseOrRunOne iid $
-                  [ Label
+              push
+                $ chooseOrRunOne iid
+                $ [ Label
                     "Fight that enemy again"
                     [ skillTestModifiers
                         (toSource attrs)
@@ -93,10 +93,10 @@ instance RunMessage OneTwoPunch5Effect where
                     ]
                   | isStillAlive
                   ]
-                    <> [ Label
-                          "Do not fight that enemy again"
-                          [DisableEffect (toId attrs)]
-                       ]
+                <> [ Label
+                      "Do not fight that enemy again"
+                      [DisableEffect (toId attrs)]
+                   ]
             _ -> pure ()
         (_, _) -> error "invalid call"
       pure . OneTwoPunch5Effect $ attrs & finishedL .~ True

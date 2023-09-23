@@ -33,8 +33,8 @@ callOfTheUnknown =
 
 instance HasAbilities CallOfTheUnknown where
   getAbilities (CallOfTheUnknown (a `With` _)) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility (TurnBegins Timing.When You)
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility (TurnBegins Timing.When You)
     ]
 
 instance RunMessage CallOfTheUnknown where
@@ -44,19 +44,19 @@ instance RunMessage CallOfTheUnknown where
       pure t
     UseCardAbility iid source 1 windows' payment | isSource attrs source -> do
       targets <-
-        selectListMap LocationTarget $
-          NotLocation $
-            locationWithInvestigator
-              iid
-      when (notNull targets) $
-        push $
-          chooseOne
+        selectListMap LocationTarget
+          $ NotLocation
+          $ locationWithInvestigator
             iid
-            [ TargetLabel
-              target
-              [UseCardAbilityChoiceTarget iid source 1 target windows' payment]
-            | target <- targets
-            ]
+      when (notNull targets)
+        $ push
+        $ chooseOne
+          iid
+          [ TargetLabel
+            target
+            [UseCardAbilityChoiceTarget iid source 1 target windows' payment]
+          | target <- targets
+          ]
       pure t
     UseCardAbilityChoiceTarget _ source 1 (LocationTarget lid) _ _
       | isSource attrs source -> do
@@ -65,8 +65,8 @@ instance RunMessage CallOfTheUnknown where
       -- use When here to trigger before turn history is erased
       for_ (chosenLocation metadata) $ \lid -> do
         history <- getHistory TurnHistory iid
-        when (lid `notMember` historyLocationsSuccessfullyInvestigated history) $
-          pushAll
+        when (lid `notMember` historyLocationsSuccessfullyInvestigated history)
+          $ pushAll
             [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
             , ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
             ]

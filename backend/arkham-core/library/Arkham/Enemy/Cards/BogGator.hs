@@ -31,11 +31,11 @@ instance HasModifiersFor BogGator where
     | spawned a && eid == enemyId = do
         bayouLocation <-
           selectAny $ LocationWithTrait Bayou <> locationWithEnemy eid
-        pure $
-          toModifiers a $
-            if bayouLocation
-              then [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
-              else []
+        pure
+          $ toModifiers a
+          $ if bayouLocation
+            then [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
+            else []
   getModifiersFor _ _ = pure []
 
 instance RunMessage BogGator where

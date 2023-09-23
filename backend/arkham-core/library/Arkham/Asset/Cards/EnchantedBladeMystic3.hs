@@ -26,10 +26,10 @@ getUsesPaid _ = 0
 
 instance HasAbilities EnchantedBladeMystic3 where
   getAbilities (EnchantedBladeMystic3 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          Costs
-            [ActionCost 1, UpTo 2 (UseCost (AssetWithId $ toId attrs) Charge 1)]
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ Costs
+          [ActionCost 1, UpTo 2 (UseCost (AssetWithId $ toId attrs) Charge 1)]
     ]
 
 instance RunMessage EnchantedBladeMystic3 where

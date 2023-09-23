@@ -31,18 +31,18 @@ instance HasAbilities DeVermisMysteriis2 where
         1
         ( ControlsThis
             <> ExtendedCardExists
-              ( PlayableCardWithCostReduction 1 $
-                  InDiscardOf You
-                    <> BasicCardMatch
-                      ( CardWithOneOf [CardWithTrait Spell, CardWithTrait Insight]
-                          <> CardWithType EventType
-                      )
+              ( PlayableCardWithCostReduction 1
+                  $ InDiscardOf You
+                  <> BasicCardMatch
+                    ( CardWithOneOf [CardWithTrait Spell, CardWithTrait Insight]
+                        <> CardWithType EventType
+                    )
               )
         )
         $ ActionAbility Nothing
         $ ActionCost 1
-          <> ExhaustCost (toTarget a)
-          <> DoomCost (toSource a) (toTarget a) 1
+        <> ExhaustCost (toTarget a)
+        <> DoomCost (toSource a) (toTarget a) 1
     ]
 
 instance RunMessage DeVermisMysteriis2 where
@@ -50,27 +50,27 @@ instance RunMessage DeVermisMysteriis2 where
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       let
         windows'' =
-          nub $
-            windows'
-              <> [ mkWindow Timing.When (Window.DuringTurn iid)
-                 , mkWindow Timing.When Window.FastPlayerWindow
-                 ]
+          nub
+            $ windows'
+            <> [ mkWindow Timing.When (Window.DuringTurn iid)
+               , mkWindow Timing.When Window.FastPlayerWindow
+               ]
       cards <-
-        selectList $
-          PlayableCardWithCostReduction 1 $
-            InDiscardOf (InvestigatorWithId iid)
-              <> BasicCardMatch
-                (EventCard <> CardWithOneOf [CardWithTrait Spell, CardWithTrait Insight] <> EventCard)
+        selectList
+          $ PlayableCardWithCostReduction 1
+          $ InDiscardOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (EventCard <> CardWithOneOf [CardWithTrait Spell, CardWithTrait Insight] <> EventCard)
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             (toCardId card)
             [ CreateWindowModifierEffect
                 (EffectCardCostWindow $ toCardId card)
-                ( EffectModifiers $
-                    toModifiers
+                ( EffectModifiers
+                    $ toModifiers
                       (toSource attrs)
                       [ ReduceCostOf (CardWithId $ toCardId card) 1
                       ]
@@ -79,8 +79,8 @@ instance RunMessage DeVermisMysteriis2 where
                 (toTarget $ toCardId card)
             , CreateWindowModifierEffect
                 EffectAbilityWindow
-                ( EffectModifiers $
-                    toModifiers
+                ( EffectModifiers
+                    $ toModifiers
                       (toSource attrs)
                       [ RemoveFromGameInsteadOfDiscard
                       ]

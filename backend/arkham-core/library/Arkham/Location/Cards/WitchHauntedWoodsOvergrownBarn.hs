@@ -31,8 +31,8 @@ instance HasAbilities WitchHauntedWoodsOvergrownBarn where
   getAbilities (WitchHauntedWoodsOvergrownBarn a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 Here $
-          ReactionAbility
+      [ restrictedAbility a 1 Here
+          $ ReactionAbility
             ( EnemyWouldSpawnAt
                 AnyEnemy
                 ( NotLocation (LocationWithId $ toId a)

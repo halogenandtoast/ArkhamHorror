@@ -53,18 +53,18 @@ instance RunMessage ThePathToCarcosa where
     CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
       lolaHayesChosen <- selectAny (InvestigatorWithTitle "Lola Hayes")
-      pushAll $
-        [story investigatorIds prologue]
-          <> [story investigatorIds lolaPrologue | lolaHayesChosen]
-          <> [NextCampaignStep Nothing]
+      pushAll
+        $ [story investigatorIds prologue]
+        <> [story investigatorIds lolaPrologue | lolaHayesChosen]
+        <> [NextCampaignStep Nothing]
       pure c
     CampaignStep (InterludeStep 1 _) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- allInvestigatorIds
       doubt <- getRecordCount Doubt
       conviction <- getRecordCount Conviction
-      push $
-        chooseOne
+      push
+        $ chooseOne
           leadInvestigatorId
           [ Label
               "Things seem to have calmed down. Perhaps we should go back inside and investigate further."
@@ -132,10 +132,10 @@ instance RunMessage ThePathToCarcosa where
       case mInterludeKey of
         Nothing -> error "Missing key from The Unspeakable Oath"
         Just DanielSurvived -> do
-          pushAll $
-            [story investigatorIds danielSurvived]
-              <> map (\iid -> GainXP iid CampaignSource 2) investigatorIds
-              <> [respondToWarning]
+          pushAll
+            $ [story investigatorIds danielSurvived]
+            <> map (\iid -> GainXP iid CampaignSource 2) investigatorIds
+            <> [respondToWarning]
         Just DanielDidNotSurvive -> do
           pushAll
             [story investigatorIds danielDidNotSurvive, respondToWarning]
@@ -150,9 +150,9 @@ instance RunMessage ThePathToCarcosa where
         investigatorIds = flip mapMaybe possessed $ \case
           SomeRecorded RecordableCardCode (Recorded cardCode) -> Just (InvestigatorId cardCode)
           _ -> Nothing
-      pushAll $
-        [story investigatorIds epilogue | notNull investigatorIds]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [story investigatorIds epilogue | notNull investigatorIds]
+        <> [EndOfGame Nothing]
       pure c
     EnemyDefeated _ cardId _ _ -> do
       card <- getCard cardId

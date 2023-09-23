@@ -30,7 +30,8 @@ instance HasAbilities SpectralWeb where
         ( ControlsThis <> EnemyCriteria (EnemyExists $ CanFightEnemy (toSource attrs) <> EnemyWithTrait Geist)
         )
         $ ActionAbility (Just Action.Fight)
-        $ ActionCost 1 <> GroupClueCostRange (1, 3) YourLocation
+        $ ActionCost 1
+        <> GroupClueCostRange (1, 3) YourLocation
     ]
 
 toSpentClues :: Payment -> Int
@@ -41,8 +42,8 @@ toSpentClues _ = 0
 instance RunMessage SpectralWeb where
   runMessage msg a@(SpectralWeb attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (toSpentClues -> x) -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ SkillLabel
             sType

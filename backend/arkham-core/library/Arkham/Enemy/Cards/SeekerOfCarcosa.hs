@@ -21,7 +21,8 @@ newtype SeekerOfCarcosa = SeekerOfCarcosa EnemyAttrs
 seekerOfCarcosa :: EnemyCard SeekerOfCarcosa
 seekerOfCarcosa =
   enemyWith SeekerOfCarcosa Cards.seekerOfCarcosa (2, Static 3, 2) (0, 1)
-    $ spawnAtL ?~ SpawnLocation (EmptyLocation <> "Historical Society")
+    $ spawnAtL
+    ?~ SpawnLocation (EmptyLocation <> "Historical Society")
 
 instance HasAbilities SeekerOfCarcosa where
   getAbilities (SeekerOfCarcosa attrs) =

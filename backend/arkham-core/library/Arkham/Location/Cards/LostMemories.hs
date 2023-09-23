@@ -25,17 +25,17 @@ lostMemories = location LostMemories Cards.lostMemories 2 (PerPlayer 1)
 
 instance HasAbilities LostMemories where
   getAbilities (LostMemories attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-        attrs
-        1
-        (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+          attrs
+          1
+          (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage LostMemories where
   runMessage msg l@(LostMemories attrs) = case msg of

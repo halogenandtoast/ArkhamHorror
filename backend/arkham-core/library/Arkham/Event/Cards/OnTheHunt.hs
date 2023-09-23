@@ -26,8 +26,8 @@ instance RunMessage OnTheHunt where
       _ <- popMessageMatching $ \case
         InvestigatorDoDrawEncounterCard iid' -> iid == iid'
         _ -> False
-      push $
-        Search
+      push
+        $ Search
           iid
           (toSource attrs)
           EncounterDeckTarget
@@ -41,10 +41,10 @@ instance RunMessage OnTheHunt where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let
         enemyCards =
-          filter ((== EnemyType) . cdCardType . toCardDef) $
-            mapMaybe (preview _EncounterCard) cards
-      push $
-        chooseOne
+          filter ((== EnemyType) . cdCardType . toCardDef)
+            $ mapMaybe (preview _EncounterCard) cards
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             (CardIdTarget $ toCardId card)

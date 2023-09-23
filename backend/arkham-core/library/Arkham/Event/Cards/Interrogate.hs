@@ -32,10 +32,10 @@ instance RunMessage Interrogate where
       case mlocation of
         Just location -> do
           enemies <-
-            selectWithField EnemyHealthDamage $
-              enemyAt location
-                <> EnemyWithTrait Humanoid
-                <> CanParleyEnemy iid
+            selectWithField EnemyHealthDamage
+              $ enemyAt location
+              <> EnemyWithTrait Humanoid
+              <> CanParleyEnemy iid
           pushAll
             [ chooseOne
                 iid
@@ -60,15 +60,15 @@ instance RunMessage Interrogate where
           Nothing -> LocationWithAnyClues
           Just lid -> LocationWithAnyClues <> NotLocation (LocationWithId lid)
       locations <- selectList matcher
-      pushAll $
-        [InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 1 Nothing]
-          <> [ chooseOrRunOne
-                iid
-                [ targetLabel
-                  location
-                  [InvestigatorDiscoverClues iid location (toSource attrs) 1 Nothing]
-                | location <- locations
-                ]
-             ]
+      pushAll
+        $ [InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 1 Nothing]
+        <> [ chooseOrRunOne
+              iid
+              [ targetLabel
+                location
+                [InvestigatorDiscoverClues iid location (toSource attrs) 1 Nothing]
+              | location <- locations
+              ]
+           ]
       pure e
     _ -> Interrogate <$> runMessage msg attrs

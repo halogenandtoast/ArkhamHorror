@@ -41,8 +41,8 @@ instance RunMessage StoneAltar where
         )
         $ do
           actionsRemaining <- field InvestigatorRemainingActions iid
-          push $
-            if actionsRemaining > 0
+          push
+            $ if actionsRemaining > 0
               then LoseActions iid (toSource attrs) 1
               else InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure l

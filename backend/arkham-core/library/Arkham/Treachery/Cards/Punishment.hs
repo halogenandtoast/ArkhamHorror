@@ -32,8 +32,12 @@ instance HasModifiersFor Punishment where
       source <- MaybeT getSkillTestSource
       investigator <- MaybeT getSkillTestInvestigator
       guard $ isSource attrs source && iid == investigator
-      guardM . lift . selectAny $
-        ExhaustedEnemy <> EnemyWithTrait Witch <> EnemyAt (locationWithInvestigator iid)
+      guardM
+        . lift
+        . selectAny
+          $ ExhaustedEnemy
+          <> EnemyWithTrait Witch
+          <> EnemyAt (locationWithInvestigator iid)
       pure SkillTestAutomaticallySucceeds
 
     pure $ toModifiers attrs $ maybeToList mModifiers
@@ -41,9 +45,9 @@ instance HasModifiersFor Punishment where
 
 instance HasAbilities Punishment where
   getAbilities (Punishment a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          EnemyDefeated Timing.After Anyone ByAny AnyEnemy
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ EnemyDefeated Timing.After Anyone ByAny AnyEnemy
     ]
 
 instance RunMessage Punishment where

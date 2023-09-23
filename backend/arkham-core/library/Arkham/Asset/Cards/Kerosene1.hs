@@ -40,8 +40,8 @@ instance HasAbilities Kerosene1 where
         )
         $ ActionAbility Nothing
         $ ActionCost 1
-          <> ExhaustCost (toTarget a)
-          <> UseCost (AssetWithId $ toId a) Supply 1
+        <> ExhaustCost (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Supply 1
     ]
 
 instance RunMessage Kerosene1 where
@@ -98,6 +98,6 @@ instance RunMessage Kerosene1 where
         $ [ TargetLabel target [HealHorror target (toSource attrs) 1]
           | target <- assets
           ]
-          <> map (uncurry targetLabel . second only) investigatorsWithHeal
+        <> map (uncurry targetLabel . second only) investigatorsWithHeal
       pure a
     _ -> Kerosene1 <$> runMessage msg attrs

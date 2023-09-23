@@ -31,12 +31,12 @@ instance HasAbilities CloverClubPitBoss where
   getAbilities (CloverClubPitBoss x) =
     withBaseAbilities
       x
-      [ restrictedAbility x 1 OnSameLocation $
-          ForcedAbility $
-            GainsClues
-              Timing.After
-              You
-              AnyValue
+      [ restrictedAbility x 1 OnSameLocation
+          $ ForcedAbility
+          $ GainsClues
+            Timing.After
+            You
+            AnyValue
       ]
 
 instance RunMessage CloverClubPitBoss where

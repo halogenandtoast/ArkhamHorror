@@ -34,8 +34,8 @@ instance RunMessage AnatomicalDiagrams where
                 enemy
                 [ CreateWindowModifierEffect
                     EffectTurnWindow
-                    ( EffectModifiers $
-                        toModifiers attrs [EnemyFight (-2), EnemyEvade (-2)]
+                    ( EffectModifiers
+                        $ toModifiers attrs [EnemyFight (-2), EnemyEvade (-2)]
                     )
                     (toSource attrs)
                     enemy

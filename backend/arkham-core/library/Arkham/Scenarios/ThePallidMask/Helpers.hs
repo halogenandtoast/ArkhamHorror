@@ -57,22 +57,22 @@ placeAtDirection direction attrs = do
 
   pure $ \card -> do
     (locationId, placement) <- placeLocation card
-    pure $
-      [ placement
-      , SetLocationLabel locationId (unLabel $ positionToLabel placedPosition)
-      ]
-        <> case mLeftLocation of
-          Just lid -> [PlacedLocationDirection locationId LeftOf lid]
-          Nothing -> []
-        <> case mRightLocation of
-          Just lid -> [PlacedLocationDirection locationId RightOf lid]
-          Nothing -> []
-        <> case mAboveLocation of
-          Just lid -> [PlacedLocationDirection locationId Above lid]
-          Nothing -> []
-        <> case mBelowLocation of
-          Just lid -> [PlacedLocationDirection locationId Below lid]
-          Nothing -> []
+    pure
+      $ [ placement
+        , SetLocationLabel locationId (unLabel $ positionToLabel placedPosition)
+        ]
+      <> case mLeftLocation of
+        Just lid -> [PlacedLocationDirection locationId LeftOf lid]
+        Nothing -> []
+      <> case mRightLocation of
+        Just lid -> [PlacedLocationDirection locationId RightOf lid]
+        Nothing -> []
+      <> case mAboveLocation of
+        Just lid -> [PlacedLocationDirection locationId Above lid]
+        Nothing -> []
+      <> case mBelowLocation of
+        Just lid -> [PlacedLocationDirection locationId Below lid]
+        Nothing -> []
  where
   newPos dir (x, y) = case dir of
     Above -> (x, y + 1)

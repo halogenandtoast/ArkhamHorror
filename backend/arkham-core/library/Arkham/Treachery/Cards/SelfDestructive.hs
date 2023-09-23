@@ -29,10 +29,10 @@ instance HasAbilities SelfDestructive where
           AnyDamageEffect
           AnyEnemy
         $ SourceOwnedBy You
-    , restrictedAbility a 2 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    , restrictedAbility a 2 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage SelfDestructive where

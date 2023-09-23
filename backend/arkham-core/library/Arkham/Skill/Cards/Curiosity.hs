@@ -27,11 +27,11 @@ instance HasModifiersFor Curiosity where
   getModifiersFor (CardIdTarget cid) (Curiosity attrs) | toCardId attrs == cid =
     do
       cardsInHand <- fieldMap InvestigatorHand length (skillOwner attrs)
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           attrs
-          [ AddSkillIcons $
-            if cardsInHand >= 7
+          [ AddSkillIcons
+            $ if cardsInHand >= 7
               then
                 [ SkillIcon SkillWillpower
                 , SkillIcon SkillWillpower

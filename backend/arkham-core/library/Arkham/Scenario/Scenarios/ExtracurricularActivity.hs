@@ -92,11 +92,11 @@ instance RunMessage ExtracurricularActivity where
           , SetActDeck
           , placeMiskatonicQuad
           ]
-          <> placeOtherLocations
-          <> [ RevealLocation Nothing miskatonicQuadId
-             , MoveAllTo (toSource attrs) miskatonicQuadId
-             , story investigatorIds intro
-             ]
+        <> placeOtherLocations
+        <> [ RevealLocation Nothing miskatonicQuadId
+           , MoveAllTo (toSource attrs) miskatonicQuadId
+           , story investigatorIds intro
+           ]
 
       setAsideCards <-
         genCards
@@ -161,8 +161,8 @@ instance RunMessage ExtracurricularActivity where
           , Record TheInvestigatorsFailedToSaveTheStudents
           , AddChaosToken Tablet
           ]
-          <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -183,8 +183,8 @@ instance RunMessage ExtracurricularActivity where
               , Label "Do not add Professor Warren Rice to your deck" []
               ]
           ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       iids <- allInvestigatorIds
@@ -194,8 +194,8 @@ instance RunMessage ExtracurricularActivity where
           , Record ProfessorWarrenRiceWasKidnapped
           , Record TheStudentsWereRescued
           ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
       iids <- allInvestigatorIds
@@ -205,8 +205,8 @@ instance RunMessage ExtracurricularActivity where
           , Record ProfessorWarrenRiceWasKidnapped
           , Record TheExperimentWasDefeated
           ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 4) -> do
       iids <- allInvestigatorIds
@@ -218,7 +218,7 @@ instance RunMessage ExtracurricularActivity where
           , Record TheInvestigatorsFailedToSaveTheStudents
           , AddChaosToken Tablet
           ]
-          <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     _ -> ExtracurricularActivity <$> runMessage msg attrs

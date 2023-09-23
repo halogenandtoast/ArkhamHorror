@@ -24,15 +24,15 @@ curiositieShoppe =
 instance HasModifiersFor CuriositieShoppe where
   getModifiersFor (LocationTarget lid) (CuriositieShoppe a) = do
     isNorthside <- lid <=~> locationIs Cards.northside
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
         | isNorthside
         ]
   getModifiersFor (InvestigatorTarget iid) (CuriositieShoppe attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Relic) 2
         | iid `member` locationInvestigators attrs

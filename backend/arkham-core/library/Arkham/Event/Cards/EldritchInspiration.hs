@@ -29,8 +29,8 @@ instance RunMessage EldritchInspiration where
   runMessage msg e@(EldritchInspiration attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       mmsg <-
-        fromQueue $
-          find
+        fromQueue
+          $ find
             ( \case
                 Do (If wType _) -> case wType of
                   Window.RevealChaosTokenEffect {} -> True
@@ -44,28 +44,28 @@ instance RunMessage EldritchInspiration where
         Do (If (Window.RevealChaosTokenEffect _ _ effectId) _) -> do
           mCardDef <- lookupEffectCard effectId
           for_ mCardDef $ \cardDef ->
-            push $
-              questionLabel (display $ cdName cardDef) iid $
-                ChooseOne
-                  [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
-                  , Label "Resolve an additional time" [effectMsg]
-                  ]
+            push
+              $ questionLabel (display $ cdName cardDef) iid
+              $ ChooseOne
+                [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
+                , Label "Resolve an additional time" [effectMsg]
+                ]
         Do (If (Window.RevealChaosTokenEventEffect _ _ eventId) _) -> do
           cardName <- cdName . toCardDef <$> field EventCard eventId
-          push $
-            questionLabel (display cardName) iid $
-              ChooseOne
-                [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
-                , Label "Resolve an additional time" [effectMsg]
-                ]
+          push
+            $ questionLabel (display cardName) iid
+            $ ChooseOne
+              [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
+              , Label "Resolve an additional time" [effectMsg]
+              ]
         Do (If (Window.RevealChaosTokenAssetAbilityEffect _ _ assetId) _) -> do
           cardName <- cdName . toCardDef <$> field AssetCard assetId
-          push $
-            questionLabel (display cardName) iid $
-              ChooseOne
-                [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
-                , Label "Resolve an additional time" [effectMsg]
-                ]
+          push
+            $ questionLabel (display cardName) iid
+            $ ChooseOne
+              [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
+              , Label "Resolve an additional time" [effectMsg]
+              ]
         _ -> error "unhandled"
 
       pure e

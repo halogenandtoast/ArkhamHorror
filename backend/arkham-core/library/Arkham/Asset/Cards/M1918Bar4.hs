@@ -24,7 +24,8 @@ instance HasAbilities M1918Bar4 where
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility
           (Just Action.Fight)
-        $ ActionCost 1 <> UseCostUpTo (AssetWithId $ toId a) Ammo 1 5
+        $ ActionCost 1
+        <> UseCostUpTo (AssetWithId $ toId a) Ammo 1 5
     ]
 
 totalUses :: Payment -> Int

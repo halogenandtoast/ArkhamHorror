@@ -24,8 +24,8 @@ toweringBeasts = treachery ToweringBeasts Cards.toweringBeasts
 instance HasModifiersFor ToweringBeasts where
   getModifiersFor (EnemyTarget eid) (ToweringBeasts attrs)
     | treacheryOnEnemy eid attrs =
-        pure $
-          toModifiers attrs [EnemyFight 1, HealthModifier 1]
+        pure
+          $ toModifiers attrs [EnemyFight 1, HealthModifier 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ToweringBeasts where
@@ -34,10 +34,10 @@ instance RunMessage ToweringBeasts where
       broodOfYogSothoth <- getBroodOfYogSothoth
       unless (null broodOfYogSothoth) $ do
         locationId <- getJustLocation iid
-        broodWithLocationIds <- for broodOfYogSothoth $
-          \x -> (x,) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
-        push $
-          chooseOne
+        broodWithLocationIds <- for broodOfYogSothoth
+          $ \x -> (x,) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
+        push
+          $ chooseOne
             iid
             [ targetLabel
               eid

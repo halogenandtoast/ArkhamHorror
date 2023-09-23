@@ -37,6 +37,6 @@ instance RunMessage ToilAndTrouble where
             [InvestigatorDrewEncounterCard iid powerTreachery]
           | powerTreachery <- maybeToList mPowerTreachery
           ]
-          <> [Label "Resolve an incursion at your location" [Incursion location]]
+        <> [Label "Resolve an incursion at your location" [Incursion location]]
       pure t
     _ -> ToilAndTrouble <$> runMessage msg attrs

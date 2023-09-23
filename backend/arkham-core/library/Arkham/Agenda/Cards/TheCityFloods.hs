@@ -26,8 +26,8 @@ theCityFloods = agenda (3, A) TheCityFloods Cards.theCityFloods (Static 8)
 instance HasModifiersFor TheCityFloods where
   getModifiersFor (CardIdTarget cardId) (TheCityFloods a) = do
     card <- getCard cardId
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
   getModifiersFor _ _ = pure []

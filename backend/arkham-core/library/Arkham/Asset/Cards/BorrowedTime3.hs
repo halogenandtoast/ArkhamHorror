@@ -21,15 +21,15 @@ borrowedTime3 = asset BorrowedTime3 Cards.borrowedTime3
 instance HasAbilities BorrowedTime3 where
   getAbilities (BorrowedTime3 a) =
     doesNotProvokeAttacksOfOpportunity
-      ( restrictedAbility a 1 ControlsThis $
-          ActionAbility Nothing $
-            ActionCost
-              1
+      ( restrictedAbility a 1 ControlsThis
+          $ ActionAbility Nothing
+          $ ActionCost
+            1
       )
-      : [ restrictedAbility a 2 ControlsThis $
-            ForcedAbility $
-              TurnBegins Timing.When $
-                maybe NoOne InvestigatorWithId (a ^. controllerL)
+      : [ restrictedAbility a 2 ControlsThis
+            $ ForcedAbility
+            $ TurnBegins Timing.When
+            $ maybe NoOne InvestigatorWithId (a ^. controllerL)
         ]
 
 instance RunMessage BorrowedTime3 where

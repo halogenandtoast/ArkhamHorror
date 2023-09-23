@@ -22,15 +22,15 @@ chronophobia = treachery Chronophobia Cards.chronophobia
 
 instance HasAbilities Chronophobia where
   getAbilities (Chronophobia x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds
-            Timing.When
-            You
-    , restrictedAbility x 2 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility x 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds
+          Timing.When
+          You
+    , restrictedAbility x 2 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage Chronophobia where

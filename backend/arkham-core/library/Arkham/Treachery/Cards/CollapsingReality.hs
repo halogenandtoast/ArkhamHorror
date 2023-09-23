@@ -34,8 +34,8 @@ instance RunMessage CollapsingReality where
               LocationTraits
               (member Extradimensional)
               lid
-          pushAll $
-            if isExtradimensional
+          pushAll
+            $ if isExtradimensional
               then
                 [ Discard (toSource attrs) (toTarget lid)
                 , InvestigatorAssignDamage iid source DamageAny 1 0

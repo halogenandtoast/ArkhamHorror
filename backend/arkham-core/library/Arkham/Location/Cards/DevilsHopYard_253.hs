@@ -26,8 +26,8 @@ instance HasAbilities DevilsHopYard_253 where
   getAbilities (DevilsHopYard_253 attrs) =
     withRevealedAbilities
       attrs
-      [ limitedAbility (GroupLimit PerGame 1) $
-          restrictedAbility
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility
             attrs
             1
             ( Here

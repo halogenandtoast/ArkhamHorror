@@ -34,9 +34,9 @@ instance HasAbilities TheManInThePallidMask where
   getAbilities (TheManInThePallidMask a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 OnSameLocation $
-          ActionAbility (Just Action.Investigate) $
-            ActionCost 1
+      [ restrictedAbility a 1 OnSameLocation
+          $ ActionAbility (Just Action.Investigate)
+          $ ActionCost 1
       ]
 
 instance RunMessage TheManInThePallidMask where

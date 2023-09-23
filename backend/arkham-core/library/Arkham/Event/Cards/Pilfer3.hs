@@ -37,8 +37,8 @@ instance RunMessage Pilfer3 where
         ]
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
-      push $
-        createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
+      push
+        $ createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       pure e
     _ -> Pilfer3 <$> runMessage msg attrs
 

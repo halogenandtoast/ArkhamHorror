@@ -52,8 +52,8 @@ instance RunMessage InPursuitOfTheDead where
           let hereticLocations = [theGallows, hereticsGraves, chapelAttic, chapelCrypt]
 
           otherLocations <-
-            selectList $
-              locationNotOneOf hereticLocations
+            selectList
+              $ locationNotOneOf hereticLocations
 
           mementosDiscovered <- getMementosDiscoveredCount
 
@@ -61,12 +61,12 @@ instance RunMessage InPursuitOfTheDead where
           spectralWebs <- getSetAsideCardsMatching $ cardIs Assets.spectralWeb
           investigators <- getInvestigatorIds
 
-          pushAll $
-            [createHeretic1, createHeretic2, createHeretic3, createHeretic4]
-              <> [PlaceClues (toSource attrs) (toTarget lid) twoPerPlayer | lid <- hereticLocations]
-              <> [PlaceClues (toSource attrs) (toTarget lid) onePerPlayer | lid <- otherLocations]
-              <> zipWith TakeControlOfSetAsideAsset investigators spectralWebs
-              <> [advanceActDeck attrs]
+          pushAll
+            $ [createHeretic1, createHeretic2, createHeretic3, createHeretic4]
+            <> [PlaceClues (toSource attrs) (toTarget lid) twoPerPlayer | lid <- hereticLocations]
+            <> [PlaceClues (toSource attrs) (toTarget lid) onePerPlayer | lid <- otherLocations]
+            <> zipWith TakeControlOfSetAsideAsset investigators spectralWebs
+            <> [advanceActDeck attrs]
         _ -> error "Invalid number of heretics"
       pure a
     _ -> InPursuitOfTheDead <$> runMessage msg attrs

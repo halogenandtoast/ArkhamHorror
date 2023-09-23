@@ -38,8 +38,8 @@ instance HasAbilities MadnessCoils where
         [ restrictedAbility
             a
             1
-            ( EnemyCriteria $
-                EnemyExists
+            ( EnemyCriteria
+                $ EnemyExists
                   ( EnemyWithTitle "Hastur"
                       <> EnemyWithDamage (AtLeast $ PerPlayer 3)
                   )
@@ -59,8 +59,8 @@ instance RunMessage MadnessCoils where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       push
-        ( chooseOne leadInvestigatorId $
-            map
+        ( chooseOne leadInvestigatorId
+            $ map
               ( \sk ->
                   Label
                     ("Any investigator tests " <> tshow sk)
@@ -80,33 +80,33 @@ instance RunMessage MadnessCoils where
                     ]
               )
               (setToList skills)
-              <> [ Label
-                    "This can't be real. This can't be real. This can't be real. Each investigator takes 2 horror. Advance to agenda 2a."
-                    ( [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-                      | iid <- investigatorIds
-                      ]
-                        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-                    )
-                 , Label
-                    "The investigators faint and awaken some time later. Advance to agenda 2a and place 1 doom on it."
-                    [ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-                    , PlaceDoomOnAgenda
+            <> [ Label
+                  "This can't be real. This can't be real. This can't be real. Each investigator takes 2 horror. Advance to agenda 2a."
+                  ( [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+                    | iid <- investigatorIds
                     ]
-                 ]
+                      <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+                  )
+               , Label
+                  "The investigators faint and awaken some time later. Advance to agenda 2a and place 1 doom on it."
+                  [ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+                  , PlaceDoomOnAgenda
+                  ]
+               ]
         )
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _
       | isSource attrs source -> do
           pushAfter (== SkillTestApplyResultsAfter) $ AdvanceAgenda (toId attrs)
-          pure $
-            MadnessCoils $
-              attrs
-                `with` Metadata
-                  (insertSet st $ chosenSkills metadata)
+          pure
+            $ MadnessCoils
+            $ attrs
+            `with` Metadata
+              (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-          pushAfter (== SkillTestApplyResultsAfter) $
-            AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+          pushAfter (== SkillTestApplyResultsAfter)
+            $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
           pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAgenda (toId attrs)

@@ -24,7 +24,8 @@ instance HasAbilities ScryingMirror where
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
           (InitiatedSkillTest Timing.When (InvestigatorAt YourLocation) AnySkillType AnySkillTestValue)
-        $ ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Secret 1
+        $ ExhaustCost (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 instance RunMessage ScryingMirror where

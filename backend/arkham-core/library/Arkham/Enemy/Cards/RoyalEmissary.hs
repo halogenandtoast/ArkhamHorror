@@ -19,7 +19,8 @@ newtype RoyalEmissary = RoyalEmissary EnemyAttrs
 royalEmissary :: EnemyCard RoyalEmissary
 royalEmissary =
   enemyWith RoyalEmissary Cards.royalEmissary (4, Static 4, 2) (2, 0)
-    $ preyL .~ Prey (InvestigatorWithLowestSkill #willpower)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #willpower)
 
 investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
 investigatorMatcher a =

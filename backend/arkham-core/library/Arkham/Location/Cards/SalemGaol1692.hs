@@ -25,10 +25,10 @@ instance HasAbilities SalemGaol1692 where
   getAbilities (SalemGaol1692 a) =
     withRevealedAbilities
       a
-      [ limitedAbility (PlayerLimit PerGame 1) $
-          restrictedAbility a 1 Here $
-            ActionAbility Nothing $
-              ActionCost 1
+      [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility a 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
       , haunted "Move to Keziah's Room." a 2
       ]
 

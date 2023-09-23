@@ -28,14 +28,14 @@ instance HasModifiersFor KeyOfYs where
 
 instance HasAbilities KeyOfYs where
   getAbilities (KeyOfYs x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ForcedAbility $
-          PlacedCounter Timing.When You AnySource HorrorCounter (AtLeast $ Static 1)
-    , restrictedAbility x 2 ControlsThis $
-        ForcedAbility $
-          AssetLeavesPlay Timing.When $
-            AssetWithId $
-              toId x
+    [ restrictedAbility x 1 ControlsThis
+        $ ForcedAbility
+        $ PlacedCounter Timing.When You AnySource HorrorCounter (AtLeast $ Static 1)
+    , restrictedAbility x 2 ControlsThis
+        $ ForcedAbility
+        $ AssetLeavesPlay Timing.When
+        $ AssetWithId
+        $ toId x
     ]
 
 instance RunMessage KeyOfYs where

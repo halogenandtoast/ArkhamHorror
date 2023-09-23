@@ -29,20 +29,20 @@ instance RunMessage LightOfAforgomon where
   runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetActs <-
-        selectListMap ActTarget $
-          NotAct $
-            ActWithTreachery $
-              treacheryIs
-                Cards.lightOfAforgomon
+        selectListMap ActTarget
+          $ NotAct
+          $ ActWithTreachery
+          $ treacheryIs
+            Cards.lightOfAforgomon
       targetAgendas <-
-        selectListMap AgendaTarget $
-          NotAgenda $
-            AgendaWithTreachery $
-              treacheryIs Cards.lightOfAforgomon
+        selectListMap AgendaTarget
+          $ NotAgenda
+          $ AgendaWithTreachery
+          $ treacheryIs Cards.lightOfAforgomon
       when
         (notNull $ targetActs <> targetAgendas)
-        ( push $
-            chooseOne
+        ( push
+            $ chooseOne
               iid
               [ TargetLabel target [AttachTreachery treacheryId target]
               | target <- targetActs <> targetAgendas

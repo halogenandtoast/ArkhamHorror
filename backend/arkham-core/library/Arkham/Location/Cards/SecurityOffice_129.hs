@@ -25,8 +25,8 @@ instance HasAbilities SecurityOffice_129 where
   getAbilities (SecurityOffice_129 x) =
     withBaseAbilities
       x
-      [ limitedAbility (PlayerLimit PerTurn 1) $
-        restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
+      [ limitedAbility (PlayerLimit PerTurn 1)
+        $ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
       | locationRevealed x
       ]
 
@@ -35,15 +35,15 @@ instance RunMessage SecurityOffice_129 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       unrevealedExhibitHalls <-
         selectList $ UnrevealedLocation <> LocationWithTitle "ExhibitHall"
-      push $
-        chooseOne iid $
-          TargetLabel
-            ScenarioDeckTarget
-            [LookAtTopOfDeck iid ScenarioDeckTarget 1]
-            : [ targetLabel
-                exhibitHall
-                [LookAtRevealed iid (toSource attrs) (LocationTarget exhibitHall)]
-              | exhibitHall <- unrevealedExhibitHalls
-              ]
+      push
+        $ chooseOne iid
+        $ TargetLabel
+          ScenarioDeckTarget
+          [LookAtTopOfDeck iid ScenarioDeckTarget 1]
+        : [ targetLabel
+            exhibitHall
+            [LookAtRevealed iid (toSource attrs) (LocationTarget exhibitHall)]
+          | exhibitHall <- unrevealedExhibitHalls
+          ]
       pure l
     _ -> SecurityOffice_129 <$> runMessage msg attrs

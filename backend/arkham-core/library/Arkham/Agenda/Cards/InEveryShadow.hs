@@ -28,11 +28,11 @@ inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)
 
 instance HasAbilities InEveryShadow where
   getAbilities (InEveryShadow x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          EnemySpawns Timing.When Anywhere $
-            enemyIs
-              Cards.huntingHorror
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ EnemySpawns Timing.When Anywhere
+        $ enemyIs
+          Cards.huntingHorror
     ]
 
 instance RunMessage InEveryShadow where
@@ -46,8 +46,8 @@ instance RunMessage InEveryShadow where
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- selectList UneliminatedInvestigator
-      pushAll $
-        concatMap
+      pushAll
+        $ concatMap
           ( \iid ->
               [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
           )

@@ -29,8 +29,8 @@ instance RunMessage WallsClosingIn where
       t <$ push (RevelationSkillTest iid source SkillWillpower shroud)
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label
                   ("Take " <> tshow n <> " horror")

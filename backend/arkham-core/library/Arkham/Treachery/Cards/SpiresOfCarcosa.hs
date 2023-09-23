@@ -25,9 +25,9 @@ spiresOfCarcosa = treachery SpiresOfCarcosa Cards.spiresOfCarcosa
 
 instance HasAbilities SpiresOfCarcosa where
   getAbilities (SpiresOfCarcosa a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility (Just Action.Investigate) $
-          ActionCost 1
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
     ]
       <> case treacheryAttachedTarget a of
         Just (LocationTarget lid) ->
@@ -52,8 +52,8 @@ instance RunMessage SpiresOfCarcosa where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid ->
-        push $
-          Investigate
+        push
+          $ Investigate
             iid
             lid
             source

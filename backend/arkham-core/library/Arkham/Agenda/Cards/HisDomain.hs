@@ -31,12 +31,12 @@ hisDomain = agenda (3, A) HisDomain Cards.hisDomain (Static 8)
 
 instance HasAbilities HisDomain where
   getAbilities (HisDomain attrs) =
-    [ mkAbility attrs 1 $
-        ForcedAbility $
-          Matcher.PlaceUnderneath
-            Timing.When
-            (TargetIs ActDeckTarget)
-            (CardWithType EnemyType)
+    [ mkAbility attrs 1
+        $ ForcedAbility
+        $ Matcher.PlaceUnderneath
+          Timing.When
+          (TargetIs ActDeckTarget)
+          (CardWithType EnemyType)
     ]
 
 instance RunMessage HisDomain where

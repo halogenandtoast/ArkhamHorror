@@ -25,10 +25,10 @@ instance RunMessage Waylay where
   runMessage msg e@(Waylay attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
-        selectWithField EnemyEvade $
-          NonEliteEnemy
-            <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-            <> ExhaustedEnemy
+        selectWithField EnemyEvade
+          $ NonEliteEnemy
+          <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+          <> ExhaustedEnemy
       let
         enemiesWithEvade =
           flip mapMaybe enemies $ \(enemy, mEvade) -> (enemy,) <$> mEvade

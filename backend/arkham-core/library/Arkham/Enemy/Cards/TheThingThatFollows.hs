@@ -33,11 +33,11 @@ instance HasAbilities TheThingThatFollows where
   getAbilities (TheThingThatFollows x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            EnemyWouldBeDefeated Timing.When $
-              EnemyWithId $
-                toId x
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ EnemyWouldBeDefeated Timing.When
+          $ EnemyWithId
+          $ toId x
       ]
 
 instance RunMessage TheThingThatFollows where

@@ -35,18 +35,18 @@ letTheStormRageTheVortexAbove =
 instance HasModifiersFor LetTheStormRageTheVortexAbove where
   getModifiersFor (CardIdTarget cardId) (LetTheStormRageTheVortexAbove a) = do
     card <- getCard cardId
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LetTheStormRageTheVortexAbove where
   getAbilities (LetTheStormRageTheVortexAbove a) =
-    [ limitedAbility (GroupLimit PerRound 1) $
-        mkAbility a 1 $
-          FastAbility $
-            GroupClueCost (PerPlayer 1) Anywhere
+    [ limitedAbility (GroupLimit PerRound 1)
+        $ mkAbility a 1
+        $ FastAbility
+        $ GroupClueCost (PerPlayer 1) Anywhere
     ]
 
 instance RunMessage LetTheStormRageTheVortexAbove where
@@ -62,22 +62,22 @@ instance RunMessage LetTheStormRageTheVortexAbove where
         createAshleighClarke <- createEnemyAt_ card port Nothing
         pure [createAshleighClarke | spawnAshleighClarke]
 
-      createBeastOfAldebaran <- for (toList mAbbeyTower) $
-        \abbeyTower -> createEnemyAt_ beast abbeyTower Nothing
+      createBeastOfAldebaran <- for (toList mAbbeyTower)
+        $ \abbeyTower -> createEnemyAt_ beast abbeyTower Nothing
 
-      pushAll $
-        createBeastOfAldebaran
-          <> spawnAshleighClarkeMessages
-          <> [ RemoveAllCopiesOfCardFromGame lead "03281"
-             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ createBeastOfAldebaran
+        <> spawnAshleighClarkeMessages
+        <> [ RemoveAllCopiesOfCardFromGame lead "03281"
+           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+           ]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
-      pushAll $
-        [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-          <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
-             | iid <- investigatorIds
-             ]
+      pushAll
+        $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
+        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
+           | iid <- investigatorIds
+           ]
       pure a
     _ -> LetTheStormRageTheVortexAbove <$> runMessage msg attrs

@@ -31,12 +31,12 @@ instance HasAbilities BurialPit where
   getAbilities (BurialPit attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            Explored
-              Timing.After
-              You
-              (SuccessfulExplore $ LocationWithId $ toId attrs)
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Explored
+            Timing.After
+            You
+            (SuccessfulExplore $ LocationWithId $ toId attrs)
       ]
 
 instance RunMessage BurialPit where

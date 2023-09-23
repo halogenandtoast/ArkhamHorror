@@ -39,9 +39,9 @@ instance HasAbilities Yard where
   getAbilities (Yard attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis) $
-        ActionAbility Nothing $
-          Costs [ActionCost 1, DamageCost (toSource attrs) YouTarget 1]
+      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, DamageCost (toSource attrs) YouTarget 1]
       | locationRevealed attrs
       ]
 

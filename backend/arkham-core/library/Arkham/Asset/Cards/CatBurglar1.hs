@@ -47,8 +47,8 @@ instance RunMessage CatBurglar1 where
       accessibleLocationIds <- selectList $ accessibleFrom locationId
       pushAll
         $ [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
-          <> [ chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
-             | notNull accessibleLocationIds
-             ]
+        <> [ chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
+           | notNull accessibleLocationIds
+           ]
       pure $ CatBurglar1 $ attrs & exhaustedL .~ True
     _ -> CatBurglar1 <$> runMessage msg attrs

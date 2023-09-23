@@ -37,7 +37,7 @@ instance HasAbilities Montmartre210 where
           )
         $ ActionAbility Nothing
         $ ActionCost 1
-          <> ResourceCost 1
+        <> ResourceCost 1
       | locationRevealed attrs
       ]
 
@@ -46,11 +46,11 @@ instance RunMessage Montmartre210 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       ammoAssets <- selectList $ AssetControlledBy You <> AssetWithUses Ammo
       supplyAssets <- selectList $ AssetControlledBy You <> AssetWithUses Supply
-      push $
-        chooseOne iid $
-          [targetLabel asset [AddUses asset Ammo 1] | asset <- ammoAssets]
-            <> [ targetLabel asset [AddUses asset Supply 1]
-               | asset <- supplyAssets
-               ]
+      push
+        $ chooseOne iid
+        $ [targetLabel asset [AddUses asset Ammo 1] | asset <- ammoAssets]
+        <> [ targetLabel asset [AddUses asset Supply 1]
+           | asset <- supplyAssets
+           ]
       pure a
     _ -> Montmartre210 <$> runMessage msg attrs

@@ -32,12 +32,12 @@ judgementXX = agenda (1, A) JudgementXX Cards.judgementXX (Static 12)
 instance HasAbilities JudgementXX where
   getAbilities (JudgementXX a) =
     [ mkAbility a 1 $ ForcedAbility $ PlacedDoomCounter Timing.After AnySource AnyTarget
-    , mkAbility a 2 $
-        ForcedAbility $
-          InvestigatorDefeated
-            Timing.When
-            ByAny
-            You
+    , mkAbility a 2
+        $ ForcedAbility
+        $ InvestigatorDefeated
+          Timing.When
+          ByAny
+          You
     ]
 
 toDefeatedInfo :: [Window] -> Source
@@ -52,30 +52,30 @@ instance RunMessage JudgementXX where
       iids <- getInvestigatorIds
       n <- getDoomCount
       let damage = if n >= 5 then 2 else 1
-      pushAll $
-        [ chooseOne
-          iid
-          [ Label
-              "Take damage"
-              [ InvestigatorAssignDamage
-                  iid
-                  (toSource attrs)
-                  DamageAny
-                  damage
-                  0
-              ]
-          , Label
-              "Take horror"
-              [ InvestigatorAssignDamage
-                  iid
-                  (toSource attrs)
-                  DamageAny
-                  0
-                  damage
-              ]
+      pushAll
+        $ [ chooseOne
+            iid
+            [ Label
+                "Take damage"
+                [ InvestigatorAssignDamage
+                    iid
+                    (toSource attrs)
+                    DamageAny
+                    damage
+                    0
+                ]
+            , Label
+                "Take horror"
+                [ InvestigatorAssignDamage
+                    iid
+                    (toSource attrs)
+                    DamageAny
+                    0
+                    damage
+                ]
+            ]
+          | iid <- iids
           ]
-        | iid <- iids
-        ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _ ->
       do
@@ -94,16 +94,16 @@ instance RunMessage JudgementXX where
           (EnemyAttackSource eid) -> do
             isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
             isMonster <- eid <=~> EnemyWithTrait Monster
-            when isTheSpectralWatcher $
-              push $
-                RecordSetInsert
-                  WasTakenByTheWatcher
-                  [recorded cardCode]
-            when isMonster $
-              push $
-                RecordSetInsert
-                  WasClaimedBySpecters
-                  [recorded cardCode]
+            when isTheSpectralWatcher
+              $ push
+              $ RecordSetInsert
+                WasTakenByTheWatcher
+                [recorded cardCode]
+            when isMonster
+              $ push
+              $ RecordSetInsert
+                WasClaimedBySpecters
+                [recorded cardCode]
             when (not isMonster && not isTheSpectralWatcher) handleOther
           _ -> handleOther
         push $ AdvanceAgenda $ toId attrs

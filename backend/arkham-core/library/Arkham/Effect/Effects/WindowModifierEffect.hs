@@ -28,8 +28,8 @@ windowModifierEffect'
   -> Target
   -> WindowModifierEffect
 windowModifierEffect' eid metadata effectWindow source target =
-  WindowModifierEffect $
-    EffectAttrs
+  WindowModifierEffect
+    $ EffectAttrs
       { effectId = eid
       , effectSource = source
       , effectTarget = target

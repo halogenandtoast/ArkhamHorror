@@ -28,8 +28,8 @@ instance HasModifiersFor TheBlackBook where
   getModifiersFor (InvestigatorTarget iid) (TheBlackBook a)
     | controlledBy a iid = do
         sanity <- field InvestigatorRemainingSanity iid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ SkillModifier #willpower 1
             , SkillModifier #intellect 1
@@ -39,8 +39,8 @@ instance HasModifiersFor TheBlackBook where
 
 instance HasAbilities TheBlackBook where
   getAbilities (TheBlackBook a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (PlayCard Timing.When You (BasicCardMatch AnyCard))
           (ExhaustCost (toTarget a) <> HorrorCostX (toSource a))
     ]

@@ -27,18 +27,18 @@ snareTrap2 = event SnareTrap2 Cards.snareTrap2
 instance HasAbilities SnareTrap2 where
   getAbilities (SnareTrap2 a) = case eventAttachedTarget a of
     Just (LocationTarget lid) ->
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyEnters
-              Timing.After
-              (LocationWithId lid)
-              NonEliteEnemy
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyEnters
+            Timing.After
+            (LocationWithId lid)
+            NonEliteEnemy
       ]
     Just (EnemyTarget eid) ->
-      [ mkAbility a 2 $
-          ForcedAbility $
-            EnemyWouldReady Timing.When $
-              EnemyWithId eid
+      [ mkAbility a 2
+          $ ForcedAbility
+          $ EnemyWouldReady Timing.When
+          $ EnemyWithId eid
       ]
     _ -> []
 
@@ -50,10 +50,10 @@ instance RunMessage SnareTrap2 where
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 [(windowType -> Window.EnemyEnters enemyId _)] _ -> do
       iids <- selectList $ InvestigatorEngagedWith (EnemyWithId enemyId)
-      pushAll $
-        Exhaust (EnemyTarget enemyId)
-          : map (`DisengageEnemy` enemyId) iids
-            <> [PlaceEvent iid (toId attrs) (AttachedToEnemy enemyId)]
+      pushAll
+        $ Exhaust (EnemyTarget enemyId)
+        : map (`DisengageEnemy` enemyId) iids
+          <> [PlaceEvent iid (toId attrs) (AttachedToEnemy enemyId)]
       pure e
     UseCardAbility _ (isSource attrs -> True) 2 [(windowType -> Window.WouldReady target)] _ -> do
       replaceMessageMatching

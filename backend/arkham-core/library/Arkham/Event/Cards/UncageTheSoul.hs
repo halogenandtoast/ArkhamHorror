@@ -30,11 +30,11 @@ instance RunMessage UncageTheSoul where
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       let
         windows'' =
-          nub $
-            windows'
-              <> map
-                (mkWindow Timing.When)
-                [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
+          nub
+            $ windows'
+            <> map
+              (mkWindow Timing.When)
+              [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
       availableResources <- getSpendableResources iid
       results <-
         selectList

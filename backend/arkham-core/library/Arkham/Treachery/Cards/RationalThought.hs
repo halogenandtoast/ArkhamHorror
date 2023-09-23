@@ -44,8 +44,8 @@ rationalThought =
 -- concern, but we may want a more flexible solution in the future
 instance HasModifiersFor RationalThought where
   getModifiersFor (InvestigatorTarget iid) (RationalThought (a `With` _)) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ CannotHealHorrorOnOtherCards (toTarget a)
         | treacheryOnInvestigator iid a
@@ -82,13 +82,13 @@ instance RunMessage RationalThought where
                     Timing.After
                     ( Window.Healed
                         HorrorType
-                        ( InvestigatorTarget $
-                            InvestigatorId
-                              ( CardCode $
-                                  UUID.toText $
-                                    unTreacheryId $
-                                      toId
-                                        attrs
+                        ( InvestigatorTarget
+                            $ InvestigatorId
+                              ( CardCode
+                                  $ UUID.toText
+                                  $ unTreacheryId
+                                  $ toId
+                                    attrs
                               )
                         )
                         source
@@ -99,8 +99,8 @@ instance RunMessage RationalThought where
             pure
               . RationalThought
               . (`with` meta)
-              $ attrs
-                & tokensL
+                $ attrs
+              & tokensL
                 %~ subtractTokens Horror amount
     HealHorrorDirectly (InvestigatorTarget iid) _ amount
       | unCardCode (unInvestigatorId iid)
@@ -110,7 +110,7 @@ instance RunMessage RationalThought where
             pure
               . RationalThought
               . (`with` meta)
-              $ attrs
-                & tokensL
+                $ attrs
+              & tokensL
                 %~ subtractTokens Horror amount
     _ -> RationalThought . (`with` meta) <$> runMessage msg attrs

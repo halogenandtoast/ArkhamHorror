@@ -15,10 +15,10 @@ newtype AsylumGorger = AsylumGorger EnemyAttrs
 
 instance HasModifiersFor AsylumGorger where
   getModifiersFor target (AsylumGorger a) | isTarget a target = do
-    pure $
-      toModifiers a $
-        CannotMakeAttacksOfOpportunity
-          : [CannotAttack | enemyMovedFromHunterKeyword a]
+    pure
+      $ toModifiers a
+      $ CannotMakeAttacksOfOpportunity
+      : [CannotAttack | enemyMovedFromHunterKeyword a]
   getModifiersFor _ _ = pure []
 
 asylumGorger :: EnemyCard AsylumGorger

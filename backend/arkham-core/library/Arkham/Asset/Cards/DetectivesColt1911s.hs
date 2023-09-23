@@ -31,22 +31,22 @@ instance HasModifiersFor DetectivesColt1911s where
       Nothing -> pure []
       Just iid -> do
         toolAssetsWithHands <-
-          selectList $
-            assetControlledBy iid
-              <> AssetWithTrait Tool
-              <> AssetInSlot HandSlot
-        pure $
-          toModifiers
+          selectList
+            $ assetControlledBy iid
+            <> AssetWithTrait Tool
+            <> AssetInSlot HandSlot
+        pure
+          $ toModifiers
             a
             [DoNotTakeUpSlot HandSlot | aid `elem` take 2 toolAssetsWithHands]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DetectivesColt1911s where
   getAbilities (DetectivesColt1911s a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
+        <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage DetectivesColt1911s where
@@ -67,13 +67,13 @@ instance RunMessage DetectivesColt1911s where
           filter (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
             <$> field InvestigatorDiscard iid
         unless (null insights) $ do
-          push $
-            chooseOne iid $
-              Label "Do not move an insight" []
-                : [ TargetLabel
-                    (CardIdTarget $ toCardId insight)
-                    [PutCardOnBottomOfDeck iid (Deck.InvestigatorDeckByKey iid HunchDeck) $ PlayerCard insight]
-                  | insight <- insights
-                  ]
+          push
+            $ chooseOne iid
+            $ Label "Do not move an insight" []
+            : [ TargetLabel
+                (CardIdTarget $ toCardId insight)
+                [PutCardOnBottomOfDeck iid (Deck.InvestigatorDeckByKey iid HunchDeck) $ PlayerCard insight]
+              | insight <- insights
+              ]
       pure a
     _ -> DetectivesColt1911s <$> runMessage msg attrs

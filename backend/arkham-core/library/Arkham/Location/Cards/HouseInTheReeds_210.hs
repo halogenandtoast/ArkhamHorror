@@ -23,8 +23,8 @@ houseInTheReeds_210 =
 
 instance HasModifiersFor HouseInTheReeds_210 where
   getModifiersFor (InvestigatorTarget iid) (HouseInTheReeds_210 attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ CannotPlay (CardWithType EventType)
         | iid `elem` locationInvestigators attrs

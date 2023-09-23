@@ -26,8 +26,8 @@ instance RunMessage TheZealotsSeal where
       -- we must unshift this first for other effects happen before
       for_ investigatorIds $ \iid' -> do
         handCardCount <- fieldMap InvestigatorHand length iid'
-        push $
-          if handCardCount <= 3
+        push
+          $ if handCardCount <= 3
             then InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1
             else RevelationSkillTest iid' source SkillWillpower 2
       pure t

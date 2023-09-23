@@ -40,14 +40,14 @@ instance HasModifiersFor EngineCar_177 where
 
 instance HasAbilities EngineCar_177 where
   getAbilities (EngineCar_177 x) =
-    withBaseAbilities x $
-      [ restrictedAbility x 1 Here $
-        ForcedAbility $
-          RevealLocation Timing.After You $
-            LocationWithId $
-              toId x
-      | locationRevealed x
-      ]
+    withBaseAbilities x
+      $ [ restrictedAbility x 1 Here
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId x
+        | locationRevealed x
+        ]
 
 instance RunMessage EngineCar_177 where
   runMessage msg l@(EngineCar_177 attrs) = case msg of

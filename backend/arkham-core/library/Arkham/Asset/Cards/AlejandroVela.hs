@@ -39,7 +39,7 @@ instance HasAbilities AlejandroVela where
         (ControlsThis <> OnLocation (LocationWithTrait Ancient))
         $ ActionAbility Nothing
         $ ActionCost 1
-          <> ExhaustCost (toTarget a)
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage AlejandroVela where

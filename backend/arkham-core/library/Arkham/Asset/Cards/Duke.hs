@@ -88,13 +88,13 @@ instance RunMessage Duke where
       push
         $ chooseOne iid
         $ investigateActions
-          <> [ targetLabel
-              lid'
-              [ Move $ move attrs iid lid'
-              , CheckAdditionalActionCosts iid (toTarget lid') #investigate [investigate']
-              ]
-             | (lid', investigate') <- accessibleLocationIds
-             ]
+        <> [ targetLabel
+            lid'
+            [ Move $ move attrs iid lid'
+            , CheckAdditionalActionCosts iid (toTarget lid') #investigate [investigate']
+            ]
+           | (lid', investigate') <- accessibleLocationIds
+           ]
       pure a
     UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 _ _ -> do
       pushM $ dukeInvestigate attrs iid lid

@@ -29,8 +29,8 @@ instance HasModifiersFor AbbeyTowerSpiresForbidden where
   getModifiersFor target (AbbeyTowerSpiresForbidden attrs)
     | isTarget attrs target = do
         foundAGuide <- remembered FoundTheTowerKey
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [Blocked | not (locationRevealed attrs) && not foundAGuide]
   getModifiersFor _ _ = pure []

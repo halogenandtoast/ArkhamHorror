@@ -37,11 +37,11 @@ searchForTheBrotherhood =
 instance HasAbilities SearchForTheBrotherhood where
   getAbilities (SearchForTheBrotherhood attrs)
     | onSide A attrs =
-        [ mkAbility attrs 1 $
-            Objective $
-              ForcedAbility $
-                Enters Timing.After Anyone $
-                  locationIs Locations.aPocketInTime
+        [ mkAbility attrs 1
+            $ Objective
+            $ ForcedAbility
+            $ Enters Timing.After Anyone
+            $ locationIs Locations.aPocketInTime
         ]
   getAbilities _ = []
 
@@ -59,18 +59,18 @@ instance RunMessage SearchForTheBrotherhood where
           else pure Nothing
       aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
       assetId <- getRandom
-      pushAll $
-        [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) shattered]
-          <> [NextAdvanceActStep (toId attrs) idx | (idx, _) <- zip [1 ..] iids]
-          <> [ CreateAssetAt assetId relic $ AttachedToLocation aPocketInTime
-             | relic <- maybeToList mRelic
-             ]
-          <> [ AdvanceToAct
-                (actDeckId attrs)
-                Acts.theYithianRelic
-                A
-                (toSource attrs)
-             ]
+      pushAll
+        $ [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) shattered]
+        <> [NextAdvanceActStep (toId attrs) idx | (idx, _) <- zip [1 ..] iids]
+        <> [ CreateAssetAt assetId relic $ AttachedToLocation aPocketInTime
+           | relic <- maybeToList mRelic
+           ]
+        <> [ AdvanceToAct
+              (actDeckId attrs)
+              Acts.theYithianRelic
+              A
+              (toSource attrs)
+           ]
       pure a
     NextAdvanceActStep aid idx | aid == toId attrs -> do
       iids <- getInvestigatorIds

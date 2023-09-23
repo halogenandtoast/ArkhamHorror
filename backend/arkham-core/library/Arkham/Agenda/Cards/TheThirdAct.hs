@@ -25,15 +25,15 @@ instance RunMessage TheThirdAct where
   runMessage msg a@(TheThirdAct attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       royalEmissary <-
-        selectJust $
-          ExtendedCardWithOneOf
+        selectJust
+          $ ExtendedCardWithOneOf
             [ SetAsideCardMatch $ cardIs Cards.royalEmissary
             , VictoryDisplayCardMatch $ cardIs Cards.royalEmissary
             ]
 
       createRoyalEmissary <-
-        createEnemyAtLocationMatching_ royalEmissary $
-          locationIs Cards.theatre
+        createEnemyAtLocationMatching_ royalEmissary
+          $ locationIs Cards.theatre
 
       pushAll
         [createRoyalEmissary, AdvanceAgendaDeck agendaDeckId (toSource attrs)]

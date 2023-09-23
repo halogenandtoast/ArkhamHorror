@@ -38,10 +38,10 @@ instance HasModifiersFor TheHermitIX where
 
 instance HasAbilities TheHermitIX where
   getAbilities (TheHermitIX (a `With` _)) =
-    [ mkAbility a 1 $
-        ReactionAbility
-          ( EnemyDefeated Timing.After You ByAny $
-              EnemyOneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
+    [ mkAbility a 1
+        $ ReactionAbility
+          ( EnemyDefeated Timing.After You ByAny
+              $ EnemyOneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
           )
           Free
     ]
@@ -52,26 +52,26 @@ instance RunMessage TheHermitIX where
       lead <- getLead
       inPlay <- getEnemyIsInPlay Enemies.brownJenkin
       playerCount <- getPlayerCount
-      pushAll $
-        FindEncounterCard
+      pushAll
+        $ FindEncounterCard
           lead
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard]
-          ( cardIs $
-              if inPlay
+          ( cardIs
+              $ if inPlay
                 then Enemies.swarmOfRats
                 else Enemies.brownJenkin
           )
-          : [ FindEncounterCard
-              lead
-              (toTarget attrs)
-              [FromEncounterDeck, FromEncounterDiscard]
-              $ cardIs
-              $ Enemies.swarmOfRats
-            | playerCount >= 3
-            ]
-            <> [ advanceAgendaDeck attrs
-               ]
+        : [ FindEncounterCard
+            lead
+            (toTarget attrs)
+            [FromEncounterDeck, FromEncounterDiscard]
+            $ cardIs
+            $ Enemies.swarmOfRats
+          | playerCount >= 3
+          ]
+          <> [ advanceAgendaDeck attrs
+             ]
       pure a
     FoundEncounterCard lead (isTarget attrs -> True) (toCard -> card) | card `cardMatch` cardIs Enemies.brownJenkin -> do
       location <- getJustLocation lead

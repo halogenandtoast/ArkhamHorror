@@ -49,12 +49,12 @@ instance HasAbilities TombOfShadows where
   getAbilities (TombOfShadows attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          RevealLocation
-            Timing.When
-            Anyone
-            (LocationWithId $ toId attrs)
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation
+          Timing.When
+          Anyone
+          (LocationWithId $ toId attrs)
       | locationRevealed attrs
       ]
 

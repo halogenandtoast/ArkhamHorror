@@ -32,29 +32,29 @@ instance HasAbilities Venturer where
         )
         $ FastAbility
         $ ExhaustCost (toTarget a)
-          <> UseCost (AssetWithId $ toId a) Supply 1
+        <> UseCost (AssetWithId $ toId a) Supply 1
     ]
 
 instance RunMessage Venturer where
   runMessage msg a@(Venturer attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       supplyAssets <-
-        selectList $
-          AssetWithUseType Supply
-            <> AssetControlledBy (colocatedWith iid)
-            <> NotAsset (AssetWithId $ toId attrs)
+        selectList
+          $ AssetWithUseType Supply
+          <> AssetControlledBy (colocatedWith iid)
+          <> NotAsset (AssetWithId $ toId attrs)
       ammoAssets <-
-        selectList $
-          AssetWithUseType Ammo
-            <> AssetControlledBy
-              (colocatedWith iid)
-      push $
-        chooseOne iid $
-          [ targetLabel aid [AddUses aid Supply 1]
+        selectList
+          $ AssetWithUseType Ammo
+          <> AssetControlledBy
+            (colocatedWith iid)
+      push
+        $ chooseOne iid
+        $ [ targetLabel aid [AddUses aid Supply 1]
           | aid <- supplyAssets
           ]
-            <> [ targetLabel aid [AddUses aid Ammo 1]
-               | aid <- ammoAssets
-               ]
+        <> [ targetLabel aid [AddUses aid Ammo 1]
+           | aid <- ammoAssets
+           ]
       pure a
     _ -> Venturer <$> runMessage msg attrs

@@ -36,28 +36,28 @@ instance RunMessage HuntedDown where
                 Nothing -> pure Nothing
                 Just locationId -> do
                   closestLocationIds <-
-                    selectList $
-                      ClosestPathLocation locationId destinationId
+                    selectList
+                      $ ClosestPathLocation locationId destinationId
                   case closestLocationIds of
                     [] -> pure Nothing
                     [x] ->
-                      pure $
-                        Just $
-                          targetLabel
-                            eid
-                            ( [EnemyMove eid x | locationId /= x]
-                                <> [EnemyAttackIfEngaged eid (Just iid)]
-                            )
+                      pure
+                        $ Just
+                        $ targetLabel
+                          eid
+                          ( [EnemyMove eid x | locationId /= x]
+                              <> [EnemyAttackIfEngaged eid (Just iid)]
+                          )
                     xs ->
-                      pure $
-                        Just $
-                          targetLabel
-                            eid
-                            [ chooseOne
-                                iid
-                                [targetLabel x [EnemyMove eid x] | x <- xs, x /= locationId]
-                            , EnemyAttackIfEngaged eid (Just iid)
-                            ]
+                      pure
+                        $ Just
+                        $ targetLabel
+                          eid
+                          [ chooseOne
+                              iid
+                              [targetLabel x [EnemyMove eid x] | x <- xs, x /= locationId]
+                          , EnemyAttackIfEngaged eid (Just iid)
+                          ]
 
             unless
               (null enemiesToMove || null (catMaybes messages))

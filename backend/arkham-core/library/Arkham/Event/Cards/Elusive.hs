@@ -23,10 +23,10 @@ instance RunMessage Elusive where
       targets <- selectList $ EmptyLocation <> RevealedLocation
       pushAll
         $ map (DisengageEnemy iid) enemies
-          <> [ chooseOrRunOne iid
-              $ targetLabels targets (only . MoveTo . move (toSource attrs) iid)
-             | notNull targets
-             ]
-          <> map EnemyCheckEngagement enemies
+        <> [ chooseOrRunOne iid
+            $ targetLabels targets (only . MoveTo . move (toSource attrs) iid)
+           | notNull targets
+           ]
+        <> map EnemyCheckEngagement enemies
       pure e
     _ -> Elusive <$> runMessage msg attrs

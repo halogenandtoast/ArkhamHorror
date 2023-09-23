@@ -37,10 +37,10 @@ instance HasAbilities HarlansCurseHarlanEarnstone where
     [ restrictedAbility
       a
       1
-      ( AssetExists $
-          assetIs Assets.harlanEarnstone
-            <> AssetWithClues
-              (AtLeast $ PerPlayer 1)
+      ( AssetExists
+          $ assetIs Assets.harlanEarnstone
+          <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
       )
       $ Objective
       $ ForcedAbility AnyWindow

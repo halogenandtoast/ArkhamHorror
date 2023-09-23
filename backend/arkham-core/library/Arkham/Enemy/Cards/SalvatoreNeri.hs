@@ -30,8 +30,8 @@ instance HasModifiersFor SalvatoreNeri where
         pure $ toModifiers attrs [Modifier.EnemyEvade evadeValue]
       (Just iid, Just Action.Fight) -> do
         fightValue <- getSkillValue SkillCombat iid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [Modifier.EnemyFight fightValue]
       _ -> pure []

@@ -32,10 +32,10 @@ instance HasAbilities TheKingInTatters where
         1
         (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped)
         $ FastAbility Free
-    , mkAbility a 2 $
-        ForcedAbility $
-          EnemyWouldBeDefeated Timing.When $
-            EnemyWithTitle "Hastur"
+    , mkAbility a 2
+        $ ForcedAbility
+        $ EnemyWouldBeDefeated Timing.When
+        $ EnemyWithTitle "Hastur"
     ]
 
 instance RunMessage TheKingInTatters where
@@ -45,20 +45,20 @@ instance RunMessage TheKingInTatters where
       for_ mlid $ \lid -> do
         iids <- getInvestigatorIds
         noClues <- fieldP LocationClues (== 0) lid
-        when noClues $
-          pushAll $
-            map (InvestigatorDiscardAllClues (toAbilitySource attrs 1)) iids
-              <> [Flip iid source (LocationTarget lid)]
+        when noClues
+          $ pushAll
+          $ map (InvestigatorDiscardAllClues (toAbilitySource attrs 1)) iids
+          <> [Flip iid source (LocationTarget lid)]
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing) $
-        push $
-          scenarioResolution 1
-      whenM (selectAny $ enemyIs Enemies.hasturTheKingInYellow) $
-        push $
-          scenarioResolution 2
-      whenM (selectAny $ enemyIs Enemies.hasturLordOfCarcosa) $
-        push $
-          scenarioResolution 3
+      whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing)
+        $ push
+        $ scenarioResolution 1
+      whenM (selectAny $ enemyIs Enemies.hasturTheKingInYellow)
+        $ push
+        $ scenarioResolution 2
+      whenM (selectAny $ enemyIs Enemies.hasturLordOfCarcosa)
+        $ push
+        $ scenarioResolution 3
       pure a
     _ -> TheKingInTatters <$> runMessage msg attrs

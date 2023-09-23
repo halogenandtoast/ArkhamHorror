@@ -23,10 +23,10 @@ instance RunMessage ScroungeForSupplies where
   runMessage msg e@(ScroungeForSupplies attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectList $
-          InDiscardOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (CardWithLevel 0)
+        selectList
+          $ InDiscardOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (CardWithLevel 0)
       when
         (null targets)
         (error "ScroungeForSupplies expected level 0 card in discard")

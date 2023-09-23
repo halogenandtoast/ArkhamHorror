@@ -22,8 +22,8 @@ ritualCandles = asset RitualCandles Cards.ritualCandles
 
 instance HasAbilities RitualCandles where
   getAbilities (RitualCandles x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
           ( RevealChaosToken
               Timing.When
               You
@@ -36,8 +36,8 @@ instance HasAbilities RitualCandles where
 instance RunMessage RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
     UseCardAbility iid source 1 (Window.revealedChaosTokens -> tokens) _ | isSource attrs source -> do
-      push $
-        If
+      push
+        $ If
           (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
           [skillTestModifier attrs iid (AnySkillValue 1)]
       pure a

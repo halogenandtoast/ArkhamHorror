@@ -25,8 +25,8 @@ monstrousTransformation =
 instance HasModifiersFor MonstrousTransformation where
   getModifiersFor (InvestigatorTarget iid) (MonstrousTransformation a)
     | controlledBy a iid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ BaseSkillOf SkillWillpower 2
             , BaseSkillOf SkillIntellect 2
@@ -37,8 +37,8 @@ instance HasModifiersFor MonstrousTransformation where
 
 instance HasAbilities MonstrousTransformation where
   getAbilities (MonstrousTransformation a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility
           (Just Action.Fight)
           (Costs [ExhaustCost (toTarget a), ActionCost 1])
     ]

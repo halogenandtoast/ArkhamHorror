@@ -29,8 +29,8 @@ instance HasModifiersFor Snakescourge where
   getModifiersFor (AssetTarget aid) (Snakescourge attrs) = do
     miid <- field AssetController aid
     nonweaknessItem <- aid <=~> (NonWeaknessAsset <> AssetWithTrait Item)
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ Blank
         | iid <- maybeToList miid
@@ -41,19 +41,19 @@ instance HasModifiersFor Snakescourge where
 
 instance HasAbilities Snakescourge where
   getAbilities (Snakescourge a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          RoundEnds
-            Timing.When
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ RoundEnds
+          Timing.When
     ]
 
 instance RunMessage Snakescourge where
   runMessage msg t@(Snakescourge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       isPoisoned <- getIsPoisoned iid
-      pushAll $
-        AttachTreachery (toId t) (InvestigatorTarget iid)
-          : [gainSurge attrs | isPoisoned]
+      pushAll
+        $ AttachTreachery (toId t) (InvestigatorTarget iid)
+        : [gainSurge attrs | isPoisoned]
       pure t
     UseCardAbility _ source 1 _ _
       | isSource attrs source ->

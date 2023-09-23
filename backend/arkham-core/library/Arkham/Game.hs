@@ -1239,19 +1239,19 @@ getGameAbilities = do
           (toList $ g ^. inHandEntitiesL . each . eventsL)
   concatMapM replaceMatcherSources
     $ enemyAbilities
-      <> blankedEnemyAbilities
-      <> locationAbilities
-      <> blankedLocationAbilities
-      <> assetAbilities
-      <> treacheryAbilities
-      <> eventAbilities
-      <> inHandEventAbilities
-      <> actAbilities
-      <> agendaAbilities
-      <> effectAbilities
-      <> investigatorAbilities
-      <> storyAbilities
-      <> skillAbilities
+    <> blankedEnemyAbilities
+    <> locationAbilities
+    <> blankedLocationAbilities
+    <> assetAbilities
+    <> treacheryAbilities
+    <> eventAbilities
+    <> inHandEventAbilities
+    <> actAbilities
+    <> agendaAbilities
+    <> effectAbilities
+    <> investigatorAbilities
+    <> storyAbilities
+    <> skillAbilities
 
 replaceMatcherSources :: HasGame m => Ability -> m [Ability]
 replaceMatcherSources ability = case abilitySource ability of
@@ -1484,7 +1484,7 @@ getLocationsMatching lmatcher = do
               . map snd
               . sortOn (Down . fst)
               . mapToList
-              $ overallDistances
+                $ overallDistances
         pure $ filter ((`elem` resultIds) . toId) ls
       NearestLocationToYou matcher -> guardYourLocation $ \start -> do
         matchingLocationIds <- map toId <$> getLocationsMatching matcher
@@ -1595,7 +1595,7 @@ getLocationsMatching lmatcher = do
                 . maybe [] (coerce . map fst)
                 . headMay
                 . groupOn snd
-                $ sortOn snd candidates
+                  $ sortOn snd candidates
         pure $ filter ((`member` matches') . toId) ls
       BlockedLocation ->
         flip filterM ls $ \l -> notElem Blocked <$> getModifiers (toTarget l)
@@ -1772,7 +1772,7 @@ getAssetsMatching matcher = do
           as
           ( AssetOneOf
               $ AssetControlledBy (InvestigatorWithId iid)
-                : map AssetWithId otherDamageableAssetIds
+              : map AssetWithId otherDamageableAssetIds
           )
       let
         isHealthDamageable a =
@@ -1789,7 +1789,7 @@ getAssetsMatching matcher = do
           as
           ( AssetOneOf
               $ AssetControlledBy (InvestigatorWithId iid)
-                : map AssetWithId otherDamageableAssetIds
+              : map AssetWithId otherDamageableAssetIds
           )
       let
         isSanityDamageable a =
@@ -1951,7 +1951,7 @@ getSkill sid = do
   pure
     $ fromJustNote missingSkill
     $ preview (entitiesL . skillsL . ix sid) g
-      <|> getInDiscardEntity skillsL sid g
+    <|> getInDiscardEntity skillsL sid g
  where
   missingSkill = "Unknown skill: " <> show sid
 
@@ -2374,18 +2374,18 @@ getAsset aid = fromMaybe (throw missingAsset) <$> maybeAsset aid
   missingAsset =
     MissingEntity
       $ "Unknown asset: "
-        <> tshow aid
-        <> "\n"
-        <> T.pack
-          (prettyCallStack callStack)
+      <> tshow aid
+      <> "\n"
+      <> T.pack
+        (prettyCallStack callStack)
 
 maybeAsset :: HasGame m => AssetId -> m (Maybe Asset)
 maybeAsset aid = do
   g <- getGame
   pure
     $ preview (entitiesL . assetsL . ix aid) g
-      <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
-      <|> getInDiscardEntity assetsL aid g
+    <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
+    <|> getInDiscardEntity assetsL aid g
 
 getTreachery :: HasGame m => TreacheryId -> m Treachery
 getTreachery tid =
@@ -2417,7 +2417,7 @@ getEventMaybe eid = do
   g <- getGame
   pure
     $ preview (entitiesL . eventsL . ix eid) g
-      <|> getInDiscardEntity eventsL eid g
+    <|> getInDiscardEntity eventsL eid g
 
 getEffect :: HasGame m => EffectId -> m Effect
 getEffect eid =
@@ -2937,21 +2937,21 @@ instance Query ExtendedCardMatcher where
                         (cdCommitRestrictions $ toCardDef card)
                     pure
                       $ PlayerCard card
-                        `notElem` committedCards
-                        && ( any (`member` skillIcons) (cdSkills (toCardDef card))
-                              || ( null (cdSkills $ toCardDef card)
-                                    && toCardType card
-                                    == SkillType
-                                 )
-                           )
-                        && passesCommitRestrictions
-                        && not prevented
-                        && matchInitial
+                      `notElem` committedCards
+                      && ( any (`member` skillIcons) (cdSkills (toCardDef card))
+                            || ( null (cdSkills $ toCardDef card)
+                                  && toCardType card
+                                  == SkillType
+                               )
+                         )
+                      && passesCommitRestrictions
+                      && not prevented
+                      && matchInitial
                   EncounterCard card ->
                     pure
                       $ CommittableTreachery
-                        `elem` (cdCommitRestrictions $ toCardDef card)
-                        && matchInitial
+                      `elem` (cdCommitRestrictions $ toCardDef card)
+                      && matchInitial
                   VengeanceCard _ -> error "vengeance card"
       BasicCardMatch cm -> pure $ c `cardMatch` cm
       InHandOf who -> do
@@ -3048,7 +3048,7 @@ getShortestPath !initialLocation !target !extraConnectionsMap = do
     . map snd
     . sortOn fst
     . mapToList
-    $ result
+      $ result
 
 data LPState = LPState
   { _lpSearchQueue :: Seq LocationId
@@ -3068,7 +3068,7 @@ getLongestPath !initialLocation !target = do
     . map snd
     . sortOn (Down . fst)
     . mapToList
-    $ result
+      $ result
 
 markDistances
   :: HasGame m
@@ -3348,7 +3348,7 @@ instance HasDistance Game where
       . map fst
       . sortOn fst
       . mapToList
-      $ result
+        $ result
 
 readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game
 readGame = view gameRefL >>= (`atomicModifyIORef'` dupe)
@@ -3571,9 +3571,9 @@ createActiveCostForCard iid card isPlayAction windows' = do
     cost =
       mconcat
         $ [resourceCost]
-          <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
-          <> additionalCosts
-          <> sealChaosTokenCosts
+        <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
+        <> additionalCosts
+        <> sealChaosTokenCosts
   pure
     ActiveCost
       { activeCostId = acId
@@ -3709,16 +3709,16 @@ runGameMessage msg g = case msg of
 
     pushAll
       $ LoadTarotDeck
-        : PreScenarioSetup
-        : [StandaloneSetup | standalone]
-          <> [ChooseLeadInvestigator]
-          <> [PerformTarotReading | gamePerformTarotReadings g]
-          <> [ SetupInvestigators
-             , SetChaosTokensForScenario -- (chaosBagOf campaign')
-             , InvestigatorsMulligan
-             , Setup
-             , EndSetup
-             ]
+      : PreScenarioSetup
+      : [StandaloneSetup | standalone]
+        <> [ChooseLeadInvestigator]
+        <> [PerformTarotReading | gamePerformTarotReadings g]
+        <> [ SetupInvestigators
+           , SetChaosTokensForScenario -- (chaosBagOf campaign')
+           , InvestigatorsMulligan
+           , Setup
+           , EndSetup
+           ]
     pure
       $ g
       & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
@@ -3737,14 +3737,14 @@ runGameMessage msg g = case msg of
     let standalone = isNothing $ modeCampaign $ g ^. modeL
     pushAll
       $ ResetGame
-        : [StandaloneSetup | standalone]
-          <> [ ChooseLeadInvestigator
-             , SetupInvestigators
-             , SetChaosTokensForScenario -- (chaosBagOf campaign')
-             , InvestigatorsMulligan
-             , Setup
-             , EndSetup
-             ]
+      : [StandaloneSetup | standalone]
+        <> [ ChooseLeadInvestigator
+           , SetupInvestigators
+           , SetChaosTokensForScenario -- (chaosBagOf campaign')
+           , InvestigatorsMulligan
+           , Setup
+           , EndSetup
+           ]
     pure $ g & (phaseL .~ InvestigationPhase)
   BeginGame -> do
     (before, _, after) <- frame $ Window.GameBegins
@@ -3989,7 +3989,7 @@ runGameMessage msg g = case msg of
           $ [ PlacedLocation (toName card) (toCardCode card) lid
             , afterPutIntoPlayWindow
             ]
-            <> map EnemyCheckEngagement enemies
+          <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   RemoveAsset aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   RemoveEvent eid -> do
@@ -4044,7 +4044,7 @@ runGameMessage msg g = case msg of
           ( filter ((`elem` iids) . fst)
               $ mapToList
               $ g
-                ^. entitiesL
+              ^. entitiesL
               . investigatorsL
           )
           (\(iid, i) -> (iid,) <$> getSpendableClueCount (toAttrs i))
@@ -4345,7 +4345,7 @@ runGameMessage msg g = case msg of
           let treachery = lookupTreachery (toCardCode pc) iid tid cardId
           pushAll
             $ resolve (Revelation iid (TreacherySource tid))
-              <> [UnsetActiveCard]
+            <> [UnsetActiveCard]
           pure
             $ g
             & (entitiesL . treacheriesL %~ insertMap tid treachery)
@@ -4617,12 +4617,12 @@ runGameMessage msg g = case msg of
         fromJustNote "must exist"
           $ find ((== cardId) . toCardId)
           $ (g ^. focusedCardsL)
-            <> ( concat
-                  . Map.elems
-                  . investigatorFoundCards
+          <> ( concat
+                . Map.elems
+                . investigatorFoundCards
                   $ toAttrs
                     investigator'
-               )
+             )
     case card of
       PlayerCard pc -> do
         pushAll
@@ -4875,14 +4875,14 @@ runGameMessage msg g = case msg of
     let phaseStep s msgs = Msg.PhaseStep (MythosPhaseStep s) msgs
     pushAllEnd
       $ phaseStep MythosPhaseBeginsStep [phaseBeginsWindow]
-        : [ phaseStep PlaceDoomOnAgendaStep [PlaceDoomOnAgenda]
-          | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
-          ]
-          <> [ phaseStep CheckDoomThresholdStep [AdvanceAgendaIfThresholdSatisfied, afterCheckDoomThreshold]
-             , phaseStep EachInvestigatorDrawsEncounterCardStep [allDrawWindow, AllDrawEncounterCard]
-             , phaseStep MythosPhaseWindow [fastWindow]
-             , phaseStep MythosPhaseEndsStep [EndMythos]
-             ]
+      : [ phaseStep PlaceDoomOnAgendaStep [PlaceDoomOnAgenda]
+        | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
+        ]
+        <> [ phaseStep CheckDoomThresholdStep [AdvanceAgendaIfThresholdSatisfied, afterCheckDoomThreshold]
+           , phaseStep EachInvestigatorDrawsEncounterCardStep [allDrawWindow, AllDrawEncounterCard]
+           , phaseStep MythosPhaseWindow [fastWindow]
+           , phaseStep MythosPhaseEndsStep [EndMythos]
+           ]
     pure $ g & phaseL .~ MythosPhase & phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep
   Msg.PhaseStep step msgs -> do
     pushAll msgs
@@ -4898,7 +4898,7 @@ runGameMessage msg g = case msg of
           ]
         | iid <- playerIds
         ]
-        <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
+      <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
     pure g
   EndMythos -> do
     pushAll
@@ -4933,11 +4933,11 @@ runGameMessage msg g = case msg of
                   (skillTestInvestigator skillTest)
                   [ SkillLabel skillType'
                     $ windows'
-                      <> [ BeginSkillTestAfterFast
-                            $ skillTest
-                              { skillTestType = SkillSkillTest skillType
-                              }
-                         ]
+                    <> [ BeginSkillTestAfterFast
+                          $ skillTest
+                            { skillTestType = SkillSkillTest skillType
+                            }
+                       ]
                   | skillType' <- setToList availableSkills
                   ]
               ]
@@ -4959,11 +4959,11 @@ runGameMessage msg g = case msg of
                   (skillTestInvestigator skillTest)
                   [ SkillLabel skillType'
                     $ windows'
-                      <> [ BeginSkillTestAfterFast
-                            $ skillTest
-                              { skillTestType = AndSkillTest types
-                              }
-                         ]
+                    <> [ BeginSkillTestAfterFast
+                          $ skillTest
+                            { skillTestType = AndSkillTest types
+                            }
+                       ]
                   | skillType' <- setToList availableSkills
                   ]
               ]
@@ -4980,9 +4980,9 @@ runGameMessage msg g = case msg of
             _ -> False
           pure
             $ performRevelationSkillTestWindow
-              : msgs
-                <> maybeToList mAfterRevelation1
-                <> maybeToList mAfterRevelation2
+            : msgs
+              <> maybeToList mAfterRevelation1
+              <> maybeToList mAfterRevelation2
         else pure msgs
     inSkillTestWindow <- fromQueue $ any (== EndSkillTestWindow)
 
@@ -5143,20 +5143,20 @@ runGameMessage msg g = case msg of
             , When (EnemySpawn (Just iid) lid enemyId)
             , EnemySpawn (Just iid) lid enemyId
             ]
-            <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
-            <> enemyCreationAfter enemyCreation
-            <> [After (EnemySpawn (Just iid) lid enemyId)]
+          <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
+          <> enemyCreationAfter enemyCreation
+          <> [After (EnemySpawn (Just iid) lid enemyId)]
       SpawnAtLocation lid -> do
         windows' <- checkWindows [mkWindow #when (Window.EnemyWouldSpawnAt enemyId lid)]
         pushAll
           $ windows'
-            : [ Will (EnemySpawn Nothing lid enemyId)
-              , When (EnemySpawn Nothing lid enemyId)
-              , EnemySpawn Nothing lid enemyId
-              ]
-              <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
-              <> enemyCreationAfter enemyCreation
-              <> [After (EnemySpawn Nothing lid enemyId)]
+          : [ Will (EnemySpawn Nothing lid enemyId)
+            , When (EnemySpawn Nothing lid enemyId)
+            , EnemySpawn Nothing lid enemyId
+            ]
+            <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
+            <> enemyCreationAfter enemyCreation
+            <> [After (EnemySpawn Nothing lid enemyId)]
       SpawnAtLocationMatching locationMatcher -> do
         windows' <- windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
         matches' <- selectList locationMatcher
@@ -5166,12 +5166,12 @@ runGameMessage msg g = case msg of
             lead <- getLead
             pushAll
               $ windows'
-                <> [ chooseOrRunOne
-                      (fromMaybe lead $ enemyCreationInvestigator enemyCreation)
-                      [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
-                      | lid <- lids
-                      ]
-                   ]
+              <> [ chooseOrRunOne
+                    (fromMaybe lead $ enemyCreationInvestigator enemyCreation)
+                    [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
+                    | lid <- lids
+                    ]
+                 ]
       SpawnWithPlacement placement -> do
         mLocation <- getPlacementLocation placement
         let
@@ -5183,15 +5183,15 @@ runGameMessage msg g = case msg of
               )
         pushAll
           $ beforeMessages
-            <> [PlaceEnemy enemyId placement]
-            <> enemyCreationAfter enemyCreation
-            <> afterMessages
+          <> [PlaceEnemy enemyId placement]
+          <> enemyCreationAfter enemyCreation
+          <> afterMessages
       SpawnEngagedWithPrey ->
         pushAll
           $ [ Will (EnemySpawnEngagedWithPrey enemyId)
             , EnemySpawnEngagedWithPrey enemyId
             ]
-            <> enemyCreationAfter enemyCreation
+          <> enemyCreationAfter enemyCreation
       SpawnViaSpawnInstruction -> spawnAt enemyId (fromMaybe (error "called without spawn at") $ attr enemySpawnAt enemy)
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
@@ -5200,7 +5200,7 @@ runGameMessage msg g = case msg of
     pushM
       $ checkWindows
       $ (`mkWindow` Window.Discarded iid source card)
-        <$> [#when, #after]
+      <$> [#when, #after]
     pure g
   InvestigatorAssignDamage iid' (InvestigatorSource iid) _ n 0 | n > 0 -> do
     let
@@ -5304,7 +5304,7 @@ runGameMessage msg g = case msg of
           , RemoveCardFromHand iid (toCardId card)
           , InvestigatorDrawEnemy iid enemyId
           ]
-          <> resolve (Revelation iid (EnemySource enemyId))
+        <> resolve (Revelation iid (EnemySource enemyId))
       pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
     other ->
       error $ "Currently not handling Revelations from type " <> show other
@@ -5348,8 +5348,8 @@ runGameMessage msg g = case msg of
             ]
         pushAll
           $ [checkWindowMessage, InvestigatorDrawEnemy iid enemyId]
-            <> [Revelation iid (EnemySource enemyId) | hasRevelation card]
-            <> [UnsetActiveCard]
+          <> [Revelation iid (EnemySource enemyId) | hasRevelation card]
+          <> [UnsetActiveCard]
         pure
           $ g'
           & (entitiesL . enemiesL . at enemyId ?~ enemy)
@@ -5371,14 +5371,14 @@ runGameMessage msg g = case msg of
         let location = createLocation card locationId
         pushAll
           $ PlacedLocation (toName location) (toCardCode card) locationId
-            : resolve (Revelation iid (LocationSource locationId))
+          : resolve (Revelation iid (LocationSource locationId))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
       _ ->
         error
           $ "Unhandled card type: "
-            <> show (toCardType card)
-            <> ": "
-            <> show card
+          <> show (toCardType card)
+          <> ": "
+          <> show card
   DrewTreachery iid mdeck (EncounterCard card) -> do
     treacheryId <- getRandom
     let
@@ -5393,7 +5393,7 @@ runGameMessage msg g = case msg of
 
     pushAll
       $ [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers']
-        <> [ResolveTreachery iid treacheryId]
+      <> [ResolveTreachery iid treacheryId]
 
     pure
       $ g
@@ -5416,11 +5416,11 @@ runGameMessage msg g = case msg of
 
     pushAll
       $ checkWindowMessage
-        : if ignoreRevelation
-          then [Discard GameSource (TreacheryTarget treacheryId)]
-          else
-            resolve (Revelation iid (TreacherySource treacheryId))
-              <> [AfterRevelation iid treacheryId, UnsetActiveCard]
+      : if ignoreRevelation
+        then [Discard GameSource (TreacheryTarget treacheryId)]
+        else
+          resolve (Revelation iid (TreacherySource treacheryId))
+            <> [AfterRevelation iid treacheryId, UnsetActiveCard]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   DrewTreachery iid _ (PlayerCard card) -> do
     sendRevelation (toJSON $ toCard card)
@@ -5432,8 +5432,8 @@ runGameMessage msg g = case msg of
 
     pushAll
       $ [RemoveCardFromHand iid (toCardId card) | hasRevelation card]
-        <> [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers']
-        <> [ResolveTreachery iid treacheryId]
+      <> [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers']
+      <> [ResolveTreachery iid treacheryId]
 
     let
       historyItem = mempty {historyTreacheriesDrawn = [toCardCode treachery]}
@@ -5592,7 +5592,8 @@ preloadEntities g = do
           Nothing -> a
         handEffectCards =
           filter (cdCardInHandEffects . toCardDef)
-            $ investigatorHand (toAttrs investigator') <> asIfInHandCards
+            $ investigatorHand (toAttrs investigator')
+            <> asIfInHandCards
       pure
         $ if null handEffectCards
           then entities
@@ -5609,7 +5610,7 @@ preloadEntities g = do
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef)
         $ (concat . Map.elems $ gameFoundCards g)
-          <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
+        <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getActiveInvestigatorId
   let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
@@ -5663,10 +5664,10 @@ preloadModifiers g = case gameMode g of
   tokens =
     nub
       $ maybe [] allSkillTestChaosTokens (gameSkillTest g)
-        <> maybe
-          []
-          (allChaosBagChaosTokens . attr scenarioChaosBag)
-          (modeScenario $ gameMode g)
+      <> maybe
+        []
+        (allChaosBagChaosTokens . attr scenarioChaosBag)
+        (modeScenario $ gameMode g)
   toTargetModifiers target =
     foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)
 

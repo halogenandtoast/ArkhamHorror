@@ -36,7 +36,7 @@ instance HasAbilities DevilsHopYard_252 where
                 <> EnemyCriteria
                   ( EnemyExists
                       $ EnemyAt YourLocation
-                        <> EnemyWithTrait Abomination
+                      <> EnemyWithTrait Abomination
                   )
             )
             (FastAbility Free)
@@ -49,7 +49,7 @@ instance RunMessage DevilsHopYard_252 where
       investigatorWithCluePairs <-
         selectWithField InvestigatorClues
           $ investigatorAt (toId attrs)
-            <> InvestigatorWithAnyClues
+          <> InvestigatorWithAnyClues
       abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
       when
         (null investigatorWithCluePairs || null abominations)
@@ -69,13 +69,13 @@ instance RunMessage DevilsHopYard_252 where
           iid
           [ targetLabel iid'
             $ placeClueOnAbomination iid'
-              : [ chooseOne
-                  iid'
-                  [ Label "Spend a second clue" [placeClueOnAbomination iid']
-                  , Label "Do not spend a second clue" []
-                  ]
-                | clueCount > 1
+            : [ chooseOne
+                iid'
+                [ Label "Spend a second clue" [placeClueOnAbomination iid']
+                , Label "Do not spend a second clue" []
                 ]
+              | clueCount > 1
+              ]
           | (iid', clueCount) <- investigatorWithCluePairs
           ]
       pure l

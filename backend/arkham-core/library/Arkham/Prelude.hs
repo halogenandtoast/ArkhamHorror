@@ -221,8 +221,8 @@ instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where
           <> encodeToTextBuilder b'
 
 instance (FromJSON a, FromJSON b) => FromJSON (a `With` b) where
-  parseJSON = withObject "With"
-    $ \o -> With <$> parseJSON (Object o) <*> parseJSON (Object o)
+  parseJSON = withObject "With" $
+    \o -> With <$> parseJSON (Object o) <*> parseJSON (Object o)
 
 instance (Show a, Show b) => Show (a `With` b) where
   show (With a b) = show a <> " WITH " <> show b
@@ -247,11 +247,11 @@ foldMapM f =
 
 frequencies :: Ord a => [a] -> Map a Int
 frequencies as =
-  Map.map getSum
-    $ foldr (unionWith (<>)) mempty
-    $ map
-      (`Map.singleton` (Sum 1))
-      as
+  Map.map getSum $
+    foldr (unionWith (<>)) mempty $
+      map
+        (`Map.singleton` (Sum 1))
+        as
 
 groupOnKey :: Ord k => [(k, v)] -> Map k [v]
 groupOnKey = Map.fromListWith (++) . map (second pure)

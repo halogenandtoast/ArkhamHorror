@@ -25,9 +25,9 @@ instance HasAbilities PorteDeLAvancee where
   getAbilities (PorteDeLAvancee a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (Here <> AgendaExists AgendaWithAnyDoom) $
-          ActionAbility Nothing $
-            ActionCost 2
+      [ restrictedAbility a 1 (Here <> AgendaExists AgendaWithAnyDoom)
+          $ ActionAbility Nothing
+          $ ActionCost 2
       ]
 
 instance RunMessage PorteDeLAvancee where
@@ -35,8 +35,8 @@ instance RunMessage PorteDeLAvancee where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectList AgendaWithAnyDoom
       agendasWithOtherAgendas <- forToSnd agendas (selectJust . NotAgenda . AgendaWithId)
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel
             target

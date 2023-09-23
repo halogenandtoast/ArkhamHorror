@@ -273,9 +273,10 @@ placeLabeledLocations_ lbl cards = do
     if alreadyTaken then getStartIndex (n + 1) else pure n
 
 placeLabeledLocations :: Text -> [CardDef] -> GameT ([LocationId], [Message])
-placeLabeledLocations lbl cards = fmap fold . concatForM (withIndex1 cards) $ \(idx, card) -> do
-  (location, placement) <- placeLocationCard card
-  pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
+placeLabeledLocations lbl cards = fmap fold
+  . concatForM (withIndex1 cards) $ \(idx, card) -> do
+    (location, placement) <- placeLocationCard card
+    pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
 putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing (defaultWindows iid)

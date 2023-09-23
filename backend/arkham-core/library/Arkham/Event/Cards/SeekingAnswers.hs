@@ -40,8 +40,8 @@ instance RunMessage SeekingAnswers where
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       lids <- selectList $ ConnectedLocation <> LocationWithAnyClues
       when (notNull lids) $ do
-        push $
-          chooseOne
+        push
+          $ chooseOne
             iid
             [ targetLabel
               lid'

@@ -1,7 +1,7 @@
-module Arkham.Asset.Cards.Observed4
-  ( observed4
-  , Observed4(..)
-  )
+module Arkham.Asset.Cards.Observed4 (
+  observed4,
+  Observed4 (..),
+)
 where
 
 import Arkham.Prelude

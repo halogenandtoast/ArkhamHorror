@@ -95,22 +95,22 @@ instance RunMessage ForTheGreaterGood where
 
       let intro2Sidebar = if showSidebar then decievingTheLodge else mempty
 
-      pushAll $
-        story iids intro1
-          : [story iids (intro2 <> intro2Sidebar) | membersOfTheLodge]
-            <> [story iids intro3 | not membersOfTheLodge, enemiesOfTheLodge]
-            <> [story iids intro4 | not membersOfTheLodge, not enemiesOfTheLodge, learnedNothing]
-            <> [ story iids intro5
-               | not membersOfTheLodge
-               , not enemiesOfTheLodge
-               , not learnedNothing
-               , neverSeenOrHeardFromAgain
-               ]
+      pushAll
+        $ story iids intro1
+        : [story iids (intro2 <> intro2Sidebar) | membersOfTheLodge]
+          <> [story iids intro3 | not membersOfTheLodge, enemiesOfTheLodge]
+          <> [story iids intro4 | not membersOfTheLodge, not enemiesOfTheLodge, learnedNothing]
+          <> [ story iids intro5
+             | not membersOfTheLodge
+             , not enemiesOfTheLodge
+             , not learnedNothing
+             , neverSeenOrHeardFromAgain
+             ]
       pure s
     StandaloneSetup -> do
       lead <- getLead
-      push $
-        chooseOne
+      push
+        $ chooseOne
           lead
           [ Label "The investigators are members of the Lodge." [Record TheInvestigatorsAreMembersOfTheLodge]
           , Label "The investigators are not members of the Lodge." []
@@ -168,14 +168,14 @@ instance RunMessage ForTheGreaterGood where
       otherPlacements <-
         placeLocationCards_ [lobby, lodgeCellar, Locations.lodgeCatacombs, Locations.lounge]
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck'
-        , SetAgendaDeck
-        , SetActDeck
-        , placeLodgeGates
-        , MoveAllTo (toSource attrs) lodgeGatesId
-        ]
-          <> otherPlacements
+      pushAll
+        $ [ SetEncounterDeck encounterDeck'
+          , SetAgendaDeck
+          , SetActDeck
+          , placeLodgeGates
+          , MoveAllTo (toSource attrs) lodgeGatesId
+          ]
+        <> otherPlacements
 
       agendas <- genCards [Agendas.theHierophantV, Agendas.endsAndMeans]
       acts <- genCards [act1, Acts.obtainingTheDevice, Acts.theFourKeys]
@@ -213,13 +213,13 @@ instance RunMessage ForTheGreaterGood where
       if isEasyStandard attrs
         then do
           closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
-          unless (null closestCultists) $
-            push $
-              chooseOrRunOne
-                iid
-                [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
-                | cultist <- closestCultists
-                ]
+          unless (null closestCultists)
+            $ push
+            $ chooseOrRunOne
+              iid
+              [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
+              | cultist <- closestCultists
+              ]
         else do
           cultists <- selectList $ EnemyWithTrait Trait.Cultist
           pushAll
@@ -229,23 +229,23 @@ instance RunMessage ForTheGreaterGood where
       if isEasyStandard attrs
         then do
           closestCultists <- selectList $ NearestEnemy (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
-          unless (null closestCultists) $
-            push $
-              chooseOne
-                iid
-                [ targetLabel
-                  cultist
-                  [RemoveDoom (ChaosTokenEffectSource ElderThing) (toTarget cultist) 1, PlaceDoomOnAgenda]
-                | cultist <- closestCultists
-                ]
+          unless (null closestCultists)
+            $ push
+            $ chooseOne
+              iid
+              [ targetLabel
+                cultist
+                [RemoveDoom (ChaosTokenEffectSource ElderThing) (toTarget cultist) 1, PlaceDoomOnAgenda]
+              | cultist <- closestCultists
+              ]
         else do
           maxDoomCultists <- selectMax EnemyDoom (EnemyWithTrait Trait.Cultist)
           if notNull maxDoomCultists
             then do
               agenda <- getCurrentAgenda
               maxDoom <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
-              push $
-                chooseOrRunOne
+              push
+                $ chooseOrRunOne
                   iid
                   [ targetLabel
                     cultist
@@ -264,34 +264,34 @@ instance RunMessage ForTheGreaterGood where
         NoResolution ->
           pushAll $ [story iids noResolution, Record TheGuardianOfTheTrapEmerged] <> xp <> [EndOfGame Nothing]
         Resolution 1 ->
-          pushAll $
-            [ story iids resolution1
-            , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
-            , addCampaignCardToDeckChoice
-                lead
-                iids
-                Assets.puzzleBox
-            ]
-              <> xp
-              <> [EndOfGame (Just $ UpgradeDeckStep $ InterludeStep 3 Nothing)]
+          pushAll
+            $ [ story iids resolution1
+              , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
+              , addCampaignCardToDeckChoice
+                  lead
+                  iids
+                  Assets.puzzleBox
+              ]
+            <> xp
+            <> [EndOfGame (Just $ UpgradeDeckStep $ InterludeStep 3 Nothing)]
         Resolution 2 ->
-          pushAll $
-            [ story iids resolution2
-            , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
-            , addCampaignCardToDeckChoice
-                lead
-                iids
-                Assets.puzzleBox
-            ]
-              <> xp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story iids resolution2
+              , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
+              , addCampaignCardToDeckChoice
+                  lead
+                  iids
+                  Assets.puzzleBox
+              ]
+            <> xp
+            <> [EndOfGame Nothing]
         Resolution 3 ->
-          pushAll $
-            [ story iids resolution3
-            , Record TheGuardianOfTheTrapEmergedAndWasDefeated
-            ]
-              <> xp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story iids resolution3
+              , Record TheGuardianOfTheTrapEmergedAndWasDefeated
+              ]
+            <> xp
+            <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s
     _ -> ForTheGreaterGood <$> runMessage msg attrs

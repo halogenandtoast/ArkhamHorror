@@ -27,9 +27,9 @@ instance RunMessage TheMawWidens where
       lead <- getLead
       investigatorIds <- getInvestigatorIds
       lid <- leftmostLocation =<< getJustLocation lead
-      pushAll $
-        RemoveLocation lid
-          : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
-            <> [advanceAgendaDeck attrs]
+      pushAll
+        $ RemoveLocation lid
+        : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
+          <> [advanceAgendaDeck attrs]
       pure a
     _ -> TheMawWidens <$> runMessage msg attrs

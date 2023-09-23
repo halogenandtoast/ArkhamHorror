@@ -46,8 +46,8 @@ instance RunMessage BidingItsTime where
       anyBrood <- (> 0) . length <$> getSetAsideBroodOfYogSothoth
       pushAll
         $ ShuffleEncounterDiscardBackIn
-          : [RequestSetAsideCard (toSource attrs) (CardCode "02255") | anyBrood]
-            <> [advanceAgendaDeck attrs]
+        : [RequestSetAsideCard (toSource attrs) (CardCode "02255") | anyBrood]
+          <> [advanceAgendaDeck attrs]
       pure a
     RequestedSetAsideCard source card | isSource attrs source -> do
       when (toCardCode card /= CardCode "02255") (throwIO $ InvalidState "wrong card")
@@ -57,9 +57,9 @@ instance RunMessage BidingItsTime where
       enemyCreation <- createEnemy card location
       pushAll
         $ toMessage enemyCreation
-          : [ beginSkillTest iid source (enemyCreationEnemyId enemyCreation) #agility 4
-            | iid <- investigators
-            ]
+        : [ beginSkillTest iid source (enemyCreationEnemyId enemyCreation) #agility 4
+          | iid <- investigators
+          ]
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) (Initiator (EnemyTarget enemy)) _ _ -> do
       pushMessage $ enemyAttack enemy attrs iid

@@ -30,8 +30,8 @@ prescient = skill Prescient Cards.prescient
 instance RunMessage Prescient where
   runMessage msg s@(Prescient attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Even"
@@ -71,22 +71,22 @@ instance RunMessage PrescientEffect where
           _ -> error "Invalid metadata"
 
       spells <-
-        selectList $
-          InDiscardOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (CardWithTrait Spell)
-      pushAll $
-        DisableEffect effectId
-          : if returnSpell && notNull spells
-            then
-              [ FocusCards spells
-              , chooseOne iid $
-                  Label "Do not return spell card" []
-                    : [ targetLabel (toCardId spell) [addToHand iid spell]
-                      | spell <- spells
-                      ]
-              , UnfocusCards
-              ]
-            else []
+        selectList
+          $ InDiscardOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (CardWithTrait Spell)
+      pushAll
+        $ DisableEffect effectId
+        : if returnSpell && notNull spells
+          then
+            [ FocusCards spells
+            , chooseOne iid
+                $ Label "Do not return spell card" []
+                : [ targetLabel (toCardId spell) [addToHand iid spell]
+                  | spell <- spells
+                  ]
+            , UnfocusCards
+            ]
+          else []
       pure e
     _ -> PrescientEffect <$> runMessage msg attrs

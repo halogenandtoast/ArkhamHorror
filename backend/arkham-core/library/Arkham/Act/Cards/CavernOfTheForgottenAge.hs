@@ -70,8 +70,8 @@ instance RunMessage CavernOfTheForgottenAge where
                         (locationIs Locations.mouthOfKnYanTheDepthsBelow)
                    )
           mouthOfKnYan <-
-            selectJust $
-              locationIs Locations.mouthOfKnYanTheDepthsBelow
+            selectJust
+              $ locationIs Locations.mouthOfKnYanTheDepthsBelow
           isConnectedToMouthOfKnYan <-
             mouthOfKnYan
               <=~> ConnectedTo (LocationWithId lid)
@@ -79,25 +79,25 @@ instance RunMessage CavernOfTheForgottenAge where
             if isConnectedToMouthOfKnYan
               then pure [mouthOfKnYan]
               else
-                selectList $
-                  NearestLocationToLocation mouthOfKnYan $
-                    ConnectedTo $
-                      LocationWithId lid
+                selectList
+                  $ NearestLocationToLocation mouthOfKnYan
+                  $ ConnectedTo
+                  $ LocationWithId lid
           locations <- selectList Anywhere
-          pushAll $
-            [PlaceClues (toSource attrs) (toTarget l) 1 | l <- locations]
-              <> ( guard singleSided
-                    *> [ chooseOne
-                          leadInvestigator
-                          [ targetLabel l $
-                            [MoveTo $ move attrs i l | i <- investigators]
-                              <> [EnemyMove eid lid | eid <- enemies]
-                          | l <- moveTo
-                          ]
-                       , ShuffleIntoDeck
-                          (ScenarioDeckByKey ExplorationDeck)
-                          (toTarget lid)
-                       ]
-                 )
+          pushAll
+            $ [PlaceClues (toSource attrs) (toTarget l) 1 | l <- locations]
+            <> ( guard singleSided
+                  *> [ chooseOne
+                        leadInvestigator
+                        [ targetLabel l
+                          $ [MoveTo $ move attrs i l | i <- investigators]
+                          <> [EnemyMove eid lid | eid <- enemies]
+                        | l <- moveTo
+                        ]
+                     , ShuffleIntoDeck
+                        (ScenarioDeckByKey ExplorationDeck)
+                        (toTarget lid)
+                     ]
+               )
         pure a
     _ -> CavernOfTheForgottenAge <$> runMessage msg attrs

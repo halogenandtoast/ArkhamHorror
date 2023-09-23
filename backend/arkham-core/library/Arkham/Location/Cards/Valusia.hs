@@ -43,10 +43,10 @@ instance RunMessage Valusia where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mHealHorror <- getHealHorrorMessage attrs 2 iid
       canHealDamage <- canHaveDamageHealed attrs iid
-      pushAll $
-        [ HealDamage (InvestigatorTarget iid) (toSource attrs) 2
-        | canHealDamage
-        ]
-          <> maybeToList mHealHorror
+      pushAll
+        $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 2
+          | canHealDamage
+          ]
+        <> maybeToList mHealHorror
       pure $ Valusia $ attrs & shroudL .~ 0
     _ -> Valusia <$> runMessage msg attrs

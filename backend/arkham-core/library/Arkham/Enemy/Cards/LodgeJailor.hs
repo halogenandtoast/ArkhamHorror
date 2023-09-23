@@ -43,9 +43,9 @@ instance RunMessage LodgeJailor where
   runMessage msg e@(LodgeJailor attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       mKey <- getRandomKey
-      pushAll $
-        PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2
-          : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
+      pushAll
+        $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2
+        : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ parley iid (toAbilitySource attrs 2) attrs SkillIntellect 3
@@ -59,8 +59,8 @@ instance RunMessage LodgeJailor where
           $ chooseOrRunOne
             iid
           $ [Label "Remove 1 Doom" [RemoveDoom (toAbilitySource attrs 2) (toTarget attrs) 1] | hasDoom]
-            <> [ Label ("Take control of the " <> keyName k <> " key") [PlaceKey (toTarget iid) k]
-               | k <- setToList $ enemyKeys attrs
-               ]
+          <> [ Label ("Take control of the " <> keyName k <> " key") [PlaceKey (toTarget iid) k]
+             | k <- setToList $ enemyKeys attrs
+             ]
       pure e
     _ -> LodgeJailor <$> runMessage msg attrs

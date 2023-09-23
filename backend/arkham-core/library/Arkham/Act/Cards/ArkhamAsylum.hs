@@ -44,34 +44,34 @@ instance RunMessage ArkhamAsylum where
             `difference` chosenSkills metadata
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      push $
-        chooseOne leadInvestigatorId $
-          map
-            ( \sk ->
-                Label
-                  ("Any investigator tests " <> tshow sk)
-                  [ chooseOrRunOne
-                      leadInvestigatorId
-                      [ targetLabel
-                        iid
-                        [ beginSkillTest
-                            iid
-                            (toSource attrs)
-                            (toTarget attrs)
-                            sk
-                            4
-                        ]
-                      | iid <- investigatorIds
+      push
+        $ chooseOne leadInvestigatorId
+        $ map
+          ( \sk ->
+              Label
+                ("Any investigator tests " <> tshow sk)
+                [ chooseOrRunOne
+                    leadInvestigatorId
+                    [ targetLabel
+                      iid
+                      [ beginSkillTest
+                          iid
+                          (toSource attrs)
+                          (toTarget attrs)
+                          sk
+                          4
                       ]
-                  ]
-            )
-            (setToList skills)
-            <> [ Label
-                  "You knock her over and grab the keys"
-                  [ Remember YouTookTheKeysByForce
-                  , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-                  ]
-               ]
+                    | iid <- investigatorIds
+                    ]
+                ]
+          )
+          (setToList skills)
+        <> [ Label
+              "You knock her over and grab the keys"
+              [ Remember YouTookTheKeysByForce
+              , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+              ]
+           ]
 
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _
@@ -79,11 +79,11 @@ instance RunMessage ArkhamAsylum where
           insertAfterMatching
             [AdvanceAct (toId attrs) source AdvancedWithClues]
             (== SkillTestApplyResultsAfter)
-          pure $
-            ArkhamAsylum $
-              attrs
-                `with` Metadata
-                  (insertSet st $ chosenSkills metadata)
+          pure
+            $ ArkhamAsylum
+            $ attrs
+            `with` Metadata
+              (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           insertAfterMatching

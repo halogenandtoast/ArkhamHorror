@@ -32,10 +32,10 @@ instance RunMessage RollingBackwards where
       locationId <- getJustLocation lead
       lid <- leftmostLocation locationId
       rlid <- selectJust $ LocationInDirection RightOf $ LocationWithId lid
-      pushAll $
-        RemoveLocation lid
-          : RemoveLocation rlid
-          : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
-            <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      pushAll
+        $ RemoveLocation lid
+        : RemoveLocation rlid
+        : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
+          <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
       pure a
     _ -> RollingBackwards <$> runMessage msg attrs

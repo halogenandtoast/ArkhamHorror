@@ -33,8 +33,8 @@ instance RunMessage Shadowed where
             , gainSurge attrs
             ]
         else do
-          push $
-            chooseOrRunOne
+          push
+            $ chooseOrRunOne
               iid
               [ targetLabel
                 cultist

@@ -29,8 +29,8 @@ instance HasModifiersFor AdministrationOffice_130 where
   getModifiersFor (InvestigatorTarget iid) (AdministrationOffice_130 attrs) =
     do
       resources <- field InvestigatorResources iid
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           attrs
           [CannotInvestigateLocation (toId attrs) | resources <= 4]
   getModifiersFor _ _ = pure []

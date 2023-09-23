@@ -121,8 +121,8 @@ instance RunMessage ReturnToTheMidnightMasks where
               else TheMidnightMasksIntroTwo
 
         spawnAcolyteMessages <-
-          for (zip acolytes [southsideId, downtownId, graveyardId]) $
-            \(c, l) -> createEnemyAt_ (EncounterCard c) l Nothing
+          for (zip acolytes [southsideId, downtownId, graveyardId])
+            $ \(c, l) -> createEnemyAt_ (EncounterCard c) l Nothing
 
         encounterDeck <-
           buildEncounterDeckWith
@@ -133,35 +133,35 @@ instance RunMessage ReturnToTheMidnightMasks where
             , EncounterSet.Nightgaunts
             , EncounterSet.LockedDoors
             ]
-        pushAll $
-          [ story investigatorIds (introPart1 intro1or2)
-          , story investigatorIds introPart2
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeRivertown
-          , placeSouthside
-          , placeStMarysHospital
-          , placeMiskatonicUniversity
-          , placeDowntown
-          , placeEasttown
-          , placeGraveyard
-          , placeNorthside
-          ]
-            <> startingLocationMessages
-            <> ghoulPriestMessages
-            <> spawnAcolyteMessages
+        pushAll
+          $ [ story investigatorIds (introPart1 intro1or2)
+            , story investigatorIds introPart2
+            , SetEncounterDeck encounterDeck
+            , SetAgendaDeck
+            , SetActDeck
+            , placeRivertown
+            , placeSouthside
+            , placeStMarysHospital
+            , placeMiskatonicUniversity
+            , placeDowntown
+            , placeEasttown
+            , placeGraveyard
+            , placeNorthside
+            ]
+          <> startingLocationMessages
+          <> ghoulPriestMessages
+          <> spawnAcolyteMessages
 
         agendas <- genCards [predatorOrPrey, Agendas.timeIsRunningShort]
         acts <- genCards [Acts.uncoveringTheConspiracy]
 
         ReturnToTheMidnightMasks
           . TheMidnightMasks
-          <$> runMessage
-            msg
-            ( attrs
-                & (decksL . at CultistDeck ?~ cultistDeck')
-                & (actStackL . at 1 ?~ acts)
-                & (agendaStackL . at 1 ?~ agendas)
-            )
+            <$> runMessage
+              msg
+              ( attrs
+                  & (decksL . at CultistDeck ?~ cultistDeck')
+                  & (actStackL . at 1 ?~ acts)
+                  & (agendaStackL . at 1 ?~ agendas)
+              )
       _ -> ReturnToTheMidnightMasks <$> runMessage msg theMidnightMasks'

@@ -38,9 +38,9 @@ instance HasAbilities SignMagick3 where
               )
         )
         $ ReactionAbility
-          ( ActivateAbility Timing.After You $
-              AssetAbility $
-                AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
+          ( ActivateAbility Timing.After You
+              $ AssetAbility
+              $ AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
           )
         $ ExhaustCost (toTarget a)
     ]
@@ -55,20 +55,20 @@ toOriginalAsset (_ : xs) = toOriginalAsset xs
 instance RunMessage SignMagick3 where
   runMessage msg a@(SignMagick3 attrs) = case msg of
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
-      push $
-        AddSlot iid ArcaneSlot $
-          RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) Nothing
+      push
+        $ AddSlot iid ArcaneSlot
+        $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) Nothing
       SignMagick3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (toOriginalAsset -> aid) _ -> do
       let nullifyActionCost ab = applyAbilityModifiers ab [ActionCostSetToModifier 0]
       abilities <-
-        selectListMap nullifyActionCost $
-          AbilityIsActionAbility
-            <> AssetAbility
-              ( NotAsset (AssetWithId aid)
-                  <> assetControlledBy iid
-                  <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
-              )
+        selectListMap nullifyActionCost
+          $ AbilityIsActionAbility
+          <> AssetAbility
+            ( NotAsset (AssetWithId aid)
+                <> assetControlledBy iid
+                <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
+            )
       abilities' <-
         filterM (\ab -> anyM (\w -> getCanPerformAbility iid w ab) (defaultWindows iid)) abilities
       push $ chooseOne iid [AbilityLabel iid ab [] [] | ab <- abilities']

@@ -39,8 +39,8 @@ instance RunMessage HauntedFieldsSpectral where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemies <- selectList $ NearestEnemy $ EnemyWithTrait Spectral
       unless (null enemies) $ do
-        push $
-          chooseOne
+        push
+          $ chooseOne
             iid
             [ targetLabel
               enemy

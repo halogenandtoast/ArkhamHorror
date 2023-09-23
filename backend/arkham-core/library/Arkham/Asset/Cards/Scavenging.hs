@@ -25,8 +25,8 @@ instance HasAbilities Scavenging where
         1
         ( exists
             $ You
-              <> DiscardWith (HasCard $ CardWithTrait Item)
-              <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
+            <> DiscardWith (HasCard $ CardWithTrait Item)
+            <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
         )
         $ ReactionAbility
           (SkillTestResult #after You (WhileInvestigating Anywhere) (SuccessResult $ atLeast 2))

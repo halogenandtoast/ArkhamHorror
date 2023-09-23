@@ -31,7 +31,7 @@ instance RunMessage SurvivalInstinct where
         moveOptions =
           chooseOrRunOne iid
             $ [Label "Do not move to a connecting location" []]
-              <> targetLabels unblockedConnectedLocations (only . Move . move attrs iid)
+            <> targetLabels unblockedConnectedLocations (only . Move . move attrs iid)
 
       case engagedEnemies of
         es | notNull es && canDisengage -> do
@@ -41,7 +41,7 @@ instance RunMessage SurvivalInstinct where
                     , Label "Skip" []
                     ]
               ]
-              <> [moveOptions | notNull unblockedConnectedLocations && canMove]
+            <> [moveOptions | notNull unblockedConnectedLocations && canMove]
         _ -> unless (null unblockedConnectedLocations) $ push moveOptions
       pure s
     _ -> SurvivalInstinct <$> runMessage msg attrs

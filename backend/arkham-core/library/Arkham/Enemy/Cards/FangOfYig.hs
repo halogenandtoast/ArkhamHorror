@@ -31,11 +31,11 @@ instance HasModifiersFor FangOfYig where
         <=~> ( investigatorEngagedWith (toId a)
                 <> HasMatchingTreachery (treacheryIs Treacheries.poisoned)
              )
-    pure $
-      toModifiers a $
-        if affected
-          then [CannotPlay AnyCard, CannotCommitCards AnyCard]
-          else []
+    pure
+      $ toModifiers a
+      $ if affected
+        then [CannotPlay AnyCard, CannotCommitCards AnyCard]
+        else []
   getModifiersFor _ _ = pure []
 
 instance RunMessage FangOfYig where

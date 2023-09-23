@@ -34,11 +34,11 @@ instance RunMessage BehindTheCurtain where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       deckCount <- getActDecksInPlayCount
 
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-        ]
-          <> [PlaceDoomOnAgenda | deckCount <= 2]
-          <> [PlaceDoomOnAgenda | deckCount == 1]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+          ]
+        <> [PlaceDoomOnAgenda | deckCount <= 2]
+        <> [PlaceDoomOnAgenda | deckCount == 1]
       pure a
     _ -> BehindTheCurtain <$> runMessage msg attrs

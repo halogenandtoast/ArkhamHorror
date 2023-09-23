@@ -34,21 +34,21 @@ instance HasAbilities HarbingerOfValusia where
   getAbilities (HarbingerOfValusia a) =
     withBaseAbilities
       a
-      [ limitedAbility (PlayerLimit PerTestOrAbility 1) $
-          mkAbility a 1 $
-            ForcedAbility $
-              OrWindowMatcher
-                [ SkillTestResult
-                    Timing.After
-                    You
-                    (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-                    (SuccessResult AnyValue)
-                , SkillTestResult
-                    Timing.After
-                    You
-                    (WhileAttackingAnEnemy $ EnemyWithId $ toId a)
-                    (SuccessResult AnyValue)
-                ]
+      [ limitedAbility (PlayerLimit PerTestOrAbility 1)
+          $ mkAbility a 1
+          $ ForcedAbility
+          $ OrWindowMatcher
+            [ SkillTestResult
+                Timing.After
+                You
+                (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
+                (SuccessResult AnyValue)
+            , SkillTestResult
+                Timing.After
+                You
+                (WhileAttackingAnEnemy $ EnemyWithId $ toId a)
+                (SuccessResult AnyValue)
+            ]
       ]
 
 instance RunMessage HarbingerOfValusia where
@@ -60,8 +60,8 @@ instance RunMessage HarbingerOfValusia where
           let
             damage = enemyDamage attrs
             enemy' =
-              overAttrs (tokensL %~ setTokens Token.Damage damage) $
-                cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
+              overAttrs (tokensL %~ setTokens Token.Damage damage)
+                $ cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
           push $ SetOutOfPlay SetAsideZone (toTarget attrs)
           pure enemy'
         else do

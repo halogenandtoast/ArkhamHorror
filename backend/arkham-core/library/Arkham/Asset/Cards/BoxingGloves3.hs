@@ -32,17 +32,17 @@ instance HasModifiersFor BoxingGloves3 where
 
 instance HasAbilities BoxingGloves3 where
   getAbilities (BoxingGloves3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility (EnemyDefeated Timing.After You ByAny AnyEnemy) $
-          ExhaustCost $
-            toTarget a
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (EnemyDefeated Timing.After You ByAny AnyEnemy)
+        $ ExhaustCost
+        $ toTarget a
     ]
 
 instance RunMessage BoxingGloves3 where
   runMessage msg a@(BoxingGloves3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           source
           (InvestigatorTarget iid)

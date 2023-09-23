@@ -24,23 +24,23 @@ instance HasAbilities BilliardsRoom where
   getAbilities (BilliardsRoom a) =
     withBaseAbilities
       a
-      [ limitedAbility (PlayerLimit PerRound 1) $
-          restrictedAbility a 1 Here $
-            ActionAbility Nothing $
-              ActionCost 1
+      [ limitedAbility (PlayerLimit PerRound 1)
+          $ restrictedAbility a 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
       ]
 
 instance RunMessage BilliardsRoom where
   runMessage msg l@(BilliardsRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        BeginSkillTest $
-          initSkillTest
-            iid
-            (toAbilitySource attrs 1)
-            attrs
-            SkillAgility
-            3
+      push
+        $ BeginSkillTest
+        $ initSkillTest
+          iid
+          (toAbilitySource attrs 1)
+          attrs
+          SkillAgility
+          3
       pure l
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do

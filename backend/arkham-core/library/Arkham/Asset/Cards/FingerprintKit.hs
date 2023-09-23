@@ -23,11 +23,11 @@ fingerprintKit = asset FingerprintKit Cards.fingerprintKit
 
 instance HasAbilities FingerprintKit where
   getAbilities (FingerprintKit a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          ActionCost 1
-            <> ExhaustCost (toTarget a)
-            <> UseCost (AssetWithId $ toId a) Supply 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Supply 1
     ]
 
 instance RunMessage FingerprintKit where

@@ -25,29 +25,29 @@ newtype ShiveringPools = ShiveringPools LocationAttrs
 
 shiveringPools :: LocationCard ShiveringPools
 shiveringPools =
-  locationWith ShiveringPools Cards.shiveringPools 5 (PerPlayer 1) $
-    (connectsToL .~ adjacentLocations)
-      . ( costToEnterUnrevealedL
-            .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-        )
+  locationWith ShiveringPools Cards.shiveringPools 5 (PerPlayer 1)
+    $ (connectsToL .~ adjacentLocations)
+    . ( costToEnterUnrevealedL
+          .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+      )
 
 instance HasAbilities ShiveringPools where
   getAbilities (ShiveringPools attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
-          [ restrictedAbility attrs 1 Here $
-              ForcedAbility $
-                TurnEnds
-                  Timing.After
-                  You
+          [ restrictedAbility attrs 1 Here
+              $ ForcedAbility
+              $ TurnEnds
+                Timing.After
+                You
           , restrictedAbility
               attrs
               2
               ( AnyCriterion
                   [ Negate
-                    ( LocationExists $
-                        LocationInDirection dir (LocationWithId $ toId attrs)
+                    ( LocationExists
+                        $ LocationInDirection dir (LocationWithId $ toId attrs)
                     )
                   | dir <- [Below, RightOf]
                   ]
@@ -63,16 +63,16 @@ instance RunMessage ShiveringPools where
   runMessage msg l@(ShiveringPools attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
-      push $
-        chooseOrRunOne iid $
-          Label
-            "Take 1 direct damage"
-            [InvestigatorDirectDamage iid (toSource attrs) 1 0]
-            : [ Label
-                "Lose 5 resources"
-                [LoseResources iid (toAbilitySource attrs 1) 5]
-              | hasResources
-              ]
+      push
+        $ chooseOrRunOne iid
+        $ Label
+          "Take 1 direct damage"
+          [InvestigatorDirectDamage iid (toSource attrs) 1 0]
+        : [ Label
+            "Lose 5 resources"
+            [LoseResources iid (toAbilitySource attrs 1) 5]
+          | hasResources
+          ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)
@@ -84,10 +84,10 @@ instance RunMessage ShiveringPools where
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
-          push $
-            chooseOrRunOne iid $
-              [Label "Place Below" placeBelow | belowEmpty]
-                <> [Label "Place to the Right" placeRight | rightEmpty]
+          push
+            $ chooseOrRunOne iid
+            $ [Label "Place Below" placeBelow | belowEmpty]
+            <> [Label "Place to the Right" placeRight | rightEmpty]
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

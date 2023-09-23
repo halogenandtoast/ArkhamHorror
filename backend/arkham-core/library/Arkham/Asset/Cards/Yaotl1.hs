@@ -66,9 +66,9 @@ instance HasModifiersFor Yaotl1Effect where
             let
               skillIcons = cdSkills $ toCardDef x
               skillCount sk = count (== SkillIcon sk) skillIcons
-            pure $
-              toModifiers a $
-                [ SkillModifier sk n
+            pure
+              $ toModifiers a
+              $ [ SkillModifier sk n
                 | sk <- allSkills
                 , let n = skillCount sk
                 , n > 0

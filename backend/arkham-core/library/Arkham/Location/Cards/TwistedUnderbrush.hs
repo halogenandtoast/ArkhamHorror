@@ -22,10 +22,10 @@ twistedUnderbrush =
 
 instance HasAbilities TwistedUnderbrush where
   getAbilities (TwistedUnderbrush attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of

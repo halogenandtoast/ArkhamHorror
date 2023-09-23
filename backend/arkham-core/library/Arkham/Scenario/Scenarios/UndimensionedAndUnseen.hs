@@ -104,9 +104,9 @@ instance RunMessage UndimensionedAndUnseen where
     StandaloneSetup ->
       pure
         . UndimensionedAndUnseen
-        $ attrs
-          & standaloneCampaignLogL
-            .~ standaloneCampaignLog
+          $ attrs
+        & standaloneCampaignLogL
+          .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       lead <- getLead
@@ -212,47 +212,47 @@ instance RunMessage UndimensionedAndUnseen where
 
       setAsideCards <- replicateM 4 (genCard Assets.esotericFormula)
 
-      pushAll $
-        [ story investigatorIds (if n == 1 then introPart1 else introPart2)
-        , Record
-            (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeDunwichVillage
-        , placeColdSpringGlen
-        , placeTenAcreMeadow
-        , placeBlastedHeath
-        , placeWhateleyRuins
-        , placeDevilsHopYard
-        ]
-          <> [ RevealLocation Nothing dunwichVillageId
-             , MoveAllTo (toSource attrs) dunwichVillageId
-             ]
-          <> [ chooseOne
-              iid
-              [ Label
-                  "Play Powder of Ibn-Ghazi"
-                  [ PutCardIntoPlay
-                      iid
-                      (PlayerCard card)
-                      Nothing
-                      (defaultWindows iid)
-                  ]
-              , Label "Do no play Powder of Ibn-Ghazi" []
-              ]
-             | (iid, card) <- investigatorsWithPowderOfIbnGhazi
-             ]
-          <> [ SearchCollectionForRandom
-              iid
-              (toSource attrs)
-              ( CardWithType PlayerTreacheryType
-                  <> CardWithOneOf (map CardWithTrait [Madness, Injury, Pact])
-              )
-             | not standalone
-             , iid <- investigatorIds
-             ]
-          <> msgs
+      pushAll
+        $ [ story investigatorIds (if n == 1 then introPart1 else introPart2)
+          , Record
+              (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
+          , SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeDunwichVillage
+          , placeColdSpringGlen
+          , placeTenAcreMeadow
+          , placeBlastedHeath
+          , placeWhateleyRuins
+          , placeDevilsHopYard
+          ]
+        <> [ RevealLocation Nothing dunwichVillageId
+           , MoveAllTo (toSource attrs) dunwichVillageId
+           ]
+        <> [ chooseOne
+            iid
+            [ Label
+                "Play Powder of Ibn-Ghazi"
+                [ PutCardIntoPlay
+                    iid
+                    (PlayerCard card)
+                    Nothing
+                    (defaultWindows iid)
+                ]
+            , Label "Do no play Powder of Ibn-Ghazi" []
+            ]
+           | (iid, card) <- investigatorsWithPowderOfIbnGhazi
+           ]
+        <> [ SearchCollectionForRandom
+            iid
+            (toSource attrs)
+            ( CardWithType PlayerTreacheryType
+                <> CardWithOneOf (map CardWithTrait [Madness, Injury, Pact])
+            )
+           | not standalone
+           , iid <- investigatorIds
+           ]
+        <> msgs
 
       agendas <-
         genCards
@@ -274,8 +274,8 @@ instance RunMessage UndimensionedAndUnseen where
       push $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken drawnToken Tablet _ -> do
-      push $
-        CreateEffect
+      push
+        $ CreateEffect
           "02236"
           Nothing
           (ChaosTokenSource drawnToken)
@@ -289,17 +289,17 @@ instance RunMessage UndimensionedAndUnseen where
           case mTarget of
             Just (EnemyTarget eid) -> do
               enemyCardCode <- field EnemyCardCode eid
-              pushWhen (enemyCardCode == "02255") $
-                EnemyAttack $
-                  enemyAttack eid attrs iid
+              pushWhen (enemyCardCode == "02255")
+                $ EnemyAttack
+                $ enemyAttack eid attrs iid
             _ -> pure ()
         _ -> pure ()
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Cultist ->
-          push $
-            InvestigatorAssignDamage
+          push
+            $ InvestigatorAssignDamage
               iid
               (ChaosTokenEffectSource Cultist)
               DamageAny
@@ -309,8 +309,8 @@ instance RunMessage UndimensionedAndUnseen where
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ \card ->
-        push $
-          ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+        push
+          $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure s
     ScenarioResolution NoResolution ->
       s <$ pushAll [ScenarioResolution $ Resolution 1]
@@ -320,22 +320,22 @@ instance RunMessage UndimensionedAndUnseen where
       broodEscapedIntoTheWild <-
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
           . length
-          <$> getBroodOfYogSothoth
-      pushAll $
-        [ story investigatorIds resolution1
-        , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
-        ]
-          <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+            <$> getBroodOfYogSothoth
+      pushAll
+        $ [ story investigatorIds resolution1
+          , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+          ]
+        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       investigatorIds <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
-          <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
+        <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     _ -> UndimensionedAndUnseen <$> runMessage msg attrs

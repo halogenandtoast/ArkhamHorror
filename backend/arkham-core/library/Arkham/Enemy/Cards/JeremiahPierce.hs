@@ -36,9 +36,9 @@ instance HasAbilities JeremiahPierce where
   getAbilities (JeremiahPierce attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 OnSameLocation $
-          ActionAbility (Just Parley) $
-            ActionCost 1
+      [ restrictedAbility attrs 1 OnSameLocation
+          $ ActionAbility (Just Parley)
+          $ ActionCost 1
       ]
 
 instance RunMessage JeremiahPierce where

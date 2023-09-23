@@ -26,18 +26,19 @@ daredevil =
 instance RunMessage Daredevil where
   runMessage msg s@(Daredevil attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      push $
-        DiscardUntilFirst iid (toSource attrs) (InvestigatorDeck iid) $
-          CommittableCard iid $
-            BasicCardMatch $
-              CardWithClass Rogue <> CardWithType SkillType
+      push
+        $ DiscardUntilFirst iid (toSource attrs) (InvestigatorDeck iid)
+        $ CommittableCard iid
+        $ BasicCardMatch
+        $ CardWithClass Rogue
+        <> CardWithType SkillType
       pure s
     RequestedPlayerCard iid (isSource attrs -> True) mcard discards -> do
       let weaknesses = filter (`cardMatch` WeaknessCard) discards
-      pushAll $
-        [CommitCard iid (PlayerCard c) | c <- maybeToList mcard]
-          <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) (map PlayerCard weaknesses)
-             | notNull weaknesses
-             ]
+      pushAll
+        $ [CommitCard iid (PlayerCard c) | c <- maybeToList mcard]
+        <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) (map PlayerCard weaknesses)
+           | notNull weaknesses
+           ]
       pure s
     _ -> Daredevil <$> runMessage msg attrs

@@ -38,9 +38,9 @@ instance HasAbilities Office where
           1
           ( DuringSkillTest (WhileInvestigating $ LocationWithId $ toId a)
               <> EnemyCriteria
-                ( EnemyExists $
-                    EnemyWithTrait SilverTwilight
-                      <> EnemyWithoutModifier CannotPlaceDoomOnThis
+                ( EnemyExists
+                    $ EnemyWithTrait SilverTwilight
+                    <> EnemyWithoutModifier CannotPlaceDoomOnThis
                 )
           )
           $ ForcedAbility
@@ -53,15 +53,15 @@ instance RunMessage Office where
   runMessage msg l@(Office attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemies <-
-        selectList $
-          NearestEnemyToLocation
+        selectList
+          $ NearestEnemyToLocation
             (toId attrs)
             ( EnemyWithTrait SilverTwilight
                 <> EnemyWithoutModifier CannotPlaceDoomOnThis
             )
       unless (null enemies) $ do
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             iid
             [ targetLabel enemy [PlaceDoom (toAbilitySource attrs 1) (toTarget enemy) 1]
             | enemy <- enemies

@@ -19,10 +19,10 @@ targetsWithDoom = do
   -- acts <- selectListMap ActTarget ActWithAnyDoom
   -- events <- selectListMap EventTarget EventWithAnyDoom
   -- skills <- selectListMap SkillTarget SkillWithAnyDoom
-  pure $
-    locations
-      <> investigators
-      <> enemies
-      <> assets
-      <> agendas
-      <> treacheries
+  pure
+    $ locations
+    <> investigators
+    <> enemies
+    <> assets
+    <> agendas
+    <> treacheries

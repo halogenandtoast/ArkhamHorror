@@ -20,17 +20,17 @@ draggedUnder = treachery DraggedUnder Cards.draggedUnder
 
 instance HasAbilities DraggedUnder where
   getAbilities (DraggedUnder x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          Leaves
-            Timing.When
-            You
-            Anywhere
-    , restrictedAbility x 2 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds
-            Timing.When
-            You
+    [ restrictedAbility x 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ Leaves
+          Timing.When
+          You
+          Anywhere
+    , restrictedAbility x 2 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds
+          Timing.When
+          You
     ]
 
 instance RunMessage DraggedUnder where
@@ -46,8 +46,8 @@ instance RunMessage DraggedUnder where
               , Discard (toAbilitySource attrs 1) $ toTarget attrs
               ]
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           source
           (InvestigatorTarget iid)

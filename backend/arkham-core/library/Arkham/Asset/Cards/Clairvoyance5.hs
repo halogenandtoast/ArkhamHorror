@@ -29,9 +29,9 @@ clairvoyance5 = asset Clairvoyance5 Cards.clairvoyance5
 
 instance HasAbilities Clairvoyance5 where
   getAbilities (Clairvoyance5 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 instance RunMessage Clairvoyance5 where

@@ -19,17 +19,17 @@ arkhamWoodsLakeside = location ArkhamWoodsLakeside Cards.arkhamWoodsLakeside 2 (
 
 instance HasAbilities ArkhamWoodsLakeside where
   getAbilities (ArkhamWoodsLakeside attrs) =
-    withRevealedAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> DuringSkillTest
-                (WhileInvestigating $ LocationWithId $ toId attrs)
-          )
-          $ ForcedAbility
-          $ RevealChaosToken Timing.After You AnyChaosToken
-      ]
+    withRevealedAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            ( Here
+                <> DuringSkillTest
+                  (WhileInvestigating $ LocationWithId $ toId attrs)
+            )
+            $ ForcedAbility
+            $ RevealChaosToken Timing.After You AnyChaosToken
+        ]
 
 instance RunMessage ArkhamWoodsLakeside where
   runMessage msg l@(ArkhamWoodsLakeside attrs) = case msg of

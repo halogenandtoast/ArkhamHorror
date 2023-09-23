@@ -48,7 +48,8 @@ instance HasAbilities TheCosmosBeckons where
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
             $ ActionAbility Nothing
-            $ ActionCost 1 <> ClueCostX
+            $ ActionCost 1
+            <> ClueCostX
         ]
 
 getClueCount :: Payment -> Int
@@ -97,15 +98,15 @@ instance RunMessage TheCosmosBeckons where
 
       pushAll
         $ RemoveLocation cosmicIngress
-          : map RemoveLocation (cosmosLocations <> emptySpace)
-            <> [ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) cosmosCards]
-            <> [ShuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards]
-            <> [ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | (Just iid, cards) <- cardsWithOwners]
-            <> [ SetScenarioMeta (toJSON cosmos')
-               , NextAdvanceActStep (toId a) 1
-               , AllDrawEncounterCard
-               , advanceActDeck attrs
-               ]
+        : map RemoveLocation (cosmosLocations <> emptySpace)
+          <> [ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) cosmosCards]
+          <> [ShuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards]
+          <> [ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | (Just iid, cards) <- cardsWithOwners]
+          <> [ SetScenarioMeta (toJSON cosmos')
+             , NextAdvanceActStep (toId a) 1
+             , AllDrawEncounterCard
+             , advanceActDeck attrs
+             ]
       pure a
     NextAdvanceActStep aid _ | aid == toId attrs -> do
       (cards, cosmosDeck) <- splitAt 2 <$> getScenarioDeck CosmosDeck
@@ -149,7 +150,7 @@ instance RunMessage TheCosmosBeckons where
           , placeThirdCosmos
           , PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 2 0) thirdCosmos)
           ]
-          <> map (ObtainCard . toCard) playerCards
-          <> placeEmptySpaces
+        <> map (ObtainCard . toCard) playerCards
+        <> placeEmptySpaces
       pure a
     _ -> TheCosmosBeckons <$> runMessage msg attrs

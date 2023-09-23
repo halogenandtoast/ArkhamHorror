@@ -23,11 +23,11 @@ instance HasAbilities Maniac where
   getAbilities (Maniac a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyEngaged Timing.After You $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyEngaged Timing.After You
+          $ EnemyWithId
+          $ toId a
       ]
 
 maniac :: EnemyCard Maniac

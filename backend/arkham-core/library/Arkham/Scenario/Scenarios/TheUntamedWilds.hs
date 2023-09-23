@@ -63,8 +63,8 @@ instance HasChaosTokenValue TheUntamedWilds where
       pure $ toChaosTokenValue attrs Cultist (min 5 locationCount) locationCount
     Tablet -> do
       explorationDeckCount <- length <$> getExplorationDeck
-      pure $
-        toChaosTokenValue
+      pure
+        $ toChaosTokenValue
           attrs
           Tablet
           (min 5 explorationDeckCount)
@@ -144,14 +144,14 @@ instance RunMessage TheUntamedWilds where
             , Treacheries.lowOnSupplies
             , Treacheries.arrowsFromTheTrees
             ]
-      pushAll $
-        [ story investigatorIds intro
-        , SetEncounterDeck encounterDeck'
-        , SetAgendaDeck
-        , SetActDeck
-        , placeExpeditionCamp
-        , MoveAllTo (toSource attrs) expeditionCampId
-        ]
+      pushAll
+        $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck'
+          , SetAgendaDeck
+          , SetActDeck
+          , placeExpeditionCamp
+          , MoveAllTo (toSource attrs) expeditionCampId
+          ]
 
       agendas <- genCards [Agendas.expeditionIntoTheWild, Agendas.intruders]
       acts <-
@@ -197,55 +197,55 @@ instance RunMessage TheUntamedWilds where
         NoResolution -> do
           foughtWithIchtaca <- remembered YouFoughtWithIchtaca
           leadingTheWay <- remembered IchtachaIsLeadingTheWay
-          pushAll $
-            [ story investigatorIds noResolution
-            , Record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
-            ]
-              <> [ Record IchtacaObservedYourProgressWithKeenInterest
-                 | actStep < 3
-                 ]
-              <> [Record IchtacaIsWaryOfTheInvestigators | foughtWithIchtaca]
-              <> [ Record AlejandroFollowedTheInvestigatorsIntoTheRuins
-                 | actStep < 3 || foughtWithIchtaca
-                 ]
-              <> [ addCampaignCardToDeckChoice
-                    leadInvestigatorId
-                    investigatorIds
-                    Assets.alejandroVela
-                 ]
-              <> [ Record TheInvestigatorsHaveEarnedIchtacasTrust
-                 | leadingTheWay
-                 ]
-              <> [Record AlejandroChoseToRemainAtCamp | leadingTheWay]
-              <> [RecordCount YigsFury vengeance]
-              <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story investigatorIds noResolution
+              , Record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+              ]
+            <> [ Record IchtacaObservedYourProgressWithKeenInterest
+               | actStep < 3
+               ]
+            <> [Record IchtacaIsWaryOfTheInvestigators | foughtWithIchtaca]
+            <> [ Record AlejandroFollowedTheInvestigatorsIntoTheRuins
+               | actStep < 3 || foughtWithIchtaca
+               ]
+            <> [ addCampaignCardToDeckChoice
+                  leadInvestigatorId
+                  investigatorIds
+                  Assets.alejandroVela
+               ]
+            <> [ Record TheInvestigatorsHaveEarnedIchtacasTrust
+               | leadingTheWay
+               ]
+            <> [Record AlejandroChoseToRemainAtCamp | leadingTheWay]
+            <> [RecordCount YigsFury vengeance]
+            <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+            <> [EndOfGame Nothing]
         Resolution 1 -> do
-          pushAll $
-            [ story investigatorIds resolution1
-            , Record TheInvestigatorsClearedAPathToTheEztliRuins
-            , Record AlejandroChoseToRemainAtCamp
-            , Record TheInvestigatorsHaveEarnedIchtacasTrust
-            , RecordCount YigsFury vengeance
-            ]
-              <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story investigatorIds resolution1
+              , Record TheInvestigatorsClearedAPathToTheEztliRuins
+              , Record AlejandroChoseToRemainAtCamp
+              , Record TheInvestigatorsHaveEarnedIchtacasTrust
+              , RecordCount YigsFury vengeance
+              ]
+            <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
-          pushAll $
-            [ story investigatorIds resolution2
-            , Record TheInvestigatorsClearedAPathToTheEztliRuins
-            , Record AlejandroFollowedTheInvestigatorsIntoTheRuins
-            ]
-              <> [ addCampaignCardToDeckChoice
-                    leadInvestigatorId
-                    investigatorIds
-                    Assets.alejandroVela
-                 ]
-              <> [ Record IchtacaIsWaryOfTheInvestigators
-                 , RecordCount YigsFury vengeance
-                 ]
-              <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story investigatorIds resolution2
+              , Record TheInvestigatorsClearedAPathToTheEztliRuins
+              , Record AlejandroFollowedTheInvestigatorsIntoTheRuins
+              ]
+            <> [ addCampaignCardToDeckChoice
+                  leadInvestigatorId
+                  investigatorIds
+                  Assets.alejandroVela
+               ]
+            <> [ Record IchtacaIsWaryOfTheInvestigators
+               , RecordCount YigsFury vengeance
+               ]
+            <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+            <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s
     _ -> TheUntamedWilds <$> runMessage msg attrs

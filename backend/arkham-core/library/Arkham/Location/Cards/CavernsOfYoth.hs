@@ -23,13 +23,13 @@ cavernsOfYoth =
 
 instance HasAbilities CavernsOfYoth where
   getAbilities (CavernsOfYoth a) =
-    withRevealedAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            PutLocationIntoPlay Timing.After Anyone $
-              LocationWithId $
-                toId a
-      ]
+    withRevealedAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ PutLocationIntoPlay Timing.After Anyone
+            $ LocationWithId
+            $ toId a
+        ]
 
 instance RunMessage CavernsOfYoth where
   runMessage msg l@(CavernsOfYoth attrs) = case msg of

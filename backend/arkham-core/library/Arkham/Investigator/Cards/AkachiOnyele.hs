@@ -35,7 +35,7 @@ instance RunMessage AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       assets <- filterByField AssetUses (hasUsesFor Charge) (toList $ investigatorAssets attrs)
-      pushWhen (notNull assets)
+      pushIfAny assets
         $ chooseOne iid
         $ Done "Do not use Elder Sign ability" : targetLabels assets (\asset -> only $ AddUses asset Charge 1)
       pure i

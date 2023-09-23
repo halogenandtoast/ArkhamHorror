@@ -19,7 +19,7 @@ newtype BodyOfAYithian = BodyOfAYithian (InvestigatorAttrs `With` YithianMetadat
 
 instance HasModifiersFor BodyOfAYithian where
   getModifiersFor (AssetTarget aid) (BodyOfAYithian (a `With` _)) = do
-    isYithian <- aid <=~> (assetControlledBy (toId a) <> AllyAsset)
+    isYithian <- aid <=~> (assetControlledBy (toId a) <> #ally)
     pure $ toModifiers a [AddTrait Yithian | isYithian]
   getModifiersFor _ _ = pure []
 
@@ -34,6 +34,6 @@ instance HasChaosTokenValue BodyOfAYithian where
 instance RunMessage BodyOfAYithian where
   runMessage msg i@(BodyOfAYithian (attrs `With` meta)) = case msg of
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      pushM $ drawCards iid (ChaosTokenEffectSource ElderSign) 1
+      pushM $ drawCards iid ElderSign 1
       pure i
     _ -> BodyOfAYithian . (`with` meta) <$> runMessage msg attrs

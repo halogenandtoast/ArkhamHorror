@@ -5,8 +5,7 @@ module Arkham.Investigator.Cards.FinnEdwards (
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
-import Arkham.Action.Additional
+import Arkham.Discover
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Location.Types (Field (..))
@@ -30,7 +29,7 @@ instance HasChaosTokenValue FinnEdwards where
 
 instance RunMessage FinnEdwards where
   runMessage msg i@(FinnEdwards attrs) = case msg of
-    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | iid == toId attrs && n >= 2 -> do
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | attrs `is` iid && n >= 2 -> do
       when (chaosTokenFace token == ElderSign) $ do
         mlid <- selectOne $ locationWithInvestigator iid
         for_ mlid $ \lid -> do
@@ -38,16 +37,10 @@ instance RunMessage FinnEdwards where
           hasClues <- fieldP LocationClues (> 0) lid
           pushWhen (hasClues && canDiscover)
             $ chooseOne iid
-            $ [ Label
-                  "Discover 1 clue at your location"
-                  [InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 1 Nothing]
+            $ [ Label "Discover 1 clue at your location" [toMessage $ discoverAtYourLocation iid attrs 1]
               , Label "Do not discover a clue" []
               ]
       pure i
-    Setup ->
-      FinnEdwards
-        <$> runMessage msg (attrs & additionalActionsL %~ (ActionRestrictedAdditionalAction Action.Evade :))
-    Do BeginRound ->
-      FinnEdwards
-        <$> runMessage msg (attrs & additionalActionsL %~ (ActionRestrictedAdditionalAction Action.Evade :))
+    Setup -> FinnEdwards <$> runMessage msg (attrs & additionalActionsL %~ (#evade :))
+    Do BeginRound -> FinnEdwards <$> runMessage msg (attrs & additionalActionsL %~ (#evade :))
     _ -> FinnEdwards <$> runMessage msg attrs

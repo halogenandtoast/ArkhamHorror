@@ -109,6 +109,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
   , investigatorName :: Name
   , investigatorCardCode :: CardCode
+  , investigatorArt :: CardCode
   , investigatorClass :: ClassSymbol
   , investigatorHealth :: Int
   , investigatorAssignedHealthDamage :: Int
@@ -250,6 +251,12 @@ instance HasField "location" InvestigatorAttrs LocationId where
 
 instance HasField "cardsUnderneath" InvestigatorAttrs [Card] where
   getField = investigatorCardsUnderneath
+
+instance HasField "hand" InvestigatorAttrs [Card] where
+  getField = investigatorHand
+
+instance HasField "deck" InvestigatorAttrs (Deck PlayerCard) where
+  getField = investigatorDeck
 
 data Investigator = forall a. IsInvestigator a => Investigator a
 

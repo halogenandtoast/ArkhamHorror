@@ -5,16 +5,13 @@ module Arkham.Investigator.Cards.DaisyWalkerParallel (
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
-import Arkham.Card.CardType
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Zone qualified as Zone
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass (IsInvestigator)
@@ -41,7 +38,7 @@ instance HasChaosTokenValue DaisyWalkerParallel where
 instance HasAbilities DaisyWalkerParallel where
   getAbilities (DaisyWalkerParallel attrs) =
     [ playerLimit PerGame
-        $ restrictedAbility attrs 1 (Self <> AssetExists (AssetControlledBy You <> AssetWithTrait Tome))
+        $ restrictedAbility attrs 1 (Self <> AssetExists (AssetControlledBy You <> withTrait Tome))
         $ FastAbility Free
     ]
 
@@ -50,23 +47,17 @@ instance RunMessage DaisyWalkerParallel where
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       tomeAssets <- filterByField AssetTraits (member Tome) (setToList attrs.assets)
       allAbilities <- getAllAbilities
-      let abilitiesForAsset aid = filter ((AssetSource aid ==) . abilitySource) allAbilities
-      let pairs' = filter (notNull . snd) $ map (\a -> (a, abilitiesForAsset a)) tomeAssets
-      unless (null pairs')
-        $ push
+      let abilitiesForAsset aid = filter (isSource aid . abilitySource) allAbilities
+      let pairs' = filter (notNull . snd) $ map (toSnd abilitiesForAsset) tomeAssets
+      let toLabel a = AbilityLabel iid a windows' []
+      pushIfAny pairs'
         $ chooseOneAtATime iid
-        $ map
-          ( \(tome, actions) -> targetLabel tome [chooseOne iid $ map ((\f -> f windows' []) . AbilityLabel iid) actions]
-          )
-          pairs'
+        $ map (\(tome, actions) -> targetLabel tome [chooseOne iid $ map toLabel actions]) pairs'
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       push
         $ chooseOne iid
-        $ [ targetLabel iid
-              $ [ search iid attrs attrs [(Zone.FromDiscard, PutBack)] (CardWithType AssetType <> CardWithTrait Tome)
-                    $ DrawFound iid 1
-                ]
+        $ [ targetLabel iid [search iid attrs attrs [fromDiscard] (#asset <> withTrait Tome) $ DrawFound iid 1]
           , Label "Do not use Daisy's ability" []
           ]
       pure i

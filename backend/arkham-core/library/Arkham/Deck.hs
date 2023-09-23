@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Id
 import Arkham.Investigator.Deck
+import Arkham.Investigator.Deck qualified as Key
 import Arkham.Scenario.Deck
 import Data.Aeson.TH
 
@@ -33,5 +34,10 @@ instance IsDeck ScenarioDeckKey where
 instance IsDeck DeckSignifier where
   toDeck = id
   {-# INLINE toDeck #-}
+
+pattern HunchDeck :: InvestigatorId -> DeckSignifier
+pattern HunchDeck iid <- InvestigatorDeckByKey iid Key.HunchDeck
+  where
+    HunchDeck iid = InvestigatorDeckByKey iid Key.HunchDeck
 
 $(deriveJSON defaultOptions ''DeckSignifier)

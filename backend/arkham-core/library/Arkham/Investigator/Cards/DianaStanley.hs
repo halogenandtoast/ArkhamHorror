@@ -5,7 +5,6 @@ module Arkham.Investigator.Cards.DianaStanley (
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Event.Cards qualified as Events
@@ -16,7 +15,6 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (AssetCard, EventCard, PlaceUnderneath, SkillCard)
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
-import Arkham.SkillType
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -26,32 +24,25 @@ newtype DianaStanley = DianaStanley InvestigatorAttrs
 
 dianaStanley :: InvestigatorCard DianaStanley
 dianaStanley =
-  investigatorWith
-    DianaStanley
-    Cards.dianaStanley
-    (Stats {health = 7, sanity = 7, willpower = 1, intellect = 3, combat = 3, agility = 3})
-    (startsWithInHandL .~ [Events.darkInsight])
+  startsWithInHand [Events.darkInsight]
+    $ investigator DianaStanley Cards.dianaStanley
+    $ Stats {health = 7, sanity = 7, willpower = 1, intellect = 3, combat = 3, agility = 3}
 
 instance HasModifiersFor DianaStanley where
   getModifiersFor target (DianaStanley a) | isTarget a target = do
     n <- fieldMap InvestigatorCardsUnderneath length (toId a)
-    pure $ toModifiers a [SkillModifier SkillWillpower n | n > 0]
+    pure $ toModifiers a [SkillModifier #willpower n | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DianaStanley where
   getAbilities (DianaStanley a) =
     [ playerLimit PerPhase
         $ restrictedAbility a 1 (Self <> fewerThan5CardBeneath)
-        $ ReactionAbility
-          ( CancelledOrIgnoredCardOrGameEffect $ SourceOwnedBy You <> NotSource (SourceIsType InvestigatorType)
-          )
-          Free
+        $ freeReaction
+        $ CancelledOrIgnoredCardOrGameEffect (SourceOwnedBy You <> NotSource #investigator)
     ]
    where
-    fewerThan5CardBeneath =
-      if length (investigatorCardsUnderneath a) < 5
-        then NoRestriction
-        else Never
+    fewerThan5CardBeneath = if length a.cardsUnderneath < 5 then NoRestriction else Never
 
 instance HasChaosTokenValue DianaStanley where
   getChaosTokenValue iid ElderSign (DianaStanley attrs) | iid == toId attrs = do
@@ -67,14 +58,13 @@ instance RunMessage DianaStanley where
   runMessage msg i@(DianaStanley attrs) = case msg of
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
-      unless (null cardsUnderneath) $ do
+      when (notNull cardsUnderneath) $ do
         pushAll
-          $ [ FocusCards cardsUnderneath
-            , chooseOrRunOne iid
-                $ Label "Do not add any cards to your Hand" []
-                  : [targetLabel (toCardId c) [addToHand iid c] | c <- cardsUnderneath]
-            , UnfocusCards
-            ]
+          [ FocusCards cardsUnderneath
+          , chooseOrRunOne iid
+              $ Label "Do not add any cards to your Hand" [UnfocusCards]
+                : [targetLabel (toCardId c) [UnfocusCards, addToHand iid c] | c <- cardsUnderneath]
+          ]
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (getCancelSource -> source) _ -> do
       let

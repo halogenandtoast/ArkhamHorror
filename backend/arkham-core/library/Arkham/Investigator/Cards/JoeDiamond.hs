@@ -45,7 +45,7 @@ instance HasModifiersFor JoeDiamond where
     case hunchDeck a of
       x : _ | toCardId x == cid -> pure $ toModifiers a [ReduceCostOf (CardWithId cid) 2]
       _ -> pure []
-  getModifiersFor target (JoeDiamond (a `With` Metadata (Just cid))) | a `isTarget` target = do
+  getModifiersFor target (JoeDiamond (a `With` Metadata (Just cid))) | a `is` target = do
     case hunchDeck a of
       x : _ | toCardId x == cid -> pure $ toModifiers a [AsIfInHand x]
       _ -> pure []
@@ -66,15 +66,12 @@ instance RunMessage JoeDiamond where
       case hunchDeck attrs of
         x : _ -> pure . JoeDiamond $ attrs `with` meta {revealedHunchCard = Just (toCardId x)}
         _ -> pure i
-    SetupInvestigator iid | iid == toId attrs -> do
+    SetupInvestigator iid | attrs `is` iid -> do
       attrs' <- runMessage msg attrs
-      let insights =
-            filter
-              (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
-              (unDeck $ investigatorDeck attrs)
+      let insights = filter (`cardMatch` (CardWithTrait Insight <> #event)) (unDeck attrs.deck)
       if length insights == 11
         then do
-          hunchDeck' <- shuffleM (map PlayerCard insights)
+          hunchDeck' <- shuffleM (map toCard insights)
           pure
             $ JoeDiamond
             . (`with` Metadata (revealedHunchCard meta))
@@ -88,33 +85,31 @@ instance RunMessage JoeDiamond where
                 $ find (`cardMatch` (cardIs Events.unsolvedCase)) insights
             remainingInsights = filter (/= unsolvedCase) insights
           pushAll
-            [ FocusCards $ map PlayerCard remainingInsights
-            , ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [PlayerCard unsolvedCase]
+            [ FocusCards $ map toCard remainingInsights
+            , ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
             , questionLabel "Choose 10 more cards for hunch deck" (toId attrs)
                 $ ChooseN 10
                 $ [ targetLabel (toCardId insight)
-                    $ [ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [PlayerCard insight]]
+                    $ [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
                   | insight <- remainingInsights
                   ]
             , UnfocusCards
             ]
           pure $ JoeDiamond (attrs' `with` meta)
-    ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [insight] | iid == toId attrs -> do
+    ShuffleCardsIntoDeck (Deck.HunchDeck iid) [insight] | attrs `is` iid -> do
       hunchDeck' <- shuffleM (insight : hunchDeck attrs)
       pure
         $ JoeDiamond
         . (`with` Metadata Nothing)
         $ attrs
-        & deckL %~ withDeck (filter ((/= insight) . PlayerCard))
+        & deckL %~ filter ((/= insight) . toCard)
         & (decksL . at HunchDeck ?~ hunchDeck')
-    RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] | iid == toId attrs -> do
+    RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] | attrs `is` iid -> do
       case hunchDeck attrs of
         x : _ | Just (toCardId x) == revealedHunchCard meta -> do
           wouldBeWindow <-
-            checkWindows
-              [ mkWindow #when (Window.WouldBeShuffledIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) x)
-              ]
-          pushAll [wouldBeWindow, ShuffleCardsIntoDeck (Deck.InvestigatorDeckByKey iid HunchDeck) [x]]
+            checkWindows [mkWindow #when (Window.WouldBeShuffledIntoDeck (Deck.HunchDeck iid) x)]
+          pushAll [wouldBeWindow, ShuffleCardsIntoDeck (Deck.HunchDeck iid) [x]]
         _ -> pure ()
       pure i
     InitiatePlayCard iid card mTarget windows' _ | attrs `is` iid && Just (toCardId card) == revealedHunchCard meta -> do
@@ -127,19 +122,17 @@ instance RunMessage JoeDiamond where
     CreateEventAt _ card _ -> do
       let hunchDeck' = filter (/= card) (hunchDeck attrs)
       pure $ JoeDiamond . (`with` Metadata Nothing) $ attrs & decksL . at HunchDeck ?~ hunchDeck'
-    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      insights <-
-        filter (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
-          <$> field InvestigatorDiscard iid
-      pushWhen (notNull insights)
+    ResolveChaosToken _drawnToken ElderSign iid | attrs `is` iid -> do
+      insights <- filter (`cardMatch` (CardWithTrait Insight <> #event)) <$> field InvestigatorDiscard iid
+      pushIfAny insights
         $ chooseOne iid
         $ Label "Do not move an insight" []
           : [ targetLabel (toCardId insight)
-              $ [PutCardOnBottomOfDeck iid (Deck.InvestigatorDeckByKey iid HunchDeck) $ PlayerCard insight]
+              $ [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
             | insight <- insights
             ]
       pure i
-    PutCardOnBottomOfDeck _ (Deck.InvestigatorDeckByKey iid HunchDeck) insight | iid == toId attrs -> do
+    PutCardOnBottomOfDeck _ (Deck.HunchDeck iid) insight | attrs `is` iid -> do
       attrs' <- runMessage msg attrs
       pure $ JoeDiamond . (`with` meta) $ attrs' & decksL . at HunchDeck ?~ hunchDeck attrs <> [insight]
     _ -> JoeDiamond . (`with` meta) <$> runMessage msg attrs

@@ -71,14 +71,7 @@ autoFailSkillTestResultsData s = do
         (getModifiedChaosTokenValue s)
   let
     totaledChaosTokenValues = chaosTokenValues + (skillTestValueModifier s)
-  pure
-    $ SkillTestResultsData
-      0
-      0
-      totaledChaosTokenValues
-      modifiedSkillTestDifficulty
-      Nothing
-      False
+  pure $ SkillTestResultsData 0 0 totaledChaosTokenValues modifiedSkillTestDifficulty Nothing False
 
 subtractSkillIconCount :: HasGame m => SkillTest -> m Int
 subtractSkillIconCount SkillTest {..} =

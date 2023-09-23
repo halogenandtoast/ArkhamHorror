@@ -7,13 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
-import Arkham.Damage
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -33,13 +31,11 @@ instance HasAbilities CarolynFern where
         a
         1
         (Self <> Negate (TreacheryExists $ treacheryIs Treacheries.rationalThought))
-        $ ReactionAbility
-          ( OrWindowMatcher
-              [ AssetHealed Timing.After HorrorType (AllyAsset <> AssetControlledBy Anyone) (SourceOwnedBy You)
-              , InvestigatorHealed Timing.After HorrorType Anyone (SourceOwnedBy You)
-              ]
-          )
-          Free
+        $ freeReaction
+        $ OrWindowMatcher
+          [ AssetHealed #after #horror (#ally <> AssetControlledBy Anyone) (SourceOwnedBy You)
+          , InvestigatorHealed #after #horror Anyone (SourceOwnedBy You)
+          ]
     ]
 
 data HealedThing = HealedAsset AssetId | HealedInvestigator InvestigatorId
@@ -68,12 +64,11 @@ instance RunMessage CarolynFern where
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       investigatorsWithHealHorror <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
-      assetsWithHorror <-
-        selectTargets $ HealableAsset (toSource attrs) HorrorType (assetAtLocationWith iid)
+      assetsWithHorror <- selectTargets $ HealableAsset (toSource attrs) #horror (assetAtLocationWith iid)
       push
         $ chooseOrRunOne iid
         $ Label "Do not heal anything" []
-          : targetLabels assetsWithHorror (\target -> only $ HealHorror target (toSource attrs) 1)
+          : targetLabels assetsWithHorror (\target -> only $ HealHorror target (toSource ElderSign) 1)
             <> map (uncurry targetLabel . second only) investigatorsWithHealHorror
       pure i
     _ -> CarolynFern <$> runMessage msg attrs

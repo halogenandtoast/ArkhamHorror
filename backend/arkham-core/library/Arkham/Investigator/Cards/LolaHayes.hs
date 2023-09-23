@@ -2,19 +2,17 @@ module Arkham.Investigator.Cards.LolaHayes where
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving anyclass (IsInvestigator)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor LolaHayes where
-  getModifiersFor target (LolaHayes attrs) | isTarget attrs target = do
+  getModifiersFor target (LolaHayes attrs) | attrs `is` target = do
     pure $ toModifiers attrs [CanOnlyUseCardsInRole $ investigatorClass attrs]
   getModifiersFor _ _ = pure []
 
@@ -30,7 +28,7 @@ instance HasChaosTokenValue LolaHayes where
 
 instance HasAbilities LolaHayes where
   getAbilities (LolaHayes attrs) =
-    [ restrictedAbility attrs 1 Self $ ForcedAbility $ DrawingStartingHand Timing.After You
+    [ restrictedAbility attrs 1 Self $ ForcedAbility $ DrawingStartingHand #after You
     , playerLimit PerRound $ restrictedAbility attrs 2 Self (FastAbility Free)
     ]
 
@@ -41,7 +39,7 @@ switchRole attrs =
 
 instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) n _ _ | n `elem` [1, 2] -> do
+    UseThisAbility _ (isSource attrs -> True) n | n `elem` [1, 2] -> do
       switchRole attrs
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do

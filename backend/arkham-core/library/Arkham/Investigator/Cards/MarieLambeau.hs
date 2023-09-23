@@ -7,6 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Action.Additional
+import Arkham.Action.Additional qualified as Additional
 import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Types (Field (..))
 import Arkham.Game.Helpers
@@ -17,21 +18,26 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Token
 
-newtype MarieLambeau = MarieLambeau InvestigatorAttrs
+newtype Meta = Meta {additionalActionActive :: Bool}
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype MarieLambeau = MarieLambeau (InvestigatorAttrs `With` Meta)
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 marieLambeau :: InvestigatorCard MarieLambeau
 marieLambeau =
-  investigator MarieLambeau Cards.marieLambeau
+  investigator (MarieLambeau . (`with` Meta False)) Cards.marieLambeau
     $ Stats {health = 6, sanity = 8, willpower = 4, intellect = 4, combat = 1, agility = 3}
 
--- TODO: Allow for playing of Spell Cards
+-- TODO: This modifier won't change if doom is added during their turn
 instance HasModifiersFor MarieLambeau where
-  getModifiersFor target (MarieLambeau a) | isTarget a target = do
+  getModifiersFor target (MarieLambeau (a `With` _)) | a `is` target = do
     hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId a)
     pure
-      $ toModifiers a [GiveAdditionalAction (TraitRestrictedAdditionalAction Spell NoRestriction) | hasDoom]
+      $ toModifiers a
+      $ [GiveAdditionalAction (TraitRestrictedAdditionalAction Spell Additional.NoRestriction) | hasDoom]
   getModifiersFor _ _ = pure []
 
 getDoomAmongstControlledCards :: HasGame m => InvestigatorId -> m Int
@@ -43,17 +49,32 @@ getDoomAmongstControlledCards iid =
     ]
 
 instance HasChaosTokenValue MarieLambeau where
-  getChaosTokenValue iid ElderSign (MarieLambeau attrs) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (MarieLambeau (attrs `With` _)) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
+checkForAction :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> Meta -> m ()
+checkForAction attrs meta = do
+  hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId attrs)
+
+  pushWhen (hasDoom && not (additionalActionActive meta))
+    $ GainAdditionalAction
+      (toId attrs)
+      (toSource attrs)
+      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction)
+  pushWhen (not hasDoom && additionalActionActive meta)
+    $ LoseAdditionalAction
+      (toId attrs)
+      (toSource attrs)
+      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction)
+
 instance RunMessage MarieLambeau where
-  runMessage msg i@(MarieLambeau attrs) = case msg of
-    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      controlledAssets <- selectList (assetControlledBy iid)
-      controlledEvents <- selectList (eventControlledBy iid)
-      assetsWithDoom <- map toTarget <$> filterM (<=~> AssetWithAnyDoom) controlledAssets
-      eventsWithDoom <- map toTarget <$> filterM (<=~> EventWithAnyDoom) controlledEvents
+  runMessage msg i@(MarieLambeau (attrs `With` meta)) = case msg of
+    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+      controlledAssets <- selectList $ assetControlledBy iid
+      controlledEvents <- selectList $ eventControlledBy iid
+      assetsWithDoom <- toTarget <$$> filterM (<=~> AssetWithAnyDoom) controlledAssets
+      eventsWithDoom <- toTarget <$$> filterM (<=~> EventWithAnyDoom) controlledEvents
 
       let removes = assetsWithDoom <> eventsWithDoom <> [toTarget iid | investigatorDoom attrs > 0]
       let adds = map toTarget controlledAssets <> map toTarget controlledEvents <> [toTarget iid]
@@ -63,10 +84,29 @@ instance RunMessage MarieLambeau where
       push
         $ chooseOne iid
         $ Label "Add 1 doom" [chooseOrRunOne iid $ targetLabels adds (only . place)]
-          : ( mwhen
-                (notNull removes)
-                [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels removes (only . remove)]]
+          : ( mwhen (notNull removes)
+                $ [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels removes (only . remove)]]
             )
             <> [Label "Do Nothing" []]
       pure i
-    _ -> MarieLambeau <$> runMessage msg attrs
+    CheckWindow iids _ | toId attrs `elem` iids -> do
+      attrs' <- runMessage msg attrs
+      checkForAction attrs' meta
+      pure $ MarieLambeau $ attrs' `with` meta
+    GainAdditionalAction
+      iid
+      (isSource attrs -> True)
+      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction) | attrs `is` iid -> do
+        attrs' <- runMessage msg attrs
+        pure $ MarieLambeau $ attrs' `with` Meta True
+    LoseAdditionalAction
+      iid
+      (isSource attrs -> True)
+      (TraitRestrictedAdditionalAction Spell Additional.NoRestriction) | attrs `is` iid -> do
+        attrs' <- runMessage msg attrs
+        pure $ MarieLambeau $ attrs' `with` Meta False
+    PlayerWindow iid _ _ | attrs `is` iid -> do
+      attrs' <- runMessage msg attrs
+      checkForAction attrs' meta
+      pure $ MarieLambeau $ attrs' `with` meta
+    _ -> MarieLambeau . (`with` meta) <$> runMessage msg attrs

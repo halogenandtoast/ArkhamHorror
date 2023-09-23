@@ -19,6 +19,7 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -62,6 +63,9 @@ data EffectAttrs = EffectAttrs
 
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
+
+instance HasField "target" EffectAttrs Target where
+  getField = effectTarget
 
 type EffectArgs =
   (EffectId, Maybe (EffectMetadata Window Message), Source, Target)

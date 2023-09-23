@@ -20,13 +20,13 @@ instance HasModifiersFor JimCulver where
   getModifiersFor (ChaosTokenTarget (chaosTokenFace -> Skull)) (JimCulver attrs) = do
     miid <- getSkillTestInvestigator
     pure $ toModifiers attrs $ do
-      iid <- maybeToList miid
+      iid <- toList miid
       guard $ attrs `is` iid
       pure $ ChangeChaosTokenModifier (PositiveModifier 0)
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue JimCulver where
-  getChaosTokenValue iid ElderSign (JimCulver attrs) | iid == investigatorId attrs = do
+  getChaosTokenValue iid ElderSign (JimCulver attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 

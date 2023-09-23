@@ -56,6 +56,9 @@ fromBottomOfDeck n = (FromBottomOfDeck n, ShuffleBackIn)
 fromDeck :: (Zone, ZoneReturnStrategy)
 fromDeck = (FromDeck, ShuffleBackIn)
 
+fromDiscard :: (Zone, ZoneReturnStrategy)
+fromDiscard = (FromDiscard, PutBack)
+
 $(deriveJSON defaultOptions ''DamageStrategy)
 $(deriveJSON defaultOptions ''ZoneReturnStrategy)
 $(deriveJSON defaultOptions ''FoundCardsStrategy)

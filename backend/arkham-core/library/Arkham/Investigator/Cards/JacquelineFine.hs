@@ -6,13 +6,11 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.ChaosBagStepState
 import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
@@ -29,12 +27,11 @@ instance HasAbilities JacquelineFine where
   getAbilities (JacquelineFine a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 Self
-        $ ReactionAbility (WouldRevealChaosToken Timing.When $ InvestigatorAt YourLocation)
-        $ Free
+        $ freeReaction (WouldRevealChaosToken #when $ InvestigatorAt YourLocation)
     ]
 
 instance HasChaosTokenValue JacquelineFine where
-  getChaosTokenValue iid ElderSign (JacquelineFine attrs) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (JacquelineFine attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign NoModifier
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
@@ -50,7 +47,7 @@ instance RunMessage JacquelineFine where
   runMessage msg i@(JacquelineFine attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getDrawSource -> drawSource) _ -> do
       ignoreWindow <-
-        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
+        checkWindows [mkWindow #after (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
       pushAll
         [ ReplaceCurrentDraw drawSource iid
             $ ChooseMatchChoice
@@ -75,10 +72,10 @@ instance RunMessage JacquelineFine where
           ignoreWindow
         ]
       pure i
-    ChaosTokenCanceled iid _ (chaosTokenFace -> ElderSign) | iid == toId attrs -> do
+    ChaosTokenCanceled iid _ (chaosTokenFace -> ElderSign) | attrs `is` iid -> do
       pushM $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
       JacquelineFine <$> runMessage msg attrs
-    ChaosTokenIgnored iid _ (chaosTokenFace -> ElderSign) | iid == toId attrs -> do
+    ChaosTokenIgnored iid _ (chaosTokenFace -> ElderSign) | attrs `is` iid -> do
       pushM $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
       JacquelineFine <$> runMessage msg attrs
     _ -> JacquelineFine <$> runMessage msg attrs

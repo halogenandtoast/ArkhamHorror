@@ -495,6 +495,9 @@ instance IsLabel "ally" ExtendedCardMatcher where
 instance IsLabel "asset" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #asset
 
+instance IsLabel "treachery" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #treachery
+
 -- | Only relies on card state, can be used purely with `cardMatch`
 data CardMatcher
   = CardWithType CardType
@@ -532,6 +535,9 @@ instance IsString CardMatcher where
 
 instance IsLabel "survivor" CardMatcher where
   fromLabel = CardWithClass Survivor
+
+instance IsLabel "treachery" CardMatcher where
+  fromLabel = CardWithType TreacheryType
 
 instance IsLabel "event" CardMatcher where
   fromLabel = CardWithType EventType
@@ -756,6 +762,9 @@ data SourceMatcher
   | NotSource SourceMatcher
   | SourceIs Source
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "investigator" SourceMatcher where
+  fromLabel = SourceIsType InvestigatorType
 
 instance Semigroup SourceMatcher where
   AnySource <> x = x

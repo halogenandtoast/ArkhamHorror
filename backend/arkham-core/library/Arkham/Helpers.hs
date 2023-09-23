@@ -3,7 +3,8 @@ module Arkham.Helpers where
 import Arkham.Prelude hiding (toLower, toUpper, unpack)
 
 import Data.Char (isLetter, toLower, toUpper)
-import Data.Foldable (foldrM)
+import Data.Foldable (foldr, foldrM)
+import Data.Foldable qualified as Foldable
 
 toLabel :: String -> String
 toLabel [] = []
@@ -58,3 +59,16 @@ newtype Bag a = Bag {unBag :: [a]}
 
 instance Show (Bag a) where
   show _ = "<Bag>"
+
+instance IsSequence (Deck a) where
+  fromList = Deck
+
+instance MonoFunctor (Deck a)
+instance MonoTraversable (Deck a)
+instance MonoPointed (Deck a)
+
+instance Foldable Deck where
+  foldr f s (Deck xs) = Foldable.foldr f s xs
+
+instance Traversable Deck where
+  traverse f (Deck xs) = Deck <$> traverse f xs

@@ -5,7 +5,6 @@ module Arkham.Investigator.Cards.AshcanPete (
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -18,11 +17,9 @@ newtype AshcanPete = AshcanPete InvestigatorAttrs
 
 ashcanPete :: InvestigatorCard AshcanPete
 ashcanPete =
-  investigatorWith
-    AshcanPete
-    Cards.ashcanPete
-    Stats {health = 6, sanity = 5, willpower = 4, intellect = 2, combat = 2, agility = 3}
-    (startsWithL .~ [Assets.duke])
+  startsWith [Assets.duke]
+    $ investigator AshcanPete Cards.ashcanPete
+    $ Stats {health = 6, sanity = 5, willpower = 4, intellect = 2, combat = 2, agility = 3}
 
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =

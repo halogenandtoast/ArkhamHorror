@@ -93,6 +93,7 @@ allInvestigatorCards =
       , dianaStanley
       , ritaYoung
       , marieLambeau
+      , tommyMuldoon
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -329,6 +330,14 @@ pennyWhite =
     ("Penny White" <:> "Josef's Housekeeper")
     Neutral
     [Assistant]
+
+tommyMuldoon :: CardDef
+tommyMuldoon =
+  investigator
+    "06001"
+    ("Tommy Muldoon" <:> "The Rookie Cop")
+    Guardian
+    [Police, Warden]
 
 dexterDrake :: CardDef
 dexterDrake =

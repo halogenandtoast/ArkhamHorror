@@ -6,7 +6,6 @@ module Arkham.Agenda.Cards.PredatorOrPrey (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Card
@@ -24,14 +23,14 @@ predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 
 instance HasAbilities PredatorOrPrey where
   getAbilities (PredatorOrPrey attrs) =
-    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+    [mkAbility attrs 1 $ ActionAbility (Just #resign) (ActionCost 1)]
 
 instance RunMessage PredatorOrPrey where
-  runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of
+  runMessage msg a@(PredatorOrPrey attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ Resign iid
       pure a
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       theMaskedHunter <- genCard Enemies.theMaskedHunter
       createTheMaskedHunter <- createEnemyEngagedWithPrey_ theMaskedHunter
       pushAll [createTheMaskedHunter, advanceAgendaDeck attrs]

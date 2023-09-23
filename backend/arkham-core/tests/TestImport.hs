@@ -486,6 +486,7 @@ newGame investigator = do
         , gameActiveInvestigatorId = investigatorId
         , gameLeadInvestigatorId = investigatorId
         , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
+        , gamePhaseStep = Nothing
         , gameSkillTest = Nothing
         , gameSkillTestResults = Nothing
         , gameEntities =

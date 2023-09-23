@@ -39,28 +39,25 @@ instance HasAbilities MuseumHalls where
       [ withTooltip
           "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
           $ restrictedAbility
-            ( ProxySource
-                (LocationMatcherSource $ LocationWithTitle "Museum Entrance")
-                (toSource attrs)
-            )
+            (proxy (LocationMatcherSource "Museum Entrance") attrs)
             1
-            (OnLocation $ LocationWithTitle "Museum Entrance")
-            (ActionAbility Nothing $ ActionCost 1)
+            (OnLocation "Museum Entrance")
+            actionAbility
       ]
   getAbilities (MuseumHalls attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility attrs 1 Here
             $ ActionAbility Nothing
-            $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) (LocationWithTitle "Museum Halls")]
+            $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) "Museum Halls"]
         ]
 
 instance RunMessage MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of
-    UseCardAbility iid proxy@(isProxySource attrs -> True) 1 _ _ | unrevealed attrs -> do
+    UseThisAbility iid this@(isProxySource attrs -> True) 1 | unrevealed attrs -> do
       museumEntrance <- selectJust $ LocationWithTitle "Museum Entrance"
-      push $ beginSkillTest iid (toAbilitySource proxy 1) museumEntrance #combat 5
+      push $ beginSkillTest iid (toAbilitySource this 1) museumEntrance #combat 5
       pure l
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ | revealed attrs -> do
+    UseThisAbility iid (isSource attrs -> True) 1 | revealed attrs -> do
       push $ DrawFromScenarioDeck iid ExhibitDeck (toTarget attrs) 1
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do

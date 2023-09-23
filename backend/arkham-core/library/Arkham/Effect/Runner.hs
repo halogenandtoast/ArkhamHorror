@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Effect.Runner (module X) where
+module Arkham.Effect.Runner (intFromMetadata, module X) where
 
 import Arkham.Prelude
 
@@ -17,6 +17,11 @@ import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 
+intFromMetadata :: EffectMetadata window a -> Int
+intFromMetadata = \case
+  EffectInt n -> n
+  _ -> 0
+
 instance RunMessage EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of
     EndSetup | isEndOfWindow a EffectSetupWindow -> do
@@ -25,8 +30,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndPhase -> do
       phase <- getPhase
-      when (isEndOfWindow a (EffectPhaseWindowFor phase)) $
-        push (DisableEffect effectId)
+      when (isEndOfWindow a (EffectPhaseWindowFor phase))
+        $ push (DisableEffect effectId)
       pure a
     EndTurn _ | isEndOfWindow a EffectTurnWindow -> do
       a <$ push (DisableEffect effectId)

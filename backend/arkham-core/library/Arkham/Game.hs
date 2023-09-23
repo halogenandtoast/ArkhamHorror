@@ -239,7 +239,7 @@ newGame
   -> m (Queue Message, Game)
 newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty includeTarotReadings = do
   let
-    initialInvestigatorId = decklistInvestigatorId deck
+    initialInvestigatorId = toId $ lookupInvestigator (decklistInvestigatorId deck)
     state =
       if length (deck : decks) /= playerCount
         then IsPending []

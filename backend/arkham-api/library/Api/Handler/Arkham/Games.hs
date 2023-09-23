@@ -15,6 +15,7 @@ module Api.Handler.Arkham.Games (
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
+import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Decklist
@@ -22,6 +23,7 @@ import Arkham.Difficulty
 import Arkham.Game
 import Arkham.Game.Diff
 import Arkham.Id
+import Arkham.Investigator
 import Arkham.Message
 import Conduit
 import Control.Lens (view)
@@ -154,7 +156,7 @@ postApiV1ArkhamGamesR = do
     pure $ arkhamDeckList deck
   decks <- maybe (invalidArgs ["must have one deck"]) pure $ nonEmpty decks'
   let
-    investigatorId = decklistInvestigatorId $ NonEmpty.head decks
+    investigatorId = toId . lookupInvestigator . decklistInvestigatorId $ NonEmpty.head decks
 
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)

@@ -9,6 +9,7 @@ import Arkham.Deck
 import Arkham.Id
 import Arkham.Source
 import Data.Aeson.TH
+import GHC.Records
 
 data CardDrawRules = ShuffleBackInEachWeakness
   deriving stock (Show, Eq, Ord)
@@ -31,6 +32,9 @@ data CardDraw = CardDraw
   }
   deriving stock (Show, Eq, Ord)
 
+instance HasField "investigator" CardDraw InvestigatorId where
+  getField = cardDrawInvestigator
+
 drewCard :: Card -> CardDraw -> CardDraw
 drewCard c draw = draw {cardDrawState = updatedState}
  where
@@ -47,8 +51,8 @@ newCardDraw
   -> m CardDraw
 newCardDraw i source n = do
   drawId <- getRandom
-  pure $
-    CardDraw
+  pure
+    $ CardDraw
       { cardDrawId = drawId
       , cardDrawInvestigator = i
       , cardDrawSource = toSource source

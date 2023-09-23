@@ -124,15 +124,17 @@ const handleResult = (result) => {
       } else {
         Arkham.gameDecoder.decodeToPromise(result.contents)
           .then((updatedGame) => {
-            game.value = updatedGame
-            gameLog.value = Object.freeze([...updatedGame.log])
-            if (solo.value === true) {
-              if (Object.keys(game.value.question).length == 1) {
-                investigatorId.value = Object.keys(game.value.question)[0]
-              } else if (game.value.activeInvestigatorId !== investigatorId.value) {
-                investigatorId.value = Object.keys(game.value.question)[0]
+            loadAllImages(updatedGame).then(() => {
+              game.value = updatedGame
+              gameLog.value = Object.freeze([...updatedGame.log])
+              if (solo.value === true) {
+                if (Object.keys(game.value.question).length == 1) {
+                  investigatorId.value = Object.keys(game.value.question)[0]
+                } else if (game.value.activeInvestigatorId !== investigatorId.value) {
+                  investigatorId.value = Object.keys(game.value.question)[0]
+                }
               }
-            }
+            })
           })
       }
       return
@@ -159,19 +161,43 @@ watch(uiLock, async () => {
   }
 })
 
-fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
-  game.value = newGame
-  solo.value = multiplayerMode === "Solo"
-  gameLog.value = Object.freeze(newGame.log)
-  investigatorId.value = newInvestigatorId
-  ready.value = true
-  Object.values(newGame.cards).forEach((card) => {
-    const { cardCode, isFlipped } = card.contents
-    const suffix = !props.revealed && isFlipped ? 'b' : ''
-    const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
-    if (preloaded.includes(url)) return
-    preload(url)
+function loadAllImages(game: Arkham.Game): Promise<void[]> {
+  const images = Object.values(game.cards).map((card) => {
+    return new Promise<void>((resolve, reject) => {
+      const { cardCode, isFlipped } = card.contents
+      const suffix = !props.revealed && isFlipped ? 'b' : ''
+      const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
+      if (preloaded.includes(url)) return resolve()
+      const img = new Image()
+      img.src = url
+      img.onload = () => {
+        preloaded.push(url)
+        resolve()
+      }
+      img.onerror = reject
+      })
   })
+
+  return Promise.all(images)
+}
+
+fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
+  loadAllImages(newGame).then(() => {
+    game.value = newGame
+    solo.value = multiplayerMode === "Solo"
+    gameLog.value = Object.freeze(newGame.log)
+    investigatorId.value = newInvestigatorId
+    ready.value = true
+  })
+
+
+  // Object.values(newGame.cards).forEach((card) => {
+  //   const { cardCode, isFlipped } = card.contents
+  //   const suffix = !props.revealed && isFlipped ? 'b' : ''
+  //   const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
+  //   if (preloaded.includes(url)) return
+  //   preload(url)
+  // })
 })
 
 async function choose(idx: number) {

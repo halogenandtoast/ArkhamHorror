@@ -8,6 +8,7 @@ import Arkham.Action
 import Arkham.Id
 import Arkham.Trait
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 data ActionRestriction = AbilitiesOnly | NoRestriction
   deriving stock (Show, Eq, Ord, Data)
@@ -18,6 +19,9 @@ data AdditionalAction
   | EffectAction Text EffectId
   | AnyAdditionalAction
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "evade" AdditionalAction where
+  fromLabel = ActionRestrictedAdditionalAction #evade
 
 additionalActionLabel :: AdditionalAction -> Text
 additionalActionLabel = \case

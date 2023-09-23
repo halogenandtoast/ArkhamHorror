@@ -34,7 +34,7 @@ newtype EventId = EventId {unEventId :: UUID}
 
 newtype InvestigatorId = InvestigatorId {unInvestigatorId :: CardCode}
   deriving stock (Data)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, IsString)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, IsString, HasCardCode)
 
 newtype LocationId = LocationId {unLocationId :: UUID}
   deriving stock (Data)

@@ -5,13 +5,11 @@ module Arkham.Investigator.Cards.LeoAnderson (
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.Card
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Timing qualified as Timing
 import Arkham.Window (duringTurnWindow)
 
 newtype Meta = Meta {responseCard :: Maybe Card}
@@ -35,9 +33,8 @@ instance HasModifiersFor LeoAnderson where
 
 instance HasAbilities LeoAnderson where
   getAbilities (LeoAnderson a) =
-    [ (restrictedAbility a 1)
-        (Self <> PlayableCardExistsWithCostReduction 1 (InHandOf You <> BasicCardMatch IsAlly))
-        (ReactionAbility (TurnBegins Timing.After You) Free)
+    [ restrictedAbility a 1 (Self <> PlayableCardExistsWithCostReduction 1 (InHandOf You <> #ally))
+        $ freeReaction (TurnBegins #after You)
     ]
 
 instance HasChaosTokenValue LeoAnderson where
@@ -49,7 +46,7 @@ instance RunMessage LeoAnderson where
   runMessage msg i@(LeoAnderson (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
       let source = toAbilitySource attrs 1
-      results <- selectList (InHandOf (InvestigatorWithId iid) <> BasicCardMatch IsAlly)
+      results <- selectList (InHandOf (InvestigatorWithId iid) <> #ally)
       resources <- getSpendableResources iid
       cards <-
         filterM
@@ -64,6 +61,6 @@ instance RunMessage LeoAnderson where
     ResetMetadata (isTarget attrs -> True) ->
       pure . LeoAnderson $ attrs `with` Meta Nothing
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ search iid attrs attrs [(FromTopOfDeck 3, ShuffleBackIn)] IsAlly (DrawFound iid 1)
+      push $ search iid attrs attrs [fromTopOfDeck 3] #ally (DrawFound iid 1)
       pure i
     _ -> LeoAnderson . (`with` meta) <$> runMessage msg attrs

@@ -5,8 +5,6 @@ module Arkham.Investigator.Cards.RolandBanks (
 
 import Arkham.Prelude
 
-import Arkham.Ability
-import Arkham.Classes
 import Arkham.Discover
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -14,7 +12,6 @@ import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -29,7 +26,7 @@ instance HasAbilities RolandBanks where
   getAbilities (RolandBanks attrs) =
     [ playerLimit PerRound
         $ restrictedAbility attrs 1 (Self <> AbleToDiscoverCluesAt YourLocation)
-        $ freeReaction (Matcher.EnemyDefeated Timing.After You ByAny AnyEnemy)
+        $ freeReaction (Matcher.EnemyDefeated #after You ByAny AnyEnemy)
     ]
 
 instance HasChaosTokenValue RolandBanks where

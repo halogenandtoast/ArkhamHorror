@@ -57,6 +57,9 @@ pushWhenM condM = whenM condM . pushAll . pure
 pushWhen :: HasQueue msg m => Bool -> msg -> m ()
 pushWhen cond = when cond . pushAll . pure
 
+pushIfAny :: (HasQueue msg m, MonoFoldable (t a)) => t a -> msg -> m ()
+pushIfAny collection = when (notNull collection) . pushAll . pure
+
 pushAll :: HasQueue msg m => [msg] -> m ()
 pushAll msgs = withQueue \queue -> (msgs <> queue, ())
 
@@ -68,7 +71,7 @@ replaceMessageMatching
   :: HasQueue msg m => (msg -> Bool) -> (msg -> [msg]) -> m ()
 replaceMessageMatching matcher replacer = withQueue \queue ->
   let (before, after) = break matcher queue
-  in  case after of
+   in case after of
         [] -> (before, ())
         (msg' : rest) -> (before <> replacer msg' <> rest, ())
 
@@ -79,7 +82,7 @@ popMessageMatching
   :: HasQueue msg m => (msg -> Bool) -> m (Maybe msg)
 popMessageMatching matcher = withQueue \queue ->
   let (before, after) = break matcher queue
-  in  case after of
+   in case after of
         [] -> (before, Nothing)
         (msg' : rest) -> (before <> rest, Just msg')
 
@@ -94,6 +97,6 @@ insertAfterMatching
   :: HasQueue msg m => [msg] -> (msg -> Bool) -> m ()
 insertAfterMatching msgs p = withQueue_ \queue ->
   let (before, rest) = break p queue
-  in  case rest of
+   in case rest of
         (x : xs) -> before <> (x : msgs <> xs)
         _ -> queue

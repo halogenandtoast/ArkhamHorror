@@ -7,6 +7,7 @@ module Arkham.Investigator.Runner (
 
 import Arkham.Prelude
 
+import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
 import Arkham.ClassSymbol as X
 import Arkham.Classes as X
@@ -20,7 +21,6 @@ import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Trait as X hiding (Cultist)
 
-import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional

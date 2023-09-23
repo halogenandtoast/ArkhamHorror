@@ -6,6 +6,7 @@ import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types qualified as Field
 import Arkham.Card
+import Arkham.Classes.Entity
 import Arkham.Classes.Query
 import Arkham.Damage
 import {-# SOURCE #-} Arkham.GameEnv
@@ -235,6 +236,14 @@ investigatorWith
   -> CardBuilder () a
 investigatorWith f cardDef stats g = investigator (f . g) cardDef stats
 
+startsWith
+  :: (Entity a, EntityAttrs a ~ InvestigatorAttrs) => [CardDef] -> CardBuilder () a -> CardBuilder () a
+startsWith cards = fmap (overAttrs (startsWithL <>~ cards))
+
+startsWithInHand
+  :: (Entity a, EntityAttrs a ~ InvestigatorAttrs) => [CardDef] -> CardBuilder () a -> CardBuilder () a
+startsWithInHand cards = fmap (overAttrs (startsWithInHandL <>~ cards))
+
 investigator
   :: (InvestigatorAttrs -> a) -> CardDef -> Stats -> CardBuilder () a
 investigator f cardDef Stats {..} =
@@ -247,6 +256,7 @@ investigator f cardDef Stats {..} =
                 { investigatorId = iid
                 , investigatorName = cdName cardDef
                 , investigatorCardCode = cdCardCode cardDef
+                , investigatorArt = cdCardCode cardDef
                 , investigatorClass =
                     fromJustNote "missing class symbol"
                       . headMay

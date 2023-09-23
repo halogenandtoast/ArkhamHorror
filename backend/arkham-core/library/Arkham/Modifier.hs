@@ -34,6 +34,7 @@ import {-# SOURCE #-} Arkham.Strategy
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 data ModifierType
   = ActionCostOf ActionTarget Int
@@ -264,6 +265,9 @@ data ActionTarget
   | IsAction Action
   | EnemyAction Action EnemyMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "draw" ActionTarget where
+  fromLabel = IsAction #draw
 
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}

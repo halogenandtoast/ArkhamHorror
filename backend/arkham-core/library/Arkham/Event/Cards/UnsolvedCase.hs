@@ -12,7 +12,6 @@ import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Deck
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
@@ -35,17 +34,17 @@ instance HasModifiersFor UnsolvedCase where
 
 instance HasAbilities UnsolvedCase where
   getAbilities (UnsolvedCase a) =
-    [ restrictedAbility a 1 InYourHand $
-        ForcedAbility $
-          WouldBeShuffledIntoDeck
-            (DeckIs (InvestigatorDeckByKey (eventOwner a) HunchDeck))
-            (CardWithId $ toCardId a)
-    , restrictedAbility a 2 (InThreatAreaOf You) $
-        ForcedAbility $
-          OrWindowMatcher
-            [ GameEnds Timing.When
-            , InvestigatorEliminated Timing.When (InvestigatorWithId $ eventOwner a)
-            ]
+    [ restrictedAbility a 1 InYourHand
+        $ ForcedAbility
+        $ WouldBeShuffledIntoDeck
+          (DeckIs (HunchDeck (eventOwner a)))
+          (CardWithId $ toCardId a)
+    , restrictedAbility a 2 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ OrWindowMatcher
+          [ GameEnds Timing.When
+          , InvestigatorEliminated Timing.When (InvestigatorWithId $ eventOwner a)
+          ]
     ]
 
 instance RunMessage UnsolvedCase where
@@ -53,7 +52,7 @@ instance RunMessage UnsolvedCase where
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
       | iid == iid' -> do
           popMessageMatching_ $ \case
-            ShuffleCardsIntoDeck (InvestigatorDeckByKey _ HunchDeck) [card] ->
+            ShuffleCardsIntoDeck (HunchDeck _) [card] ->
               card == toCard attrs
             _ -> False
           push $ CreateEventAt iid (toCard attrs) (InThreatArea iid)
@@ -61,18 +60,18 @@ instance RunMessage UnsolvedCase where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
       highestShroud <- selectList $ HighestShroud Anywhere
-      pushAll $
-        [ chooseOrRunOne
-          iid
-          [ targetLabel
-            location
-            [ RemoveClues (toSource attrs) (toTarget iid) 1
-            , PlaceClues (toSource attrs) (toTarget location) 1
+      pushAll
+        $ [ chooseOrRunOne
+            iid
+            [ targetLabel
+              location
+              [ RemoveClues (toSource attrs) (toTarget iid) 1
+              , PlaceClues (toSource attrs) (toTarget location) 1
+              ]
+            | location <- highestShroud
             ]
-          | location <- highestShroud
+          | notNull highestShroud && hasClues
           ]
-        | notNull highestShroud && hasClues
-        ]
       pure e
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       -- no-op, handled in HasModifiersFor

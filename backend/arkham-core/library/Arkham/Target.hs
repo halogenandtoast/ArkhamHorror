@@ -16,7 +16,10 @@ import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Tarot
 import Arkham.Trait
+import Control.Lens (Getting, Prism', prism')
 import Data.Aeson.TH
+import Data.Monoid (First)
+import GHC.OverloadedLabels
 
 data ForSkillTest = ForSkillTest
 
@@ -61,6 +64,16 @@ data Target
   | BothTarget Target Target
   | TarotTarget TarotCard
   deriving stock (Show, Eq, Ord, Data)
+
+investigatorTarget :: Target -> Maybe InvestigatorId
+investigatorTarget (InvestigatorTarget iid) = Just iid
+investigatorTarget _ = Nothing
+
+_InvestigatorTarget :: Prism' Target InvestigatorId
+_InvestigatorTarget = prism' InvestigatorTarget investigatorTarget
+
+instance IsLabel "investigator" (Getting (First InvestigatorId) Target InvestigatorId) where
+  fromLabel = _InvestigatorTarget
 
 pattern Initiator :: Target -> Target
 pattern Initiator t <- SkillTestInitiatorTarget t

@@ -25,6 +25,10 @@ instance WithTrait EnemyMatcher where
   withTrait = EnemyWithTrait
   {-# INLINE withTrait #-}
 
+instance WithTrait CardMatcher where
+  withTrait = CardWithTrait
+  {-# INLINE withTrait #-}
+
 -- ** Investigator Helpers **
 
 investigatorIs :: HasCardCode a => a -> InvestigatorMatcher

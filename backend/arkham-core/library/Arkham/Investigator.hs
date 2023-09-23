@@ -23,7 +23,7 @@ instance RunMessage Investigator where
     Investigator <$> runMessage msg' a
 
 lookupInvestigator :: InvestigatorId -> Investigator
-lookupInvestigator iid = case lookup (unInvestigatorId iid) allInvestigators of
+lookupInvestigator iid = case lookup (toCardCode iid) allInvestigators of
   Nothing -> lookupPromoInvestigator iid
   Just c -> toInvestigator c
 
@@ -36,33 +36,40 @@ the same, we proxy the lookup to their non-promo version.
 Parallel investigators will need to be handled differently since they
 are not functionally the same.
 -}
+promoInvestigators :: Map InvestigatorId InvestigatorId
+promoInvestigators =
+  mapFromList
+    [ ("98001", "02003") -- Jenny Barnes
+    , ("98004", "01001") -- Roland Banks
+    , ("98007", "08004") -- Norman Withers
+    , ("98016", "07004") -- Dexter Drake
+    , ("99001", "05006") -- Marie Lambeau
+    ]
+
 lookupPromoInvestigator :: InvestigatorId -> Investigator
-lookupPromoInvestigator "98001" = lookupInvestigator "02003" -- Jenny Barnes
-lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
-lookupPromoInvestigator "98007" = lookupInvestigator "08004" -- Norman Withers
-lookupPromoInvestigator "98016" = lookupInvestigator "07004" -- Dexter Drake
-lookupPromoInvestigator "99001" = lookupInvestigator "05006" -- Marie Lambeau
-lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
+lookupPromoInvestigator iid = case lookup iid promoInvestigators of
+  Nothing -> error $ "Unknown promo investigator: " <> show iid
+  Just iid' -> overAttrs (artL .~ toCardCode iid) $ lookupInvestigator iid'
 
 instance FromJSON Investigator where
   parseJSON = withObject "Investigator" $ \o -> do
     cCode <- o .: "cardCode"
     withInvestigatorCardCode cCode
-      $ \(SomeInvestigator (_ :: Proxy a)) -> Investigator <$> parseJSON @a (Object o)
+      $ \(SomeInvestigator @a) -> Investigator <$> parseJSON @a (Object o)
 
 withInvestigatorCardCode
   :: CardCode -> (SomeInvestigator -> r) -> r
 withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
   Nothing -> case cCode of
-    "04244" -> f (SomeInvestigator (Proxy @BodyOfAYithian))
-    "05046" -> f (SomeInvestigator (Proxy @GavriellaMizrah))
-    "05047" -> f (SomeInvestigator (Proxy @JeromeDavids))
-    "05048" -> f (SomeInvestigator (Proxy @ValentinoRivas))
-    "05049" -> f (SomeInvestigator (Proxy @PennyWhite))
+    "04244" -> f (SomeInvestigator @BodyOfAYithian)
+    "05046" -> f (SomeInvestigator @GavriellaMizrah)
+    "05047" -> f (SomeInvestigator @JeromeDavids)
+    "05048" -> f (SomeInvestigator @ValentinoRivas)
+    "05049" -> f (SomeInvestigator @PennyWhite)
     _ -> error ("invalid investigators: " <> show cCode)
-  Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator (Proxy @a))
+  Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator @a)
 
-data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator (Proxy a)
+data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator
 
 allInvestigators :: Map CardCode SomeInvestigatorCard
 allInvestigators =

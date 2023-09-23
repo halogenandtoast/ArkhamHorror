@@ -33,12 +33,12 @@ instance RunMessage CorpseDweller where
       leadInvestigatorId <- getLeadInvestigatorId
       let iid = fromMaybe leadInvestigatorId miid
       humanoids <-
-        selectList $
-          EnemyWithTrait Humanoid
-            <> EnemyAt
-              (LocationWithId lid)
-      push $
-        chooseOrRunOne
+        selectList
+          $ EnemyWithTrait Humanoid
+          <> EnemyAt
+            (LocationWithId lid)
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel humanoid [Discard (toSource attrs) (EnemyTarget humanoid)]
           | humanoid <- humanoids

@@ -27,17 +27,17 @@ intruders = agenda (2, A) Intruders Cards.intruders (Static 9)
 
 instance HasAbilities Intruders where
   getAbilities (Intruders a) =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
-        ActionAbility (Just Action.Explore) $
-          ActionCost 1
+    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+        $ ActionAbility (Just Action.Explore)
+        $ ActionCost 1
     ]
 
 instance RunMessage Intruders where
   runMessage msg a@(Intruders attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           source
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
@@ -45,15 +45,15 @@ instance RunMessage Intruders where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- getInvestigatorIds
       unpoisoned <-
-        selectList $
-          NotInvestigator $
-            HasMatchingTreachery $
-              treacheryIs $
-                Treacheries.poisoned
-      pushAll $
-        [InvestigatorDefeated (toSource attrs) iid | iid <- iids]
-          <> [ AddCampaignCardToDeck iid Treacheries.poisoned
-             | iid <- unpoisoned
-             ]
+        selectList
+          $ NotInvestigator
+          $ HasMatchingTreachery
+          $ treacheryIs
+          $ Treacheries.poisoned
+      pushAll
+        $ [InvestigatorDefeated (toSource attrs) iid | iid <- iids]
+        <> [ AddCampaignCardToDeck iid Treacheries.poisoned
+           | iid <- unpoisoned
+           ]
       pure a
     _ -> Intruders <$> runMessage msg attrs

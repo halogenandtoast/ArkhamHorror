@@ -83,7 +83,7 @@ instance HasChaosTokenValue WhereDoomAwaits where
       isAltered <-
         selectAny
           $ LocationWithInvestigator (InvestigatorWithId iid)
-            <> LocationWithTrait Altered
+          <> LocationWithTrait Altered
       if isAltered
         then pure $ toChaosTokenValue attrs Skull 3 5
         else pure $ toChaosTokenValue attrs Skull 1 2
@@ -113,7 +113,7 @@ instance RunMessage WhereDoomAwaits where
     StandaloneSetup -> do
       pure
         . WhereDoomAwaits
-        $ attrs
+          $ attrs
         & standaloneCampaignLogL
           .~ standaloneCampaignLog
     Setup -> do
@@ -210,19 +210,19 @@ instance RunMessage WhereDoomAwaits where
 
       pushAll
         $ story investigatorIds intro
-          : [story investigatorIds introPart1 | naomiHasTheInvestigatorsBacks]
-            <> [GainClues lead (toSource attrs) 1 | naomiHasTheInvestigatorsBacks]
-            <> [ AddChaosToken token
-               , SetEncounterDeck encounterDeck
-               , SetAgendaDeck
-               , SetActDeck
-               ]
-            <> replicate broodEscapedCount PlaceDoomOnAgenda
-            <> [placeBaseOfTheHill, placeAscendingPath, placeSentinelPeak]
-            <> silasMsgs
-            <> [ RevealLocation Nothing baseOfTheHillId
-               , MoveAllTo (toSource attrs) baseOfTheHillId
-               ]
+        : [story investigatorIds introPart1 | naomiHasTheInvestigatorsBacks]
+          <> [GainClues lead (toSource attrs) 1 | naomiHasTheInvestigatorsBacks]
+          <> [ AddChaosToken token
+             , SetEncounterDeck encounterDeck
+             , SetAgendaDeck
+             , SetActDeck
+             ]
+          <> replicate broodEscapedCount PlaceDoomOnAgenda
+          <> [placeBaseOfTheHill, placeAscendingPath, placeSentinelPeak]
+          <> silasMsgs
+          <> [ RevealLocation Nothing baseOfTheHillId
+             , MoveAllTo (toSource attrs) baseOfTheHillId
+             ]
 
       setAsideCards <- genCards [Enemies.silasBishop]
 
@@ -275,8 +275,8 @@ instance RunMessage WhereDoomAwaits where
         $ [ story investigatorIds resolution1
           , Record TheInvestigatorsEnteredTheGate
           ]
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       investigatorIds <- allInvestigatorIds
@@ -285,8 +285,8 @@ instance RunMessage WhereDoomAwaits where
           , Record
               YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
           ]
-          <> [DrivenInsane iid | iid <- investigatorIds]
-          <> [GameOver]
+        <> [DrivenInsane iid | iid <- investigatorIds]
+        <> [GameOver]
       pure s
     PlacedLocation name _ lid -> do
       when (name == "Altered Path") $ do

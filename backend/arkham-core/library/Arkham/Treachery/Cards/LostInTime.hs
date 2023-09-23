@@ -30,14 +30,14 @@ instance RunMessage LostInTime where
         pure (asset, damage, horror)
       if notNull assetsWithDamageAndHorror
         then do
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
-              [ targetLabel aid $
-                shuffleIntoDeck iid aid
-                  : [ InvestigatorDamage iid (toSource attrs) dmg hrr
-                    | dmg > 0 || hrr > 0
-                    ]
+              [ targetLabel aid
+                $ shuffleIntoDeck iid aid
+                : [ InvestigatorDamage iid (toSource attrs) dmg hrr
+                  | dmg > 0 || hrr > 0
+                  ]
               | (aid, dmg, hrr) <- assetsWithDamageAndHorror
               ]
         else pushAll $ replicate 3 $ toMessage $ chooseAndDiscardCard iid attrs

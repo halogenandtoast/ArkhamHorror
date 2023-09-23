@@ -30,8 +30,8 @@ historicalSocietyHistoricalLibrary_136 =
 
 instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
   getAbilities (HistoricalSocietyHistoricalLibrary_136 attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
           [ restrictedAbility
               attrs
@@ -51,15 +51,15 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
                   (HorrorCost (toSource attrs) YouTarget 2)
               )
               & abilityLimitL
-              .~ PlayerLimit PerRound 1
+                .~ PlayerLimit PerRound 1
           ]
         else
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                EnemySpawns
-                  Timing.When
-                  (LocationWithId $ toId attrs)
-                  AnyEnemy
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ EnemySpawns
+                Timing.When
+                (LocationWithId $ toId attrs)
+                AnyEnemy
           ]
 
 instance RunMessage HistoricalSocietyHistoricalLibrary_136 where

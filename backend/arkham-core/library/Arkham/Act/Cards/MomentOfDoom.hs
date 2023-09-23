@@ -40,18 +40,18 @@ instance HasAbilities MomentOfDoom where
           ControlsThis
           $ ActionAbility Nothing
           $ ActionCost 1
-      , mkAbility attrs 2 $
-          Objective $
-            ForcedAbility $
-              EnemyDefeated Timing.After Anyone ByAny $
-                enemyIs Enemies.yig
+      , mkAbility attrs 2
+          $ Objective
+          $ ForcedAbility
+          $ EnemyDefeated Timing.After Anyone ByAny
+          $ enemyIs Enemies.yig
       ]
 
 instance RunMessage MomentOfDoom where
   runMessage msg a@(MomentOfDoom attrs) = case msg of
     UseCardAbility iid (ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ SkillLabel
             skill
@@ -65,19 +65,19 @@ instance RunMessage MomentOfDoom where
         for_ mlid $ \lid -> do
           yig <- selectJust $ enemyIs Enemies.yig
           iids <- selectList $ colocatedWith iid <> InvestigatorWithAnyClues
-          unless (null iids) $
-            push $
-              chooseOrRunOne
-                iid
-                [ targetLabel
-                  iid'
-                  [ FlipClues (InvestigatorTarget iid') 1
-                  , RemoveDoom (toAbilitySource attrs 1) (InvestigatorTarget iid') 1
-                  , PlaceDoom (toAbilitySource attrs 1) (LocationTarget lid) 1
-                  , EnemyDamage yig $ nonAttack attrs 3
-                  ]
-                | iid' <- iids
+          unless (null iids)
+            $ push
+            $ chooseOrRunOne
+              iid
+              [ targetLabel
+                iid'
+                [ FlipClues (InvestigatorTarget iid') 1
+                , RemoveDoom (toAbilitySource attrs 1) (InvestigatorTarget iid') 1
+                , PlaceDoom (toAbilitySource attrs 1) (LocationTarget lid) 1
+                , EnemyDamage yig $ nonAttack attrs 3
                 ]
+              | iid' <- iids
+              ]
         pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)

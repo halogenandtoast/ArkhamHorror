@@ -23,10 +23,10 @@ gardenDistrict = location GardenDistrict Cards.gardenDistrict 1 (Static 0)
 
 instance HasAbilities GardenDistrict where
   getAbilities (GardenDistrict attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage GardenDistrict where
   runMessage msg l@(GardenDistrict attrs) = case msg of

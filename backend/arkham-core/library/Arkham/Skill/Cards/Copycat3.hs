@@ -32,16 +32,16 @@ instance RunMessage Copycat3 where
       iids <- selectList $ NotInvestigator $ InvestigatorWithId iid
       iidsWithCommittableCards <- flip mapMaybeM iids $ \iid' -> do
         committableCards <-
-          selectList $
-            CommittableCard iid $
-              InDiscardOf (InvestigatorWithId iid')
-                <> BasicCardMatch Matcher.SkillCard
-        pure $
-          if null committableCards
+          selectList
+            $ CommittableCard iid
+            $ InDiscardOf (InvestigatorWithId iid')
+            <> BasicCardMatch Matcher.SkillCard
+        pure
+          $ if null committableCards
             then Nothing
             else Just (iid', committableCards)
-      unless (null iidsWithCommittableCards) $
-        pushAll
+      unless (null iidsWithCommittableCards)
+        $ pushAll
           [ FocusCards (concatMap snd iidsWithCommittableCards)
           , chooseOne
               iid

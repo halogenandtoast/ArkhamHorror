@@ -25,17 +25,17 @@ instance HasAbilities PathOfThorns where
   getAbilities (PathOfThorns a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            SkillTestResult
-              Timing.After
-              You
-              (WhileInvestigating $ LocationWithId $ toId a)
-              (FailureResult AnyValue)
-      , restrictedAbility a 2 Here $
-          ForcedAbility $
-            Explored Timing.After You $
-              FailedExplore AnyCard
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId a)
+            (FailureResult AnyValue)
+      , restrictedAbility a 2 Here
+          $ ForcedAbility
+          $ Explored Timing.After You
+          $ FailedExplore AnyCard
       ]
 
 instance RunMessage PathOfThorns where

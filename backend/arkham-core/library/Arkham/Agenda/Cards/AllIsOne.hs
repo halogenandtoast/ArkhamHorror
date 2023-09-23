@@ -27,12 +27,12 @@ allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
 instance HasAbilities AllIsOne where
   getAbilities (AllIsOne x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          MovedBy
-            Timing.After
-            You
-            Matcher.EncounterCardSource
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ MovedBy
+          Timing.After
+          You
+          Matcher.EncounterCardSource
     ]
 
 instance RunMessage AllIsOne where
@@ -46,19 +46,19 @@ instance RunMessage AllIsOne where
           TheInvestigatorsFailedToSaveTheStudents
       lead <- getLead
       investigatorIds <- getInvestigatorIds
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , DiscardUntilFirst
-            lead
-            (toSource attrs)
-            Deck.EncounterDeck
-            (BasicCardMatch $ CardWithType LocationType)
-        ]
-          <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-             | failedToSaveStudents
-             , iid <- investigatorIds
-             ]
-          <> [advanceAgendaDeck attrs]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , DiscardUntilFirst
+              lead
+              (toSource attrs)
+              Deck.EncounterDeck
+              (BasicCardMatch $ CardWithType LocationType)
+          ]
+        <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+           | failedToSaveStudents
+           , iid <- investigatorIds
+           ]
+        <> [advanceAgendaDeck attrs]
       pure a
     RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId

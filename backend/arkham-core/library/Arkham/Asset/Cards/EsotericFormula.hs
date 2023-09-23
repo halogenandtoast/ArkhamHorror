@@ -24,9 +24,9 @@ esotericFormula = asset EsotericFormula Cards.esotericFormula
 
 instance HasAbilities EsotericFormula where
   getAbilities (EsotericFormula x) =
-    [ fightAbility x 1 (ActionCost 1) $
-        ControlsThis
-          <> enemyExists (CanFightEnemy (toAbilitySource x 1) <> EnemyWithTrait Abomination)
+    [ fightAbility x 1 (ActionCost 1)
+        $ ControlsThis
+        <> enemyExists (CanFightEnemy (toAbilitySource x 1) <> EnemyWithTrait Abomination)
     ]
 
 instance HasModifiersFor EsotericFormula where
@@ -46,8 +46,8 @@ instance HasModifiersFor EsotericFormula where
 instance RunMessage EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        ChooseFightEnemy
+      push
+        $ ChooseFightEnemy
           iid
           source
           Nothing

@@ -27,12 +27,12 @@ instance RunMessage OnWingsOfDarkness where
       enemiesToDisengage <- selectList $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
       pushAll
         $ assignDamageAndHorror iid attrs 1 1
-          : map (DisengageEnemy iid) enemiesToDisengage
-            <> [ chooseOne
-                  iid
-                  [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
-                  | lid <- centralLocations
-                  ]
-               ]
+        : map (DisengageEnemy iid) enemiesToDisengage
+          <> [ chooseOne
+                iid
+                [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
+                | lid <- centralLocations
+                ]
+             ]
       pure t
     _ -> OnWingsOfDarkness <$> runMessage msg attrs

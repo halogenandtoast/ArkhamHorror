@@ -43,8 +43,9 @@ instance HasAbilities InPursuitOfTheLiving where
         [ restrictedAbility
             a
             1
-            ( OnLocation $
-                LocationWithoutModifier CannotBeFlipped <> locationNotOneOf (usedLocationIds meta)
+            ( OnLocation
+                $ LocationWithoutModifier CannotBeFlipped
+                <> locationNotOneOf (usedLocationIds meta)
             )
             $ FastAbility Free
         , restrictedAbility

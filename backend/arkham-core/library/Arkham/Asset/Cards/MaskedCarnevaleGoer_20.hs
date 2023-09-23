@@ -25,10 +25,10 @@ maskedCarnevaleGoer_20 =
 
 instance HasAbilities MaskedCarnevaleGoer_20 where
   getAbilities (MaskedCarnevaleGoer_20 x) =
-    [ restrictedAbility x 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> ClueCost (Static 1)
+    [ restrictedAbility x 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> ClueCost (Static 1)
     ]
 
 locationOf :: AssetAttrs -> LocationId
@@ -48,20 +48,20 @@ instance RunMessage MaskedCarnevaleGoer_20 where
       investigators <- selectList $ investigatorAt $ locationOf attrs
       lead <- getLead
       (enemyId, createSavioCorvi) <- createEnemyAt savioCorvi lid Nothing
-      pushAll $
-        [ createSavioCorvi
-        , Flipped (toSource attrs) savioCorvi
-        ]
-          <> [ chooseOrRunOneAtATime
-              lead
-              [ targetLabel
-                investigator
-                [EnemyAttack $ enemyAttack enemyId attrs investigator]
-              | investigator <- investigators
-              ]
-             | isAbilitySource attrs 1 source
-             , notNull investigators
-             ]
+      pushAll
+        $ [ createSavioCorvi
+          , Flipped (toSource attrs) savioCorvi
+          ]
+        <> [ chooseOrRunOneAtATime
+            lead
+            [ targetLabel
+              investigator
+              [EnemyAttack $ enemyAttack enemyId attrs investigator]
+            | investigator <- investigators
+            ]
+           | isAbilitySource attrs 1 source
+           , notNull investigators
+           ]
       pure a
     LookAtRevealed _ _ (isTarget a -> True) -> do
       let savioCorvi = lookupCard Enemies.savioCorvi (toCardId attrs)

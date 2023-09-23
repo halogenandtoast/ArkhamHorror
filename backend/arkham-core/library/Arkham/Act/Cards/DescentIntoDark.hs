@@ -28,11 +28,11 @@ instance HasAbilities DescentIntoDark where
         a
         1
         ( Negate
-            ( InvestigatorExists $
-                InvestigatorAt $
-                  NotLocation $
-                    locationIs
-                      Locations.descentToYoth
+            ( InvestigatorExists
+                $ InvestigatorAt
+                $ NotLocation
+                $ locationIs
+                  Locations.descentToYoth
             )
             <> LocationExists
               (locationIs Locations.descentToYoth <> LocationWithoutDoom)

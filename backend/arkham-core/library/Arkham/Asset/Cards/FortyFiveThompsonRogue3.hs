@@ -24,10 +24,10 @@ fortyFiveThompsonRogue3 =
 
 instance HasAbilities FortyFiveThompsonRogue3 where
   getAbilities (FortyFiveThompsonRogue3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
+        <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage FortyFiveThompsonRogue3 where
@@ -49,20 +49,20 @@ instance RunMessage FortyFiveThompsonRogue3 where
               fightValue <- field EnemyFight eid
               when (n >= fightValue) $ do
                 enemies <-
-                  selectList $
-                    EnemyAt (locationWithInvestigator iid)
-                      <> NotEnemy
-                        (EnemyWithId eid)
-                push $
-                  chooseOrRunOne iid $
-                    Label "Do not damage any enemies" []
-                      : [ targetLabel
-                          eid'
-                          [ SpendUses (toTarget attrs) Ammo 1
-                          , InvestigatorDamageEnemy iid eid' (toSource attrs)
-                          ]
-                        | eid' <- enemies
-                        ]
+                  selectList
+                    $ EnemyAt (locationWithInvestigator iid)
+                    <> NotEnemy
+                      (EnemyWithId eid)
+                push
+                  $ chooseOrRunOne iid
+                  $ Label "Do not damage any enemies" []
+                  : [ targetLabel
+                      eid'
+                      [ SpendUses (toTarget attrs) Ammo 1
+                      , InvestigatorDamageEnemy iid eid' (toSource attrs)
+                      ]
+                    | eid' <- enemies
+                    ]
             _ -> pure ()
           pure a
     _ -> FortyFiveThompsonRogue3 <$> runMessage msg attrs

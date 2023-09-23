@@ -44,8 +44,8 @@ instance RunMessage TemperanceXIV where
       lead <- getLeadInvestigatorId
       for_ mWitch $ \witch -> do
         investigators <- selectList InvestigatorWithMostCardsInPlayArea
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             lead
             [ targetLabel
               investigator

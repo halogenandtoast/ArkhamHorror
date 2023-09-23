@@ -24,10 +24,10 @@ instance RunMessage TrueSurvivor3 where
   runMessage msg e@(TrueSurvivor3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectList $
-          InDiscardOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (CardWithTrait Innate)
+        selectList
+          $ InDiscardOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (CardWithTrait Innate)
       when
         (null targets)
         (error "ScroungeForSupplies expected level 0 card in discard")

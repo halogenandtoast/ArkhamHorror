@@ -29,24 +29,24 @@ canalsOfTenochtitlan_181 =
 instance HasModifiersFor CanalsOfTenochtitlan_181 where
   getModifiersFor target (CanalsOfTenochtitlan_181 a)
     | isTarget a target =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ShroudModifier (locationResources a) | locationResources a > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CanalsOfTenochtitlan_181 where
   getAbilities (CanalsOfTenochtitlan_181 attrs) =
-    withRevealedAbilities attrs $
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            PutLocationIntoPlay Timing.After Anyone $
-              LocationWithId $
-                toId attrs
-      , restrictedAbility attrs 2 (ResourcesOnThis $ AtLeast $ Static 1) $
-          ForcedAbility $
-            RoundEnds Timing.When
-      ]
+    withRevealedAbilities attrs
+      $ [ mkAbility attrs 1
+            $ ForcedAbility
+            $ PutLocationIntoPlay Timing.After Anyone
+            $ LocationWithId
+            $ toId attrs
+        , restrictedAbility attrs 2 (ResourcesOnThis $ AtLeast $ Static 1)
+            $ ForcedAbility
+            $ RoundEnds Timing.When
+        ]
 
 instance RunMessage CanalsOfTenochtitlan_181 where
   runMessage msg l@(CanalsOfTenochtitlan_181 attrs) = case msg of

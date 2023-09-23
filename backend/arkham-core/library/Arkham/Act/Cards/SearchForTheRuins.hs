@@ -29,10 +29,10 @@ searchForTheRuins =
 instance HasModifiersFor SearchForTheRuins where
   getModifiersFor (EnemyTarget eid) (SearchForTheRuins a) = do
     isEztliGuardian <- eid <=~> EnemyWithTitle "Eztli Guardian"
-    pure $
-      toModifiers a $
-        guard isEztliGuardian
-          *> [CannotAttack, CannotBeAttacked]
+    pure
+      $ toModifiers a
+      $ guard isEztliGuardian
+      *> [CannotAttack, CannotBeAttacked]
   getModifiersFor (TreacheryTarget tid) (SearchForTheRuins a) = do
     isArrowsFromTheTrees <- tid <=~> treacheryIs Treacheries.arrowsFromTheTrees
     pure $ toModifiers a [IgnoreRevelation | isArrowsFromTheTrees]

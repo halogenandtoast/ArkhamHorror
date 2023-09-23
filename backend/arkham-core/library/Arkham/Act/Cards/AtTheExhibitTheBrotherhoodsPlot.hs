@@ -48,31 +48,31 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       leadInvestigatorId <- getLeadInvestigatorId
       brotherhoodCultists <- selectList $ enemyIs Enemies.brotherhoodCultist
       farthestBrotherhoodCultists <-
-        selectList $
-          FarthestEnemyFromAll $
-            enemyIs
-              Enemies.brotherhoodCultist
+        selectList
+          $ FarthestEnemyFromAll
+          $ enemyIs
+            Enemies.brotherhoodCultist
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       assetId <- getRandom
-      pushAll $
-        map
+      pushAll
+        $ map
           ((`HealAllDamage` toSource attrs) . EnemyTarget)
           brotherhoodCultists
-          <> [ chooseOrRunOne
-                leadInvestigatorId
-                [ targetLabel cultist $
-                  CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
-                    : [PlaceDoom (toSource attrs) (EnemyTarget cultist) 1 | deckCount <= 2]
-                | cultist <- farthestBrotherhoodCultists
-                ]
-             ]
+        <> [ chooseOrRunOne
+              leadInvestigatorId
+              [ targetLabel cultist
+                $ CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
+                : [PlaceDoom (toSource attrs) (EnemyTarget cultist) 1 | deckCount <= 2]
+              | cultist <- farthestBrotherhoodCultists
+              ]
+           ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       locations <- selectList $ FarthestLocationFromAll Anywhere
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           leadInvestigatorId
           [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
           | location <- locations

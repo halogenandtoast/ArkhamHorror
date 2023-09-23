@@ -26,11 +26,11 @@ relicOfAgesUnleashTheTimestream =
 
 instance HasAbilities RelicOfAgesUnleashTheTimestream where
   getAbilities (RelicOfAgesUnleashTheTimestream a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          Explored Timing.After You $
-            FailedExplore $
-              CardWithType TreacheryType
+    [ restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ Explored Timing.After You
+        $ FailedExplore
+        $ CardWithType TreacheryType
     ]
 
 getFailureCard :: [Window] -> Card

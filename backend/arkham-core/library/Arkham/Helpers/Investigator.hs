@@ -261,7 +261,7 @@ investigator f cardDef Stats {..} =
                     fromJustNote "missing class symbol"
                       . headMay
                       . setToList
-                      $ cdClassSymbols cardDef
+                        $ cdClassSymbols cardDef
                 , investigatorHealth = health
                 , investigatorSanity = sanity
                 , investigatorWillpower = willpower
@@ -389,8 +389,8 @@ findCard cardId a =
   fromJustNote "not in hand or discard or deck"
     $ findMatch
     $ (a ^. handL)
-      <> map PlayerCard (a ^. discardL)
-      <> map PlayerCard (unDeck $ a ^. deckL)
+    <> map PlayerCard (a ^. discardL)
+    <> map PlayerCard (unDeck $ a ^. deckL)
  where
   findMatch = find ((== cardId) . toCardId)
 

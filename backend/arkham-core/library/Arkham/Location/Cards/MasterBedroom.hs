@@ -32,9 +32,9 @@ instance HasAbilities MasterBedroom where
           1
           ( InvestigatorExists (investigatorAt $ toId a)
               <> EnemyCriteria
-                ( EnemyExists $
-                    EnemyWithTrait SilverTwilight
-                      <> EnemyWithoutModifier CannotPlaceDoomOnThis
+                ( EnemyExists
+                    $ EnemyWithTrait SilverTwilight
+                    <> EnemyWithoutModifier CannotPlaceDoomOnThis
                 )
           )
           $ ForcedAbility
@@ -45,16 +45,16 @@ instance RunMessage MasterBedroom where
   runMessage msg l@(MasterBedroom attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       enemies <-
-        selectList $
-          NearestEnemyToLocation
+        selectList
+          $ NearestEnemyToLocation
             (toId attrs)
             ( EnemyWithTrait SilverTwilight
                 <> EnemyWithoutModifier CannotPlaceDoomOnThis
             )
       unless (null enemies) $ do
         lead <- getLead
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             lead
             [ targetLabel enemy [PlaceDoom (toAbilitySource attrs 1) (toTarget enemy) 1]
             | enemy <- enemies

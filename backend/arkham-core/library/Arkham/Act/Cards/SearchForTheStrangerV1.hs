@@ -38,10 +38,10 @@ instance HasAbilities SearchForTheStrangerV1 where
     [ restrictedAbility
         a
         1
-        ( OnLocation $
-            LocationWithEnemy $
-              enemyIs
-                Enemies.theManInThePallidMask
+        ( OnLocation
+            $ LocationWithEnemy
+            $ enemyIs
+              Enemies.theManInThePallidMask
         )
         $ Objective
         $ ActionAbility Nothing

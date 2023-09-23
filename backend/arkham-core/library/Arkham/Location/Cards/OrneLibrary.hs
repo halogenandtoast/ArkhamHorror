@@ -19,8 +19,8 @@ orneLibrary = location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1)
 instance HasModifiersFor OrneLibrary where
   getModifiersFor (InvestigatorTarget iid) (OrneLibrary attrs)
     | iid `elem` locationInvestigators attrs =
-        pure $
-          toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]
+        pure
+          $ toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage OrneLibrary where

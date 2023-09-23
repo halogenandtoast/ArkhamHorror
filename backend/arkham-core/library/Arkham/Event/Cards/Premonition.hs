@@ -36,17 +36,17 @@ instance RunMessage Premonition where
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) RemoveChaosTokens
       pure e
     RequestedChaosTokens (isSource attrs -> True) _ ts -> do
-      pushAll $
-        concatMap (\t -> [SealChaosToken t, SealedChaosToken t (toCard attrs)]) ts
-          <> [ResetChaosTokens (toSource attrs)]
+      pushAll
+        $ concatMap (\t -> [SealChaosToken t, SealedChaosToken t (toCard attrs)]) ts
+        <> [ResetChaosTokens (toSource attrs)]
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let ts = eventSealedChaosTokens attrs
-      pushAll $
-        CancelNext (toSource attrs) RunWindowMessage
-          : map UnsealChaosToken ts
-            <> [ ReplaceCurrentDraw (toSource attrs) iid $
-                  Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
-               ]
+      pushAll
+        $ CancelNext (toSource attrs) RunWindowMessage
+        : map UnsealChaosToken ts
+          <> [ ReplaceCurrentDraw (toSource attrs) iid
+                $ Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
+             ]
       pure e
     _ -> Premonition <$> runMessage msg attrs

@@ -36,14 +36,14 @@ instance HasAbilities TheWingedSerpent where
   getAbilities (TheWingedSerpent a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            PlacedCounterOnLocation
-              Timing.After
-              (LocationWithTitle "Mouth of K'n-yan")
-              AnySource
-              ResourceCounter
-              AnyValue
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ PlacedCounterOnLocation
+            Timing.After
+            (LocationWithTitle "Mouth of K'n-yan")
+            AnySource
+            ResourceCounter
+            AnyValue
       ]
 
 instance RunMessage TheWingedSerpent where

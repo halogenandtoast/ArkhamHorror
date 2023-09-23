@@ -18,10 +18,10 @@ newtype TheRelicIsMissing = TheRelicIsMissing ActAttrs
 
 theRelicIsMissing :: ActCard TheRelicIsMissing
 theRelicIsMissing =
-  act (1, A) TheRelicIsMissing Cards.theRelicIsMissing $
-    Just $
-      GroupClueCost (PerPlayer 1) $
-        LocationWithTitle "Miskatonic University"
+  act (1, A) TheRelicIsMissing Cards.theRelicIsMissing
+    $ Just
+    $ GroupClueCost (PerPlayer 1)
+    $ LocationWithTitle "Miskatonic University"
 
 instance RunMessage TheRelicIsMissing where
   runMessage msg a@(TheRelicIsMissing attrs) = case msg of

@@ -34,11 +34,11 @@ instance HasAbilities ThePathIsBarred where
   getAbilities (ThePathIsBarred a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          Objective $
-            ForcedAbility $
-              EnemyDefeated Timing.When Anyone ByAny $
-                enemyIs Enemies.theManInThePallidMask
+      [ mkAbility a 1
+          $ Objective
+          $ ForcedAbility
+          $ EnemyDefeated Timing.When Anyone ByAny
+          $ enemyIs Enemies.theManInThePallidMask
       ]
 
 instance RunMessage ThePathIsBarred where
@@ -53,8 +53,8 @@ instance RunMessage ThePathIsBarred where
           AdvancedWithClues -> (Doubt, Cards.leadingTheWay)
       enemy <- getCampaignStoryCard Enemies.theManInThePallidMask
       mTheManInThePallidMaskId <-
-        selectOne $
-          enemyIs Enemies.theManInThePallidMask
+        selectOne
+          $ enemyIs Enemies.theManInThePallidMask
       convictionOrDoubtCount <- getRecordCount convictionOrDoubt
       pushAll
         ( [ RecordCount convictionOrDoubt (convictionOrDoubtCount + 2)

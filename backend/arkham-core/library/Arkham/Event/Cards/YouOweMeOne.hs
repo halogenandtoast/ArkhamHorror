@@ -26,8 +26,8 @@ instance RunMessage YouOweMeOne where
   runMessage msg e@(YouOweMeOne attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       others <- selectList $ NotInvestigator (InvestigatorWithId iid)
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel
             other
@@ -43,18 +43,18 @@ instance RunMessage YouOweMeOne where
         drawing2 <- drawCards iid' attrs 1
         pushAll
           [ FocusCards cards
-          , chooseOne iid $
-              Label "Do not play a card" []
-                : [ targetLabel
-                    (toCardId card)
-                    [ RemoveCardFromHand iid' (toCardId card)
-                    , AddToHand iid [card]
-                    , InitiatePlayCard iid card Nothing (defaultWindows iid) False
-                    , drawing1
-                    , drawing2
-                    ]
-                  | card <- relevantCards
+          , chooseOne iid
+              $ Label "Do not play a card" []
+              : [ targetLabel
+                  (toCardId card)
+                  [ RemoveCardFromHand iid' (toCardId card)
+                  , AddToHand iid [card]
+                  , InitiatePlayCard iid card Nothing (defaultWindows iid) False
+                  , drawing1
+                  , drawing2
                   ]
+                | card <- relevantCards
+                ]
           , UnfocusCards
           ]
         pure e

@@ -27,9 +27,9 @@ instance RunMessage MeddlesomeFamiliar where
   runMessage msg t@(MeddlesomeFamiliar attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       brownJenkinInPlay <- getEnemyIsInPlay Enemies.brownJenkin
-      push $
-        findEncounterCard iid attrs [FromEncounterDeck, FromEncounterDiscard] $
-          if brownJenkinInPlay then Enemies.swarmOfRats else Enemies.brownJenkin
+      push
+        $ findEncounterCard iid attrs [FromEncounterDeck, FromEncounterDiscard]
+        $ if brownJenkinInPlay then Enemies.swarmOfRats else Enemies.brownJenkin
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.brownJenkin -> do
       spawnBrownJenkin <- toMessage <$> createEnemy card (locationWithInvestigator iid)
@@ -37,10 +37,10 @@ instance RunMessage MeddlesomeFamiliar where
       pure t
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.swarmOfRats -> do
       spawnSwarmOfRats <- createEnemy card iid
-      push $
-        toMessage $
-          spawnSwarmOfRats
-            { enemyCreationAfter = [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-            }
+      push
+        $ toMessage
+        $ spawnSwarmOfRats
+          { enemyCreationAfter = [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
+          }
       pure t
     _ -> MeddlesomeFamiliar <$> runMessage msg attrs

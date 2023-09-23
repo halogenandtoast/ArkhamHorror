@@ -26,7 +26,8 @@ instance HasAbilities UncoveringTheConspiracy where
   getAbilities (UncoveringTheConspiracy a) | onSide A a = do
     [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck)
         $ ActionAbility Nothing
-        $ ActionCost 1 <> GroupClueCost (PerPlayer 2) Anywhere
+        $ ActionCost 1
+        <> GroupClueCost (PerPlayer 2) Anywhere
       , mkAbility a 2 (Objective $ ForcedAbility AnyWindow)
           `withCriteria` InVictoryDisplay
             (CardWithTrait Cultist <> CardIsUnique)

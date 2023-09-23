@@ -29,11 +29,11 @@ run = act (1, A) (Run . (`with` (Metadata Nothing))) Cards.run Nothing
 
 instance HasAbilities Run where
   getAbilities (Run x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          Enters Timing.When You $
-            LocationWithTitle
-              "Engine Car"
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ Enters Timing.When You
+        $ LocationWithTitle
+          "Engine Car"
     ]
 
 instance RunMessage Run where

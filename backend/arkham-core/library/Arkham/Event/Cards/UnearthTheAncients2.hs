@@ -40,10 +40,10 @@ instance RunMessage UnearthTheAncients2 where
   runMessage msg e@(UnearthTheAncients2 (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <-
-        selectList $
-          InHandOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (CardWithClass Seeker <> CardWithType AssetType)
+        selectList
+          $ InHandOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (CardWithClass Seeker <> CardWithType AssetType)
       pushAll
         [ chooseUpToN
             iid
@@ -58,11 +58,11 @@ instance RunMessage UnearthTheAncients2 where
         ]
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (CardTarget card) -> do
-      pure $
-        UnearthTheAncients2 $
-          attrs
-            `with` Metadata
-              (card : chosenCards metadata)
+      pure
+        $ UnearthTheAncients2
+        $ attrs
+        `with` Metadata
+          (card : chosenCards metadata)
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
       skillType <- field LocationInvestigateSkill lid
@@ -76,10 +76,10 @@ instance RunMessage UnearthTheAncients2 where
       pure e
     Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _ -> do
       chosen <- forToSnd (chosenCards metadata) $ \_ -> drawCards iid attrs 1
-      pushAll $
-        [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
-        | card <- chosenCards metadata
-        ]
-          <> [drawing | (card, drawing) <- chosen, Relic `member` toTraits card]
+      pushAll
+        $ [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
+          | card <- chosenCards metadata
+          ]
+        <> [drawing | (card, drawing) <- chosen, Relic `member` toTraits card]
       pure e
     _ -> UnearthTheAncients2 . (`with` metadata) <$> runMessage msg attrs

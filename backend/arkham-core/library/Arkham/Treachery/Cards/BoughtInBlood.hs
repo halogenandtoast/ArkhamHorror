@@ -29,16 +29,16 @@ instance RunMessage BoughtInBlood where
       case (inPlay, inHand) of
         ([], []) -> push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
         (inPlay', inHand') ->
-          push $
-            chooseOrRunOne iid $
-              [ Label
+          push
+            $ chooseOrRunOne iid
+            $ [ Label
                 "Discard an Ally asset you control from play"
                 [ChooseAndDiscardAsset iid (toSource attrs) AllyAsset]
               | notNull inPlay'
               ]
-                <> [ Label "Discard each Ally asset from your hand" $
-                    map (DiscardCard iid (toSource attrs)) inHand'
-                   | notNull inHand'
-                   ]
+            <> [ Label "Discard each Ally asset from your hand"
+                $ map (DiscardCard iid (toSource attrs)) inHand'
+               | notNull inHand'
+               ]
       pure t
     _ -> BoughtInBlood <$> runMessage msg attrs

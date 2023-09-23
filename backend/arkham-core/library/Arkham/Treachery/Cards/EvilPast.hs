@@ -22,20 +22,20 @@ evilPast = treachery EvilPast Cards.evilPast
 
 instance HasAbilities EvilPast where
   getAbilities (EvilPast a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility EncounterDeckRunsOutOfCards
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility EncounterDeckRunsOutOfCards
     ]
 
 instance RunMessage EvilPast where
   runMessage msg t@(EvilPast attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       hasEvilPast <-
-        selectAny $
-          treacheryIs Cards.evilPast
-            <> TreacheryInThreatAreaOf
-              (InvestigatorWithId iid)
-      push $
-        if hasEvilPast
+        selectAny
+          $ treacheryIs Cards.evilPast
+          <> TreacheryInThreatAreaOf
+            (InvestigatorWithId iid)
+      push
+        $ if hasEvilPast
           then gainSurge attrs
           else AttachTreachery (toId attrs) (toTarget iid)
       pure t

@@ -57,7 +57,7 @@ instance RunMessage Banish1Effect where
               Nothing -> []
               Just st ->
                 let faces = map chaosTokenFace (skillTestRevealedChaosTokens st)
-                in  [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
+                 in [ createRoundModifier attrs eid [DoesNotReadyDuringUpkeep]
                     | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
                     ]
 

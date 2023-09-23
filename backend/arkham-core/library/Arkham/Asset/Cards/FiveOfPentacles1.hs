@@ -25,8 +25,8 @@ fiveOfPentacles1 =
 instance HasModifiersFor FiveOfPentacles1 where
   getModifiersFor (InvestigatorTarget iid) (FiveOfPentacles1 a)
     | controlledBy a iid =
-        pure $
-          toModifiers a [HealthModifier 1, SanityModifier 1]
+        pure
+          $ toModifiers a [HealthModifier 1, SanityModifier 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FiveOfPentacles1 where

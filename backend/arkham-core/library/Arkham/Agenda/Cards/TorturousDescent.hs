@@ -35,14 +35,14 @@ instance RunMessage TorturousDescent where
         spawnConstanceDumaine <- not <$> slain Enemies.constanceDumaine
         card <- genCard Enemies.constanceDumaine
         createConstanceDumaine <-
-          createEnemyAtLocationMatching_ card $
-            LocationWithTitle "Garden"
+          createEnemyAtLocationMatching_ card
+            $ LocationWithTitle "Garden"
         pure [createConstanceDumaine | spawnConstanceDumaine]
 
-      pushAll $
-        [DrawRandomFromScenarioDeck lead MonstersDeck (toTarget attrs) 1]
-          <> spawnConstanceDumaineMessages
-          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll
+        $ [DrawRandomFromScenarioDeck lead MonstersDeck (toTarget attrs) 1]
+        <> spawnConstanceDumaineMessages
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
       push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards

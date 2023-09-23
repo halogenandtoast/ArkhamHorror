@@ -22,8 +22,8 @@ faubourgMarigny = location FaubourgMarigny Cards.faubourgMarigny 4 (Static 0)
 
 instance HasModifiersFor FaubourgMarigny where
   getModifiersFor (InvestigatorTarget iid) (FaubourgMarigny attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ ReduceCostOf (CardWithType AssetType) 1
         | iid `member` locationInvestigators attrs

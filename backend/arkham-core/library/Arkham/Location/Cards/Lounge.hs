@@ -35,12 +35,12 @@ instance RunMessage Lounge where
       augustLindquist <- getSetAsideCard Assets.augustLindquist
       augustLindquistId <- getRandom
       mKey <- getRandomKey
-      pushAll $
-        [ PlaceLocationMatching (CardWithTitle "Vault")
-        , PlaceLocationMatching (CardWithTitle "Library")
-        , CreateAssetAt augustLindquistId augustLindquist (AtLocation $ toId attrs)
-        ]
-          <> [ PlaceKey (AssetTarget augustLindquistId) k | k <- maybeToList mKey
-             ]
+      pushAll
+        $ [ PlaceLocationMatching (CardWithTitle "Vault")
+          , PlaceLocationMatching (CardWithTitle "Library")
+          , CreateAssetAt augustLindquistId augustLindquist (AtLocation $ toId attrs)
+          ]
+        <> [ PlaceKey (AssetTarget augustLindquistId) k | k <- maybeToList mKey
+           ]
       pure l
     _ -> Lounge <$> runMessage msg attrs

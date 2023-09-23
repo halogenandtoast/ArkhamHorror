@@ -22,8 +22,8 @@ luckyCigaretteCase3 = asset LuckyCigaretteCase3 Cards.luckyCigaretteCase3
 
 instance HasAbilities LuckyCigaretteCase3 where
   getAbilities (LuckyCigaretteCase3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( SkillTestResult
               Timing.After
               You

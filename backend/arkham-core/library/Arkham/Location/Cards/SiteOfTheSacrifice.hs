@@ -35,10 +35,11 @@ instance HasAbilities SiteOfTheSacrifice where
             ( Here <> enemyExists (enemyIs Enemies.nahab <> EnemyWithAnyDoom)
             )
           $ ActionAbility Nothing
-          $ ActionCost 1 <> GroupClueCost (PerPlayer 1) (LocationWithId $ toId a)
-      , restrictedAbility a 2 (CluesOnThis $ LessThan $ PerPlayer 3) $
-          ForcedAbility $
-            RoundEnds Timing.When
+          $ ActionCost 1
+          <> GroupClueCost (PerPlayer 1) (LocationWithId $ toId a)
+      , restrictedAbility a 2 (CluesOnThis $ LessThan $ PerPlayer 3)
+          $ ForcedAbility
+          $ RoundEnds Timing.When
       , haunted "You must either place 1 doom on Nahab, or Nahab attacks you." a 3
       ]
 
@@ -55,8 +56,8 @@ instance RunMessage SiteOfTheSacrifice where
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
       nahab <- getUniqueEnemy Enemies.nahab
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label "Place 1 doom on Nahab" [PlaceDoom (toAbilitySource attrs 3) (toTarget nahab) 1]
           , Label "Nahab attacks you" [InitiateEnemyAttack $ enemyAttack nahab attrs iid]

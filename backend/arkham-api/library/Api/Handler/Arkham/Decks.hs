@@ -9,7 +9,6 @@ module Api.Handler.Arkham.Decks (
 
 import Import hiding (delete, on, update, (=.), (==.))
 
-import Control.Lens (view)
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
 import Arkham.Classes.HasQueue
@@ -20,6 +19,7 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
+import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -116,22 +116,26 @@ putApiV1ArkhamGameDecksR gameId = do
   let diffDown = diff ge arkhamGameCurrentData
   updatedQueue <- readIORef (queueToRef queueRef)
   writeChannel <- getChannel gameId
-  atomically $
-    writeTChan
+  atomically
+    $ writeTChan
       writeChannel
       (encode $ GameUpdate $ PublicGame gameId arkhamGameName mempty ge)
   now <- liftIO getCurrentTime
   runDB $ do
-    replace gameId $
-      ArkhamGame
+    replace gameId
+      $ ArkhamGame
         arkhamGameName
         ge
         (arkhamGameStep + 1)
         arkhamGameMultiplayerVariant
         arkhamGameCreatedAt
         now
-    insert_ $
-      ArkhamStep gameId (Choice diffDown updatedQueue) (arkhamGameStep + 1) (ActionDiff $ view actionDiffL ge)
+    insert_
+      $ ArkhamStep
+        gameId
+        (Choice diffDown updatedQueue)
+        (arkhamGameStep + 1)
+        (ActionDiff $ view actionDiffL ge)
 
 fromPostData
   :: MonadIO m => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
@@ -139,8 +143,8 @@ fromPostData userId CreateDeckPost {..} = do
   edecklist <- getDeckList deckUrl
   pure $ do
     decklist <- edecklist
-    pure $
-      ArkhamDeck
+    pure
+      $ ArkhamDeck
         { arkhamDeckUserId = userId
         , arkhamDeckUrl = deckUrl
         , arkhamDeckInvestigatorName = tshow $ investigator_name decklist
@@ -177,8 +181,8 @@ postApiV1ArkhamSyncDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 postApiV1ArkhamSyncDeckR deckId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   deck <- runDB $ get404 deckId
-  unless (arkhamDeckUserId deck == userId) $
-    sendStatusJSON
+  unless (arkhamDeckUserId deck == userId)
+    $ sendStatusJSON
       Status.status400
       (JSONError "Deck does not belong to this user")
   edecklist <- getDeckList (arkhamDeckUrl deck)

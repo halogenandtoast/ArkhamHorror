@@ -32,8 +32,8 @@ toWindowChaosToken (_ : xs) = toWindowChaosToken xs
 instance RunMessage Eucatastrophe3 where
   runMessage msg e@(Eucatastrophe3 attrs) = case msg of
     InvestigatorPlayEvent _ eid _ (toWindowChaosToken -> token) _ | eid == toId attrs -> do
-      push $
-        CreateChaosTokenEffect
+      push
+        $ CreateChaosTokenEffect
           (EffectModifiers $ toModifiers attrs [ChaosTokenFaceModifier [ElderSign]])
           (toSource attrs)
           token

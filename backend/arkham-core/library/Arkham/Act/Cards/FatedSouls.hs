@@ -43,14 +43,14 @@ instance RunMessage FatedSouls where
       locations <- selectList $ LocationIsInFrontOf Anyone
       (geistTrap, placeGeistTrap) <- placeSetAsideLocation Locations.theGeistTrap
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
-      pushAll $
-        [ PlaceEnemy watcher $ AtLocation miskatonicRiver
-        , ShuffleCardsIntoDeck EncounterDeck (watchersGrasp <> watchersGaze)
-        , ShuffleEncounterDiscardBackIn
-        , advanceActDeck attrs
-        ]
-          <> map PutLocationInCenter locations
-          <> [placeGeistTrap]
-          <> [lightBrazier geistTrap | sidedWithTheCoven]
+      pushAll
+        $ [ PlaceEnemy watcher $ AtLocation miskatonicRiver
+          , ShuffleCardsIntoDeck EncounterDeck (watchersGrasp <> watchersGaze)
+          , ShuffleEncounterDiscardBackIn
+          , advanceActDeck attrs
+          ]
+        <> map PutLocationInCenter locations
+        <> [placeGeistTrap]
+        <> [lightBrazier geistTrap | sidedWithTheCoven]
       pure a
     _ -> FatedSouls <$> runMessage msg attrs

@@ -24,15 +24,15 @@ snappedThreads = agenda (3, A) SnappedThreads Cards.snappedThreads (Static 12)
 
 instance HasAbilities SnappedThreads where
   getAbilities (SnappedThreads a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          InvestigatorEliminated Timing.When $
-            AnyInvestigator
-              [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
-              , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
-              , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
-              , HasMatchingAsset (AssetWithTitle "Relic of Ages")
-              ]
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ InvestigatorEliminated Timing.When
+        $ AnyInvestigator
+          [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
+          , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
+          , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
+          , HasMatchingAsset (AssetWithTitle "Relic of Ages")
+          ]
     ]
 
 instance RunMessage SnappedThreads where

@@ -70,11 +70,11 @@ instance RunMessage BeyondTheMistV1 where
               (\covenInitiate -> createEnemyAt_ covenInitiate geistTrap Nothing)
               covenInitiates
 
-      pushAll $
-        RevealLocation Nothing geistTrap
-          : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
-            <> creationMessages
-            <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
+      pushAll
+        $ RevealLocation Nothing geistTrap
+        : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
+          <> creationMessages
+          <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
       pure a
     NextAdvanceActStep aid 1 | aid == toId attrs -> do
       witches <- getSetAsideCardsMatching (CardWithTrait Witch)

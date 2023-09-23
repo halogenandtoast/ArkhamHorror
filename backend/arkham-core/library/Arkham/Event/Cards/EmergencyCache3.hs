@@ -23,25 +23,25 @@ instance RunMessage EmergencyCache3 where
   runMessage msg e@(EmergencyCache3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       supplyAssets <-
-        selectList $
-          AssetControlledBy (InvestigatorWithId iid)
-            <> AssetWithUses Supply
+        selectList
+          $ AssetControlledBy (InvestigatorWithId iid)
+          <> AssetWithUses Supply
       if null supplyAssets
         then pushAll [TakeResources iid 4 (toSource attrs) False]
         else do
-          pushAll $
-            replicate 4 $
-              chooseOne
-                iid
-                [ Label "Take Resource" [TakeResources iid 1 (toSource attrs) False]
-                , Label
-                    "Add Supply"
-                    [ chooseOrRunOne
-                        iid
-                        [ targetLabel asset [AddUses asset Supply 1]
-                        | asset <- supplyAssets
-                        ]
-                    ]
-                ]
+          pushAll
+            $ replicate 4
+            $ chooseOne
+              iid
+              [ Label "Take Resource" [TakeResources iid 1 (toSource attrs) False]
+              , Label
+                  "Add Supply"
+                  [ chooseOrRunOne
+                      iid
+                      [ targetLabel asset [AddUses asset Supply 1]
+                      | asset <- supplyAssets
+                      ]
+                  ]
+              ]
       pure e
     _ -> EmergencyCache3 <$> runMessage msg attrs

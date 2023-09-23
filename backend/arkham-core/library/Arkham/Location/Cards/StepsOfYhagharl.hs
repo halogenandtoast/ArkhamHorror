@@ -28,21 +28,21 @@ stepsOfYhagharl =
 
 instance HasAbilities StepsOfYhagharl where
   getAbilities (StepsOfYhagharl attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          Leaves Timing.When You $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.When You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage StepsOfYhagharl where
   runMessage msg l@(StepsOfYhagharl attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- scenarioField ScenarioDiscard
-      for_ (find (member Madness . toTraits) encounterDiscard) $
-        \madnessCard -> push $ InvestigatorDrewEncounterCard iid madnessCard
+      for_ (find (member Madness . toTraits) encounterDiscard)
+        $ \madnessCard -> push $ InvestigatorDrewEncounterCard iid madnessCard
       StepsOfYhagharl <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ beginSkillTest iid source (InvestigatorTarget iid) SkillWillpower 2

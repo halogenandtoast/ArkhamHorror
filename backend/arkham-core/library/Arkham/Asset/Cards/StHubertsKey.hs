@@ -25,8 +25,8 @@ stHubertsKey = asset StHubertsKey Cards.stHubertsKey
 instance HasModifiersFor StHubertsKey where
   getModifiersFor (InvestigatorTarget iid) (StHubertsKey a)
     | controlledBy a iid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ SkillModifier SkillWillpower 1
             , SkillModifier SkillIntellect 1
@@ -38,8 +38,8 @@ instance HasAbilities StHubertsKey where
   getAbilities (StHubertsKey a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          ( InvestigatorDefeated Timing.When ByHorror $
-              HealableInvestigator (toSource a) HorrorType You
+          ( InvestigatorDefeated Timing.When ByHorror
+              $ HealableInvestigator (toSource a) HorrorType You
           )
         $ DiscardCost FromPlay
         $ toTarget a
@@ -56,10 +56,10 @@ instance RunMessage StHubertsKey where
           Just (Msg.InvestigatorDefeated x _) -> x
           _ -> error "missing defeated message"
       mHealHorror <- getHealHorrorMessage attrs 2 iid
-      pushAll $
-        maybeToList mHealHorror
-          <> [ CancelNext (toSource attrs) InvestigatorDefeatedMessage
-             , CheckDefeated defeatedSource
-             ]
+      pushAll
+        $ maybeToList mHealHorror
+        <> [ CancelNext (toSource attrs) InvestigatorDefeatedMessage
+           , CheckDefeated defeatedSource
+           ]
       pure a
     _ -> StHubertsKey <$> runMessage msg attrs

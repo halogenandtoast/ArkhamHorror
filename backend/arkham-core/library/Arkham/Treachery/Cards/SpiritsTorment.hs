@@ -24,29 +24,29 @@ spiritsTorment = treachery SpiritsTorment Cards.spiritsTorment
 
 instance HasAbilities SpiritsTorment where
   getAbilities (SpiritsTorment a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          Leaves Timing.When You $
-            LocationWithTreachery $
-              TreacheryWithId $
-                toId a
-    , restrictedAbility a 2 OnSameLocation $
-        ActionAbility Nothing $
-          Costs
-            [ActionCost 1, PlaceClueOnLocationCost 1]
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ Leaves Timing.When You
+        $ LocationWithTreachery
+        $ TreacheryWithId
+        $ toId a
+    , restrictedAbility a 2 OnSameLocation
+        $ ActionAbility Nothing
+        $ Costs
+          [ActionCost 1, PlaceClueOnLocationCost 1]
     ]
 
 instance RunMessage SpiritsTorment where
   runMessage msg t@(SpiritsTorment attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid $
-        \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
+      for_ mlid
+        $ \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasActions <- member iid <$> select InvestigatorWithAnyActionsRemaining
-      push $
-        if hasActions
+      push
+        $ if hasActions
           then
             chooseOne
               iid

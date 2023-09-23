@@ -27,8 +27,8 @@ azureFlame3 = asset AzureFlame3 Cards.azureFlame3
 
 instance HasAbilities AzureFlame3 where
   getAbilities (AzureFlame3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbilityWithSkill
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbilityWithSkill
           (Just Action.Fight)
           SkillWillpower
           (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])

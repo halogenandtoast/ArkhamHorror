@@ -26,7 +26,7 @@ instance RunMessage CoupDeGrace where
       enemies <-
         selectList
           $ EnemyAt (locationWithInvestigator iid)
-            <> EnemyCanBeDamagedBySource (toSource attrs)
+          <> EnemyCanBeDamagedBySource (toSource attrs)
       pushAll
         $ chooseOrRunOne
           iid
@@ -35,7 +35,7 @@ instance RunMessage CoupDeGrace where
             [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
           | enemy <- enemies
           ]
-          : [ChooseEndTurn iid | isTurn]
+        : [ChooseEndTurn iid | isTurn]
       pure e
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       drawing <- drawCards (eventController attrs) attrs 1

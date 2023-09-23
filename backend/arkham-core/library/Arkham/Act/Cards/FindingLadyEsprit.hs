@@ -45,10 +45,10 @@ instance RunMessage FindingLadyEsprit where
 
       let
         traits =
-          toList $
-            Set.unions (map toTraits setAsideLocations)
-              `intersect` setFromList
-                [NewOrleans, Riverside, Wilderness, Unhallowed]
+          toList
+            $ Set.unions (map toTraits setAsideLocations)
+            `intersect` setFromList
+              [NewOrleans, Riverside, Wilderness, Unhallowed]
         locationsFor t = filter (member t . toTraits) setAsideLocations
 
       setAsideLocationsWithLabels <-
@@ -60,10 +60,10 @@ instance RunMessage FindingLadyEsprit where
         pure [locationPlacement, SetLocationLabel locationId label]
 
       assetId <- getRandom
-      pushAll $
-        [CreateAssetAt assetId ladyEsprit (AtLocation ladyEspritSpawnLocation)]
-          <> concat placements
-          <> [NextAdvanceActStep aid 2]
+      pushAll
+        $ [CreateAssetAt assetId ladyEsprit (AtLocation ladyEspritSpawnLocation)]
+        <> concat placements
+        <> [NextAdvanceActStep aid 2]
       pure a
     NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
       lead <- getLead
@@ -77,13 +77,13 @@ instance RunMessage FindingLadyEsprit where
         createRougarou <- createEnemyAt_ theRougarou lid Nothing
         pure $ targetLabel lid [createRougarou]
 
-      pushAll $
-        [chooseOne lead choices]
-          <> [ ShuffleEncounterDiscardBackIn
-             , ShuffleCardsIntoDeck Deck.EncounterDeck curseOfTheRougarouSet
-             , AddCampaignCardToDeck lead Treacheries.curseOfTheRougarou
-             , CreateWeaknessInThreatArea curseOfTheRougarou lead
-             , AdvanceActDeck actDeckId (toSource attrs)
-             ]
+      pushAll
+        $ [chooseOne lead choices]
+        <> [ ShuffleEncounterDiscardBackIn
+           , ShuffleCardsIntoDeck Deck.EncounterDeck curseOfTheRougarouSet
+           , AddCampaignCardToDeck lead Treacheries.curseOfTheRougarou
+           , CreateWeaknessInThreatArea curseOfTheRougarou lead
+           , AdvanceActDeck actDeckId (toSource attrs)
+           ]
       pure a
     _ -> FindingLadyEsprit <$> runMessage msg attrs

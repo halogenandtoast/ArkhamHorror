@@ -25,8 +25,8 @@ instance HasAbilities CityOfElderThings where
   getAbilities (CityOfElderThings a) =
     withRevealedAbilities
       a
-      [ mkAbility a 1 $
-          ReactionAbility
+      [ mkAbility a 1
+          $ ReactionAbility
             (RevealLocation Timing.After You $ LocationWithId $ toId a)
             (HorrorCost (toSource a) YouTarget 2)
       ]
@@ -40,16 +40,16 @@ instance RunMessage CityOfElderThings where
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) [card] -> do
       labels <-
-        selectFields LocationLabel $
-          LocationWithUnrevealedTitle "Unknown Places"
-            <> NotLocation RevealedLocation
+        selectFields LocationLabel
+          $ LocationWithUnrevealedTitle "Unknown Places"
+          <> NotLocation RevealedLocation
       let
         nextLabel =
-          fromJustNote "too many locations" $
-            find (`notElem` labels) $
-              map
-                (\n -> "unknownPlaces" <> tshow n)
-                ([1 .. 7] :: [Int])
+          fromJustNote "too many locations"
+            $ find (`notElem` labels)
+            $ map
+              (\n -> "unknownPlaces" <> tshow n)
+              ([1 .. 7] :: [Int])
       (lid, placement) <- placeLocation card
       pushAll
         [ placement

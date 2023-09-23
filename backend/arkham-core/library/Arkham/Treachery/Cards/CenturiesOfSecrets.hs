@@ -29,8 +29,8 @@ instance RunMessage CenturiesOfSecrets where
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n
       | n > 0 ->
           do
-            push $
-              DiscardTopOfEncounterDeck
+            push
+              $ DiscardTopOfEncounterDeck
                 iid
                 n
                 (toSource attrs)
@@ -40,8 +40,8 @@ instance RunMessage CenturiesOfSecrets where
       when (any (`cardMatch` CardWithTrait Curse) cards) $ do
         assetIds <-
           selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
-        pushAll $
-          InvestigatorDirectDamage iid (toSource attrs) 1 0
-            : [AssetDamage aid (toSource attrs) 1 0 | aid <- assetIds]
+        pushAll
+          $ InvestigatorDirectDamage iid (toSource attrs) 1 0
+          : [AssetDamage aid (toSource attrs) 1 0 | aid <- assetIds]
       pure t
     _ -> CenturiesOfSecrets <$> runMessage msg attrs

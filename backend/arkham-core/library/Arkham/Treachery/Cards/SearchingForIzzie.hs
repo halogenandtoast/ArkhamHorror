@@ -30,12 +30,12 @@ instance HasAbilities SearchingForIzzie where
       1
       OnSameLocation
       (ActionAbility (Just Action.Investigate) $ ActionCost 2)
-      : [ mkAbility x 2 $
-          ForcedAbility $
-            OrWindowMatcher
-              [ GameEnds Timing.When
-              , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
-              ]
+      : [ mkAbility x 2
+          $ ForcedAbility
+          $ OrWindowMatcher
+            [ GameEnds Timing.When
+            , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+            ]
         | iid <- maybeToList (treacheryOwner x)
         ]
 
@@ -46,8 +46,8 @@ instance RunMessage SearchingForIzzie where
       case targets of
         [] -> pure ()
         xs ->
-          push $
-            chooseOrRunOne
+          push
+            $ chooseOrRunOne
               iid
               [ TargetLabel target [AttachTreachery treacheryId target]
               | target <- xs
@@ -56,8 +56,8 @@ instance RunMessage SearchingForIzzie where
     UseCardAbility iid source 1 _ _ | isSource attrs source ->
       withTreacheryLocation attrs $ \locationId -> do
         skillType <- field LocationInvestigateSkill locationId
-        push $
-          Investigate
+        push
+          $ Investigate
             iid
             locationId
             source
@@ -71,5 +71,5 @@ instance RunMessage SearchingForIzzie where
     UseCardAbility _ source 2 _ _
       | isSource attrs source ->
           let investigator = fromJustNote "missing investigator" treacheryOwner
-          in  t <$ push (SufferTrauma investigator 0 1)
+           in t <$ push (SufferTrauma investigator 0 1)
     _ -> SearchingForIzzie <$> runMessage msg attrs

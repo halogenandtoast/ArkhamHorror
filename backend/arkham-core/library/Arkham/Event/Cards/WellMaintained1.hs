@@ -26,8 +26,8 @@ wellMaintained1 = event WellMaintained1 Cards.wellMaintained1
 instance HasAbilities WellMaintained1 where
   getAbilities (WellMaintained1 a) = case eventPlacement a of
     AttachedToAsset aid _ ->
-      [ restrictedAbility a 1 ControlsThis $
-          ReactionAbility (AssetWouldBeDiscarded Timing.After $ AssetWithId aid) Free
+      [ restrictedAbility a 1 ControlsThis
+          $ ReactionAbility (AssetWouldBeDiscarded Timing.After $ AssetWithId aid) Free
       ]
     _ -> []
 
@@ -35,8 +35,8 @@ instance RunMessage WellMaintained1 where
   runMessage msg e@(WellMaintained1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetWithTrait Item
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
           | asset <- assets
@@ -46,13 +46,13 @@ instance RunMessage WellMaintained1 where
       case eventPlacement attrs of
         AttachedToAsset aid _ -> do
           otherUpgrades <-
-            selectList $
-              EventAttachedToAsset (AssetWithId aid)
-                <> NotEvent (EventWithId (toId attrs))
-                <> EventWithTrait Upgrade
-          pushAll $
-            [ReturnToHand iid (toTarget upgrade) | upgrade <- otherUpgrades]
-              <> [ReturnToHand iid (toTarget aid)]
+            selectList
+              $ EventAttachedToAsset (AssetWithId aid)
+              <> NotEvent (EventWithId (toId attrs))
+              <> EventWithTrait Upgrade
+          pushAll
+            $ [ReturnToHand iid (toTarget upgrade) | upgrade <- otherUpgrades]
+            <> [ReturnToHand iid (toTarget aid)]
         _ -> error "Invalid placement"
       pure e
     _ -> WellMaintained1 <$> runMessage msg attrs

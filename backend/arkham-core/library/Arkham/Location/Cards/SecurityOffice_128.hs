@@ -24,8 +24,8 @@ instance HasAbilities SecurityOffice_128 where
   getAbilities (SecurityOffice_128 x) =
     withBaseAbilities
       x
-      [ limitedAbility (PlayerLimit PerTurn 1) $
-        restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
+      [ limitedAbility (PlayerLimit PerTurn 1)
+        $ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
       | locationRevealed x
       ]
 

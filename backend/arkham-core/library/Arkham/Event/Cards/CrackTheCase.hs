@@ -27,14 +27,14 @@ instance RunMessage CrackTheCase where
       lid <- getJustLocation iid
       iids <- selectList $ investigatorAt lid <> InvestigatorCanGainResources
       shroud <- field LocationShroud lid
-      pushAll $
-        replicate shroud $
-          chooseOrRunOne
-            iid
-            [ ComponentLabel
-              (InvestigatorComponent iid' ResourceToken)
-              [TakeResources iid' 1 (toSource attrs) False]
-            | iid' <- iids
-            ]
+      pushAll
+        $ replicate shroud
+        $ chooseOrRunOne
+          iid
+          [ ComponentLabel
+            (InvestigatorComponent iid' ResourceToken)
+            [TakeResources iid' 1 (toSource attrs) False]
+          | iid' <- iids
+          ]
       pure e
     _ -> CrackTheCase <$> runMessage msg attrs

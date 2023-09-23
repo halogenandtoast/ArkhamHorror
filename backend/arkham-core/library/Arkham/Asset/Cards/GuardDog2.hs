@@ -35,8 +35,8 @@ instance HasAbilities GuardDog2 where
         $ FastAbility
         $ ExhaustCost
         $ toTarget x
-    , restrictedAbility x 2 ControlsThis $
-        ReactionAbility
+    , restrictedAbility x 2 ControlsThis
+        $ ReactionAbility
           ( AssetDealtDamage
               Timing.When
               (SourceIsEnemyAttack AnyEnemy)
@@ -58,8 +58,8 @@ instance RunMessage GuardDog2 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <-
         selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel
             enemy

@@ -20,14 +20,14 @@ forgottenMarsh = location ForgottenMarsh Cards.forgottenMarsh 2 (Static 0)
 
 instance HasAbilities ForgottenMarsh where
   getAbilities (ForgottenMarsh attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          Leaves Timing.When You $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.When You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage ForgottenMarsh where
   runMessage msg l@(ForgottenMarsh attrs) = case msg of

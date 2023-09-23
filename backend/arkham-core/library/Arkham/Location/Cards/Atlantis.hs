@@ -26,10 +26,10 @@ instance HasAbilities Atlantis where
   getAbilities (Atlantis a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            RevealChaosToken Timing.After Anyone $
-              ChaosTokenFaceIs AutoFail
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ RevealChaosToken Timing.After Anyone
+          $ ChaosTokenFaceIs AutoFail
       ]
 
 instance RunMessage Atlantis where

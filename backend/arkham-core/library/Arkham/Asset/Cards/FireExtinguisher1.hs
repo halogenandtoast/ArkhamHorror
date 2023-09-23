@@ -17,10 +17,10 @@ fireExtinguisher1 = asset FireExtinguisher1 Cards.fireExtinguisher1
 
 instance HasAbilities FireExtinguisher1 where
   getAbilities (FireExtinguisher1 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Fight) (ActionCost 1)
-    , restrictedAbility a 2 ControlsThis $
-        ActionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+    , restrictedAbility a 2 ControlsThis
+        $ ActionAbility
           (Just Action.Evade)
           (Costs [ActionCost 1, ExileCost $ toTarget a])
     ]

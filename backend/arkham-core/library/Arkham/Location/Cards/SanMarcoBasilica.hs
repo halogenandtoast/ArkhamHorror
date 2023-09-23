@@ -33,28 +33,28 @@ sanMarcoBasilica =
 
 instance HasAbilities SanMarcoBasilica where
   getAbilities (SanMarcoBasilica attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-        attrs
-        1
-        ( Here
-            <> AssetExists
-              (AssetControlledBy You <> assetIs Assets.innocentReveler)
-        )
-        $ ActionAbility Nothing
-        $ ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+          attrs
+          1
+          ( Here
+              <> AssetExists
+                (AssetControlledBy You <> assetIs Assets.innocentReveler)
+          )
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       innocentRevelers <-
-        selectWithField AssetCardId $
-          AssetControlledBy You
-            <> assetIs Assets.innocentReveler
-      push $
-        chooseOne
+        selectWithField AssetCardId
+          $ AssetControlledBy You
+          <> assetIs Assets.innocentReveler
+      push
+        $ chooseOne
           iid
           [ targetLabel
             innocentReveler

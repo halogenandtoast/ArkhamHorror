@@ -212,7 +212,7 @@ instance RunMessage EnemyAttrs where
                     lid
               pushAll
                 $ EnemyEntered eid lid
-                  : [EnemyEngageInvestigator eid iid | iid <- investigatorIds]
+                : [EnemyEngageInvestigator eid iid | iid <- investigatorIds]
       pure a
     EnemySpawnedAt lid eid | eid == enemyId -> do
       a <$ push (EnemyEntered eid lid)
@@ -341,7 +341,7 @@ instance RunMessage EnemyAttrs where
             $ \oldId -> windows [Window.EnemyLeaves eid oldId]
           pushAll
             $ fromMaybe [] leaveWindows
-              <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
+            <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
           pure $ a & placementL .~ AtLocation lid
         else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) -> a <$ push (EnemyCheckEngagement $ toId a)
@@ -358,7 +358,11 @@ instance RunMessage EnemyAttrs where
                 CannotBeEngagedBy matcher -> notElem eid <$> select matcher
                 _ -> pure True
               pure
-                $ canEngage && EnemyCannotEngage iid `notElem` modifiers' && CannotBeEngaged `notElem` modifiers'
+                $ canEngage
+                && EnemyCannotEngage iid
+                `notElem` modifiers'
+                && CannotBeEngaged
+                `notElem` modifiers'
       investigatorIds' <-
         filterM modifiedFilter
           =<< getInvestigatorsAtSameLocation a
@@ -471,8 +475,8 @@ instance RunMessage EnemyAttrs where
                 $ locationMatcherModifier
                 $ LocationWithInvestigator
                 $ onlyPrey
-                  <> NearestToEnemy
-                    (EnemyWithId eid)
+                <> NearestToEnemy
+                  (EnemyWithId eid)
             (Nothing, _prey) -> do
               investigatorLocations <-
                 selectList
@@ -613,18 +617,18 @@ instance RunMessage EnemyAttrs where
                   [iid]
                   [mkWindow Timing.After (Window.EnemyAttacked iid source enemyId)]
               ]
-              <> [ EnemyAttack
-                  $ (enemyAttack enemyId a iid)
-                    { attackDamageStrategy = enemyDamageStrategy
-                    }
-                 | Keyword.Retaliate
-                    `elem` keywords
-                 , IgnoreRetaliate
-                    `notElem` modifiers'
-                 , not enemyExhausted
-                    || CanRetaliateWhileExhausted
-                    `elem` modifiers'
-                 ]
+            <> [ EnemyAttack
+                $ (enemyAttack enemyId a iid)
+                  { attackDamageStrategy = enemyDamageStrategy
+                  }
+               | Keyword.Retaliate
+                  `elem` keywords
+               , IgnoreRetaliate
+                  `notElem` modifiers'
+               , not enemyExhausted
+                  || CanRetaliateWhileExhausted
+                  `elem` modifiers'
+               ]
           pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
       case miid of
@@ -707,12 +711,12 @@ instance RunMessage EnemyAttrs where
                 [mkWindow Timing.After (Window.FailEvadeEnemy iid enemyId n)]
             pushAll
               $ [whenWindow, afterWindow]
-                <> [ EnemyAttack
-                    $ (enemyAttack enemyId a iid)
-                      { attackDamageStrategy = enemyDamageStrategy
-                      }
-                   | Keyword.Alert `elem` keywords
-                   ]
+              <> [ EnemyAttack
+                  $ (enemyAttack enemyId a iid)
+                    { attackDamageStrategy = enemyDamageStrategy
+                    }
+                 | Keyword.Alert `elem` keywords
+                 ]
             pure a
     InitiateEnemyAttack details | attackEnemy details == enemyId -> do
       push $ EnemyAttack details
@@ -771,9 +775,9 @@ instance RunMessage EnemyAttrs where
                 enemySanityDamage
               | allowAttack
               ]
-              <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
-              <> ignoreWindows
-              <> [After (EnemyAttack details)]
+            <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
+            <> ignoreWindows
+            <> [After (EnemyAttack details)]
         _ -> error "Unhandled"
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
@@ -866,9 +870,9 @@ instance RunMessage EnemyAttrs where
                 else
                   error
                     $ "mismatched damage assignments\n\nassignment: "
-                      <> show l
-                      <> "\nnew assignment: "
-                      <> show r
+                    <> show l
+                    <> "\nnew assignment: "
+                    <> show r
           unless (damageAssignmentDelayed damageAssignment')
             $ push
             $ CheckDefeated source
@@ -993,38 +997,38 @@ instance RunMessage EnemyAttrs where
 
       pushAll
         $ [whenMsg, When msg, After msg]
-          <> victoryMsgs
-          <> [afterMsg]
-          <> defeatMsgs
+        <> victoryMsgs
+        <> [afterMsg]
+        <> defeatMsgs
       pure $ a & keysL .~ mempty
     Discard source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
         $ windows'
-          <> [ RemovedFromPlay $ toSource a
-             , Discarded (toTarget a) source (toCard a)
-             ]
+        <> [ RemovedFromPlay $ toSource a
+           , Discarded (toTarget a) source (toCard a)
+           ]
       pure $ a & keysL .~ mempty
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll
         $ resolve (RemoveEnemy $ toId a)
-          <> [PutCardOnTopOfDeck iid deck (toCard a)]
+        <> [PutCardOnTopOfDeck iid deck (toCard a)]
       pure a
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
       pushAll
         $ resolve (RemoveEnemy $ toId a)
-          <> [PutCardOnBottomOfDeck iid deck (toCard a)]
+        <> [PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     RemovedFromPlay source | isSource a source -> do
       enemyAssets <- selectList $ EnemyAsset enemyId
       windowMsg <-
         checkWindows
           $ (`mkWindow` Window.LeavePlay (toTarget a))
-            <$> [Timing.When, Timing.After]
+          <$> [Timing.When, Timing.After]
       pushAll
         $ windowMsg
-          : map (Discard GameSource . AssetTarget) enemyAssets
-            <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
+        : map (Discard GameSource . AssetTarget) enemyAssets
+          <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getJustLocation iid
@@ -1094,10 +1098,10 @@ instance RunMessage EnemyAttrs where
         [] ->
           pushAll
             $ Discard GameSource (EnemyTarget eid)
-              : [ Surge iid (toSource a)
-                | enemySurgeIfUnableToSpawn
-                , iid <- toList miid
-                ]
+            : [ Surge iid (toSource a)
+              | enemySurgeIfUnableToSpawn
+              , iid <- toList miid
+              ]
         [lid] -> do
           windows' <-
             checkWindows

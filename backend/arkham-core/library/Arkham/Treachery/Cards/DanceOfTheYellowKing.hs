@@ -28,8 +28,8 @@ instance RunMessage DanceOfTheYellowKing where
   runMessage msg t@(DanceOfTheYellowKing attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       anyLunatics <- selectAny $ EnemyWithTrait Lunatic
-      push $
-        if anyLunatics
+      push
+        $ if anyLunatics
           then RevelationSkillTest iid source SkillWillpower 3
           else gainSurge attrs
       pure t
@@ -38,8 +38,8 @@ instance RunMessage DanceOfTheYellowKing where
           lunatics <- selectList $ NearestEnemy $ EnemyWithTrait Lunatic
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid ->
-            push $
-              chooseOrRunOne
+            push
+              $ chooseOrRunOne
                 iid
                 [ targetLabel
                   lunatic

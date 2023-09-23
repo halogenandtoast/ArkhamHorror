@@ -29,8 +29,8 @@ instance HasModifiersFor AdministrationOffice_131 where
   getModifiersFor (InvestigatorTarget iid) (AdministrationOffice_131 attrs) =
     do
       cardsInHand <- fieldMap InvestigatorHand length iid
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           attrs
           [CannotInvestigateLocation (toId attrs) | cardsInHand <= 4]
   getModifiersFor _ _ = pure []

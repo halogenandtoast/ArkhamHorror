@@ -34,11 +34,11 @@ instance HasAbilities JosefMeiger where
           1
           ( OnSameLocation
               <> Negate
-                ( EnemyCriteria $
-                    EnemyExists $
-                      EnemyWithTrait SilverTwilight
-                        <> EnemyWithAnyDoom
-                        <> NotEnemy (EnemyWithId $ toId a)
+                ( EnemyCriteria
+                    $ EnemyExists
+                    $ EnemyWithTrait SilverTwilight
+                    <> EnemyWithAnyDoom
+                    <> NotEnemy (EnemyWithId $ toId a)
                 )
           )
           $ ActionAbility (Just Action.Parley)

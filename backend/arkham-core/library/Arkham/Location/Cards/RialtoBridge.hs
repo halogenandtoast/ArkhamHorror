@@ -30,14 +30,14 @@ rialtoBridge =
 
 instance HasAbilities RialtoBridge where
   getAbilities (RialtoBridge attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          Leaves Timing.After You $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of

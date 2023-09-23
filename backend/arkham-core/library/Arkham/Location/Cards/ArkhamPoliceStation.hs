@@ -24,8 +24,8 @@ arkhamPoliceStation =
 instance HasModifiersFor ArkhamPoliceStation where
   getModifiersFor (LocationTarget lid) (ArkhamPoliceStation a) = do
     isEasttown <- lid <=~> locationIs Cards.easttown
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
         | isEasttown
@@ -43,8 +43,8 @@ instance HasAbilities ArkhamPoliceStation where
 instance RunMessage ArkhamPoliceStation where
   runMessage msg l@(ArkhamPoliceStation attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           source
           (InvestigatorTarget iid)

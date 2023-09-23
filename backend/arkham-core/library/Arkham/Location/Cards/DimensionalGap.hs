@@ -25,13 +25,13 @@ dimensionalGap = location DimensionalGap Cards.dimensionalGap 3 (PerPlayer 1)
 
 instance HasAbilities DimensionalGap where
   getAbilities (DimensionalGap attrs) =
-    withRevealedAbilities attrs $
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            RevealLocation Timing.After You $
-              LocationWithId $
-                toId attrs
-      ]
+    withRevealedAbilities attrs
+      $ [ mkAbility attrs 1
+            $ ForcedAbility
+            $ RevealLocation Timing.After You
+            $ LocationWithId
+            $ toId attrs
+        ]
 
 instance RunMessage DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of

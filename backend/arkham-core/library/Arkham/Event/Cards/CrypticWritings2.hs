@@ -25,8 +25,8 @@ crypticWritings2 = event CrypticWritings2 Cards.crypticWritings2
 
 instance HasAbilities CrypticWritings2 where
   getAbilities (CrypticWritings2 x) =
-    [ restrictedAbility x 1 (InYourHand <> DuringTurn You) $
-        ReactionAbility
+    [ restrictedAbility x 1 (InYourHand <> DuringTurn You)
+        $ ReactionAbility
           ( DrawCard
               Timing.After
               You

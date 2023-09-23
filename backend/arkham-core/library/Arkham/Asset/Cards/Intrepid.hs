@@ -21,8 +21,8 @@ intrepid = asset Intrepid Cards.intrepid
 
 instance HasModifiersFor Intrepid where
   getModifiersFor (InvestigatorTarget iid) (Intrepid a) =
-    pure $
-      if controlledBy a iid
+    pure
+      $ if controlledBy a iid
         then
           toModifiers
             a

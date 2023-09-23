@@ -28,12 +28,12 @@ miskatonicUniversityMiskatonicMuseum =
 
 instance HasAbilities MiskatonicUniversityMiskatonicMuseum where
   getAbilities (MiskatonicUniversityMiskatonicMuseum attrs) =
-    withRevealedAbilities attrs $
-      [ limitedAbility (PlayerLimit PerGame 1) $
-          restrictedAbility attrs 1 Here $
-            ActionAbility Nothing $
-              ActionCost 1
-      ]
+    withRevealedAbilities attrs
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+            $ restrictedAbility attrs 1 Here
+            $ ActionAbility Nothing
+            $ ActionCost 1
+        ]
 
 instance RunMessage MiskatonicUniversityMiskatonicMuseum where
   runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = case msg of

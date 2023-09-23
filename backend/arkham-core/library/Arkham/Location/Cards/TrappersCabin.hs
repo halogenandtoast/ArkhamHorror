@@ -25,23 +25,23 @@ trappersCabin = location TrappersCabin Cards.trappersCabin 3 (Static 0)
 
 instance HasModifiersFor TrappersCabin where
   getModifiersFor (InvestigatorTarget iid) (TrappersCabin attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [CannotGainResources | iid `member` locationInvestigators attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrappersCabin where
   getAbilities (TrappersCabin attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-        attrs
-        1
-        (Here <> Negate (AssetExists $ assetIs Assets.bearTrap))
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, ResourceCost 5]
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+          attrs
+          1
+          (Here <> Negate (AssetExists $ assetIs Assets.bearTrap))
+          $ ActionAbility Nothing
+          $ Costs [ActionCost 1, ResourceCost 5]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of

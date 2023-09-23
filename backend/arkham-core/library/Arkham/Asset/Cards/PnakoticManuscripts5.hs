@@ -33,10 +33,10 @@ instance HasAbilities PnakoticManuscripts5 where
               (InvestigatorAt YourLocation)
           )
         $ UseCost (AssetWithId $ toId a) Secret 1
-    , restrictedAbility a 2 ControlsThis $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Secret 1
+    , restrictedAbility a 2 ControlsThis
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 getInvestigator :: [Window] -> InvestigatorId
@@ -49,16 +49,16 @@ instance RunMessage PnakoticManuscripts5 where
   runMessage msg a@(PnakoticManuscripts5 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (getInvestigator -> iid) _ ->
       do
-        push $
-          skillTestModifier
+        push
+          $ skillTestModifier
             (toSource attrs)
             (InvestigatorTarget iid)
             DoNotDrawChaosTokensForSkillChecks
         pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       iids <- selectList $ colocatedWith iid
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel
             iid'

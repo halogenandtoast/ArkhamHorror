@@ -24,12 +24,12 @@ instance HasAbilities OpeningTheMaw where
   getAbilities (OpeningTheMaw a) =
     if onSide A a
       then
-        [ mkAbility a 1 $
-            ActionAbility Nothing $
-              ActionCost 1
-                <> GroupClueCost
-                  (Static 1)
-                  (locationIs Locations.mouthOfKnYanTheCavernsMaw)
+        [ mkAbility a 1
+            $ ActionAbility Nothing
+            $ ActionCost 1
+            <> GroupClueCost
+              (Static 1)
+              (locationIs Locations.mouthOfKnYanTheCavernsMaw)
         , restrictedAbility
             a
             2
@@ -45,8 +45,8 @@ instance RunMessage OpeningTheMaw where
   runMessage msg a@(OpeningTheMaw attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       mouthOfKnYan <-
-        selectJust $
-          locationIs Locations.mouthOfKnYanTheCavernsMaw
+        selectJust
+          $ locationIs Locations.mouthOfKnYanTheCavernsMaw
       push $ PlaceResources (toAbilitySource attrs 1) (toTarget mouthOfKnYan) 1
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do

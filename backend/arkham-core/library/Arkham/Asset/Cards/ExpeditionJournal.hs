@@ -19,8 +19,8 @@ expeditionJournal = asset ExpeditionJournal Cards.expeditionJournal
 
 instance HasModifiersFor ExpeditionJournal where
   getModifiersFor (InvestigatorTarget iid) (ExpeditionJournal a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ GiveAdditionalAction $ ActionRestrictedAdditionalAction Action.Explore
         | controlledBy a iid
@@ -30,8 +30,8 @@ instance HasModifiersFor ExpeditionJournal where
 instance RunMessage ExpeditionJournal where
   runMessage msg a@(ExpeditionJournal attrs) = case msg of
     InvestigatorPlayAsset iid assetId | toId attrs == assetId -> do
-      push $
-        GainAdditionalAction iid (toSource attrs) $
-          ActionRestrictedAdditionalAction Action.Explore
+      push
+        $ GainAdditionalAction iid (toSource attrs)
+        $ ActionRestrictedAdditionalAction Action.Explore
       pure a
     _ -> ExpeditionJournal <$> runMessage msg attrs

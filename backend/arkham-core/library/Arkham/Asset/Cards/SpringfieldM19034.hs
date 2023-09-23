@@ -27,10 +27,10 @@ instance HasAbilities SpringfieldM19034 where
         1
         ( ControlsThis
             <> EnemyCriteria (EnemyExists $ CanFightEnemy (toAbilitySource a 1) <> NotEnemy EnemyEngagedWithYou)
-        ) $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> UseCost (AssetWithId $ toId a) Ammo 1
+        )
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
+        <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage SpringfieldM19034 where

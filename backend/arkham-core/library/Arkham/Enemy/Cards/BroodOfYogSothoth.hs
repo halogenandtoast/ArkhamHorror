@@ -26,8 +26,8 @@ broodOfYogSothoth =
 instance HasModifiersFor BroodOfYogSothoth where
   getModifiersFor target (BroodOfYogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 1)
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ HealthModifier healthModifier
         , CanOnlyBeAttackedByAbilityOn (singleton $ CardCode "02219")

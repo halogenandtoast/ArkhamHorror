@@ -34,11 +34,11 @@ instance HasModifiersFor RecoverTheRelic where
 
 instance HasAbilities RecoverTheRelic where
   getAbilities (RecoverTheRelic a) =
-    [ mkAbility a 1 $
-        Objective $
-          ForcedAbility $
-            EnemyLeavesPlay Timing.When $
-              EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+    [ mkAbility a 1
+        $ Objective
+        $ ForcedAbility
+        $ EnemyLeavesPlay Timing.When
+        $ EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
     ]
 
 instance RunMessage RecoverTheRelic where
@@ -51,11 +51,11 @@ instance RunMessage RecoverTheRelic where
       deckCount <- getActDecksInPlayCount
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       iids <-
-        selectList $
-          NearestToEnemy $
-            EnemyWithAsset $
-              assetIs
-                Assets.relicOfAgesADeviceOfSomeSort
+        selectList
+          $ NearestToEnemy
+          $ EnemyWithAsset
+          $ assetIs
+            Assets.relicOfAgesADeviceOfSomeSort
       let
         takeControlMessage =
           chooseOrRunOne

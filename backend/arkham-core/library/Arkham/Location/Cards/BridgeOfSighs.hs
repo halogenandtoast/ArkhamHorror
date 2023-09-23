@@ -30,14 +30,14 @@ bridgeOfSighs =
 
 instance HasAbilities BridgeOfSighs where
   getAbilities (BridgeOfSighs attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          Leaves Timing.After You $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage BridgeOfSighs where
   runMessage msg l@(BridgeOfSighs attrs) = case msg of

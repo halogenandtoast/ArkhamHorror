@@ -35,8 +35,8 @@ instance RunMessage OozeAndFilth where
   runMessage msg t@(OozeAndFilth attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetAgendas <- selectListMap AgendaTarget AnyAgenda
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ TargetLabel target [AttachTreachery (toId attrs) target]
           | target <- targetAgendas

@@ -35,20 +35,20 @@ ricesWhereabouts = act (2, A) RicesWhereabouts Cards.ricesWhereabouts Nothing
 instance HasAbilities RicesWhereabouts where
   getAbilities (RicesWhereabouts x) =
     [ mkAbility x 1 $ ActionAbility Nothing $ Costs [ActionCost 1, ClueCost (Static 1)]
-    , mkAbility x 2 $
-        ForcedAbility $
-          Discarded
-            Timing.When
-            You
-            AnySource
-            (cardIs Assets.jazzMulligan)
-    , mkAbility x 3 $
-        Objective $
-          ForcedAbility $
-            TookControlOfAsset
-              Timing.When
-              You
-              (assetIs Assets.jazzMulligan)
+    , mkAbility x 2
+        $ ForcedAbility
+        $ Discarded
+          Timing.When
+          You
+          AnySource
+          (cardIs Assets.jazzMulligan)
+    , mkAbility x 3
+        $ Objective
+        $ ForcedAbility
+        $ TookControlOfAsset
+          Timing.When
+          You
+          (assetIs Assets.jazzMulligan)
     ]
 
 instance RunMessage RicesWhereabouts where
@@ -81,19 +81,19 @@ instance RunMessage RicesWhereabouts where
       alchemicalConcoction <- getSetAsideCard Assets.alchemicalConcoction
 
       createTheExperiment <-
-        createEnemyAtLocationMatching_ theExperiment $
-          LocationWithTitle "Alchemy Labs"
+        createEnemyAtLocationMatching_ theExperiment
+          $ LocationWithTitle "Alchemy Labs"
 
-      pushAll $
-        [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
-        | not alchemyLabsInPlay
-        ]
-          <> [createTheExperiment | step <= 2]
-          <> [ CreateStoryAssetAtLocationMatching
-              alchemicalConcoction
-              (LocationWithTitle "Alchemy Labs")
-             | completedTheHouseAlwaysWins
-             ]
-          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll
+        $ [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
+          | not alchemyLabsInPlay
+          ]
+        <> [createTheExperiment | step <= 2]
+        <> [ CreateStoryAssetAtLocationMatching
+            alchemicalConcoction
+            (LocationWithTitle "Alchemy Labs")
+           | completedTheHouseAlwaysWins
+           ]
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> RicesWhereabouts <$> runMessage msg attrs

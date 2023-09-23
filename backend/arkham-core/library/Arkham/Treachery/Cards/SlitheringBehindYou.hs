@@ -33,8 +33,8 @@ instance RunMessage SlitheringBehindYou where
           pushAll
             [PlaceDoom (toSource attrs) (toTarget eid) 1, ShuffleDeck Deck.EncounterDeck]
         Nothing ->
-          push $
-            FindEncounterCard
+          push
+            $ FindEncounterCard
               iid
               (toTarget attrs)
               [FromEncounterDeck, FromEncounterDiscard, FromVoid]
@@ -42,8 +42,8 @@ instance RunMessage SlitheringBehindYou where
       pure t
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid $
-        \lid -> push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
+      for_ mlid
+        $ \lid -> push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
       pure t
     FoundEnemyInVoid iid target eid | isTarget attrs target -> do
       mlid <- field InvestigatorLocation iid

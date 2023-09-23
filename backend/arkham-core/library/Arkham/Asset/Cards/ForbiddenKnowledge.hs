@@ -13,13 +13,16 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
 forbiddenKnowledge =
   assetWith ForbiddenKnowledge Cards.forbiddenKnowledge
-    $ whenNoUsesL ?~ DiscardWhenNoUses
+    $ whenNoUsesL
+    ?~ DiscardWhenNoUses
 
 instance HasAbilities ForbiddenKnowledge where
   getAbilities (ForbiddenKnowledge a) =
     [ restrictedAbility (toSource a) 1 ControlsThis
         $ FastAbility
-        $ assetUseCost a Secret 1 <> HorrorCost (toSource a) YouTarget 1 <> exhaust a
+        $ assetUseCost a Secret 1
+        <> HorrorCost (toSource a) YouTarget 1
+        <> exhaust a
     ]
 
 instance RunMessage ForbiddenKnowledge where

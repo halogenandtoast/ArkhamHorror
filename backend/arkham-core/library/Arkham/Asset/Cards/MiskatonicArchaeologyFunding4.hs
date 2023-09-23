@@ -26,12 +26,12 @@ miskatonicArchaeologyFunding4 =
 
 instance HasAbilities MiskatonicArchaeologyFunding4 where
   getAbilities (MiskatonicArchaeologyFunding4 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          DealtDamageOrHorror
-            Timing.When
-            AnySource
-            You
+    [ restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ DealtDamageOrHorror
+          Timing.When
+          AnySource
+          You
     ]
 
 slot :: AssetAttrs -> Slot
@@ -43,8 +43,8 @@ instance RunMessage MiskatonicArchaeologyFunding4 where
       pushAll $ replicate 2 (AddSlot iid AllySlot (slot attrs))
       MiskatonicArchaeologyFunding4 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        createCardEffect
+      push
+        $ createCardEffect
           Cards.miskatonicArchaeologyFunding4
           Nothing
           (toSource attrs)

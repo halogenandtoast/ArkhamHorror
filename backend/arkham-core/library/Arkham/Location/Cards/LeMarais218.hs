@@ -37,8 +37,8 @@ instance HasAbilities LeMarais218 where
 instance RunMessage LeMarais218 where
   runMessage msg l@(LeMarais218 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        CreateEffect
+      push
+        $ CreateEffect
           (toCardCode attrs)
           Nothing
           source

@@ -45,26 +45,26 @@ instance RunMessage LostMemories where
             lead <- getLeadInvestigatorId
             custodian <- selectJust $ assetIs Assets.theCustodian
             locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
-            pure $
-              [ chooseOrRunOne
-                  lead
-                  [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
-                  | lid <- locationWithMostClues
-                  ]
-              ]
+            pure
+              $ [ chooseOrRunOne
+                    lead
+                    [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
+                    | lid <- locationWithMostClues
+                    ]
+                ]
           else pure []
       drawing <- for hasPendant $ \iid -> drawCards iid attrs 2
-      pushAll $
-        ShuffleEncounterDiscardBackIn
-          : custodianMessages
-            <> drawing
-            <> [ createCardEffect
-                  Cards.lostMemories
-                  Nothing
-                  (toSource attrs)
-                  ScenarioTarget
-               , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-               ]
+      pushAll
+        $ ShuffleEncounterDiscardBackIn
+        : custodianMessages
+          <> drawing
+          <> [ createCardEffect
+                Cards.lostMemories
+                Nothing
+                (toSource attrs)
+                ScenarioTarget
+             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+             ]
       pure a
     _ -> LostMemories <$> runMessage msg attrs
 

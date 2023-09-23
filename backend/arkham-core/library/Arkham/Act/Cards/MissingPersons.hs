@@ -19,10 +19,10 @@ newtype MissingPersons = MissingPersons ActAttrs
 
 missingPersons :: ActCard MissingPersons
 missingPersons =
-  act (1, C) MissingPersons Cards.missingPersons $
-    Just $
-      GroupClueCost (PerPlayer 1) $
-        LocationWithTitle "Easttown"
+  act (1, C) MissingPersons Cards.missingPersons
+    $ Just
+    $ GroupClueCost (PerPlayer 1)
+    $ LocationWithTitle "Easttown"
 
 instance RunMessage MissingPersons where
   runMessage msg a@(MissingPersons attrs) = case msg of

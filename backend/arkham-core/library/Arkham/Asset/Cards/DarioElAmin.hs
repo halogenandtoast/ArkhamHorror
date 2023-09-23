@@ -24,11 +24,11 @@ instance HasModifiersFor DarioElAmin where
   getModifiersFor (InvestigatorTarget iid) (DarioElAmin attrs)
     | attrs `controlledBy` iid = do
         resources <- field InvestigatorResources iid
-        pure $
-          toModifiers attrs $
-            if resources >= 10
-              then [SkillModifier SkillWillpower 1, SkillModifier SkillIntellect 1]
-              else []
+        pure
+          $ toModifiers attrs
+          $ if resources >= 10
+            then [SkillModifier SkillWillpower 1, SkillModifier SkillIntellect 1]
+            else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DarioElAmin where

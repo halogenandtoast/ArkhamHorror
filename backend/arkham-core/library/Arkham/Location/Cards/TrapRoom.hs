@@ -27,11 +27,11 @@ instance HasAbilities TrapRoom where
   getAbilities (TrapRoom attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          RevealLocation Timing.After You $
-            LocationWithId $
-              toId attrs
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
       | locationRevealed attrs
       ]
 

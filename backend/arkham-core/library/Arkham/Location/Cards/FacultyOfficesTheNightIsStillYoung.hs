@@ -35,24 +35,24 @@ facultyOfficesTheNightIsStillYoung =
 instance HasModifiersFor FacultyOfficesTheNightIsStillYoung where
   getModifiersFor target (FacultyOfficesTheNightIsStillYoung attrs)
     | isTarget attrs target =
-        pure $
-          toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        pure
+          $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FacultyOfficesTheNightIsStillYoung where
   getAbilities (FacultyOfficesTheNightIsStillYoung x) =
     withRevealedAbilities
       x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            RevealLocation Timing.After Anyone $
-              LocationWithId $
-                toId x
-      , restrictedAbility x 2 Here $
-          FastAbility $
-            GroupClueCost
-              (PerPlayer 2)
-              (LocationWithTitle "Faculty Offices")
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After Anyone
+          $ LocationWithId
+          $ toId x
+      , restrictedAbility x 2 Here
+          $ FastAbility
+          $ GroupClueCost
+            (PerPlayer 2)
+            (LocationWithTitle "Faculty Offices")
       ]
 
 instance RunMessage FacultyOfficesTheNightIsStillYoung where
@@ -64,7 +64,7 @@ instance RunMessage FacultyOfficesTheNightIsStillYoung where
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard]
         $ CardWithType EnemyType
-          <> CardWithTrait Humanoid
+        <> CardWithTrait Humanoid
       pure l
     FoundEncounterCard _iid target card
       | isTarget attrs target ->

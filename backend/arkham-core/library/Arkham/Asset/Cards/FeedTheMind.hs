@@ -20,7 +20,9 @@ instance HasAbilities FeedTheMind where
   getAbilities (FeedTheMind a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility Nothing
-        $ ActionCost 1 <> exhaust a <> assetUseCost a Secret 1
+        $ ActionCost 1
+        <> exhaust a
+        <> assetUseCost a Secret 1
     ]
 
 instance RunMessage FeedTheMind where

@@ -35,13 +35,13 @@ instance HasAbilities CellKeeper where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1 $ ForcedAbility $ EnemySpawns Timing.After Anywhere $ EnemyWithId $ toId attrs
-      , restrictedAbility attrs 2 keyCriteria $
-          ForcedAbility $
-            SkillTestResult
-              Timing.After
-              You
-              (WhileEvadingAnEnemy $ EnemyWithId $ toId attrs)
-              (SuccessResult $ AtLeast $ Static 2)
+      , restrictedAbility attrs 2 keyCriteria
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileEvadingAnEnemy $ EnemyWithId $ toId attrs)
+            (SuccessResult $ AtLeast $ Static 2)
       ]
    where
     keyCriteria = if null (enemyKeys attrs) then Never else NoRestriction
@@ -50,13 +50,13 @@ instance RunMessage CellKeeper where
   runMessage msg e@(CellKeeper attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       mKey <- getRandomKey
-      pushAll $
-        PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Doom 2
-          : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
+      pushAll
+        $ PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Doom 2
+        : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           iid
           [ Label ("Take control of " <> keyName k <> " key") [PlaceKey (toTarget iid) k]
           | k <- setToList (enemyKeys attrs)

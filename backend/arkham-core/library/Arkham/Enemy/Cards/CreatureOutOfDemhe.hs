@@ -32,14 +32,14 @@ creatureOutOfDemhe =
 
 instance HasAbilities CreatureOutOfDemhe where
   getAbilities (CreatureOutOfDemhe a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Matcher.FlipLocation
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ Matcher.FlipLocation
               Timing.When
               Anyone
               (LocationMatchAny [LocationOfThis, ConnectedFrom LocationOfThis])
-      ]
+        ]
 
 instance RunMessage CreatureOutOfDemhe where
   runMessage msg e@(CreatureOutOfDemhe attrs) = case msg of

@@ -29,11 +29,11 @@ instance RunMessage CityOfBlood where
       mHarbinger <- maybeGetSetAsideEncounterCard Enemies.harbingerOfValusia
       harbingerMsgs <- for (maybeToList mHarbinger) $ \harbinger ->
         createEnemyWithPlacement_ (EncounterCard harbinger) (OutOfPlay PursuitZone)
-      pushAll $
-        harbingerMsgs
-          <> [ NextAdvanceAgendaStep (toId attrs) 1
-             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ harbingerMsgs
+        <> [ NextAdvanceAgendaStep (toId attrs) 1
+           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+           ]
       pure a
     NextAdvanceAgendaStep aid 1 | aid == toId attrs -> do
       enemyMsgs <- getPlacePursuitEnemyMessages

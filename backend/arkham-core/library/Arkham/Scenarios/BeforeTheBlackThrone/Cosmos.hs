@@ -198,7 +198,7 @@ cosmosRowToGrid :: CosmosRow a b -> GridTemplateRow
 cosmosRowToGrid (CosmosRow left center right) =
   GridTemplateRow
     . T.unwords
-    $ toList (fmap (maybe "." cosmosCellToGrid) left)
+      $ toList (fmap (maybe "." cosmosCellToGrid) left)
       <> [maybe "." cosmosCellToGrid center]
       <> toList (fmap (maybe "." cosmosCellToGrid) right)
 

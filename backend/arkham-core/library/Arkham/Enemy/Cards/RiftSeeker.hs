@@ -27,22 +27,22 @@ instance HasAbilities RiftSeeker where
   getAbilities (RiftSeeker a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After You AnyEnemyAttack $
-              EnemyWithId (toId a)
-      , restrictedAbility a 2 OnSameLocation $
-          ActionAbility (Just Action.Parley) $
-            HorrorCost (toSource a) YouTarget 2
-              <> DoomCost (toSource a) (AgendaMatcherTarget AnyAgenda) 1
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.After You AnyEnemyAttack
+          $ EnemyWithId (toId a)
+      , restrictedAbility a 2 OnSameLocation
+          $ ActionAbility (Just Action.Parley)
+          $ HorrorCost (toSource a) YouTarget 2
+          <> DoomCost (toSource a) (AgendaMatcherTarget AnyAgenda) 1
       ]
 
 instance RunMessage RiftSeeker where
   runMessage msg e@(RiftSeeker attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectListMap AgendaTarget AnyAgenda
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "take 1 additional damage and 1 additional horror"

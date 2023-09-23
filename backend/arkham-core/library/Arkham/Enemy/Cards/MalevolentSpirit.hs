@@ -56,12 +56,12 @@ instance RunMessage MalevolentSpirit where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       spectralLocations <- selectList $ LocationWithTrait Spectral
       lead <- getLead
-      pushAll $
-        [ CancelNext (toSource attrs) EnemyDefeatedMessage
-        , HealAllDamage (toTarget attrs) (toSource attrs)
-        , DisengageEnemyFromAll (toId attrs)
-        , Exhaust (toTarget attrs)
-        ]
-          <> [chooseOrRunOne lead [targetLabel lid [EnemyMove (toId attrs) lid]] | lid <- spectralLocations]
+      pushAll
+        $ [ CancelNext (toSource attrs) EnemyDefeatedMessage
+          , HealAllDamage (toTarget attrs) (toSource attrs)
+          , DisengageEnemyFromAll (toId attrs)
+          , Exhaust (toTarget attrs)
+          ]
+        <> [chooseOrRunOne lead [targetLabel lid [EnemyMove (toId attrs) lid]] | lid <- spectralLocations]
       pure e
     _ -> MalevolentSpirit <$> runMessage msg attrs

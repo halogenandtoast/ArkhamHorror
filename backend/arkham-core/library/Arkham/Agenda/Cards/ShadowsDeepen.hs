@@ -29,11 +29,11 @@ shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)
 
 instance HasAbilities ShadowsDeepen where
   getAbilities (ShadowsDeepen x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          EnemySpawns Timing.When Anywhere $
-            enemyIs
-              Enemies.huntingHorror
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ EnemySpawns Timing.When Anywhere
+        $ enemyIs
+          Enemies.huntingHorror
     ]
 
 instance RunMessage ShadowsDeepen where
@@ -57,8 +57,8 @@ instance RunMessage ShadowsDeepen where
             , advanceAgendaDeck attrs
             ]
         Nothing ->
-          push $
-            FindEncounterCard
+          push
+            $ FindEncounterCard
               leadInvestigatorId
               (toTarget attrs)
               [FromEncounterDeck, FromEncounterDiscard, FromVoid]

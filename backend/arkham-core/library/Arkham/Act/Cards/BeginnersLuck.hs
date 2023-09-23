@@ -33,19 +33,19 @@ beginnersLuck = act (1, A) BeginnersLuck Cards.beginnersLuck Nothing
 
 instance HasAbilities BeginnersLuck where
   getAbilities (BeginnersLuck x) =
-    withBaseAbilities x $
-      if onSide A x
+    withBaseAbilities x
+      $ if onSide A x
         then
-          [ limitedAbility (GroupLimit PerRound 1) $
-              mkAbility
+          [ limitedAbility (GroupLimit PerRound 1)
+              $ mkAbility
                 x
                 1
                 (ReactionAbility (RevealChaosToken Timing.When Anyone AnyChaosToken) Free)
-          , mkAbility x 2 $
-              Objective $
-                ForcedAbilityWithCost
-                  AnyWindow
-                  (GroupClueCost (PerPlayer 4) Anywhere)
+          , mkAbility x 2
+              $ Objective
+              $ ForcedAbilityWithCost
+                AnyWindow
+                (GroupClueCost (PerPlayer 4) Anywhere)
           ]
         else []
 
@@ -61,8 +61,8 @@ instance RunMessage BeginnersLuck where
                 [ TargetLabel
                   (ChaosTokenFaceTarget $ chaosTokenFace token')
                   [ CreateChaosTokenEffect
-                      ( EffectModifiers $
-                          toModifiers attrs [ChaosTokenFaceModifier [chaosTokenFace token']]
+                      ( EffectModifiers
+                          $ toModifiers attrs [ChaosTokenFaceModifier [chaosTokenFace token']]
                       )
                       source
                       token

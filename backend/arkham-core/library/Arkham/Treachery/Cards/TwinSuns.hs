@@ -27,8 +27,8 @@ instance RunMessage TwinSuns where
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
           agenda <- selectJust AnyAgenda
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label
                   "Remove 1 doom from the current agenda"

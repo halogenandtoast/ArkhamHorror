@@ -23,8 +23,8 @@ tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3
 
 instance HasAbilities TryAndTryAgain3 where
   getAbilities (TryAndTryAgain3 x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
           ( SkillTestResult
               Timing.After
               Anyone
@@ -38,8 +38,8 @@ instance RunMessage TryAndTryAgain3 where
   runMessage msg a@(TryAndTryAgain3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       committedSkillCards <-
-        selectListMapM (field SkillCard) $
-          skillControlledBy iid
+        selectListMapM (field SkillCard)
+          $ skillControlledBy iid
       pushAll
         [ FocusCards committedSkillCards
         , chooseOne

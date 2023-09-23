@@ -30,22 +30,22 @@ congregationalChurch_208 =
 instance HasAbilities CongregationalChurch_208 where
   getAbilities (CongregationalChurch_208 attrs) =
     let rest = withDrawCardUnderneathAction attrs
-    in  rest
-          <> [ mkAbility attrs 1 $
-              ForcedAbility $
-                RevealLocation Timing.After Anyone $
-                  LocationWithId $
-                    toId attrs
+     in rest
+          <> [ mkAbility attrs 1
+              $ ForcedAbility
+              $ RevealLocation Timing.After Anyone
+              $ LocationWithId
+              $ toId attrs
              | locationRevealed attrs
              ]
 
 instance RunMessage CongregationalChurch_208 where
   runMessage msg l@(CongregationalChurch_208 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        FindEncounterCard iid (toTarget attrs) [FromEncounterDeck] $
-          CardWithType EnemyType
-            <> CardWithTrait Humanoid
+      push
+        $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck]
+        $ CardWithType EnemyType
+        <> CardWithTrait Humanoid
       pure l
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- selectJust $ LocationWithTitle "Village Commons"

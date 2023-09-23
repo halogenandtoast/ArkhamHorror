@@ -23,9 +23,10 @@ augustLindquist =
 
 instance HasAbilities AugustLindquist where
   getAbilities (AugustLindquist attrs) =
-    [ restrictedAbility attrs 1 OnSameLocation $
-        ActionAbility (Just Action.Parley) $
-          ActionCost 1 <> GroupClueCost (PerPlayer 2) (locationWithAsset $ toId attrs)
+    [ restrictedAbility attrs 1 OnSameLocation
+        $ ActionAbility (Just Action.Parley)
+        $ ActionCost 1
+        <> GroupClueCost (PerPlayer 2) (locationWithAsset $ toId attrs)
     ]
 
 getSpentClues :: Payment -> [InvestigatorId]
@@ -36,16 +37,16 @@ getSpentClues _ = []
 instance RunMessage AugustLindquist where
   runMessage msg a@(AugustLindquist attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getSpentClues -> spentClues) -> do
-      pushAll $
-        [ chooseOne
-          iid'
-          [ Label "Take 1 damage" [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 0]
-          , Label "Take 1 horror" [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 0 1]
+      pushAll
+        $ [ chooseOne
+            iid'
+            [ Label "Take 1 damage" [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 0]
+            , Label "Take 1 horror" [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 0 1]
+            ]
+          | iid' <- spentClues
           ]
-        | iid' <- spentClues
-        ]
-          <> [RemoveFromGame (toTarget attrs)]
-          <> [PlaceKey (toTarget iid) k | k <- toList (assetKeys attrs)]
+        <> [RemoveFromGame (toTarget attrs)]
+        <> [PlaceKey (toTarget iid) k | k <- toList (assetKeys attrs)]
 
       pure a
     _ -> AugustLindquist <$> runMessage msg attrs

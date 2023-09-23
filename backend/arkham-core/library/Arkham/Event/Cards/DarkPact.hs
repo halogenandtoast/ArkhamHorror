@@ -24,12 +24,12 @@ darkPact = event DarkPact Cards.darkPact
 
 instance HasAbilities DarkPact where
   getAbilities (DarkPact x) =
-    [ restrictedAbility x 1 InYourHand $
-        ForcedAbility $
-          OrWindowMatcher
-            [ GameEnds Timing.When
-            , InvestigatorEliminated Timing.When You
-            ]
+    [ restrictedAbility x 1 InYourHand
+        $ ForcedAbility
+        $ OrWindowMatcher
+          [ GameEnds Timing.When
+          , InvestigatorEliminated Timing.When You
+          ]
     ]
 
 instance RunMessage DarkPact where

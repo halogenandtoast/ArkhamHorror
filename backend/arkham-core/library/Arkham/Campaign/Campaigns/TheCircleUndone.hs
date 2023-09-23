@@ -61,11 +61,11 @@ theCircleUndone difficulty =
     difficulty
     (chaosBagContents difficulty)
     $ logL
-      .~ mkCampaignLog
-        { campaignLogRecordedSets =
-            singletonMap MissingPersons
-              $ map (recorded . unInvestigatorId) allPrologueInvestigators
-        }
+    .~ mkCampaignLog
+      { campaignLogRecordedSets =
+          singletonMap MissingPersons
+            $ map (recorded . unInvestigatorId) allPrologueInvestigators
+      }
 
 allPrologueInvestigators :: [InvestigatorId]
 allPrologueInvestigators = ["05046", "05047", "05048", "05049"]
@@ -76,13 +76,13 @@ instance RunMessage TheCircleUndone where
       investigatorIds <- allInvestigatorIds
       pushAll
         $ story investigatorIds prologue
-          : [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
-            | iid <- investigatorIds
-            ]
-            <> [ story investigatorIds intro
-               , CampaignStep (PrologueStepPart 2)
-               , NextCampaignStep Nothing
-               ]
+        : [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
+          | iid <- investigatorIds
+          ]
+          <> [ story investigatorIds intro
+             , CampaignStep (PrologueStepPart 2)
+             , NextCampaignStep Nothing
+             ]
       pure c
     CampaignStep (InvestigatorCampaignStep iid PrologueStep) -> do
       let
@@ -104,7 +104,7 @@ instance RunMessage TheCircleUndone where
     BecomePrologueInvestigator iid pId -> do
       pure
         . TheCircleUndone
-        $ attrs
+          $ attrs
           `With` metadata
             { prologueInvestigators =
                 insertMap
@@ -117,8 +117,8 @@ instance RunMessage TheCircleUndone where
         prologueInvestigatorsNotTaken =
           map unInvestigatorId
             $ allPrologueInvestigators
-              \\ toList
-                (prologueInvestigators metadata)
+            \\ toList
+              (prologueInvestigators metadata)
         readingFor = \case
           "05046" -> gavriellaIntro
           "05047" -> jeromeIntro
@@ -129,7 +129,7 @@ instance RunMessage TheCircleUndone where
       investigatorIds <- getInvestigatorIds
       pushAll
         $ crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
-          : map (story investigatorIds) readings
+        : map (story investigatorIds) readings
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
@@ -149,22 +149,22 @@ instance RunMessage TheCircleUndone where
         $ [ story iids (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2)
           , story iids thePriceOfProgress3
           ]
-          <> ( guard showThePriceOfProgress4
-                *> [ story iids thePriceOfProgress4
-                   , Record JosefDisappearedIntoTheMist
-                   , Record TheInvestigatorsAreEnemiesOfTheLodge
-                   , NextCampaignStep Nothing
-                   ]
-             )
-          <> ( guard showThePriceOfProgress5
-                *> [ Record TheInvestigatorsRescuedJosef
-                   , storyWithChooseOne lead iids thePriceOfProgress5 lodgeChoices
-                   ]
-                  <> gainXp
-             )
-          <> ( guard showThePriceOfProgress6
-                *> [Record JosefIsAliveAndWell, storyWithChooseOne lead iids thePriceOfProgress6 lodgeChoices]
-             )
+        <> ( guard showThePriceOfProgress4
+              *> [ story iids thePriceOfProgress4
+                 , Record JosefDisappearedIntoTheMist
+                 , Record TheInvestigatorsAreEnemiesOfTheLodge
+                 , NextCampaignStep Nothing
+                 ]
+           )
+        <> ( guard showThePriceOfProgress5
+              *> [ Record TheInvestigatorsRescuedJosef
+                 , storyWithChooseOne lead iids thePriceOfProgress5 lodgeChoices
+                 ]
+                <> gainXp
+           )
+        <> ( guard showThePriceOfProgress6
+              *> [Record JosefIsAliveAndWell, storyWithChooseOne lead iids thePriceOfProgress6 lodgeChoices]
+           )
       pure c
     CampaignStep (InterludeStepPart 2 _ 7) -> do
       pushAll [Record TheInvestigatorsAreEnemiesOfTheLodge, NextCampaignStep Nothing]
@@ -273,12 +273,12 @@ instance RunMessage TheCircleUndone where
         $ [ story investigators twistOfFate1
           , RecordCount ThePathWindsBeforeYou total
           ]
-          <> [ AddChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix (campaignDifficulty attrs)
-             | askedAnetteForAssistance || askedSanfordForAssistance
-             ]
-          <> [ story investigators twistOfFate2
-             , NextCampaignStep Nothing
-             ]
+        <> [ AddChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix (campaignDifficulty attrs)
+           | askedAnetteForAssistance || askedSanfordForAssistance
+           ]
+        <> [ story investigators twistOfFate2
+           , NextCampaignStep Nothing
+           ]
       pure c
     CampaignStep EpilogueStep -> do
       arrestedAnette <- getHasRecord TheInvestigatorsArrestedAnette
@@ -288,10 +288,10 @@ instance RunMessage TheCircleUndone where
       investigators <- allInvestigators
       pushAll
         $ [story investigators epilogueArrestedAnette | arrestedAnette]
-          <> [story investigators epilogueAssumedControlOfTheLodge | assumedControlOfTheLodge]
-          <> [story investigators epilogueSurvivedTheWatchersEmbrace | survivedTheWatchersEmbrace]
-          <> [story investigators epilogueSignedTheBlackBook | signedTheBlackBook]
-          <> [GameOver]
+        <> [story investigators epilogueAssumedControlOfTheLodge | assumedControlOfTheLodge]
+        <> [story investigators epilogueSurvivedTheWatchersEmbrace | survivedTheWatchersEmbrace]
+        <> [story investigators epilogueSignedTheBlackBook | signedTheBlackBook]
+        <> [GameOver]
 
       pure c
     PreScenarioSetup -> do
@@ -302,7 +302,7 @@ instance RunMessage TheCircleUndone where
     EndOfScenario _ -> do
       pure
         . TheCircleUndone
-        $ attrs
+          $ attrs
           `With` metadata
             { prologueInvestigators = mempty
             }

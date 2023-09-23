@@ -23,10 +23,10 @@ instance RunMessage Sacrifice1 where
   runMessage msg e@(Sacrifice1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectListMap AssetTarget $
-          AssetWithClass Mystic
-            <> DiscardableAsset
-            <> assetControlledBy iid
+        selectListMap AssetTarget
+          $ AssetWithClass Mystic
+          <> DiscardableAsset
+          <> assetControlledBy iid
       pushAll
         [ chooseOrRunOne
             iid
@@ -44,8 +44,8 @@ instance RunMessage Sacrifice1 where
         drawAmount = getChoiceAmount "Cards" choices
         resourcesAmount = getChoiceAmount "Resources" choices
       drawing <- drawCards iid attrs drawAmount
-      pushAll $
-        [drawing | drawAmount > 0]
-          <> [TakeResources iid resourcesAmount (toSource attrs) False | resourcesAmount > 0]
+      pushAll
+        $ [drawing | drawAmount > 0]
+        <> [TakeResources iid resourcesAmount (toSource attrs) False | resourcesAmount > 0]
       pure e
     _ -> Sacrifice1 <$> runMessage msg attrs

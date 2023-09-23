@@ -49,22 +49,22 @@ instance RunMessage MaskedCarnevaleGoer_17 where
       investigators <- selectList $ investigatorAt $ locationOf attrs
       lead <- getLead
       (enemyId, createDonLagorio) <- createEnemyAt donLagorio lid Nothing
-      pushAll $
-        [ createDonLagorio
-        , Flipped
-            (toSource attrs)
-            donLagorio
-        ]
-          <> [ chooseOrRunOneAtATime
-              lead
-              [ targetLabel
-                investigator
-                [EnemyAttack $ enemyAttack enemyId attrs investigator]
-              | investigator <- investigators
-              ]
-             | isAbilitySource attrs 1 source
-             , notNull investigators
-             ]
+      pushAll
+        $ [ createDonLagorio
+          , Flipped
+              (toSource attrs)
+              donLagorio
+          ]
+        <> [ chooseOrRunOneAtATime
+            lead
+            [ targetLabel
+              investigator
+              [EnemyAttack $ enemyAttack enemyId attrs investigator]
+            | investigator <- investigators
+            ]
+           | isAbilitySource attrs 1 source
+           , notNull investigators
+           ]
       pure a
     LookAtRevealed _ _ (isTarget a -> True) -> do
       let donLagorio = lookupCard Enemies.donLagorio (toCardId attrs)

@@ -24,9 +24,9 @@ instance RunMessage FireExtinguisher1 where
       | SkillTestTarget == effectTarget ->
           do
             evasions <-
-              selectListMap (EnemyEvaded iid) $
-                EnemyIsEngagedWith $
-                  InvestigatorWithId iid
+              selectListMap (EnemyEvaded iid)
+                $ EnemyIsEngagedWith
+                $ InvestigatorWithId iid
             e <$ pushAll (evasions <> [DisableEffect effectId])
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
     _ -> FireExtinguisher1 <$> runMessage msg attrs

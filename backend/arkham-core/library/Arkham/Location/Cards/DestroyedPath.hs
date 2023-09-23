@@ -25,14 +25,14 @@ destroyedPath = location DestroyedPath Cards.destroyedPath 3 (Static 0)
 
 instance HasAbilities DestroyedPath where
   getAbilities (DestroyedPath attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                RevealLocation Timing.After You $
-                  LocationWithId $
-                    toId attrs
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ RevealLocation Timing.After You
+              $ LocationWithId
+              $ toId attrs
           , withTooltip
               "{action}: _Investigate_. If you succeed, instead of discovering clues, remove 1 doom from Destroyed Path."
               $ restrictedAbility attrs 2 Here
@@ -48,8 +48,8 @@ instance RunMessage DestroyedPath where
       push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) amount
       pure l
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $
-        Investigate
+      push
+        $ Investigate
           iid
           (toId attrs)
           (AbilitySource source 2)

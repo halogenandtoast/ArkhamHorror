@@ -54,18 +54,18 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
             then "token is -4"
             else "automatically fail"
       unless (null broodOfYogSothothWithClues) $ do
-        push $
-          chooseOne iid $
-            Label
-              ("Do not remove clues from Brood of Yog-Sothoth and " <> result)
-              []
-              : [ targetLabel
-                  enemyId
-                  [ RemoveAllClues (ChaosTokenEffectSource Tablet) (toTarget enemyId)
-                  , DisableEffect $ effectId attrs
-                  ]
-                | enemyId <- broodOfYogSothothWithClues
-                ]
+        push
+          $ chooseOne iid
+          $ Label
+            ("Do not remove clues from Brood of Yog-Sothoth and " <> result)
+            []
+          : [ targetLabel
+              enemyId
+              [ RemoveAllClues (ChaosTokenEffectSource Tablet) (toTarget enemyId)
+              , DisableEffect $ effectId attrs
+              ]
+            | enemyId <- broodOfYogSothothWithClues
+            ]
       pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> UndimensionedAndUnseenTabletToken <$> runMessage msg attrs

@@ -24,8 +24,8 @@ instance HasAbilities FeedTheMind3 where
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility Nothing
         $ ActionCost 1
-          <> ExhaustCost (toTarget a)
-          <> UseCost (AssetWithId $ toId a) Secret 1
+        <> ExhaustCost (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 instance RunMessage FeedTheMind3 where

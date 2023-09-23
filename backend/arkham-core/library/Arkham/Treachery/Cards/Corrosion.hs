@@ -71,6 +71,6 @@ instance RunMessage Corrosion where
         $ push
         $ chooseOne iid
         $ map discardAsset assets
-          <> map discardHandAsset handAssets
+        <> map discardHandAsset handAssets
       pure t
     _ -> Corrosion <$> runMessage msg attrs

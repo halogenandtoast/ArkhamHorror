@@ -148,7 +148,7 @@ addCardEntityWith i f e card = case card of
       let
         eventId = EventId uuid
         event' = createEvent card i eventId
-      in
+       in
         e & eventsL %~ insertEntity event'
     AssetType -> do
       let

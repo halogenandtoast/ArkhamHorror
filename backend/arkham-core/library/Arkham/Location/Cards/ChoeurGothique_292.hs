@@ -34,7 +34,7 @@ instance HasAbilities ChoeurGothique_292 where
             (Here <> InvestigatorExists (HealableInvestigator (toSource a) DamageType You))
           $ ActionAbility Nothing
           $ ActionCost 1
-            <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide A) 1
+          <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide A) 1
       ]
 
 instance RunMessage ChoeurGothique_292 where

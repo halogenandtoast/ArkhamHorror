@@ -15,8 +15,8 @@ newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
 
 instance HasModifiersFor ClaspOfBlackOnyx where
   getModifiersFor (InvestigatorHandTarget _) (ClaspOfBlackOnyx attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [IncreaseCostOf (NotCard $ CardWithTitle "Clasp of Black Onyx") 1]
   getModifiersFor _ _ = pure []

@@ -66,21 +66,21 @@ instance RunMessage HypnoticGaze2 where
       when shouldDamageEnemy $ do
         healthDamage' <- field EnemyHealthDamage enemyId
         sanityDamage' <- field EnemySanityDamage enemyId
-        when (healthDamage' > 0 || sanityDamage' > 0) $
-          push $
-            If
-              (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
-              [ chooseOrRunOne iid $
-                  [ Label
+        when (healthDamage' > 0 || sanityDamage' > 0)
+          $ push
+          $ If
+            (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
+            [ chooseOrRunOne iid
+                $ [ Label
                     "Deal health damage"
                     [EnemyDamage enemyId $ nonAttack attrs healthDamage']
                   | healthDamage' > 0
                   ]
-                    <> [ Label
-                        "Deal sanity damage"
-                        [EnemyDamage enemyId $ nonAttack attrs sanityDamage']
-                       | sanityDamage' > 0
-                       ]
-              ]
+                <> [ Label
+                    "Deal sanity damage"
+                    [EnemyDamage enemyId $ nonAttack attrs sanityDamage']
+                   | sanityDamage' > 0
+                   ]
+            ]
       pure e
     _ -> HypnoticGaze2 . (`with` meta) <$> runMessage msg attrs

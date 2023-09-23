@@ -27,17 +27,17 @@ fold = act (3, A) Fold Cards.fold Nothing
 
 instance HasAbilities Fold where
   getAbilities (Fold x) =
-    withBaseAbilities x $
-      if onSide A x
+    withBaseAbilities x
+      $ if onSide A x
         then
           [ restrictedAbility
               (toProxySource x $ AssetMatcherSource $ assetIs Cards.peterClover)
               1
               (Uncontrolled <> OnSameLocation)
               (ActionAbility (Just Parley) $ ActionCost 1)
-          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned $
-              Objective $
-                ForcedAbility AnyWindow
+          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
+              $ Objective
+              $ ForcedAbility AnyWindow
           ]
         else []
 
@@ -61,8 +61,8 @@ instance RunMessage Fold where
           currentClueCount <- field AssetClues aid
           requiredClueCount <- perPlayer 1
           push $ PlaceClues (toAbilitySource attrs 1) (AssetTarget aid) 1
-          when (currentClueCount + 1 >= requiredClueCount) $
-            push $
-              TakeControlOfAsset iid aid
+          when (currentClueCount + 1 >= requiredClueCount)
+            $ push
+            $ TakeControlOfAsset iid aid
           pure a
     _ -> Fold <$> runMessage msg attrs

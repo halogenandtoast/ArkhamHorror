@@ -33,8 +33,8 @@ instance RunMessage Expulsion where
           mYourLocation <- selectOne $ locationWithInvestigator iid
           ks <- fieldMap InvestigatorKeys toList iid
           for_ mYourLocation $ \yourLocation -> do
-            push $
-              chooseOrRunOne
+            push
+              $ chooseOrRunOne
                 iid
                 [ targetLabel
                   cultist
@@ -42,7 +42,7 @@ instance RunMessage Expulsion where
                     , EnemyEngageInvestigator cultist iid
                     , InitiateEnemyAttack $ enemyAttack cultist (toSource attrs) iid
                     ]
-                    <> [PlaceKey (toTarget cultist) k | k <- ks]
+                  <> [PlaceKey (toTarget cultist) k | k <- ks]
                 | cultist <- nearestCultists
                 ]
       pure t

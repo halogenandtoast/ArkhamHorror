@@ -79,14 +79,14 @@ instance RunMessage PlanningTheEscape where
         $ [ ShuffleCardsIntoDeck Deck.EncounterDeck enemyCards
           , ShuffleEncounterDiscardBackIn
           ]
-          <> [ DiscardUntilFirst
-              lead
-              (toSource attrs)
-              Deck.EncounterDeck
-              (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Monster)
-             | monsterCount >= 3
-             ]
-          <> [AdvanceActDeck (actDeckId attrs) $ toSource attrs]
+        <> [ DiscardUntilFirst
+            lead
+            (toSource attrs)
+            Deck.EncounterDeck
+            (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Monster)
+           | monsterCount >= 3
+           ]
+        <> [AdvanceActDeck (actDeckId attrs) $ toSource attrs]
       pure a
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId

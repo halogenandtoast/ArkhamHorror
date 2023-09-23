@@ -24,10 +24,10 @@ newtype SkinGame = SkinGame ActAttrs
 
 skinGame :: ActCard SkinGame
 skinGame =
-  act (2, A) SkinGame Cards.skinGame $
-    Just $
-      GroupClueCost (PerPlayer 2) $
-        LocationWithTitle "VIP Area"
+  act (2, A) SkinGame Cards.skinGame
+    $ Just
+    $ GroupClueCost (PerPlayer 2)
+    $ LocationWithTitle "VIP Area"
 
 instance RunMessage SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of
@@ -39,8 +39,8 @@ instance RunMessage SkinGame where
       cloverClubBarId <- getJustLocationByName "Clover Club Bar"
       vipAreaId <- getJustLocationByName "VIP Area"
       assetId <- getRandom
-      pushAll $
-        if completedExtracurricularActivity
+      pushAll
+        $ if completedExtracurricularActivity
           then
             [ CreateAssetAt assetId peterClover (AtLocation cloverClubBarId)
             , FindEncounterCard

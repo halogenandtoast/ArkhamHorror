@@ -27,10 +27,10 @@ instance RunMessage SnakeBite where
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do
       allies <-
-        selectList $
-          AllyAsset
-            <> AssetControlledBy
-              (InvestigatorWithId iid)
+        selectList
+          $ AllyAsset
+          <> AssetControlledBy
+            (InvestigatorWithId iid)
       isPoisoned <- getIsPoisoned iid
       handlePoisoned <-
         if isPoisoned
@@ -38,17 +38,17 @@ instance RunMessage SnakeBite where
           else do
             poisoned <- getSetAsidePoisoned
             pure [CreateWeaknessInThreatArea poisoned iid]
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Deal 5 damage to an Ally asset you control"
             [chooseOne iid [targetLabel ally [AssetDamage ally source 5 0] | ally <- allies]]
           | notNull allies
           ]
-            <> [ Label
-                  "Take 1 direct damage. If you are not poisoned, put a set-aside Poisoned weakness into play in your threat area."
-                  $ InvestigatorDirectDamage iid source 1 0
-                    : handlePoisoned
-               ]
+        <> [ Label
+              "Take 1 direct damage. If you are not poisoned, put a set-aside Poisoned weakness into play in your threat area."
+              $ InvestigatorDirectDamage iid source 1 0
+              : handlePoisoned
+           ]
       pure t
     _ -> SnakeBite <$> runMessage msg attrs

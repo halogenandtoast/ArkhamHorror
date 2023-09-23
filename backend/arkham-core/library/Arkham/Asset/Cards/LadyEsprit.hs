@@ -32,8 +32,8 @@ instance HasAbilities LadyEsprit where
                   ]
               )
         )
-        ( ActionAbility Nothing $
-            Costs
+        ( ActionAbility Nothing
+            $ Costs
               [ ActionCost 1
               , ExhaustCost (toTarget x)
               , HorrorCost (toSource x) (toTarget x) 1
@@ -46,17 +46,17 @@ instance RunMessage LadyEsprit where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       canHeal <- canHaveDamageHealed attrs iid
       canGainResources <- withoutModifier (InvestigatorTarget iid) CannotGainResources
-      push $
-        chooseOne iid $
-          [ ComponentLabel
+      push
+        $ chooseOne iid
+        $ [ ComponentLabel
             (InvestigatorComponent iid DamageToken)
             [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
           | canHeal
           ]
-            <> [ ComponentLabel
-                (InvestigatorComponent iid ResourceToken)
-                [TakeResources iid 2 (toAbilitySource attrs 1) False]
-               | canGainResources
-               ]
+        <> [ ComponentLabel
+            (InvestigatorComponent iid ResourceToken)
+            [TakeResources iid 2 (toAbilitySource attrs 1) False]
+           | canGainResources
+           ]
       pure a
     _ -> LadyEsprit <$> runMessage msg attrs

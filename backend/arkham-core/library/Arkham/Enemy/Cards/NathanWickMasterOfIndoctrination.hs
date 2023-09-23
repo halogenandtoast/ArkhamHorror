@@ -29,13 +29,13 @@ instance HasAbilities NathanWickMasterOfIndoctrination where
   getAbilities (NathanWickMasterOfIndoctrination attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            SkillTestResult
-              Timing.After
-              You
-              (WhileEvadingAnEnemy $ EnemyWithId $ toId attrs)
-              (SuccessResult $ AtLeast $ Static 3)
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileEvadingAnEnemy $ EnemyWithId $ toId attrs)
+            (SuccessResult $ AtLeast $ Static 3)
       ]
 
 instance RunMessage NathanWickMasterOfIndoctrination where

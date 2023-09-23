@@ -24,7 +24,8 @@ instance HasAbilities Shrivelling where
   getAbilities (Shrivelling a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbilityWithSkill (Just #fight) #willpower
-        $ ActionCost 1 <> assetUseCost a Charge 1
+        $ ActionCost 1
+        <> assetUseCost a Charge 1
     ]
 
 instance RunMessage Shrivelling where

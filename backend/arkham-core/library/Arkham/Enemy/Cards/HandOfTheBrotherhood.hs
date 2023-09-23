@@ -29,17 +29,17 @@ handOfTheBrotherhood =
 
 instance HasModifiersFor HandOfTheBrotherhood where
   getModifiersFor (InvestigatorTarget _) (HandOfTheBrotherhood a) = do
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
-        [ CannotTriggerAbilityMatching $
-          AbilityOnLocation
+        [ CannotTriggerAbilityMatching
+          $ AbilityOnLocation
             ( LocationMatchAny
                 [ locationWithEnemy (toId a)
                 , ConnectedTo $ locationWithEnemy (toId a)
                 ]
             )
-            <> AbilityOneOf [AbilityIsActionAbility, AbilityIsReactionAbility]
+          <> AbilityOneOf [AbilityIsActionAbility, AbilityIsReactionAbility]
         | not (enemyExhausted a)
         ]
   getModifiersFor _ _ = pure []
@@ -48,10 +48,10 @@ instance HasAbilities HandOfTheBrotherhood where
   getAbilities (HandOfTheBrotherhood a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy ReadyEnemy) $
-          ForcedAbility $
-            DiscoveringLastClue Timing.After Anyone $
-              LocationWithTrait Ancient
+      [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy ReadyEnemy)
+          $ ForcedAbility
+          $ DiscoveringLastClue Timing.After Anyone
+          $ LocationWithTrait Ancient
       ]
 
 instance RunMessage HandOfTheBrotherhood where

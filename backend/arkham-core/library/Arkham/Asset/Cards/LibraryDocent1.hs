@@ -62,19 +62,19 @@ instance RunMessage LibraryDocent1 where
         handCards <- field InvestigatorHand iid
         let
           windows'' =
-            nub $
-              windows'
-                <> [ mkWindow Timing.When (DuringTurn iid)
-                   , mkWindow Timing.When FastPlayerWindow
-                   ]
+            nub
+              $ windows'
+              <> [ mkWindow Timing.When (DuringTurn iid)
+                 , mkWindow Timing.When FastPlayerWindow
+                 ]
           targetCards =
             filterBy
               [ (`cardMatch` (CardWithType AssetType <> CardWithTrait Tome))
               , (/= (toName assetPayment)) . toName
               ]
               handCards
-        push $
-          chooseOne
+        push
+          $ chooseOne
             iid
             [ targetLabel
               (toCardId tome)

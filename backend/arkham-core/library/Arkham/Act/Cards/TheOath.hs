@@ -29,8 +29,8 @@ theOath =
 
 instance HasModifiersFor TheOath where
   getModifiersFor (LocationTarget _) (TheOath attrs) = do
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ ConnectedToWhen
             (LocationWithTrait Passageway)

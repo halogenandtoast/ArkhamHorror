@@ -36,11 +36,11 @@ instance HasModifiersFor SearchForTheStrangerV3 where
 
 instance HasAbilities SearchForTheStrangerV3 where
   getAbilities (SearchForTheStrangerV3 x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          EnemyWouldBeDefeated Timing.When $
-            enemyIs
-              Enemies.theManInThePallidMask
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ EnemyWouldBeDefeated Timing.When
+        $ enemyIs
+          Enemies.theManInThePallidMask
     ]
 
 instance RunMessage SearchForTheStrangerV3 where

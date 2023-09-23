@@ -31,11 +31,11 @@ instance RunMessage WhatsGoingOn where
             $ Label
               "The lead investigator takes 2 horror"
               [assignHorror lead attrs 2]
-              : [ Label
-                  "Each investigator discards 1 card at random from his or her hand"
-                  [AllRandomDiscard (toSource attrs) AnyCard]
-                | canChooseDiscardOption
-                ]
+            : [ Label
+                "Each investigator discards 1 card at random from his or her hand"
+                [AllRandomDiscard (toSource attrs) AnyCard]
+              | canChooseDiscardOption
+              ]
         , advanceAgendaDeck attrs
         ]
       pure a

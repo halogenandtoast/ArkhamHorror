@@ -32,11 +32,11 @@ instance HasModifiersFor AscendingTheHillV2 where
 
 instance HasAbilities AscendingTheHillV2 where
   getAbilities (AscendingTheHillV2 x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          Enters Timing.When You $
-            LocationWithTitle
-              "Sentinel Peak"
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ Enters Timing.When You
+        $ LocationWithTitle
+          "Sentinel Peak"
     ]
 
 instance RunMessage AscendingTheHillV2 where

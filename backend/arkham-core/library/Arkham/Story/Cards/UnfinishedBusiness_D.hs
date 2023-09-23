@@ -43,16 +43,16 @@ instance RunMessage UnfinishedBusiness_D where
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
       pure . UnfinishedBusiness_D $ attrs & placementL .~ InThreatArea iid
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label "Take 1 damage" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
           , Label "Flip this back over" [Flip iid (toAbilitySource attrs 1) (toTarget attrs)]
           ]
       pure s
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ SkillLabel sType [beginSkillTest iid attrs attrs sType 4] | sType <- [SkillWillpower, SkillAgility]
           ]

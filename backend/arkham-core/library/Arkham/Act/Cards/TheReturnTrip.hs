@@ -32,11 +32,11 @@ instance HasAbilities TheReturnTrip where
   getAbilities (TheReturnTrip a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-        Objective $
-          ForcedAbility $
-            EnemyDefeated Timing.When Anyone ByAny $
-              enemyIs Enemies.padmaAmrita
+      [ mkAbility a 1
+        $ Objective
+        $ ForcedAbility
+        $ EnemyDefeated Timing.When Anyone ByAny
+        $ enemyIs Enemies.padmaAmrita
       | onSide A a
       ]
 

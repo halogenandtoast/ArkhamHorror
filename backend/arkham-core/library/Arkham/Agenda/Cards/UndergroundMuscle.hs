@@ -40,10 +40,10 @@ instance RunMessage UndergroundMuscle where
         rest = drop 1 result
       strikingFear <- gatherEncounterSet StrikingFear
       laBellaLunaInvestigators <-
-        selectList $
-          InvestigatorAt $
-            LocationWithId
-              laBellaLunaId
+        selectList
+          $ InvestigatorAt
+          $ LocationWithId
+            laBellaLunaId
       laBellaLunaEnemies <- selectList $ EnemyAt $ LocationWithId laBellaLunaId
       unEngagedEnemiesAtLaBellaLuna <-
         filterM
@@ -56,29 +56,29 @@ instance RunMessage UndergroundMuscle where
           cloverClubLoungeId
           Nothing
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           lead
-          [ Label "Continue" $
-              [ enemyCreation
-              , ShuffleEncounterDiscardBackIn
-              , ShuffleCardsIntoDeck Deck.EncounterDeck $
-                  map EncounterCard (rest <> strikingFear)
-              ]
-                <> [ Move $ move attrs iid cloverClubLoungeId
-                   | iid <- laBellaLunaInvestigators
-                   ]
-                <> [ EnemyMove eid cloverClubLoungeId
-                   | eid <- unEngagedEnemiesAtLaBellaLuna
-                   ]
-                <> [ RemoveLocation laBellaLunaId
-                   , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-                   ]
+          [ Label "Continue"
+              $ [ enemyCreation
+                , ShuffleEncounterDiscardBackIn
+                , ShuffleCardsIntoDeck Deck.EncounterDeck
+                    $ map EncounterCard (rest <> strikingFear)
+                ]
+              <> [ Move $ move attrs iid cloverClubLoungeId
+                 | iid <- laBellaLunaInvestigators
+                 ]
+              <> [ EnemyMove eid cloverClubLoungeId
+                 | eid <- unEngagedEnemiesAtLaBellaLuna
+                 ]
+              <> [ RemoveLocation laBellaLunaId
+                 , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+                 ]
           ]
 
-      pure $
-        UndergroundMuscle $
-          attrs
-            & (sequenceL .~ Sequence 1 B)
-            & (flippedL .~ True)
+      pure
+        $ UndergroundMuscle
+        $ attrs
+        & (sequenceL .~ Sequence 1 B)
+        & (flippedL .~ True)
     _ -> UndergroundMuscle <$> runMessage msg attrs

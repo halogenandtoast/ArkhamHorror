@@ -24,23 +24,23 @@ foulSwamp = location FoulSwamp Cards.foulSwamp 2 (Static 0)
 instance HasModifiersFor FoulSwamp where
   getModifiersFor (InvestigatorTarget iid) (FoulSwamp attrs)
     | iid `member` locationInvestigators attrs =
-        pure $
-          toModifiers attrs [CannotHealHorror, CannotCancelHorror]
+        pure
+          $ toModifiers attrs [CannotHealHorror, CannotCancelHorror]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FoulSwamp where
   getAbilities (FoulSwamp attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-        attrs
-        1
-        Here
-        ( ActionAbility Nothing $
-            Costs
-              [ActionCost 1, UpTo 3 (HorrorCost (toSource attrs) YouTarget 1)]
-        )
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+          attrs
+          1
+          Here
+          ( ActionAbility Nothing
+              $ Costs
+                [ActionCost 1, UpTo 3 (HorrorCost (toSource attrs) YouTarget 1)]
+          )
+        | locationRevealed attrs
+        ]
 
 instance RunMessage FoulSwamp where
   runMessage msg l@(FoulSwamp attrs) = case msg of

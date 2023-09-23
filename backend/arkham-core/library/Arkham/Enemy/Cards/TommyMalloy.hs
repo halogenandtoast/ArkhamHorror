@@ -31,13 +31,13 @@ instance HasAbilities TommyMalloy where
   getAbilities (TommyMalloy attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            EnemyTakeDamage
-              Timing.When
-              AnyDamageEffect
-              (EnemyWithId $ toId attrs)
-              AnySource
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemyTakeDamage
+            Timing.When
+            AnyDamageEffect
+            (EnemyWithId $ toId attrs)
+            AnySource
       ]
 
 instance RunMessage TommyMalloy where

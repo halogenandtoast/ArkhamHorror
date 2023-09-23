@@ -41,8 +41,8 @@ instance RunMessage OutOfThisWorld where
         ]
       pure a
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        DiscardTopOfEncounterDeck
+      push
+        $ DiscardTopOfEncounterDeck
           iid
           3
           (toSource attrs)
@@ -50,8 +50,8 @@ instance RunMessage OutOfThisWorld where
       pure a
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
-      unless (null locationCards) $
-        pushAll
+      unless (null locationCards)
+        $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
               iid

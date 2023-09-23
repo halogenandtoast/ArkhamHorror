@@ -31,18 +31,18 @@ instance HasAbilities WitchHauntings where
 instance HasModifiersFor WitchHauntings where
   getModifiersFor (LocationTarget lid) (WitchHauntings a) = do
     mInFrontOf <- field LocationInFrontOf lid
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
-        [ ConnectedToWhen (LocationWithId lid) $
-          NotLocation (LocationWithId lid)
-            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        [ ConnectedToWhen (LocationWithId lid)
+          $ NotLocation (LocationWithId lid)
+          <> LocationIsInFrontOf (InvestigatorWithId iid)
         | iid <- maybeToList mInFrontOf
         ]
   getModifiersFor (InvestigatorTarget iid) (WitchHauntings a) = do
     lids <-
-      selectList $
-        LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
+      selectList
+        $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
     pure $ toModifiers a $ map CannotEnter lids
   getModifiersFor _ _ = pure []
 

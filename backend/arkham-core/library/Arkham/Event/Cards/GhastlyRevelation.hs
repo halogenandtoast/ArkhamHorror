@@ -31,12 +31,12 @@ instance RunMessage GhastlyRevelation where
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       clues <- field InvestigatorClues iid
       otherInvestigators <-
-        selectList $
-          NotInvestigator (InvestigatorWithId iid)
+        selectList
+          $ NotInvestigator (InvestigatorWithId iid)
       locations <- selectList Anywhere
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Give any number of your clues to another investigator"
             [ chooseOrRunOne
                 iid
@@ -57,23 +57,23 @@ instance RunMessage GhastlyRevelation where
             ]
           | notNull otherInvestigators
           ]
-            <> [ Label
-                  "Place any number of your clues on any location"
-                  [ chooseOrRunOne
-                      iid
-                      [ targetLabel
-                        lid
-                        [ chooseAmounts
-                            iid
-                            "Clues to give"
-                            (MaxAmountTarget clues)
-                            [("Clues", (0, clues))]
-                            (ProxyTarget (toTarget attrs) (LocationTarget lid))
-                        ]
-                      | lid <- locations
-                      ]
+        <> [ Label
+              "Place any number of your clues on any location"
+              [ chooseOrRunOne
+                  iid
+                  [ targetLabel
+                    lid
+                    [ chooseAmounts
+                        iid
+                        "Clues to give"
+                        (MaxAmountTarget clues)
+                        [("Clues", (0, clues))]
+                        (ProxyTarget (toTarget attrs) (LocationTarget lid))
+                    ]
+                  | lid <- locations
                   ]
-               ]
+              ]
+           ]
       pure e
     ResolveAmounts iid (getChoiceAmount "Clues" -> n) (ProxyTarget (isTarget attrs -> True) target) ->
       do

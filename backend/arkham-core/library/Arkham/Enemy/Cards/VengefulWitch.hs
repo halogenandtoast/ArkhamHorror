@@ -34,11 +34,11 @@ instance HasAbilities VengefulWitch where
   getAbilities (VengefulWitch a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (InvestigatorExists $ InvestigatorAt $ locationWithEnemy (toId a)) $
-          ForcedAbility $
-            EnemyDefeated Timing.When Anyone ByAny $
-              EnemyWithId $
-                toId a
+      [ restrictedAbility a 1 (InvestigatorExists $ InvestigatorAt $ locationWithEnemy (toId a))
+          $ ForcedAbility
+          $ EnemyDefeated Timing.When Anyone ByAny
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage VengefulWitch where

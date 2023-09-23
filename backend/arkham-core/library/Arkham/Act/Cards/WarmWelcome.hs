@@ -47,8 +47,8 @@ instance RunMessage WarmWelcome where
         Nothing -> do
           (library, placeLibrary) <- placeSetAsideLocation Locations.library
           spawnMessages <- spawnNathanWick library
-          pushAll $
-            placeLibrary
-              : spawnMessages <> [advanceActDeck attrs]
+          pushAll
+            $ placeLibrary
+            : spawnMessages <> [advanceActDeck attrs]
       pure a
     _ -> WarmWelcome <$> runMessage msg attrs

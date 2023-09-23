@@ -32,11 +32,11 @@ instance HasModifiersFor AlejandrosPlight where
 
 instance HasAbilities AlejandrosPlight where
   getAbilities (AlejandrosPlight a) =
-    [ mkAbility a 1 $
-        Objective $
-          ForcedAbility $
-            EnemyLeavesPlay Timing.When $
-              EnemyWithAsset (assetIs Assets.alejandroVela)
+    [ mkAbility a 1
+        $ Objective
+        $ ForcedAbility
+        $ EnemyLeavesPlay Timing.When
+        $ EnemyWithAsset (assetIs Assets.alejandroVela)
     ]
 
 instance RunMessage AlejandrosPlight where
@@ -49,11 +49,11 @@ instance RunMessage AlejandrosPlight where
       deckCount <- getActDecksInPlayCount
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela
       iids <-
-        selectList $
-          NearestToEnemy $
-            EnemyWithAsset $
-              assetIs
-                Assets.alejandroVela
+        selectList
+          $ NearestToEnemy
+          $ EnemyWithAsset
+          $ assetIs
+            Assets.alejandroVela
       let
         takeControlMessage =
           chooseOrRunOne

@@ -25,24 +25,24 @@ eerieGlade = location EerieGlade Cards.eerieGlade 4 (PerPlayer 1)
 
 instance HasAbilities EerieGlade where
   getAbilities (EerieGlade attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-        attrs
-        1
-        (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+          attrs
+          1
+          (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage EerieGlade where
   runMessage msg l@(EerieGlade attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
-      push $
-        DiscardTopOfDeck
+      push
+        $ DiscardTopOfDeck
           iid
           (actionRemainingCount * 2)
           (toAbilitySource attrs 1)

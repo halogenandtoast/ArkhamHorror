@@ -34,7 +34,7 @@ instance HasModifiersFor HistoricalSocietyRecordOffice_129 where
     pure
       $ toModifiers attrs
       $ guard atLocation
-        *> [EnemyFight 1, EnemyEvade 1]
+      *> [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HistoricalSocietyRecordOffice_129 where

@@ -62,8 +62,8 @@ instance RunMessage DarkKnowledgeV2 where
         $ [ toMessage createCarlSanford
           , advanceActDeck attrs
           ]
-          <> [ PlaceBreaches (ActTarget $ ActId $ toCardCode Acts.newWorldOrder) breaches
-             | breaches > 0
-             ]
+        <> [ PlaceBreaches (ActTarget $ ActId $ toCardCode Acts.newWorldOrder) breaches
+           | breaches > 0
+           ]
       pure a
     _ -> DarkKnowledgeV2 <$> runMessage msg attrs

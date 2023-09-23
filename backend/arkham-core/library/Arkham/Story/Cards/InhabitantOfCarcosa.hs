@@ -26,13 +26,13 @@ instance RunMessage InhabitantOfCarcosa where
         map snd <$> getInvestigatorsWithHealHorror attrs 3 Anyone
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaInhabitantOfCarcosa
       setAsideRuinsOfCarcosa <-
-        getSetAsideCardsMatching $
-          CardWithTitle "Ruins of Carcosa"
+        getSetAsideCardsMatching
+          $ CardWithTitle "Ruins of Carcosa"
       otherRuinsOfCarcosa <- case nonEmpty setAsideRuinsOfCarcosa of
         Nothing -> error "missing"
         Just xs -> sample xs
-      pushAll $
-        healHorrorMessages
-          <> [ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace]
+      pushAll
+        $ healHorrorMessages
+        <> [ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace]
       pure s
     _ -> InhabitantOfCarcosa <$> runMessage msg attrs

@@ -25,7 +25,8 @@ instance HasAbilities StMarysHospital where
     withRevealedAbilities x
       $ [ limitedAbility (PlayerLimit PerGame 1)
             $ withCriteria (mkAbility x 1 (ActionAbility Nothing $ ActionCost 1))
-            $ Here <> InvestigatorExists (HealableInvestigator (toSource x) DamageType You)
+            $ Here
+            <> InvestigatorExists (HealableInvestigator (toSource x) DamageType You)
         ]
 
 instance RunMessage StMarysHospital where

@@ -43,8 +43,8 @@ instance HasAbilities TheGateToHell where
         1
         ( AnyCriterion
             [ Negate
-              ( LocationExists $
-                  LocationInDirection dir (LocationWithId $ toId attrs)
+              ( LocationExists
+                  $ LocationInDirection dir (LocationWithId $ toId attrs)
               )
             | dir <- [Above, Below]
             ]

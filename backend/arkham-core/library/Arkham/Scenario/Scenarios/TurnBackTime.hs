@@ -71,10 +71,10 @@ instance RunMessage TurnBackTime where
   runMessage msg s@(TurnBackTime attrs) = case msg of
     CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
       mRepossessThePast <-
-        selectOne $
-          InDeckOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (cardIs Assets.relicOfAgesRepossessThePast)
+        selectOne
+          $ InDeckOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (cardIs Assets.relicOfAgesRepossessThePast)
       pushAll
         [ RemovePlayerCardFromGame True repossessThePast
         | repossessThePast <- maybeToList mRepossessThePast
@@ -137,26 +137,26 @@ instance RunMessage TurnBackTime where
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       setAsideCards <-
-        genCards $
-          [ Locations.chamberOfTime
-          , Assets.relicOfAgesRepossessThePast
-          , Enemies.harbingerOfValusia
-          ]
-            <> replicate setAsidePoisonedCount Treacheries.poisoned
+        genCards
+          $ [ Locations.chamberOfTime
+            , Assets.relicOfAgesRepossessThePast
+            , Enemies.harbingerOfValusia
+            ]
+          <> replicate setAsidePoisonedCount Treacheries.poisoned
 
       (entrywayId, placeEntryway) <- placeLocationCard Locations.entryway
 
-      pushAll $
-        story iids intro
-          : map CrossOutRecord crossOut
-            <> [ SetEncounterDeck encounterDeck'
-               , SetAgendaDeck
-               , SetActDeck
-               , placeEntryway
-               , RevealLocation Nothing entrywayId
-               , MoveAllTo (toSource attrs) entrywayId
-               , AddChaosToken ElderThing
-               ]
+      pushAll
+        $ story iids intro
+        : map CrossOutRecord crossOut
+          <> [ SetEncounterDeck encounterDeck'
+             , SetAgendaDeck
+             , SetActDeck
+             , placeEntryway
+             , RevealLocation Nothing entrywayId
+             , MoveAllTo (toSource attrs) entrywayId
+             , AddChaosToken ElderThing
+             ]
 
       agendas <- genCards [Agendas.somethingStirs, Agendas.theTempleWarden]
       acts <-
@@ -190,16 +190,16 @@ instance RunMessage TurnBackTime where
       iids <- allInvestigatorIds
       case resolution of
         NoResolution ->
-          pushAll $
-            Record TheFabricOfTimeIsUnwoven
-              : map DrivenInsane iids
-                <> [GameOver]
+          pushAll
+            $ Record TheFabricOfTimeIsUnwoven
+            : map DrivenInsane iids
+              <> [GameOver]
         Resolution 1 -> do
           gainXp <- toGainXp attrs getXp
-          pushAll $
-            Record TheInvestigatorsSealedTheRelicOfAgesForever
-              : gainXp
-                <> [GameOver]
+          pushAll
+            $ Record TheInvestigatorsSealedTheRelicOfAgesForever
+            : gainXp
+              <> [GameOver]
         _ -> error "Unknown Resolution"
       pure s
     Explore iid _ _ -> do

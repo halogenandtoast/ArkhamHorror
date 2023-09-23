@@ -33,11 +33,11 @@ instance HasAbilities SwampLeech where
     let actions' = getAbilities attrs
     let base = filter (not . (`abilityIs` Action.Evade)) actions'
     base
-      <> [ mkAbility attrs 1 $
-            ForcedAbility $
-              EnemyEnters Timing.When (LocationWithoutTrait Bayou) $
-                EnemyWithId $
-                  toId attrs
+      <> [ mkAbility attrs 1
+            $ ForcedAbility
+            $ EnemyEnters Timing.When (LocationWithoutTrait Bayou)
+            $ EnemyWithId
+            $ toId attrs
          ]
 
 instance RunMessage SwampLeech where

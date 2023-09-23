@@ -23,8 +23,8 @@ instance RunMessage Taunt3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid
       enemies <- forToSnd enemyIds $ \_ -> drawCards iid attrs 1
-      push $
-        chooseSome
+      push
+        $ chooseSome
           iid
           "Done engaging enemies"
           [ targetLabel

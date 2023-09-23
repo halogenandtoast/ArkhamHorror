@@ -26,8 +26,8 @@ instance HasAbilities AshcanPete where
     [ playerLimit PerRound
         $ withCriteria (mkAbility x 1 (FastAbility $ HandDiscardCost 1 AnyCard))
         $ Self
-          <> AssetExists (AssetControlledBy You <> AssetExhausted)
-          <> Negate (SelfHasModifier ControlledAssetsCannotReady)
+        <> AssetExists (AssetControlledBy You <> AssetExhausted)
+        <> Negate (SelfHasModifier ControlledAssetsCannotReady)
     ]
 
 instance HasChaosTokenValue AshcanPete where

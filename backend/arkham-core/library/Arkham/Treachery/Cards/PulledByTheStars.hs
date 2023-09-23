@@ -26,9 +26,9 @@ pulledByTheStars = treachery PulledByTheStars Cards.pulledByTheStars
 
 instance HasAbilities PulledByTheStars where
   getAbilities (PulledByTheStars a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds Timing.When (You <> NotInvestigator InvestigatorThatMovedDuringTurn)
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds Timing.When (You <> NotInvestigator InvestigatorThatMovedDuringTurn)
     , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing $ ActionCost 1
     ]
 

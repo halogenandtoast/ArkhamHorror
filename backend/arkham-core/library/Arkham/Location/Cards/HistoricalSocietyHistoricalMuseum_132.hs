@@ -46,12 +46,12 @@ instance HasAbilities HistoricalSocietyHistoricalMuseum_132 where
   getAbilities (HistoricalSocietyHistoricalMuseum_132 attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          EnemySpawns
-            Timing.When
-            (LocationWithId $ toId attrs)
-            AnyEnemy
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ EnemySpawns
+          Timing.When
+          (LocationWithId $ toId attrs)
+          AnyEnemy
       | not (locationRevealed attrs)
       ]
 

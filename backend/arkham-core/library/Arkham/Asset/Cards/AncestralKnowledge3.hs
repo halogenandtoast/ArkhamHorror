@@ -24,12 +24,12 @@ ancestralKnowledge3 = asset AncestralKnowledge3 Cards.ancestralKnowledge3
 
 instance HasAbilities AncestralKnowledge3 where
   getAbilities (AncestralKnowledge3 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ReactionAbility (DrawingStartingHand Timing.When You) Free
-    , restrictedAbility attrs 2 ability2Criteria $
-        FastAbility $
-          ExhaustCost
-            (toTarget attrs)
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ReactionAbility (DrawingStartingHand Timing.When You) Free
+    , restrictedAbility attrs 2 ability2Criteria
+        $ FastAbility
+        $ ExhaustCost
+          (toTarget attrs)
     ]
    where
     ability2Criteria =

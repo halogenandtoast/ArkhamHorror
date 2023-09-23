@@ -111,10 +111,10 @@ additionalRewards s = do
         == 3
         then abbessSatisfied lead investigatorIds
         else []
-  pure $
-    [ChooseOneRewardByEachPlayer masks investigatorIds]
-      <> proceedToSacrificesMade
-      <> proceedToAbbessSatisfied
+  pure
+    $ [ChooseOneRewardByEachPlayer masks investigatorIds]
+    <> proceedToSacrificesMade
+    <> proceedToAbbessSatisfied
 
 instance RunMessage CarnevaleOfHorrors where
   runMessage msg s@(CarnevaleOfHorrors attrs) = case msg of
@@ -135,16 +135,17 @@ instance RunMessage CarnevaleOfHorrors where
       -- Locations
       let locationLabels = ["location" <> tshow @Int n | n <- [1 .. 8]]
       randomLocations <-
-        traverse placeLocationCard . drop 1
-          =<< shuffleM
-            [ Locations.streetsOfVenice
-            , Locations.rialtoBridge
-            , Locations.venetianGarden
-            , Locations.bridgeOfSighs
-            , Locations.floodedSquare
-            , Locations.accademiaBridge
-            , Locations.theGuardian
-            ]
+        traverse placeLocationCard
+          . drop 1
+            =<< shuffleM
+              [ Locations.streetsOfVenice
+              , Locations.rialtoBridge
+              , Locations.venetianGarden
+              , Locations.bridgeOfSighs
+              , Locations.floodedSquare
+              , Locations.accademiaBridge
+              , Locations.theGuardian
+              ]
       canalSide <- placeLocationCard Locations.canalSide
       sanMarcoBasilica@(sanMarcoBasilicaId, _) <-
         placeLocationCard
@@ -176,32 +177,32 @@ instance RunMessage CarnevaleOfHorrors where
 
       let
         placeLocations =
-          flip map (zip locationLabels (toList locations)) $
-            \(label, (locationId, placement)) ->
+          flip map (zip locationLabels (toList locations))
+            $ \(label, (locationId, placement)) ->
               (locationId, [placement, SetLocationLabel locationId label])
         locationIds =
           fromJustNote "was empty" . nonEmpty $ map fst $ toList locations
 
-      pushAll $
-        [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-          <> concatMap snd placeLocations
-          <> [ PlacedLocationDirection l2 RightOf l1
-             | (l1, l2) <- zip (toList locationIds) (drop 1 $ toList locationIds)
-             ]
-          <> [ PlacedLocationDirection
-                (NE.head locationIds)
-                RightOf
-                (NE.last locationIds)
-             ]
-          <> [ CreateAssetAt assetId asset (AtLocation locationId)
-             | (locationId, (asset, assetId)) <-
-                locationIdsWithMaskedCarnevaleGoers
-             ]
-          <> [ CreateAssetAt abbessId abbess (AtLocation sanMarcoBasilicaId)
-             , RevealLocation Nothing sanMarcoBasilicaId
-             , MoveAllTo (toSource attrs) sanMarcoBasilicaId
-             , story investigatorIds Flavor.intro
-             ]
+      pushAll
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
+        <> concatMap snd placeLocations
+        <> [ PlacedLocationDirection l2 RightOf l1
+           | (l1, l2) <- zip (toList locationIds) (drop 1 $ toList locationIds)
+           ]
+        <> [ PlacedLocationDirection
+              (NE.head locationIds)
+              RightOf
+              (NE.last locationIds)
+           ]
+        <> [ CreateAssetAt assetId asset (AtLocation locationId)
+           | (locationId, (asset, assetId)) <-
+              locationIdsWithMaskedCarnevaleGoers
+           ]
+        <> [ CreateAssetAt abbessId abbess (AtLocation sanMarcoBasilicaId)
+           , RevealLocation Nothing sanMarcoBasilicaId
+           , MoveAllTo (toSource attrs) sanMarcoBasilicaId
+           , story investigatorIds Flavor.intro
+           ]
 
       setAsideCards <-
         genCards
@@ -281,15 +282,15 @@ instance RunMessage CarnevaleOfHorrors where
     ResolveChaosToken token Tablet iid | isHardExpert attrs -> do
       lid <- getJustLocation iid
       closestInnocentRevelers <-
-        selectList $
-          ClosestAsset lid $
-            assetIs
-              Assets.innocentReveler
+        selectList
+          $ ClosestAsset lid
+          $ assetIs
+            Assets.innocentReveler
       case closestInnocentRevelers of
         [] -> pure ()
         [x] ->
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ ComponentLabel
                   (AssetComponent x DamageToken)
@@ -299,8 +300,8 @@ instance RunMessage CarnevaleOfHorrors where
                   [AssetDamage x (ChaosTokenSource token) 0 1]
               ]
         xs ->
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ targetLabel
                 x
@@ -323,15 +324,15 @@ instance RunMessage CarnevaleOfHorrors where
         Tablet -> do
           lid <- getJustLocation iid
           closestInnocentRevelers <-
-            selectList $
-              ClosestAsset lid $
-                assetIs
-                  Assets.innocentReveler
+            selectList
+              $ ClosestAsset lid
+              $ assetIs
+                Assets.innocentReveler
           case closestInnocentRevelers of
             [] -> pure ()
             [x] ->
-              push $
-                chooseOne
+              push
+                $ chooseOne
                   iid
                   [ ComponentLabel
                       (AssetComponent x DamageToken)
@@ -341,8 +342,8 @@ instance RunMessage CarnevaleOfHorrors where
                       [AssetDamage x (ChaosTokenSource token) 0 1]
                   ]
             xs ->
-              push $
-                chooseOne
+              push
+                $ chooseOne
                   iid
                   [ targetLabel
                     x
@@ -362,11 +363,11 @@ instance RunMessage CarnevaleOfHorrors where
           mCnidathquaId <- getCnidathqua
           case mCnidathquaId of
             Just cnidathquaId ->
-              push $
-                EnemyAttack $
-                  (enemyAttack cnidathquaId attrs iid)
-                    { attackDamageStrategy = DamageFirst Assets.innocentReveler
-                    }
+              push
+                $ EnemyAttack
+                $ (enemyAttack cnidathquaId attrs iid)
+                  { attackDamageStrategy = DamageFirst Assets.innocentReveler
+                  }
             Nothing -> pure ()
         _ -> pure ()
       pure s
@@ -379,50 +380,50 @@ instance RunMessage CarnevaleOfHorrors where
               & (cardsUnderActDeckL %~ drop 1)
               & (cardsUnderAgendaDeckL <>~ take 1 (scenarioCardsUnderActDeck attrs))
           )
-      pushAll $
-        [ story iids Flavor.noResolution
-        , Record ManyWereSacrificedToCnidathquaDuringTheCarnivale
-        ]
-          <> additionalRewardsMsg
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids Flavor.noResolution
+          , Record ManyWereSacrificedToCnidathquaDuringTheCarnivale
+          ]
+        <> additionalRewardsMsg
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
       iids <- allInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
-      pushAll $
-        [ story iids Flavor.resolution1
-        , Record TheSunBanishedCnidathquaIntoTheDepths
-        ]
-          <> additionalRewardsMsg
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids Flavor.resolution1
+          , Record TheSunBanishedCnidathquaIntoTheDepths
+          ]
+        <> additionalRewardsMsg
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
       iids <- allInvestigatorIds
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
-      pushAll $
-        [ story iids Flavor.resolution2
-        , Record CnidathquaRetreatedToNurseItsWounds
-        ]
-          <> additionalRewardsMsg
-          <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids Flavor.resolution2
+          , Record CnidathquaRetreatedToNurseItsWounds
+          ]
+        <> additionalRewardsMsg
+        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure s
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest) ->
       do
-        push $
-          chooseOne currentInvestigatorId $
-            Label "Do not add a mask" [ChooseOneRewardByEachPlayer rewards rest]
-              : [ CardLabel
-                  (toCardCode reward)
-                  [ AddCampaignCardToDeck currentInvestigatorId reward
-                  , ChooseOneRewardByEachPlayer (delete reward rewards) rest
-                  ]
-                | reward <- rewards
-                ]
+        push
+          $ chooseOne currentInvestigatorId
+          $ Label "Do not add a mask" [ChooseOneRewardByEachPlayer rewards rest]
+          : [ CardLabel
+              (toCardCode reward)
+              [ AddCampaignCardToDeck currentInvestigatorId reward
+              , ChooseOneRewardByEachPlayer (delete reward rewards) rest
+              ]
+            | reward <- rewards
+            ]
         pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ push . AddCardToDeckForCampaign iid

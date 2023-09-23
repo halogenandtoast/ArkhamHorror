@@ -60,8 +60,8 @@ instance RunMessage BaseOfTheHill where
     Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _
       | isSource attrs source -> do
           divergingPaths <-
-            getSetAsideCardsMatching $
-              CardWithTitle "Diverging Path"
+            getSetAsideCardsMatching
+              $ CardWithTitle "Diverging Path"
           for_ (nonEmpty divergingPaths) $ \ne -> do
             card <- sample ne
             placement <- placeLocation_ card

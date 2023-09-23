@@ -27,15 +27,15 @@ threadsOfTime = agenda (1, A) ThreadsOfTime Cards.threadsOfTime (Static 6)
 instance HasAbilities ThreadsOfTime where
   getAbilities (ThreadsOfTime a) =
     let hasCard = HasCard (CardWithTitle "Relic of Ages")
-    in  [ mkAbility a 1 $
-            ForcedAbility $
-              InvestigatorEliminated Timing.When $
-                AnyInvestigator
-                  [ HandWith hasCard
-                  , DiscardWith hasCard
-                  , DeckWith hasCard
-                  , HasMatchingAsset (AssetWithTitle "Relic of Ages")
-                  ]
+     in [ mkAbility a 1
+            $ ForcedAbility
+            $ InvestigatorEliminated Timing.When
+            $ AnyInvestigator
+              [ HandWith hasCard
+              , DiscardWith hasCard
+              , DeckWith hasCard
+              , HasMatchingAsset (AssetWithTitle "Relic of Ages")
+              ]
         ]
 
 instance RunMessage ThreadsOfTime where

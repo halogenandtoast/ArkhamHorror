@@ -28,8 +28,8 @@ theHiddenChamber =
 instance HasModifiersFor TheHiddenChamber where
   getModifiersFor target (TheHiddenChamber attrs) | isTarget attrs target = do
     mKeyToTheChamber <- selectOne (assetIs Assets.keyToTheChamber)
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         ( case mKeyToTheChamber of
             Just keyToTheChamber

@@ -112,16 +112,16 @@ instance RunMessage LocationAttrs where
       (before, _, after) <- frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       pushAll
         $ [before | clues == 0]
-          <> [Successful (Action.Investigate, toTarget a) iid source (toTarget a) n]
-          <> [after | clues == 0]
+        <> [Successful (Action.Investigate, toTarget a) iid source (toTarget a) n]
+        <> [after | clues == 0]
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
       let clues = locationClues a
       (before, _, after) <- frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       pushAll
         $ [before | clues == 0]
-          <> [Successful (Action.Investigate, toTarget a) iid source actual n]
-          <> [after | clues == 0]
+        <> [Successful (Action.Investigate, toTarget a) iid source actual n]
+        <> [after | clues == 0]
       pure a
     Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
       let lid = toId a
@@ -179,9 +179,9 @@ instance RunMessage LocationAttrs where
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
         $ windows'
-          <> [Discarded (toTarget a) source (toCard a)]
-          <> [RemovedFromPlay $ toSource a]
-          <> resolve (RemoveLocation $ toId a)
+        <> [Discarded (toTarget a) source (toCard a)]
+        <> [RemovedFromPlay $ toSource a]
+        <> resolve (RemoveLocation $ toId a)
       pure a
     AttachAsset aid (LocationTarget lid)
       | lid == locationId ->
@@ -256,9 +256,10 @@ instance RunMessage LocationAttrs where
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
-              pure . not $ flip any modifiers' $ \case
-                SpawnNonEliteAtConnectingInstead {} -> True
-                _ -> False
+              pure
+                . not $ flip any modifiers' $ \case
+                  SpawnNonEliteAtConnectingInstead {} -> True
+                  _ -> False
           withQueue_ $ filter (/= next)
           if null availableLocationIds
             then push (Discard GameSource (EnemyTarget eid))
@@ -336,7 +337,7 @@ instance RunMessage LocationAttrs where
           [mkWindow Timing.After (Window.RevealLocation revealer lid)]
       pushAll
         $ [whenWindowMsg, afterWindowMsg]
-          <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
+        <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
       pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount == 0)
     LookAtRevealed iid source target | isTarget a target -> do
       push
@@ -390,7 +391,7 @@ instance RunMessage LocationAttrs where
           throwIO
             $ InvalidState
             $ "Not expecting a player card or empty set, but got "
-              <> tshow locationCardsUnderneath
+            <> tshow locationCardsUnderneath
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid source 101 _ _ | isSource a source -> do
       let

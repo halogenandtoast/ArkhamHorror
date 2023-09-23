@@ -31,9 +31,9 @@ instance HasAbilities VoiceOfTheJungle where
         )
         $ ForcedAbility
         $ TurnEnds Timing.AtIf You
-    , restrictedAbility x 2 (InThreatAreaOf You) $
-        ActionAbility Nothing $
-          ActionCost 1
+    , restrictedAbility x 2 (InThreatAreaOf You)
+        $ ActionAbility Nothing
+        $ ActionCost 1
     ]
 
 instance RunMessage VoiceOfTheJungle where
@@ -43,8 +43,8 @@ instance RunMessage VoiceOfTheJungle where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           source
           (InvestigatorTarget iid)

@@ -37,8 +37,8 @@ instance HasModifiersFor LakeXochimilco_183 where
       Just iid -> do
         sanityMatches <- fieldP InvestigatorRemainingSanity (<= 3) iid
         isBeingInvestigated <- getIsBeingInvestigated (toId a)
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ShroudModifier (-2) | sanityMatches && isBeingInvestigated]
   getModifiersFor _ _ = pure []

@@ -28,42 +28,42 @@ instance RunMessage EndlessCaverns where
       enemyMsgs <- getPlacePursuitEnemyMessages
       lead <- getLeadInvestigatorId
       iids <- getInvestigatorIds
-      pushAll $
-        enemyMsgs
-          <> [ questionLabel "Choose a scout" lead $
-                ChooseOne
-                  [ targetLabel iid [HandleTargetChoice lead (toSource attrs) (InvestigatorTarget iid)]
-                  | iid <- iids
-                  ]
-             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ enemyMsgs
+        <> [ questionLabel "Choose a scout" lead
+              $ ChooseOne
+                [ targetLabel iid [HandleTargetChoice lead (toSource attrs) (InvestigatorTarget iid)]
+                | iid <- iids
+                ]
+           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+           ]
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) ->
       do
         hasRope <- getHasSupply iid Rope
-        unless hasRope $
-          push $
-            chooseOne
-              iid
-              [ SkillLabel
-                  SkillCombat
-                  [ beginSkillTest
-                      iid
-                      (toSource attrs)
-                      (toTarget attrs)
-                      SkillCombat
-                      5
-                  ]
-              , SkillLabel
-                  SkillAgility
-                  [ beginSkillTest
-                      iid
-                      (toSource attrs)
-                      (toTarget attrs)
-                      SkillAgility
-                      5
-                  ]
-              ]
+        unless hasRope
+          $ push
+          $ chooseOne
+            iid
+            [ SkillLabel
+                SkillCombat
+                [ beginSkillTest
+                    iid
+                    (toSource attrs)
+                    (toTarget attrs)
+                    SkillCombat
+                    5
+                ]
+            , SkillLabel
+                SkillAgility
+                [ beginSkillTest
+                    iid
+                    (toSource attrs)
+                    (toTarget attrs)
+                    SkillAgility
+                    5
+                ]
+            ]
         pure a
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do

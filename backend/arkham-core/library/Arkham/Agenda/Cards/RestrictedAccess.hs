@@ -27,10 +27,10 @@ restrictedAccess =
 
 instance HasAbilities RestrictedAccess where
   getAbilities (RestrictedAccess x) =
-    [ mkAbility x 1 $
-      ForcedAbility $
-        EnemySpawns Timing.When Anywhere $
-          enemyIs Enemies.huntingHorror
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ EnemySpawns Timing.When Anywhere
+      $ enemyIs Enemies.huntingHorror
     | onSide A x
     ]
 
@@ -55,8 +55,8 @@ instance RunMessage RestrictedAccess where
             , advanceAgendaDeck attrs
             ]
         Nothing ->
-          push $
-            FindEncounterCard
+          push
+            $ FindEncounterCard
               leadInvestigatorId
               (toTarget attrs)
               [FromEncounterDeck, FromEncounterDiscard, FromVoid]

@@ -22,13 +22,13 @@ atychiphobia = treachery Atychiphobia Cards.atychiphobia
 
 instance HasAbilities Atychiphobia where
   getAbilities (Atychiphobia a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          SkillTestResult Timing.After You AnySkillTest $
-            FailureResult AnyValue
-    , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation) $
-        ActionAbility Nothing $
-          ActionCost 2
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ SkillTestResult Timing.After You AnySkillTest
+        $ FailureResult AnyValue
+    , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation)
+        $ ActionAbility Nothing
+        $ ActionCost 2
     ]
 
 instance RunMessage Atychiphobia where

@@ -26,12 +26,13 @@ instance HasAbilities HypnoticTherapy where
   getAbilities (HypnoticTherapy a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility Nothing
-        $ ActionCost 1 <> exhaust a
+        $ ActionCost 1
+        <> exhaust a
     , restrictedAbility a 2 ControlsThis
         $ ReactionAbility
           ( InvestigatorHealed Timing.After HorrorType Anyone
               $ SourceOwnedBy You
-                <> NotSource (SourceIs (toSource a))
+              <> NotSource (SourceIs (toSource a))
           )
         $ exhaust a
     ]

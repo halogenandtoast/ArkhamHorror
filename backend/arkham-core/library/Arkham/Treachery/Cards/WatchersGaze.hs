@@ -38,8 +38,8 @@ instance RunMessage WatchersGaze where
           ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-          push $
-            InvestigatorAssignDamage
+          push
+            $ InvestigatorAssignDamage
               iid
               source
               (DamageFirst Assets.innocentReveler)

@@ -39,7 +39,7 @@ investigatorsNearestToEnemy eid = do
   investigatorIdWithLocationId <-
     fmap catMaybes
       . traverse (\i -> fmap (i,) <$> field InvestigatorLocation i)
-      =<< selectList UneliminatedInvestigator
+        =<< selectList UneliminatedInvestigator
 
   mappings <-
     catMaybes
@@ -50,10 +50,13 @@ investigatorsNearestToEnemy eid = do
   let
     minDistance :: Int =
       fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-  pure . (Distance minDistance,) . nub . map fst $
-    filter
-      ((== minDistance) . unDistance . snd)
-      mappings
+  pure
+    . (Distance minDistance,)
+    . nub
+    . map fst
+      $ filter
+        ((== minDistance) . unDistance . snd)
+        mappings
 
 moveOrganistAwayFromNearestInvestigator :: HasGame m => m Message
 moveOrganistAwayFromNearestInvestigator = do
@@ -65,26 +68,26 @@ moveOrganistAwayFromNearestInvestigator = do
   lids <-
     setFromList
       . concat
-      <$> for
-        iids
-        ( \iid -> do
-            currentLocation <-
-              fieldMap
-                InvestigatorLocation
-                (fromJustNote "must be at a location")
-                iid
-            rs <-
-              forToSnd
-                everywhere
-                (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)
-            pure $ map fst $ filter ((> minDistance) . snd) rs
-        )
+        <$> for
+          iids
+          ( \iid -> do
+              currentLocation <-
+                fieldMap
+                  InvestigatorLocation
+                  (fromJustNote "must be at a location")
+                  iid
+              rs <-
+                forToSnd
+                  everywhere
+                  (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)
+              pure $ map fst $ filter ((> minDistance) . snd) rs
+          )
   withNoInvestigators <- select LocationWithoutInvestigators
   let
     forced = lids `intersect` withNoInvestigators
     targets = toList $ if null forced then lids else forced
-  pure $
-    chooseOrRunOne
+  pure
+    $ chooseOrRunOne
       leadInvestigatorId
       [targetLabel lid [EnemyMove organist lid] | lid <- targets]
 
@@ -102,21 +105,21 @@ disengageEachEnemyAndMoveToConnectingLocation source = do
       iids
       ( selectList . AccessibleFrom . LocationWithInvestigator . InvestigatorWithId
       )
-  pure $
-    [ DisengageEnemy iid enemy
-    | (iid, enemies) <- enemyPairs
-    , enemy <- enemies
-    ]
-      <> [ chooseOneAtATime
-            leadInvestigatorId
-            [ targetLabel
-              iid
-              [ chooseOne
-                  iid
-                  [ targetLabel lid [Move $ move source iid lid]
-                  | lid <- locations
-                  ]
-              ]
-            | (iid, locations) <- locationPairs
+  pure
+    $ [ DisengageEnemy iid enemy
+      | (iid, enemies) <- enemyPairs
+      , enemy <- enemies
+      ]
+    <> [ chooseOneAtATime
+          leadInvestigatorId
+          [ targetLabel
+            iid
+            [ chooseOne
+                iid
+                [ targetLabel lid [Move $ move source iid lid]
+                | lid <- locations
+                ]
             ]
-         ]
+          | (iid, locations) <- locationPairs
+          ]
+       ]

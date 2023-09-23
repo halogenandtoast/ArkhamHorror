@@ -30,10 +30,10 @@ streetsOfVenice =
 
 instance HasAbilities StreetsOfVenice where
   getAbilities (StreetsOfVenice attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ FastAbility Free
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here $ FastAbility Free
+        | locationRevealed attrs
+        ]
 
 instance RunMessage StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of

@@ -24,13 +24,13 @@ instance RunMessage ThriceDamnedCuriosity where
   runMessage msg t@(ThriceDamnedCuriosity attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       n <- fieldMap InvestigatorHand ((`div` 3) . length) iid
-      when (n > 0) $
-        push $
-          InvestigatorAssignDamage
-            iid
-            (toSource attrs)
-            DamageAny
-            n
-            0
+      when (n > 0)
+        $ push
+        $ InvestigatorAssignDamage
+          iid
+          (toSource attrs)
+          DamageAny
+          n
+          0
       pure t
     _ -> ThriceDamnedCuriosity <$> runMessage msg attrs

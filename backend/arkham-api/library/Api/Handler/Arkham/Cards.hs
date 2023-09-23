@@ -54,4 +54,4 @@ getApiV1ArkhamCardsR = do
       )
     $ toList
     $ cards
-      `Map.difference` allSpecialPlayerAssetCards
+    `Map.difference` allSpecialPlayerAssetCards

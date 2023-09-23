@@ -27,39 +27,39 @@ whateleyRuins_250 =
 
 instance HasModifiersFor WhateleyRuins_250 where
   getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_250 attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [SkillModifier SkillWillpower (-1) | iid `on` attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhateleyRuins_250 where
   getAbilities (WhateleyRuins_250 attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-        attrs
-        1
-        ( Here
-            <> InvestigatorExists
-              (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-            <> EnemyCriteria
-              ( EnemyExists $
-                  EnemyAt YourLocation
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+          attrs
+          1
+          ( Here
+              <> InvestigatorExists
+                (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+              <> EnemyCriteria
+                ( EnemyExists
+                    $ EnemyAt YourLocation
                     <> EnemyWithTrait Abomination
-              )
-        )
-        (FastAbility Free)
-        & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+                )
+          )
+          (FastAbility Free)
+          & (abilityLimitL .~ GroupLimit PerGame 1)
+        | locationRevealed attrs
+        ]
 
 instance RunMessage WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <-
-        selectWithField InvestigatorClues $
-          investigatorAt (toId attrs)
-            <> InvestigatorWithAnyClues
+        selectWithField InvestigatorClues
+          $ investigatorAt (toId attrs)
+          <> InvestigatorWithAnyClues
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
@@ -75,25 +75,25 @@ instance RunMessage WhateleyRuins_250 where
             | target <- abominations
             ]
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
-          [ targetLabel iid' $
-            placeClueOnAbomination iid'
-              : [ chooseOne
-                  iid'
-                  [ Label "Spend a second clue" [placeClueOnAbomination iid']
-                  , Label "Do not spend a second clue" []
-                  ]
-                | clueCount > 1
+          [ targetLabel iid'
+            $ placeClueOnAbomination iid'
+            : [ chooseOne
+                iid'
+                [ Label "Spend a second clue" [placeClueOnAbomination iid']
+                , Label "Do not spend a second clue" []
                 ]
-                <> [ chooseOne
-                    iid'
-                    [ Label "Spend a third clue" [placeClueOnAbomination iid']
-                    , Label "Do not spend a third clue" []
-                    ]
-                   | clueCount > 2
-                   ]
+              | clueCount > 1
+              ]
+              <> [ chooseOne
+                  iid'
+                  [ Label "Spend a third clue" [placeClueOnAbomination iid']
+                  , Label "Do not spend a third clue" []
+                  ]
+                 | clueCount > 2
+                 ]
           | (iid', clueCount) <- investigatorWithCluePairs
           ]
       pure l

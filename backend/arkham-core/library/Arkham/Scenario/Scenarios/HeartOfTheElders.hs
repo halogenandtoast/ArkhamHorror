@@ -151,21 +151,21 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
                 ]
               | iid <- maybeToList mIchtacaInvestigator
               ]
-              <> [ Label
-                  "Let’s consult with Alejandro."
-                  [ story iids intro3
-                  , PutCampaignCardIntoPlay iid Assets.alejandroVela
-                  ]
-                 | iid <- maybeToList mAlejandroInvestigator
-                 ]
-              <> [ Label
-                  "Let’s consult the expedition journal."
-                  [ story iids intro4
-                  , PutCampaignCardIntoPlay iid Assets.expeditionJournal
-                  ]
-                 | iid <- maybeToList mExpeditionJournalInvestigator
-                 ]
-              <> [Label "I wish we knew more about this..." []]
+            <> [ Label
+                "Let’s consult with Alejandro."
+                [ story iids intro3
+                , PutCampaignCardIntoPlay iid Assets.alejandroVela
+                ]
+               | iid <- maybeToList mAlejandroInvestigator
+               ]
+            <> [ Label
+                "Let’s consult the expedition journal."
+                [ story iids intro4
+                , PutCampaignCardIntoPlay iid Assets.expeditionJournal
+                ]
+               | iid <- maybeToList mExpeditionJournalInvestigator
+               ]
+            <> [Label "I wish we knew more about this..." []]
         ]
 
     pathsKnown <- getRecordCount PathsAreKnownToYou
@@ -237,19 +237,19 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
         pushAll
           $ introMessages
-            <> [ SetEncounterDeck encounterDeck
-               , SetAgendaDeck
-               , SetActDeck
-               , placeMouthOfKnYanTheCavernsMaw
-               , MoveAllTo (toSource attrs) mouthOfKnYanTheCavernsMawId
-               , PlaceTokens
-                  (toSource attrs)
-                  (LocationTarget mouthOfKnYanTheCavernsMawId)
-                  Resource
-                  pathsKnown
-               ]
-            <> [createTheWingedSerpent | reachedAct2 metadata]
-            <> [placeRuinsLocation | mappedOutTheWayForward]
+          <> [ SetEncounterDeck encounterDeck
+             , SetAgendaDeck
+             , SetActDeck
+             , placeMouthOfKnYanTheCavernsMaw
+             , MoveAllTo (toSource attrs) mouthOfKnYanTheCavernsMawId
+             , PlaceTokens
+                (toSource attrs)
+                (LocationTarget mouthOfKnYanTheCavernsMawId)
+                Resource
+                pathsKnown
+             ]
+          <> [createTheWingedSerpent | reachedAct2 metadata]
+          <> [placeRuinsLocation | mappedOutTheWayForward]
 
         acts <- genCards [Acts.searchForThePattern, Acts.openingTheMaw]
         agendas <- genCards [Agendas.theJunglesHeart, Agendas.settingSun]
@@ -278,7 +278,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         $ [ RecordCount PathsAreKnownToYou pillarTokens
           | pillarTokens > pathsKnown
           ]
-          <> [RestartScenario]
+        <> [RestartScenario]
       pure
         $ HeartOfTheElders
           ( attrs
@@ -293,8 +293,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       gainXP <- toGainXp attrs getXp
       pushAll
         $ recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
-          : gainXP
-            <> [RestartScenario]
+        : gainXP
+          <> [RestartScenario]
       pure $ HeartOfTheElders (attrs `With` metadata {scenarioStep = Two})
     _ -> pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> runMessage msg attrs
@@ -407,11 +407,11 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         gainXp <- toGainXp attrs getXp
         pushAll
           $ story iids resolutionStory
-            : RecordCount YigsFury (yigsFury + vengeance)
-            : [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
-              <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          : RecordCount YigsFury (yigsFury + vengeance)
+          : [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
+            <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
+            <> gainXp
+            <> [EndOfGame Nothing]
     pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> runMessage msg attrs
 

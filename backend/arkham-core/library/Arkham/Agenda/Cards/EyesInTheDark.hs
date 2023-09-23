@@ -37,16 +37,16 @@ instance RunMessage EyesInTheDark where
   runMessage msg a@(EyesInTheDark attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           (toSource attrs)
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- selectList UneliminatedInvestigator
-      pushAll $
-        concatMap
+      pushAll
+        $ concatMap
           ( \iid ->
               [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
           )

@@ -47,8 +47,8 @@ instance HasAbilities Handcuffs2 where
 instance RunMessage Handcuffs2 where
   runMessage msg a@(Handcuffs2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        ChooseEvadeEnemy
+      push
+        $ ChooseEvadeEnemy
           iid
           (toSource attrs)
           (Just $ toTarget attrs)

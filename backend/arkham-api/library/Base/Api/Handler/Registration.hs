@@ -8,15 +8,15 @@ import Types
 registrationToUser :: Registration -> Handler User
 registrationToUser Registration {..} = do
   mdigest <-
-    liftIO $
-      hashPasswordUsingPolicy
+    liftIO
+      $ hashPasswordUsingPolicy
         slowerBcryptHashingPolicy
         (TE.encodeUtf8 registrationPassword)
   case mdigest of
     Nothing -> error "could not hash password"
     Just digest ->
-      pure $
-        User
+      pure
+        $ User
           registrationUsername
           registrationEmail
           (TE.decodeUtf8 digest)

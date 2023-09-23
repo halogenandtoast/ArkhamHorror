@@ -24,11 +24,11 @@ instance HasAbilities BalconyAtDeathsDoorstep where
   getAbilities (BalconyAtDeathsDoorstep a) =
     withRevealedAbilities
       a
-      [ limitedAbility (GroupLimit PerGame 1) $
-          restrictedAbility a 1 Here $
-            ActionAbility (Just Action.Parley) $
-              ActionCost 1
-                <> SkillIconCost 3 (singleton $ SkillIcon SkillIntellect)
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility a 1 Here
+          $ ActionAbility (Just Action.Parley)
+          $ ActionCost 1
+          <> SkillIconCost 3 (singleton $ SkillIcon SkillIntellect)
       ]
 
 instance RunMessage BalconyAtDeathsDoorstep where

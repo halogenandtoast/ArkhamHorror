@@ -27,8 +27,8 @@ ineffableTruth5 = asset IneffableTruth5 Cards.ineffableTruth5
 
 instance HasAbilities IneffableTruth5 where
   getAbilities (IneffableTruth5 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility
           (Just Action.Evade)
           (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]

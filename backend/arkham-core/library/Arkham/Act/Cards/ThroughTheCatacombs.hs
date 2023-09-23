@@ -46,9 +46,9 @@ instance RunMessage ThroughTheCatacombs where
           tombOfShadows
           Nothing
 
-      pushAll $
-        createTheManInThePallidMask
-          : spawnIshimaruHarukoMessages
-            <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll
+        $ createTheManInThePallidMask
+        : spawnIshimaruHarukoMessages
+          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> ThroughTheCatacombs <$> runMessage msg attrs

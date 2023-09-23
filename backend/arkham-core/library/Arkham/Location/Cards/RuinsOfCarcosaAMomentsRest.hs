@@ -33,12 +33,12 @@ instance HasAbilities RuinsOfCarcosaAMomentsRest where
   getAbilities (RuinsOfCarcosaAMomentsRest a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            DiscoveringLastClue
-              Timing.After
-              You
-              (LocationWithId $ toId a)
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ DiscoveringLastClue
+            Timing.After
+            You
+            (LocationWithId $ toId a)
       ]
 
 instance RunMessage RuinsOfCarcosaAMomentsRest where

@@ -28,10 +28,10 @@ instance RunMessage DynamiteBlast2 where
           (fromJustNote "must be at a location")
           iid
       connectedLocationIds <-
-        selectList $
-          AccessibleFrom $
-            LocationWithId
-              currentLocationId
+        selectList
+          $ AccessibleFrom
+          $ LocationWithId
+            currentLocationId
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- selectList $ EnemyAt $ LocationWithId lid
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid

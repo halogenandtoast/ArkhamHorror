@@ -27,13 +27,13 @@ instance HasAbilities CanalSaintMartin where
   getAbilities (CanalSaintMartin attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility attrs 1 Here $
-          ReactionAbility
-            ( Matcher.EnemyEvaded Timing.After You $
-                EnemyAt (LocationWithId $ toId attrs)
-            )
-            Free
+      [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility attrs 1 Here
+        $ ReactionAbility
+          ( Matcher.EnemyEvaded Timing.After You
+              $ EnemyAt (LocationWithId $ toId attrs)
+          )
+          Free
       | locationRevealed attrs
       ]
 
@@ -41,14 +41,14 @@ instance RunMessage CanalSaintMartin where
   runMessage msg a@(CanalSaintMartin attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <-
-        selectListMap EnemyTarget $
-          EnemyAt (LocationWithId $ toId attrs)
+        selectListMap EnemyTarget
+          $ EnemyAt (LocationWithId $ toId attrs)
       connectingLocations <-
-        selectList $
-          AccessibleFrom $
-            LocationWithId $
-              toId
-                attrs
+        selectList
+          $ AccessibleFrom
+          $ LocationWithId
+          $ toId
+            attrs
       push $ chooseOrRunOne iid $ do
         e <- enemies
         pure $ TargetLabel e $ do

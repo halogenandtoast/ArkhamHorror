@@ -27,11 +27,11 @@ instance HasAbilities TennesseeSourMash where
         (ControlsThis <> DuringSkillTest (SkillTestOnTreachery AnyTreachery))
         $ FastAbility
         $ ExhaustCost (toTarget a)
-          <> UseCost (AssetWithId $ toId a) Supply 1
-    , restrictedAbility a 2 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> DiscardCost FromPlay (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Supply 1
+    , restrictedAbility a 2 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
+        <> DiscardCost FromPlay (toTarget a)
     ]
 
 instance RunMessage TennesseeSourMash where
@@ -40,12 +40,12 @@ instance RunMessage TennesseeSourMash where
       push $ skillTestModifier attrs iid (SkillModifier SkillWillpower 2)
       pure a
     InDiscard _ (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
-      pushAll $
-        [ skillTestModifier
-            attrs
-            (InvestigatorTarget iid)
-            (SkillModifier SkillCombat 3)
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        ]
+      pushAll
+        $ [ skillTestModifier
+              attrs
+              (InvestigatorTarget iid)
+              (SkillModifier SkillCombat 3)
+          , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
+          ]
       pure a
     _ -> TennesseeSourMash <$> runMessage msg attrs

@@ -42,7 +42,7 @@ instance RunMessage HallowedMirror3 where
       canShuffleDeck <- getCanShuffleDeck iid
       pushAll
         $ addToHand iid handSoothingMelody
-          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
+        : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
       HallowedMirror3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       push

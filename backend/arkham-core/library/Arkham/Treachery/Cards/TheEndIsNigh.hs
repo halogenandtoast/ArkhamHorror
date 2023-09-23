@@ -40,6 +40,6 @@ instance RunMessage TheEndIsNigh where
           doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
           pushAll
             $ map (RemoveAllDoom (toSource attrs) . toTarget) cultists
-              <> [PlaceDoom (toSource attrs) (toTarget azathoth) doom]
+            <> [PlaceDoom (toSource attrs) (toTarget azathoth) doom]
       pure t
     _ -> TheEndIsNigh <$> runMessage msg attrs

@@ -62,11 +62,11 @@ instance HasChaosTokenValue LostInTimeAndSpace where
   getChaosTokenValue iid chaosTokenFace (LostInTimeAndSpace attrs) = case chaosTokenFace of
     Skull -> do
       extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
-      pure $
-        ChaosTokenValue
+      pure
+        $ ChaosTokenValue
           Skull
-          ( NegativeModifier $
-              if isEasyStandard attrs
+          ( NegativeModifier
+              $ if isEasyStandard attrs
                 then min extradimensionalCount 5
                 else extradimensionalCount
           )
@@ -107,11 +107,11 @@ readInvestigatorDefeat a = do
   if null defeatedInvestigatorIds
     then pure []
     else
-      pure $
-        [story defeatedInvestigatorIds investigatorDefeat]
-          <> [ InvestigatorKilled (toSource a) iid
-             | iid <- defeatedInvestigatorIds
-             ]
+      pure
+        $ [story defeatedInvestigatorIds investigatorDefeat]
+        <> [ InvestigatorKilled (toSource a) iid
+           | iid <- defeatedInvestigatorIds
+           ]
 
 instance RunMessage LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
@@ -191,8 +191,8 @@ instance RunMessage LostInTimeAndSpace where
     After (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
       case chaosTokenFace token of
         Cultist ->
-          push $
-            DiscardUntilFirst
+          push
+            $ DiscardUntilFirst
               iid
               (ChaosTokenEffectSource Cultist)
               Deck.EncounterDeck
@@ -216,14 +216,14 @@ instance RunMessage LostInTimeAndSpace where
       msgs <- readInvestigatorDefeat attrs
       investigatorIds <- allInvestigatorIds
       xp <- getXp
-      pushAll $
-        msgs
-          <> [ story investigatorIds resolution1
-             , Record TheInvestigatorsClosedTheTearInReality
-             ]
-          <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
-          <> [GainXP iid (toSource attrs) (n + 5) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ msgs
+        <> [ story investigatorIds resolution1
+           , Record TheInvestigatorsClosedTheTearInReality
+           ]
+        <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
+        <> [GainXP iid (toSource attrs) (n + 5) | (iid, n) <- xp]
+        <> [EndOfGame Nothing]
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 2) -> do
       msgs <- readInvestigatorDefeat attrs
@@ -234,24 +234,24 @@ instance RunMessage LostInTimeAndSpace where
     ScenarioResolution (Resolution 3) -> do
       msgs <- readInvestigatorDefeat attrs
       investigatorIds <- allInvestigatorIds
-      pushAll $
-        msgs
-          <> [ story investigatorIds resolution3
-             , Record YogSothothHasFledToAnotherDimension
-             ]
-          <> [InvestigatorKilled (toSource attrs) iid | iid <- investigatorIds]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ msgs
+        <> [ story investigatorIds resolution3
+           , Record YogSothothHasFledToAnotherDimension
+           ]
+        <> [InvestigatorKilled (toSource attrs) iid | iid <- investigatorIds]
+        <> [EndOfGame Nothing]
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 4) -> do
       msgs <- readInvestigatorDefeat attrs
       investigatorIds <- allInvestigatorIds
-      pushAll $
-        msgs
-          <> [ story investigatorIds resolution4
-             , Record
-                YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
-             ]
-          <> [DrivenInsane iid | iid <- investigatorIds]
-          <> [EndOfGame Nothing]
+      pushAll
+        $ msgs
+        <> [ story investigatorIds resolution4
+           , Record
+              YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
+           ]
+        <> [DrivenInsane iid | iid <- investigatorIds]
+        <> [EndOfGame Nothing]
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     _ -> LostInTimeAndSpace <$> runMessage msg attrs

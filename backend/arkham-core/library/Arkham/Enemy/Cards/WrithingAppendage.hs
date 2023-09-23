@@ -28,16 +28,16 @@ instance HasAbilities WrithingAppendage where
   getAbilities (WrithingAppendage attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After You AnyEnemyAttack $
-              EnemyWithId $
-                toId attrs
-      , mkAbility attrs 2 $
-          ForcedAbility $
-            EnemyDefeated Timing.When Anyone ByAny $
-              EnemyWithId $
-                toId attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.After You AnyEnemyAttack
+          $ EnemyWithId
+          $ toId attrs
+      , mkAbility attrs 2
+          $ ForcedAbility
+          $ EnemyDefeated Timing.When Anyone ByAny
+          $ EnemyWithId
+          $ toId attrs
       ]
 
 instance RunMessage WrithingAppendage where

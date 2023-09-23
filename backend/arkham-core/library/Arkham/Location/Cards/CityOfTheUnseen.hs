@@ -35,15 +35,15 @@ instance HasAbilities CityOfTheUnseen where
   getAbilities (CityOfTheUnseen (attrs `With` meta)) =
     withBaseAbilities
       attrs
-      [ limitedAbility (GroupLimit PerWindow 1) $
-          restrictedAbility attrs 1 (if inUse meta then Never else NoRestriction) $
-            ForcedAbility $
-              PlacedCounterOnEnemy
-                Timing.After
-                (enemyAt $ toId attrs)
-                AnySource
-                DoomCounter
-                (AtLeast $ Static 1)
+      [ limitedAbility (GroupLimit PerWindow 1)
+          $ restrictedAbility attrs 1 (if inUse meta then Never else NoRestriction)
+          $ ForcedAbility
+          $ PlacedCounterOnEnemy
+            Timing.After
+            (enemyAt $ toId attrs)
+            AnySource
+            DoomCounter
+            (AtLeast $ Static 1)
       ]
 
 getEnemyId :: [Window] -> EnemyId

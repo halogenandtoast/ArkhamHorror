@@ -23,15 +23,15 @@ constanceDumaine = asset ConstanceDumaine Cards.constanceDumaine
 
 instance HasAbilities ConstanceDumaine where
   getAbilities (ConstanceDumaine a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            1
-    , mkAbility a 2 $
-        ForcedAbility $
-          LastClueRemovedFromAsset Timing.When $
-            AssetWithId $
-              toId a
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          1
+    , mkAbility a 2
+        $ ForcedAbility
+        $ LastClueRemovedFromAsset Timing.When
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage ConstanceDumaine where

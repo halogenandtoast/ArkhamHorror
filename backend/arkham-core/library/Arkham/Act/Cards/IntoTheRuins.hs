@@ -38,17 +38,17 @@ instance HasAbilities IntoTheRuins where
   getAbilities (IntoTheRuins a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
-          ActionAbility (Just Action.Explore) $
-            ActionCost 1
+      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+          $ ActionAbility (Just Action.Explore)
+          $ ActionCost 1
       ]
 
 instance RunMessage IntoTheRuins where
   runMessage msg a@(IntoTheRuins attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           source
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
@@ -56,12 +56,12 @@ instance RunMessage IntoTheRuins where
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       chamberOfTime <- getSetAsideCard Locations.chamberOfTime
       hasChalk <- getAnyHasSupply Chalk
-      pushAll $
-        [ ShuffleCardsIntoDeck
-            (Deck.ScenarioDeckByKey ExplorationDeck)
-            [chamberOfTime]
-        ]
-          <> [AddToVictory (toTarget attrs) | not hasChalk]
-          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      pushAll
+        $ [ ShuffleCardsIntoDeck
+              (Deck.ScenarioDeckByKey ExplorationDeck)
+              [chamberOfTime]
+          ]
+        <> [AddToVictory (toTarget attrs) | not hasChalk]
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     _ -> IntoTheRuins <$> runMessage msg attrs

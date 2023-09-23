@@ -27,9 +27,9 @@ instance HasAbilities CloverClubCardroom where
   getAbilities (CloverClubCardroom attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 (OnAct 1 <> Here) $
-          ActionAbility Nothing $
-            Costs [ActionCost 1, ResourceCost 2]
+      [ restrictedAbility attrs 1 (OnAct 1 <> Here)
+          $ ActionAbility Nothing
+          $ Costs [ActionCost 1, ResourceCost 2]
       ]
 
 instance RunMessage CloverClubCardroom where
@@ -60,8 +60,8 @@ instance RunMessage CloverClubCardroom where
                 AutoFail -> []
             )
             chaosTokenFaces
-      pushAll $
-        [chooseOne iid [Label "Apply results" msgs]]
-          <> [ResetChaosTokens source]
+      pushAll
+        $ [chooseOne iid [Label "Apply results" msgs]]
+        <> [ResetChaosTokens source]
       pure l
     _ -> CloverClubCardroom <$> runMessage msg attrs

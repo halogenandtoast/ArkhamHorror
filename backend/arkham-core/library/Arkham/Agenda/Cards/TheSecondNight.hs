@@ -45,9 +45,9 @@ instance RunMessage TheSecondNight where
             card
             (LocationWithTitle "Montparnasse")
         pure [createJordanPerry | spawnJordanPerry]
-      pushAll $
-        organistMsg
-          : spawnJordanPerryMessages
-            <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll
+        $ organistMsg
+        : spawnJordanPerryMessages
+          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> TheSecondNight <$> runMessage msg attrs

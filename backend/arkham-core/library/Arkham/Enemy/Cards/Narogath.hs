@@ -19,22 +19,22 @@ newtype Narogath = Narogath EnemyAttrs
 
 narogath :: EnemyCard Narogath
 narogath =
-  enemyWith Narogath Cards.narogath (3, Static 4, 3) (1, 2) $
-    preyL
-      .~ Prey
-        ( NearestToEnemy $
-            EnemyWithTrait Trait.Cultist
-              <> NotEnemy
-                (enemyIs Cards.narogath)
-        )
+  enemyWith Narogath Cards.narogath (3, Static 4, 3) (1, 2)
+    $ preyL
+    .~ Prey
+      ( NearestToEnemy
+          $ EnemyWithTrait Trait.Cultist
+          <> NotEnemy
+            (enemyIs Cards.narogath)
+      )
 
 instance HasModifiersFor Narogath where
   getModifiersFor (InvestigatorTarget iid) (Narogath a) = do
     affected <-
       iid
         <=~> InvestigatorAt (AccessibleFrom $ locationWithEnemy $ toId a)
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ CannotTakeAction $ EnemyAction Parley $ EnemyWithTrait Cultist
         | enemyReady a && affected

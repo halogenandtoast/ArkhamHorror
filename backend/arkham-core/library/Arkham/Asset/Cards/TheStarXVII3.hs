@@ -28,7 +28,8 @@ instance HasModifiersFor TheStarXVII3 where
       isSanityAsset <- aid <=~> (assetControlledBy iid <> AssetWithSanity)
       pure
         $ toModifiers attrs
-        $ [HealthModifier 1 | isHealthAsset] <> [SanityModifier 1 | isSanityAsset]
+        $ [HealthModifier 1 | isHealthAsset]
+        <> [SanityModifier 1 | isSanityAsset]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheStarXVII3 where

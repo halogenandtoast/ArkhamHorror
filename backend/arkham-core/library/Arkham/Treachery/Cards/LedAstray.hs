@@ -32,8 +32,8 @@ instance RunMessage LedAstray where
           TargetLabel
             target
             [InvestigatorSpendClues iid 1, PlaceClues (toSource attrs) target 1]
-      pushAll $
-        if null cultists || hasNoClues
+      pushAll
+        $ if null cultists || hasNoClues
           then advanceAgenda
           else
             [ chooseOne

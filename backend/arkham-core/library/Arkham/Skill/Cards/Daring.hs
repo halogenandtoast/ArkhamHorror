@@ -30,8 +30,8 @@ instance RunMessage Daring where
       mtarget <- getSkillTestTarget
       case mtarget of
         Just target@(EnemyTarget _) ->
-          push $
-            skillTestModifiers
+          push
+            $ skillTestModifiers
               (toSource attrs)
               target
               [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]

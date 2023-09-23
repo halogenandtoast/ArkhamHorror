@@ -21,8 +21,8 @@ lightningGun5 = asset LightningGun5 Cards.lightningGun5
 
 instance HasAbilities LightningGun5 where
   getAbilities (LightningGun5 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility
           (Just Action.Fight)
           (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]

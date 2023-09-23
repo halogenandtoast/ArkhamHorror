@@ -25,10 +25,10 @@ instance HasAbilities StepsOfYoth where
   getAbilities (StepsOfYoth attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (GroupLimit PerGame 1) $
-          restrictedAbility attrs 1 Here $
-            ReactionAbility AddingToCurrentDepth $
-              SupplyCost (LocationWithId $ toId attrs) Rope
+      [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ReactionAbility AddingToCurrentDepth
+          $ SupplyCost (LocationWithId $ toId attrs) Rope
       ]
 
 instance RunMessage StepsOfYoth where

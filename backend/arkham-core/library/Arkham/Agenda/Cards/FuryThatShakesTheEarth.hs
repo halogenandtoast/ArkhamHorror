@@ -35,10 +35,10 @@ instance HasAbilities FuryThatShakesTheEarth where
         $ restrictedAbility
           a
           1
-          ( AgendaExists $
-              AgendaWithId (toId a)
-                <> AgendaWithDoom
-                  (AtLeast $ Static 3)
+          ( AgendaExists
+              $ AgendaWithId (toId a)
+              <> AgendaWithDoom
+                (AtLeast $ Static 3)
           )
         $ ForcedAbility
         $ PlacedCounterOnAgenda
@@ -55,8 +55,8 @@ instance RunMessage FuryThatShakesTheEarth where
       enemyMsgs <- getPlacePursuitEnemyMessages
       mYig <- maybeGetSetAsideEncounterCard Enemies.yig
       depthStart <- getDepthStart
-      yigMsgs <- for (toList mYig) $
-        \yig -> createEnemyAt_ (EncounterCard yig) depthStart Nothing
+      yigMsgs <- for (toList mYig)
+        $ \yig -> createEnemyAt_ (EncounterCard yig) depthStart Nothing
       pushAll $ enemyMsgs <> yigMsgs <> [advanceAgendaDeck attrs]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do

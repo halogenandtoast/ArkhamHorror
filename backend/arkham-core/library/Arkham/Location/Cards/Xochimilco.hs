@@ -31,19 +31,19 @@ instance HasAbilities Xochimilco where
   getAbilities (Xochimilco attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $
-        ActionAbility (Just Action.Explore) $
-          ActionCost 1
-            <> ResourceCost 3
+      [ restrictedAbility attrs 1 Here
+        $ ActionAbility (Just Action.Explore)
+        $ ActionCost 1
+        <> ResourceCost 3
       | locationRevealed attrs
       ]
 
 instance RunMessage Xochimilco where
   runMessage msg l@(Xochimilco attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        Explore iid (toSource attrs) $
-          CardWithPrintedLocationSymbol $
-            locationSymbol attrs
+      push
+        $ Explore iid (toSource attrs)
+        $ CardWithPrintedLocationSymbol
+        $ locationSymbol attrs
       pure l
     _ -> Xochimilco <$> runMessage msg attrs

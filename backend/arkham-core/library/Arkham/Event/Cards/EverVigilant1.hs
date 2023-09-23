@@ -28,8 +28,8 @@ everVigilant1 = event EverVigilant1 Cards.everVigilant1
 instance HasModifiersFor EverVigilant1 where
   getModifiersFor (InvestigatorTarget iid) (EverVigilant1 attrs)
     | iid == eventOwner attrs =
-        pure $
-          toModifiers attrs [ReduceCostOf AnyCard 1]
+        pure
+          $ toModifiers attrs [ReduceCostOf AnyCard 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage EverVigilant1 where
@@ -42,9 +42,9 @@ instance RunMessage EverVigilant1 where
     ResolveEvent iid eid _mtarget windows' | eid == toId attrs -> do
       let
         windows'' =
-          nub $
-            windows'
-              <> [mkWindow Timing.When (DuringTurn iid), mkWindow Timing.When NonFast]
+          nub
+            $ windows'
+            <> [mkWindow Timing.When (DuringTurn iid), mkWindow Timing.When NonFast]
       cards <-
         fieldMap
           InvestigatorHand
@@ -54,14 +54,14 @@ instance RunMessage EverVigilant1 where
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost windows'')
           cards
-      when (notNull playableCards) $
-        push $
-          chooseUpToN
-            iid
-            1
-            "Do not play asset"
-            [ TargetLabel (CardIdTarget $ toCardId c) [PayCardCost iid c windows'']
-            | c <- playableCards
-            ]
+      when (notNull playableCards)
+        $ push
+        $ chooseUpToN
+          iid
+          1
+          "Do not play asset"
+          [ TargetLabel (CardIdTarget $ toCardId c) [PayCardCost iid c windows'']
+          | c <- playableCards
+          ]
       pure e
     _ -> EverVigilant1 <$> runMessage msg attrs

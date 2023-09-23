@@ -25,18 +25,18 @@ instance RunMessage Pitfall where
   runMessage msg t@(Pitfall attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       card <- field TreacheryCard (toId attrs)
-      push $
-        chooseOrRunOne iid $
-          Label
-            "Test {agility} (3) to attempt to jump the gap. For each point you fail by, take 1 damage."
-            [RevelationSkillTest iid source SkillAgility 3]
-            : [ Label
-                "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
-                [ ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
-                , RemoveTreachery (toId attrs)
-                ]
-              | treacheryDrawnFrom attrs /= Just (ScenarioDeckByKey ExplorationDeck)
-              ]
+      push
+        $ chooseOrRunOne iid
+        $ Label
+          "Test {agility} (3) to attempt to jump the gap. For each point you fail by, take 1 damage."
+          [RevelationSkillTest iid source SkillAgility 3]
+        : [ Label
+            "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
+            [ ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
+            , RemoveTreachery (toId attrs)
+            ]
+          | treacheryDrawnFrom attrs /= Just (ScenarioDeckByKey ExplorationDeck)
+          ]
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
       do

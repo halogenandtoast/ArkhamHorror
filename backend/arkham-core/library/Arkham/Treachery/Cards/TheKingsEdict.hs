@@ -33,10 +33,10 @@ instance RunMessage TheKingsEdict where
           pure $ do
             lid <- maybeToList mlid
             [RemoveClues (toSource attrs) (toTarget lid) 1, PlaceClues (toSource attrs) (toTarget cultist) 1]
-      pushAll $
-        msgs
-          <> map
-            (CreateEffect (toCardCode attrs) Nothing source . toTarget)
-            cultists
+      pushAll
+        $ msgs
+        <> map
+          (CreateEffect (toCardCode attrs) Nothing source . toTarget)
+          cultists
       pure t
     _ -> TheKingsEdict <$> runMessage msg attrs

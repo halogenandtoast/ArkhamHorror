@@ -44,14 +44,14 @@ instance HasModifiersFor AbbeyChurch where
 
 instance HasAbilities AbbeyChurch where
   getAbilities (AbbeyChurch attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                RevealLocation Timing.After Anyone $
-                  LocationWithId $
-                    toId attrs
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ RevealLocation Timing.After Anyone
+              $ LocationWithId
+              $ toId attrs
           ]
         else []
 

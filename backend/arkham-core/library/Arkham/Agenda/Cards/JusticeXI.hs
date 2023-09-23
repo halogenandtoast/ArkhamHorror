@@ -40,13 +40,13 @@ instance HasModifiersFor JusticeXI where
 
 instance HasAbilities JusticeXI where
   getAbilities (JusticeXI a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          DrawCard
-            Timing.When
-            Anyone
-            (BasicCardMatch $ CardWithTrait Monster)
-            EncounterDeck
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ DrawCard
+          Timing.When
+          Anyone
+          (BasicCardMatch $ CardWithTrait Monster)
+          EncounterDeck
     ]
 
 toDrawnCard :: [Window] -> Card
@@ -81,8 +81,8 @@ instance RunMessage JusticeXI where
           else do
             lead <- getLead
             lids <-
-              selectList $
-                FarthestLocationFromAll
+              selectList
+                $ FarthestLocationFromAll
                   (NotLocation $ LocationWithTitle "Entry Hall")
             josefMeiger <- getSetAsideCard Enemies.josefMeiger
             pure
@@ -92,28 +92,28 @@ instance RunMessage JusticeXI where
                   [targetLabel lid [SpawnEnemyAt josefMeiger lid] | lid <- lids]
               ]
 
-      pushAll $
-        msgs
-          <> map (RemoveAllClues (toSource attrs) . toTarget) allLocations
-          <> ( if toCardCode Investigators.gavriellaMizrah `elem` missingPersons && noCluesOnEntryHall
-                then [story iids interlude1Gavriella, Record TheInvestigatorsAreOnGavriella'sTrail]
-                else []
-             )
-          <> ( if toCardCode Investigators.jeromeDavids `elem` missingPersons && noCluesOnOffice
-                then [story iids interlude1Jerome, Record TheInvestigatorsAreOnJerome'sTrail]
-                else []
-             )
-          <> ( if toCardCode Investigators.pennyWhite `elem` missingPersons && noCluesOnBalcony
-                then [story iids interlude1Penny, Record TheInvestigatorsAreOnPenny'sTrail]
-                else []
-             )
-          <> ( if toCardCode Investigators.valentinoRivas `elem` missingPersons && noCluesOnBilliardsRoom
-                then [story iids interlude1Valentino, Record TheInvestigatorsAreOnValentino'sTrail]
-                else []
-             )
-          <> [ AdvanceAct actId (toSource attrs) AdvancedWithOther
-             , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ msgs
+        <> map (RemoveAllClues (toSource attrs) . toTarget) allLocations
+        <> ( if toCardCode Investigators.gavriellaMizrah `elem` missingPersons && noCluesOnEntryHall
+              then [story iids interlude1Gavriella, Record TheInvestigatorsAreOnGavriella'sTrail]
+              else []
+           )
+        <> ( if toCardCode Investigators.jeromeDavids `elem` missingPersons && noCluesOnOffice
+              then [story iids interlude1Jerome, Record TheInvestigatorsAreOnJerome'sTrail]
+              else []
+           )
+        <> ( if toCardCode Investigators.pennyWhite `elem` missingPersons && noCluesOnBalcony
+              then [story iids interlude1Penny, Record TheInvestigatorsAreOnPenny'sTrail]
+              else []
+           )
+        <> ( if toCardCode Investigators.valentinoRivas `elem` missingPersons && noCluesOnBilliardsRoom
+              then [story iids interlude1Valentino, Record TheInvestigatorsAreOnValentino'sTrail]
+              else []
+           )
+        <> [ AdvanceAct actId (toSource attrs) AdvancedWithOther
+           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+           ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (toDrawnCard -> card) _ -> do
       removeMessageType DrawEnemyMessage

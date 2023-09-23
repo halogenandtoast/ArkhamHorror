@@ -28,15 +28,15 @@ somethingStirs =
     Cards.somethingStirs
     (StaticWithPerPlayer 6 1)
     $ removeDoomMatchersL
-      %~ (\m -> m {removeDoomLocations = Nowhere})
+    %~ (\m -> m {removeDoomLocations = Nowhere})
 
 instance HasAbilities SomethingStirs where
   getAbilities (SomethingStirs a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          AgendaAdvances Timing.When $
-            AgendaWithId $
-              toId a
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ AgendaAdvances Timing.When
+        $ AgendaWithId
+        $ toId a
     ]
 
 -- ability does not do anything, just triggers the button
@@ -52,8 +52,8 @@ instance RunMessage SomethingStirs where
       choices <- for targets $ \target -> do
         choice <- createEnemyAt_ harbingerOfValusia target Nothing
         pure $ targetLabel target [choice]
-      pushAll $
-        chooseOne lead choices
-          : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll
+        $ chooseOne lead choices
+        : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> SomethingStirs <$> runMessage msg attrs

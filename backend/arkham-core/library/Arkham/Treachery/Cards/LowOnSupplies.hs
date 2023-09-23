@@ -25,9 +25,9 @@ instance RunMessage LowOnSupplies where
       anyWithResources <- selectAny InvestigatorWithAnyResources
       hasAssets <- selectAny (HasMatchingAsset AnyAsset)
       investigatorIds <- getInvestigatorIds
-      push $
-        chooseOrRunOne iid $
-          ( if anyWithResources
+      push
+        $ chooseOrRunOne iid
+        $ ( if anyWithResources
               then
                 [ Label
                     "Each investigator loses 2 resources."
@@ -35,21 +35,21 @@ instance RunMessage LowOnSupplies where
                 ]
               else []
           )
-            <> [ Label
-                  "Each investigator takes 1 damage."
-                  [ InvestigatorAssignDamage iid' source DamageAny 1 0
-                  | iid' <- investigatorIds
-                  ]
-               ]
-            <> ( if hasAssets
-                  then
-                    [ Label
-                        "Each investigator chooses and discards an asset he or she controls."
-                        [ ChooseAndDiscardAsset iid' (toSource attrs) AnyAsset
-                        | iid' <- investigatorIds
-                        ]
+        <> [ Label
+              "Each investigator takes 1 damage."
+              [ InvestigatorAssignDamage iid' source DamageAny 1 0
+              | iid' <- investigatorIds
+              ]
+           ]
+        <> ( if hasAssets
+              then
+                [ Label
+                    "Each investigator chooses and discards an asset he or she controls."
+                    [ ChooseAndDiscardAsset iid' (toSource attrs) AnyAsset
+                    | iid' <- investigatorIds
                     ]
-                  else []
-               )
+                ]
+              else []
+           )
       pure t
     _ -> LowOnSupplies <$> runMessage msg attrs

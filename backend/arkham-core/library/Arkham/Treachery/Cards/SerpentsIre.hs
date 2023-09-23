@@ -43,16 +43,16 @@ instance RunMessage SerpentsIre where
       choices <-
         toList
           . setFromList @(Set EnemyId)
-          <$> filterM
-            (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) ((== fightValue)))
-            serpents
+            <$> filterM
+              (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) ((== fightValue)))
+              serpents
       if null choices
         then push $ gainSurge attrs
         else do
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid ->
-            push $
-              chooseOne
+            push
+              $ chooseOne
                 iid
                 [ targetLabel
                   eid

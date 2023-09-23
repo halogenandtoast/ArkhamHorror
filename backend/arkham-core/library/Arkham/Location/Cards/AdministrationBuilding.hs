@@ -21,14 +21,14 @@ administrationBuilding =
 
 instance HasAbilities AdministrationBuilding where
   getAbilities (AdministrationBuilding x) =
-    withRevealedAbilities x $
-      [ restrictedAbility x 1 Here $
-          ForcedAbility $
-            Matcher.RevealLocation Timing.After You $
-              LocationWithId $
-                toId x
-      , restrictedAbility x 2 Here $ ForcedAbility $ TurnEnds Timing.When You
-      ]
+    withRevealedAbilities x
+      $ [ restrictedAbility x 1 Here
+            $ ForcedAbility
+            $ Matcher.RevealLocation Timing.After You
+            $ LocationWithId
+            $ toId x
+        , restrictedAbility x 2 Here $ ForcedAbility $ TurnEnds Timing.When You
+        ]
 
 instance RunMessage AdministrationBuilding where
   runMessage msg l@(AdministrationBuilding attrs) = case msg of

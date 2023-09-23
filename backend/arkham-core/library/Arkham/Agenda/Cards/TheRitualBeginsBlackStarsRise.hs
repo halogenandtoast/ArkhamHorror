@@ -53,15 +53,15 @@ instance RunMessage TheRitualBeginsBlackStarsRise where
         $ [ ShuffleEncounterDiscardBackIn
           , ShuffleCardsIntoDeck Deck.EncounterDeck riftSeekers
           ]
-          <> markDoubtOrConviction
-          <> [advanceAgendaDeck attrs]
+        <> markDoubtOrConviction
+        <> [advanceAgendaDeck attrs]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       investigatorIds <- getInvestigatorIds
       drawing <- for investigatorIds $ \iid -> drawCards iid (toAbilitySource attrs 1) 1
       pushAll
         $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-          : AdvanceAgendaIfThresholdSatisfied
-          : drawing
+        : AdvanceAgendaIfThresholdSatisfied
+        : drawing
       pure a
     _ -> TheRitualBeginsBlackStarsRise <$> runMessage msg attrs

@@ -33,15 +33,15 @@ cardMatcher = CardWithOneOf [CardWithTrait Tactic, CardWithTrait Trick] <> CardW
 instance HasModifiersFor ChuckFergus5 where
   getModifiersFor (InvestigatorTarget iid) (ChuckFergus5 a)
     | controlledBy a iid && not (assetExhausted a) =
-        pure $
-          toModifiers a [CanBecomeFast cardMatcher, CanReduceCostOf cardMatcher 2]
+        pure
+          $ toModifiers a [CanBecomeFast cardMatcher, CanReduceCostOf cardMatcher 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChuckFergus5 where
   getAbilities (ChuckFergus5 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility (Matcher.PlayCard Timing.When You $ BasicCardMatch cardMatcher) $
-          ExhaustCost (toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (Matcher.PlayCard Timing.When You $ BasicCardMatch cardMatcher)
+        $ ExhaustCost (toTarget a)
     ]
 
 getWindowCard :: [Window] -> Card
@@ -61,63 +61,63 @@ instance RunMessage ChuckFergus5 where
       let n = if canAffordCost then 2 else 1
           n' = if canAffordActionCost then n else n - 1
       when (n' > 0) $ do
-        push $
-          chooseN iid n' $
-            [ Label
+        push
+          $ chooseN iid n'
+          $ [ Label
               "That event gains fast"
               [ CreateWindowModifierEffect
                   EffectEventWindow
-                  ( EffectModifiers $
-                      toModifiers attrs [BecomesFast]
+                  ( EffectModifiers
+                      $ toModifiers attrs [BecomesFast]
                   )
                   (toSource attrs)
                   (CardIdTarget $ toCardId card)
               ]
             | canAffordActionCost
             ]
-              <> [ Label
-                  "That event costs 2 fewer resources to play."
-                  [ CreateWindowModifierEffect
-                      EffectCostWindow
-                      ( EffectModifiers $
-                          toModifiers attrs [ReduceCostOf (CardWithId $ toCardId card) 2]
-                      )
-                      (toSource attrs)
-                      (InvestigatorTarget iid)
-                  ]
-                 | canAffordCost
-                 ]
-              <> [ Label
-                    "You get +2 skill value while performing a skill test during the resolution of that event."
-                    [ CreateWindowModifierEffect
-                        EffectEventWindow
-                        ( EffectModifiers $
-                            toModifiers attrs [AnySkillValue 2]
-                        )
-                        (toSource attrs)
-                        (InvestigatorTarget iid)
-                    ]
-                 ]
+          <> [ Label
+              "That event costs 2 fewer resources to play."
+              [ CreateWindowModifierEffect
+                  EffectCostWindow
+                  ( EffectModifiers
+                      $ toModifiers attrs [ReduceCostOf (CardWithId $ toCardId card) 2]
+                  )
+                  (toSource attrs)
+                  (InvestigatorTarget iid)
+              ]
+             | canAffordCost
+             ]
+          <> [ Label
+                "You get +2 skill value while performing a skill test during the resolution of that event."
+                [ CreateWindowModifierEffect
+                    EffectEventWindow
+                    ( EffectModifiers
+                        $ toModifiers attrs [AnySkillValue 2]
+                    )
+                    (toSource attrs)
+                    (InvestigatorTarget iid)
+                ]
+             ]
 
-      unless canAffordActionCost $
-        push $
-          CreateWindowModifierEffect
-            EffectEventWindow
-            ( EffectModifiers $
-                toModifiers attrs [BecomesFast]
-            )
-            (toSource attrs)
-            (CardIdTarget $ toCardId card)
+      unless canAffordActionCost
+        $ push
+        $ CreateWindowModifierEffect
+          EffectEventWindow
+          ( EffectModifiers
+              $ toModifiers attrs [BecomesFast]
+          )
+          (toSource attrs)
+          (CardIdTarget $ toCardId card)
 
-      unless canAffordCost $
-        push $
-          CreateWindowModifierEffect
-            EffectCostWindow
-            ( EffectModifiers $
-                toModifiers attrs [ReduceCostOf (CardWithId $ toCardId card) 2]
-            )
-            (toSource attrs)
-            (InvestigatorTarget iid)
+      unless canAffordCost
+        $ push
+        $ CreateWindowModifierEffect
+          EffectCostWindow
+          ( EffectModifiers
+              $ toModifiers attrs [ReduceCostOf (CardWithId $ toCardId card) 2]
+          )
+          (toSource attrs)
+          (InvestigatorTarget iid)
 
       pure a
     _ -> ChuckFergus5 <$> runMessage msg attrs

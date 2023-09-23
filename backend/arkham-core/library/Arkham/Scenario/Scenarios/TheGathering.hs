@@ -125,8 +125,8 @@ instance RunMessage TheGathering where
               , Record GhoulPriestIsStillAlive
               , chooseToAddLita
               ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 1 ->
           pushAll
             $ [ story investigators resolution1
@@ -134,8 +134,8 @@ instance RunMessage TheGathering where
               , chooseToAddLita
               , SufferTrauma lead 0 1
               ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 2 ->
           -- TODO: Combine gainXP and bonus so modifiers work
           pushAll
@@ -143,8 +143,8 @@ instance RunMessage TheGathering where
               , Record YourHouseIsStillStanding
               , GainXP lead (toSource attrs) 1
               ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 3 ->
           pushAll
             -- TODO: missing rules

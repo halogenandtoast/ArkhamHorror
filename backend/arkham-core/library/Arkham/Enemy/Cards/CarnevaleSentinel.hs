@@ -32,8 +32,8 @@ instance HasModifiersFor CarnevaleSentinel where
     case mlid of
       Just lid | Just lid == enemyLocation -> do
         name <- field AssetName aid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [CannotBeRevealed | nameTitle name == "Masked Carnevale-Goer"]
       _ -> pure []

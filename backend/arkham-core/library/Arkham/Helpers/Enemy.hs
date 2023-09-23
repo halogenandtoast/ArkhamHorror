@@ -58,10 +58,10 @@ isActionTarget attrs = isTarget attrs . toProxyTarget
 spawnAt :: EnemyId -> SpawnAt -> GameT ()
 spawnAt eid (SpawnLocation locationMatcher) = do
   windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
-  pushAll $
-    windows'
-      <> resolve
-        (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
+  pushAll
+    $ windows'
+    <> resolve
+      (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 spawnAt eid (SpawnPlaced placement) = do
   push $ PlaceEnemy eid placement
 spawnAt _ (SpawnAtFirst []) = error "must have something"
@@ -77,21 +77,21 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
   case nonEmpty cards of
     Nothing -> do
       windows' <- windows [Window.EnemyAttemptsToSpawnAt eid Nowhere]
-      pushAll $
-        windows'
-          <> resolve
-            (EnemySpawnAtLocationMatching Nothing Nowhere eid)
+      pushAll
+        $ windows'
+        <> resolve
+          (EnemySpawnAtLocationMatching Nothing Nowhere eid)
     Just locations -> do
       x <- sample locations
       (locationId, locationPlacement) <- placeLocation x
       windows' <-
         windows
           [Window.EnemyAttemptsToSpawnAt eid $ LocationWithId locationId]
-      pushAll $
-        locationPlacement
-          : windows'
-            <> resolve
-              (EnemySpawnAtLocationMatching Nothing (LocationWithId locationId) eid)
+      pushAll
+        $ locationPlacement
+        : windows'
+          <> resolve
+            (EnemySpawnAtLocationMatching Nothing (LocationWithId locationId) eid)
 
 modifiedEnemyFight :: HasGame m => InvestigatorId -> EnemyAttrs -> m Int
 modifiedEnemyFight iid EnemyAttrs {..} = do
@@ -190,10 +190,10 @@ getEnemyAccessibleLocations eid = do
   let
     unblocked lid' = do
       modifiers' <- getModifiers (LocationTarget lid')
-      pure $
-        enemyIsElite
-          || Modifier.CannotBeEnteredByNonElite
-          `notElem` modifiers'
+      pure
+        $ enemyIsElite
+        || Modifier.CannotBeEnteredByNonElite
+        `notElem` modifiers'
   filterM unblocked connectedLocationIds
 
 getUniqueEnemy :: HasGame m => CardDef -> m EnemyId

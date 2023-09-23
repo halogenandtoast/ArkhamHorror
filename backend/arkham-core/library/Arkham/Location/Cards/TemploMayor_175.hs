@@ -29,23 +29,23 @@ temploMayor_175 =
 
 instance HasAbilities TemploMayor_175 where
   getAbilities (TemploMayor_175 attrs) =
-    withRevealedAbilities attrs $
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            PutLocationIntoPlay Timing.After Anyone $
-              LocationWithId $
-                toId attrs
-      , limitedAbility (GroupLimit PerPhase 1)
-          $ restrictedAbility
-            attrs
-            2
-            ( CluesOnThis (AtLeast $ Static 1)
-                <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
-            )
-          $ ActionAbility Nothing
-          $ ActionCost 1
+    withRevealedAbilities attrs
+      $ [ mkAbility attrs 1
+            $ ForcedAbility
+            $ PutLocationIntoPlay Timing.After Anyone
+            $ LocationWithId
+            $ toId attrs
+        , limitedAbility (GroupLimit PerPhase 1)
+            $ restrictedAbility
+              attrs
+              2
+              ( CluesOnThis (AtLeast $ Static 1)
+                  <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
+              )
+            $ ActionAbility Nothing
+            $ ActionCost 1
             <> ShuffleDiscardCost 1 WeaknessCard
-      ]
+        ]
 
 instance RunMessage TemploMayor_175 where
   runMessage msg l@(TemploMayor_175 attrs) = case msg of

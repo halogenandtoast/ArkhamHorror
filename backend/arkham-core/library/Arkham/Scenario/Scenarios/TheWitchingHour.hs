@@ -99,15 +99,15 @@ instance RunMessage TheWitchingHour where
           <$> gatherEncounterSet EncounterSet.AgentsOfAzathoth
 
       witchHauntedWoods <-
-        sampleN 5 $
-          Locations.witchHauntedWoodsAbandonedMine
-            :| [ Locations.witchHauntedWoodsCairnStones
-               , Locations.witchHauntedWoodsTheLonelyTree
-               , Locations.witchHauntedWoodsChildsTreeHouse
-               , Locations.witchHauntedWoodsTaintedWell
-               , Locations.witchHauntedWoodsHermitsHouse
-               , Locations.witchHauntedWoodsOvergrownBarn
-               ]
+        sampleN 5
+          $ Locations.witchHauntedWoodsAbandonedMine
+          :| [ Locations.witchHauntedWoodsCairnStones
+             , Locations.witchHauntedWoodsTheLonelyTree
+             , Locations.witchHauntedWoodsChildsTreeHouse
+             , Locations.witchHauntedWoodsTaintedWell
+             , Locations.witchHauntedWoodsHermitsHouse
+             , Locations.witchHauntedWoodsOvergrownBarn
+             ]
 
       setAsideCards <-
         (<> agentsOfShubNiggurath <> agentsOfAzathoth)
@@ -144,14 +144,14 @@ instance RunMessage TheWitchingHour where
               guard $ location == startingLocation
               pure $ MoveTo $ move attrs investigator lid
 
-          pure $
-            placement
-              : PutLocationInFrontOf investigator lid
-              : maybeToList mMoveTo
+          pure
+            $ placement
+            : PutLocationInFrontOf investigator lid
+            : maybeToList mMoveTo
 
-      pushAll $
-        [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-          <> locationPlacements
+      pushAll
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
+        <> locationPlacements
 
       agendas <- genCards [Agendas.temperanceXIV, Agendas.theNightHowls]
       acts <-
@@ -181,17 +181,17 @@ instance RunMessage TheWitchingHour where
               . any ((`elem` [Assets.theTowerXVI, Assets.aceOfRods1]) . toCardDef)
           )
           lead
-      pushAll $
-        [ story iids intro2
-        , Record YouHaveAcceptedYourFate
-        , AddChaosToken Tablet
-        , AddChaosToken Tablet
-        ]
-          <> ( guard addCards
-                *> [ AddCampaignCardToDeck lead Assets.theTowerXVI
-                   , AddCampaignCardToDeck lead Assets.aceOfRods1
-                   ]
-             )
+      pushAll
+        $ [ story iids intro2
+          , Record YouHaveAcceptedYourFate
+          , AddChaosToken Tablet
+          , AddChaosToken Tablet
+          ]
+        <> ( guard addCards
+              *> [ AddCampaignCardToDeck lead Assets.theTowerXVI
+                 , AddCampaignCardToDeck lead Assets.aceOfRods1
+                 ]
+           )
       pure s
     SetupStep (isTarget attrs -> True) 3 -> do
       iids <- getInvestigatorIds
@@ -208,51 +208,51 @@ instance RunMessage TheWitchingHour where
       step <- actStep <$> selectJustField ActSequence AnyAct
       case resolution of
         NoResolution -> do
-          push $
-            ScenarioResolution $
-              Resolution $
-                if step == ActStep 4
-                  then 4
-                  else 3
+          push
+            $ ScenarioResolution
+            $ Resolution
+            $ if step == ActStep 4
+              then 4
+              else 3
         Resolution 1 -> do
-          pushAll $
-            [ story iids resolution1
-            , Record TheWitches'SpellWasBroken
-            , recordSetInsert
-                MementosDiscovered
-                [MesmerizingFlute, RitualComponents]
-            ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story iids resolution1
+              , Record TheWitches'SpellWasBroken
+              , recordSetInsert
+                  MementosDiscovered
+                  [MesmerizingFlute, RitualComponents]
+              ]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
-          pushAll $
-            [ story iids resolution2
-            , Record TheWitches'SpellWasBroken
-            , recordSetInsert
-                MementosDiscovered
-                [MesmerizingFlute, ScrapOfTornShadow]
-            ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story iids resolution2
+              , Record TheWitches'SpellWasBroken
+              , recordSetInsert
+                  MementosDiscovered
+                  [MesmerizingFlute, ScrapOfTornShadow]
+              ]
+            <> gainXp
+            <> [EndOfGame Nothing]
         Resolution 3 -> do
           gainXpNoBonus <- toGainXp attrs getXp
-          pushAll $
-            [story iids resolution3, Record TheWitches'SpellWasCast]
-              <> if step == ActStep 3
-                then
-                  recordSetInsert MementosDiscovered [MesmerizingFlute]
-                    : gainXp
-                else
-                  gainXpNoBonus
-                    <> [EndOfGame Nothing]
+          pushAll
+            $ [story iids resolution3, Record TheWitches'SpellWasCast]
+            <> if step == ActStep 3
+              then
+                recordSetInsert MementosDiscovered [MesmerizingFlute]
+                  : gainXp
+              else
+                gainXpNoBonus
+                  <> [EndOfGame Nothing]
         Resolution 4 -> do
-          pushAll $
-            [ story iids resolution4
-            , Record TheWitches'SpellWasCast
-            , recordSetInsert MementosDiscovered [MesmerizingFlute]
-            ]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story iids resolution4
+              , Record TheWitches'SpellWasCast
+              , recordSetInsert MementosDiscovered [MesmerizingFlute]
+              ]
+            <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s
     _ -> TheWitchingHour <$> runMessage msg attrs

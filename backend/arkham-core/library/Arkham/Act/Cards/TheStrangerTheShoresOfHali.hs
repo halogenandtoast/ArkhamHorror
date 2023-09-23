@@ -28,11 +28,11 @@ theStrangerTheShoresOfHali =
 
 instance HasAbilities TheStrangerTheShoresOfHali where
   getAbilities (TheStrangerTheShoresOfHali a) =
-    [ mkAbility a 1 $
-        Objective $
-          ForcedAbility $
-            EnemyWouldBeDiscarded Timing.When $
-              enemyIs Enemies.theManInThePallidMask
+    [ mkAbility a 1
+        $ Objective
+        $ ForcedAbility
+        $ EnemyWouldBeDiscarded Timing.When
+        $ enemyIs Enemies.theManInThePallidMask
     ]
 
 instance RunMessage TheStrangerTheShoresOfHali where
@@ -43,8 +43,8 @@ instance RunMessage TheStrangerTheShoresOfHali where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       privateLocations <-
-        selectListMap LocationTarget $
-          LocationWithTrait Private
+        selectListMap LocationTarget
+          $ LocationWithTrait Private
       card <- flipCard <$> genCard (toCardDef attrs)
       a
         <$ pushAll

@@ -41,8 +41,8 @@ instance HasModifiersFor DrElliHorowitz where
 
 instance HasAbilities DrElliHorowitz where
   getAbilities (DrElliHorowitz a) =
-    [ restrictedAbility a 1 (ControlsThis <> CanManipulateDeck) $
-        ReactionAbility
+    [ restrictedAbility a 1 (ControlsThis <> CanManipulateDeck)
+        $ ReactionAbility
           (AssetEntersPlay Timing.When $ AssetWithId $ toId a)
           Free
     ]
@@ -50,8 +50,8 @@ instance HasAbilities DrElliHorowitz where
 instance RunMessage DrElliHorowitz where
   runMessage msg a@(DrElliHorowitz attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           source
           (InvestigatorTarget iid)
@@ -61,8 +61,8 @@ instance RunMessage DrElliHorowitz where
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       validCards <-
-        pure $
-          filter
+        pure
+          $ filter
             (`cardMatch` (CardWithType AssetType <> CardWithTrait Relic))
             cards
       tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
@@ -81,13 +81,13 @@ instance RunMessage DrElliHorowitz where
         then push $ chooseOne iid [Label "No Cards Found" []]
         else do
           assetId <- getRandom
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ targetLabel
                 (toCardId c)
-                [ CreateAssetAt assetId c $
-                    AttachedToAsset (toId attrs) (Just $ InPlayArea iid)
+                [ CreateAssetAt assetId c
+                    $ AttachedToAsset (toId attrs) (Just $ InPlayArea iid)
                 ]
               | c <- validCardsAfterSeal
               ]

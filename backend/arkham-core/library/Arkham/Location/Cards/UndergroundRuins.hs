@@ -38,11 +38,11 @@ instance HasAbilities UndergroundRuins where
   getAbilities (UndergroundRuins attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            EnemyLeavesPlay Timing.After $
-              enemyAt $
-                toId attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemyLeavesPlay Timing.After
+          $ enemyAt
+          $ toId attrs
       ]
 
 instance RunMessage UndergroundRuins where

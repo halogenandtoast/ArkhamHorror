@@ -21,11 +21,11 @@ cherishedKeepsake1 =
 
 instance HasAbilities CherishedKeepsake1 where
   getAbilities (CherishedKeepsake1 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          AssetDefeated Timing.When ByHorror $
-            AssetWithId $
-              toId a
+    [ restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ AssetDefeated Timing.When ByHorror
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage CherishedKeepsake1 where

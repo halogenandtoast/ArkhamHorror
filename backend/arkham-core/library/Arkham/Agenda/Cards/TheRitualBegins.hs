@@ -34,12 +34,14 @@ instance RunMessage TheRitualBegins where
       investigators <- getInvestigators
       pushAll
         $ [beginSkillTest investigator attrs investigator #willpower 6 | investigator <- investigators]
-          <> [advanceAgendaDeck attrs]
+        <> [advanceAgendaDeck attrs]
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       push
         $ SearchCollectionForRandom iid (toSource attrs)
-        $ CardWithType PlayerTreacheryType <> CardWithTrait Madness <> CardWithSubType BasicWeakness
+        $ CardWithType PlayerTreacheryType
+        <> CardWithTrait Madness
+        <> CardWithSubType BasicWeakness
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       for_ mcard $ push . addToHand iid . PlayerCard

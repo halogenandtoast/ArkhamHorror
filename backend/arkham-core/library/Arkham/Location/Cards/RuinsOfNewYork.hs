@@ -30,11 +30,11 @@ instance HasAbilities RuinsOfNewYork where
   getAbilities (RuinsOfNewYork a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            PutLocationIntoPlay Timing.After Anyone $
-              LocationWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ PutLocationIntoPlay Timing.After Anyone
+          $ LocationWithId
+          $ toId a
       ]
 
 instance RunMessage RuinsOfNewYork where
@@ -48,8 +48,8 @@ instance RunMessage RuinsOfNewYork where
         polyps = map (\card -> PlayerCard $ card {pcCardCode = "xpolyp"}) cards
       placements <- for polyps $ \polyp -> do
         createEnemyWithPlacement_ polyp (AtLocation $ toId attrs)
-      pushAll $
-        map (RemovePlayerCardFromGame False . PlayerCard) cards
-          <> placements
+      pushAll
+        $ map (RemovePlayerCardFromGame False . PlayerCard) cards
+        <> placements
       pure l
     _ -> RuinsOfNewYork <$> runMessage msg attrs

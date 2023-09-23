@@ -66,6 +66,6 @@ instance RunMessage RealmOfMadness where
         $ push
         $ chooseOne iid
         $ map discardAsset assets
-          <> map discardHandCard handDiscardableCards
+        <> map discardHandCard handDiscardableCards
       pure t
     _ -> RealmOfMadness <$> runMessage msg attrs

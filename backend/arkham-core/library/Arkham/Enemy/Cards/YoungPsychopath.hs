@@ -28,11 +28,11 @@ instance HasAbilities YoungPsychopath where
   getAbilities (YoungPsychopath a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyEngaged Timing.After You $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyEngaged Timing.After You
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage YoungPsychopath where

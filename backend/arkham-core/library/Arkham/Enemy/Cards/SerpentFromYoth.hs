@@ -22,11 +22,11 @@ serpentFromYoth =
 instance HasModifiersFor SerpentFromYoth where
   getModifiersFor (EnemyTarget eid) (SerpentFromYoth a) | toId a == eid = do
     vengeance <- getVengeanceInVictoryDisplay
-    pure $
-      toModifiers a $
-        [AddKeyword Keyword.Retaliate | vengeance >= 1]
-          <> [AddKeyword Keyword.Hunter | vengeance >= 2]
-          <> [DamageTaken (-1) | vengeance >= 3]
+    pure
+      $ toModifiers a
+      $ [AddKeyword Keyword.Retaliate | vengeance >= 1]
+      <> [AddKeyword Keyword.Hunter | vengeance >= 2]
+      <> [DamageTaken (-1) | vengeance >= 3]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SerpentFromYoth where

@@ -24,7 +24,7 @@ itAwaits :: AgendaCard ItAwaits
 itAwaits =
   agendaWith (2, A) ItAwaits Cards.itAwaits (Static 6)
     $ removeDoomMatchersL
-      %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
+    %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
 
 instance RunMessage ItAwaits where
   runMessage msg a@(ItAwaits attrs) =
@@ -36,11 +36,11 @@ instance RunMessage ItAwaits where
         investigators <- getInvestigators
         pushAll
           $ ritualSuicideMessages
-            <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
-            <> ( guard (not theWraithRecognizesTheCrucifix)
-                  *> [beginSkillTest iid attrs iid #willpower 4 | iid <- investigators]
-               )
-            <> [advanceAgendaDeck attrs]
+          <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
+          <> ( guard (not theWraithRecognizesTheCrucifix)
+                *> [beginSkillTest iid attrs iid #willpower 4 | iid <- investigators]
+             )
+          <> [advanceAgendaDeck attrs]
         pure a
       FailedThisSkillTest iid (isSource attrs -> True) -> do
         push $ assignDamageAndHorror iid attrs 1 1

@@ -53,20 +53,20 @@ instance RunMessage MaskedCarnevaleGoer_18 where
           elisabettaMagro
           lid
           Nothing
-      pushAll $
-        [ createElisabettaMagro
-        , Flipped (toSource attrs) elisabettaMagro
-        ]
-          <> [ chooseOrRunOneAtATime
-              lead
-              [ targetLabel
-                investigator
-                [EnemyAttack $ enemyAttack enemyId attrs investigator]
-              | investigator <- investigators
-              ]
-             | isAbilitySource attrs 1 source
-             , notNull investigators
-             ]
+      pushAll
+        $ [ createElisabettaMagro
+          , Flipped (toSource attrs) elisabettaMagro
+          ]
+        <> [ chooseOrRunOneAtATime
+            lead
+            [ targetLabel
+              investigator
+              [EnemyAttack $ enemyAttack enemyId attrs investigator]
+            | investigator <- investigators
+            ]
+           | isAbilitySource attrs 1 source
+           , notNull investigators
+           ]
       pure a
     LookAtRevealed iid source target | isTarget a target -> do
       let elisabettaMagro = lookupCard Enemies.elisabettaMagro (toCardId attrs)

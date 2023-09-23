@@ -28,8 +28,8 @@ instance RunMessage ATearInTime where
     FailedSkillTest iid maction source target@SkillTestInitiatorTarget {} sType n
       | isSource attrs source && n > 0 -> do
           hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
-          pushAll $
-            chooseOrRunOne
+          pushAll
+            $ chooseOrRunOne
               iid
               ( [ Label "Lose 1 Action" [LoseActions iid source 1]
                 | hasRemainingActions
@@ -39,6 +39,6 @@ instance RunMessage ATearInTime where
                         [InvestigatorAssignDamage iid source DamageAny 0 1]
                      ]
               )
-              : [FailedSkillTest iid maction source target sType (n - 1)]
+            : [FailedSkillTest iid maction source target sType (n - 1)]
           pure t
     _ -> ATearInTime <$> runMessage msg attrs

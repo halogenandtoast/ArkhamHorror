@@ -28,15 +28,15 @@ pendulousThreads =
 
 instance HasAbilities PendulousThreads where
   getAbilities (PendulousThreads a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          InvestigatorEliminated Timing.When $
-            AnyInvestigator
-              [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
-              , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
-              , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
-              , HasMatchingAsset (AssetWithTitle "Relic of Ages")
-              ]
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ InvestigatorEliminated Timing.When
+        $ AnyInvestigator
+          [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
+          , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
+          , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
+          , HasMatchingAsset (AssetWithTitle "Relic of Ages")
+          ]
     ]
 
 instance RunMessage PendulousThreads where
@@ -44,20 +44,20 @@ instance RunMessage PendulousThreads where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       inPlay <- selectAny $ enemyIs Enemies.formlessSpawn
       mVictory <-
-        selectOne $
-          VictoryDisplayCardMatch $
-            cardIs
-              Enemies.formlessSpawn
+        selectOne
+          $ VictoryDisplayCardMatch
+          $ cardIs
+            Enemies.formlessSpawn
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
-      pushAll $
-        [ShuffleEncounterDiscardBackIn]
-          <> [PlaceDoom (toSource attrs) (toTarget nexus) 2 | inPlay]
-          <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [formlessSpawn]
-             | formlessSpawn <- maybeToList mVictory
-             ]
-          <> [ AddToVictory (toTarget attrs)
-             , advanceAgendaDeck attrs
-             ]
+      pushAll
+        $ [ShuffleEncounterDiscardBackIn]
+        <> [PlaceDoom (toSource attrs) (toTarget nexus) 2 | inPlay]
+        <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [formlessSpawn]
+           | formlessSpawn <- maybeToList mVictory
+           ]
+        <> [ AddToVictory (toTarget attrs)
+           , advanceAgendaDeck attrs
+           ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ AdvanceToAgenda 1 Agendas.snappedThreads B (toSource attrs)

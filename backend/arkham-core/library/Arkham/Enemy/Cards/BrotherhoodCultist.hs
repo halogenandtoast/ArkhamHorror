@@ -27,21 +27,22 @@ brotherhoodCultist =
 instance HasModifiersFor BrotherhoodCultist where
   getModifiersFor target (BrotherhoodCultist a) | isTarget a target = do
     doom <- field EnemyDoom (toId a)
-    pure . toModifiers a $
-      if doom > 0
-        then [EnemyFight doom, EnemyEvade doom]
-        else []
+    pure
+      . toModifiers a
+        $ if doom > 0
+          then [EnemyFight doom, EnemyEvade doom]
+          else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrotherhoodCultist where
   getAbilities (BrotherhoodCultist a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacked Timing.When You AnySource $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacked Timing.When You AnySource
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage BrotherhoodCultist where

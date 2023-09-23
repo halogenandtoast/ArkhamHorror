@@ -22,13 +22,13 @@ valentinoRivas = enemy ValentinoRivas Cards.valentinoRivas (3, Static 5, 4) (1, 
 
 instance HasAbilities ValentinoRivas where
   getAbilities (ValentinoRivas a) =
-    withBaseAbilities a $
-      [ restrictedAbility a 1 (InvestigatorExists $ You <> InvestigatorWithAnyResources) $
-          ForcedAbility $
-            EnemyEngaged Timing.After You $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ restrictedAbility a 1 (InvestigatorExists $ You <> InvestigatorWithAnyResources)
+            $ ForcedAbility
+            $ EnemyEngaged Timing.After You
+            $ EnemyWithId
+            $ toId a
+        ]
 
 instance RunMessage ValentinoRivas where
   runMessage msg e@(ValentinoRivas attrs) = case msg of

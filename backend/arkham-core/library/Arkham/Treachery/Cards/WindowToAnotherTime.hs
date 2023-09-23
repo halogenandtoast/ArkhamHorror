@@ -26,19 +26,19 @@ instance RunMessage WindowToAnotherTime where
   runMessage msg t@(WindowToAnotherTime attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       ancientLocations <-
-        selectWithField LocationCard $
-          LocationWithTrait Ancient
-      push $
-        chooseOrRunOne iid $
-          Label
-            "Place Doom on the Current Agenda"
-            [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
-            : [ targetLabel
-                lid
-                [ RemoveLocation lid
-                , ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
-                ]
-              | (lid, card) <- ancientLocations
-              ]
+        selectWithField LocationCard
+          $ LocationWithTrait Ancient
+      push
+        $ chooseOrRunOne iid
+        $ Label
+          "Place Doom on the Current Agenda"
+          [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+        : [ targetLabel
+            lid
+            [ RemoveLocation lid
+            , ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
+            ]
+          | (lid, card) <- ancientLocations
+          ]
       pure t
     _ -> WindowToAnotherTime <$> runMessage msg attrs

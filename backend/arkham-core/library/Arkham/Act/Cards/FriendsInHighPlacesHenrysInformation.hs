@@ -36,10 +36,10 @@ instance HasAbilities FriendsInHighPlacesHenrysInformation where
     [ restrictedAbility
       a
       1
-      ( AssetExists $
-          assetIs Assets.henryDeveau
-            <> AssetWithClues
-              (AtLeast $ PerPlayer 1)
+      ( AssetExists
+          $ assetIs Assets.henryDeveau
+          <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
       )
       $ Objective
       $ ForcedAbility AnyWindow
@@ -64,8 +64,8 @@ instance RunMessage FriendsInHighPlacesHenrysInformation where
           assetId <- getRandom
           pure [placeTownHall, CreateAssetAt assetId alejandroVela (AttachedToLocation townHallId)]
 
-      pushAll $
-        createAssetMessages
-          <> [AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)]
+      pushAll
+        $ createAssetMessages
+        <> [AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)]
       pure a
     _ -> FriendsInHighPlacesHenrysInformation <$> runMessage msg attrs

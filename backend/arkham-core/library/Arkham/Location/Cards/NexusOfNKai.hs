@@ -33,25 +33,25 @@ instance HasAbilities NexusOfNKai where
   getAbilities (NexusOfNKai attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            OrWindowMatcher
-              [ Moves
-                  Timing.After
-                  You
-                  (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
-                  (LocationWithId $ toId attrs)
-                  (LocationWithTrait Otherworld <> LocationWithAnyClues)
-              , Moves
-                  Timing.After
-                  You
-                  (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
-                  (LocationWithTrait Otherworld <> LocationWithAnyClues)
-                  (LocationWithId $ toId attrs)
-              ]
-      , restrictedAbility attrs 2 (Here <> ScenarioDeckWithCard ExplorationDeck) $
-          ActionAbility (Just Action.Explore) $
-            ActionCost 1
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ OrWindowMatcher
+            [ Moves
+                Timing.After
+                You
+                (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
+                (LocationWithId $ toId attrs)
+                (LocationWithTrait Otherworld <> LocationWithAnyClues)
+            , Moves
+                Timing.After
+                You
+                (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
+                (LocationWithTrait Otherworld <> LocationWithAnyClues)
+                (LocationWithId $ toId attrs)
+            ]
+      , restrictedAbility attrs 2 (Here <> ScenarioDeckWithCard ExplorationDeck)
+          $ ActionAbility (Just Action.Explore)
+          $ ActionCost 1
       ]
 
 getShatteredLocation :: LocationAttrs -> [Window] -> LocationId
@@ -71,8 +71,8 @@ instance RunMessage NexusOfNKai where
         pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           (toAbilitySource attrs 2)
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)

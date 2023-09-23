@@ -25,21 +25,21 @@ instance RunMessage Enraptured where
     PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _ ->
       do
         chargeAssets <-
-          selectList $
-            assetControlledBy (skillOwner attrs)
-              <> AssetWithUseType Uses.Charge
+          selectList
+            $ assetControlledBy (skillOwner attrs)
+            <> AssetWithUseType Uses.Charge
         secretAssets <-
-          selectList $
-            assetControlledBy (skillOwner attrs)
-              <> AssetWithUseType Uses.Secret
-        unless (null chargeAssets && null secretAssets) $
-          push $
-            chooseOne (skillOwner attrs) $
-              [ targetLabel aid [AddUses aid Uses.Charge 1]
-              | aid <- chargeAssets
-              ]
-                <> [ targetLabel aid [AddUses aid Uses.Secret 1]
-                   | aid <- secretAssets
-                   ]
+          selectList
+            $ assetControlledBy (skillOwner attrs)
+            <> AssetWithUseType Uses.Secret
+        unless (null chargeAssets && null secretAssets)
+          $ push
+          $ chooseOne (skillOwner attrs)
+          $ [ targetLabel aid [AddUses aid Uses.Charge 1]
+            | aid <- chargeAssets
+            ]
+          <> [ targetLabel aid [AddUses aid Uses.Secret 1]
+             | aid <- secretAssets
+             ]
         pure s
     _ -> Enraptured <$> runMessage msg attrs

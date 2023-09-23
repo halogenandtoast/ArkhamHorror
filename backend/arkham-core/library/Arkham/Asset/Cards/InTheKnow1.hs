@@ -25,7 +25,7 @@ instance HasAbilities InTheKnow1 where
     [ restrictedAbility attrs 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
         $ ActionCost 1
-          <> UseCost (AssetWithId $ toId attrs) Secret 1
+        <> UseCost (AssetWithId $ toId attrs) Secret 1
     ]
 
 instance RunMessage InTheKnow1 where
@@ -44,7 +44,7 @@ instance RunMessage InTheKnow1 where
             investigateActions <-
               selectList
                 $ AbilityOnLocation (LocationWithId lid)
-                  <> AbilityIsAction Action.Investigate
+                <> AbilityIsAction Action.Investigate
             pure $ map (lid,) investigateActions
       push
         $ chooseOne

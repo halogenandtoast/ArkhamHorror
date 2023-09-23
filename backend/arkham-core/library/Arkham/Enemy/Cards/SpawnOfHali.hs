@@ -30,13 +30,13 @@ instance HasAbilities SpawnOfHali where
   getAbilities (SpawnOfHali a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            SkillTestResult
-              Timing.After
-              You
-              (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-              (SuccessResult $ LessThanOrEqualTo $ Static 2)
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
+            (SuccessResult $ LessThanOrEqualTo $ Static 2)
       ]
 
 instance RunMessage SpawnOfHali where

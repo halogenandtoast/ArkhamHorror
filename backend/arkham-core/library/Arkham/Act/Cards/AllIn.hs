@@ -28,17 +28,17 @@ allIn = act (3, A) AllIn Cards.allIn Nothing
 
 instance HasAbilities AllIn where
   getAbilities (AllIn x) =
-    withBaseAbilities x $
-      if onSide A x
+    withBaseAbilities x
+      $ if onSide A x
         then
           [ restrictedAbility
               (toProxySource x $ AssetMatcherSource $ assetIs Assets.drFrancisMorgan)
               1
               (Uncontrolled <> OnSameLocation)
               (ActionAbility (Just Parley) $ ActionCost 1)
-          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned $
-              Objective $
-                ForcedAbility AnyWindow
+          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
+              $ Objective
+              $ ForcedAbility AnyWindow
           ]
         else []
 

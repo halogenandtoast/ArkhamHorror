@@ -46,8 +46,8 @@ instance RunMessage ParallelFates where
     RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) ->
       do
         push $ ResetChaosTokens (toSource attrs)
-        push $
-          if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
+        push
+          $ if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
             then
               chooseOne
                 iid

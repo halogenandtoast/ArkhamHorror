@@ -56,8 +56,8 @@ instance HasAbilities StoneArchways where
         attrs
         1
         ( Negate
-            ( LocationExists $
-                LocationInDirection RightOf (LocationWithId $ toId attrs)
+            ( LocationExists
+                $ LocationInDirection RightOf (LocationWithId $ toId attrs)
             )
         )
         $ ForcedAbility

@@ -24,8 +24,8 @@ instance HasModifiersFor FightOrFlight where
   getModifiersFor target@(InvestigatorTarget iid) (FightOrFlight attrs)
     | effectTarget attrs == target = do
         horror <- field InvestigatorHorror iid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [SkillModifier SkillCombat horror, SkillModifier SkillAgility horror]
   getModifiersFor _ _ = pure []

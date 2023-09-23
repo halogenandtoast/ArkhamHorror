@@ -74,8 +74,8 @@ instance HasChaosTokenValue TheDoomOfEztli where
       Skull -> do
         hasDoom <-
           selectAny $ LocationWithAnyDoom <> locationWithInvestigator iid
-        pure $
-          if hasDoom
+        pure
+          $ if hasDoom
             then toChaosTokenValue attrs Skull 3 4
             else toChaosTokenValue attrs Skull 1 2
       face | face `elem` [Cultist, Tablet] -> do
@@ -127,21 +127,21 @@ investigatorDefeat attrs = do
           if null defeatedInvestigatorIds
             then pure []
             else
-              pure $
-                story investigatorIds defeat
-                  : story
-                    investigatorIds
-                    "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
-                  : map
-                    (InvestigatorKilled (toSource attrs))
-                    defeatedInvestigatorIds
-                    <> [ GameOver
-                       | null
-                          ( setFromList @(Set InvestigatorId) investigatorIds
-                              `difference` setFromList @(Set InvestigatorId)
-                                defeatedInvestigatorIds
-                          )
-                       ]
+              pure
+                $ story investigatorIds defeat
+                : story
+                  investigatorIds
+                  "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
+                : map
+                  (InvestigatorKilled (toSource attrs))
+                  defeatedInvestigatorIds
+                  <> [ GameOver
+                     | null
+                        ( setFromList @(Set InvestigatorId) investigatorIds
+                            `difference` setFromList @(Set InvestigatorId)
+                              defeatedInvestigatorIds
+                        )
+                     ]
         else do
           pure
             [ story
@@ -159,8 +159,8 @@ instance RunMessage TheDoomOfEztli where
       pure
         . TheDoomOfEztli
         . (`with` metadata)
-        $ attrs
-          & standaloneCampaignLogL
+          $ attrs
+        & standaloneCampaignLogL
           .~ standaloneCampaignLog
     Setup -> do
       iids <- allInvestigatorIds
@@ -224,25 +224,25 @@ instance RunMessage TheDoomOfEztli where
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       setAsideCards <-
-        genCards $
-          [ Locations.chamberOfTime
-          , Assets.relicOfAgesADeviceOfSomeSort
-          , Enemies.harbingerOfValusia
-          ]
-            <> replicate setAsidePoisonedCount Treacheries.poisoned
+        genCards
+          $ [ Locations.chamberOfTime
+            , Assets.relicOfAgesADeviceOfSomeSort
+            , Enemies.harbingerOfValusia
+            ]
+          <> replicate setAsidePoisonedCount Treacheries.poisoned
 
-      pushAll $
-        [ story iids intro
-        , SetEncounterDeck encounterDeck'
-        , SetAgendaDeck
-        , SetActDeck
-        , placeEntryway
-        , RevealLocation Nothing entrywayId
-        ]
-          <> [ PlaceTokens (toSource attrs) (LocationTarget entrywayId) Doom (resolution4Count metadata)
-             | resolution4Count metadata > 0
-             ]
-          <> [MoveAllTo (toSource attrs) entrywayId]
+      pushAll
+        $ [ story iids intro
+          , SetEncounterDeck encounterDeck'
+          , SetAgendaDeck
+          , SetActDeck
+          , placeEntryway
+          , RevealLocation Nothing entrywayId
+          ]
+        <> [ PlaceTokens (toSource attrs) (LocationTarget entrywayId) Doom (resolution4Count metadata)
+           | resolution4Count metadata > 0
+           ]
+        <> [MoveAllTo (toSource attrs) entrywayId]
 
       acts <-
         genCards
@@ -251,14 +251,14 @@ instance RunMessage TheDoomOfEztli where
 
       TheDoomOfEztli
         . (`with` metadata)
-        <$> runMessage
-          msg
-          ( attrs
-              & (decksL . at ExplorationDeck ?~ explorationDeck)
-              & (setAsideCardsL .~ setAsideCards)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (actStackL . at 1 ?~ acts)
-          )
+          <$> runMessage
+            msg
+            ( attrs
+                & (decksL . at ExplorationDeck ?~ explorationDeck)
+                & (setAsideCardsL .~ setAsideCards)
+                & (agendaStackL . at 1 ?~ agendas)
+                & (actStackL . at 1 ?~ acts)
+            )
     Explore iid _ _ -> do
       windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
@@ -288,10 +288,10 @@ instance RunMessage TheDoomOfEztli where
       gainXp <- toGainXp attrs getXp
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       setAsideHarbinger <-
-        selectOne $
-          OutOfPlayEnemy SetAsideZone $
-            enemyIs
-              Enemies.harbingerOfValusia
+        selectOne
+          $ OutOfPlayEnemy SetAsideZone
+          $ enemyIs
+            Enemies.harbingerOfValusia
       harbingerMessages <- case inPlayHarbinger of
         Just harbinger -> do
           damage <- field EnemyDamage harbinger
@@ -309,68 +309,69 @@ instance RunMessage TheDoomOfEztli where
           push $ ScenarioResolution (Resolution resolution)
           pure s
         Resolution 1 -> do
-          pushAll $
-            defeatMessages
-              <> [ story investigatorIds resolution1
-                 , Record TheInvestigatorsRecoveredTheRelicOfAges
-                 ]
-              <> harbingerMessages
-              <> [RecordCount YigsFury (yigsFury + vengeance)]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ defeatMessages
+            <> [ story investigatorIds resolution1
+               , Record TheInvestigatorsRecoveredTheRelicOfAges
+               ]
+            <> harbingerMessages
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+            <> [EndOfGame Nothing]
           pure s
         Resolution 2 -> do
-          pushAll $
-            defeatMessages
-              <> [ story investigatorIds resolution2
-                 , Record AlejandroRecoveredTheRelicOfAges
-                 ]
-              <> harbingerMessages
-              <> [RecordCount YigsFury (yigsFury + vengeance)]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ defeatMessages
+            <> [ story investigatorIds resolution2
+               , Record AlejandroRecoveredTheRelicOfAges
+               ]
+            <> harbingerMessages
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+            <> [EndOfGame Nothing]
           pure s
         Resolution 3 -> do
-          pushAll $
-            defeatMessages
-              <> [ story investigatorIds resolution3
-                 , chooseOne
-                    leadInvestigatorId
-                    [ Label
-                        "“We can’t stop now—we have to go back inside!” - Proceed to Resolution 4."
-                        [ScenarioResolution $ Resolution 4]
-                    , Label
-                        "“It’s too dangerous. This place must be destroyed.” - Proceed to Resolution 5."
-                        [ScenarioResolution $ Resolution 5]
-                    ]
-                 ]
+          pushAll
+            $ defeatMessages
+            <> [ story investigatorIds resolution3
+               , chooseOne
+                  leadInvestigatorId
+                  [ Label
+                      "“We can’t stop now—we have to go back inside!” - Proceed to Resolution 4."
+                      [ScenarioResolution $ Resolution 4]
+                  , Label
+                      "“It’s too dangerous. This place must be destroyed.” - Proceed to Resolution 5."
+                      [ScenarioResolution $ Resolution 5]
+                  ]
+               ]
           pure s
         Resolution 4 -> do
           standalone <- getIsStandalone
-          pushAll $
-            [story investigatorIds resolution4, ResetGame]
-              <> [StandaloneSetup | standalone]
-              <> [ ChooseLeadInvestigator
-                 , SetupInvestigators
-                 , SetChaosTokensForScenario -- (chaosBagOf campaign')
-                 , InvestigatorsMulligan
-                 , Setup
-                 , EndSetup
-                 ]
+          pushAll
+            $ [story investigatorIds resolution4, ResetGame]
+            <> [StandaloneSetup | standalone]
+            <> [ ChooseLeadInvestigator
+               , SetupInvestigators
+               , SetChaosTokensForScenario -- (chaosBagOf campaign')
+               , InvestigatorsMulligan
+               , Setup
+               , EndSetup
+               ]
           let resetAttrs = toAttrs $ theDoomOfEztli (scenarioDifficulty attrs)
-          pure . TheDoomOfEztli $
-            resetAttrs
+          pure
+            . TheDoomOfEztli
+              $ resetAttrs
               `with` Metadata
                 (resolution4Count metadata + 1)
         Resolution 5 -> do
-          pushAll $
-            [ story investigatorIds resolution5
-            , Record TheInvestigatorsRecoveredTheRelicOfAges
-            ]
-              <> harbingerMessages
-              <> [RecordCount YigsFury (yigsFury + vengeance)]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [ story investigatorIds resolution5
+              , Record TheInvestigatorsRecoveredTheRelicOfAges
+              ]
+            <> harbingerMessages
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+            <> [EndOfGame Nothing]
           pure s
         _ -> error "Unknown Resolution"
     _ -> TheDoomOfEztli . (`with` metadata) <$> runMessage msg attrs

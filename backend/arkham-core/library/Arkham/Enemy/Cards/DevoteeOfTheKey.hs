@@ -20,7 +20,8 @@ newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey
 devoteeOfTheKey =
   enemyWith DevoteeOfTheKey Cards.devoteeOfTheKey (3, Static 3, 3) (1, 1)
-    $ spawnAtL ?~ SpawnLocation "Base of the Hill"
+    $ spawnAtL
+    ?~ SpawnLocation "Base of the Hill"
 
 instance HasAbilities DevoteeOfTheKey where
   getAbilities (DevoteeOfTheKey attrs) =

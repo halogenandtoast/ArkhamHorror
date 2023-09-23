@@ -34,11 +34,11 @@ instance HasAbilities DiscipleOfTheDevourer where
   getAbilities (DiscipleOfTheDevourer x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $
-          ForcedAbility $
-            EnemySpawns Timing.After Anywhere $
-              EnemyWithId $
-                toId x
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ EnemySpawns Timing.After Anywhere
+          $ EnemyWithId
+          $ toId x
       ]
 
 instance RunMessage DiscipleOfTheDevourer where
@@ -50,28 +50,28 @@ instance RunMessage DiscipleOfTheDevourer where
       step <- fieldMap AgendaSequence agendaStep agendaId
       if step == AgendaStep 1
         then
-          push $
-            chooseOrRunOne iid $
-              Label
-                "Place 1 doom on Disciple of the Devourer"
-                [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
-                : [ Label
-                    "Place one of your clues on it's location"
+          push
+            $ chooseOrRunOne iid
+            $ Label
+              "Place 1 doom on Disciple of the Devourer"
+              [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
+            : [ Label
+                "Place one of your clues on it's location"
+                [ RemoveClues (toAbilitySource attrs 1) (InvestigatorTarget iid) 1
+                , PlaceClues (toAbilitySource attrs 1) (LocationTarget lid) 1
+                ]
+              | hasClues
+              , lid <- maybeToList mLocationId
+              ]
+        else
+          pushAll
+            $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+            : case mLocationId of
+              Just lid
+                | hasClues ->
                     [ RemoveClues (toAbilitySource attrs 1) (InvestigatorTarget iid) 1
                     , PlaceClues (toAbilitySource attrs 1) (LocationTarget lid) 1
                     ]
-                  | hasClues
-                  , lid <- maybeToList mLocationId
-                  ]
-        else
-          pushAll $
-            PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-              : case mLocationId of
-                Just lid
-                  | hasClues ->
-                      [ RemoveClues (toAbilitySource attrs 1) (InvestigatorTarget iid) 1
-                      , PlaceClues (toAbilitySource attrs 1) (LocationTarget lid) 1
-                      ]
-                _ -> []
+              _ -> []
       pure e
     _ -> DiscipleOfTheDevourer <$> runMessage msg attrs

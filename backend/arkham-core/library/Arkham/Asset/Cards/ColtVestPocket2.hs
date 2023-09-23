@@ -31,17 +31,17 @@ instance HasAbilities ColtVestPocket2 where
       a
       1
       ControlsThis
-      ( ActionAbility (Just Action.Fight) $
-          ActionCost 1
-            <> UseCost
-              (AssetWithId $ toId a)
-              Ammo
-              1
+      ( ActionAbility (Just Action.Fight)
+          $ ActionCost 1
+          <> UseCost
+            (AssetWithId $ toId a)
+            Ammo
+            1
       )
-      : [ restrictedAbility a 2 ControlsThis $
-          ForcedAbility $
-            RoundEnds
-              Timing.When
+      : [ restrictedAbility a 2 ControlsThis
+          $ ForcedAbility
+          $ RoundEnds
+            Timing.When
         | abilityTriggered meta
         ]
 

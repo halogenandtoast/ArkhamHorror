@@ -28,9 +28,10 @@ getCompletedScenarios = do
     Nothing -> pure mempty
     Just campaignId -> do
       completedSteps <- field CampaignCompletedSteps campaignId
-      pure . setFromList $ flip mapMaybe completedSteps $ \case
-        ScenarioStep scenarioId -> Just scenarioId
-        _ -> Nothing
+      pure
+        . setFromList $ flip mapMaybe completedSteps $ \case
+          ScenarioStep scenarioId -> Just scenarioId
+          _ -> Nothing
 
 getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
 getOwner cardDef = do
@@ -61,8 +62,8 @@ matchingCardsAlreadyInDeck
   :: HasGame m => CardMatcher -> m (Map InvestigatorId (Set CardCode))
 matchingCardsAlreadyInDeck matcher = do
   decks <- campaignField CampaignDecks
-  pure $
-    Map.map
+  pure
+    $ Map.map
       (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck)
       decks
 
@@ -79,7 +80,7 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
         [AddCampaignCardToDeck iid cardDef]
       | iid <- investigatorIds
       ]
-      <> [Label ("Do not add " <> display name <> " to any deck") []]
+    <> [Label ("Do not add " <> display name <> " to any deck") []]
  where
   name = cdName cardDef
 

@@ -28,7 +28,8 @@ instance RunMessage PiperOfAzathoth where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigators <-
         selectList
-          $ InvestigatorAt (locationWithEnemy $ toId e) <> NotInvestigator (investigatorEngagedWith $ toId e)
+          $ InvestigatorAt (locationWithEnemy $ toId e)
+          <> NotInvestigator (investigatorEngagedWith $ toId e)
       pushAll
         [ toMessage $ enemyAttack (toId e) (toAbilitySource attrs 1) investigator
         | investigator <- investigators

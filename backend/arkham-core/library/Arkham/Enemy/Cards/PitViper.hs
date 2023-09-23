@@ -29,10 +29,10 @@ instance HasAbilities PitViper where
       [ restrictedAbility
           a
           1
-          ( InvestigatorExists $
-              You
-                <> NotInvestigator
-                  (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
+          ( InvestigatorExists
+              $ You
+              <> NotInvestigator
+                (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
           )
           $ ForcedAbility
           $ DealtDamage

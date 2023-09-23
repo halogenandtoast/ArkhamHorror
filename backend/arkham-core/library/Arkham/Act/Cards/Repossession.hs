@@ -27,9 +27,9 @@ instance HasAbilities Repossession where
   getAbilities (Repossession a)
     | onSide A a =
         [ mkAbility a 1 $ ActionAbility (Just Action.Draw) $ ClueCost (Static 1) <> ActionCost 1
-        , restrictedAbility a 2 (EachUndefeatedInvestigator $ HandWith $ LengthIs $ AtLeast $ Static 10) $
-            Objective $
-              ForcedAbility AnyWindow
+        , restrictedAbility a 2 (EachUndefeatedInvestigator $ HandWith $ LengthIs $ AtLeast $ Static 10)
+            $ Objective
+            $ ForcedAbility AnyWindow
         ]
   getAbilities _ = []
 

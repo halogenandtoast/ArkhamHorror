@@ -19,14 +19,14 @@ newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
 
 theNecronomiconAdvanced :: AssetCard TheNecronomiconAdvanced
 theNecronomiconAdvanced =
-  assetWith TheNecronomiconAdvanced Cards.theNecronomiconAdvanced $
-    (tokensL %~ setTokens Horror 3)
-      . (canLeavePlayByNormalMeansL .~ False)
+  assetWith TheNecronomiconAdvanced Cards.theNecronomiconAdvanced
+    $ (tokensL %~ setTokens Horror 3)
+    . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor TheNecronomiconAdvanced where
   getModifiersFor (InvestigatorTarget iid) (TheNecronomiconAdvanced a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ ForcedChaosTokenChange
           Token.ElderSign
@@ -37,9 +37,9 @@ instance HasModifiersFor TheNecronomiconAdvanced where
 
 instance HasAbilities TheNecronomiconAdvanced where
   getAbilities (TheNecronomiconAdvanced a) =
-    [ restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis) $
-        ActionAbility Nothing $
-          ActionCost 1
+    [ restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis)
+        $ ActionAbility Nothing
+        $ ActionCost 1
     ]
 
 instance RunMessage TheNecronomiconAdvanced where
@@ -51,7 +51,7 @@ instance RunMessage TheNecronomiconAdvanced where
       if assetHorror attrs <= 1
         then a <$ push (Discard (toAbilitySource attrs 1) (toTarget attrs))
         else
-          pure $
-            TheNecronomiconAdvanced
+          pure
+            $ TheNecronomiconAdvanced
               (attrs & tokensL %~ decrementTokens Horror)
     _ -> TheNecronomiconAdvanced <$> runMessage msg attrs

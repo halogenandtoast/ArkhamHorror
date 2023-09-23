@@ -47,10 +47,10 @@ instance RunMessage FirstWatch where
                 remainingInvestigatorIds =
                   setToList
                     . insertSet iid
-                    $ investigatorIds
+                      $ investigatorIds
                       `difference` assignedInvestigatorIds
-              push $
-                chooseOne
+              push
+                $ chooseOne
                   iid
                   [ targetLabel
                     iid'
@@ -67,8 +67,8 @@ instance RunMessage FirstWatch where
               pure e
       UseCardAbilityChoice iid (EventSource eid) 2 (EncounterCardMetadata card) _ _
         | eid == eventId ->
-            pure $
-              FirstWatch
+            pure
+              $ FirstWatch
                 ( attrs
                     `with` FirstWatchMetadata
                       { firstWatchPairings = (iid, card) : firstWatchPairings

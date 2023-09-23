@@ -33,14 +33,14 @@ instance HasAbilities LodgeNeophyte where
   getAbilities (LodgeNeophyte a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 CanPlaceDoomOnThis $
-          ForcedAbility $
-            EnemySpawns Timing.After Anywhere $
-              EnemyWithId $
-                toId a
-      , restrictedAbility a 2 OnSameLocation $
-          ActionAbility (Just Action.Parley) $
-            ActionCost 1
+      [ restrictedAbility a 1 CanPlaceDoomOnThis
+          $ ForcedAbility
+          $ EnemySpawns Timing.After Anywhere
+          $ EnemyWithId
+          $ toId a
+      , restrictedAbility a 2 OnSameLocation
+          $ ActionAbility (Just Action.Parley)
+          $ ActionCost 1
       ]
 
 instance RunMessage LodgeNeophyte where

@@ -35,8 +35,9 @@ instance RunMessage ShardsOfTheVoid3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       zeros <- fieldMap AssetSealedChaosTokens (count ((== Zero) . chaosTokenFace)) (toId attrs)
       pushAll
-        [ skillTestModifiers attrs iid $
-            DamageDealt 1 : [SkillModifier SkillWillpower (zeros * 2) | zeros > 0]
+        [ skillTestModifiers attrs iid
+            $ DamageDealt 1
+            : [SkillModifier SkillWillpower (zeros * 2) | zeros > 0]
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillWillpower mempty False
         ]
       pure a
@@ -44,8 +45,8 @@ instance RunMessage ShardsOfTheVoid3 where
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator
       for_ ((,) <$> mSource <*> mInvestigator) $ \(source, iid) -> do
-        when (isSource attrs source) $
-          pushAll
+        when (isSource attrs source)
+          $ pushAll
             [ skillTestModifier attrs iid (DamageDealt 1)
             , SealChaosToken token
             , SealedChaosToken token (toCard attrs)

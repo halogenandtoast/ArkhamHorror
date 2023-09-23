@@ -46,10 +46,10 @@ instance HasModifiersFor JosefsPlanEffect where
   getModifiersFor (EnemyTarget eid) (JosefsPlanEffect a) = do
     isSilverTwilight <- eid <=~> EnemyWithTrait SilverTwilight
     isJosefMeiger <- eid <=~> enemyIs Enemies.josefMeiger
-    pure $
-      toModifiers a $
-        [CannotPlaceDoomOnThis | isSilverTwilight]
-          <> [AddKeyword Keyword.Aloof | isJosefMeiger]
+    pure
+      $ toModifiers a
+      $ [CannotPlaceDoomOnThis | isSilverTwilight]
+      <> [AddKeyword Keyword.Aloof | isJosefMeiger]
   getModifiersFor _ _ = pure []
 
 instance RunMessage JosefsPlanEffect where

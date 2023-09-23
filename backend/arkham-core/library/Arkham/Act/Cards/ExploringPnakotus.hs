@@ -45,12 +45,12 @@ instance RunMessage ExploringPnakotus where
       spawnLocation <- maybe (error "no locations") (fmap fst . sample) $ NE.nonEmpty placements
       assetId <- getRandom
 
-      pushAll $
-        map EnemyCheckEngagement yithianObservers
-          <> map snd placements
-          <> [ CreateAssetAt assetId custodian $ AtLocation spawnLocation
-             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ map EnemyCheckEngagement yithianObservers
+        <> map snd placements
+        <> [ CreateAssetAt assetId custodian $ AtLocation spawnLocation
+           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+           ]
 
       pure a
     _ -> ExploringPnakotus <$> runMessage msg attrs

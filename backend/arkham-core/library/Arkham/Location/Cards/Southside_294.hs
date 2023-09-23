@@ -38,12 +38,12 @@ instance RunMessage Southside_294 where
       act <- selectJust AnyAct
       pushAll
         $ [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
-          <> ( guard (notNull powerTreacheries)
-                *> [ FocusCards (toCard <$> cards)
-                   , chooseOrRunOne
-                      iid
-                      [targetLabel (toCardId card) [UnfocusCards, InvestigatorDrewEncounterCard iid card] | card <- cards]
-                   ]
-             )
+        <> ( guard (notNull powerTreacheries)
+              *> [ FocusCards (toCard <$> cards)
+                 , chooseOrRunOne
+                    iid
+                    [targetLabel (toCardId card) [UnfocusCards, InvestigatorDrewEncounterCard iid card] | card <- cards]
+                 ]
+           )
       pure l
     _ -> Southside_294 <$> runMessage msg attrs

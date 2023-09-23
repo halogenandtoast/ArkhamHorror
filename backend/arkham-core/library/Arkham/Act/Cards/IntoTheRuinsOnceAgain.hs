@@ -36,17 +36,17 @@ instance HasAbilities IntoTheRuinsOnceAgain where
   getAbilities (IntoTheRuinsOnceAgain a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
-          ActionAbility (Just Action.Explore) $
-            ActionCost 1
+      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+          $ ActionAbility (Just Action.Explore)
+          $ ActionCost 1
       ]
 
 instance RunMessage IntoTheRuinsOnceAgain where
   runMessage msg a@(IntoTheRuinsOnceAgain attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           source
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)

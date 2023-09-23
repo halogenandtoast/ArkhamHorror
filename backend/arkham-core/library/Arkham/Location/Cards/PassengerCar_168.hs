@@ -44,11 +44,11 @@ instance HasAbilities PassengerCar_168 where
   getAbilities (PassengerCar_168 x) =
     withBaseAbilities
       x
-      [ restrictedAbility x 1 Here $
-        ForcedAbility $
-          Enters Timing.After You $
-            LocationWithId $
-              toId x
+      [ restrictedAbility x 1 Here
+        $ ForcedAbility
+        $ Enters Timing.After You
+        $ LocationWithId
+        $ toId x
       | locationRevealed x
       ]
 
@@ -65,14 +65,15 @@ instance RunMessage PassengerCar_168 where
           cost
       if hasSkills
         then
-          push . chooseOne iid $
-            [ Label
-                "Take 2 damage"
-                [InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0]
-            , Label
-                "Discard cards with at least 2 {combat} icons"
-                [PayForAbility (abilityEffect attrs cost) []]
-            ]
+          push
+            . chooseOne iid
+              $ [ Label
+                    "Take 2 damage"
+                    [InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0]
+                , Label
+                    "Discard cards with at least 2 {combat} icons"
+                    [PayForAbility (abilityEffect attrs cost) []]
+                ]
         else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)
       pure l
     _ -> PassengerCar_168 <$> runMessage msg attrs

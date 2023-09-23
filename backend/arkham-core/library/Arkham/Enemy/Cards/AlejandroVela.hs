@@ -32,9 +32,9 @@ instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 OnSameLocation $
-          ActionAbility (Just Action.Parley) $
-            ActionCost 1
+      [ restrictedAbility a 1 OnSameLocation
+          $ ActionAbility (Just Action.Parley)
+          $ ActionCost 1
       ]
 
 instance RunMessage AlejandroVela where

@@ -25,16 +25,16 @@ cloverClubLounge =
 
 instance HasAbilities CloverClubLounge where
   getAbilities (CloverClubLounge attrs) =
-    withBaseAbilities attrs $
-      [ limitedAbility (PlayerLimit PerGame 1) $
-        restrictedAbility attrs 1 (OnAct 1) $
-          ActionAbility Nothing $
-            Costs
-              [ ActionCost 1
-              , HandDiscardCost 1 $ CardWithType AssetType <> CardWithTrait Ally
-              ]
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 (OnAct 1)
+          $ ActionAbility Nothing
+          $ Costs
+            [ ActionCost 1
+            , HandDiscardCost 1 $ CardWithType AssetType <> CardWithTrait Ally
+            ]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage CloverClubLounge where
   runMessage msg l@(CloverClubLounge attrs) = case msg of

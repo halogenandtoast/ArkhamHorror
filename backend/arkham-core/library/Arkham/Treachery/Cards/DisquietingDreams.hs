@@ -23,12 +23,12 @@ disquietingDreams = treachery DisquietingDreams Cards.disquietingDreams
 
 instance HasAbilities DisquietingDreams where
   getAbilities (DisquietingDreams a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds Timing.AtIf You
-    , restrictedAbility a 2 (InThreatAreaOf You) $
-        ForcedAbility $
-          EncounterDeckRunsOutOfCards
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds Timing.AtIf You
+    , restrictedAbility a 2 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ EncounterDeckRunsOutOfCards
     ]
 
 instance RunMessage DisquietingDreams where

@@ -32,19 +32,19 @@ instance RunMessage DiabolicVoices where
       | n > 0 ->
           do
             handCount <- fieldMap InvestigatorHand length iid
-            pushAll $
-              toMessage (randomDiscardN iid attrs (min n handCount))
-                : replicate
-                  (max 0 $ n - handCount)
-                  ( chooseOne
-                      iid
-                      [ Label
-                          "Take Damage"
-                          [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-                      , Label
-                          "Take Horror"
-                          [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
-                      ]
-                  )
+            pushAll
+              $ toMessage (randomDiscardN iid attrs (min n handCount))
+              : replicate
+                (max 0 $ n - handCount)
+                ( chooseOne
+                    iid
+                    [ Label
+                        "Take Damage"
+                        [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
+                    , Label
+                        "Take Horror"
+                        [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
+                    ]
+                )
             pure t
     _ -> DiabolicVoices <$> runMessage msg attrs

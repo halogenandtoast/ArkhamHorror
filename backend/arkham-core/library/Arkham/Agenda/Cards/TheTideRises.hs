@@ -27,10 +27,10 @@ theTideRises = agenda (1, A) TheTideRises Cards.theTideRises (Static 5)
 
 instance HasAbilities TheTideRises where
   getAbilities (TheTideRises a) =
-    [ limitedAbility (GroupLimit PerRound 1) $
-        mkAbility a 1 $
-          FastAbility $
-            GroupClueCost (PerPlayer 1) Anywhere
+    [ limitedAbility (GroupLimit PerRound 1)
+        $ mkAbility a 1
+        $ FastAbility
+        $ GroupClueCost (PerPlayer 1) Anywhere
     ]
 
 instance RunMessage TheTideRises where
@@ -44,17 +44,17 @@ instance RunMessage TheTideRises where
           a1cDoom <- field AgendaDoom a1cId
           markMsg <- if a1cDoom > 3 then markDoubt else markConviction
           pure [markMsg]
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , ShuffleCardsIntoDeck Deck.EncounterDeck tidalTerrors
-        ]
-          <> markDoubtOrConviction
-          <> [advanceAgendaDeck attrs]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , ShuffleCardsIntoDeck Deck.EncounterDeck tidalTerrors
+          ]
+        <> markDoubtOrConviction
+        <> [advanceAgendaDeck attrs]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
-      pushAll $
-        [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-          <> [TakeResources iid 2 (toAbilitySource attrs 1) False | iid <- investigatorIds]
+      pushAll
+        $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
+        <> [TakeResources iid 2 (toAbilitySource attrs 1) False | iid <- investigatorIds]
       pure a
     _ -> TheTideRises <$> runMessage msg attrs

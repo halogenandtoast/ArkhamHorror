@@ -61,6 +61,6 @@ instance RunMessage HideousPalace where
       card <- field Field.LocationCard lid
       pushAll
         $ [Move $ move (toAbilitySource source 1) iid (toId attrs) | iid <- investigators]
-          <> [RemovedLocation lid, ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) [card]]
+        <> [RemovedLocation lid, ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) [card]]
       pure l
     _ -> HideousPalace <$> runMessage msg attrs

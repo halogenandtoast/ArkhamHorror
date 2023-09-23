@@ -26,48 +26,48 @@ instance HasAbilities TheCouncilsCoffer2 where
           0
           (if useCount (assetUses a) == 0 then NoRestriction else Never)
         $ SilentForcedAbility AnyWindow
-    , restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    , restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage TheCouncilsCoffer2 where
   runMessage msg a@(TheCouncilsCoffer2 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 0 _ _ -> do
       iids <- getInvestigatorIds
-      pushAll $
-        [ chooseOne
-          iid
-          [ Label
-              "Search Deck"
-              [ Search
-                  iid
-                  (toSource attrs)
-                  (toTarget iid)
-                  [(FromDeck, ShuffleBackIn)]
-                  AnyCard
-                  (PlayFoundNoCost iid 1)
-              ]
-          , Label
-              "Search Discard"
-              [ Search
-                  iid
-                  (toSource attrs)
-                  (toTarget iid)
-                  [(FromDiscard, PutBack)]
-                  AnyCard
-                  (PlayFoundNoCost iid 1)
-              ]
+      pushAll
+        $ [ chooseOne
+            iid
+            [ Label
+                "Search Deck"
+                [ Search
+                    iid
+                    (toSource attrs)
+                    (toTarget iid)
+                    [(FromDeck, ShuffleBackIn)]
+                    AnyCard
+                    (PlayFoundNoCost iid 1)
+                ]
+            , Label
+                "Search Discard"
+                [ Search
+                    iid
+                    (toSource attrs)
+                    (toTarget iid)
+                    [(FromDiscard, PutBack)]
+                    AnyCard
+                    (PlayFoundNoCost iid 1)
+                ]
+            ]
+          | iid <- iids
           ]
-        | iid <- iids
-        ]
-          <> [Exile (toTarget attrs)]
+        <> [Exile (toTarget attrs)]
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let chooseSkillTest skillType = beginSkillTest iid attrs iid skillType 5
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [SkillLabel sType [chooseSkillTest sType] | sType <- allSkills]
       pure a

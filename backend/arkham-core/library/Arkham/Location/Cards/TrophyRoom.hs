@@ -42,17 +42,17 @@ instance RunMessage TrophyRoom where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       canGainResources <- iid <=~> InvestigatorCanGainResources
       hasTwoResources <- (> 2) <$> getSpendableResources iid
-      push $
-        chooseOrRunOne iid $
-          [ Label
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
             "Gain 2 Resources"
             [TakeResources iid 2 (toAbilitySource attrs 1) False]
           | canGainResources
           ]
-            <> [ Label
-                "Spend 2 Resources to gain 1 clue"
-                [SpendResources iid 2, GainClues iid (toAbilitySource attrs 1) 1]
-               | hasTwoResources
-               ]
+        <> [ Label
+            "Spend 2 Resources to gain 1 clue"
+            [SpendResources iid 2, GainClues iid (toAbilitySource attrs 1) 1]
+           | hasTwoResources
+           ]
       pure l
     _ -> TrophyRoom <$> runMessage msg attrs

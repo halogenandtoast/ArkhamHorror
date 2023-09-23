@@ -36,29 +36,31 @@ instance RunMessage TheUnvisitedIsle where
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
       locationMessages <- flip concatMapM paired $ \(investigator, unvisitedIsle) -> do
         (lid, placement) <- placeLabeledLocation "unvisitedIsle" unvisitedIsle
-        pure $
-          placement
-            : PutLocationInFrontOf investigator lid
-            : MoveTo
-              ( uncancellableMove $
-                  move attrs investigator lid
-              )
-            : [UpdateLocation lid (LocationBrazier ?=. Lit) | sidedWithTheCoven]
+        pure
+          $ placement
+          : PutLocationInFrontOf investigator lid
+          : MoveTo
+            ( uncancellableMove
+                $ move attrs investigator lid
+            )
+          : [UpdateLocation lid (LocationBrazier ?=. Lit) | sidedWithTheCoven]
 
       -- We need to resolve all dealt cards in player order so we build a map first
       storyMap <-
         groupOnKey
           . zip (cycle investigators)
-          <$> selectShuffled (UnderScenarioReferenceMatch StoryCard)
+            <$> selectShuffled (UnderScenarioReferenceMatch StoryCard)
 
       -- then for each player in player order we get the corresponding story cards and resolve them
       let
         storyMessages = flip concatMap investigators $ \investigator ->
           let stories = Map.findWithDefault [] investigator storyMap
-          in  map (\s -> ReadStory investigator s ResolveIt Nothing) stories
+           in map (\s -> ReadStory investigator s ResolveIt Nothing) stories
 
-      pushAll $
-        locationMessages <> storyMessages <> [advanceActDeck attrs]
+      pushAll
+        $ locationMessages
+        <> storyMessages
+        <> [advanceActDeck attrs]
 
       pure a
     _ -> TheUnvisitedIsle <$> runMessage msg attrs

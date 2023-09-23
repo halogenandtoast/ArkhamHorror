@@ -24,8 +24,8 @@ instance HasModifiersFor ShadowSpawned where
   getModifiersFor (EnemyTarget eid) (ShadowSpawned attrs)
     | treacheryOnEnemy eid attrs = do
         n <- field TreacheryResources (treacheryId attrs)
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             ( [EnemyFight n, HealthModifier n, EnemyEvade n]
                 <> [AddKeyword Keyword.Massive | n >= 3]

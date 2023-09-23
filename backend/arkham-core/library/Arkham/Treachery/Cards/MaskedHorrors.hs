@@ -24,12 +24,12 @@ instance RunMessage MaskedHorrors where
       targetInvestigators <-
         map fst
           . filter ((>= 2) . snd)
-          <$> for
-            iids
-            ( \iid -> do
-                clueCount <- field InvestigatorClues iid
-                pure (iid, clueCount)
-            )
+            <$> for
+              iids
+              ( \iid -> do
+                  clueCount <- field InvestigatorClues iid
+                  pure (iid, clueCount)
+              )
       t
         <$ if null targetInvestigators
           then

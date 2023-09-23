@@ -23,14 +23,14 @@ backpack = asset Backpack Cards.backpack
 instance HasModifiersFor Backpack where
   getModifiersFor (InvestigatorTarget iid) (Backpack attrs)
     | controlledBy attrs iid =
-        pure $
-          toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+        pure
+          $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Backpack where
   getAbilities (Backpack a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     ]
@@ -38,8 +38,8 @@ instance HasAbilities Backpack where
 instance RunMessage Backpack where
   runMessage msg a@(Backpack attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           source
           (InvestigatorTarget iid)
@@ -68,8 +68,8 @@ instance RunMessage Backpack where
       do
         let
           remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
-        pushAll $
-          [Discard (toSource attrs) (toTarget attrs) | null remaining]
-            <> [addToHand iid card, msg]
+        pushAll
+          $ [Discard (toSource attrs) (toTarget attrs) | null remaining]
+          <> [addToHand iid card, msg]
         pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     _ -> Backpack <$> runMessage msg attrs

@@ -40,7 +40,7 @@ instance HasAbilities GrimmsFairyTales where
               $ Static 2
           )
         $ exhaust a
-          <> UseCost (AssetWithId $ toId a) Secret 1
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 toInvestigator :: [Window] -> InvestigatorId

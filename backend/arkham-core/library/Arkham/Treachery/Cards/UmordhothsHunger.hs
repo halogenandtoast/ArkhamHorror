@@ -24,8 +24,8 @@ instance RunMessage UmordhothsHunger where
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do
         handCount <- fieldMap InvestigatorHand length iid
-        pure $
-          if handCount == 0
+        pure
+          $ if handCount == 0
             then InvestigatorKilled (toSource attrs) iid
             else toMessage $ randomDiscard iid attrs
       targets <- selectListMap EnemyTarget AnyEnemy

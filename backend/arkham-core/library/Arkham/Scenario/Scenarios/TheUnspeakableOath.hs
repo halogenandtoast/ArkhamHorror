@@ -57,8 +57,8 @@ theUnspeakableOath difficulty =
 instance HasChaosTokenValue TheUnspeakableOath where
   getChaosTokenValue iid chaosTokenFace (TheUnspeakableOath attrs) = case chaosTokenFace of
     Skull ->
-      pure $
-        if isEasyStandard attrs
+      pure
+        $ if isEasyStandard attrs
           then ChaosTokenValue Skull (NegativeModifier 1)
           else ChaosTokenValue Skull NoModifier
     Cultist -> do
@@ -98,16 +98,16 @@ investigatorDefeat = do
   if null defeatedInvestigatorIds
     then pure []
     else
-      pure $
-        story investigatorIds defeat
-          : map DrivenInsane defeatedInvestigatorIds
-            <> [ GameOver
-               | null
-                  ( setFromList @(Set InvestigatorId) investigatorIds
-                      `difference` setFromList @(Set InvestigatorId)
-                        defeatedInvestigatorIds
-                  )
-               ]
+      pure
+        $ story investigatorIds defeat
+        : map DrivenInsane defeatedInvestigatorIds
+          <> [ GameOver
+             | null
+                ( setFromList @(Set InvestigatorId) investigatorIds
+                    `difference` setFromList @(Set InvestigatorId)
+                      defeatedInvestigatorIds
+                )
+             ]
 
 instance RunMessage TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
@@ -228,27 +228,27 @@ instance RunMessage TheUnspeakableOath where
           Hard -> MinusFour
           Expert -> MinusFive
 
-      pushAll $
-        [story investigatorIds intro1Or2, story investigatorIds intro3]
-          <> [ story investigatorIds constancesInformation
-             | constanceInterviewed
-             ]
-          <> courageMessages
-          <> [ SetEncounterDeck encounterDeck
-             , SetAgendaDeck
-             , SetActDeck
-             , placeWesternPatientWing
-             , SetLocationLabel
-                westernPatientWingId
-                "asylumHallsWesternPatientWing"
-             , placeEasternPatientWing
-             , SetLocationLabel
-                easternPatientWingId
-                "asylumHallsEasternPatientWing"
-             ]
-          <> placeOtherLocations
-          <> [AddChaosToken tokenToAdd]
-          <> spawnMessages
+      pushAll
+        $ [story investigatorIds intro1Or2, story investigatorIds intro3]
+        <> [ story investigatorIds constancesInformation
+           | constanceInterviewed
+           ]
+        <> courageMessages
+        <> [ SetEncounterDeck encounterDeck
+           , SetAgendaDeck
+           , SetActDeck
+           , placeWesternPatientWing
+           , SetLocationLabel
+              westernPatientWingId
+              "asylumHallsWesternPatientWing"
+           , placeEasternPatientWing
+           , SetLocationLabel
+              easternPatientWingId
+              "asylumHallsEasternPatientWing"
+           ]
+        <> placeOtherLocations
+        <> [AddChaosToken tokenToAdd]
+        <> spawnMessages
 
       tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
       let
@@ -311,8 +311,8 @@ instance RunMessage TheUnspeakableOath where
               monster <- sample (x :| xs)
               push (PlaceUnderneath ActDeckTarget [monster])
         Cultist ->
-          push $
-            InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
+          push
+            $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
         Tablet ->
           push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
         _ -> pure ()
@@ -365,38 +365,38 @@ instance RunMessage TheUnspeakableOath where
                       ]
                   ]
               else pure []
-          pushAll $
-            msgs
-              <> [ story investigatorIds resolution1
-                 , Record TheKingClaimedItsVictims
-                 ]
-              <> gainXp
-              <> claspMessages
-              <> updateSlain
-              <> removeTokens
-              <> [AddChaosToken Cultist, AddChaosToken Cultist]
-              <> [EndOfGame Nothing]
+          pushAll
+            $ msgs
+            <> [ story investigatorIds resolution1
+               , Record TheKingClaimedItsVictims
+               ]
+            <> gainXp
+            <> claspMessages
+            <> updateSlain
+            <> removeTokens
+            <> [AddChaosToken Cultist, AddChaosToken Cultist]
+            <> [EndOfGame Nothing]
         2 ->
-          pushAll $
-            msgs
-              <> [story investigatorIds resolution2]
-              <> [Record TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum]
-              <> [SufferTrauma iid 1 0 | iid <- investigatorIds]
-              <> gainXp
-              <> updateSlain
-              <> removeTokens
-              <> [AddChaosToken Tablet, AddChaosToken Tablet]
-              <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
+          pushAll
+            $ msgs
+            <> [story investigatorIds resolution2]
+            <> [Record TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum]
+            <> [SufferTrauma iid 1 0 | iid <- investigatorIds]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddChaosToken Tablet, AddChaosToken Tablet]
+            <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
         3 ->
-          pushAll $
-            msgs
-              <> [story investigatorIds resolution3]
-              <> [Record TheInvestigatorsEscapedTheAsylum]
-              <> gainXp
-              <> updateSlain
-              <> removeTokens
-              <> [AddChaosToken ElderThing, AddChaosToken ElderThing]
-              <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
+          pushAll
+            $ msgs
+            <> [story investigatorIds resolution3]
+            <> [Record TheInvestigatorsEscapedTheAsylum]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddChaosToken ElderThing, AddChaosToken ElderThing]
+            <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
         _ -> error "invalid resolution"
       pure s
     _ -> TheUnspeakableOath <$> runMessage msg attrs

@@ -22,15 +22,15 @@ internalInjury = treachery InternalInjury Cards.internalInjury
 
 instance HasAbilities InternalInjury where
   getAbilities (InternalInjury x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds
-            Timing.When
-            You
-    , restrictedAbility x 2 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            2
+    [ restrictedAbility x 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds
+          Timing.When
+          You
+    , restrictedAbility x 2 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          2
     ]
 
 instance RunMessage InternalInjury where

@@ -30,10 +30,10 @@ instance HasAbilities WingedOne where
       [ restrictedAbility
           a
           1
-          ( enemyExists $
-              EnemyWithId (toId a)
-                <> ReadyEnemy
-                <> UnengagedEnemy
+          ( enemyExists
+              $ EnemyWithId (toId a)
+              <> ReadyEnemy
+              <> UnengagedEnemy
           )
           $ ForcedAbility
           $ Matcher.FlipLocation Timing.When Anyone Anywhere

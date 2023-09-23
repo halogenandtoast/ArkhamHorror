@@ -29,8 +29,8 @@ instance HasAbilities StrangeSolutionRestorativeConcoction4 where
         1
         ( ControlsThis
             <> InvestigatorExists
-              ( HealableInvestigator (toSource x) DamageType $
-                  InvestigatorAt YourLocation
+              ( HealableInvestigator (toSource x) DamageType
+                  $ InvestigatorAt YourLocation
               )
         )
         $ ActionAbility Nothing
@@ -41,11 +41,11 @@ instance RunMessage StrangeSolutionRestorativeConcoction4 where
   runMessage msg a@(StrangeSolutionRestorativeConcoction4 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <-
-        selectListMap InvestigatorTarget $
-          HealableInvestigator (toSource attrs) DamageType $
-            colocatedWith iid
-      push $
-        chooseOne
+        selectListMap InvestigatorTarget
+          $ HealableInvestigator (toSource attrs) DamageType
+          $ colocatedWith iid
+      push
+        $ chooseOne
           iid
           [ TargetLabel target [HealDamage target (toSource attrs) 2]
           | target <- targets

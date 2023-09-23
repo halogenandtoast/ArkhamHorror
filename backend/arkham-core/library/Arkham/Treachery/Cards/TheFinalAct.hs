@@ -25,8 +25,8 @@ instance RunMessage TheFinalAct where
     Revelation iid source | isSource attrs source -> do
       agenda <- selectJust AnyAgenda
       noRemainingSanity <- fieldP InvestigatorRemainingSanity (== 0) iid
-      when noRemainingSanity $
-        pushAll
+      when noRemainingSanity
+        $ pushAll
           [PlaceDoom (toSource attrs) (AgendaTarget agenda) 2, AdvanceAgendaIfThresholdSatisfied]
       pure t
     _ -> TheFinalAct <$> runMessage msg attrs

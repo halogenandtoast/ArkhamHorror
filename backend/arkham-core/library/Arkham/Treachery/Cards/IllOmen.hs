@@ -23,8 +23,8 @@ instance RunMessage IllOmen where
     Revelation iid source | isSource attrs source -> do
       lids <- selectList $ LocationWithInvestigator UneliminatedInvestigator
       locationsWithInvestigators <- forToSnd lids (selectList . investigatorAt)
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             lid

@@ -25,14 +25,14 @@ instance RunMessage TheHeightOfTheDepths where
       healHorrorMessages <-
         map snd <$> getInvestigatorsWithHealHorror attrs 5 Anyone
       setAsideDepthsOfDemhe <-
-        getSetAsideCardsMatching $
-          CardWithTitle "Depths of Demhe"
+        getSetAsideCardsMatching
+          $ CardWithTitle "Depths of Demhe"
       otherDepthsOfDemhe <- case nonEmpty setAsideDepthsOfDemhe of
         Nothing -> error "missing"
         Just xs -> sample xs
       depthsOfDemhe <- selectJust $ locationIs Locations.depthsOfDemheTheHeightOfTheDepths
-      pushAll $
-        healHorrorMessages
-          <> [ReplaceLocation depthsOfDemhe otherDepthsOfDemhe DefaultReplace]
+      pushAll
+        $ healHorrorMessages
+        <> [ReplaceLocation depthsOfDemhe otherDepthsOfDemhe DefaultReplace]
       pure s
     _ -> TheHeightOfTheDepths <$> runMessage msg attrs

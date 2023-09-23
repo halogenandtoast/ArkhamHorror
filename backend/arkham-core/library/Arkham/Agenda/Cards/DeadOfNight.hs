@@ -39,14 +39,14 @@ instance RunMessage DeadOfNight where
           theExperiment
           scienceBuildingId
           Nothing
-      pushAll $
-        [ PlaceLocationMatching (CardWithTitle "Dormitories")
-        | not dormitoriesInPlay
-        ]
-          <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
-             | eid <- maybeToList mExperimentId
-             ]
-          <> [createTheExperiment | isNothing mExperimentId]
-          <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
+      pushAll
+        $ [ PlaceLocationMatching (CardWithTitle "Dormitories")
+          | not dormitoriesInPlay
+          ]
+        <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
+           | eid <- maybeToList mExperimentId
+           ]
+        <> [createTheExperiment | isNothing mExperimentId]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
       pure a
     _ -> DeadOfNight <$> runMessage msg attrs

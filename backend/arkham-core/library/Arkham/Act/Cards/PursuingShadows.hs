@@ -27,15 +27,15 @@ pursuingShadows = act (2, A) PursuingShadows Cards.pursuingShadows Nothing
 instance HasAbilities PursuingShadows where
   getAbilities (PursuingShadows a)
     | onSide A a =
-        [ reaction a 1 NoRestriction (GroupClueCost (Static 1) YourLocation) $
-            EnemyAttacked Timing.After You AnySource (EnemyWithTitle "The Organist")
+        [ reaction a 1 NoRestriction (GroupClueCost (Static 1) YourLocation)
+            $ EnemyAttacked Timing.After You AnySource (EnemyWithTitle "The Organist")
         , restrictedAbility
             a
             2
-            ( EnemyCriteria $
-                EnemyExists $
-                  EnemyWithTitle "The Organist"
-                    <> EnemyWithClues (AtLeast $ PerPlayer 3)
+            ( EnemyCriteria
+                $ EnemyExists
+                $ EnemyWithTitle "The Organist"
+                <> EnemyWithClues (AtLeast $ PerPlayer 3)
             )
             $ Objective
             $ ForcedAbility AnyWindow

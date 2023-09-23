@@ -25,16 +25,16 @@ instance RunMessage CheatDeath5 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
       treacheries <-
-        selectList $
-          TreacheryInThreatAreaOf $
-            InvestigatorWithId
-              iid
+        selectList
+          $ TreacheryInThreatAreaOf
+          $ InvestigatorWithId
+            iid
       locations <-
-        selectList $
-          RevealedLocation
-            <> LocationWithoutEnemies
-            <> NotLocation
-              (locationWithInvestigator iid)
+        selectList
+          $ RevealedLocation
+          <> LocationWithoutEnemies
+          <> NotLocation
+            (locationWithInvestigator iid)
       yourTurn <- member iid <$> select TurnInvestigator
 
       replaceMessageMatching
@@ -50,17 +50,17 @@ instance RunMessage CheatDeath5 where
       mHealHorror <- getHealHorrorMessage attrs 2 iid
       healable <- canHaveDamageHealed attrs iid
 
-      pushAll $
-        map (DisengageEnemy iid) enemies
-          <> map (Discard (toSource attrs) . TreacheryTarget) treacheries
-          <> maybeToList mHealHorror
-          <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
-          <> [ chooseOrRunOne iid $
-              map
-                (\lid -> targetLabel lid [MoveTo $ move (toSource attrs) iid lid])
-                locations
-             | notNull locations
-             ]
-          <> [ChooseEndTurn iid | yourTurn]
+      pushAll
+        $ map (DisengageEnemy iid) enemies
+        <> map (Discard (toSource attrs) . TreacheryTarget) treacheries
+        <> maybeToList mHealHorror
+        <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
+        <> [ chooseOrRunOne iid
+            $ map
+              (\lid -> targetLabel lid [MoveTo $ move (toSource attrs) iid lid])
+              locations
+           | notNull locations
+           ]
+        <> [ChooseEndTurn iid | yourTurn]
       pure e
     _ -> CheatDeath5 <$> runMessage msg attrs

@@ -32,14 +32,14 @@ handleDoom msg attrs = do
 
 instance HasAbilities BaronSamedi where
   getAbilities (BaronSamedi a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          PlacedCounter
-            Timing.When
-            (InvestigatorAt $ LocationWithInvestigator $ HasMatchingAsset $ AssetWithId $ toId a)
-            AnySource
-            DamageCounter
-            (GreaterThan $ Static 0)
+    [ restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ PlacedCounter
+          Timing.When
+          (InvestigatorAt $ LocationWithInvestigator $ HasMatchingAsset $ AssetWithId $ toId a)
+          AnySource
+          DamageCounter
+          (GreaterThan $ Static 0)
     , restrictedAbility a 2 ControlsThis $ FastAbility $ ExhaustCost $ toTarget a
     ]
 
@@ -63,8 +63,8 @@ instance RunMessage BaronSamedi where
         ]
       pure a
     UseCardAbilityStep _ (isSource attrs -> True) 2 _ _ 1 -> do
-      when (assetDoom attrs >= 3) $
-        push $
-          Discard (toAbilitySource attrs 2) (toTarget attrs)
+      when (assetDoom attrs >= 3)
+        $ push
+        $ Discard (toAbilitySource attrs 2) (toTarget attrs)
       pure a
     _ -> handleDoom msg attrs

@@ -38,7 +38,7 @@ instance HasAbilities ChoeurGothique_293 where
             )
           $ ActionAbility Nothing
           $ ActionCost 1
-            <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide C) 1
+          <> DoomCost (toSource a) (AgendaMatcherTarget $ AgendaWithSide C) 1
       ]
 
 instance RunMessage ChoeurGothique_293 where

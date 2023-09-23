@@ -126,8 +126,8 @@ getApiV1ArkhamGamesR = do
     (players :& games) <-
       from
         $ table @ArkhamPlayer
-          `innerJoin` table @ArkhamGame
-            `on` (\(players :& games) -> players.arkhamGameId ==. games.id)
+        `innerJoin` table @ArkhamGame
+          `on` (\(players :& games) -> players.arkhamGameId ==. games.id)
     where_ $ players.userId ==. val userId
     orderBy [desc $ games.updatedAt]
     pure games
@@ -215,7 +215,9 @@ updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handle
 updateGame response gameId userId writeChannel = do
   (Entity pid arkhamPlayer@ArkhamPlayer {..}, ArkhamGame {..}) <-
     runDB
-      $ (,) <$> getBy404 (UniquePlayer userId gameId) <*> get404 gameId
+      $ (,)
+      <$> getBy404 (UniquePlayer userId gameId)
+      <*> get404 gameId
   mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   let
     gameJson@Game {..} = arkhamGameCurrentData

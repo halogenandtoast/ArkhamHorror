@@ -26,18 +26,18 @@ sealOfTheSeventhSign5 =
 
 instance HasAbilities SealOfTheSeventhSign5 where
   getAbilities (SealOfTheSeventhSign5 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
-        ForcedAbility $
-          RevealChaosToken Timing.After You $
-            ChaosTokenMatchesAny $
-              map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ ForcedAbility
+        $ RevealChaosToken Timing.After You
+        $ ChaosTokenMatchesAny
+        $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
     ]
 
 instance RunMessage SealOfTheSeventhSign5 where
   runMessage msg a@(SealOfTheSeventhSign5 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
-      push $
-        If
+      push
+        $ If
           (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
           [SpendUses (toTarget attrs) Charge 1]
       pure a

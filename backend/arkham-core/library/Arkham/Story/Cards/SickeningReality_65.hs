@@ -32,19 +32,19 @@ instance RunMessage SickeningReality_65 where
       iids <- selectList $ investigatorAt lid
       clues <- field AssetClues assetId
       enemyCreation <- createEnemyAt_ enemyCard lid Nothing
-      pushAll $
-        [ InvestigatorAssignDamage
-          iid
-          (toSource attrs)
-          DamageAny
-          0
-          1
-        | iid <- iids
-        ]
-          <> [ RemoveTokens (toSource attrs) (toTarget assetId) Clue clues
-             , PlaceTokens (toSource attrs) (toTarget lid) Clue clues
-             , RemoveFromGame (toTarget assetId)
-             , enemyCreation
-             ]
+      pushAll
+        $ [ InvestigatorAssignDamage
+            iid
+            (toSource attrs)
+            DamageAny
+            0
+            1
+          | iid <- iids
+          ]
+        <> [ RemoveTokens (toSource attrs) (toTarget assetId) Clue clues
+           , PlaceTokens (toSource attrs) (toTarget lid) Clue clues
+           , RemoveFromGame (toTarget assetId)
+           , enemyCreation
+           ]
       pure s
     _ -> SickeningReality_65 <$> runMessage msg attrs

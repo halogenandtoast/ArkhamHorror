@@ -29,10 +29,11 @@ instance HasAbilities HereticsGravesSpectral_172 where
   getAbilities (HereticsGravesSpectral_172 a) =
     withRevealedAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyDefeated Timing.After Anyone ByAny $
-              enemyAt (toId a) <> EnemyWithTrait Witch
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyDefeated Timing.After Anyone ByAny
+          $ enemyAt (toId a)
+          <> EnemyWithTrait Witch
       ]
 
 instance RunMessage HereticsGravesSpectral_172 where

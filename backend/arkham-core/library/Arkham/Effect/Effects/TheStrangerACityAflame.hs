@@ -28,14 +28,14 @@ instance HasAbilities TheStrangerACityAflame where
             (toSource attrs)
         )
         1
-        ( ForcedAbility $
-            OrWindowMatcher
+        ( ForcedAbility
+            $ OrWindowMatcher
               [ Enters Timing.After You ThisLocation
               , TurnEnds Timing.When (You <> InvestigatorAt ThisLocation)
               ]
         )
         & abilityLimitL
-        .~ PlayerLimit PerRound 1
+          .~ PlayerLimit PerRound 1
     ]
 
 instance RunMessage TheStrangerACityAflame where

@@ -27,10 +27,10 @@ instance RunMessage FashionablyLate where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       dianneDevine <- getSetAsideCard Cards.dianneDevine
       createDianneDevine <-
-        createEnemyAtLocationMatching_ dianneDevine $
-          LocationWithAsset $
-            AssetWithFewestClues $
-              AssetWithTrait Bystander
+        createEnemyAtLocationMatching_ dianneDevine
+          $ LocationWithAsset
+          $ AssetWithFewestClues
+          $ AssetWithTrait Bystander
 
       pushAll
         [ createDianneDevine

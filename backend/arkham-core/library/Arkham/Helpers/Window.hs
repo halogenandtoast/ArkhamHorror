@@ -83,15 +83,18 @@ wouldDoEach n msg outerWouldWindow wouldWindow outerWindow window = do
 
   push
     $ Would outerBatchId
-    $ outerWouldWindowsMsgs <> [outerBefore, outerAtIf] <> frames <> [outerAfter]
+    $ outerWouldWindowsMsgs
+    <> [outerBefore, outerAtIf]
+    <> frames
+    <> [outerAfter]
 
 splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do
   iids <- selectList UneliminatedInvestigator
   pure
     $ [CheckWindow iids $ map (mkWindow Timing.When) windows']
-      <> [msg]
-      <> [CheckWindow iids $ map (mkWindow Timing.After) windows']
+    <> [msg]
+    <> [CheckWindow iids $ map (mkWindow Timing.After) windows']
 
 defeatedEnemy :: [Window] -> EnemyId
 defeatedEnemy =

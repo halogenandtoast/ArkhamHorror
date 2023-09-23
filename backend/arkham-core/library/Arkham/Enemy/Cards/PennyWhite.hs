@@ -23,13 +23,13 @@ pennyWhite = enemy PennyWhite Cards.pennyWhite (4, Static 5, 3) (0, 2)
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Matcher.EnemyEvaded Timing.After You $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ Matcher.EnemyEvaded Timing.After You
+            $ EnemyWithId
+            $ toId a
+        ]
 
 instance RunMessage PennyWhite where
   runMessage msg e@(PennyWhite attrs) = case msg of

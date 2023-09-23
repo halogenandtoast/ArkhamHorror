@@ -22,8 +22,8 @@ hallOfHeresy =
 instance HasModifiersFor HallOfHeresy where
   getModifiersFor target (HallOfHeresy a) | isTarget a target = do
     hasInvestigator <- selectAny $ InvestigatorAt $ LocationWithId $ toId a
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [InVictoryDisplayForCountingVengeance | hasInvestigator]
   getModifiersFor _ _ = pure []

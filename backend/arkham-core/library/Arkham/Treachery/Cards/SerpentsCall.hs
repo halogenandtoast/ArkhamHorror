@@ -29,8 +29,8 @@ instance RunMessage SerpentsCall where
         then pushAll drawEncounterCards
         else do
           poisoned <- getSetAsidePoisoned
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label
                   "Put a set-aside Poisoned weakness into play in your threat area"

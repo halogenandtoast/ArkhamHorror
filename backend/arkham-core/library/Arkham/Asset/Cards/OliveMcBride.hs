@@ -23,9 +23,9 @@ oliveMcBride = ally OliveMcBride Cards.oliveMcBride (1, 3)
 
 instance HasAbilities OliveMcBride where
   getAbilities (OliveMcBride a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility (WouldRevealChaosToken Timing.When You) $
-          ExhaustCost (toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (WouldRevealChaosToken Timing.When You)
+        $ ExhaustCost (toTarget a)
     ]
 
 instance RunMessage OliveMcBride where
@@ -41,8 +41,8 @@ instance RunMessage OliveMcBride where
             checkWindows
               [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
           pushAll
-            [ ReplaceCurrentDraw drawSource iid $
-                Choose
+            [ ReplaceCurrentDraw drawSource iid
+                $ Choose
                   (toSource attrs)
                   2
                   ResolveChoice

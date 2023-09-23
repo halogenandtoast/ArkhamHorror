@@ -25,8 +25,8 @@ whispersInYourHeadDoubt =
 
 instance HasModifiersFor WhispersInYourHeadDoubt where
   getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDoubt a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [CannotPlay (CardWithType EventType) | treacheryInHandOf a == Just iid]
   getModifiersFor _ _ = pure []

@@ -30,8 +30,8 @@ instance RunMessage TheSecretMustBeKept where
       do
         deckCount <- getActDecksInPlayCount
         let n = 3 - deckCount
-        push $
-          InvestigatorAssignDamage
+        push
+          $ InvestigatorAssignDamage
             iid
             (toSource attrs)
             DamageAny

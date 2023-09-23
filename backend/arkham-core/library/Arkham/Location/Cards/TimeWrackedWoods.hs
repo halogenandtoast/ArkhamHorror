@@ -45,10 +45,10 @@ instance RunMessage TimeWrackedWoods where
       targets <-
         mapMaybe (preview _EncounterCard)
           <$> selectList
-            ( VictoryDisplayCardMatch $
-                CardWithVengeance
-                  <> NotCard
-                    (CardWithTrait Elite)
+            ( VictoryDisplayCardMatch
+                $ CardWithVengeance
+                <> NotCard
+                  (CardWithTrait Elite)
             )
       pushAll
         [ FocusCards $ map EncounterCard targets

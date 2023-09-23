@@ -33,15 +33,15 @@ instance RunMessage AgainstAllOdds2 where
       let n = skillTestDifficulty st - base
       ignoreWindow <-
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      pushAll $
-        [ CreateWindowModifierEffect
-            EffectSkillTestWindow
-            ( EffectModifiers $
-                toModifiers attrs [ChangeRevealStrategy $ RevealAndChoose n 1]
-            )
-            (toSource attrs)
-            (InvestigatorTarget iid)
-        ]
-          <> [ignoreWindow | n > 1]
+      pushAll
+        $ [ CreateWindowModifierEffect
+              EffectSkillTestWindow
+              ( EffectModifiers
+                  $ toModifiers attrs [ChangeRevealStrategy $ RevealAndChoose n 1]
+              )
+              (toSource attrs)
+              (InvestigatorTarget iid)
+          ]
+        <> [ignoreWindow | n > 1]
       pure e
     _ -> AgainstAllOdds2 <$> runMessage msg attrs

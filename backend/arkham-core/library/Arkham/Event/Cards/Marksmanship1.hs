@@ -63,21 +63,21 @@ instance HasModifiersFor Marksmanship1 where
                       UnpaidCost
                       [mkWindow Timing.When DoNotCheckWindow]
                       (toCard a)
-                  pure $
-                    toModifiers
+                  pure
+                    $ toModifiers
                       a
-                      [ CanModify $
-                        EnemyFightActionCriteria $
-                          CriteriaOverride $
-                            EnemyCriteria $
-                              ThisEnemy $
-                                EnemyWithoutModifier CannotBeAttacked
-                                  <> EnemyAt
-                                    ( LocationMatchAny
-                                        [ LocationWithId lid
-                                        , ConnectedTo $ LocationWithId lid
-                                        ]
-                                    )
+                      [ CanModify
+                        $ EnemyFightActionCriteria
+                        $ CriteriaOverride
+                        $ EnemyCriteria
+                        $ ThisEnemy
+                        $ EnemyWithoutModifier CannotBeAttacked
+                        <> EnemyAt
+                          ( LocationMatchAny
+                              [ LocationWithId lid
+                              , ConnectedTo $ LocationWithId lid
+                              ]
+                          )
                       | isPlayable
                       ]
             else pure []
@@ -117,14 +117,14 @@ instance HasModifiersFor Marksmanship1Effect where
   getModifiersFor (EnemyTarget eid) (Marksmanship1Effect a) =
     case effectTarget a of
       InvestigatorTarget _ ->
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
-            [ EnemyFightActionCriteria $
-                CriteriaOverride $
-                  AnyCriterion
-                    [OnSameLocation, OnLocation $ ConnectedTo $ locationWithEnemy eid]
-                    <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+            [ EnemyFightActionCriteria
+                $ CriteriaOverride
+                $ AnyCriterion
+                  [OnSameLocation, OnLocation $ ConnectedTo $ locationWithEnemy eid]
+                <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
             ]
       _ -> pure []
   getModifiersFor _ _ = pure []
@@ -136,12 +136,12 @@ instance RunMessage Marksmanship1Effect where
         selectAny $ EnemyWithId eid <> EnemyOneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
       ignoreWindow <-
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect effectSource)]
-      pushAll $
-        skillTestModifiers
+      pushAll
+        $ skillTestModifiers
           (toSource attrs)
           (InvestigatorTarget iid)
           [IgnoreRetaliate, IgnoreAloof]
-          : [ignoreWindow | ignored]
+        : [ignoreWindow | ignored]
       pure . Marksmanship1Effect $ attrs & targetL .~ EnemyTarget eid
     PassedSkillTest iid (Just Action.Fight) _ SkillTestInitiatorTarget {} _ _ ->
       do
@@ -149,12 +149,12 @@ instance RunMessage Marksmanship1Effect where
         for_ mSkillTestTarget $ \case
           target@(EnemyTarget eid) | effectTarget == target -> do
             engaged <- eid <=~> enemyEngagedWith iid
-            unless engaged $
-              push $
-                skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (DamageDealt 1)
+            unless engaged
+              $ push
+              $ skillTestModifier
+                attrs
+                (InvestigatorTarget iid)
+                (DamageDealt 1)
           _ -> pure ()
         pure e
     SkillTestEnds _ _ -> do

@@ -33,8 +33,8 @@ instance HasModifiersFor ChapelOfStAubertThePathIsOpen where
   getModifiersFor target (ChapelOfStAubertThePathIsOpen attrs)
     | isTarget attrs target = do
         foundAGuide <- remembered FoundAGuide
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [Blocked | not (locationRevealed attrs) && not foundAGuide]
   getModifiersFor (InvestigatorTarget iid) (ChapelOfStAubertThePathIsOpen attrs)
@@ -53,8 +53,8 @@ instance HasAbilities ChapelOfStAubertThePathIsOpen where
 instance RunMessage ChapelOfStAubertThePathIsOpen where
   runMessage msg l@(ChapelOfStAubertThePathIsOpen attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseAmounts
+      push
+        $ chooseAmounts
           iid
           "Take up to 3 horror"
           (MaxAmountTarget 3)
@@ -64,13 +64,13 @@ instance RunMessage ChapelOfStAubertThePathIsOpen where
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let
         horrorAmount = getChoiceAmount "Horror" choices
-      when (horrorAmount > 0) $
-        push $
-          InvestigatorAssignDamage
-            iid
-            (toSource attrs)
-            DamageAny
-            0
-            horrorAmount
+      when (horrorAmount > 0)
+        $ push
+        $ InvestigatorAssignDamage
+          iid
+          (toSource attrs)
+          DamageAny
+          0
+          horrorAmount
       pure l
     _ -> ChapelOfStAubertThePathIsOpen <$> runMessage msg attrs

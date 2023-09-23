@@ -37,11 +37,11 @@ instance HasAbilities BlockedPassage where
   getAbilities (BlockedPassage attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          RevealLocation Timing.When You $
-            LocationWithId $
-              toId attrs
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.When You
+        $ LocationWithId
+        $ toId attrs
       | locationRevealed attrs
       ]
 

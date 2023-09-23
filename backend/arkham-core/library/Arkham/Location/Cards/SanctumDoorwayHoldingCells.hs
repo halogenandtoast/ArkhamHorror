@@ -25,11 +25,11 @@ instance HasAbilities SanctumDoorwayHoldingCells where
   getAbilities (SanctumDoorwayHoldingCells attrs) =
     withRevealedAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            RevealLocation Timing.After Anyone $
-              LocationWithId $
-                toId attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After Anyone
+          $ LocationWithId
+          $ toId attrs
       ]
 
 instance RunMessage SanctumDoorwayHoldingCells where
@@ -41,7 +41,7 @@ instance RunMessage SanctumDoorwayHoldingCells where
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard]
         $ CardWithType EnemyType
-          <> CardWithTrait Cultist
+        <> CardWithTrait Cultist
       pure l
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
       pushM $ createEnemyAt_ card (toId attrs) Nothing

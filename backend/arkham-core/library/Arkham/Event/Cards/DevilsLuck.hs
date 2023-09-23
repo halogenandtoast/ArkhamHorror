@@ -42,9 +42,9 @@ instance RunMessage DevilsLuck where
         horrorAmount = getChoiceAmount "Horror" choices
       ignoreWindow <-
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      pushAll $
-        [CancelDamage iid damageAmount | damageAmount > 0]
-          <> [CancelHorror iid horrorAmount | horrorAmount > 0]
-          <> [ignoreWindow | damageAmount + horrorAmount > 0]
+      pushAll
+        $ [CancelDamage iid damageAmount | damageAmount > 0]
+        <> [CancelHorror iid horrorAmount | horrorAmount > 0]
+        <> [ignoreWindow | damageAmount + horrorAmount > 0]
       pure e
     _ -> DevilsLuck <$> runMessage msg attrs

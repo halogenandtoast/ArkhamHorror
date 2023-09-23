@@ -24,10 +24,10 @@ instance RunMessage ArousingSuspicions where
   runMessage msg t@(ArousingSuspicions attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       criminals <-
-        selectList $
-          EnemyAt YourLocation
-            <> EnemyWithTrait Criminal
-            <> EnemyWithoutModifier CannotPlaceDoomOnThis
+        selectList
+          $ EnemyAt YourLocation
+          <> EnemyWithTrait Criminal
+          <> EnemyWithoutModifier CannotPlaceDoomOnThis
       if null criminals
         then push (SpendResources iid 2)
         else pushAll [PlaceDoom (toSource attrs) (EnemyTarget eid) 1 | eid <- criminals]

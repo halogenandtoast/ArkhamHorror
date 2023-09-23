@@ -22,21 +22,21 @@ ashleighClarke = asset AshleighClarke Cards.ashleighClarke
 
 instance HasAbilities AshleighClarke where
   getAbilities (AshleighClarke a) =
-    [ restrictedAbility a 1 (OnSameLocation <> CanTakeControlOfClues) $
-        ActionAbility Nothing $
-          ActionCost 2
-    , mkAbility a 2 $
-        ForcedAbility $
-          LastClueRemovedFromAsset Timing.When $
-            AssetWithId $
-              toId a
+    [ restrictedAbility a 1 (OnSameLocation <> CanTakeControlOfClues)
+        $ ActionAbility Nothing
+        $ ActionCost 2
+    , mkAbility a 2
+        $ ForcedAbility
+        $ LastClueRemovedFromAsset Timing.When
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage AshleighClarke where
   runMessage msg a@(AshleighClarke attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      when (assetClues attrs > 0) $
-        pushAll
+      when (assetClues attrs > 0)
+        $ pushAll
           [ RemoveClues (toAbilitySource attrs 1) (toTarget attrs) 1
           , GainClues iid (toAbilitySource attrs 1) 1
           ]

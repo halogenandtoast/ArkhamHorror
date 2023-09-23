@@ -45,6 +45,6 @@ instance RunMessage DaemonicPiping where
         createPiperOfAzathoth <- createEnemyEngagedWithPrey_ piperOfAzathoth
         pushAll
           $ map (Discard (toSource attrs) . toTarget) daemonicPipings
-            <> [createPiperOfAzathoth]
+          <> [createPiperOfAzathoth]
       pure t
     _ -> DaemonicPiping <$> runMessage msg attrs

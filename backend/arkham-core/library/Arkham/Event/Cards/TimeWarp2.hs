@@ -26,14 +26,14 @@ instance RunMessage TimeWarp2 where
       card <- field EventCard eid
       let
         pc = fromJustNote "has to be a player card" $ preview _PlayerCard card
-      pushAll $
-        [ UndoAction
-        , -- when we undo action timewarp will either be in hand or on the deck
-          -- so we just remove it from the game to find it no matter where it is
-          RemovePlayerCardFromGame True card
-        , -- Then we add it directly to the discard
-          AddToDiscard iid pc
-        ]
-          <> eventPaymentMessages attrs
+      pushAll
+        $ [ UndoAction
+          , -- when we undo action timewarp will either be in hand or on the deck
+            -- so we just remove it from the game to find it no matter where it is
+            RemovePlayerCardFromGame True card
+          , -- Then we add it directly to the discard
+            AddToDiscard iid pc
+          ]
+        <> eventPaymentMessages attrs
       pure e
     _ -> TimeWarp2 <$> runMessage msg attrs

@@ -28,8 +28,8 @@ wither = asset Wither Cards.wither
 
 instance HasAbilities Wither where
   getAbilities (Wither a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbilityWithSkill
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbilityWithSkill
           (Just Action.Fight)
           SkillWillpower
           (ActionCost 1)

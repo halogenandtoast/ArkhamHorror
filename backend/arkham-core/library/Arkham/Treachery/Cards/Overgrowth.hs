@@ -30,10 +30,10 @@ instance HasModifiersFor Overgrowth where
 
 instance HasAbilities Overgrowth where
   getAbilities (Overgrowth a) =
-    [ restrictedAbility a 1 OnSameLocation $
-        ActionAbility Nothing $
-          ActionCost
-            1
+    [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost
+          1
     ]
 
 instance RunMessage Overgrowth where
@@ -43,11 +43,11 @@ instance RunMessage Overgrowth where
       withoutOvergrowth <-
         lid
           <=~> LocationWithoutTreachery (treacheryIs Cards.overgrowth)
-      when withoutOvergrowth $
-        push $
-          AttachTreachery
-            (toId attrs)
-            (LocationTarget lid)
+      when withoutOvergrowth
+        $ push
+        $ AttachTreachery
+          (toId attrs)
+          (LocationTarget lid)
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let

@@ -25,26 +25,26 @@ instance HasModifiersFor DayanaEsperence3 where
   getModifiersFor (InvestigatorTarget iid) (DayanaEsperence3 attrs)
     | controlledBy attrs iid = do
         events <-
-          selectWithField EventCard $
-            EventAttachedToAsset $
-              AssetWithId $
-                toId
-                  attrs
+          selectWithField EventCard
+            $ EventAttachedToAsset
+            $ AssetWithId
+            $ toId
+              attrs
         pure $ toModifiers attrs [AsIfInHand card | (_, card) <- events]
   getModifiersFor (CardIdTarget cardId) (DayanaEsperence3 attrs) = do
     events <-
-      selectWithField EventCard $
-        EventAttachedToAsset $
-          AssetWithId $
-            toId
-              attrs
+      selectWithField EventCard
+        $ EventAttachedToAsset
+        $ AssetWithId
+        $ toId
+          attrs
 
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
-        [ AdditionalCost $
-          UseCost (AssetWithId $ toId attrs) Secret 1
-            <> ExhaustCost (toTarget attrs)
+        [ AdditionalCost
+          $ UseCost (AssetWithId $ toId attrs) Secret 1
+          <> ExhaustCost (toTarget attrs)
         | (_, card) <- events
         , toCardId card == cardId
         ]
@@ -69,30 +69,30 @@ instance RunMessage DayanaEsperence3 where
   runMessage msg a@(DayanaEsperence3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       cards <-
-        selectList $
-          InHandOf You
-            <> BasicCardMatch
-              (NonWeakness <> CardWithTrait Spell <> CardWithType EventType)
+        selectList
+          $ InHandOf You
+          <> BasicCardMatch
+            (NonWeakness <> CardWithTrait Spell <> CardWithType EventType)
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             (toCardId c)
             [ RemoveCardFromHand iid (toCardId c)
-            , CreateEventAt iid c $
-                AttachedToAsset (toId attrs) (Just $ StillInHand iid)
+            , CreateEventAt iid c
+                $ AttachedToAsset (toId attrs) (Just $ StillInHand iid)
             ]
           | c <- cards
           ]
       pure a
     InitiatePlayCard iid card mTarget windows' _ -> do
       events <-
-        selectWithField EventCard $
-          EventAttachedToAsset $
-            AssetWithId $
-              toId
-                attrs
+        selectWithField EventCard
+          $ EventAttachedToAsset
+          $ AssetWithId
+          $ toId
+            attrs
       -- we place again to remove the card from the investigator's events
       for_ (find ((== card) . snd) events) $ \(event, card') ->
         pushAll

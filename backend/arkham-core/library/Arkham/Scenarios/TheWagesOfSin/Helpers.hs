@@ -49,12 +49,12 @@ hereticModifiers target (toAttrs -> a) | isTarget a target = do
   n <- perPlayer 2
   atSpectralLocation <-
     selectAny $ locationWithEnemy (toId a) <> LocationWithTrait Spectral
-  pure $
-    toModifiers a $
-      HealthModifier n
-        : ( guard atSpectralLocation
-              *> [AddKeyword Aloof, CannotBeDamaged, CannotBeEngaged]
-          )
+  pure
+    $ toModifiers a
+    $ HealthModifier n
+    : ( guard atSpectralLocation
+          *> [AddKeyword Aloof, CannotBeDamaged, CannotBeEngaged]
+      )
 hereticModifiers _ _ = pure []
 
 hereticAbilities

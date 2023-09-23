@@ -42,19 +42,19 @@ instance RunMessage Montmartre209 where
               )
               =<< selectList (TopOfDeckOf UneliminatedInvestigator)
           pushAll
-            [ chooseOne iid $
-                Label "Play no cards" []
-                  : [ TargetLabel
-                      (CardIdTarget $ toCardId card)
-                      [ InitiatePlayCard
-                          iid
-                          card
-                          Nothing
-                          (Window.defaultWindows iid)
-                          False
-                      ]
-                    | card <- cards
+            [ chooseOne iid
+                $ Label "Play no cards" []
+                : [ TargetLabel
+                    (CardIdTarget $ toCardId card)
+                    [ InitiatePlayCard
+                        iid
+                        card
+                        Nothing
+                        (Window.defaultWindows iid)
+                        False
                     ]
+                  | card <- cards
+                  ]
             , DisableEffect eid
             ]
           pure e

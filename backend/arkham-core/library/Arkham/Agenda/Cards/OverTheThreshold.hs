@@ -41,7 +41,9 @@ instance HasAbilities OverTheThreshold where
         a
         1
         ( enemyExists
-            $ ReadyEnemy <> EnemyWithTrait Spectral <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Humanoid)
+            $ ReadyEnemy
+            <> EnemyWithTrait Spectral
+            <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Humanoid)
         )
         $ ForcedAbility
         $ PhaseStep #after HuntersMoveStep

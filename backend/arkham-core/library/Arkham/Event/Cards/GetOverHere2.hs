@@ -28,8 +28,8 @@ instance RunMessage GetOverHere2 where
       lid <- getJustLocation iid
       let m = LocationWithId lid
       enemies <- selectList $ NonEliteEnemy <> EnemyAt (LocationMatchAny [m, ConnectedFrom m])
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             enemy

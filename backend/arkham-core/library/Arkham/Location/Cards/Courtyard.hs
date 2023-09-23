@@ -26,20 +26,20 @@ instance HasAbilities Courtyard where
   getAbilities (Courtyard attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $
-        ForcedAbility $
-          Enters
-            Timing.After
-            You
-            ThisLocation
+      [ restrictedAbility attrs 1 Here
+        $ ForcedAbility
+        $ Enters
+          Timing.After
+          You
+          ThisLocation
       | locationRevealed attrs
       ]
 
 instance RunMessage Courtyard where
   runMessage msg l@(Courtyard attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        DiscardTopOfEncounterDeck
+      push
+        $ DiscardTopOfEncounterDeck
           iid
           1
           (toAbilitySource attrs 1)

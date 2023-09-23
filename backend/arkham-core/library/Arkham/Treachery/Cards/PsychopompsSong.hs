@@ -25,10 +25,10 @@ psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 instance HasAbilities PsychopompsSong where
   getAbilities (PsychopompsSong attrs) = case treacheryAttachedTarget attrs of
     Just (InvestigatorTarget iid) ->
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            DealtDamage Timing.When AnySource $
-              InvestigatorWithId iid
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ DealtDamage Timing.When AnySource
+          $ InvestigatorWithId iid
       ]
     _ -> []
 
@@ -36,9 +36,9 @@ instance RunMessage PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       investigators <- getInvestigators
-      push $
-        chooseOrRunOne iid $
-          [targetLabel iid' [AttachTreachery treacheryId $ InvestigatorTarget iid'] | iid' <- investigators]
+      push
+        $ chooseOrRunOne iid
+        $ [targetLabel iid' [AttachTreachery treacheryId $ InvestigatorTarget iid'] | iid' <- investigators]
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       dealAdditionalDamage iid 2 [Discard (toAbilitySource attrs 1) (toTarget attrs)]

@@ -24,8 +24,8 @@ theStrangerTheShoresOfHali =
 
 instance HasAbilities TheStrangerTheShoresOfHali where
   getAbilities (TheStrangerTheShoresOfHali attrs) =
-    [ limitedAbility (PlayerLimit PerRound 1) $
-        mkAbility
+    [ limitedAbility (PlayerLimit PerRound 1)
+        $ mkAbility
           ( ProxySource
               (LocationMatcherSource LocationWithAnyHorror)
               (toSource attrs)

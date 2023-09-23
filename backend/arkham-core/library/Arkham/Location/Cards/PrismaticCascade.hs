@@ -27,14 +27,14 @@ prismaticCascade =
 
 instance HasAbilities PrismaticCascade where
   getAbilities (PrismaticCascade attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          DiscoveringLastClue Timing.After Anyone $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ DiscoveringLastClue Timing.After Anyone
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of

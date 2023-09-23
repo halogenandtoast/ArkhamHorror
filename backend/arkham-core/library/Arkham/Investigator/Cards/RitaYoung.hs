@@ -67,10 +67,10 @@ instance RunMessage RitaYoung where
         $ [ Label "Damage enemy" [EnemyDamage enemyId $ nonAttack (toAbilitySource attrs 1) 1]
           | canDamage
           ]
-          <> [ Label "Move to a connecting location"
-              $ [chooseOne iid $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)]
-             | notNull connectingLocations
-             ]
+        <> [ Label "Move to a connecting location"
+            $ [chooseOne iid $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)]
+           | notNull connectingLocations
+           ]
       pure i
     _ -> RitaYoung <$> runMessage msg attrs
 

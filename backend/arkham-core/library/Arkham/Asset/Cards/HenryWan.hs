@@ -27,7 +27,8 @@ instance HasAbilities HenryWan where
   getAbilities (HenryWan (a `With` _)) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility Nothing
-        $ ActionCost 1 <> exhaust a
+        $ ActionCost 1
+        <> exhaust a
     ]
 
 instance RunMessage HenryWan where
@@ -66,7 +67,7 @@ instance RunMessage HenryWan where
               pure
                 $ chooseOrRunOne iid
                 $ [Label "Draw 1 card" [drawing] | canDraw]
-                  <> [Label "Gain 1 resources" [TakeResources iid 1 (toAbilitySource attrs 1) False] | canGainResources]
+                <> [Label "Gain 1 resources" [TakeResources iid 1 (toAbilitySource attrs 1) False] | canGainResources]
             pushAll msgs
       pure $ HenryWan (attrs `with` Metadata [])
     _ -> HenryWan . (`with` meta) <$> runMessage msg attrs

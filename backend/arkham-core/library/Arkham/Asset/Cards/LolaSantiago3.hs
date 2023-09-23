@@ -23,18 +23,18 @@ lolaSantiago3 = ally LolaSantiago3 Cards.lolaSantiago3 (2, 2)
 instance HasModifiersFor LolaSantiago3 where
   getModifiersFor (InvestigatorTarget iid) (LolaSantiago3 a)
     | controlledBy a iid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [SkillModifier SkillIntellect 1, SkillModifier SkillAgility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LolaSantiago3 where
   getAbilities (LolaSantiago3 a) =
-    [ restrictedAbility a 1 (ControlsThis <> ClueOnLocation) $
-        FastAbility $
-          ExhaustCost (toTarget a)
-            <> FieldResourceCost (FieldCost YourLocation LocationShroud)
+    [ restrictedAbility a 1 (ControlsThis <> ClueOnLocation)
+        $ FastAbility
+        $ ExhaustCost (toTarget a)
+        <> FieldResourceCost (FieldCost YourLocation LocationShroud)
     ]
 
 instance RunMessage LolaSantiago3 where

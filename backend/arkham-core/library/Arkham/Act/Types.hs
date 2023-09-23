@@ -82,17 +82,17 @@ actWith (n, side) f cardDef mCost g =
     , cbCardBuilder = \cardId (deckId, aid) ->
         f
           . g
-          $ ActAttrs
-            { actId = aid
-            , actCardId = cardId
-            , actSequence = AS.Sequence n side
-            , actClues = 0
-            , actAdvanceCost = mCost
-            , actTreacheries = mempty
-            , actDeckId = deckId
-            , actBreaches = Nothing
-            , actUsedWheelOfFortuneX = False
-            }
+            $ ActAttrs
+              { actId = aid
+              , actCardId = cardId
+              , actSequence = AS.Sequence n side
+              , actClues = 0
+              , actAdvanceCost = mCost
+              , actTreacheries = mempty
+              , actDeckId = deckId
+              , actBreaches = Nothing
+              , actUsedWheelOfFortuneX = False
+              }
     }
 
 act

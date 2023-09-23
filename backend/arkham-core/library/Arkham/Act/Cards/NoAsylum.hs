@@ -27,8 +27,8 @@ noAsylum = act (4, A) NoAsylum Cards.noAsylum Nothing
 
 instance HasAbilities NoAsylum where
   getAbilities (NoAsylum x) =
-    withBaseAbilities x $
-      if onSide A x
+    withBaseAbilities x
+      $ if onSide A x
         then
           [ restrictedAbility
               ( ProxySource
@@ -41,9 +41,9 @@ instance HasAbilities NoAsylum where
                     (EnemyCriteria $ EnemyExists $ ReadyEnemy <> EnemyAt YourLocation)
               )
               (ActionAbility (Just Action.Resign) $ ActionCost 1)
-          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned $
-              Objective $
-                ForcedAbility AnyWindow
+          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
+              $ Objective
+              $ ForcedAbility AnyWindow
           ]
         else []
 

@@ -24,11 +24,11 @@ instance RunMessage ConnectTheDots where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
       locations <-
-        selectList $
-          LocationWithLowerShroudThan (LocationWithId lid)
-            <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
-      push $
-        chooseOrRunOne
+        selectList
+          $ LocationWithLowerShroudThan (LocationWithId lid)
+          <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel location [DiscoverCluesAtLocation iid location (toSource attrs) 2 Nothing]
           | location <- locations

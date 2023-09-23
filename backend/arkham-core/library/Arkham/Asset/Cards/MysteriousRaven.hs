@@ -30,7 +30,7 @@ instance HasAbilities MysteriousRaven where
         )
         $ FastAbility
         $ DiscardCost FromPlay (toTarget a)
-          <> DamageCost (toSource a) YouTarget 1
+        <> DamageCost (toSource a) YouTarget 1
     ]
 
 instance RunMessage MysteriousRaven where

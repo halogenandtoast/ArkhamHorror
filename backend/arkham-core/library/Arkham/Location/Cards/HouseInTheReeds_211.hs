@@ -28,22 +28,22 @@ instance HasModifiersFor HouseInTheReeds_211
 instance HasAbilities HouseInTheReeds_211 where
   getAbilities (HouseInTheReeds_211 x) =
     let rest = withDrawCardUnderneathAction x
-    in  rest
-          <> [ mkAbility x 1 $
-              ForcedAbility $
-                RevealLocation Timing.After Anyone $
-                  LocationWithId $
-                    toId x
+     in rest
+          <> [ mkAbility x 1
+              $ ForcedAbility
+              $ RevealLocation Timing.After Anyone
+              $ LocationWithId
+              $ toId x
              | locationRevealed x
              ]
 
 instance RunMessage HouseInTheReeds_211 where
   runMessage msg l@(HouseInTheReeds_211 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        FindEncounterCard iid (toTarget attrs) [FromEncounterDeck] $
-          CardWithType EnemyType
-            <> CardWithTrait Nightgaunt
+      push
+        $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck]
+        $ CardWithType EnemyType
+        <> CardWithTrait Nightgaunt
       pure l
     FoundEncounterCard _iid target card | isTarget attrs target -> do
       villageCommonsId <- selectJust $ LocationWithTitle "Village Commons"

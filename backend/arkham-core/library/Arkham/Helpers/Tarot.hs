@@ -13,6 +13,6 @@ affectedByTarot iid tarotCard = do
   tarotCards <- scenarioField ScenarioTarotCards
   pure
     $ tarotCard
-      `elem` findWithDefault [] GlobalTarot tarotCards
-      || tarotCard
-      `elem` findWithDefault [] (InvestigatorTarot iid) tarotCards
+    `elem` findWithDefault [] GlobalTarot tarotCards
+    || tarotCard
+    `elem` findWithDefault [] (InvestigatorTarot iid) tarotCards

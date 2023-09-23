@@ -24,8 +24,8 @@ curseOfYig = treachery CurseOfYig Cards.curseOfYig
 
 instance HasModifiersFor CurseOfYig where
   getModifiersFor (InvestigatorTarget iid) (CurseOfYig attrs) =
-    pure $
-      if treacheryOnInvestigator iid attrs
+    pure
+      $ if treacheryOnInvestigator iid attrs
         then
           toModifiers
             attrs

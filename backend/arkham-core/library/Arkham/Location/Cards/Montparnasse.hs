@@ -25,10 +25,10 @@ instance HasAbilities Montparnasse where
   getAbilities (Montparnasse attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility attrs 1 Here $
-          FastAbility $
-            HandDiscardCost 1 AnyCard
+      [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility attrs 1 Here
+        $ FastAbility
+        $ HandDiscardCost 1 AnyCard
       | locationRevealed attrs
       ]
 

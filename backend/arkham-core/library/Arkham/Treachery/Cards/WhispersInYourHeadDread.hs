@@ -23,8 +23,8 @@ whispersInYourHeadDread =
 
 instance HasModifiersFor WhispersInYourHeadDread where
   getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDread a) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [CannotMoveMoreThanOnceEachTurn | treacheryInHandOf a == Just iid]
   getModifiersFor _ _ = pure []

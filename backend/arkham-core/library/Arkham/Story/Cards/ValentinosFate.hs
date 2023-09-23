@@ -53,14 +53,14 @@ instance RunMessage ValentinosFate where
         else when claimedBySpecters $ do
           valentino <- genCard Enemies.valentinoRivas
           createValentino <-
-            createEnemy valentino $
-              if onTrail
+            createEnemy valentino
+              $ if onTrail
                 then toEnemyCreationMethod location
                 else toEnemyCreationMethod iid
           pushAll
             [ RemoveStory (toId attrs)
-            , toMessage $
-                createValentino
+            , toMessage
+                $ createValentino
                   { enemyCreationExhausted = onTrail
                   }
             ]

@@ -30,8 +30,8 @@ historicalSocietyMeetingRoom =
 
 instance HasAbilities HistoricalSocietyMeetingRoom where
   getAbilities (HistoricalSocietyMeetingRoom attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
           [ restrictedAbility
               attrs
@@ -45,12 +45,12 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
               $ Costs [ActionCost 1, ExhaustAssetCost $ AssetWithTrait Ally]
           ]
         else
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                EnemySpawns
-                  Timing.When
-                  (LocationWithId $ toId attrs)
-                  AnyEnemy
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ EnemySpawns
+                Timing.When
+                (LocationWithId $ toId attrs)
+                AnyEnemy
           ]
 
 instance RunMessage HistoricalSocietyMeetingRoom where

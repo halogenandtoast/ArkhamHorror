@@ -22,9 +22,9 @@ oldKeyring = assetWith OldKeyring Cards.oldKeyring (whenNoUsesL ?~ DiscardWhenNo
 
 instance HasAbilities OldKeyring where
   getAbilities (OldKeyring attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          ActionCost 1
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
     ]
 
 instance RunMessage OldKeyring where

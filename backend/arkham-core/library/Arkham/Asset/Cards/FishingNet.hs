@@ -21,8 +21,8 @@ fishingNet = assetWith FishingNet Cards.fishingNet (isStoryL .~ True)
 
 instance HasModifiersFor FishingNet where
   getModifiersFor (EnemyTarget eid) (FishingNet attrs) =
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [RemoveKeyword Retaliate | attachedToEnemy attrs eid]
   getModifiersFor _ _ = pure []
@@ -34,10 +34,10 @@ instance HasAbilities FishingNet where
         1
         ( ControlsThis
             <> EnemyCriteria
-              ( EnemyExists $
-                  ExhaustedEnemy
-                    <> EnemyAt YourLocation
-                    <> enemyIs Cards.theRougarou
+              ( EnemyExists
+                  $ ExhaustedEnemy
+                  <> EnemyAt YourLocation
+                  <> enemyIs Cards.theRougarou
               )
         )
         $ FastAbility Free

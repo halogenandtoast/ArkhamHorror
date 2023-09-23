@@ -25,10 +25,10 @@ exploringTheRainforest =
 
 instance HasAbilities ExploringTheRainforest where
   getAbilities (ExploringTheRainforest x) =
-    [ mkAbility x 1 $
-        Objective $
-          ReactionAbility (RoundEnds Timing.When) $
-            GroupClueCost (PerPlayer 3) (NotLocation $ LocationWithTrait Campsite)
+    [ mkAbility x 1
+        $ Objective
+        $ ReactionAbility (RoundEnds Timing.When)
+        $ GroupClueCost (PerPlayer 3) (NotLocation $ LocationWithTrait Campsite)
     ]
 
 instance RunMessage ExploringTheRainforest where
@@ -40,7 +40,7 @@ instance RunMessage ExploringTheRainforest where
       ichtaca <-
         fromJustNote "Ichtaca was not set aside"
           . listToMaybe
-          <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
+            <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
       locationId <- selectJust LeadInvestigatorLocation
       createIchtaca <- createEnemyAt_ ichtaca locationId Nothing
       pushAll

@@ -38,7 +38,7 @@ wheelOfFortuneX :: AgendaCard WheelOfFortuneX
 wheelOfFortuneX =
   agendaWith (1, A) (WheelOfFortuneX . (`with` Metadata [])) Cards.wheelOfFortuneX (Static 4)
     $ removeDoomMatchersL
-      %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
+    %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
 
 instance RunMessage WheelOfFortuneX where
   runMessage msg a@(WheelOfFortuneX (attrs `With` meta)) =
@@ -50,11 +50,11 @@ instance RunMessage WheelOfFortuneX where
         investigators <- getInvestigators
         pushAll
           $ ritualSuicideMessages
-            <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
-            <> ( guard (not ableToFindYourWay)
-                  *> [ForInvestigator iid (NextAdvanceAgendaStep (toId attrs) 1) | iid <- investigators]
-               )
-            <> [advanceAgendaDeck attrs]
+          <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
+          <> ( guard (not ableToFindYourWay)
+                *> [ForInvestigator iid (NextAdvanceAgendaStep (toId attrs) 1) | iid <- investigators]
+             )
+          <> [advanceAgendaDeck attrs]
 
         pure a
       ForInvestigator iid (NextAdvanceAgendaStep aid _) | aid == toId attrs -> do
@@ -70,11 +70,11 @@ instance RunMessage WheelOfFortuneX where
             $ [ Label "Move to the location to your left" [Move $ move attrs iid leftLocation]
               | leftLocation <- maybeToList mLeftLocation
               ]
-              <> [ Label
-                  "Move the placement of your location once to the left"
-                  [HandleTargetChoice iid (toSource attrs) (toTarget location)]
-                 | canMoveLocationLeft
-                 ]
+            <> [ Label
+                "Move the placement of your location once to the left"
+                [HandleTargetChoice iid (toSource attrs) (toTarget location)]
+               | canMoveLocationLeft
+               ]
 
         pure a
       HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do

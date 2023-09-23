@@ -35,9 +35,9 @@ instance HasAbilities TheCaveOfDarknessTunnelsInTheDark where
     [ restrictedAbility
         attrs
         999
-        ( LocationExists $
-            LocationWithTitle "Black Cave"
-              <> LocationWithoutClues
+        ( LocationExists
+            $ LocationWithTitle "Black Cave"
+            <> LocationWithoutClues
         )
         $ Objective
         $ FastAbility
@@ -66,15 +66,15 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
             , AddDirectConnection townHallId blackCave
             ]
       iids <- getInvestigatorIds
-      pushAll $
-        townHallMessages
-          <> [DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids]
-          <> [ AdvanceToAct
-                (actDeckId attrs)
-                Acts.strangeOccurences
-                E
-                (toSource attrs)
-             ]
+      pushAll
+        $ townHallMessages
+        <> [DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids]
+        <> [ AdvanceToAct
+              (actDeckId attrs)
+              Acts.strangeOccurences
+              E
+              (toSource attrs)
+           ]
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do
       when (toCardType card == TreacheryType) $ do

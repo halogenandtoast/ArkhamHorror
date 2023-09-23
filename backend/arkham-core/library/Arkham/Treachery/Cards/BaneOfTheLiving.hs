@@ -38,18 +38,18 @@ instance RunMessage BaneOfTheLiving where
             [RevelationChoice iid (toSource attrs) 1]
           | hasUnfinishedBusiness
           ]
-          <> [ Label
-                "Discard cards from the top of the spectral encounter deck until a Geist enemy is discarded. Spawn that enemy engaged with you."
-                [RevelationChoice iid (toSource attrs) 2]
-             ]
+        <> [ Label
+              "Discard cards from the top of the spectral encounter deck until a Geist enemy is discarded. Spawn that enemy engaged with you."
+              [RevelationChoice iid (toSource attrs) 2]
+           ]
       pure t
     RevelationChoice iid (isSource attrs -> True) 1 -> do
       stories <- selectList $ StoryWithTitle "Unfinished Business"
       storiesWithCardId <- for stories $ \story' -> do
         storyCard <- field StoryCard story'
         pure (story', toCardId storyCard)
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             story'
@@ -65,8 +65,8 @@ instance RunMessage BaneOfTheLiving where
       push $ PlaceDamage (toSource attrs) (toTarget e) (health `div` 2)
       pure t
     RevelationChoice iid (isSource attrs -> True) 2 -> do
-      push $
-        DiscardUntilFirst
+      push
+        $ DiscardUntilFirst
           iid
           (toSource attrs)
           (Deck.EncounterDeckByKey SpectralEncounterDeck)

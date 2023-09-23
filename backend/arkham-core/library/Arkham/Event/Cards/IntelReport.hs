@@ -67,14 +67,14 @@ instance RunMessage IntelReport where
       if discoverUpToTwoAway
         then do
           lids <-
-            selectList $
-              LocationMatchAny $
-                (locationWithInvestigator iid <> LocationWithAnyClues)
-                  : [ LocationWithDistanceFrom n LocationWithAnyClues
-                    | n <- [1 .. 2]
-                    ]
-          push $
-            chooseOrRunOne
+            selectList
+              $ LocationMatchAny
+              $ (locationWithInvestigator iid <> LocationWithAnyClues)
+              : [ LocationWithDistanceFrom n LocationWithAnyClues
+                | n <- [1 .. 2]
+                ]
+          push
+            $ chooseOrRunOne
               iid
               [ targetLabel
                 lid
@@ -82,15 +82,15 @@ instance RunMessage IntelReport where
               | lid <- lids
               ]
         else
-          push $
-            InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) clueCount Nothing
+          push
+            $ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) clueCount Nothing
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
-      push $
-        CreateWindowModifierEffect
+      push
+        $ CreateWindowModifierEffect
           EffectEventWindow
-          ( EffectModifiers $
-              toModifiers
+          ( EffectModifiers
+              $ toModifiers
                 attrs
                 [MetaModifier $ object ["clueCount" .= (2 :: Int)]]
           )
@@ -98,11 +98,11 @@ instance RunMessage IntelReport where
           (CardIdTarget $ toCardId attrs)
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 2 _ _) -> do
-      push $
-        CreateWindowModifierEffect
+      push
+        $ CreateWindowModifierEffect
           EffectEventWindow
-          ( EffectModifiers $
-              toModifiers
+          ( EffectModifiers
+              $ toModifiers
                 attrs
                 [MetaModifier $ object ["discoverUpToTwoAway" .= True]]
           )

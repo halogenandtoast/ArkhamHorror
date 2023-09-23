@@ -29,8 +29,8 @@ instance HasModifiersFor KeeperOfTheGreatLibrary where
   getModifiersFor target (KeeperOfTheGreatLibrary a) | isTarget a target = do
     foundTheProcess <- remembered FoundTheProcess
     realizedWhatYearItIs <- remembered RealizedWhatYearItIs
-    pure $
-      if foundTheProcess || realizedWhatYearItIs
+    pure
+      $ if foundTheProcess || realizedWhatYearItIs
         then
           toModifiers
             a

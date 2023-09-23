@@ -31,17 +31,17 @@ expeditionIntoTheWild =
 
 instance HasAbilities ExpeditionIntoTheWild where
   getAbilities (ExpeditionIntoTheWild a) =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
-        ActionAbility (Just Action.Explore) $
-          ActionCost 1
+    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+        $ ActionAbility (Just Action.Explore)
+        $ ActionCost 1
     ]
 
 instance RunMessage ExpeditionIntoTheWild where
   runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           source
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
@@ -49,19 +49,19 @@ instance RunMessage ExpeditionIntoTheWild where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <- getSetAsideEncounterSet AgentsOfYig
       iids <- getInvestigatorIds
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
-        ]
-          <> [ beginSkillTest
-              iid
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              SkillWillpower
-              3
-             | iid <- iids
-             ]
-          <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
+          ]
+        <> [ beginSkillTest
+            iid
+            (toSource attrs)
+            (InvestigatorTarget iid)
+            SkillWillpower
+            3
+           | iid <- iids
+           ]
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do

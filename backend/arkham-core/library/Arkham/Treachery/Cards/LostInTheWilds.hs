@@ -24,19 +24,19 @@ lostInTheWilds = treachery LostInTheWilds Cards.lostInTheWilds
 
 instance HasModifiersFor LostInTheWilds where
   getModifiersFor (InvestigatorTarget iid) (LostInTheWilds attrs) =
-    pure $
-      if treacheryOnInvestigator iid attrs
+    pure
+      $ if treacheryOnInvestigator iid attrs
         then toModifiers attrs [CannotMove, CannotExplore]
         else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LostInTheWilds where
   getAbilities (LostInTheWilds a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds
-            Timing.When
-            You
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds
+          Timing.When
+          You
     ]
 
 instance RunMessage LostInTheWilds where

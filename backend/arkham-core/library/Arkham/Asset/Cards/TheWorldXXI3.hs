@@ -23,7 +23,8 @@ theWorldXxi3 = asset TheWorldXXI3 Cards.theWorldXxi3
 instance HasAbilities TheWorldXXI3 where
   getAbilities (TheWorldXXI3 a) =
     [ fastAbility a 1 (exhaust a)
-        $ ControlsThis <> InvestigatorExists (You <> HandWith (LengthIs $ atLeast 8))
+        $ ControlsThis
+        <> InvestigatorExists (You <> HandWith (LengthIs $ atLeast 8))
     , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
     ]
 

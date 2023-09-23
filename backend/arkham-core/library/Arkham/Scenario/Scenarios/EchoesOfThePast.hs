@@ -196,38 +196,38 @@ instance RunMessage EchoesOfThePast where
 
       pushAll
         $ [story investigatorIds intro]
-          <> [ story investigatorIds sebastiensInformation
-             | sebastienInterviewed
-             ]
-          <> [ SetEncounterDeck encounterDeck
-             , SetAgendaDeck
-             , SetActDeck
-             , placeEntryHall
-             ]
-          <> [ PlaceTokens (toSource attrs) (LocationTarget entryHallId) Clue 1
-             | sebastienInterviewed
-             ]
-          <> [ placeQuietHalls1
-             , SetLocationLabel quietHalls1Id "quietHalls1"
-             , placeQuietHalls2
-             , SetLocationLabel quietHalls2Id "quietHalls2"
-             ]
-          <> concatMap snd groundFloorPlacements
-          <> concatMap snd secondFloorPlacements
-          <> concatMap snd thirdFloorPlacements
-          <> spawnMessages
-          <> [MoveAllTo (toSource attrs) entryHallId]
-          <> ( if fledTheDinnerParty
-                then
-                  [ CreateWindowModifierEffect
-                    EffectRoundWindow
-                    (EffectModifiers $ toModifiers attrs [AdditionalActions 1])
-                    (toSource attrs)
-                    (InvestigatorTarget iid)
-                  | iid <- investigatorIds
-                  ]
-                else []
-             )
+        <> [ story investigatorIds sebastiensInformation
+           | sebastienInterviewed
+           ]
+        <> [ SetEncounterDeck encounterDeck
+           , SetAgendaDeck
+           , SetActDeck
+           , placeEntryHall
+           ]
+        <> [ PlaceTokens (toSource attrs) (LocationTarget entryHallId) Clue 1
+           | sebastienInterviewed
+           ]
+        <> [ placeQuietHalls1
+           , SetLocationLabel quietHalls1Id "quietHalls1"
+           , placeQuietHalls2
+           , SetLocationLabel quietHalls2Id "quietHalls2"
+           ]
+        <> concatMap snd groundFloorPlacements
+        <> concatMap snd secondFloorPlacements
+        <> concatMap snd thirdFloorPlacements
+        <> spawnMessages
+        <> [MoveAllTo (toSource attrs) entryHallId]
+        <> ( if fledTheDinnerParty
+              then
+                [ CreateWindowModifierEffect
+                  EffectRoundWindow
+                  (EffectModifiers $ toModifiers attrs [AdditionalActions 1])
+                  (toSource attrs)
+                  (InvestigatorTarget iid)
+                | iid <- investigatorIds
+                ]
+              else []
+           )
 
       setAsideCards <-
         genCards
@@ -329,22 +329,22 @@ instance RunMessage EchoesOfThePast where
                   | iid <- investigatorIds
                   ]
               ]
-              <> gainXp
-              <> updateSlain
-              <> removeTokens
-              <> [AddChaosToken Cultist, AddChaosToken Cultist]
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddChaosToken Cultist, AddChaosToken Cultist]
+            <> [EndOfGame Nothing]
         2 ->
           pushAll
             $ [ story investigatorIds resolution2
               , Record YouLeftTheOnyxClaspBehind
               , RecordCount Doubt (doubt + 1)
               ]
-              <> gainXp
-              <> updateSlain
-              <> removeTokens
-              <> [AddChaosToken Tablet, AddChaosToken Tablet]
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddChaosToken Tablet, AddChaosToken Tablet]
+            <> [EndOfGame Nothing]
         3 ->
           pushAll
             $ [ story investigatorIds resolution3
@@ -357,21 +357,21 @@ instance RunMessage EchoesOfThePast where
                   | iid <- investigatorIds
                   ]
               ]
-              <> gainXp
-              <> updateSlain
-              <> removeTokens
-              <> [AddChaosToken Tablet, AddChaosToken Tablet]
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddChaosToken Tablet, AddChaosToken Tablet]
+            <> [EndOfGame Nothing]
         4 ->
           pushAll
             $ [ story investigatorIds resolution4
               , Record TheFollowersOfTheSignHaveFoundTheWayForward
               ]
-              <> gainXp
-              <> updateSlain
-              <> removeTokens
-              <> [AddChaosToken ElderThing, AddChaosToken ElderThing]
-              <> [EndOfGame Nothing]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddChaosToken ElderThing, AddChaosToken ElderThing]
+            <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"
       pure s
     _ -> EchoesOfThePast <$> runMessage msg attrs

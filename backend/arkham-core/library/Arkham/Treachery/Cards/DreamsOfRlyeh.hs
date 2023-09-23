@@ -25,7 +25,7 @@ instance HasModifiersFor DreamsOfRlyeh where
     pure
       $ toModifiers attrs
       $ guard (treacheryOnInvestigator iid attrs)
-        *> [SkillModifier #willpower (-1), SanityModifier (-1)]
+      *> [SkillModifier #willpower (-1), SanityModifier (-1)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DreamsOfRlyeh where

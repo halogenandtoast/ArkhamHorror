@@ -28,7 +28,7 @@ instance HasAbilities Flamethrower5 where
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Fight)
         $ ActionCost 1
-          <> UseCost (AssetWithId $ toId a) Ammo 1
+        <> UseCost (AssetWithId $ toId a) Ammo 1
     ]
 
 instance RunMessage Flamethrower5 where

@@ -25,10 +25,10 @@ instance HasAbilities MessHall where
   getAbilities (MessHall attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $
-        ForcedAbility $
-          SkillTestResult Timing.After You (WhileInvestigating YourLocation) $
-            SuccessResult AnyValue
+      [ restrictedAbility attrs 1 Here
+        $ ForcedAbility
+        $ SkillTestResult Timing.After You (WhileInvestigating YourLocation)
+        $ SuccessResult AnyValue
       | locationRevealed attrs
       ]
 

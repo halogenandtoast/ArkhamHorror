@@ -28,8 +28,8 @@ instance HasModifiersFor TheCodexOfAges where
 
 instance HasAbilities TheCodexOfAges where
   getAbilities (TheCodexOfAges a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility (WouldRevealChaosToken Timing.When You) Free
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (WouldRevealChaosToken Timing.When You) Free
     ]
 
 instance RunMessage TheCodexOfAges where

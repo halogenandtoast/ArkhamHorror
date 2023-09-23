@@ -42,10 +42,10 @@ instance RunMessage WellPrepared2 where
       matchingIcons <- getSkillTestMatchingSkillIcons
 
       assetIds <-
-        selectList $
-          NotAsset (AssetWithId $ toId attrs)
-            <> AssetControlledBy (InvestigatorWithId iid)
-            <> AssetWithMatchingSkillTestIcon
+        selectList
+          $ NotAsset (AssetWithId $ toId attrs)
+          <> AssetControlledBy (InvestigatorWithId iid)
+          <> AssetWithMatchingSkillTestIcon
       assetIdsWithIconCount <- for assetIds $ \aid -> do
         x <-
           fieldMap
@@ -57,8 +57,8 @@ instance RunMessage WellPrepared2 where
             )
             aid
         pure (aid, x)
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel
             aid

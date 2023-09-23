@@ -30,13 +30,13 @@ instance HasAbilities Thermos where
           1
           ( ControlsThis
               <> InvestigatorExists
-                ( HealableInvestigator (toSource a) DamageType $
-                    InvestigatorAt YourLocation
+                ( HealableInvestigator (toSource a) DamageType
+                    $ InvestigatorAt YourLocation
                 )
           )
         $ ActionAbility Nothing
         $ ActionCost 1
-          <> ExhaustCost (toTarget a)
+        <> ExhaustCost (toTarget a)
     , withTooltip
         "Heal 1 horror from an investigator at your location (2 horror instead if he or she has 2 or more mental trauma)."
         $ restrictedAbility
@@ -44,24 +44,24 @@ instance HasAbilities Thermos where
           2
           ( ControlsThis
               <> InvestigatorExists
-                ( HealableInvestigator (toSource a) HorrorType $
-                    InvestigatorAt YourLocation
+                ( HealableInvestigator (toSource a) HorrorType
+                    $ InvestigatorAt YourLocation
                 )
           )
         $ ActionAbility Nothing
         $ ActionCost 1
-          <> ExhaustCost (toTarget a)
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage Thermos where
   runMessage msg a@(Thermos attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
       targets <-
-        selectListMap InvestigatorTarget $
-          HealableInvestigator (toSource attrs) DamageType $
-            colocatedWith iid
-      push $
-        chooseOrRunOne
+        selectListMap InvestigatorTarget
+          $ HealableInvestigator (toSource attrs) DamageType
+          $ colocatedWith iid
+      push
+        $ chooseOrRunOne
           iid
           [ TargetLabel
             target
@@ -79,19 +79,19 @@ instance RunMessage Thermos where
     UseCardAbilityChoiceTarget _ (isSource attrs -> True) 1 (InvestigatorTarget iid') _ _ ->
       do
         trauma <- field InvestigatorPhysicalTrauma iid'
-        push $
-          HealDamage
+        push
+          $ HealDamage
             (InvestigatorTarget iid')
             (toSource attrs)
             (if trauma >= 2 then 2 else 1)
         pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' payment -> do
       targets <-
-        selectListMap InvestigatorTarget $
-          HealableInvestigator (toSource attrs) HorrorType $
-            colocatedWith iid
-      push $
-        chooseOrRunOne
+        selectListMap InvestigatorTarget
+          $ HealableInvestigator (toSource attrs) HorrorType
+          $ colocatedWith iid
+      push
+        $ chooseOrRunOne
           iid
           [ TargetLabel
             target

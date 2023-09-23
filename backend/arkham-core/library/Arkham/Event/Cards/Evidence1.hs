@@ -32,9 +32,9 @@ instance RunMessage Evidence1 where
       currentLocationId <- getJustLocation iid
       availableClues <- field LocationClues currentLocationId
       let amount = min availableClues (if totalPrintedHealth >= 4 then 2 else 1)
-      pushAll $
-        [ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) amount Nothing
-        | amount > 0
-        ]
+      pushAll
+        $ [ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) amount Nothing
+          | amount > 0
+          ]
       pure e
     _ -> Evidence1 <$> runMessage msg attrs

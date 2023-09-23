@@ -90,8 +90,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       wraith <- genCard Enemies.wraith
 
       mGavriellaMizrah <-
-        selectOne $
-          investigatorIs Investigators.gavriellaMizrah
+        selectOne
+          $ investigatorIs Investigators.gavriellaMizrah
       mJeromeDavids <- selectOne $ investigatorIs Investigators.jeromeDavids
       mValentinoRivas <- selectOne $ investigatorIs Investigators.valentinoRivas
       mPennyWhite <- selectOne $ investigatorIs Investigators.pennyWhite
@@ -121,45 +121,45 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           entryHallId
           Nothing
 
-      pushAll $
-        [ SetEncounterDeck $
-            removeEachFromDeck encounterDeck $
-              [Treacheries.fateOfAllFools | isJust mGavriellaMizrah]
-                <> [Enemies.netherMist | isJust mJeromeDavids]
-                <> [Treacheries.obscuringFog | isJust mJeromeDavids]
-                <> [Enemies.shadowHound | isJust mValentinoRivas]
-                <> [Treacheries.terrorInTheNight | isJust mValentinoRivas]
-                <> [Enemies.wraith | isJust mPennyWhite]
-                <> [Treacheries.whispersInTheDark | isJust mPennyWhite]
-        , SetAgendaDeck
-        , SetActDeck
-        , placeOffice
-        , placeBilliardsRoom
-        , placeTrophyRoom
-        , placeVictorianHalls
-        , placeMasterBedroom
-        , placeBalcony
-        , placeEntryHall
-        , createTheSpectralWatcher
-        ]
-          <> victorianHallsMoveTo
-          <> officeMoveTo
-          <> billiardsRoomMoveTo
-          <> balconyMoveTo
-          <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
-             | isJust mJeromeDavids
-             ]
-          <> [createNetherMist | isJust mJeromeDavids]
-          <> [ SpawnEnemyAtEngagedWith shadowHound billiardsRoomId valentinoId
-             | valentinoId <- maybeToList mValentinoRivas
-             ]
-          <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
-             | isJust mJeromeDavids
-             ]
-          <> [ SpawnEnemyAtEngagedWith wraith balconyId pennyId
-             | pennyId <- maybeToList mPennyWhite
-             ]
-          <> [SetupStep (toTarget attrs) 2]
+      pushAll
+        $ [ SetEncounterDeck
+              $ removeEachFromDeck encounterDeck
+              $ [Treacheries.fateOfAllFools | isJust mGavriellaMizrah]
+              <> [Enemies.netherMist | isJust mJeromeDavids]
+              <> [Treacheries.obscuringFog | isJust mJeromeDavids]
+              <> [Enemies.shadowHound | isJust mValentinoRivas]
+              <> [Treacheries.terrorInTheNight | isJust mValentinoRivas]
+              <> [Enemies.wraith | isJust mPennyWhite]
+              <> [Treacheries.whispersInTheDark | isJust mPennyWhite]
+          , SetAgendaDeck
+          , SetActDeck
+          , placeOffice
+          , placeBilliardsRoom
+          , placeTrophyRoom
+          , placeVictorianHalls
+          , placeMasterBedroom
+          , placeBalcony
+          , placeEntryHall
+          , createTheSpectralWatcher
+          ]
+        <> victorianHallsMoveTo
+        <> officeMoveTo
+        <> billiardsRoomMoveTo
+        <> balconyMoveTo
+        <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
+           | isJust mJeromeDavids
+           ]
+        <> [createNetherMist | isJust mJeromeDavids]
+        <> [ SpawnEnemyAtEngagedWith shadowHound billiardsRoomId valentinoId
+           | valentinoId <- maybeToList mValentinoRivas
+           ]
+        <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
+           | isJust mJeromeDavids
+           ]
+        <> [ SpawnEnemyAtEngagedWith wraith balconyId pennyId
+           | pennyId <- maybeToList mPennyWhite
+           ]
+        <> [SetupStep (toTarget attrs) 2]
 
       acts <- genCards [Acts.theDisappearance]
       agendas <- genCards [Agendas.judgementXX]
@@ -170,8 +170,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           (attrs & (actStackL . at 1 ?~ acts) & (agendaStackL . at 1 ?~ agendas))
     SetupStep (isTarget attrs -> True) 2 -> do
       gavriellaChosen <-
-        selectAny $
-          investigatorIs Investigators.gavriellaMizrah
+        selectAny
+          $ investigatorIs Investigators.gavriellaMizrah
       valentinoChosen <- selectAny $ investigatorIs Investigators.valentinoRivas
       pennyChosen <- selectAny $ investigatorIs Investigators.pennyWhite
 
@@ -181,24 +181,24 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       terrorInTheNight <- genCard Treacheries.terrorInTheNight
       whispersInTheDark <- genCard Treacheries.whispersInTheDark
 
-      pushAll $
-        [ EnemyDamage theSpectralWatcher $ nonAttack attrs 1
-        | gavriellaChosen
-        ]
-          <> [ AttachStoryTreacheryTo terrorInTheNight (toTarget agendaId)
-             | valentinoChosen
-             ]
-          <> [ AttachStoryTreacheryTo whispersInTheDark (toTarget agendaId)
-             | pennyChosen
-             ]
+      pushAll
+        $ [ EnemyDamage theSpectralWatcher $ nonAttack attrs 1
+          | gavriellaChosen
+          ]
+        <> [ AttachStoryTreacheryTo terrorInTheNight (toTarget agendaId)
+           | valentinoChosen
+           ]
+        <> [ AttachStoryTreacheryTo whispersInTheDark (toTarget agendaId)
+           | pennyChosen
+           ]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Skull -> do
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
-            when (action `elem` [Action.Fight, Action.Evade]) $
-              runHauntedAbilities iid
+            when (action `elem` [Action.Fight, Action.Evade])
+              $ runHauntedAbilities iid
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do

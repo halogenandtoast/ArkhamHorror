@@ -32,13 +32,13 @@ instance HasAbilities WizardOfYogSothoth where
   getAbilities (WizardOfYogSothoth x) =
     withBaseAbilities
       x
-      [ restrictedAbility x 1 (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You) $
-          ForcedAbility $
-            DrawCard
-              Timing.When
-              You
-              (BasicCardMatch $ CardWithOneOf $ map CardWithTrait [Hex, Pact])
-              AnyDeck
+      [ restrictedAbility x 1 (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
+          $ ForcedAbility
+          $ DrawCard
+            Timing.When
+            You
+            (BasicCardMatch $ CardWithOneOf $ map CardWithTrait [Hex, Pact])
+            AnyDeck
       ]
 
 instance RunMessage WizardOfYogSothoth where

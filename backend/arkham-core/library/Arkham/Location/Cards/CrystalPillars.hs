@@ -26,11 +26,11 @@ instance HasAbilities CrystalPillars where
   getAbilities (CrystalPillars attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            Enters Timing.After You $
-              LocationWithId $
-                toId attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId
+          $ toId attrs
       ]
 
 instance RunMessage CrystalPillars where

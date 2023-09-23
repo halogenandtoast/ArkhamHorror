@@ -26,8 +26,8 @@ instance HasModifiersFor AshleighClarke where
     lid <- getJustLocation iid
     enemyLocation <- field EnemyLocation (toId attrs)
     phase <- getPhase
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ CannotDrawCards
         | phase == UpkeepPhase && Just lid == enemyLocation

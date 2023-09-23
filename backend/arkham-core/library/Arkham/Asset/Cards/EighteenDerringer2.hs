@@ -26,9 +26,9 @@ eighteenDerringer2 =
 
 instance HasAbilities EighteenDerringer2 where
   getAbilities (EighteenDerringer2 (attrs `With` _)) =
-    [ restrictedAbility attrs 1 ControlsThis $
-        ActionAbility (Just Action.Fight) $
-          Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Ammo 1]
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ActionAbility (Just Action.Fight)
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Ammo 1]
     ]
 
 instance RunMessage EighteenDerringer2 where

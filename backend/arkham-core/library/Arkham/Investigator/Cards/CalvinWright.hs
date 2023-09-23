@@ -26,7 +26,7 @@ instance HasModifiersFor CalvinWright where
     pure
       $ toModifiers a
       $ [SkillModifier skill horror | horror > 0, skill <- [#willpower, #intellect]]
-        <> [SkillModifier skill damage | damage > 0, skill <- [#combat, #agility]]
+      <> [SkillModifier skill damage | damage > 0, skill <- [#combat, #agility]]
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue CalvinWright where
@@ -42,10 +42,10 @@ instance RunMessage CalvinWright where
       push
         $ chooseOne iid
         $ [Label "Heal 1 Damage" [HealDamage (toTarget attrs) (toSource attrs) 1] | canHealDamage]
-          <> [Label "Heal 1 Horror" [healHorror] | healHorror <- toList mHealHorror]
-          <> [ Label "Take 1 Direct Damage" [directDamage iid attrs 1]
-             , Label "Take 1 Direct Horror" [directHorror iid attrs 1]
-             , Label "Do not use elder sign ability" []
-             ]
+        <> [Label "Heal 1 Horror" [healHorror] | healHorror <- toList mHealHorror]
+        <> [ Label "Take 1 Direct Damage" [directDamage iid attrs 1]
+           , Label "Take 1 Direct Horror" [directHorror iid attrs 1]
+           , Label "Do not use elder sign ability" []
+           ]
       pure i
     _ -> CalvinWright <$> runMessage msg attrs

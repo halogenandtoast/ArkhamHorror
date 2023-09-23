@@ -33,12 +33,12 @@ instance HasAbilities DimStreetsMappingTheStreets where
   getAbilities (DimStreetsMappingTheStreets a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            DiscoveringLastClue
-              Timing.After
-              You
-              (LocationWithId $ toId a)
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ DiscoveringLastClue
+            Timing.After
+            You
+            (LocationWithId $ toId a)
       ]
 
 instance RunMessage DimStreetsMappingTheStreets where

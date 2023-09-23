@@ -23,7 +23,7 @@ instance RunMessage HallowedMirror where
       canShuffleDeck <- getCanShuffleDeck iid
       pushAll
         $ addToHand iid handSoothingMelody
-          : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
+        : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
       HallowedMirror <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
       let iid = getOwner attrs

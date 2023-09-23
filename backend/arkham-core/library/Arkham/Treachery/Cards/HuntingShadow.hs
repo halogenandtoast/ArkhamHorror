@@ -22,6 +22,6 @@ instance RunMessage HuntingShadow where
       push
         $ chooseOrRunOne iid
         $ [Label "Spend 1 clue" [SpendClues 1 [iid]] | canSpendClues]
-          <> [Label "Take 2 damage" [assignDamage iid attrs 2]]
+        <> [Label "Take 2 damage" [assignDamage iid attrs 2]]
       pure t
     _ -> HuntingShadow <$> runMessage msg attrs

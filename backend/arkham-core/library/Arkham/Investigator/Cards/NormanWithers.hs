@@ -28,7 +28,8 @@ instance HasModifiersFor NormanWithers where
   getModifiersFor target (NormanWithers (a `With` metadata)) | isTarget a target = do
     pure
       $ toModifiers a
-      $ TopCardOfDeckIsRevealed : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+      $ TopCardOfDeckIsRevealed
+      : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
   getModifiersFor (CardIdTarget cid) (NormanWithers (a `With` _)) =
     case unDeck (investigatorDeck a) of
       x : _ | toCardId x == cid -> do
@@ -64,10 +65,10 @@ instance RunMessage NormanWithers where
         push
           $ chooseOne iid
           $ Label "Do not swap" []
-            : [ targetLabel (toCardId c)
-                $ [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
-              | c <- onlyPlayerCards (investigatorHand a)
-              ]
+          : [ targetLabel (toCardId c)
+              $ [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
+            | c <- onlyPlayerCards (investigatorHand a)
+            ]
       pure nw
     Do BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
     PlayCard iid card _ _ False | iid == toId a ->

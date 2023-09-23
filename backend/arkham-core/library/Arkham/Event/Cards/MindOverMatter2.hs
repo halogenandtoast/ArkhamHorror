@@ -47,8 +47,8 @@ mindOverMatter2Effect = cardEffect MindOverMatter2Effect Cards.mindOverMatter2
 instance HasModifiersFor MindOverMatter2Effect where
   getModifiersFor target (MindOverMatter2Effect a@EffectAttrs {..})
     | target == effectTarget =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [ AddSkillToOtherSkill SkillIntellect SkillCombat
             , AddSkillToOtherSkill SkillIntellect SkillAgility

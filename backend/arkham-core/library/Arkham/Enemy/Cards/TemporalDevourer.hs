@@ -32,7 +32,7 @@ temporalDevourer =
                 (LocationMatchAny $ map LocationWithTrait [Shattered, Extradimensional])
             )
       )
-      . (surgeIfUnableToSpawnL .~ True)
+    . (surgeIfUnableToSpawnL .~ True)
 
 instance HasAbilities TemporalDevourer where
   getAbilities (TemporalDevourer a) =
@@ -42,8 +42,8 @@ instance HasAbilities TemporalDevourer where
           $ ForcedAbility
           $ EnemyEnters
             Timing.After
-            ( LocationMatchAny $
-                map LocationWithTrait [Shattered, Extradimensional]
+            ( LocationMatchAny
+                $ map LocationWithTrait [Shattered, Extradimensional]
             )
           $ EnemyWithId
           $ toId a

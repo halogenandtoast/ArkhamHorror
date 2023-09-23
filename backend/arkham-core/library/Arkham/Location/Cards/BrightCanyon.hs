@@ -30,10 +30,10 @@ instance HasAbilities BrightCanyon where
       [ restrictedAbility
           attrs
           1
-          ( InvestigatorExists $
-              You
-                <> HasMatchingTreachery
-                  (treacheryIs Treacheries.poisoned)
+          ( InvestigatorExists
+              $ You
+              <> HasMatchingTreachery
+                (treacheryIs Treacheries.poisoned)
           )
           $ ForcedAbility
           $ Enters Timing.After You

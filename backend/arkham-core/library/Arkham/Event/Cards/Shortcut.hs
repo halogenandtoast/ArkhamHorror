@@ -24,8 +24,8 @@ instance RunMessage Shortcut where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <- selectList $ colocatedWith iid
       connectingLocations <- selectList AccessibleLocation
-      unless (null connectingLocations) $
-        pushAll
+      unless (null connectingLocations)
+        $ pushAll
           [ chooseOne
               iid
               [ TargetLabel

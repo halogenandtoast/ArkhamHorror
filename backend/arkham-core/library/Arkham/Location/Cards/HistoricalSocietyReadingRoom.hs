@@ -31,8 +31,8 @@ historicalSocietyReadingRoom =
 
 instance HasAbilities HistoricalSocietyReadingRoom where
   getAbilities (HistoricalSocietyReadingRoom attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
           [ withTooltip
               "{action}: _Investigate_. If you succeed, instead of discovering clues, choose an enemy with doom on it. Take 1 of that enemy's doom, flip it to its clue side, and place it on your investigator. (Group limit once per round)."
@@ -44,20 +44,20 @@ instance HasAbilities HistoricalSocietyReadingRoom where
                 (ActionAbility (Just Action.Investigate) (ActionCost 1))
           ]
         else
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                EnemySpawns
-                  Timing.When
-                  (LocationWithId $ toId attrs)
-                  AnyEnemy
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ EnemySpawns
+                Timing.When
+                (LocationWithId $ toId attrs)
+                AnyEnemy
           ]
 
 instance RunMessage HistoricalSocietyReadingRoom where
   runMessage msg l@(HistoricalSocietyReadingRoom attrs) = case msg of
     UseCardAbility iid source 1 _ _
       | isSource attrs source && locationRevealed attrs -> do
-          push $
-            Investigate
+          push
+            $ Investigate
               iid
               (toId attrs)
               (AbilitySource source 1)
@@ -71,15 +71,15 @@ instance RunMessage HistoricalSocietyReadingRoom where
     Successful (Action.Investigate, _) iid (AbilitySource source 1) _ _
       | isSource attrs source -> do
           enemies <-
-            selectListMap EnemyTarget $
-              EnemyWithDoom $
-                AtLeast $
-                  Static
-                    1
+            selectListMap EnemyTarget
+              $ EnemyWithDoom
+              $ AtLeast
+              $ Static
+                1
           when
             (notNull enemies)
-            ( push $
-                chooseOrRunOne
+            ( push
+                $ chooseOrRunOne
                   iid
                   [ targetLabel
                     target

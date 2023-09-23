@@ -29,8 +29,8 @@ sacredWoods_184 =
 
 instance HasAbilities SacredWoods_184 where
   getAbilities (SacredWoods_184 attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
           [ restrictedAbility
               attrs

@@ -27,8 +27,8 @@ cursedLuck = treachery CursedLuck Cards.cursedLuck
 instance HasModifiersFor CursedLuck where
   getModifiersFor (InvestigatorTarget iid) (CursedLuck attrs) = do
     mSkillTestSource <- getSkillTestSource
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         attrs
         [ AnySkillValue (-1)
         | treacheryOnInvestigator iid attrs && isJust mSkillTestSource
@@ -37,12 +37,12 @@ instance HasModifiersFor CursedLuck where
 
 instance HasAbilities CursedLuck where
   getAbilities (CursedLuck x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          SkillTestResult Timing.After You AnySkillTest $
-            SuccessResult $
-              AtLeast $
-                Static 1
+    [ restrictedAbility x 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ SkillTestResult Timing.After You AnySkillTest
+        $ SuccessResult
+        $ AtLeast
+        $ Static 1
     ]
 
 instance RunMessage CursedLuck where

@@ -49,7 +49,7 @@ instance RunMessage PrestonFairmont where
       push
         $ chooseOrRunOne iid
         $ Label "Resolve normally" []
-          : [Label "Automatically succeed" [SpendResources iid 2, PassSkillTest] | hasResources]
+        : [Label "Automatically succeed" [SpendResources iid 2, PassSkillTest] | hasResources]
       pure i
     SpendResources iid n | iid == toId attrs -> do
       familyInheritance <- selectJust $ assetIs Assets.familyInheritance
@@ -63,7 +63,7 @@ instance RunMessage PrestonFairmont where
                 $ replicate
                   familyInheritanceResources
                   (targetLabel familyInheritance [RemoveResources (toSource attrs) (toTarget familyInheritance) 1])
-                  <> replicate attrs.resources (ResourceLabel iid [Do (SpendResources iid 1)])
+                <> replicate attrs.resources (ResourceLabel iid [Do (SpendResources iid 1)])
             else push $ RemoveResources (toSource attrs) (toTarget familyInheritance) n
           pure i
         else PrestonFairmont <$> runMessage msg attrs

@@ -22,19 +22,19 @@ instance RunMessage StandTogether where
   runMessage msg e@(StandTogether attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigators <-
-        selectList $
-          NotInvestigator (InvestigatorWithId iid)
-            <> colocatedWith iid
-      pushAll $
-        [ chooseOrRunOne
-          iid
-          [ targetLabel
-              iid'
-              [ TakeResources iid' 2 (toSource attrs) False
-              , TakeResources iid 2 (toSource attrs) False
-              ]
+        selectList
+          $ NotInvestigator (InvestigatorWithId iid)
+          <> colocatedWith iid
+      pushAll
+        $ [ chooseOrRunOne
+            iid
+            [ targetLabel
+                iid'
+                [ TakeResources iid' 2 (toSource attrs) False
+                , TakeResources iid 2 (toSource attrs) False
+                ]
+            ]
+          | iid' <- investigators
           ]
-        | iid' <- investigators
-        ]
       pure e
     _ -> StandTogether <$> runMessage msg attrs

@@ -33,11 +33,11 @@ instance HasAbilities SlimeCoveredDhole where
   getAbilities (SlimeCoveredDhole attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            EnemyEnters Timing.When (LocationWithInvestigator Anyone) $
-              EnemyWithId $
-                toId attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemyEnters Timing.When (LocationWithInvestigator Anyone)
+          $ EnemyWithId
+          $ toId attrs
       ]
 
 instance RunMessage SlimeCoveredDhole where

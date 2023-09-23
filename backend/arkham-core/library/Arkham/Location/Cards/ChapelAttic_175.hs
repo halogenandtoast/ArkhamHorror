@@ -29,11 +29,11 @@ instance HasAbilities ChapelAttic_175 where
   getAbilities (ChapelAttic_175 a) =
     withRevealedAbilities
       a
-      [ restrictedAbility a 1 Here $
-          ForcedAbility $
-            DrawCard Timing.After You (BasicCardMatch NonWeakness) (DeckOf You)
-      , mkAbility a 2 $
-          ReactionAbility
+      [ restrictedAbility a 1 Here
+          $ ForcedAbility
+          $ DrawCard Timing.After You (BasicCardMatch NonWeakness) (DeckOf You)
+      , mkAbility a 2
+          $ ReactionAbility
             ( SkillTestResult
                 Timing.After
                 You
@@ -64,7 +64,7 @@ instance RunMessage ChapelAttic_175 where
           let
             cards =
               filter (maybe False ((== Just iid) . pcOwner) . preview _PlayerCard) (locationCardsUnderneath attrs)
-          in
+           in
             guard (notNull cards) $> AddToHand iid cards
       pushAll $ mapMaybe returnCards iids
       pure l

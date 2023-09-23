@@ -36,11 +36,11 @@ instance HasAbilities ExhibitHallAthabaskanExhibit where
   getAbilities (ExhibitHallAthabaskanExhibit x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $
-        ForcedAbility $
-          Enters Timing.After You $
-            LocationWithId $
-              toId x
+      [ mkAbility x 1
+        $ ForcedAbility
+        $ Enters Timing.After You
+        $ LocationWithId
+        $ toId x
       | locationRevealed x
       ]
 

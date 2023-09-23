@@ -30,14 +30,14 @@ accademiaBridge =
 
 instance HasAbilities AccademiaBridge where
   getAbilities (AccademiaBridge attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          Leaves Timing.After You $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage AccademiaBridge where
   runMessage msg l@(AccademiaBridge attrs) = case msg of

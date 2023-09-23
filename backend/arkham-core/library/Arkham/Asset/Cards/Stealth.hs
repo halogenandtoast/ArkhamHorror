@@ -34,6 +34,6 @@ instance RunMessage Stealth where
       canDisengage <- iid <=~> InvestigatorCanDisengage
       pushAll
         $ [turnModifier attrs target (EnemyCannotEngage iid)]
-          <> [DisengageEnemy iid eid | canDisengage]
+        <> [DisengageEnemy iid eid | canDisengage]
       pure a
     _ -> Stealth <$> runMessage msg attrs

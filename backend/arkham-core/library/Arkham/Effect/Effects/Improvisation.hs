@@ -34,9 +34,11 @@ instance RunMessage Improvisation where
       role <- field InvestigatorClass iid
       e
         <$ when
-          ( maybe False (== role) . headMay . toList $
-              cdClassSymbols
-                (toCardDef card)
+          ( maybe False (== role)
+              . headMay
+              . toList
+                $ cdClassSymbols
+                  (toCardDef card)
           )
           (push $ DisableEffect $ toId attrs)
     EndTurn iid

@@ -26,12 +26,12 @@ priestessOfTheCoven =
 instance HasModifiersFor PriestessOfTheCoven where
   getModifiersFor target (PriestessOfTheCoven a) | isTarget a target = do
     witchCount <- length <$> findInDiscard (CardWithTrait Witch)
-    pure $
-      toModifiers a $
-        guard (witchCount > 0)
-          *> [ Modifier.EnemyFight (min 3 witchCount)
-             , Modifier.EnemyEvade (min 3 witchCount)
-             ]
+    pure
+      $ toModifiers a
+      $ guard (witchCount > 0)
+      *> [ Modifier.EnemyFight (min 3 witchCount)
+         , Modifier.EnemyEvade (min 3 witchCount)
+         ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PriestessOfTheCoven where
@@ -44,8 +44,8 @@ instance RunMessage PriestessOfTheCoven where
   runMessage msg e@(PriestessOfTheCoven attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ InvestigatorAt $ locationWithEnemy $ toId attrs
-      pushAll $
-        Ready (toTarget attrs)
-          : map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
+      pushAll
+        $ Ready (toTarget attrs)
+        : map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
       pure e
     _ -> PriestessOfTheCoven <$> runMessage msg attrs

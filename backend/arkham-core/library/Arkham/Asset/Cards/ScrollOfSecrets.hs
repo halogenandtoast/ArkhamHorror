@@ -21,21 +21,21 @@ scrollOfSecrets = asset ScrollOfSecrets Cards.scrollOfSecrets
 
 instance HasAbilities ScrollOfSecrets where
   getAbilities (ScrollOfSecrets a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility Nothing $
-          ActionCost 1
-            <> ExhaustCost (toTarget a)
-            <> UseCost (AssetWithId $ toId a) Secret 1
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
+        <> UseCost (AssetWithId $ toId a) Secret 1
     ]
 
 instance RunMessage ScrollOfSecrets where
   runMessage msg a@(ScrollOfSecrets attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <-
-        selectTargets $
-          InvestigatorWithoutModifier CannotManipulateDeck
-      push $
-        chooseOne
+        selectTargets
+          $ InvestigatorWithoutModifier CannotManipulateDeck
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             target

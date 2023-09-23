@@ -40,8 +40,8 @@ instance RunMessage ThePaintedWorld where
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)
           candidates
-      push $
-        InitiatePlayCardAsChoose
+      push
+        $ InitiatePlayCardAsChoose
           iid
           (toCard attrs)
           playableCards

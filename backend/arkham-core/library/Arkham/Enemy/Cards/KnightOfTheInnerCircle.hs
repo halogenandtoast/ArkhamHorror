@@ -31,12 +31,12 @@ instance HasAbilities KnightOfTheInnerCircle where
   getAbilities (KnightOfTheInnerCircle attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            OrWindowMatcher
-              [ Enters Timing.After You $ locationWithEnemy $ toId attrs
-              , EnemyEnters Timing.After YourLocation $ EnemyWithId $ toId attrs
-              ]
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ OrWindowMatcher
+            [ Enters Timing.After You $ locationWithEnemy $ toId attrs
+            , EnemyEnters Timing.After YourLocation $ EnemyWithId $ toId attrs
+            ]
       ]
 
 instance RunMessage KnightOfTheInnerCircle where

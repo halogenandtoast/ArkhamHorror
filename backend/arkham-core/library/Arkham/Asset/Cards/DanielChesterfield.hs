@@ -25,17 +25,17 @@ instance HasAbilities DanielChesterfield where
         1
         (ControlsThis <> InvestigatorExists (NotYou <> InvestigatorAt YourLocation))
         $ FastAbility Free
-    , restrictedAbility a 1 ControlsThis $
-        ForcedAbility $
-          AssignedHorror
-            Timing.After
-            You
-            (ExcludesTarget $ TargetIs $ toTarget a)
-    , mkAbility a 1 $
-        ForcedAbility $
-          AssetLeavesPlay Timing.When $
-            AssetWithId $
-              toId a
+    , restrictedAbility a 1 ControlsThis
+        $ ForcedAbility
+        $ AssignedHorror
+          Timing.After
+          You
+          (ExcludesTarget $ TargetIs $ toTarget a)
+    , mkAbility a 1
+        $ ForcedAbility
+        $ AssetLeavesPlay Timing.When
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage DanielChesterfield where

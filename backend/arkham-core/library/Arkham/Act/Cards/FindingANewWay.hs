@@ -24,17 +24,17 @@ instance HasAbilities FindingANewWay where
   getAbilities (FindingANewWay x)
     | onSide A x =
         [ mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1
-        , restrictedAbility x 2 AllUndefeatedInvestigatorsResigned $
-            Objective $
-              ForcedAbility AnyWindow
+        , restrictedAbility x 2 AllUndefeatedInvestigatorsResigned
+            $ Objective
+            $ ForcedAbility AnyWindow
         ]
   getAbilities _ = []
 
 instance RunMessage FindingANewWay where
   runMessage msg a@(FindingANewWay attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        DiscardTopOfEncounterDeck
+      push
+        $ DiscardTopOfEncounterDeck
           iid
           3
           (toSource attrs)
@@ -47,8 +47,8 @@ instance RunMessage FindingANewWay where
       a <$ push (scenarioResolution 1)
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
-      unless (null locationCards) $
-        pushAll
+      unless (null locationCards)
+        $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
               iid

@@ -30,12 +30,12 @@ instance HasAbilities TheCarnevaleConspiracy where
         [ restrictedAbility
             x
             1
-            ( AssetExists $
-                AssetWithTitle "Masked Carnevale-Goer"
-                  <> AssetWithoutModifier CannotBeRevealed
+            ( AssetExists
+                $ AssetWithTitle "Masked Carnevale-Goer"
+                <> AssetWithoutModifier CannotBeRevealed
             )
-            ( ActionAbility Nothing $
-                Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Anywhere]
+            ( ActionAbility Nothing
+                $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Anywhere]
             )
         , restrictedAbility
             x
@@ -89,8 +89,8 @@ instance RunMessage TheCarnevaleConspiracy where
                 ]
             ]
       createCnidathqua <- toMessage <$> createEnemy cnidathqua Global
-      pushAll $
-        [createCnidathqua, advanceActDeck attrs]
-          <> flipMsg
+      pushAll
+        $ [createCnidathqua, advanceActDeck attrs]
+        <> flipMsg
       pure a
     _ -> TheCarnevaleConspiracy <$> runMessage msg attrs

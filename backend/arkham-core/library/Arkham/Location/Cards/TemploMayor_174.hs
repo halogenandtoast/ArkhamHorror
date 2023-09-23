@@ -31,36 +31,36 @@ temploMayor_174 =
 
 instance HasAbilities TemploMayor_174 where
   getAbilities (TemploMayor_174 attrs) =
-    withRevealedAbilities attrs $
-      [ mkAbility attrs 1 $
-          ForcedAbility $
-            PutLocationIntoPlay Timing.After Anyone $
-              LocationWithId $
-                toId attrs
-      , limitedAbility (GroupLimit PerPhase 1)
-          $ restrictedAbility
-            attrs
-            2
-            ( Here
-                <> CluesOnThis (AtLeast $ Static 1)
-                <> CanDiscoverCluesAt
-                  (LocationWithId $ toId attrs)
-            )
-          $ ReactionAbility
-            ( OrWindowMatcher
-                [ EnemyDefeated
-                    Timing.After
-                    You
-                    ByAny
-                    (enemyAt (toId attrs) <> EnemyWithTrait Serpent)
-                , EnemyEvaded
-                    Timing.After
-                    You
-                    (enemyAt (toId attrs) <> EnemyWithTrait Serpent)
-                ]
-            )
-            Free
-      ]
+    withRevealedAbilities attrs
+      $ [ mkAbility attrs 1
+            $ ForcedAbility
+            $ PutLocationIntoPlay Timing.After Anyone
+            $ LocationWithId
+            $ toId attrs
+        , limitedAbility (GroupLimit PerPhase 1)
+            $ restrictedAbility
+              attrs
+              2
+              ( Here
+                  <> CluesOnThis (AtLeast $ Static 1)
+                  <> CanDiscoverCluesAt
+                    (LocationWithId $ toId attrs)
+              )
+            $ ReactionAbility
+              ( OrWindowMatcher
+                  [ EnemyDefeated
+                      Timing.After
+                      You
+                      ByAny
+                      (enemyAt (toId attrs) <> EnemyWithTrait Serpent)
+                  , EnemyEvaded
+                      Timing.After
+                      You
+                      (enemyAt (toId attrs) <> EnemyWithTrait Serpent)
+                  ]
+              )
+              Free
+        ]
 
 instance RunMessage TemploMayor_174 where
   runMessage msg l@(TemploMayor_174 attrs) = case msg of

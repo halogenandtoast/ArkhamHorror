@@ -35,7 +35,8 @@ instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
         $ FastAbility (assetUseCost a Secret 3)
     , withTooltip "{fast} Spend 4 secrets: Deal 3 damage to an enemy engaged with you."
         $ withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a Secret 4)
-        $ ControlsThis <> enemyExists (EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (toSource a))
+        $ ControlsThis
+        <> enemyExists (EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (toSource a))
     ]
 
 instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where

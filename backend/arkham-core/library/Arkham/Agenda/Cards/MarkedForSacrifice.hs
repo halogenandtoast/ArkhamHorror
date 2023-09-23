@@ -30,10 +30,10 @@ instance HasModifiersFor MarkedForSacrifice where
 
 instance HasAbilities MarkedForSacrifice where
   getAbilities (MarkedForSacrifice a) =
-    [ mkAbility a 1 $
-        ReactionAbility
-          ( EnemyDefeated Timing.After You ByAny $
-              EnemyOneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
+    [ mkAbility a 1
+        $ ReactionAbility
+          ( EnemyDefeated Timing.After You ByAny
+              $ EnemyOneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
           )
           Free
     ]

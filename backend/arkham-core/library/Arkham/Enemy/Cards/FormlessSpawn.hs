@@ -32,35 +32,35 @@ formlessSpawn =
 instance HasModifiersFor FormlessSpawn where
   getModifiersFor target (FormlessSpawn a) | isTarget a target = do
     enemyDoom <-
-      selectAgg Sum EnemyDoom $
-        EnemyAt $
-          locationIs
-            Locations.nexusOfNKai
+      selectAgg Sum EnemyDoom
+        $ EnemyAt
+        $ locationIs
+          Locations.nexusOfNKai
     treacheryDoom <-
-      selectAgg Sum TreacheryDoom $
-        TreacheryAt $
-          locationIs
-            Locations.nexusOfNKai
+      selectAgg Sum TreacheryDoom
+        $ TreacheryAt
+        $ locationIs
+          Locations.nexusOfNKai
     assetDoom <-
-      selectAgg Sum AssetDoom $
-        AssetAt $
-          locationIs
-            Locations.nexusOfNKai
+      selectAgg Sum AssetDoom
+        $ AssetAt
+        $ locationIs
+          Locations.nexusOfNKai
     investigatorDoom <-
-      selectAgg Sum InvestigatorDoom $
-        InvestigatorAt $
-          locationIs
-            Locations.nexusOfNKai
+      selectAgg Sum InvestigatorDoom
+        $ InvestigatorAt
+        $ locationIs
+          Locations.nexusOfNKai
     nexusDoom <- selectAgg Sum LocationDoom $ locationIs Locations.nexusOfNKai
 
     let
       doomCount =
-        getSum $
-          fold
+        getSum
+          $ fold
             [enemyDoom, treacheryDoom, assetDoom, investigatorDoom, nexusDoom]
 
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ CannotMove
         , CannotBeMoved

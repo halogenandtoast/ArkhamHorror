@@ -29,20 +29,20 @@ innocentReveler =
 
 instance HasAbilities InnocentReveler where
   getAbilities (InnocentReveler x) =
-    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) $
-        ActionAbility (Just Parley) (ActionCost 1)
-    , mkAbility x 2 $
-        ForcedAbility $
-          AssetWouldBeDiscarded Timing.When $
-            AssetWithId $
-              toId x
+    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation)
+        $ ActionAbility (Just Parley) (ActionCost 1)
+    , mkAbility x 2
+        $ ForcedAbility
+        $ AssetWouldBeDiscarded Timing.When
+        $ AssetWithId
+        $ toId x
     ]
 
 instance RunMessage InnocentReveler where
   runMessage msg a@(InnocentReveler attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        parley
+      push
+        $ parley
           iid
           source
           (toTarget attrs)

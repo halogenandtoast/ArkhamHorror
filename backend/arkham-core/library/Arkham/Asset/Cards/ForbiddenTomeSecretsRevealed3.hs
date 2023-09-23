@@ -41,7 +41,7 @@ instance HasAbilities ForbiddenTomeSecretsRevealed3 where
         )
         $ ActionAbility Nothing
         $ ActionCost 4
-          <> ExhaustCost (toTarget a)
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage ForbiddenTomeSecretsRevealed3 where
@@ -49,9 +49,9 @@ instance RunMessage ForbiddenTomeSecretsRevealed3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       lids <- selectList AccessibleLocation
       pushAll
-        [ chooseOrRunOne iid $
-            Label "Do not move" []
-              : [targetLabel lid [MoveTo $ move (toSource attrs) iid lid] | lid <- lids]
+        [ chooseOrRunOne iid
+            $ Label "Do not move" []
+            : [targetLabel lid [MoveTo $ move (toSource attrs) iid lid] | lid <- lids]
         , InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
         ]
       pure a

@@ -36,10 +36,10 @@ instance HasAbilities TheWayOut where
         , restrictedAbility
             a
             2
-            ( EachUndefeatedInvestigator $
-                InvestigatorAt $
-                  locationIs
-                    Locations.theGateToHell
+            ( EachUndefeatedInvestigator
+                $ InvestigatorAt
+                $ locationIs
+                  Locations.theGateToHell
             )
             $ Objective
             $ ForcedAbility AnyWindow
@@ -52,20 +52,20 @@ instance RunMessage TheWayOut where
       leadInvestigatorId <- getLeadInvestigatorId
       theGateToHell <- selectJust $ locationIs $ Locations.theGateToHell
       locations <-
-        selectList $
-          FarthestLocationFromLocation theGateToHell Anywhere
+        selectList
+          $ FarthestLocationFromLocation theGateToHell Anywhere
       locationsWithInvestigatorsAndEnemiesAndConnectedLocations <-
         for locations $ \location -> do
           investigators <- selectList $ InvestigatorAt $ LocationWithId location
           enemies <- selectList $ EnemyAt $ LocationWithId location
           connectedLocations <-
-            selectList $
-              AccessibleFrom $
-                LocationWithId
-                  location
+            selectList
+              $ AccessibleFrom
+              $ LocationWithId
+                location
           pure (location, investigators, enemies, connectedLocations)
-      push $
-        chooseOrRunOne
+      push
+        $ chooseOrRunOne
           leadInvestigatorId
           [ targetLabel
             location
@@ -73,15 +73,15 @@ instance RunMessage TheWayOut where
                 leadInvestigatorId
                 [ targetLabel
                   connected
-                  [ chooseOneAtATime leadInvestigatorId $
-                      [ targetLabel
-                        investigator
-                        [MoveTo $ move (toSource attrs) investigator connected]
-                      | investigator <- investigators
-                      ]
-                        <> [ targetLabel enemy [EnemyMove enemy connected]
-                           | enemy <- enemies
-                           ]
+                  [ chooseOneAtATime leadInvestigatorId
+                      $ [ targetLabel
+                          investigator
+                          [MoveTo $ move (toSource attrs) investigator connected]
+                        | investigator <- investigators
+                        ]
+                      <> [ targetLabel enemy [EnemyMove enemy connected]
+                         | enemy <- enemies
+                         ]
                   ]
                 | connected <- connectedLocations
                 ]

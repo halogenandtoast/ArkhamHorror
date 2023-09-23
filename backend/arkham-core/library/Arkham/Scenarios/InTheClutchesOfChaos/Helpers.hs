@@ -19,14 +19,14 @@ sampleLocations n = do
   lbls <-
     sampleN n
       $ "merchantDistrict"
-        :| [ "rivertown"
-           , "hangmansHill"
-           , "uptown"
-           , "southside"
-           , "frenchHill"
-           , "silverTwilightLodge"
-           , "southChurch"
-           ]
+      :| [ "rivertown"
+         , "hangmansHill"
+         , "uptown"
+         , "southside"
+         , "frenchHill"
+         , "silverTwilightLodge"
+         , "southChurch"
+         ]
   selectList $ LocationMatchAny $ map LocationWithLabel lbls
 
 sampleLocation :: (HasGame m, MonadRandom m) => m LocationId

@@ -30,20 +30,20 @@ specterOfDeath =
 
 instance HasAbilities SpecterOfDeath where
   getAbilities (SpecterOfDeath a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          SkillTestResult
-            Timing.After
-            You
-            (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-            (FailureResult AnyValue)
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ SkillTestResult
+          Timing.After
+          You
+          (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
+          (FailureResult AnyValue)
     ]
 
 instance RunMessage SpecterOfDeath where
   runMessage msg e@(SpecterOfDeath attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        EnemyAttack $
-          (enemyAttack (toId attrs) attrs iid) {attackDamageStrategy = enemyDamageStrategy attrs}
+      push
+        $ EnemyAttack
+        $ (enemyAttack (toId attrs) attrs iid) {attackDamageStrategy = enemyDamageStrategy attrs}
       pure e
     _ -> SpecterOfDeath <$> runMessage msg attrs

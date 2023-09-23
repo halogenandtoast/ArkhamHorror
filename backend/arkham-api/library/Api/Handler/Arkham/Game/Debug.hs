@@ -39,8 +39,8 @@ getApiV1ArkhamGameExportR gameId = do
 
     entries <- getGameLogEntries gameId
 
-    pure $
-      ArkhamExport
+    pure
+      $ ArkhamExport
         { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
         , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
         }
@@ -56,7 +56,7 @@ postApiV1ArkhamGamesImportR = do
       . fromJustNote "No export file uploaded"
       . headMay
       . snd
-      =<< runRequestBody
+        =<< runRequestBody
   now <- liftIO getCurrentTime
 
   case eExportData of
@@ -67,18 +67,18 @@ postApiV1ArkhamGamesImportR = do
         investigatorIds = aeCampaignPlayers export
       key <- runDB $ do
         gameId <-
-          insert $
-            ArkhamGame agedName agedCurrentData agedStep Solo now now
+          insert
+            $ ArkhamGame agedName agedCurrentData agedStep Solo now now
         insertMany_ $ map (\e -> e {arkhamLogEntryArkhamGameId = gameId}) agedLog
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
         traverse_
           ( \s ->
-              insert_ $
-                ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
+              insert_
+                $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
           )
           agedSteps
         pure gameId
-      pure $
-        toPublicGame
+      pure
+        $ toPublicGame
           (Entity key $ ArkhamGame agedName agedCurrentData agedStep Solo now now)
           (GameLog $ map arkhamLogEntryBody agedLog)

@@ -24,15 +24,15 @@ landlordsQuarters =
 
 instance HasAbilities LandlordsQuarters where
   getAbilities (LandlordsQuarters a) =
-    withBaseAbilities a $
-      guard (locationRevealed a)
-        *> [ restrictedAbility a 1 Here $
-              ForcedAbility $
-                RevealLocation Timing.After You $
-                  LocationWithId $
-                    toId a
-           , haunted hauntedText a 2
-           ]
+    withBaseAbilities a
+      $ guard (locationRevealed a)
+      *> [ restrictedAbility a 1 Here
+            $ ForcedAbility
+            $ RevealLocation Timing.After You
+            $ LocationWithId
+            $ toId a
+         , haunted hauntedText a 2
+         ]
    where
     hauntedText =
       "Search the encounter deck and discard pile for a Swarm of Rats and spawn it in Moldy Halls. Shuffle the encounter deck."
@@ -40,16 +40,16 @@ instance HasAbilities LandlordsQuarters where
 instance RunMessage LandlordsQuarters where
   runMessage msg l@(LandlordsQuarters attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        FindEncounterCard
+      push
+        $ FindEncounterCard
           iid
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard]
           (cardIs Enemies.swarmOfRats)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $
-        FindEncounterCard
+      push
+        $ FindEncounterCard
           iid
           (toTarget attrs)
           [FromEncounterDeck, FromEncounterDiscard]

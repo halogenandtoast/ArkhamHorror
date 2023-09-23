@@ -28,10 +28,10 @@ instance RunMessage BrokenRails where
         filterM
           (fieldP InvestigatorDamage (>= 4))
           investigatorIds
-      pushAll $
-        [LoseActions iid' source 1 | iid' <- investigatorIds]
-          <> [ ChooseAndDiscardAsset iid' (toSource attrs) AnyAsset
-             | iid' <- investigatorsWhoMustDiscard
-             ]
+      pushAll
+        $ [LoseActions iid' source 1 | iid' <- investigatorIds]
+        <> [ ChooseAndDiscardAsset iid' (toSource attrs) AnyAsset
+           | iid' <- investigatorsWhoMustDiscard
+           ]
       pure t
     _ -> BrokenRails <$> runMessage msg attrs

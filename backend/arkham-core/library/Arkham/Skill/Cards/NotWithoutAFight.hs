@@ -24,13 +24,13 @@ instance HasModifiersFor NotWithoutAFight where
   getModifiersFor (CardIdTarget cid) (NotWithoutAFight attrs)
     | toCardId attrs == cid = do
         n <-
-          selectCount $
-            EnemyIsEngagedWith $
-              InvestigatorWithId $
-                skillOwner
-                  attrs
-        pure $
-          toModifiers
+          selectCount
+            $ EnemyIsEngagedWith
+            $ InvestigatorWithId
+            $ skillOwner
+              attrs
+        pure
+          $ toModifiers
             attrs
             [AddSkillIcons $ cycleN n [SkillIcon SkillWillpower, SkillIcon SkillCombat, SkillIcon SkillAgility]]
   getModifiersFor _ _ = pure []

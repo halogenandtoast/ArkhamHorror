@@ -43,11 +43,11 @@ instance RunMessage JoeyTheRatVigil where
       handCards <- field InvestigatorHand iid
       let items = filter (member Item . toTraits) handCards
           windows'' =
-            nub $
-              windows'
-                <> [ mkWindow Timing.When (DuringTurn iid)
-                   , mkWindow Timing.When FastPlayerWindow
-                   ]
+            nub
+              $ windows'
+              <> [ mkWindow Timing.When (DuringTurn iid)
+                 , mkWindow Timing.When FastPlayerWindow
+                 ]
       playableItems <-
         filterM
           ( getIsPlayable
@@ -57,8 +57,8 @@ instance RunMessage JoeyTheRatVigil where
               windows''
           )
           items
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item windows'']
           | item <- playableItems

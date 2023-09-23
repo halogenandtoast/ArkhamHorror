@@ -26,15 +26,15 @@ instance RunMessage LiveAndLearn where
     InvestigatorPlayEvent iid eid _ [(windowType -> Window.SkillTestEnded st)] _ | eid == toId attrs -> do
       pushAll
         [ skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
-        , BeginSkillTest $
-            ( buildSkillTest
-                iid
-                (skillTestSource st)
-                (skillTestTarget st)
-                (skillTestType st)
-                (skillTestBaseValue st)
-                (skillTestDifficulty st)
-            )
+        , BeginSkillTest
+            $ ( buildSkillTest
+                  iid
+                  (skillTestSource st)
+                  (skillTestTarget st)
+                  (skillTestType st)
+                  (skillTestBaseValue st)
+                  (skillTestDifficulty st)
+              )
               { skillTestAction = skillTestAction st
               }
         ]

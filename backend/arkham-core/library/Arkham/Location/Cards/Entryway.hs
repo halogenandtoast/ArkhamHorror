@@ -62,14 +62,14 @@ instance RunMessage Entryway where
         (viewing, rest) = splitAt 2 explorationDeck
         (treacheries, other) =
           partition (`cardMatch` CardWithType TreacheryType) viewing
-      pushAll $
-        [ FocusCards viewing
-        , SetScenarioDeck ExplorationDeck $ other <> rest
-        , handleTreacheries
-            iid
-            (mapMaybe (preview _EncounterCard) treacheries)
-        ]
-          <> [PutCardOnBottomOfDeck iid deckKey c | c <- other]
-          <> [UnfocusCards, ShuffleDeck deckKey]
+      pushAll
+        $ [ FocusCards viewing
+          , SetScenarioDeck ExplorationDeck $ other <> rest
+          , handleTreacheries
+              iid
+              (mapMaybe (preview _EncounterCard) treacheries)
+          ]
+        <> [PutCardOnBottomOfDeck iid deckKey c | c <- other]
+        <> [UnfocusCards, ShuffleDeck deckKey]
       pure l
     _ -> Entryway <$> runMessage msg attrs

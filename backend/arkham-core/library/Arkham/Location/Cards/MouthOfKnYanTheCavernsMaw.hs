@@ -26,8 +26,8 @@ mouthOfKnYanTheCavernsMaw = location MouthOfKnYanTheCavernsMaw Cards.mouthOfKnYa
 
 instance HasAbilities MouthOfKnYanTheCavernsMaw where
   getAbilities (MouthOfKnYanTheCavernsMaw attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
           [ withTooltip
               "Let's make camp and solve this puzzle tomorrow"
@@ -50,8 +50,8 @@ instance RunMessage MouthOfKnYanTheCavernsMaw where
       pushAll
         [ FocusCards viewing
         , SetScenarioDeck ExplorationDeck rest
-        , questionLabel "Place one card on bottom of exploration deck" iid $
-            ChooseOne
+        , questionLabel "Place one card on bottom of exploration deck" iid
+            $ ChooseOne
               [ targetLabel
                 (toCardId c)
                 [ PutCardOnBottomOfDeck
@@ -59,8 +59,8 @@ instance RunMessage MouthOfKnYanTheCavernsMaw where
                     (Deck.ScenarioDeckByKey ExplorationDeck)
                     c
                 , FocusCards remaining
-                , questionLabel "Place card on top of exploration deck" iid $
-                    ChooseOneAtATime
+                , questionLabel "Place card on top of exploration deck" iid
+                    $ ChooseOneAtATime
                       [ targetLabel
                         (toCardId r)
                         [ PutCardOnTopOfDeck

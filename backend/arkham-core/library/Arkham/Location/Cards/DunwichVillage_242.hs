@@ -26,8 +26,8 @@ instance HasAbilities DunwichVillage_242 where
   getAbilities (DunwichVillage_242 attrs) =
     withResignAction
       attrs
-      [ limitedAbility (GroupLimit PerGame 1) $
-        restrictedAbility
+      [ limitedAbility (GroupLimit PerGame 1)
+        $ restrictedAbility
           attrs
           1
           ( Here

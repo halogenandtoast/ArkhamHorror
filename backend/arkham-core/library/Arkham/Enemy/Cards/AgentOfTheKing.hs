@@ -31,16 +31,16 @@ instance HasAbilities AgentOfTheKing where
   getAbilities (AgentOfTheKing a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.After (You <> InvestigatorWithAnyClues) AnyEnemyAttack $
-              EnemyWithId $
-                toId a
-      , mkAbility a 2 $
-          ForcedAbility $
-            EnemyDefeated Timing.When You ByAny $
-              EnemyWithId (toId a)
-                <> EnemyWithAnyClues
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.After (You <> InvestigatorWithAnyClues) AnyEnemyAttack
+          $ EnemyWithId
+          $ toId a
+      , mkAbility a 2
+          $ ForcedAbility
+          $ EnemyDefeated Timing.When You ByAny
+          $ EnemyWithId (toId a)
+          <> EnemyWithAnyClues
       ]
 
 instance RunMessage AgentOfTheKing where

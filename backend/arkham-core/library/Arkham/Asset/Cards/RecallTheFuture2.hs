@@ -28,8 +28,8 @@ recallTheFuture2 = asset (RecallTheFuture2 . (`with` Metadata Nothing)) Cards.re
 
 instance HasAbilities RecallTheFuture2 where
   getAbilities (RecallTheFuture2 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           (InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue)
           Free
     ]
@@ -41,8 +41,8 @@ instance RunMessage RecallTheFuture2 where
         scenarioFieldMap
           ScenarioChaosBag
           (nub . map chaosTokenFace . allChaosBagChaosTokens)
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
             (tshow t)
@@ -54,8 +54,8 @@ instance RunMessage RecallTheFuture2 where
       pure . RecallTheFuture2 $ attrs `with` Metadata (Just t)
     When (RevealChaosToken _ _ token@(ChaosToken _ t)) | Just t == chosenChaosToken metadata -> do
       unless (assetExhausted attrs) $ for_ (assetController attrs) $ \iid -> do
-        push $
-          If
+        push
+          $ If
             (Window.RevealChaosTokenAssetAbilityEffect iid [token] (toId attrs))
             [ ExhaustThen
                 (toTarget attrs)

@@ -29,8 +29,8 @@ theKingInYellow =
 
 instance HasAbilities TheKingInYellow where
   getAbilities (TheKingInYellow x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
           ( SkillTestResult
               Timing.After
               (You <> ContributedMatchingIcons (AtLeast $ Static 6))
@@ -45,8 +45,8 @@ instance HasModifiersFor TheKingInYellow where
     case assetPlacement attrs of
       InPlayArea minhId -> do
         commitedCardsCount <- fieldMap InvestigatorCommittedCards length minhId
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [ CannotPerformSkillTest
             | commitedCardsCount == 1 || commitedCardsCount == 2

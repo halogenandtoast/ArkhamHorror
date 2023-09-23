@@ -27,24 +27,24 @@ instance RunMessage SurvivalInstinct2 where
       unblockedConnectedLocationIds <- selectList AccessibleLocation
       let
         moveOptions =
-          chooseOrRunOne iid $
-            [Label "Do not move to a connecting location" []]
-              <> [ targetLabel lid [Move $ move attrs iid lid]
-                 | lid <- unblockedConnectedLocationIds
-                 ]
+          chooseOrRunOne iid
+            $ [Label "Do not move to a connecting location" []]
+            <> [ targetLabel lid [Move $ move attrs iid lid]
+               | lid <- unblockedConnectedLocationIds
+               ]
 
       case engagedEnemyIds of
         [] -> push moveOptions
         es ->
-          pushAll $
-            [ chooseOne
-                iid
-                [ Label
-                    "Evade each other enemy"
-                    [EnemyEvaded iid eid | eid <- es]
-                , Label "Skip" []
-                ]
-            ]
-              <> [moveOptions | notNull unblockedConnectedLocationIds]
+          pushAll
+            $ [ chooseOne
+                  iid
+                  [ Label
+                      "Evade each other enemy"
+                      [EnemyEvaded iid eid | eid <- es]
+                  , Label "Skip" []
+                  ]
+              ]
+            <> [moveOptions | notNull unblockedConnectedLocationIds]
       pure s
     _ -> SurvivalInstinct2 <$> runMessage msg attrs

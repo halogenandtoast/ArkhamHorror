@@ -21,26 +21,26 @@ newtype GitSha = GitSha {unGitSha :: Text}
 {- | The Git commit hash of HEAD at compile time. Attempts to read the
 @GIT_SHA1@ environment variable and otherwise runs @git rev-parse HEAD@.
 -}
-gitHash :: (IsString s) => s
+gitHash :: IsString s => s
 gitHash =
-  fromString $
-    $( let
-        strip = T.unpack . T.strip . T.pack
+  fromString
+    $ $( let
+          strip = T.unpack . T.strip . T.pack
 
-        gitHashCli :: IO (Maybe String)
-        gitHashCli = do
-          outcome <- try (readProcessWithExitCode "git" ["rev-parse", "HEAD"] "")
-          case outcome of
-            Left (_ :: IOException) -> pure Nothing
-            Right (exitCode, stdoutData, _stderr) -> case exitCode of
-              ExitSuccess -> pure $ Just $ strip stdoutData
-              ExitFailure _ -> pure Nothing
+          gitHashCli :: IO (Maybe String)
+          gitHashCli = do
+            outcome <- try (readProcessWithExitCode "git" ["rev-parse", "HEAD"] "")
+            case outcome of
+              Left (_ :: IOException) -> pure Nothing
+              Right (exitCode, stdoutData, _stderr) -> case exitCode of
+                ExitSuccess -> pure $ Just $ strip stdoutData
+                ExitFailure _ -> pure Nothing
 
-        gitHash' :: IO String
-        gitHash' = do
-          envHash <- lookupEnv "GIT_SHA1"
-          cliHash <- gitHashCli
-          pure $ fromMaybe (fail "No git sha found") $ cliHash <|> envHash
-       in
-        runIO gitHash' >>= TH.lift
-     )
+          gitHash' :: IO String
+          gitHash' = do
+            envHash <- lookupEnv "GIT_SHA1"
+            cliHash <- gitHashCli
+            pure $ fromMaybe (fail "No git sha found") $ cliHash <|> envHash
+          in
+          runIO gitHash' >>= TH.lift
+       )

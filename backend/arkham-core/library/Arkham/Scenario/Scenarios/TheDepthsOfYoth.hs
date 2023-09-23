@@ -110,8 +110,8 @@ instance RunMessage TheDepthsOfYoth where
           (toTarget attrs)
       pure
         . TheDepthsOfYoth
-        $ attrs
-          & standaloneCampaignLogL
+          $ attrs
+        & standaloneCampaignLogL
           .~ standaloneCampaignLog
     Setup -> do
       isStandalone <- getIsStandalone
@@ -178,55 +178,55 @@ instance RunMessage TheDepthsOfYoth where
       createHarbinger <- createEnemyWithPlacement_ harbingerOfValusia (OutOfPlay PursuitZone)
       createYig <- createEnemyWithPlacement_ yig (OutOfPlay PursuitZone)
 
-      pushAll $
-        story investigatorIds intro1
-          : [story investigatorIds intro2 | isIntro2]
-            <> [AddChaosToken ElderThing | isIntro2 && not isStandalone]
-            <> [ story investigatorIds intro3
-               | not forgingYourOwnPath && ichtacasFaithIsRestored
-               ]
-            <> [story investigatorIds intro4 | isIntro2]
-            <> [Record IchtacaIsSetAgainstYou | isIntro2 || isIntro4]
-            <> [RemoveCampaignCard Assets.ichtacaTheForgottenGuardian | isIntro4]
-            <> [story investigatorIds intro5 | isIntro4 && theRelicIsMissing]
-            <> [story investigatorIds intro6 | isIntro6]
-            <> [story investigatorIds intro7 | isIntro6 && hasPocketknife]
-            <> [story investigatorIds intro8 | isIntro8]
-            <> [CrossOutRecord TheInvestigatorsFoundTheMissingRelic | isIntro8]
-            <> [Record TheRelicIsMissing | isIntro8]
-            <> [RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort | isIntro4]
-            <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
-               | isIntro4
-               ]
-            <> [ SetEncounterDeck encounterDeck
-               , SetAgendaDeck
-               , SetActDeck
-               , placeStartLocation
-               , MoveAllTo (toSource attrs) startLocationId
-               ]
-            <> [createHarbinger | startsOnAgenda5]
-            <> [createYig | startsOnAgenda6]
+      pushAll
+        $ story investigatorIds intro1
+        : [story investigatorIds intro2 | isIntro2]
+          <> [AddChaosToken ElderThing | isIntro2 && not isStandalone]
+          <> [ story investigatorIds intro3
+             | not forgingYourOwnPath && ichtacasFaithIsRestored
+             ]
+          <> [story investigatorIds intro4 | isIntro2]
+          <> [Record IchtacaIsSetAgainstYou | isIntro2 || isIntro4]
+          <> [RemoveCampaignCard Assets.ichtacaTheForgottenGuardian | isIntro4]
+          <> [story investigatorIds intro5 | isIntro4 && theRelicIsMissing]
+          <> [story investigatorIds intro6 | isIntro6]
+          <> [story investigatorIds intro7 | isIntro6 && hasPocketknife]
+          <> [story investigatorIds intro8 | isIntro8]
+          <> [CrossOutRecord TheInvestigatorsFoundTheMissingRelic | isIntro8]
+          <> [Record TheRelicIsMissing | isIntro8]
+          <> [RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort | isIntro4]
+          <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
+             | isIntro4
+             ]
+          <> [ SetEncounterDeck encounterDeck
+             , SetAgendaDeck
+             , SetActDeck
+             , placeStartLocation
+             , MoveAllTo (toSource attrs) startLocationId
+             ]
+          <> [createHarbinger | startsOnAgenda5]
+          <> [createYig | startsOnAgenda6]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
       theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
       setAsideCards <-
-        genCards $
-          Assets.relicOfAgesRepossessThePast
-            : [ Enemies.harbingerOfValusia
-              | theHarbingerIsStillAlive && not startsOnAgenda5
-              ]
-              <> [Enemies.yig | not startsOnAgenda6]
-              <> replicate setAsidePoisonedCount Treacheries.poisoned
+        genCards
+          $ Assets.relicOfAgesRepossessThePast
+          : [ Enemies.harbingerOfValusia
+            | theHarbingerIsStillAlive && not startsOnAgenda5
+            ]
+            <> [Enemies.yig | not startsOnAgenda6]
+            <> replicate setAsidePoisonedCount Treacheries.poisoned
 
       acts <- genCards [Acts.journeyToTheNexus]
       agendas <-
-        genCards $
-          [Agendas.theDescentBegins | yigsFury < 6] -- 1
-            <> [Agendas.horrificDescent | yigsFury < 11] -- 2
-            <> [Agendas.endlessCaverns | yigsFury < 15] -- 3
-            <> [Agendas.cityOfBlood | yigsFury < 18] -- 4
-            <> [Agendas.furyThatShakesTheEarth | yigsFury < 21] -- 5
-            <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
+        genCards
+          $ [Agendas.theDescentBegins | yigsFury < 6] -- 1
+          <> [Agendas.horrificDescent | yigsFury < 11] -- 2
+          <> [Agendas.endlessCaverns | yigsFury < 15] -- 3
+          <> [Agendas.cityOfBlood | yigsFury < 18] -- 4
+          <> [Agendas.furyThatShakesTheEarth | yigsFury < 21] -- 5
+          <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
       TheDepthsOfYoth
         <$> runMessage
           msg
@@ -245,9 +245,9 @@ instance RunMessage TheDepthsOfYoth where
       isHarbinger <- harbingerId <=~> enemyIs Enemies.harbingerOfValusia
       when isHarbinger $ do
         startingDamage <- getRecordCount TheHarbingerIsStillAlive
-        when (startingDamage > 0) $
-          push $
-            PlaceTokens (toSource attrs) (toTarget harbingerId) Token.Damage startingDamage
+        when (startingDamage > 0)
+          $ push
+          $ PlaceTokens (toSource attrs) (toTarget harbingerId) Token.Damage startingDamage
       pure s
     Explore iid _ _ -> do
       windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
@@ -263,10 +263,10 @@ instance RunMessage TheDepthsOfYoth where
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
       inVictory <-
-        selectAny $
-          VictoryDisplayCardMatch $
-            cardIs
-              Enemies.harbingerOfValusia
+        selectAny
+          $ VictoryDisplayCardMatch
+          $ cardIs
+            Enemies.harbingerOfValusia
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       damage <- case inPlayHarbinger of
         Just eid -> field EnemyDamage eid
@@ -291,23 +291,23 @@ instance RunMessage TheDepthsOfYoth where
                       <> [ScenarioResolutionStep 1 (Resolution 1)]
                       <> map
                         ( \i ->
-                            SearchCollectionForRandom i (toSource attrs) $
-                              WeaknessCard
-                                <> CardWithTrait Injury
+                            SearchCollectionForRandom i (toSource attrs)
+                              $ WeaknessCard
+                              <> CardWithTrait Injury
                         )
                         iids
                   3 ->
                     map (\i -> SufferTrauma i 1 0) iids
                       <> [ScenarioResolutionStep 1 (Resolution 1)]
                   _ -> []
-          pushAll $
-            [story iids resolution, Record recordEntry]
-              <> depthMessages
-              <> [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
-              <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
-              <> [RecordCount YigsFury (yigsFury + vengeance)]
-              <> gainXp
-              <> [EndOfGame Nothing]
+          pushAll
+            $ [story iids resolution, Record recordEntry]
+            <> depthMessages
+            <> [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
+            <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
+            <> [RecordCount YigsFury (yigsFury + vengeance)]
+            <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "Unknown Resolution"
       pure s
     ScenarioResolutionStep 1 (Resolution 1) -> do
@@ -316,7 +316,7 @@ instance RunMessage TheDepthsOfYoth where
       pure s
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       for_ mcard $ \card ->
-        push $
-          ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+        push
+          $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure s
     _ -> TheDepthsOfYoth <$> runMessage msg attrs

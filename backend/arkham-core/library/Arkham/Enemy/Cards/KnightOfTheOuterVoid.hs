@@ -41,16 +41,16 @@ instance RunMessage KnightOfTheOuterVoid where
       lead <- getLead
       canPlaceDoom <- toId attrs <=~> NotEnemy (EnemyWithModifier CannotPlaceDoomOnThis)
       when canPlaceDoom $ do
-        push $
-          chooseOne
+        push
+          $ chooseOne
             lead
             [ Label "Place 1 doom" [PlaceDoom (toSource attrs) (toTarget attrs) 1]
             , Label "Place 2 doom" [PlaceDoom (toSource attrs) (toTarget attrs) 2]
             ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label "Use {willpower}" [parley iid (toAbilitySource attrs 1) attrs SkillWillpower 4]
           , Label "Use {intellect}" [parley iid (toAbilitySource attrs 1) attrs SkillIntellect 4]

@@ -42,12 +42,12 @@ instance RunMessage UnearthTheAncients where
   runMessage msg e@(UnearthTheAncients (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <-
-        selectList $
-          InHandOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (CardWithClass Seeker <> CardWithType AssetType)
-      push $
-        chooseOne
+        selectList
+          $ InHandOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (CardWithClass Seeker <> CardWithType AssetType)
+      push
+        $ chooseOne
           iid
           [ TargetLabel
             (CardIdTarget $ toCardId asset)
@@ -77,9 +77,9 @@ instance RunMessage UnearthTheAncients where
         case chosenCard metadata of
           Just card -> do
             drawing <- drawCards iid attrs 1
-            pushAll $
-              PutCardIntoPlay iid card Nothing (defaultWindows iid)
-                : [drawing | Relic `member` toTraits card]
+            pushAll
+              $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
+              : [drawing | Relic `member` toTraits card]
           Nothing -> error "this should not happen"
         pure e
     _ -> UnearthTheAncients . (`with` metadata) <$> runMessage msg attrs

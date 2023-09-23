@@ -382,7 +382,7 @@ extraAmmunition1 =
         Just
           $ Criteria.AssetExists
           $ AssetControlledBy (InvestigatorAt YourLocation)
-            <> AssetWithTrait Firearm
+          <> AssetWithTrait Firearm
     , cdAlternateCardCodes = ["01526"]
     }
 
@@ -406,7 +406,8 @@ workingAHunch =
           $ Criteria.Criteria
             [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
             , Criteria.InvestigatorExists
-                $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+                $ You
+                <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdAlternateCardCodes = ["01537"]
     }
@@ -440,8 +441,8 @@ elusive =
             [ Criteria.enemyExists EnemyEngagedWithYou
             , Criteria.LocationExists
                 $ RevealedLocation
-                  <> LocationWithoutEnemies
-                  <> NotYourLocation
+                <> LocationWithoutEnemies
+                <> NotYourLocation
             ]
     , cdAlternateCardCodes = ["01550"]
     }
@@ -463,7 +464,8 @@ sneakAttack =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ EnemyAt YourLocation <> ExhaustedEnemy
+          $ EnemyAt YourLocation
+          <> ExhaustedEnemy
     , cdAlternateCardCodes = ["01552"]
     }
 
@@ -527,7 +529,8 @@ mindWipe1 =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ EnemyAt YourLocation <> NonEliteEnemy
+          $ EnemyAt YourLocation
+          <> NonEliteEnemy
     , cdAlternateCardCodes = ["01568"]
     }
 
@@ -565,7 +568,8 @@ lookWhatIFound =
           $ Criteria.Criteria
             [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
             , Criteria.InvestigatorExists
-                $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+                $ You
+                <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdAlternateCardCodes = ["01579", "60517"]
     }
@@ -623,7 +627,8 @@ emergencyCache =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists
-          $ InvestigatorCanGainResources <> You
+          $ InvestigatorCanGainResources
+          <> You
     }
 
 searchForTheTruth :: CardDef
@@ -667,8 +672,8 @@ shortcut =
     , cdCriteria =
         Just
           $ Criteria.LocationExists AccessibleLocation
-            <> Criteria.InvestigatorExists
-              (InvestigatorCanMove <> InvestigatorAt YourLocation)
+          <> Criteria.InvestigatorExists
+            (InvestigatorCanMove <> InvestigatorAt YourLocation)
     }
 
 seekingAnswers :: CardDef
@@ -688,7 +693,7 @@ thinkOnYourFeet =
     , cdCriteria =
         Just
           $ Criteria.LocationExists AccessibleLocation
-            <> Criteria.InvestigatorExists (You <> InvestigatorCanMove)
+          <> Criteria.InvestigatorExists (You <> InvestigatorCanMove)
     }
 
 bindMonster2 :: CardDef
@@ -718,7 +723,8 @@ emergencyAid =
           $ Criteria.AnyCriterion
             [ Criteria.AssetExists
                 $ HealableAsset ThisCard DamageType
-                $ AssetControlledBy (InvestigatorAt YourLocation) <> #ally
+                $ AssetControlledBy (InvestigatorAt YourLocation)
+                <> #ally
             , Criteria.InvestigatorExists
                 $ HealableInvestigator ThisCard DamageType
                 $ InvestigatorAt YourLocation
@@ -742,8 +748,8 @@ contraband =
         Just
           $ Criteria.AssetExists
           $ AssetControlledBy (InvestigatorAt YourLocation)
-            <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
-            <> AssetNotAtUseLimit
+          <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
+          <> AssetNotAtUseLimit
     }
 
 delveTooDeep :: CardDef
@@ -761,7 +767,8 @@ oops =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ EnemyAt YourLocation <> NotEnemy AttackedEnemy
+          $ EnemyAt YourLocation
+          <> NotEnemy AttackedEnemy
     , cdFastWindow =
         Just
           $ SkillTestResult #after You (WhileAttackingAnEnemy EnemyEngagedWithYou)
@@ -846,7 +853,8 @@ emergencyCache2 =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists
-          $ InvestigatorCanGainResources <> You
+          $ InvestigatorCanGainResources
+          <> You
     }
 
 ifItBleeds :: CardDef
@@ -966,7 +974,7 @@ thePaintedWorld =
         Just
           $ PlayerHasPlayableCard
           $ CardIsBeneathInvestigator You
-            <> BasicCardMatch (NonExceptional <> #event)
+          <> BasicCardMatch (NonExceptional <> #event)
     , cdCost = Nothing
     , cdDeckRestrictions = [Signature "03003"]
     }
@@ -979,7 +987,8 @@ buryThemDeep =
     , cdFastWindow =
         Just
           $ EnemyDefeated #after Anyone ByAny
-          $ NonEliteEnemy <> EnemyAt YourLocation
+          $ NonEliteEnemy
+          <> EnemyAt YourLocation
     , cdVictoryPoints = Just 1
     , cdDeckRestrictions = [Signature "03005"]
     }
@@ -1005,8 +1014,8 @@ letMeHandleThis =
             NotYou
             ( BasicCardMatch
                 $ NonPeril
-                  <> CardWithOneOf
-                    (map CardWithType encounterCardTypes)
+                <> CardWithOneOf
+                  (map CardWithType encounterCardTypes)
             )
             EncounterDeck
     }
@@ -1020,7 +1029,8 @@ everVigilant1 =
     , cdCriteria =
         Just
           $ Criteria.PlayableCardExistsWithCostReduction 1
-          $ BasicCardMatch AssetCard <> InHandOf You
+          $ BasicCardMatch AssetCard
+          <> InHandOf You
     }
 
 noStoneUnturned :: CardDef
@@ -1032,7 +1042,7 @@ noStoneUnturned =
         Just
           $ Criteria.InvestigatorExists
           $ InvestigatorAt YourLocation
-            <> InvestigatorWithoutModifier CannotManipulateDeck
+          <> InvestigatorWithoutModifier CannotManipulateDeck
     }
 
 sleightOfHand :: CardDef
@@ -1068,8 +1078,8 @@ uncageTheSoul =
         Just
           $ Criteria.PlayableCardExistsWithCostReduction 3
           $ InHandOf You
-            <> BasicCardMatch
-              (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
+          <> BasicCardMatch
+            (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
     }
 
 astralTravel :: CardDef
@@ -1081,7 +1091,9 @@ astralTravel =
     , cdCriteria =
         Just
           $ Criteria.LocationExists
-          $ RevealedLocation <> Unblocked <> NotYourLocation
+          $ RevealedLocation
+          <> Unblocked
+          <> NotYourLocation
     , cdAlternateCardCodes = ["60413"]
     }
 
@@ -1117,7 +1129,7 @@ anatomicalDiagrams =
         Just
           $ Criteria.InvestigatorExists
             (You <> InvestigatorWithRemainingSanity (atLeast 5))
-            <> Criteria.enemyExists (EnemyAt YourLocation <> NonEliteEnemy)
+          <> Criteria.enemyExists (EnemyAt YourLocation <> NonEliteEnemy)
     }
 
 ambush1 :: CardDef
@@ -1155,7 +1167,8 @@ sneakAttack2 =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ EnemyAt YourLocation <> EnemyNotEngagedWithYou
+          $ EnemyAt YourLocation
+          <> EnemyNotEngagedWithYou
     }
 
 stormOfSpirits :: CardDef
@@ -1230,14 +1243,14 @@ logicalReasoning =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists (You <> InvestigatorWithAnyClues)
-            <> Criteria.AnyCriterion
-              [ Criteria.InvestigatorExists
-                  $ HealableInvestigator ThisCard HorrorType
-                  $ InvestigatorAt YourLocation
-              , Criteria.TreacheryExists
-                  $ TreacheryWithTrait Terror
-                    <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
-              ]
+          <> Criteria.AnyCriterion
+            [ Criteria.InvestigatorExists
+                $ HealableInvestigator ThisCard HorrorType
+                $ InvestigatorAt YourLocation
+            , Criteria.TreacheryExists
+                $ TreacheryWithTrait Terror
+                <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
+            ]
     }
 
 cheapShot :: CardDef
@@ -1265,7 +1278,7 @@ recharge2 =
         Just
           $ Criteria.AssetExists
           $ AssetControlledBy (InvestigatorAt YourLocation)
-            <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
+          <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     , cdLevel = 2
     }
 
@@ -1278,7 +1291,8 @@ snareTrap2 =
         Just
           $ Criteria.Negate
           $ Criteria.AssetExists
-          $ AssetIs "03199" <> AssetAt YourLocation
+          $ AssetIs "03199"
+          <> AssetAt YourLocation
     , cdLevel = 2
     }
 
@@ -1310,7 +1324,9 @@ waylay =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy
+          $ NonEliteEnemy
+          <> EnemyAt YourLocation
+          <> ExhaustedEnemy
     }
 
 aChanceEncounter2 :: CardDef
@@ -1348,7 +1364,9 @@ guidance =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists
-          $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
+          $ NotYou
+          <> InvestigatorAt YourLocation
+          <> YetToTakeTurn
     , cdSkills = [#wild]
     }
 
@@ -1413,7 +1431,8 @@ eideticMemory3 =
     , cdFastWindow =
         Just
           $ PlayerHasPlayableCard
-          $ InDiscardOf Anyone <> BasicCardMatch (CardWithTrait Insight <> #event)
+          $ InDiscardOf Anyone
+          <> BasicCardMatch (CardWithTrait Insight <> #event)
     , cdLevel = 3
     , cdCost = Nothing
     }
@@ -1428,7 +1447,7 @@ noStoneUnturned5 =
         Just
           $ Criteria.InvestigatorExists
           $ InvestigatorAt YourLocation
-            <> InvestigatorWithoutModifier CannotManipulateDeck
+          <> InvestigatorWithoutModifier CannotManipulateDeck
     , cdLevel = 5
     }
 
@@ -1469,7 +1488,8 @@ smuggledGoods =
         Just
           $ Criteria.Negate
           $ Criteria.enemyExists
-          $ EnemyAt YourLocation <> ReadyEnemy
+          $ EnemyAt YourLocation
+          <> ReadyEnemy
     , cdDeckRestrictions = [Signature "04003"]
     }
 
@@ -1503,8 +1523,8 @@ unearthTheAncients =
         Just
           $ Criteria.ExtendedCardExists
           $ InHandOf You
-            <> BasicCardMatch
-              (CardWithClass Seeker <> CardWithType AssetType)
+          <> BasicCardMatch
+            (CardWithClass Seeker <> CardWithType AssetType)
     }
 
 eavesdrop :: CardDef
@@ -1515,7 +1535,8 @@ eavesdrop =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ UnengagedEnemy <> EnemyAt YourLocation
+          $ UnengagedEnemy
+          <> EnemyAt YourLocation
     }
 
 youHandleThisOne :: CardDef
@@ -1591,7 +1612,7 @@ marksmanship1 =
         Just
           $ ActivateAbility #when You
           $ AbilityIsAction #fight
-            <> AssetAbility (AssetOneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
+          <> AssetAbility (AssetOneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
     , cdCardInHandEffects = True
     , cdLevel = 1
     }
@@ -1604,7 +1625,9 @@ persuasion =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation
+          $ NonWeaknessEnemy
+          <> EnemyWithTrait Humanoid
+          <> EnemyAt YourLocation
     , cdActions = [Action.Parley]
     }
 
@@ -1641,7 +1664,8 @@ secondWind =
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
         Just
-          $ Criteria.FirstAction <> Criteria.InvestigatorExists (HealableInvestigator ThisCard DamageType You)
+          $ Criteria.FirstAction
+          <> Criteria.InvestigatorExists (HealableInvestigator ThisCard DamageType You)
     }
 
 truthFromFiction :: CardDef
@@ -1652,8 +1676,8 @@ truthFromFiction =
     , cdCriteria =
         Just
           $ Criteria.ClueOnLocation
-            <> Criteria.AssetExists
-              (AssetControlledBy You <> AssetWithUseType Uses.Secret)
+          <> Criteria.AssetExists
+            (AssetControlledBy You <> AssetWithUseType Uses.Secret)
     }
 
 customAmmunition3 :: CardDef
@@ -1665,9 +1689,9 @@ customAmmunition3 =
         Just
           $ Criteria.AssetExists
           $ AssetControlledBy (InvestigatorAt YourLocation)
-            <> AssetWithTrait Firearm
-            <> NotAsset
-              (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
+          <> AssetWithTrait Firearm
+          <> NotAsset
+            (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
     , cdFastWindow = Just $ DuringTurn You
     , cdLevel = 3
     }
@@ -1733,7 +1757,9 @@ sacrifice1 =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetWithClass Mystic <> AssetControlledBy You <> DiscardableAsset
+          $ AssetWithClass Mystic
+          <> AssetControlledBy You
+          <> DiscardableAsset
     , cdLevel = 1
     }
 
@@ -1759,7 +1785,8 @@ coupDeGrace =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard
+          $ EnemyAt YourLocation
+          <> EnemyCanBeDamagedBySource ThisCard
     }
 
 wingingIt :: CardDef
@@ -1801,7 +1828,8 @@ alterFate3 =
     , cdCriteria =
         Just
           $ Criteria.TreacheryExists
-          $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
+          $ NotTreachery (TreacheryOnEnemy EliteEnemy)
+          <> TreacheryIsNonWeakness
     , cdLevel = 3
     }
 
@@ -1869,7 +1897,8 @@ interrogate =
     , cdCriteria =
         Just
           $ Criteria.enemyExists
-          $ EnemyWithTrait Humanoid <> EnemyAt YourLocation
+          $ EnemyWithTrait Humanoid
+          <> EnemyAt YourLocation
     , cdActions = [Action.Parley]
     }
 
@@ -1890,7 +1919,8 @@ connectTheDots =
     , cdCriteria =
         Just
           $ Criteria.LocationExists
-          $ LocationWithLowerShroudThan YourLocation <> LocationWithDiscoverableCluesBy You
+          $ LocationWithLowerShroudThan YourLocation
+          <> LocationWithDiscoverableCluesBy You
     }
 
 moneyTalks :: CardDef
@@ -1996,8 +2026,8 @@ wellMaintained1 =
         Just
           $ Criteria.AssetExists
           $ AssetControlledBy You
-            <> AssetWithTrait Item
-            <> NotAsset (AssetWithAttachedEvent $ EventIs "05152")
+          <> AssetWithTrait Item
+          <> NotAsset (AssetWithAttachedEvent $ EventIs "05152")
     }
 
 swiftReflexes :: CardDef
@@ -2036,7 +2066,7 @@ warningShot =
             ( ConnectedLocation
                 <> NotLocation (LocationWithModifier CannotBeEnteredByNonElite)
             )
-            <> Criteria.enemyExists (EnemyAt YourLocation <> NonEliteEnemy)
+          <> Criteria.enemyExists (EnemyAt YourLocation <> NonEliteEnemy)
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
@@ -2064,13 +2094,13 @@ knowledgeIsPower =
                 )
             , Criteria.ExtendedCardExists
                 $ InHandOf You
-                  <> BasicCardMatch
-                    ( CardWithOneOf [CardWithTrait Tome, CardWithTrait Spell]
-                        <> CardWithType AssetType
-                    )
-                  <> CardWithPerformableAbility
-                    (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
-                    [IgnoreAllCosts]
+                <> BasicCardMatch
+                  ( CardWithOneOf [CardWithTrait Tome, CardWithTrait Spell]
+                      <> CardWithType AssetType
+                  )
+                <> CardWithPerformableAbility
+                  (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
+                  [IgnoreAllCosts]
             ]
     }
 
@@ -2084,7 +2114,8 @@ decoy =
         Just
           $ Criteria.AnyCriterion
             [ Criteria.enemyExists
-                $ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
+                $ EnemyAt YourLocation
+                <> CanEvadeEnemy ThisCard
             , Criteria.CanAffordCostIncrease 2
                 <> Criteria.enemyExists
                   ( CanEvadeEnemyWithOverride
@@ -2093,7 +2124,7 @@ decoy =
                       $ Criteria.EnemyExists
                       $ EnemyOneOf
                         [EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1 .. 2]]
-                        <> NonEliteEnemy
+                      <> NonEliteEnemy
                   )
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
@@ -2177,7 +2208,8 @@ baitAndSwitch3 =
             , CanEvadeEnemyWithOverride
                 $ Criteria.CriteriaOverride
                 $ Criteria.enemyExists
-                $ EnemyAt (ConnectedFrom YourLocation) <> NonEliteEnemy
+                $ EnemyAt (ConnectedFrom YourLocation)
+                <> NonEliteEnemy
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
     }
@@ -2304,8 +2336,8 @@ unearthTheAncients2 =
         Just
           $ Criteria.ExtendedCardExists
           $ InHandOf You
-            <> BasicCardMatch
-              (CardWithClass Seeker <> CardWithType AssetType)
+          <> BasicCardMatch
+            (CardWithClass Seeker <> CardWithType AssetType)
     , cdLevel = 2
     }
 
@@ -2394,7 +2426,7 @@ thinkOnYourFeet2 =
     , cdCriteria =
         Just
           $ Criteria.LocationExists AccessibleLocation
-            <> Criteria.InvestigatorExists (You <> InvestigatorCanMove)
+          <> Criteria.InvestigatorExists (You <> InvestigatorCanMove)
     , cdLevel = 2
     }
 
@@ -2433,14 +2465,14 @@ logicalReasoning4 =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists (You <> InvestigatorWithAnyClues)
-            <> Criteria.AnyCriterion
-              [ Criteria.InvestigatorExists
-                  $ HealableInvestigator ThisCard HorrorType
-                  $ InvestigatorAt YourLocation
-              , Criteria.TreacheryExists
-                  $ TreacheryWithTrait Terror
-                    <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
-              ]
+          <> Criteria.AnyCriterion
+            [ Criteria.InvestigatorExists
+                $ HealableInvestigator ThisCard HorrorType
+                $ InvestigatorAt YourLocation
+            , Criteria.TreacheryExists
+                $ TreacheryWithTrait Terror
+                <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
+            ]
     }
 
 stormOfSpirits3 :: CardDef
@@ -2471,7 +2503,8 @@ truthFromFiction2 =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetControlledBy (InvestigatorAt YourLocation) <> AssetWithUseType Uses.Secret
+          $ AssetControlledBy (InvestigatorAt YourLocation)
+          <> AssetWithUseType Uses.Secret
     }
 
 alterFate1 :: CardDef
@@ -2482,7 +2515,8 @@ alterFate1 =
     , cdCriteria =
         Just
           $ Criteria.TreacheryExists
-          $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
+          $ NotTreachery (TreacheryOnEnemy EliteEnemy)
+          <> TreacheryIsNonWeakness
     , cdLevel = 1
     }
 
@@ -2526,10 +2560,10 @@ getOverHere =
         Just
           $ Criteria.enemyExists
           $ NonEliteEnemy
-            <> EnemyOneOf
-              [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
-              , EnemyAt $ ConnectedFrom YourLocation
-              ]
+          <> EnemyOneOf
+            [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
+            , EnemyAt $ ConnectedFrom YourLocation
+            ]
     , cdOverrideActionPlayableIfCriteriaMet = True
     }
 
@@ -2565,7 +2599,8 @@ standTogether =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists
-          $ NotYou <> InvestigatorAt YourLocation
+          $ NotYou
+          <> InvestigatorAt YourLocation
     }
 
 evidence1 :: CardDef
@@ -2579,7 +2614,8 @@ evidence1 =
           $ Criteria.Criteria
             [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
             , Criteria.InvestigatorExists
-                $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+                $ You
+                <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdLevel = 1
     }
@@ -2616,11 +2652,11 @@ getOverHere2 =
         Just
           $ Criteria.enemyExists
           $ NonEliteEnemy
-            <> EnemyOneOf
-              [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
-              , EnemyAt $ ConnectedFrom YourLocation
-              , EnemyAt $ LocationWithDistanceFrom 2 YourLocation
-              ]
+          <> EnemyOneOf
+            [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
+            , EnemyAt $ ConnectedFrom YourLocation
+            , EnemyAt $ LocationWithDistanceFrom 2 YourLocation
+            ]
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdLevel = 2
     }
@@ -2638,7 +2674,8 @@ lessonLearned2 =
           $ Criteria.Criteria
             [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
             , Criteria.InvestigatorExists
-                $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+                $ You
+                <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdLevel = 2
     }
@@ -2650,7 +2687,8 @@ manoAMano2 =
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
         Just
-          $ Criteria.FirstAction <> Criteria.enemyExists EnemyEngagedWithYou
+          $ Criteria.FirstAction
+          <> Criteria.enemyExists EnemyEngagedWithYou
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 2
     }
@@ -2708,7 +2746,8 @@ extensiveResearch =
           $ Criteria.Criteria
             [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
             , Criteria.InvestigatorExists
-                $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+                $ You
+                <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     }
 
@@ -2881,7 +2920,7 @@ recharge4 =
         Just
           $ Criteria.AssetExists
           $ AssetControlledBy (InvestigatorAt YourLocation)
-            <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
+          <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     , cdLevel = 4
     }
 
@@ -2958,11 +2997,11 @@ lookWhatIFound2 =
           $ Criteria.Criteria
             [ Criteria.LocationExists
                 $ LocationMatchAny [YourLocation, ConnectedLocation]
-                  <> LocationWithAnyClues
+                <> LocationWithAnyClues
             , Criteria.InvestigatorExists
                 $ You
-                  <> InvestigatorCanDiscoverCluesAt
-                    (LocationMatchAny [YourLocation, ConnectedLocation])
+                <> InvestigatorCanDiscoverCluesAt
+                  (LocationMatchAny [YourLocation, ConnectedLocation])
             ]
     , cdFastWindow =
         Just

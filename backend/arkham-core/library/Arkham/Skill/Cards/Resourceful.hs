@@ -32,8 +32,8 @@ instance RunMessage Resourceful where
       s
         <$ when
           (notNull targets)
-          ( push $
-              chooseOne
+          ( push
+              $ chooseOne
                 (skillOwner attrs)
                 [ TargetLabel
                   (CardIdTarget $ toCardId card)

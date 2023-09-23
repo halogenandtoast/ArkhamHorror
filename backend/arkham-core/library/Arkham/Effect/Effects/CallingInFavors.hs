@@ -25,8 +25,8 @@ instance HasModifiersFor CallingInFavors where
     | (InvestigatorSource iid) == effectSource attrs = do
         case effectMetadata attrs of
           Just (EffectInt n) ->
-            pure $
-              toModifiers
+            pure
+              $ toModifiers
                 attrs
                 [ReduceCostOf (CardWithType AssetType <> CardWithTrait Ally) n]
           _ -> error "Invalid metadata"

@@ -45,15 +45,15 @@ instance RunMessage DiningRoom where
   runMessage msg l@(DiningRoom attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mHealHorror <- getHealHorrorMessage attrs 1 iid
-      pushAll $
-        maybeToList mHealHorror
-          <> [RequestChaosTokens source (Just iid) (Reveal 1) SetAside]
+      pushAll
+        $ maybeToList mHealHorror
+        <> [RequestChaosTokens source (Just iid) (Reveal 1) SetAside]
       pure l
     RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
       push $ ResetChaosTokens (toSource attrs)
       chaosTokenFaces <- getModifiedChaosTokenFaces tokens
-      pushAll $
-        concatMap
+      pushAll
+        $ concatMap
           ( \case
               chaosTokenFace
                 | chaosTokenFace `elem` [Skull, AutoFail] ->

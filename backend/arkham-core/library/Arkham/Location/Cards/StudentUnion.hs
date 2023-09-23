@@ -25,14 +25,14 @@ studentUnion = location StudentUnion Cards.studentUnion 1 (Static 2)
 
 instance HasAbilities StudentUnion where
   getAbilities (StudentUnion attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
-          [ mkAbility attrs 1 $
-              ForcedAbility $
-                RevealLocation Timing.After Anyone $
-                  LocationWithId $
-                    toId attrs
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ RevealLocation Timing.After Anyone
+              $ LocationWithId
+              $ toId attrs
           , restrictedAbility
               attrs
               2
@@ -57,10 +57,10 @@ instance RunMessage StudentUnion where
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       healDamage <- canHaveDamageHealed source iid
       mHealHorror <- getHealHorrorMessage source 1 iid
-      pushAll $
-        [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
-        | healDamage
-        ]
-          <> maybeToList mHealHorror
+      pushAll
+        $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
+          | healDamage
+          ]
+        <> maybeToList mHealHorror
       pure l
     _ -> StudentUnion <$> runMessage msg attrs

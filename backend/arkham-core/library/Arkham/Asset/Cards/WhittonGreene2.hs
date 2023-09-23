@@ -24,8 +24,8 @@ whittonGreene2 = ally WhittonGreene2 Cards.whittonGreene2 (2, 3)
 
 instance HasAbilities WhittonGreene2 where
   getAbilities (WhittonGreene2 x) =
-    [ restrictedAbility x 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
           ( OrWindowMatcher
               [ Matcher.RevealLocation Timing.After You Anywhere
               , PutLocationIntoPlay Timing.After You Anywhere
@@ -50,8 +50,8 @@ instance HasModifiersFor WhittonGreene2 where
 instance RunMessage WhittonGreene2 where
   runMessage msg a@(WhittonGreene2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        Search
+      push
+        $ Search
           iid
           source
           (InvestigatorTarget iid)

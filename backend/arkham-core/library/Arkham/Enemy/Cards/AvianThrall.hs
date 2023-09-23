@@ -36,8 +36,8 @@ instance HasModifiersFor AvianThrall where
     case (mSource, mAction) of
       (Just (AssetSource aid), Just Action.Fight) -> do
         traits <- field AssetTraits aid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [ Modifier.EnemyFight (-3)
             | any (`elem` [Ranged, Firearm, Spell]) traits

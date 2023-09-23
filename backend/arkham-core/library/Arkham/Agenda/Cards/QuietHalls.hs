@@ -30,8 +30,8 @@ instance RunMessage QuietHalls where
         discardCount <- fieldMap InvestigatorDiscard length iid
         if discardCount >= 5
           then
-            pure $
-              Just
+            pure
+              $ Just
                 ( InvestigatorAssignDamage
                     iid
                     (toSource attrs)

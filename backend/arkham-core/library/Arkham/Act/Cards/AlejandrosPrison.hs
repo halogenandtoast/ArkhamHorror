@@ -34,9 +34,9 @@ instance HasAbilities AlejandrosPrison where
     [ restrictedAbility
       a
       1
-      ( LocationExists $
-          LocationWithAsset (assetIs Assets.alejandroVela)
-            <> LocationWithoutClues
+      ( LocationExists
+          $ LocationWithAsset (assetIs Assets.alejandroVela)
+          <> LocationWithoutClues
       )
       $ Objective
       $ ForcedAbility AnyWindow
@@ -53,11 +53,11 @@ instance RunMessage AlejandrosPrison where
       deckCount <- getActDecksInPlayCount
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela
       iids <-
-        selectList $
-          NearestToLocation $
-            LocationWithAsset $
-              assetIs
-                Assets.alejandroVela
+        selectList
+          $ NearestToLocation
+          $ LocationWithAsset
+          $ assetIs
+            Assets.alejandroVela
       let
         takeControlMessage =
           chooseOrRunOne

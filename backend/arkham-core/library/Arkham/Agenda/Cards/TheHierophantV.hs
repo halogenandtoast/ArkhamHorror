@@ -78,8 +78,8 @@ instance RunMessage TheHierophantV where
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> enemy) _ -> do
       enemiesWithDoom <- selectList $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
-      pushAll $
-        concat
+      pushAll
+        $ concat
           [[RemoveDoom (toSource attrs) (toTarget enemy') 1, PlaceDoomOnAgenda] | enemy' <- enemiesWithDoom]
       pure a
     _ -> TheHierophantV <$> runMessage msg attrs

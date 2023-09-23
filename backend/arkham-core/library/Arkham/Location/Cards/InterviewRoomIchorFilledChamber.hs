@@ -28,19 +28,19 @@ interviewRoomIchorFilledChamber =
 
 instance HasAbilities InterviewRoomIchorFilledChamber where
   getAbilities (InterviewRoomIchorFilledChamber a) =
-    withBaseAbilities a $
-      [ mkAbility a 1 $
-          ForcedAbility $
-            Enters Timing.After You $
-              LocationWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ Enters Timing.After You
+            $ LocationWithId
+            $ toId a
+        ]
 
 instance RunMessage InterviewRoomIchorFilledChamber where
   runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

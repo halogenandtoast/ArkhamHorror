@@ -25,8 +25,8 @@ yogSothoth = enemyWith YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5) (evad
 instance HasModifiersFor YogSothoth where
   getModifiersFor target (YogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 6)
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [ HealthModifier healthModifier
         , CannotMakeAttacksOfOpportunity
@@ -38,8 +38,8 @@ instance HasAbilities YogSothoth where
   getAbilities (YogSothoth attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $
-          ReactionAbility
+      [ mkAbility attrs 1
+          $ ReactionAbility
             (EnemyAttacks Timing.When You AnyEnemyAttack $ EnemyWithId $ toId attrs)
             Free
       ]

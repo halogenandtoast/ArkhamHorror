@@ -27,11 +27,11 @@ theTerrifyingTruth =
 
 instance HasAbilities TheTerrifyingTruth where
   getAbilities (TheTerrifyingTruth a) =
-    [ mkAbility a 1 $
-      ForcedAbility $
-        AgendaWouldAdvance Timing.When DoomThreshold $
-          AgendaWithId $
-            toId a
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ AgendaWouldAdvance Timing.When DoomThreshold
+      $ AgendaWithId
+      $ toId a
     | onSide A a
     ]
 

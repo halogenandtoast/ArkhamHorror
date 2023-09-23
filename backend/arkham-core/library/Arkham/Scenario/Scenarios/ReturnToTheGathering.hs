@@ -66,17 +66,17 @@ instance RunMessage ReturnToTheGathering where
             placeLocationCard_
             [Locations.guestHall, Locations.bedroom, Locations.bathroom]
 
-        pushAll $
-          [ SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeStudy
-          ]
-            <> placeRest
-            <> [ RevealLocation Nothing studyId
-               , MoveAllTo (toSource attrs) studyId
-               , story investigatorIds theGatheringIntro
-               ]
+        pushAll
+          $ [ SetEncounterDeck encounterDeck
+            , SetAgendaDeck
+            , SetActDeck
+            , placeStudy
+            ]
+          <> placeRest
+          <> [ RevealLocation Nothing studyId
+             , MoveAllTo (toSource attrs) studyId
+             , story investigatorIds theGatheringIntro
+             ]
 
         attic <- sample $ Locations.returnToAttic :| [Locations.attic]
         cellar <- sample $ Locations.returnToCellar :| [Locations.cellar]
@@ -100,11 +100,11 @@ instance RunMessage ReturnToTheGathering where
 
         ReturnToTheGathering
           . TheGathering
-          <$> runMessage
-            msg
-            ( attrs
-                & (setAsideCardsL .~ setAsideCards)
-                & (actStackL . at 1 ?~ acts)
-                & (agendaStackL . at 1 ?~ agendas)
-            )
+            <$> runMessage
+              msg
+              ( attrs
+                  & (setAsideCardsL .~ setAsideCards)
+                  & (actStackL . at 1 ?~ acts)
+                  & (agendaStackL . at 1 ?~ agendas)
+              )
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

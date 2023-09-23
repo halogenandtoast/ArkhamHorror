@@ -28,8 +28,8 @@ instance HasModifiersFor NoTurningBack where
     case treacheryPlacement attrs of
       TreacheryAttachedTo (LocationTarget lid) -> do
         onNoTurningBack <- iid <=~> investigatorAt lid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [if onNoTurningBack then CannotMove else CannotEnter lid]
       _ -> pure []
@@ -40,8 +40,8 @@ instance HasAbilities NoTurningBack where
     [ restrictedAbility
         a
         1
-        ( OnLocation $
-            LocationMatchAny
+        ( OnLocation
+            $ LocationMatchAny
               [ LocationWithTreachery (TreacheryWithId $ toId a)
               , ConnectedTo (LocationWithTreachery (TreacheryWithId $ toId a))
               ]
@@ -54,15 +54,15 @@ instance RunMessage NoTurningBack where
   runMessage msg t@(NoTurningBack attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-
-        selectList $
-          LocationMatchAny
+        selectList
+          $ LocationMatchAny
             [ locationWithInvestigator iid
             , ConnectedFrom (locationWithInvestigator iid)
             ]
-            <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
+          <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
       unless (null targets) $ do
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             iid
             [ targetLabel x [AttachTreachery (toId attrs) (LocationTarget x)]
             | x <- targets
@@ -70,14 +70,14 @@ instance RunMessage NoTurningBack where
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasPickaxe <- getHasSupply iid Pickaxe
-      push $
-        chooseOrRunOne iid $
-          Label
-            "Test {combat} (3)"
-            [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillCombat 3]
-            : [ Label "Check your supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
-              | hasPickaxe
-              ]
+      push
+        $ chooseOrRunOne iid
+        $ Label
+          "Test {combat} (3)"
+          [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillCombat 3]
+        : [ Label "Check your supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+          | hasPickaxe
+          ]
       pure t
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

@@ -28,13 +28,15 @@ instance HasAbilities PhysicsClassroom where
           $ restrictedAbility
             a
             1
-            ( CanDiscoverCluesAt $
-                RevealedLocation <> LocationWithAnyClues <> NotLocation (LocationWithId $ toId a)
+            ( CanDiscoverCluesAt
+                $ RevealedLocation
+                <> LocationWithAnyClues
+                <> NotLocation (LocationWithId $ toId a)
             )
           $ ReactionAbility
-            ( SkillTestResult Timing.After You (WhileInvestigating $ LocationWithId $ toId a) $
-                SuccessResult $
-                  AtLeast (Static 2)
+            ( SkillTestResult Timing.After You (WhileInvestigating $ LocationWithId $ toId a)
+                $ SuccessResult
+                $ AtLeast (Static 2)
             )
             Free
       ]
@@ -45,13 +47,13 @@ instance RunMessage PhysicsClassroom where
       PhysicsClassroom <$> runMessage msg (attrs & labelL .~ "physicsClassroom")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       locations <-
-        selectList $
-          locationWithDiscoverableCluesBy iid
-            <> RevealedLocation
-            <> LocationWithAnyClues
-            <> NotLocation (LocationWithId $ toId attrs)
-      push $
-        chooseOrRunOne
+        selectList
+          $ locationWithDiscoverableCluesBy iid
+          <> RevealedLocation
+          <> LocationWithAnyClues
+          <> NotLocation (LocationWithId $ toId attrs)
+      push
+        $ chooseOrRunOne
           iid
           [ targetLabel lid [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 1 Nothing]
           | lid <- locations

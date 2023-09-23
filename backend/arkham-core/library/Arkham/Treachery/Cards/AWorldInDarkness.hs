@@ -37,11 +37,11 @@ instance RunMessage AWorldInDarkness where
             $ replicate doom
             $ chooseOne iid
             $ [Label "Lose 1 resource" [LoseResources iid (toSource attrs) 1] | hasResources]
-              <> [ Label "Choose and discard 1 card from your hand" [toMessage $ chooseAndDiscardCard iid attrs]
-                 | canDiscard
-                 ]
-              <> [ Label "Take 1 horror" [assignHorror iid attrs 1]
-                 , Label "Take 1 damage" [assignDamage iid attrs 1]
-                 ]
+            <> [ Label "Choose and discard 1 card from your hand" [toMessage $ chooseAndDiscardCard iid attrs]
+               | canDiscard
+               ]
+            <> [ Label "Take 1 horror" [assignHorror iid attrs 1]
+               , Label "Take 1 damage" [assignDamage iid attrs 1]
+               ]
       pure t
     _ -> AWorldInDarkness <$> runMessage msg attrs

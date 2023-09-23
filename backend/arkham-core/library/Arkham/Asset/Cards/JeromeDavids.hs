@@ -29,8 +29,8 @@ instance HasModifiersFor JeromeDavids where
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( DrawCard
               Timing.When
               You

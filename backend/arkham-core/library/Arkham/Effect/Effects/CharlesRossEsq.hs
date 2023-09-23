@@ -29,8 +29,8 @@ instance HasModifiersFor CharlesRossEsq where
       AssetSource aid -> do
         assetLid <- field AssetLocation aid
         investigatorLid <- field InvestigatorLocation iid
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             attrs
             [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Item) 1
             | isJust assetLid && assetLid == investigatorLid

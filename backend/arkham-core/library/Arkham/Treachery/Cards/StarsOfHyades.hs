@@ -34,15 +34,15 @@ instance RunMessage StarsOfHyades where
         Just targets -> do
           deckSize <- fieldMap InvestigatorDeck length iid
           discardedEvent <- sample targets
-          pushAll $
-            chooseOne
+          pushAll
+            $ chooseOne
               iid
               [ TargetLabel
                   (CardIdTarget $ toCardId discardedEvent)
                   [RemoveFromGame (CardIdTarget $ toCardId discardedEvent)]
               ]
-              : [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-                | deckSize >= 5
-                ]
+            : [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
+              | deckSize >= 5
+              ]
       pure t
     _ -> StarsOfHyades <$> runMessage msg attrs

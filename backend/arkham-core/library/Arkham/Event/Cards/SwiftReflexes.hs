@@ -26,11 +26,11 @@ instance RunMessage SwiftReflexes where
   runMessage msg e@(SwiftReflexes attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iid' <- getActiveInvestigatorId
-      pushAll $
-        [SetActiveInvestigator iid | iid /= iid']
-          <> [ GainAdditionalAction iid (toSource attrs) AnyAdditionalAction
-             , PlayerWindow iid [] False
-             ]
-          <> [SetActiveInvestigator iid' | iid /= iid']
+      pushAll
+        $ [SetActiveInvestigator iid | iid /= iid']
+        <> [ GainAdditionalAction iid (toSource attrs) AnyAdditionalAction
+           , PlayerWindow iid [] False
+           ]
+        <> [SetActiveInvestigator iid' | iid /= iid']
       pure e
     _ -> SwiftReflexes <$> runMessage msg attrs

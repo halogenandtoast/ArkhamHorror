@@ -25,11 +25,11 @@ searchingForAnswers =
 
 instance HasAbilities SearchingForAnswers where
   getAbilities (SearchingForAnswers x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          Enters Timing.When You $
-            LocationWithTitle
-              "The Hidden Chamber"
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ Enters Timing.When You
+        $ LocationWithTitle
+          "The Hidden Chamber"
     ]
 
 instance RunMessage SearchingForAnswers where
@@ -42,11 +42,11 @@ instance RunMessage SearchingForAnswers where
       hiddenChamber <- selectJust (LocationWithTitle "The Hidden Chamber")
       silasBishop <- genCard Enemies.silasBishop
       createSilasBishop <- createEnemyAt_ silasBishop hiddenChamber Nothing
-      pushAll $
-        [RevealLocation Nothing lid | lid <- unrevealedLocationIds]
-          <> [ MoveAllCluesTo (toSource attrs) (toTarget hiddenChamber)
-             , createSilasBishop
-             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-             ]
+      pushAll
+        $ [RevealLocation Nothing lid | lid <- unrevealedLocationIds]
+        <> [ MoveAllCluesTo (toSource attrs) (toTarget hiddenChamber)
+           , createSilasBishop
+           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+           ]
       pure a
     _ -> SearchingForAnswers <$> runMessage msg attrs

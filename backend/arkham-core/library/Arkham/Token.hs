@@ -30,13 +30,13 @@ flipClues :: Int -> Tokens -> Tokens
 flipClues n original@(Tokens tokens) =
   let clueVal = findWithDefault 0 Clue tokens
       n' = min n clueVal
-  in  if clueVal == 0 then original else addTokens Doom n' (subtractTokens Clue n' original)
+   in if clueVal == 0 then original else addTokens Doom n' (subtractTokens Clue n' original)
 
 flipDoom :: Int -> Tokens -> Tokens
 flipDoom n original@(Tokens tokens) =
   let doomVal = findWithDefault 0 Doom tokens
       n' = min n doomVal
-  in  if doomVal == 0 then original else addTokens Clue n' (subtractTokens Doom n' original)
+   in if doomVal == 0 then original else addTokens Clue n' (subtractTokens Doom n' original)
 
 countTokens :: Token -> Tokens -> Int
 countTokens token (Tokens tokens) = findWithDefault 0 token tokens
@@ -44,7 +44,7 @@ countTokens token (Tokens tokens) = findWithDefault 0 token tokens
 addTokens :: Token -> Int -> Tokens -> Tokens
 addTokens token amount (Tokens tokens) =
   let val = max 0 (findWithDefault 0 token tokens + amount)
-  in  if val == 0
+   in if val == 0
         then Tokens $ deleteMap token tokens
         else Tokens $ insertMap token val tokens
 

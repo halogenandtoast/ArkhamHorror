@@ -26,10 +26,10 @@ lockpicks = asset Lockpicks Cards.lockpicks
 
 instance HasAbilities Lockpicks where
   getAbilities (Lockpicks a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          ActionCost 1
-            <> ExhaustCost (toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage Lockpicks where

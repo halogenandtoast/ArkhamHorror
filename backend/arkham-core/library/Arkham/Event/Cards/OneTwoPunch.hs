@@ -64,9 +64,9 @@ instance RunMessage OneTwoPunchEffect where
           case (skillTestResult skillTest, skillTestTarget skillTest) of
             (SucceededBy {}, EnemyTarget eid) -> do
               isStillAlive <- selectAny $ EnemyWithId eid
-              push $
-                chooseOrRunOne iid $
-                  [ Label
+              push
+                $ chooseOrRunOne iid
+                $ [ Label
                     "Fight that enemy again"
                     [ skillTestModifiers
                         (toSource attrs)
@@ -83,10 +83,10 @@ instance RunMessage OneTwoPunchEffect where
                     ]
                   | isStillAlive
                   ]
-                    <> [ Label
-                          "Do not fight that enemy again"
-                          [DisableEffect (toId attrs)]
-                       ]
+                <> [ Label
+                      "Do not fight that enemy again"
+                      [DisableEffect (toId attrs)]
+                   ]
             _ -> pure ()
         (_, _) -> error "invalid call"
       pure . OneTwoPunchEffect $ attrs & finishedL .~ True

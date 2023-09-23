@@ -31,8 +31,8 @@ instance RunMessage MassHysteria where
       let take2damage = InvestigatorAssignDamage iid source DamageAny 2 0
       if hasLocation && anyMaskedCarnevaleGoers
         then
-          push $
-            chooseOne
+          push
+            $ chooseOne
               iid
               [ Label "Take 2 damage" [take2damage]
               , Label

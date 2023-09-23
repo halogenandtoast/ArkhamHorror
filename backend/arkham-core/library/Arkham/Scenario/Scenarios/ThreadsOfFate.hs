@@ -89,8 +89,8 @@ instance RunMessage ThreadsOfFate where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOne
+      push
+        $ chooseOne
           leadInvestigatorId
           [ Label
               "The investigators gave custody of the relic to Alejandro."
@@ -162,9 +162,9 @@ instance RunMessage ThreadsOfFate where
         if gaveCustodyToHarlan
           then do
             harlansCurse <-
-              sample $
-                Acts.harlansCurseSafekeeping
-                  :| [Acts.harlansCurseHarlanEarnstone]
+              sample
+                $ Acts.harlansCurseSafekeeping
+                :| [Acts.harlansCurseHarlanEarnstone]
             genCards
               [ Acts.harlanIsInDanger
               , harlansCurse
@@ -173,9 +173,9 @@ instance RunMessage ThreadsOfFate where
               ]
           else do
             atTheExhibit <-
-              sample $
-                Acts.atTheExhibitTheRelicsLocation
-                  :| [Acts.atTheExhibitTheBrotherhoodsPlot]
+              sample
+                $ Acts.atTheExhibitTheRelicsLocation
+                :| [Acts.atTheExhibitTheBrotherhoodsPlot]
             genCards
               [ Acts.theRelicIsMissing
               , atTheExhibit
@@ -185,9 +185,9 @@ instance RunMessage ThreadsOfFate where
 
       act2Deck1 <- do
         atTheStation <-
-          sample $
-            Acts.atTheStationInShadowedTalons
-              :| [Acts.atTheStationTrainTracks]
+          sample
+            $ Acts.atTheStationInShadowedTalons
+            :| [Acts.atTheStationTrainTracks]
         genCards
           [ Acts.missingPersons
           , atTheStation
@@ -196,9 +196,9 @@ instance RunMessage ThreadsOfFate where
           ]
       act2Deck2 <- do
         friendsInHighPlaces <-
-          sample $
-            Acts.friendsInHighPlacesHenrysInformation
-              :| [Acts.friendsInHighPlacesHenryDeveau]
+          sample
+            $ Acts.friendsInHighPlacesHenrysInformation
+            :| [Acts.friendsInHighPlacesHenryDeveau]
         genCards
           [ Acts.searchForAlejandro
           , friendsInHighPlaces
@@ -211,9 +211,9 @@ instance RunMessage ThreadsOfFate where
         if listenedToIchtacasTale
           then do
             strangeRelics <-
-              sample $
-                Acts.strangeRelicsMariaDeSilva
-                  :| [Acts.strangeRelicsMariasInformation]
+              sample
+                $ Acts.strangeRelicsMariaDeSilva
+                :| [Acts.strangeRelicsMariasInformation]
             genCards
               [ Acts.theGuardiansInquiry
               , strangeRelics
@@ -222,9 +222,9 @@ instance RunMessage ThreadsOfFate where
               ]
           else do
             theCaveOfDarkness <-
-              sample $
-                Acts.theCaveOfDarknessEmbroiledInBattle
-                  :| [Acts.theCaveOfDarknessTunnelsInTheDark]
+              sample
+                $ Acts.theCaveOfDarknessEmbroiledInBattle
+                :| [Acts.theCaveOfDarknessTunnelsInTheDark]
             genCards
               [ Acts.trialOfTheHuntress
               , theCaveOfDarkness
@@ -241,25 +241,25 @@ instance RunMessage ThreadsOfFate where
           , Assets.alejandroVela
           ]
 
-      pushAll $
-        [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-        , RemoveCampaignCard Assets.alejandroVela
-        , SetEncounterDeck encounterDeck
-        , chooseOne
-            leadInvestigatorId
-            [ Label
-                "Go to the police to inform them of Alejandro's disappearance"
-                [SetActDeckCards 2 act2Deck1]
-            , Label
-                "Look for Alejandro on your own"
-                [SetActDeckCards 2 act2Deck2]
-            ]
-        , SetAgendaDeck
-        , SetActDeck
-        , placeRivertown
-        ]
-          <> placeOtherLocations
-          <> [MoveAllTo (toSource attrs) rivertownId]
+      pushAll
+        $ [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+          , RemoveCampaignCard Assets.alejandroVela
+          , SetEncounterDeck encounterDeck
+          , chooseOne
+              leadInvestigatorId
+              [ Label
+                  "Go to the police to inform them of Alejandro's disappearance"
+                  [SetActDeckCards 2 act2Deck1]
+              , Label
+                  "Look for Alejandro on your own"
+                  [SetActDeckCards 2 act2Deck2]
+              ]
+          , SetAgendaDeck
+          , SetActDeck
+          , placeRivertown
+          ]
+        <> placeOtherLocations
+        <> [MoveAllTo (toSource attrs) rivertownId]
 
       agendas <-
         genCards
@@ -327,17 +327,17 @@ instance RunMessage ThreadsOfFate where
           push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
         Tablet | isEasyStandard attrs && n < 1 -> do
           targets <-
-            selectListMap EnemyTarget $
-              NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+            selectListMap EnemyTarget
+              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           unless (null targets) $ do
-            push $
-              chooseOrRunOne
+            push
+              $ chooseOrRunOne
                 iid
                 [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs && n < 2 -> do
           targets <-
-            selectListMap EnemyTarget $
-              NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+            selectListMap EnemyTarget
+              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
         _ -> pure ()
       pure s
@@ -349,17 +349,17 @@ instance RunMessage ThreadsOfFate where
           push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
         Tablet | isEasyStandard attrs -> do
           targets <-
-            selectListMap EnemyTarget $
-              NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+            selectListMap EnemyTarget
+              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           unless (null targets) $ do
-            push $
-              chooseOrRunOne
+            push
+              $ chooseOrRunOne
                 iid
                 [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs -> do
           targets <-
-            selectListMap EnemyTarget $
-              NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+            selectListMap EnemyTarget
+              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
         ElderThing -> do
           push $ RemoveClues (ChaosTokenEffectSource ElderThing) (InvestigatorTarget iid) 1
@@ -381,7 +381,7 @@ instance RunMessage ThreadsOfFate where
                   . toAttrs
                 )
                 (Act.lookupAct (ActId $ toCardCode actDef) 0 nullCardId)
-          in
+           in
             (n, c)
         actPairCountMap = IntMap.fromList actPairCount
         completedStack n =
@@ -389,7 +389,7 @@ instance RunMessage ThreadsOfFate where
             . (+ findWithDefault 0 n actPairCountMap)
             . length
             . fromMaybe []
-            $ lookup n (scenarioCompletedActStack attrs)
+              $ lookup n (scenarioCompletedActStack attrs)
 
         act3bCompleted = completedStack 1
         act3dCompleted = completedStack 2
@@ -402,57 +402,57 @@ instance RunMessage ThreadsOfFate where
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
 
-      pushAll $
-        [story iids resolution1]
-          <> [ Record
-                if act3bCompleted
-                  then TheInvestigatorsFoundTheMissingRelic
-                  else TheRelicIsMissing
-             ]
-          <> [ addCampaignCardToDeckChoice
+      pushAll
+        $ [story iids resolution1]
+        <> [ Record
+              if act3bCompleted
+                then TheInvestigatorsFoundTheMissingRelic
+                else TheRelicIsMissing
+           ]
+        <> [ addCampaignCardToDeckChoice
+            leadInvestigatorId
+            iids
+            Assets.relicOfAgesADeviceOfSomeSort
+           | act3bCompleted && not relicOwned
+           ]
+        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+           | not act3bCompleted
+           ]
+        <> [ Record
+              if act3dCompleted
+                then TheInvestigatorsRescuedAlejandro
+                else AlejandroIsMissing
+           ]
+        <> [ addCampaignCardToDeckChoice
+            leadInvestigatorId
+            iids
+            Assets.alejandroVela
+           | act3dCompleted && not alejandroOwned
+           ]
+        <> [RemoveCampaignCard Assets.alejandroVela | not act3dCompleted]
+        <> [ Record
+              if act3fCompleted
+                then TheInvestigatorsForgedABondWithIchtaca
+                else IchtacaIsInTheDark
+           ]
+        <> [ addCampaignCardToDeckChoice
+            leadInvestigatorId
+            iids
+            Assets.ichtacaTheForgottenGuardian
+           | act3fCompleted
+           ]
+        <> [ chooseOne
               leadInvestigatorId
-              iids
-              Assets.relicOfAgesADeviceOfSomeSort
-             | act3bCompleted && not relicOwned
-             ]
-          <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-             | not act3bCompleted
-             ]
-          <> [ Record
-                if act3dCompleted
-                  then TheInvestigatorsRescuedAlejandro
-                  else AlejandroIsMissing
-             ]
-          <> [ addCampaignCardToDeckChoice
-              leadInvestigatorId
-              iids
-              Assets.alejandroVela
-             | act3dCompleted && not alejandroOwned
-             ]
-          <> [RemoveCampaignCard Assets.alejandroVela | not act3dCompleted]
-          <> [ Record
-                if act3fCompleted
-                  then TheInvestigatorsForgedABondWithIchtaca
-                  else IchtacaIsInTheDark
-             ]
-          <> [ addCampaignCardToDeckChoice
-              leadInvestigatorId
-              iids
-              Assets.ichtacaTheForgottenGuardian
-             | act3fCompleted
-             ]
-          <> [ chooseOne
-                leadInvestigatorId
-                [ Label
-                    "Add Expedition Journal to your deck"
-                    [ AddCampaignCardToDeck
-                        leadInvestigatorId
-                        Assets.expeditionJournal
-                    ]
-                , Label "Do not add Expedition Journal to your deck" []
-                ]
-             ]
-          <> gainXp
-          <> [EndOfGame Nothing]
+              [ Label
+                  "Add Expedition Journal to your deck"
+                  [ AddCampaignCardToDeck
+                      leadInvestigatorId
+                      Assets.expeditionJournal
+                  ]
+              , Label "Do not add Expedition Journal to your deck" []
+              ]
+           ]
+        <> gainXp
+        <> [EndOfGame Nothing]
       pure s
     _ -> ThreadsOfFate <$> runMessage msg attrs

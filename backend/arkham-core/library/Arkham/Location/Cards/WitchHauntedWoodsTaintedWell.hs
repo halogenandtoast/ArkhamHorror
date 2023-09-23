@@ -34,18 +34,18 @@ instance HasModifiersFor WitchHauntedWoodsTaintedWell where
         Just lid ->
           if lid == toId attrs
             then
-              pure $
-                toModifiers
+              pure
+                $ toModifiers
                   attrs
-                  [ CanCommitToSkillTestPerformedByAnInvestigatorAt $
-                      LocationWithTitle "Witch-Haunted Woods"
+                  [ CanCommitToSkillTestPerformedByAnInvestigatorAt
+                      $ LocationWithTitle "Witch-Haunted Woods"
                   ]
             else do
               isWitchHauntedWoods <-
                 member lid
                   <$> select (LocationWithTitle "Witch-Haunted Woods")
-              pure $
-                toModifiers
+              pure
+                $ toModifiers
                   attrs
                   [ CanCommitToSkillTestPerformedByAnInvestigatorAt
                     (LocationWithId $ toId attrs)

@@ -24,11 +24,11 @@ encore = agenda (2, A) Encore Cards.encore (Static 6)
 
 instance HasAbilities Encore where
   getAbilities (Encore a) =
-    [ mkAbility a 1 $
-        ForcedAbility $
-          AddedToVictory Timing.After $
-            cardIs
-              Cards.royalEmissary
+    [ mkAbility a 1
+        $ ForcedAbility
+        $ AddedToVictory Timing.After
+        $ cardIs
+          Cards.royalEmissary
     ]
 
 instance RunMessage Encore where

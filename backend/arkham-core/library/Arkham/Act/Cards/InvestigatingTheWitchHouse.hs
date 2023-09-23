@@ -33,10 +33,10 @@ instance HasAbilities InvestigatingTheWitchHouse where
         ( DuringTurn Anyone
             <> EachUndefeatedInvestigator (InvestigatorAt $ locationIs Locations.walterGilmansRoom)
         )
-        ( Objective $
-            FastAbility $
-              GroupClueCost (PerPlayer 3) $
-                locationIs Locations.walterGilmansRoom
+        ( Objective
+            $ FastAbility
+            $ GroupClueCost (PerPlayer 3)
+            $ locationIs Locations.walterGilmansRoom
         )
     ]
 
@@ -50,18 +50,18 @@ instance RunMessage InvestigatingTheWitchHouse where
       otherLocations <- selectList $ NotLocation $ LocationWithId lid
       theBlackBook <- getSetAsideCard Assets.theBlackBook
       strangeGeometries <- getSetAsideCardsMatching (CardWithTitle "Strange Geometry")
-      pushAll $
-        ReplaceLocation lid keziahsRoom Swap
-          : map RemoveLocation otherLocations
-            <> [ chooseOne
-                  lead
-                  [ targetLabel
-                    iid
-                    [TakeControlOfSetAsideAsset iid theBlackBook]
-                  | iid <- iids
-                  ]
-               , ShuffleCardsIntoDeck Deck.EncounterDeck strangeGeometries
-               , advanceActDeck attrs
-               ]
+      pushAll
+        $ ReplaceLocation lid keziahsRoom Swap
+        : map RemoveLocation otherLocations
+          <> [ chooseOne
+                lead
+                [ targetLabel
+                  iid
+                  [TakeControlOfSetAsideAsset iid theBlackBook]
+                | iid <- iids
+                ]
+             , ShuffleCardsIntoDeck Deck.EncounterDeck strangeGeometries
+             , advanceActDeck attrs
+             ]
       pure a
     _ -> InvestigatingTheWitchHouse <$> runMessage msg attrs

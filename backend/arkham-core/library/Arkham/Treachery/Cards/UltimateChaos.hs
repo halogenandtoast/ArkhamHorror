@@ -34,14 +34,14 @@ instance RunMessage UltimateChaos where
         investigators <- getInvestigators
         pushAll
           $ map (Discard (toSource attrs) . toTarget) instances
-            <> [ chooseOne
-                  iid
-                  [ Label "Place 1 Doom on Azathoth" [PlaceDoom (toSource attrs) (toTarget azathoth) 1]
-                  , Label
-                      "Azathoth attacks each investigator in player order"
-                      [toMessage $ enemyAttack azathoth (toSource attrs) investigator | investigator <- investigators]
-                  ]
-               ]
+          <> [ chooseOne
+                iid
+                [ Label "Place 1 Doom on Azathoth" [PlaceDoom (toSource attrs) (toTarget azathoth) 1]
+                , Label
+                    "Azathoth attacks each investigator in player order"
+                    [toMessage $ enemyAttack azathoth (toSource attrs) investigator | investigator <- investigators]
+                ]
+             ]
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth

@@ -30,18 +30,18 @@ theBeastUnleashed =
 
 instance HasAbilities TheBeastUnleashed where
   getAbilities (TheBeastUnleashed x) =
-    [ mkAbility x 1 $
-        ForcedAbility $
-          AgendaWouldAdvance Timing.When DoomThreshold $
-            AgendaWithId $
-              toId x
-    , mkAbility x 2 $
-        Objective $
-          ForcedAbility $
-            EnemyEnters
-              Timing.After
-              (locationIs Cards.dormitories)
-              (enemyIs Cards.theExperiment)
+    [ mkAbility x 1
+        $ ForcedAbility
+        $ AgendaWouldAdvance Timing.When DoomThreshold
+        $ AgendaWithId
+        $ toId x
+    , mkAbility x 2
+        $ Objective
+        $ ForcedAbility
+        $ EnemyEnters
+          Timing.After
+          (locationIs Cards.dormitories)
+          (enemyIs Cards.theExperiment)
     ]
 
 getTheExperiment :: HasGame m => m EnemyId
@@ -64,13 +64,13 @@ instance RunMessage TheBeastUnleashed where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      pushAll $
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
-        | iid <- investigatorIds
-        ]
-          <> [ chooseOne
-                leadInvestigatorId
-                [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
-             ]
+      pushAll
+        $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
+          | iid <- investigatorIds
+          ]
+        <> [ chooseOne
+              leadInvestigatorId
+              [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
+           ]
       pure a
     _ -> TheBeastUnleashed <$> runMessage msg attrs

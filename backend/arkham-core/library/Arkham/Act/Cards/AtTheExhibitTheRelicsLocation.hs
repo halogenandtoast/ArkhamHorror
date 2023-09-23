@@ -23,10 +23,10 @@ newtype AtTheExhibitTheRelicsLocation = AtTheExhibitTheRelicsLocation ActAttrs
 
 atTheExhibitTheRelicsLocation :: ActCard AtTheExhibitTheRelicsLocation
 atTheExhibitTheRelicsLocation =
-  act (2, A) AtTheExhibitTheRelicsLocation Cards.atTheExhibitTheRelicsLocation $
-    Just $
-      GroupClueCost (PerPlayer 2) $
-        LocationWithTitle "Eztli Exhibit"
+  act (2, A) AtTheExhibitTheRelicsLocation Cards.atTheExhibitTheRelicsLocation
+    $ Just
+    $ GroupClueCost (PerPlayer 2)
+    $ LocationWithTitle "Eztli Exhibit"
 
 instance RunMessage AtTheExhibitTheRelicsLocation where
   runMessage msg a@(AtTheExhibitTheRelicsLocation attrs) = case msg of
@@ -56,10 +56,10 @@ instance RunMessage AtTheExhibitTheRelicsLocation where
             )
 
       assetId <- getRandom
-      pushAll $
-        msgs
-          <> [ CreateAssetAt assetId relicOfAges (AttachedToLocation townHallId)
-             , AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)
-             ]
+      pushAll
+        $ msgs
+        <> [ CreateAssetAt assetId relicOfAges (AttachedToLocation townHallId)
+           , AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)
+           ]
       pure a
     _ -> AtTheExhibitTheRelicsLocation <$> runMessage msg attrs

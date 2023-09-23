@@ -28,13 +28,13 @@ easttownArkhamPoliceStation =
 
 instance HasAbilities EasttownArkhamPoliceStation where
   getAbilities (EasttownArkhamPoliceStation attrs) =
-    withBaseAbilities attrs $
-      [ limitedAbility (PlayerLimit PerGame 1) $
-        restrictedAbility attrs 1 Here $
-          ActionAbility Nothing $
-            ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of
@@ -45,8 +45,8 @@ instance RunMessage EasttownArkhamPoliceStation where
       supplyAssets <-
         map (Supply,)
           <$> selectList (AssetControlledBy You <> AssetWithUseType Supply)
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ targetLabel assetId [AddUses assetId useType' 2]
           | (useType', assetId) <- ammoAssets <> supplyAssets

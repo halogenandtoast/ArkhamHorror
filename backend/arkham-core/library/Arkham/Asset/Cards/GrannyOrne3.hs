@@ -22,16 +22,16 @@ grannyOrne3 = ally GrannyOrne3 Cards.grannyOrne3 (1, 3)
 instance HasModifiersFor GrannyOrne3 where
   getModifiersFor (InvestigatorTarget iid) (GrannyOrne3 a)
     | controlledBy a iid =
-        pure $
-          toModifiers
+        pure
+          $ toModifiers
             a
             [SkillModifier SkillWillpower 1, SkillModifier SkillIntellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GrannyOrne3 where
   getAbilities (GrannyOrne3 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( WouldHaveSkillTestResult
               Timing.When
               (InvestigatorAt YourLocation)
@@ -44,8 +44,8 @@ instance HasAbilities GrannyOrne3 where
 instance RunMessage GrannyOrne3 where
   runMessage msg a@(GrannyOrne3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Get +1 skill value"

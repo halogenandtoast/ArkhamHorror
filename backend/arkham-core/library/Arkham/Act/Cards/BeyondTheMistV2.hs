@@ -52,9 +52,9 @@ instance RunMessage BeyondTheMistV2 where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       geistTrap <- getJustLocationByName "The Geist-Trap"
       investigatorsAtUnvisitedIsles <- selectList $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
-      pushAll $
-        RevealLocation Nothing geistTrap
-          : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
-            <> [RemoveAllChaosTokens Cultist, advanceActDeck attrs]
+      pushAll
+        $ RevealLocation Nothing geistTrap
+        : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
+          <> [RemoveAllChaosTokens Cultist, advanceActDeck attrs]
       pure a
     _ -> BeyondTheMistV2 <$> runMessage msg attrs

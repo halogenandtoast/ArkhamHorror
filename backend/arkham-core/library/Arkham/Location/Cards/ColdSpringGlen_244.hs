@@ -54,7 +54,7 @@ instance RunMessage ColdSpringGlen_244 where
       investigatorWithCluePairs <-
         selectWithField InvestigatorClues
           $ investigatorAt (toId attrs)
-            <> InvestigatorWithAnyClues
+          <> InvestigatorWithAnyClues
       abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
       when
         (null investigatorWithCluePairs || null abominations)
@@ -71,12 +71,12 @@ instance RunMessage ColdSpringGlen_244 where
 
       pushAll
         $ placeClueOnAbomination
-          : [ chooseOne
-              iid
-              [ Label "Spend a second clue" [placeClueOnAbomination]
-              , Label "Do not spend a second clue" []
-              ]
-            | totalClues > 1
+        : [ chooseOne
+            iid
+            [ Label "Spend a second clue" [placeClueOnAbomination]
+            , Label "Do not spend a second clue" []
             ]
+          | totalClues > 1
+          ]
       pure l
     _ -> ColdSpringGlen_244 <$> runMessage msg attrs

@@ -25,11 +25,11 @@ instance HasModifiersFor Prophesy where
   getModifiersFor (CardIdTarget cid) (Prophesy attrs) | toCardId attrs == cid =
     do
       doom <- getDoomCount
-      pure $
-        toModifiers
+      pure
+        $ toModifiers
           attrs
-          [ AddSkillIcons $
-            if doom >= 6
+          [ AddSkillIcons
+            $ if doom >= 6
               then
                 [ WildIcon
                 , WildIcon

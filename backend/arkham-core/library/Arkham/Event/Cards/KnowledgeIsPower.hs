@@ -41,12 +41,12 @@ instance RunMessage KnowledgeIsPower where
   runMessage msg e@(KnowledgeIsPower attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <-
-        selectList $
-          assetControlledBy iid
-            <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Tome]
-            <> AssetWithPerformableAbility
-              (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
-              [IgnoreAllCosts]
+        selectList
+          $ assetControlledBy iid
+          <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Tome]
+          <> AssetWithPerformableAbility
+            (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
+            [IgnoreAllCosts]
 
       cards <-
         fieldMapM
@@ -57,34 +57,34 @@ instance RunMessage KnowledgeIsPower where
       canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
       drawing <- drawCards iid attrs 1
 
-      push $
-        chooseOne iid $
-          [ targetLabel
+      push
+        $ chooseOne iid
+        $ [ targetLabel
             asset
             [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)]
           | asset <- assets
           ]
-            <> [ targetLabel (toCardId card) $
-                [ AddCardEntity card
-                , HandleTargetChoice
-                    iid
-                    (toSource attrs)
-                    (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
-                , RemoveCardEntity card
+        <> [ targetLabel (toCardId card)
+            $ [ AddCardEntity card
+              , HandleTargetChoice
+                  iid
+                  (toSource attrs)
+                  (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
+              , RemoveCardEntity card
+              ]
+            <> [ chooseOne
+                iid
+                [ Label
+                    "Discard to draw 1 card"
+                    [ DiscardCard iid (toSource attrs) (toCardId card)
+                    , drawing
+                    ]
+                , Label "Do not discard" []
                 ]
-                  <> [ chooseOne
-                      iid
-                      [ Label
-                          "Discard to draw 1 card"
-                          [ DiscardCard iid (toSource attrs) (toCardId card)
-                          , drawing
-                          ]
-                      , Label "Do not discard" []
-                      ]
-                     | canDraw
-                     ]
-               | card <- cards
+               | canDraw
                ]
+           | card <- cards
+           ]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       let
@@ -93,9 +93,9 @@ instance RunMessage KnowledgeIsPower where
             (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
             [IgnoreAllCosts]
       abilities <-
-        selectListMap adjustAbility $
-          AssetAbility (AssetWithId aid)
-            <> AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility]
+        selectListMap adjustAbility
+          $ AssetAbility (AssetWithId aid)
+          <> AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility]
       abilities' <-
         filterM
           ( \ab ->

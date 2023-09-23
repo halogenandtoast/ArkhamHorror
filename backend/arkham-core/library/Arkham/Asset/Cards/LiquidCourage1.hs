@@ -22,10 +22,10 @@ instance HasAbilities LiquidCourage1 where
   getAbilities (LiquidCourage1 x) =
     [ withCriteria (mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1 <> assetUseCost x Supply 1)
         $ ControlsThis
-          <> InvestigatorExists
-            ( HealableInvestigator (toSource x) HorrorType
-                $ InvestigatorAt YourLocation
-            )
+        <> InvestigatorExists
+          ( HealableInvestigator (toSource x) HorrorType
+              $ InvestigatorAt YourLocation
+          )
     ]
 
 instance RunMessage LiquidCourage1 where

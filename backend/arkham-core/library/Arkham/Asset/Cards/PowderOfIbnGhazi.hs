@@ -28,10 +28,10 @@ instance HasAbilities PowderOfIbnGhazi where
         ( ControlsThis
             <> CluesOnThis (GreaterThan $ Static 0)
             <> EnemyCriteria
-              ( EnemyExists $
-                  ExhaustedEnemy
-                    <> EnemyAt YourLocation
-                    <> EnemyWithTitle "Brood of Yog-Sothoth"
+              ( EnemyExists
+                  $ ExhaustedEnemy
+                  <> EnemyAt YourLocation
+                  <> EnemyWithTitle "Brood of Yog-Sothoth"
               )
         )
         (FastAbility Free)
@@ -52,10 +52,10 @@ instance RunMessage PowderOfIbnGhazi where
       PowderOfIbnGhazi <$> runMessage msg (attrs & tokensL %~ setTokens Clue survivedCount)
     UseCardAbility you source 1 _ _ | isSource attrs source -> do
       targets <-
-        selectListMap EnemyTarget $
-          EnemyWithTitle "Brood of Yog-Sothoth"
-            <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId you)
-            <> ExhaustedEnemy
+        selectListMap EnemyTarget
+          $ EnemyWithTitle "Brood of Yog-Sothoth"
+          <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId you)
+          <> ExhaustedEnemy
       case targets of
         [] -> throwIO $ InvalidState "missing brood of yog sothoth"
         [x] -> push (PlaceClues (toAbilitySource attrs 1) x 1)

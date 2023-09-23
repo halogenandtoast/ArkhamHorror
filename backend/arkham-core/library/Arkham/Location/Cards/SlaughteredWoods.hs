@@ -24,15 +24,15 @@ slaughteredWoods =
 
 instance HasAbilities SlaughteredWoods where
   getAbilities (SlaughteredWoods attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-        attrs
-        1
-        (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-        $ ForcedAbility
-          (RevealLocation Timing.After You $ LocationWithId $ toId attrs)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+          attrs
+          1
+          (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+          $ ForcedAbility
+            (RevealLocation Timing.After You $ LocationWithId $ toId attrs)
+        | locationRevealed attrs
+        ]
 
 instance RunMessage SlaughteredWoods where
   runMessage msg l@(SlaughteredWoods attrs) = case msg of

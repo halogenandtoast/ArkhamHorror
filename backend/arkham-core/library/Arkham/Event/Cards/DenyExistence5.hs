@@ -44,14 +44,14 @@ instance RunMessage DenyExistence5 where
       case windowType w of
         Discarded iid source c -> do
           drawing <- drawCards iid source 1
-          replaceMessageMatching (== Do (toMessage $ discardCard iid source c)) $
-            \_ -> [drawing]
+          replaceMessageMatching (== Do (toMessage $ discardCard iid source c))
+            $ \_ -> [drawing]
         LostResources iid source n -> do
-          replaceMessageMatching (== Do (LoseResources iid source n)) $
-            \_ -> [TakeResources iid n source False]
+          replaceMessageMatching (== Do (LoseResources iid source n))
+            $ \_ -> [TakeResources iid n source False]
         LostActions iid source n -> do
-          replaceMessageMatching (== Do (LoseActions iid source n)) $
-            \_ -> [GainActions iid source n]
+          replaceMessageMatching (== Do (LoseActions iid source n))
+            $ \_ -> [GainActions iid source n]
         WouldTakeDamage source (InvestigatorTarget iid) n -> do
           pushAll
             [CancelDamage iid n, HealDamage (InvestigatorTarget iid) source n]

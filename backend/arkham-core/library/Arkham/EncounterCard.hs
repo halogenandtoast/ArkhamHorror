@@ -15,8 +15,8 @@ import Arkham.Treachery.Cards
 
 lookupEncounterCardDef :: CardCode -> CardDef
 lookupEncounterCardDef cardCode =
-  fromJustNote ("Unknown card: " <> show cardCode) $
-    lookup cardCode allEncounterCards
+  fromJustNote ("Unknown card: " <> show cardCode)
+    $ lookup cardCode allEncounterCards
 
 allEncounterCards :: Map CardCode CardDef
 allEncounterCards =

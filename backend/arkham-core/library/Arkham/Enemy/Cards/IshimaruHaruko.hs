@@ -25,13 +25,13 @@ instance HasAbilities IshimaruHaruko where
   getAbilities (IshimaruHaruko a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyDealtDamage
-              Timing.After
-              NonAttackDamageEffect
-              (EnemyWithId $ toId a)
-              AnySource
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyDealtDamage
+            Timing.After
+            NonAttackDamageEffect
+            (EnemyWithId $ toId a)
+            AnySource
       ]
 
 instance RunMessage IshimaruHaruko where

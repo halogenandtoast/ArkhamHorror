@@ -28,10 +28,10 @@ instance RunMessage MysteriesOfTheLodge where
   runMessage msg t@(MysteriesOfTheLodge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <-
-        selectList $
-          NearestEnemy $
-            EnemyWithTrait Cultist
-              <> EnemyWithoutModifier CannotPlaceDoomOnThis
+        selectList
+          $ NearestEnemy
+          $ EnemyWithTrait Cultist
+          <> EnemyWithoutModifier CannotPlaceDoomOnThis
       case enemies of
         [] -> push $ gainSurge attrs
         xs ->

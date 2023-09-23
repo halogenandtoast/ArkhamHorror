@@ -40,10 +40,10 @@ instance RunMessage AstralTravel where
       let faces = [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when (any ((`elem` faces) . chaosTokenFace) tokens) $ do
         targets <-
-          selectList $
-            AssetOneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
-        push $
-          If
+          selectList
+            $ AssetOneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
+        push
+          $ If
             (Window.RevealChaosTokenEventEffect (eventOwner attrs) tokens (toId attrs))
             [ case targets of
                 [] ->

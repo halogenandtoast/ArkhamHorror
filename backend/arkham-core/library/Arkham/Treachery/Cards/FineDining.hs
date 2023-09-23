@@ -27,8 +27,8 @@ instance RunMessage FineDining where
       clueCount <- field InvestigatorClues iid
       bystanders <- selectListMap AssetTarget $ AssetWithTrait Bystander
       let damageMsg = InvestigatorAssignDamage iid source DamageAny 1 1
-      push $
-        if clueCount > 0 && notNull bystanders
+      push
+        $ if clueCount > 0 && notNull bystanders
           then
             chooseOne
               iid

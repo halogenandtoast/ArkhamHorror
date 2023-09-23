@@ -38,9 +38,10 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
       enemies <- selectList EnemyEngagedWithYou
       pushAll
         $ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) 1 (Just Action.Investigate)
-          : [ chooseOne iid
-              $ Label "No evasion" [] : [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]
-            | notNull enemies
-            ]
+        : [ chooseOne iid
+            $ Label "No evasion" []
+            : [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]
+          | notNull enemies
+          ]
       pure a
     _ -> ArchaicGlyphsProphecyForetold3 <$> runMessage msg attrs

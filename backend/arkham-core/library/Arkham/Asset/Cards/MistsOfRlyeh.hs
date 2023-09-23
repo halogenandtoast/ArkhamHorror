@@ -32,8 +32,8 @@ mistsOfRlyeh = asset MistsOfRlyeh Cards.mistsOfRlyeh
 
 instance HasAbilities MistsOfRlyeh where
   getAbilities (MistsOfRlyeh a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility
           (Just Action.Evade)
           (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
@@ -80,11 +80,11 @@ instance RunMessage MistsOfRlyehEffect where
               unblockedConnectedLocationIds <- selectList AccessibleLocation
               let
                 moveOptions =
-                  chooseOrRunOne iid $
-                    [Label "Do not move to a connecting location" []]
-                      <> [ targetLabel lid [Move $ move attrs iid lid]
-                         | lid <- unblockedConnectedLocationIds
-                         ]
+                  chooseOrRunOne iid
+                    $ [Label "Do not move to a connecting location" []]
+                    <> [ targetLabel lid [Move $ move attrs iid lid]
+                       | lid <- unblockedConnectedLocationIds
+                       ]
               pushAll [moveOptions, DisableEffect effectId]
             _ -> push $ DisableEffect effectId
         _ -> error "Invalid Target"

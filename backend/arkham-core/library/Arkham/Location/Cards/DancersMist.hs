@@ -79,17 +79,17 @@ instance RunMessage DancersMist where
                     ]
                   | notNull rightChoice
                   ]
-                  <> [ Label
-                      "Lose 2 resources and connect to an adjacent location in a direction of your choice"
-                      [ LoseResources iid (toAbilitySource attrs 1) 2
-                      , chooseOrRunOne
-                          iid
-                          [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
-                          | pos'@(Pos x y) <- emptyPositions
-                          ]
-                      ]
-                     | notNull emptyPositions
-                     ]
+                <> [ Label
+                    "Lose 2 resources and connect to an adjacent location in a direction of your choice"
+                    [ LoseResources iid (toAbilitySource attrs 1) 2
+                    , chooseOrRunOne
+                        iid
+                        [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
+                        | pos'@(Pos x y) <- emptyPositions
+                        ]
+                    ]
+                   | notNull emptyPositions
+                   ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       startId <- fieldJust InvestigatorLocation iid

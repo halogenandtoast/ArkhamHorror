@@ -27,11 +27,11 @@ relicOfAgesForestallingTheFuture =
 
 instance HasAbilities RelicOfAgesForestallingTheFuture where
   getAbilities (RelicOfAgesForestallingTheFuture (a `With` _)) =
-    [ restrictedAbility a 1 ControlsThis $
-        FastAbility $
-          ExhaustCost $
-            toTarget
-              a
+    [ restrictedAbility a 1 ControlsThis
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget
+          a
     ]
 
 instance RunMessage RelicOfAgesForestallingTheFuture where
@@ -40,8 +40,8 @@ instance RunMessage RelicOfAgesForestallingTheFuture where
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         let
           chooseSkillTest skillType = beginSkillTest iid attrs iid skillType 4
-        push $
-          chooseOne
+        push
+          $ chooseOne
             iid
             [ SkillLabel skillType [chooseSkillTest skillType]
             | skillType <- [SkillWillpower, SkillIntellect]
@@ -60,4 +60,4 @@ instance RunMessage RelicOfAgesForestallingTheFuture where
       _ ->
         RelicOfAgesForestallingTheFuture
           . (`with` metadata)
-          <$> runMessage msg attrs
+            <$> runMessage msg attrs

@@ -23,8 +23,8 @@ doubleDouble4 = asset DoubleDouble4 Cards.doubleDouble4
 
 instance HasAbilities DoubleDouble4 where
   getAbilities (DoubleDouble4 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ReactionAbility
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
           ( PlayCard
               Timing.After
               You

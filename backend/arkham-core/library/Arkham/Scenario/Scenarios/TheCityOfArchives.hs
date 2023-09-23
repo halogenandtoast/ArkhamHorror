@@ -56,11 +56,11 @@ instance HasChaosTokenValue TheCityOfArchives where
   getChaosTokenValue iid chaosTokenFace (TheCityOfArchives attrs) = case chaosTokenFace of
     Skull -> do
       cardsInHand <- fieldMap InvestigatorHand length iid
-      pure $
-        if cardsInHand >= 5
+      pure
+        $ if cardsInHand >= 5
           then
-            ChaosTokenValue Skull $
-              if isEasyStandard attrs
+            ChaosTokenValue Skull
+              $ if isEasyStandard attrs
                 then NegativeModifier 3
                 else AutoFailModifier
           else toChaosTokenValue attrs Skull 1 2
@@ -95,54 +95,54 @@ instance RunMessage TheCityOfArchives where
       pure s
     CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
       uniqueItemAssetCards <-
-        selectList $
-          InDeckOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (CardWithTrait Item <> CardIsUnique)
+        selectList
+          $ InDeckOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (CardWithTrait Item <> CardIsUnique)
       uniqueItemAssets <- selectList $ AssetWithTrait Item <> UniqueAsset
 
       mAlejandro <-
-        selectOne $
-          InDeckOf (InvestigatorWithId iid)
-            <> BasicCardMatch
-              (cardIs Assets.alejandroVela)
+        selectOne
+          $ InDeckOf (InvestigatorWithId iid)
+          <> BasicCardMatch
+            (cardIs Assets.alejandroVela)
 
       let setAsideUpdate = maybe id (over setAsideCardsL . (:)) mAlejandro
 
-      pushAll $
-        map (RemovePlayerCardFromGame True) uniqueItemAssetCards
-          <> [ RemovePlayerCardFromGame True alejandro
-             | alejandro <- maybeToList mAlejandro
-             ]
-          <> map (RemoveFromGame . AssetTarget) uniqueItemAssets
+      pushAll
+        $ map (RemovePlayerCardFromGame True) uniqueItemAssetCards
+        <> [ RemovePlayerCardFromGame True alejandro
+           | alejandro <- maybeToList mAlejandro
+           ]
+        <> map (RemoveFromGame . AssetTarget) uniqueItemAssets
       pure . TheCityOfArchives $ attrs & setAsideUpdate
     Setup -> do
       iids <- allInvestigatorIds
       leadInvestigator <- getLeadInvestigatorId
-      pushAll $
-        map BecomeYithian iids
-          <> [ story iids intro1
-             , chooseOne
-                leadInvestigator
-                [ Label
-                    "Cooperate and tell the creatures everything you know."
-                    [ story iids intro2
-                    , Record TheInvestigatorsCooperatedWithTheYithians
-                    ]
-                , Label
-                    "Refuse and resist captivity."
-                    [story iids intro3, Record TheInvestigatorsResistedCaptivity]
-                ]
-             , SetupStep (toTarget attrs) 1
-             ]
+      pushAll
+        $ map BecomeYithian iids
+        <> [ story iids intro1
+           , chooseOne
+              leadInvestigator
+              [ Label
+                  "Cooperate and tell the creatures everything you know."
+                  [ story iids intro2
+                  , Record TheInvestigatorsCooperatedWithTheYithians
+                  ]
+              , Label
+                  "Refuse and resist captivity."
+                  [story iids intro3, Record TheInvestigatorsResistedCaptivity]
+              ]
+           , SetupStep (toTarget attrs) 1
+           ]
       TheCityOfArchives <$> runMessage msg attrs
     SetupStep (isTarget attrs -> True) 1 -> do
       cooperatedWithTheYithians <-
         getHasRecord
           TheInvestigatorsCooperatedWithTheYithians
       interviewRoom <-
-        genCard $
-          if cooperatedWithTheYithians
+        genCard
+          $ if cooperatedWithTheYithians
             then Locations.interviewRoomArrivalChamber
             else Locations.interviewRoomRestrainingChamber
       otherRooms <-
@@ -205,17 +205,17 @@ instance RunMessage TheCityOfArchives where
           interviewRoomId
           Nothing
 
-      pushAll $
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeInterviewRoom
-        , SetLocationLabel interviewRoomId "interviewRoom1"
-        , MoveAllTo (toSource attrs) interviewRoomId
-        ]
-          <> concat placeOtherRooms
-          <> [createYithianObserver | cooperatedWithTheYithians]
-          <> placeRemainingLocations
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeInterviewRoom
+          , SetLocationLabel interviewRoomId "interviewRoom1"
+          , MoveAllTo (toSource attrs) interviewRoomId
+          ]
+        <> concat placeOtherRooms
+        <> [createYithianObserver | cooperatedWithTheYithians]
+        <> placeRemainingLocations
 
       acts <-
         genCards
@@ -231,11 +231,11 @@ instance RunMessage TheCityOfArchives where
           ]
       pure
         . TheCityOfArchives
-        $ attrs
-          & victoryDisplayUpdate
-          & (setAsideCardsL %~ (<> setAsideCards))
-          & (agendaStackL . at 1 ?~ agendas)
-          & (actStackL . at 1 ?~ acts)
+          $ attrs
+        & victoryDisplayUpdate
+        & (setAsideCardsL %~ (<> setAsideCards))
+        & (agendaStackL . at 1 ?~ agendas)
+        & (actStackL . at 1 ?~ acts)
     ResolveChaosToken _ chaosTokenFace iid
       | isHardExpert attrs && chaosTokenFace `elem` [Cultist, ElderThing] -> do
           push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource chaosTokenFace) 1
@@ -246,24 +246,24 @@ instance RunMessage TheCityOfArchives where
           push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource face) 1
         Tablet -> do
           let discardCount = if isEasyStandard attrs then 1 else n
-          pushAll $
-            replicate discardCount $
-              toMessage $
-                randomDiscard
-                  iid
-                  (ChaosTokenEffectSource Tablet)
+          pushAll
+            $ replicate discardCount
+            $ toMessage
+            $ randomDiscard
+              iid
+              (ChaosTokenEffectSource Tablet)
         _ -> pure ()
       pure s
     ScenarioResolution r -> do
       iids <- allInvestigatorIds
       case r of
         NoResolution ->
-          pushAll $
-            [ story iids noResolution
-            , Record TheInvestigatorsHadTheirMemoriesExpunged
-            ]
-              <> map DrivenInsane iids
-              <> [GameOver]
+          pushAll
+            $ [ story iids noResolution
+              , Record TheInvestigatorsHadTheirMemoriesExpunged
+              ]
+            <> map DrivenInsane iids
+            <> [GameOver]
         Resolution 1 -> do
           rememberedTasks <-
             countM
@@ -299,11 +299,11 @@ instance RunMessage TheCityOfArchives where
                 then Just TheCustodianWasUnderControl
                 else Nothing
 
-          pushAll $
-            story iids resolution1
-              : Record logEntry
-              : gainXp
-                <> [EndOfGame (Just $ InterludeStep 4 interludeResult)]
+          pushAll
+            $ story iids resolution1
+            : Record logEntry
+            : gainXp
+              <> [EndOfGame (Just $ InterludeStep 4 interludeResult)]
         _ -> error "Invalid resolution"
       pure s
     _ -> TheCityOfArchives <$> runMessage msg attrs

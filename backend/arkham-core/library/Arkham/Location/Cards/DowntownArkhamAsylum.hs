@@ -26,7 +26,8 @@ instance HasAbilities DowntownArkhamAsylum where
     withRevealedAbilities x
       $ [ limitedAbility (PlayerLimit PerGame 1)
             $ withCriteria (mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1)
-            $ Here <> InvestigatorExists (HealableInvestigator (toSource x) HorrorType You)
+            $ Here
+            <> InvestigatorExists (HealableInvestigator (toSource x) HorrorType You)
         ]
 
 instance RunMessage DowntownArkhamAsylum where

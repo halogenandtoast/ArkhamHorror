@@ -21,8 +21,8 @@ thePaintedWorld = ThePaintedWorld . uncurry4 (baseAttrs "03012")
 instance HasModifiersFor ThePaintedWorld where
   getModifiersFor (EventTarget eid) (ThePaintedWorld a@EffectAttrs {..}) = do
     cardId <- field EventCardId eid
-    pure $
-      toModifiers
+    pure
+      $ toModifiers
         a
         [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
   getModifiersFor _ _ = pure []

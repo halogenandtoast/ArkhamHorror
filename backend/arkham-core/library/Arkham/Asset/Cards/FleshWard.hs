@@ -26,7 +26,7 @@ instance HasAbilities FleshWard where
         $ ReactionAbility
           (DealtDamageOrHorror Timing.When (SourceIsCancelable $ SourceIsEnemyAttack AnyEnemy) You)
         $ exhaust a
-          <> UseCost (AssetWithId $ toId a) Charge 1
+        <> UseCost (AssetWithId $ toId a) Charge 1
     ]
 
 dealtDamage :: [Window] -> Bool
@@ -45,13 +45,13 @@ instance RunMessage FleshWard where
       ignoreWindow <-
         checkWindows
           [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
-      push $
-        chooseOrRunOne iid $
-          [ Label "Cancel 1 damage" [CancelDamage iid 1, ignoreWindow]
+      push
+        $ chooseOrRunOne iid
+        $ [ Label "Cancel 1 damage" [CancelDamage iid 1, ignoreWindow]
           | dealtDamage windows'
           ]
-            <> [ Label "Cancel 1 horror" [CancelHorror iid 1, ignoreWindow]
-               | dealtHorror windows'
-               ]
+        <> [ Label "Cancel 1 horror" [CancelHorror iid 1, ignoreWindow]
+           | dealtHorror windows'
+           ]
       pure a
     _ -> FleshWard <$> runMessage msg attrs

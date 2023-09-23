@@ -25,8 +25,8 @@ deathXiii1 =
 
 instance HasModifiersFor DeathXIII1 where
   getModifiersFor (InvestigatorTarget iid) (DeathXIII1 a) =
-    pure $
-      toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
+    pure
+      $ toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DeathXIII1 where

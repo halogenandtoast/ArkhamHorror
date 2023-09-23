@@ -147,31 +147,31 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
     , cbCardBuilder = \cardId eid ->
         f
           . g
-          $ EnemyAttrs
-            { enemyId = eid
-            , enemyCardId = cardId
-            , enemyCardCode = toCardCode cardDef
-            , enemyOriginalCardCode = toCardCode cardDef
-            , enemyPlacement = Unplaced
-            , enemyFight = fight
-            , enemyHealth = health
-            , enemyEvade = Just evade
-            , enemyAssignedDamage = mempty
-            , enemyHealthDamage = healthDamage
-            , enemySanityDamage = sanityDamage
-            , enemyPrey = Prey Anyone
-            , enemyModifiers = mempty
-            , enemyExhausted = False
-            , enemyTokens = mempty
-            , enemySpawnAt = Nothing
-            , enemySurgeIfUnableToSpawn = False
-            , enemyAsSelfLocation = Nothing
-            , enemyMovedFromHunterKeyword = False
-            , enemyDamageStrategy = DamageAny
-            , enemyBearer = Nothing
-            , enemySealedChaosTokens = []
-            , enemyKeys = mempty
-            }
+            $ EnemyAttrs
+              { enemyId = eid
+              , enemyCardId = cardId
+              , enemyCardCode = toCardCode cardDef
+              , enemyOriginalCardCode = toCardCode cardDef
+              , enemyPlacement = Unplaced
+              , enemyFight = fight
+              , enemyHealth = health
+              , enemyEvade = Just evade
+              , enemyAssignedDamage = mempty
+              , enemyHealthDamage = healthDamage
+              , enemySanityDamage = sanityDamage
+              , enemyPrey = Prey Anyone
+              , enemyModifiers = mempty
+              , enemyExhausted = False
+              , enemyTokens = mempty
+              , enemySpawnAt = Nothing
+              , enemySurgeIfUnableToSpawn = False
+              , enemyAsSelfLocation = Nothing
+              , enemyMovedFromHunterKeyword = False
+              , enemyDamageStrategy = DamageAny
+              , enemyBearer = Nothing
+              , enemySealedChaosTokens = []
+              , enemyKeys = mempty
+              }
     }
 
 instance HasAbilities EnemyAttrs where

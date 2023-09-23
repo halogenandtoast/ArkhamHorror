@@ -33,9 +33,9 @@ instance RunMessage CheapShot2 where
         ]
       pure e
     PassedSkillTest iid _ _ (SkillTestInitiatorTarget (InvestigatorTarget _)) _ n | n >= 1 -> do
-      when (n >= 3) $
-        push $
-          createCardEffect Cards.cheapShot2 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
+      when (n >= 3)
+        $ push
+        $ createCardEffect Cards.cheapShot2 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       mSkillTestTarget <- getSkillTestTarget
       case mSkillTestTarget of
         Just (EnemyTarget eid) -> push $ EnemyEvaded iid eid

@@ -44,8 +44,8 @@ instance HasModifiersFor TheBrotherhoodIsRevealed where
       atLocationWithoutClues <-
         selectAny $ locationWithEnemy eid <> LocationWithoutClues
       n <- getPlayerCountValue (PerPlayer 1)
-      pure $
-        if isPrey && atLocationWithoutClues
+      pure
+        $ if isPrey && atLocationWithoutClues
           then toModifiers a [EnemyFight 1, HealthModifier n, EnemyEvade 1]
           else []
   getModifiersFor _ _ = pure []
@@ -102,8 +102,9 @@ instance RunMessage TheBrotherhoodIsRevealed where
                 EnemyLocation
                 (fromJustNote "missing locatioN")
                 eid
-            pure . TheBrotherhoodIsRevealed $
-              attrs
+            pure
+              . TheBrotherhoodIsRevealed
+                $ attrs
                 `with` Metadata
                   (Just location)
           else pure a

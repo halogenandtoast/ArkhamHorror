@@ -36,18 +36,18 @@ instance HasAbilities SwiftByakhee where
   getAbilities (SwiftByakhee a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            MovedFromHunter Timing.When $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ MovedFromHunter Timing.When
+          $ EnemyWithId
+          $ toId a
       ]
 
 choosePrey :: EnemyAttrs -> (InvestigatorId, LocationId, Distance) -> UI Message
 choosePrey attrs (iid, pathId, distance) =
-  targetLabel iid $
-    [noAttack | unDistance distance <= 1]
-      <> [MoveUntil pathId (toTarget attrs)]
+  targetLabel iid
+    $ [noAttack | unDistance distance <= 1]
+    <> [MoveUntil pathId (toTarget attrs)]
  where
   noAttack =
     CreateWindowModifierEffect

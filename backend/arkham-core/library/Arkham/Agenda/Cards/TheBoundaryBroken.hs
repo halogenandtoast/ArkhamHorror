@@ -39,17 +39,17 @@ instance RunMessage TheBoundaryBroken where
           harbinger
           locationId
           (Just $ toTarget attrs)
-      pushAll $
-        [createHarbinger | harbingerAlive]
-          <> [advanceAgendaDeck attrs]
+      pushAll
+        $ [createHarbinger | harbingerAlive]
+        <> [advanceAgendaDeck attrs]
       pure a
     CreatedEnemyAt harbingerId _ (isTarget attrs -> True) -> do
       startingDamage <- getRecordCount TheHarbingerIsStillAlive
-      when (startingDamage > 0) $
-        push $
-          PlaceDamage
-            (toSource attrs)
-            (EnemyTarget harbingerId)
-            startingDamage
+      when (startingDamage > 0)
+        $ push
+        $ PlaceDamage
+          (toSource attrs)
+          (EnemyTarget harbingerId)
+          startingDamage
       pure a
     _ -> TheBoundaryBroken <$> runMessage msg attrs

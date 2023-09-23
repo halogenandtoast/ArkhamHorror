@@ -23,13 +23,13 @@ jeromeDavids = enemy JeromeDavids Cards.jeromeDavids (4, Static 4, 4) (1, 1)
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =
-    withBaseAbilities a $
-      [ restrictedAbility a 1 (InvestigatorExists $ You <> InvestigatorWithDiscardableCard) $
-          ForcedAbility $
-            EnemyEngaged Timing.After You $
-              EnemyWithId $
-                toId a
-      ]
+    withBaseAbilities a
+      $ [ restrictedAbility a 1 (InvestigatorExists $ You <> InvestigatorWithDiscardableCard)
+            $ ForcedAbility
+            $ EnemyEngaged Timing.After You
+            $ EnemyWithId
+            $ toId a
+        ]
 
 instance RunMessage JeromeDavids where
   runMessage msg e@(JeromeDavids attrs) = case msg of

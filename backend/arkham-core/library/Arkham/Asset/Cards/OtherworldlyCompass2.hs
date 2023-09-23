@@ -23,10 +23,10 @@ otherworldlyCompass2 = asset OtherworldlyCompass2 Cards.otherworldlyCompass2
 
 instance HasAbilities OtherworldlyCompass2 where
   getAbilities (OtherworldlyCompass2 a) =
-    [ restrictedAbility a 1 ControlsThis $
-        ActionAbility (Just Action.Investigate) $
-          ActionCost 1
-            <> ExhaustCost (toTarget a)
+    [ restrictedAbility a 1 ControlsThis
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
+        <> ExhaustCost (toTarget a)
     ]
 
 instance RunMessage OtherworldlyCompass2 where
@@ -34,10 +34,10 @@ instance RunMessage OtherworldlyCompass2 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       lid <- getJustLocation iid
       revealedLocations <-
-        selectCount $
-          RevealedLocation
-            <> ConnectedTo
-              (locationWithInvestigator iid)
+        selectCount
+          $ RevealedLocation
+          <> ConnectedTo
+            (locationWithInvestigator iid)
       skillType <- field LocationInvestigateSkill lid
       pushAll
         [ skillTestModifier

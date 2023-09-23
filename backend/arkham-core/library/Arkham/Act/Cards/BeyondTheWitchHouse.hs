@@ -54,9 +54,9 @@ instance RunMessage BeyondTheWitchHouse where
       brownJenkin <- findUniqueCard Enemies.brownJenkin
       createBrownJenkin <- createEnemyAt_ brownJenkin siteId Nothing
 
-      pushAll $
-        [sitePlacement, createNahab]
-          <> doomMessages
-          <> [createBrownJenkin, advanceActDeck attrs]
+      pushAll
+        $ [sitePlacement, createNahab]
+        <> doomMessages
+        <> [createBrownJenkin, advanceActDeck attrs]
       pure a
     _ -> BeyondTheWitchHouse <$> runMessage msg attrs

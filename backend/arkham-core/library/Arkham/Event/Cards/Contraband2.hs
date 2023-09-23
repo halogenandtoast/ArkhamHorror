@@ -28,16 +28,16 @@ instance RunMessage Contraband2 where
       ammoAssets <-
         selectWithField AssetUses
           $ AssetWithUseType Ammo
-            <> AssetNotAtUseLimit
-            <> AssetOneOf
-              (map assetControlledBy investigatorIds)
+          <> AssetNotAtUseLimit
+          <> AssetOneOf
+            (map assetControlledBy investigatorIds)
 
       supplyAssets <-
         selectWithField AssetUses
           $ AssetWithUseType Supply
-            <> AssetNotAtUseLimit
-            <> AssetOneOf
-              (map assetControlledBy investigatorIds)
+          <> AssetNotAtUseLimit
+          <> AssetOneOf
+            (map assetControlledBy investigatorIds)
 
       let
         ammoAssetsWithUseCount =

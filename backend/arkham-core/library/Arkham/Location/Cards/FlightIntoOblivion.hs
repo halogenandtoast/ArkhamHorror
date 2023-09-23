@@ -76,17 +76,17 @@ instance RunMessage FlightIntoOblivion where
                     ]
                   | notNull aboveChoice
                   ]
-                  <> [ Label
-                      "Take 2 horror and connect to the topmost revealed location in a direction of your choice"
-                      [ assignHorror iid (toAbilitySource attrs 1) 2
-                      , chooseOrRunOne
-                          iid
-                          [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
-                          | pos'@(Pos x y) <- emptyPositions
-                          ]
-                      ]
-                     | notNull emptyPositions
-                     ]
+                <> [ Label
+                    "Take 2 horror and connect to the topmost revealed location in a direction of your choice"
+                    [ assignHorror iid (toAbilitySource attrs 1) 2
+                    , chooseOrRunOne
+                        iid
+                        [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
+                        | pos'@(Pos x y) <- emptyPositions
+                        ]
+                    ]
+                   | notNull emptyPositions
+                   ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       (map toCard -> cards, _) <- fieldMap InvestigatorDeck (draw 1) iid

@@ -33,8 +33,8 @@ getApiV1ArkhamGameReplayR gameId step = do
   let choices = map (arkhamStepChoice . entityVal) $ reverse $ drop step allChoices
   let gameJson' = replayChoices gameJson $ map choicePatchDown choices
 
-  pure $
-    GetReplayJson
+  pure
+    $ GetReplayJson
       (length choices)
       ( toPublicGame
           ( Entity

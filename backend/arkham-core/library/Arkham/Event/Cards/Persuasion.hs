@@ -32,9 +32,9 @@ instance RunMessage Persuasion where
           enemies <-
             selectWithField EnemySanityDamage
               $ enemyAt location
-                <> EnemyWithTrait Humanoid
-                <> NonWeaknessEnemy
-                <> CanParleyEnemy iid
+              <> EnemyWithTrait Humanoid
+              <> NonWeaknessEnemy
+              <> CanParleyEnemy iid
           pushAll
             [ chooseOne
                 iid

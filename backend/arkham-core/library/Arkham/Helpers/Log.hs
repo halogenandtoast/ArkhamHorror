@@ -22,8 +22,8 @@ getCampaignLog =
 getHasRecord :: HasGame m => CampaignLogKey -> m Bool
 getHasRecord k = do
   campaignLog <- getCampaignLog
-  pure $
-    or
+  pure
+    $ or
       [ k `member` campaignLogRecorded campaignLog
       , k `member` campaignLogRecordedCounts campaignLog
       ]

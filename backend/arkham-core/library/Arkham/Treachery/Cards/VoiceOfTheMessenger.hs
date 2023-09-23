@@ -20,8 +20,8 @@ voiceOfTheMessenger = treachery VoiceOfTheMessenger Cards.voiceOfTheMessenger
 instance RunMessage VoiceOfTheMessenger where
   runMessage msg t@(VoiceOfTheMessenger attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Take 1 direct damage and suffer 1 physical trauma"

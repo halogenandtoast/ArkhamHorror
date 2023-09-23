@@ -44,11 +44,12 @@ getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
   pure $ entries.body
 
 getGameLogEntries :: MonadIO m => ArkhamGameId -> SqlPersistT m [ArkhamLogEntry]
-getGameLogEntries gameId = fmap (fmap entityVal) . select $ do
-  entries <- from $ table @ArkhamLogEntry
-  where_ $ entries.arkhamGameId ==. val gameId
-  orderBy [asc entries.createdAt]
-  pure entries
+getGameLogEntries gameId = fmap (fmap entityVal)
+  . select $ do
+    entries <- from $ table @ArkhamLogEntry
+    where_ $ entries.arkhamGameId ==. val gameId
+    orderBy [asc entries.createdAt]
+    pure entries
 
 toPublicGame :: Entity ArkhamGame -> GameLog -> PublicGame ArkhamGameId
 toPublicGame (Entity gId ArkhamGame {..}) gameLog =

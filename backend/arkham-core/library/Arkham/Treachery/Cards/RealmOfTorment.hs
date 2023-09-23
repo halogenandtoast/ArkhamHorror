@@ -24,16 +24,16 @@ realmOfTorment = treachery RealmOfTorment Cards.realmOfTorment
 
 instance HasAbilities RealmOfTorment where
   getAbilities (RealmOfTorment a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnBegins
-            Timing.When
-            You
-    , restrictedAbility a 2 (InThreatAreaOf You) $
-        ForcedAbility $
-          TurnEnds
-            Timing.When
-            You
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnBegins
+          Timing.When
+          You
+    , restrictedAbility a 2 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ TurnEnds
+          Timing.When
+          You
     ]
 
 instance RunMessage RealmOfTorment where

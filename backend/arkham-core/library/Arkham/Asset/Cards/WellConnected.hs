@@ -26,10 +26,10 @@ wellConnected =
 
 instance HasAbilities WellConnected where
   getAbilities (WellConnected a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest) $
-        FastAbility $
-          ExhaustCost $
-            toTarget a
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ FastAbility
+        $ ExhaustCost
+        $ toTarget a
     ]
 
 instance RunMessage WellConnected where

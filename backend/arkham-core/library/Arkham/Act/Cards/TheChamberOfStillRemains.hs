@@ -30,9 +30,9 @@ instance HasAbilities TheChamberOfStillRemains where
   getAbilities (TheChamberOfStillRemains a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
-          ActionAbility (Just Action.Explore) $
-            ActionCost 1
+      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+          $ ActionAbility (Just Action.Explore)
+          $ ActionCost 1
       ]
 
 theChamberOfStillRemains :: ActCard TheChamberOfStillRemains
@@ -47,8 +47,8 @@ instance RunMessage TheChamberOfStillRemains where
   runMessage msg a@(TheChamberOfStillRemains attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           source
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
@@ -60,15 +60,15 @@ instance RunMessage TheChamberOfStillRemains where
       investigators <- selectList $ investigatorAt chamberOfTime
       yig <- genCard Enemies.yig
       createYig <- createEnemyAt_ yig chamberOfTime Nothing
-      pushAll $
-        [ chooseOrRunOne
-            leadInvestigatorId
-            [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
-            | iid <- investigators
-            ]
-        , createYig
-        , AddToVictory (toTarget attrs)
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      pushAll
+        $ [ chooseOrRunOne
+              leadInvestigatorId
+              [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
+              | iid <- investigators
+              ]
+          , createYig
+          , AddToVictory (toTarget attrs)
+          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+          ]
       pure a
     _ -> TheChamberOfStillRemains <$> runMessage msg attrs

@@ -34,11 +34,11 @@ instance HasModifiersFor StoppingTheRitual where
 instance HasAbilities StoppingTheRitual where
   getAbilities (StoppingTheRitual a)
     | onSide A a =
-        [ mkAbility a 1 $
-            ForcedAbility $
-              EnemyDefeated Timing.When Anyone ByAny $
-                enemyIs
-                  Enemies.nahab
+        [ mkAbility a 1
+            $ ForcedAbility
+            $ EnemyDefeated Timing.When Anyone ByAny
+            $ enemyIs
+              Enemies.nahab
         , restrictedAbility
             a
             2

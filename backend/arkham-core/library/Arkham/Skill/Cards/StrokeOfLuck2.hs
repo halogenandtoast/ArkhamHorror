@@ -21,8 +21,8 @@ strokeOfLuck2 = skill StrokeOfLuck2 Cards.strokeOfLuck2
 instance RunMessage StrokeOfLuck2 where
   runMessage msg s@(StrokeOfLuck2 attrs) = case msg of
     RevealChaosToken _ iid token | chaosTokenFace token /= AutoFail -> do
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
           [ Label
               "Exile Stroke of Luck to automatically succeed"

@@ -24,8 +24,8 @@ instance HasAbilities Infirmary where
   getAbilities (Infirmary attrs) =
     withBaseAbilities
       attrs
-      [ limitedAbility (PlayerLimit PerRound 1) $
-        restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
+      [ limitedAbility (PlayerLimit PerRound 1)
+        $ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
       | locationRevealed attrs
       ]
 
@@ -35,15 +35,15 @@ instance RunMessage Infirmary where
       mHealHorror <- getHealHorrorMessage attrs 1 iid
       healDamage <- canHaveDamageHealed attrs iid
 
-      push $
-        chooseOne
+      push
+        $ chooseOne
           iid
-          [ Label "Heal 1 damage and take 1 direct horror" $
-              [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
-                <> [InvestigatorDirectDamage iid (toSource attrs) 0 1]
-          , Label "Heal 1 horror and take 1 direct damage" $
-              maybeToList mHealHorror
-                <> [InvestigatorDirectDamage iid (toSource attrs) 1 0]
+          [ Label "Heal 1 damage and take 1 direct horror"
+              $ [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
+              <> [InvestigatorDirectDamage iid (toSource attrs) 0 1]
+          , Label "Heal 1 horror and take 1 direct damage"
+              $ maybeToList mHealHorror
+              <> [InvestigatorDirectDamage iid (toSource attrs) 1 0]
           ]
       pure l
     _ -> Infirmary <$> runMessage msg attrs

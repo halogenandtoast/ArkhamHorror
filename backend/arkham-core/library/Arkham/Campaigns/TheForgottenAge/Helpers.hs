@@ -74,8 +74,8 @@ getSetAsidePoisonedCount = do
   n <-
     selectCount
       $ InDeckOf Anyone
-        <> BasicCardMatch
-          (cardIs Treacheries.poisoned)
+      <> BasicCardMatch
+        (cardIs Treacheries.poisoned)
   pure $ 4 - n
 
 getIsPoisoned :: HasGame m => InvestigatorId -> m Bool
@@ -149,13 +149,13 @@ explore iid source cardMatcher exploreRule matchCount = do
 
             pure
               $ locationAction
-                : [ Move $ move source iid lid
-                  | canMove && exploreRule == PlaceExplored
-                  ]
-                  <> [ UpdateHistory iid historyItem
-                     , afterExploredWindow
-                     , afterPutIntoPlayWindow
-                     ]
+              : [ Move $ move source iid lid
+                | canMove && exploreRule == PlaceExplored
+                ]
+                <> [ UpdateHistory iid historyItem
+                   , afterExploredWindow
+                   , afterPutIntoPlayWindow
+                   ]
           else do
             windowMsg <-
               checkWindows
@@ -199,17 +199,17 @@ explore iid source cardMatcher exploreRule matchCount = do
 
         pure
           $ map snd placements
-            <> [ chooseOne
-                iid
-                [ targetLabel lid [Move $ move source iid lid]
-                | lid <- locationIds
-                ]
-               | canMove
-               ]
-            <> [ UpdateHistory iid historyItem
-               , afterExploredWindow
-               , afterPutIntoPlayWindow
-               ]
+          <> [ chooseOne
+              iid
+              [ targetLabel lid [Move $ move source iid lid]
+              | lid <- locationIds
+              ]
+             | canMove
+             ]
+          <> [ UpdateHistory iid historyItem
+             , afterExploredWindow
+             , afterPutIntoPlayWindow
+             ]
       deck' <-
         if null notMatched
           then pure rest
@@ -223,7 +223,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           , UnfocusCards
           , SetScenarioDeck ExplorationDeck deck'
           ]
-          <> msgs
+        <> msgs
 
 getVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
 getVengeancePoints = getCardField cdVengeancePoints

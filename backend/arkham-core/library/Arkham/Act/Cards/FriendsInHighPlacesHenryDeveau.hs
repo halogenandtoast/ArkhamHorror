@@ -37,10 +37,10 @@ instance HasAbilities FriendsInHighPlacesHenryDeveau where
     [ restrictedAbility
       a
       1
-      ( AssetExists $
-          assetIs Assets.henryDeveau
-            <> AssetWithClues
-              (AtLeast $ PerPlayer 1)
+      ( AssetExists
+          $ assetIs Assets.henryDeveau
+          <> AssetWithClues
+            (AtLeast $ PerPlayer 1)
       )
       $ Objective
       $ ForcedAbility AnyWindow

@@ -26,13 +26,13 @@ instance HasAbilities ArtGallery where
   getAbilities (ArtGallery x) =
     withBaseAbilities
       x
-      [ restrictedAbility x 1 Here $
-        ForcedAbility $
-          SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId x)
-            (FailureResult AnyValue)
+      [ restrictedAbility x 1 Here
+        $ ForcedAbility
+        $ SkillTestResult
+          Timing.After
+          You
+          (WhileInvestigating $ LocationWithId $ toId x)
+          (FailureResult AnyValue)
       | locationRevealed x
       ]
 

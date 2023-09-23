@@ -24,20 +24,20 @@ basementHall = location BasementHall Cards.basementHall 4 (PerPlayer 1)
 instance HasModifiersFor BasementHall where
   getModifiersFor (LocationTarget lid) (BasementHall attrs)
     | lid == toId attrs =
-        pure $
-          toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        pure
+          $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BasementHall where
   getAbilities (BasementHall attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $
-        ForcedAbility $
-          RevealLocation Timing.When Anyone $
-            LocationWithId $
-              toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.When Anyone
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage BasementHall where
   runMessage msg l@(BasementHall attrs) = case msg of

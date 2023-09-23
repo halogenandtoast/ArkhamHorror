@@ -120,7 +120,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                 deck'
         pushAll
           $ LoadDeck iid (withDeck (<> weaknesses) deck')
-            : [SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0]
+          : [SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0]
         pure $ a & playerDecksL %~ insertMap iid deck'
       else pure a
   PlaceLocationMatching cardMatcher -> do
@@ -192,7 +192,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     actIds <- selectList $ Matcher.ActWithDeckId n
     pushAll
       $ [Discard GameSource (ActTarget actId) | actId <- actIds]
-        <> [AddAct n current]
+      <> [AddAct n current]
     pure
       $ a
       & (actStackL . at n ?~ stack)
@@ -201,7 +201,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     agendaIds <- selectList $ Matcher.AgendaWithDeckId n
     pushAll
       $ [Discard GameSource (AgendaTarget agendaId) | agendaId <- agendaIds]
-        <> [AddAgenda n current]
+      <> [AddAgenda n current]
     pure
       $ a
       & (agendaStackL . at n ?~ stack)
@@ -340,8 +340,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     _ ->
       error
         $ "Invalid scenario deck key "
-          <> show key
-          <> ", could not find deck in scenario"
+        <> show key
+        <> ", could not find deck in scenario"
   DrawRandomFromScenarioDeck iid key target n ->
     case lookup key scenarioDecks of
       Just [] -> pure a
@@ -352,8 +352,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       _ ->
         error
           $ "Invalid scenario deck key "
-            <> show key
-            <> ", could not find deck in scenario"
+          <> show key
+          <> ", could not find deck in scenario"
   ShuffleScenarioDeckIntoEncounterDeck key -> case lookup key scenarioDecks of
     Just [] -> pure a
     Just xs -> do
@@ -362,16 +362,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     _ ->
       error
         $ "Invalid scenario deck key "
-          <> show key
-          <> ", could not find deck in scenario"
+        <> show key
+        <> ", could not find deck in scenario"
   SetScenarioDeck key cards -> pure $ a & (decksL . at key ?~ cards)
   AddCardToScenarioDeck key card -> case lookup key scenarioDecks of
     Just cards -> pure $ a & (decksL . at key ?~ card : cards)
     _ ->
       error
         $ "Invalid scenario deck key "
-          <> show key
-          <> ", could not find deck in scenario"
+        <> show key
+        <> ", could not find deck in scenario"
   RemoveCardFromScenarioDeck key card ->
     pure $ a & (decksL . ix key %~ filter (/= card))
   ChooseRandomLocation target exclusions -> do
@@ -815,29 +815,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           [FoundEncounterCardFrom iid target FromDiscard card]
         | card <- matchingDiscards
         ]
-        <> [ TargetLabel
-            (CardIdTarget $ toCardId card)
-            [FoundEncounterCardFrom iid target FromEncounterDeck card]
-           | card <- matchingDeckCards
-           ]
-        <> [ TargetLabel
-            (CardIdTarget $ toCardId card)
-            [FoundEncounterCardFrom iid target FromVictoryDisplay card]
-           | card <- matchingVictoryDisplay
-           ]
-        <> [ TargetLabel
-            (CardIdTarget $ toCardId card)
-            [FoundEnemyInVoid iid target eid]
-           | (eid, card) <- voidEnemiesWithCards
-           ]
+      <> [ TargetLabel
+          (CardIdTarget $ toCardId card)
+          [FoundEncounterCardFrom iid target FromEncounterDeck card]
+         | card <- matchingDeckCards
+         ]
+      <> [ TargetLabel
+          (CardIdTarget $ toCardId card)
+          [FoundEncounterCardFrom iid target FromVictoryDisplay card]
+         | card <- matchingVictoryDisplay
+         ]
+      <> [ TargetLabel
+          (CardIdTarget $ toCardId card)
+          [FoundEnemyInVoid iid target eid]
+         | (eid, card) <- voidEnemiesWithCards
+         ]
 
     -- TODO: show where focused cards are from
 
     push
       $ FocusCards
       $ map EncounterCard matchingDeckCards
-        <> map EncounterCard matchingDiscards
-        <> map snd voidEnemiesWithCards
+      <> map EncounterCard matchingDiscards
+      <> map snd voidEnemiesWithCards
     pure a
   FindAndDrawEncounterCard iid matcher includeDiscard -> do
     handler <- getEncounterDeckHandler iid
@@ -854,16 +854,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         | includeDiscard == IncludeDiscard
         , card <- matchingDiscards
         ]
-        <> [ targetLabel
-            (toCardId card)
-            [FoundAndDrewEncounterCard iid FromEncounterDeck card]
-           | card <- matchingDeckCards
-           ]
+      <> [ targetLabel
+          (toCardId card)
+          [FoundAndDrewEncounterCard iid FromEncounterDeck card]
+         | card <- matchingDeckCards
+         ]
     -- TODO: show where focused cards are from
     push
       $ FocusCards
       $ map EncounterCard matchingDeckCards
-        <> map EncounterCard matchingDiscards
+      <> map EncounterCard matchingDiscards
     pure a
   DrawEncounterCards target n -> do
     let (cards, encounterDeck) = draw n scenarioEncounterDeck
@@ -881,9 +881,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ [ DiscardedTopOfEncounterDeck iid cards source target
         | target <- maybeToList mtarget
         ]
-        <> ( guard (null scenarioEncounterDeck)
-              *> [windows', ShuffleEncounterDiscardBackIn]
-           )
+      <> ( guard (null scenarioEncounterDeck)
+            *> [windows', ShuffleEncounterDiscardBackIn]
+         )
     pure a
   DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards -> do
     handler <- getEncounterDeckHandler iid
@@ -969,7 +969,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                 (DefeatedByOther $ LocationSource lid)
                 iid
           )
-          <$> [Timing.When]
+        <$> [Timing.When]
     pushAll $ windowMsgs <> [RemovedLocation lid]
     pure a
   RemoveAllDoomFromPlay matchers -> do

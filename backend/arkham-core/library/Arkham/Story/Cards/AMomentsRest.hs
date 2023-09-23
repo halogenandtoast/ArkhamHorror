@@ -23,8 +23,8 @@ instance RunMessage AMomentsRest where
   runMessage msg s@(AMomentsRest attrs) = case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       enemies <-
-        selectList $
-          EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
+        selectList
+          $ EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaAMomentsRest
       mHealHorror <- getHealHorrorMessage (toSource attrs) 5 iid
       let
@@ -42,13 +42,13 @@ instance RunMessage AMomentsRest where
                | healHorror <- maybeToList mHealHorror
                ]
       setAsideRuinsOfCarcosa <-
-        getSetAsideCardsMatching $
-          CardWithTitle "Ruins of Carcosa"
+        getSetAsideCardsMatching
+          $ CardWithTitle "Ruins of Carcosa"
       otherRuinsOfCarcosa <- case nonEmpty setAsideRuinsOfCarcosa of
         Nothing -> error "missing"
         Just xs -> sample xs
-      pushAll $
-        [chooseOrRunOne iid choices | notNull choices]
-          <> [ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace]
+      pushAll
+        $ [chooseOrRunOne iid choices | notNull choices]
+        <> [ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace]
       pure s
     _ -> AMomentsRest <$> runMessage msg attrs

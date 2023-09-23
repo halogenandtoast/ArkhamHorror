@@ -32,11 +32,11 @@ instance HasAbilities ShadowHound where
   getAbilities (ShadowHound a) =
     withBaseAbilities
       a
-      [ mkAbility a 1 $
-          ForcedAbility $
-            EnemyAttacks Timing.When You AnyEnemyAttack $
-              EnemyWithId $
-                toId a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ EnemyAttacks Timing.When You AnyEnemyAttack
+          $ EnemyWithId
+          $ toId a
       ]
 
 instance RunMessage ShadowHound where

@@ -31,17 +31,17 @@ theJunglesHeart =
 
 instance HasAbilities TheJunglesHeart where
   getAbilities (TheJunglesHeart a) =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck) $
-        ActionAbility (Just Action.Explore) $
-          ActionCost 1
+    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+        $ ActionAbility (Just Action.Explore)
+        $ ActionCost 1
     ]
 
 instance RunMessage TheJunglesHeart where
   runMessage msg a@(TheJunglesHeart attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $
-        Explore
+      push
+        $ Explore
           iid
           source
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)

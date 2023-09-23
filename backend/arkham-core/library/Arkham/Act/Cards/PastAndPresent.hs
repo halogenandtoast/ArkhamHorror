@@ -34,9 +34,9 @@ instance HasAbilities PastAndPresent where
     [ restrictedAbility
       a
       1
-      ( LocationCount 6 $
-          LocationWithTrait Tenochtitlan
-            <> LocationWithoutClues
+      ( LocationCount 6
+          $ LocationWithTrait Tenochtitlan
+          <> LocationWithoutClues
       )
       $ Objective
       $ ForcedAbility AnyWindow
@@ -55,20 +55,20 @@ instance RunMessage PastAndPresent where
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
 
-      pushAll $
-        map (AddToVictory . LocationTarget) tenochtitlanLocations
-          <> [NextAdvanceActStep (toId attrs) 1]
-          <> map (InvestigatorDiscardAllClues (toAbilitySource attrs 1)) iids
-          <> [NextAdvanceActStep (toId attrs) 2]
-          <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
-             , SetCurrentActDeck 1 [theReturnTrip]
-             ]
+      pushAll
+        $ map (AddToVictory . LocationTarget) tenochtitlanLocations
+        <> [NextAdvanceActStep (toId attrs) 1]
+        <> map (InvestigatorDiscardAllClues (toAbilitySource attrs 1)) iids
+        <> [NextAdvanceActStep (toId attrs) 2]
+        <> [ SetCurrentAgendaDeck 1 [timeCollapsing]
+           , SetCurrentActDeck 1 [theReturnTrip]
+           ]
       pure a
     NextAdvanceActStep aid 1 | aid == toId attrs && onSide B attrs -> do
       presentDayLocations <- selectList $ LocationWithTrait PresentDay
       leadInvestigatorId <- getLeadInvestigatorId
-      push $
-        chooseOneAtATime
+      push
+        $ chooseOneAtATime
           leadInvestigatorId
           [ targetLabel
             lid

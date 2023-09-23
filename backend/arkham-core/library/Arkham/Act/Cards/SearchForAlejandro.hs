@@ -21,10 +21,10 @@ newtype SearchForAlejandro = SearchForAlejandro ActAttrs
 
 searchForAlejandro :: ActCard SearchForAlejandro
 searchForAlejandro =
-  act (1, C) SearchForAlejandro Cards.searchForAlejandro $
-    Just $
-      GroupClueCost (PerPlayer 1) $
-        LocationWithTitle "Easttown"
+  act (1, C) SearchForAlejandro Cards.searchForAlejandro
+    $ Just
+    $ GroupClueCost (PerPlayer 1)
+    $ LocationWithTitle "Easttown"
 
 instance RunMessage SearchForAlejandro where
   runMessage msg a@(SearchForAlejandro attrs) = case msg of

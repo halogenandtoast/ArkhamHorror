@@ -24,12 +24,12 @@ alteredBeast = treachery AlteredBeast Cards.alteredBeast
 instance HasAbilities AlteredBeast where
   getAbilities (AlteredBeast x) = case treacheryAttachedTarget x of
     Just (EnemyTarget eid) ->
-      [ mkAbility x 1 $
-          ForcedAbility $
-            OrWindowMatcher
-              [ EnemyEnters Timing.When YourLocation $ EnemyWithId eid
-              , Enters Timing.When You (LocationWithEnemy $ EnemyWithId eid)
-              ]
+      [ mkAbility x 1
+          $ ForcedAbility
+          $ OrWindowMatcher
+            [ EnemyEnters Timing.When YourLocation $ EnemyWithId eid
+            , Enters Timing.When You (LocationWithEnemy $ EnemyWithId eid)
+            ]
       ]
     _ -> error "Altered Beast must be attached to an enemy"
 

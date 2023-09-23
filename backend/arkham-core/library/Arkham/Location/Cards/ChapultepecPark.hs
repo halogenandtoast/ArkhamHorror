@@ -30,19 +30,19 @@ chapultepecPark =
 
 instance HasAbilities ChapultepecPark where
   getAbilities (ChapultepecPark attrs) =
-    withBaseAbilities attrs $
-      if locationRevealed attrs
+    withBaseAbilities attrs
+      $ if locationRevealed attrs
         then
-          [ restrictedAbility attrs 1 Here $
-              ForcedAbility $
-                SkillTestResult
-                  Timing.After
-                  You
-                  (SkillTestWithSkillType SkillWillpower)
-                  (FailureResult AnyValue)
-          , restrictedAbility attrs 2 Here $
-              ActionAbility (Just Action.Explore) $
-                ActionCost 1
+          [ restrictedAbility attrs 1 Here
+              $ ForcedAbility
+              $ SkillTestResult
+                Timing.After
+                You
+                (SkillTestWithSkillType SkillWillpower)
+                (FailureResult AnyValue)
+          , restrictedAbility attrs 2 Here
+              $ ActionAbility (Just Action.Explore)
+              $ ActionCost 1
           ]
         else []
 
@@ -52,8 +52,8 @@ instance RunMessage ChapultepecPark where
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $
-        beginSkillTest
+      push
+        $ beginSkillTest
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
@@ -62,9 +62,9 @@ instance RunMessage ChapultepecPark where
       pure l
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
-        push $
-          Explore iid (toSource attrs) $
-            CardWithPrintedLocationSymbol $
-              locationSymbol attrs
+        push
+          $ Explore iid (toSource attrs)
+          $ CardWithPrintedLocationSymbol
+          $ locationSymbol attrs
         pure l
     _ -> ChapultepecPark <$> runMessage msg attrs

@@ -103,8 +103,9 @@ allInvestigators =
       , SomeInvestigatorCard dianaStanley
       , SomeInvestigatorCard ritaYoung
       , SomeInvestigatorCard marieLambeau
-      , SomeInvestigatorCard normanWithers
+      , SomeInvestigatorCard tommyMuldoon
       , SomeInvestigatorCard dexterDrake
+      , SomeInvestigatorCard normanWithers
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

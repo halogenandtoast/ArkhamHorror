@@ -1,6 +1,7 @@
 module Arkham.Asset.Cards.BaseballBat (
   BaseballBat (..),
   baseballBat,
+  baseballBatEffect,
 ) where
 
 import Arkham.Prelude
@@ -9,6 +10,8 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.ChaosToken
+import Arkham.Effect.Runner
 
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving anyclass (IsAsset)
@@ -31,11 +34,31 @@ instance HasAbilities BaseballBat where
 
 instance RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
       pushAll
-        [ skillTestModifier attrs iid (SkillModifier #combat 2)
-        , CreateEffect "01074" Nothing (toAbilitySource attrs 1) (toTarget iid)
-        , ChooseFightEnemy iid (toAbilitySource attrs 1) Nothing #combat mempty False
+        [ skillTestModifier source iid (SkillModifier #combat 2)
+        , createCardEffect Cards.baseballBat Nothing source iid
+        , chooseFightEnemy iid source #combat
         ]
       pure a
     _ -> BaseballBat <$> runMessage msg attrs
+
+newtype BaseballBatEffect = BaseballBatEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+baseballBatEffect :: EffectArgs -> BaseballBatEffect
+baseballBatEffect = cardEffect BaseballBatEffect Cards.baseballBat
+
+instance RunMessage BaseballBatEffect where
+  runMessage msg e@(BaseballBatEffect attrs@EffectAttrs {..}) = case msg of
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+      case effectSource of
+        AssetSource assetId ->
+          when (chaosTokenFace token `elem` [Skull, AutoFail])
+            $ pushAll [Discard effectSource (toTarget assetId), disable attrs]
+        _ -> error "wrong source"
+      pure e
+    SkillTestEnds _ _ -> e <$ push (disable attrs)
+    _ -> BaseballBatEffect <$> runMessage msg attrs

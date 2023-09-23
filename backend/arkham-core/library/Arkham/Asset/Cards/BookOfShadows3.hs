@@ -24,28 +24,20 @@ slot attrs = Slot (toSource attrs) Nothing
 
 instance HasAbilities BookOfShadows3 where
   getAbilities (BookOfShadows3 a) =
-    [ restrictedAbility
-        a
-        1
-        ( ControlsThis
-            <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell)
-        )
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    [ controlledAbility a 1 (exists $ AssetControlledBy You <> withTrait Spell)
+        $ actionAbilityWithCost (exhaust a)
     ]
 
 instance RunMessage BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
-      push $ AddSlot iid ArcaneSlot (slot attrs)
+      push $ AddSlot iid #arcane (slot attrs)
       BookOfShadows3 <$> runMessage msg attrs
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      spellAsset <- selectList $ assetControlledBy iid <> AssetWithTrait Spell
-      pushWhen (notNull spellAsset)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      spellAssets <- selectList $ assetControlledBy iid <> withTrait Spell
+      pushIfAny spellAssets
         $ chooseOne iid
-        $ [ targetLabel aid' [AddUses aid' Charge 1]
-          | aid' <- spellAsset
-          ]
+        $ targetLabels spellAssets (\spellAsset -> only $ AddUses spellAsset Charge 1)
       pure a
     _ -> BookOfShadows3 <$> runMessage msg attrs

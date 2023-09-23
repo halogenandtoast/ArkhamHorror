@@ -32,6 +32,7 @@ import Arkham.Asset.Assets (
   azureFlame3Effect,
   azureFlame5Effect,
   azureFlameEffect,
+  baseballBatEffect,
   clairvoyance3Effect,
   clairvoyance5Effect,
   clairvoyanceEffect,
@@ -69,6 +70,7 @@ import Arkham.Event.Events (
   actOfDesperationEffect,
   backstab3Effect,
   banish1Effect,
+  blindingLight2Effect,
   blindingLightEffect,
   cheapShot2Effect,
   exposeWeakness3Effect,
@@ -82,7 +84,6 @@ import Arkham.Event.Events (
   slipAwayEffect,
   stormOfSpirits3Effect,
   stormOfSpiritsEffect,
-  sureGamble3Effect,
   telescopicSight3Effect,
   vantagePointEffect,
   willToSurviveEffect,
@@ -218,11 +219,10 @@ instance FromJSON Effect where
 allEffects :: Map CardCode SomeEffect
 allEffects =
   mapFromList
-    [ ("01056", SomeEffect sureGamble3Effect)
-    , ("01060", SomeEffect shrivellingEffect)
+    [ ("01060", SomeEffect shrivellingEffect)
     , ("01066", SomeEffect blindingLightEffect)
-    , ("01069", SomeEffect blindingLight2)
-    , ("01074", SomeEffect baseballBat)
+    , ("01069", SomeEffect blindingLight2Effect)
+    , ("01074", SomeEffect baseballBatEffect)
     , ("01085", SomeEffect willToSurvive3)
     , ("01151", SomeEffect arkhamWoodsTwistingPaths)
     , ("02028", SomeEffect riteOfSeeking)

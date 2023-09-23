@@ -46,10 +46,7 @@ instance RunMessage BlindingLightEffect where
           ]
       pure e
     PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget eid)) _ _ | SkillTestTarget == attrs.target -> do
-      pushAll
-        [ nonAttackEnemyDamage (InvestigatorSource iid) 1 eid
-        , disable attrs
-        ]
+      pushAll [nonAttackEnemyDamage iid 1 eid, disable attrs]
       pure e
     SkillTestEnds _ _ -> e <$ push (disable attrs)
     _ -> BlindingLightEffect <$> runMessage msg attrs

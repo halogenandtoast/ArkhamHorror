@@ -841,9 +841,7 @@ library
       Arkham.Effect.Effects.AChanceEncounter
       Arkham.Effect.Effects.ArcaneBarrier
       Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
-      Arkham.Effect.Effects.BaseballBat
       Arkham.Effect.Effects.BindMonster2
-      Arkham.Effect.Effects.BlindingLight2
       Arkham.Effect.Effects.CallingInFavors
       Arkham.Effect.Effects.ChaosTokenEffect
       Arkham.Effect.Effects.CharlesRossEsq

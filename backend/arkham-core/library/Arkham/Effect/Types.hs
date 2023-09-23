@@ -67,6 +67,12 @@ finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
 instance HasField "target" EffectAttrs Target where
   getField = effectTarget
 
+instance HasField "source" EffectAttrs Source where
+  getField = effectSource
+
+instance HasField "metadata" EffectAttrs (Maybe (EffectMetadata Window Message)) where
+  getField = effectMetadata
+
 type EffectArgs =
   (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
 

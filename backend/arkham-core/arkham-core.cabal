@@ -843,7 +843,6 @@ library
       Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Effect.Effects.BaseballBat
       Arkham.Effect.Effects.BindMonster2
-      Arkham.Effect.Effects.BlindingLight
       Arkham.Effect.Effects.BlindingLight2
       Arkham.Effect.Effects.CallingInFavors
       Arkham.Effect.Effects.ChaosTokenEffect
@@ -867,7 +866,6 @@ library
       Arkham.Effect.Effects.LuckyDice2
       Arkham.Effect.Effects.MeatCleaver
       Arkham.Effect.Effects.Mesmerize
-      Arkham.Effect.Effects.MindWipe1
       Arkham.Effect.Effects.MindWipe3
       Arkham.Effect.Effects.MinhThiPhan
       Arkham.Effect.Effects.Montmartre209
@@ -880,7 +878,6 @@ library
       Arkham.Effect.Effects.RiteOfSeeking
       Arkham.Effect.Effects.RiteOfSeeking2
       Arkham.Effect.Effects.RiteOfSeeking4
-      Arkham.Effect.Effects.Shrivelling
       Arkham.Effect.Effects.SleightOfHand
       Arkham.Effect.Effects.SongOfTheDead2
       Arkham.Effect.Effects.SurgeEffect

@@ -51,6 +51,7 @@ import Arkham.Asset.Assets (
   oldBookOfLore3Effect,
   pnakoticManuscripts5Effect,
   showmanshipEffect,
+  shrivellingEffect,
   sixthSense4Effect,
   sixthSenseEffect,
   wellConnected3Effect,
@@ -68,6 +69,7 @@ import Arkham.Event.Events (
   actOfDesperationEffect,
   backstab3Effect,
   banish1Effect,
+  blindingLightEffect,
   cheapShot2Effect,
   exposeWeakness3Effect,
   imDoneRunninEffect,
@@ -221,9 +223,8 @@ allEffects =
     [ ("01010", SomeEffect onTheLamEffect)
     , ("01036", SomeEffect mindOverMatterEffect)
     , ("01056", SomeEffect sureGamble3Effect)
-    , ("01060", SomeEffect shrivelling)
-    , ("01066", SomeEffect blindingLight)
-    , ("01068", SomeEffect mindWipe1)
+    , ("01060", SomeEffect shrivellingEffect)
+    , ("01066", SomeEffect blindingLightEffect)
     , ("01069", SomeEffect blindingLight2)
     , ("01074", SomeEffect baseballBat)
     , ("01085", SomeEffect willToSurvive3)

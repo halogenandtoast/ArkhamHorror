@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Timing qualified as Timing
 
 newtype ACircleUnbroken = ACircleUnbroken ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -27,9 +26,9 @@ instance HasAbilities ACircleUnbroken where
     [ mkAbility x 1
         $ Objective
         $ ForcedAbility
-        $ EnemyDefeated Timing.After Anyone ByAny
+        $ EnemyDefeated #after Anyone ByAny
         $ enemyIs Enemies.anetteMason
-    , restrictedAbility x 2 (LocationExists $ locationIs Locations.witchesCircle <> LocationWithoutClues)
+    , restrictedAbility x 2 (exists $ locationIs Locations.witchesCircle <> LocationWithoutClues)
         $ Objective (ForcedAbility AnyWindow)
     ]
 

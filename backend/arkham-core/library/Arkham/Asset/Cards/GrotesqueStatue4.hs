@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosBagStepState
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
@@ -19,14 +18,13 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
-grotesqueStatue4 =
-  assetWith GrotesqueStatue4 Cards.grotesqueStatue4 (whenNoUsesL ?~ DiscardWhenNoUses)
+grotesqueStatue4 = assetWith GrotesqueStatue4 Cards.grotesqueStatue4 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities GrotesqueStatue4 where
   getAbilities (GrotesqueStatue4 x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility (WouldRevealChaosToken Timing.When You)
-        $ UseCost (AssetWithId $ toId x) Charge 1
+        $ ReactionAbility (WouldRevealChaosToken #when You)
+        $ assetUseCost x Charge 1
     ]
 
 toDrawSource :: [Window] -> Source
@@ -38,7 +36,7 @@ instance RunMessage GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (toDrawSource -> drawSource) _ -> do
       ignoreWindow <-
-        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
+        checkWindows [mkWindow #after (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
       pushAll
         [ ReplaceCurrentDraw drawSource iid
             $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] []

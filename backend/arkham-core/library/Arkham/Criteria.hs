@@ -166,6 +166,9 @@ class Exists a where
 instance Exists InvestigatorMatcher where
   exists = InvestigatorExists
 
+instance Exists AssetMatcher where
+  exists = AssetExists
+
 instance Exists EnemyMatcher where
   exists = enemyExists
 

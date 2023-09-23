@@ -19,17 +19,15 @@ strayCat = ally StrayCat Cards.strayCat (1, 0)
 
 instance HasAbilities StrayCat where
   getAbilities (StrayCat a) =
-    [ withCriteria (mkAbility a 1 $ FastAbility $ DiscardCost FromPlay (toTarget a))
-        $ ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation)
+    [ controlledAbility a 1 (ControlsThis <> exists (EnemyAt YourLocation))
+        $ FastAbility
+        $ DiscardCost FromPlay (toTarget a)
     ]
 
 instance RunMessage StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
-    InDiscard _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      enemies <- selectList $ EnemyAt (locationWithInvestigator iid) <> NonEliteEnemy
-
-      push
-        $ chooseOne iid
-        $ [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]
+    InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      enemies <- selectList $ enemyAtLocationWith iid <> NonEliteEnemy
+      push $ chooseOne iid $ targetLabels enemies (only . EnemyEvaded iid)
       pure a
     _ -> StrayCat <$> runMessage msg attrs

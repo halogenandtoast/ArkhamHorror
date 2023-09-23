@@ -75,7 +75,6 @@ import Arkham.Event.Events (
   imDoneRunninEffect,
   marksmanship1Effect,
   mindOverMatter2Effect,
-  mindOverMatterEffect,
   mystifyingSongEffect,
   oneTwoPunch5Effect,
   oneTwoPunchEffect,
@@ -219,8 +218,7 @@ instance FromJSON Effect where
 allEffects :: Map CardCode SomeEffect
 allEffects =
   mapFromList
-    [ ("01036", SomeEffect mindOverMatterEffect)
-    , ("01056", SomeEffect sureGamble3Effect)
+    [ ("01056", SomeEffect sureGamble3Effect)
     , ("01060", SomeEffect shrivellingEffect)
     , ("01066", SomeEffect blindingLightEffect)
     , ("01069", SomeEffect blindingLight2)

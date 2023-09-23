@@ -104,9 +104,9 @@ cultistEffect = do
     minDistance =
       fromJustNote "error"
         . minimumMay
-          $ map
-            (unDistance . fst . snd)
-            byakheePairs
+        $ map
+          (unDistance . fst . snd)
+          byakheePairs
     hset =
       concatMap (snd . snd)
         $ filter ((== minDistance) . unDistance . fst . snd) byakheePairs

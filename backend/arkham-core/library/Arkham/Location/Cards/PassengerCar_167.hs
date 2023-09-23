@@ -67,13 +67,13 @@ instance RunMessage PassengerCar_167 where
         then
           push
             . chooseOne iid
-              $ [ Label
-                    "Take 2 damage"
-                    [InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0]
-                , Label
-                    "Discard cards with at least 2 {agility} icons"
-                    [PayForAbility (abilityEffect attrs cost) []]
-                ]
+            $ [ Label
+                  "Take 2 damage"
+                  [InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0]
+              , Label
+                  "Discard cards with at least 2 {agility} icons"
+                  [PayForAbility (abilityEffect attrs cost) []]
+              ]
         else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)
       pure l
     _ -> PassengerCar_167 <$> runMessage msg attrs

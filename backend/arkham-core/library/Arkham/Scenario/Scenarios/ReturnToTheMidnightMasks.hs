@@ -157,11 +157,11 @@ instance RunMessage ReturnToTheMidnightMasks where
 
         ReturnToTheMidnightMasks
           . TheMidnightMasks
-            <$> runMessage
-              msg
-              ( attrs
-                  & (decksL . at CultistDeck ?~ cultistDeck')
-                  & (actStackL . at 1 ?~ acts)
-                  & (agendaStackL . at 1 ?~ agendas)
-              )
+          <$> runMessage
+            msg
+            ( attrs
+                & (decksL . at CultistDeck ?~ cultistDeck')
+                & (actStackL . at 1 ?~ acts)
+                & (agendaStackL . at 1 ?~ agendas)
+            )
       _ -> ReturnToTheMidnightMasks <$> runMessage msg theMidnightMasks'

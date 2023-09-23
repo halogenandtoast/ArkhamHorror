@@ -58,5 +58,5 @@ buildEncounterDeckWith f encounterSets =
             . excludeBSides
             . excludeDoubleSided
             . concat
-              =<< traverse gatherEncounterSet encounterSets
+            =<< traverse gatherEncounterSet encounterSets
         )

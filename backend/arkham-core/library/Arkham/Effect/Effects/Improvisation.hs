@@ -37,8 +37,8 @@ instance RunMessage Improvisation where
           ( maybe False (== role)
               . headMay
               . toList
-                $ cdClassSymbols
-                  (toCardDef card)
+              $ cdClassSymbols
+                (toCardDef card)
           )
           (push $ DisableEffect $ toId attrs)
     EndTurn iid

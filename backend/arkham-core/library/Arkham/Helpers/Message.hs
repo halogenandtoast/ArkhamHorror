@@ -274,7 +274,8 @@ placeLabeledLocations_ lbl cards = do
 
 placeLabeledLocations :: Text -> [CardDef] -> GameT ([LocationId], [Message])
 placeLabeledLocations lbl cards = fmap fold
-  . concatForM (withIndex1 cards) $ \(idx, card) -> do
+  . concatForM (withIndex1 cards)
+  $ \(idx, card) -> do
     (location, placement) <- placeLocationCard card
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 

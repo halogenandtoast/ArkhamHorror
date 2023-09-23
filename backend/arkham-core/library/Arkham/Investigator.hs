@@ -118,19 +118,19 @@ becomeYithian (Investigator a) =
   Investigator
     $ BodyOfAYithian
     . (`with` YithianMetadata (toJSON a))
-      $ (toAttrs a)
-        { investigatorHealth = 7
-        , investigatorSanity = 7
-        , investigatorWillpower = 2
-        , investigatorIntellect = 2
-        , investigatorCombat = 2
-        , investigatorAgility = 2
-        , investigatorCardCode = "04244"
-        , investigatorClass = Neutral
-        , investigatorTraits = setFromList [Monster, Yithian]
-        , investigatorIsYithian = True
-        , investigatorDiscarding = Nothing
-        }
+    $ (toAttrs a)
+      { investigatorHealth = 7
+      , investigatorSanity = 7
+      , investigatorWillpower = 2
+      , investigatorIntellect = 2
+      , investigatorCombat = 2
+      , investigatorAgility = 2
+      , investigatorCardCode = "04244"
+      , investigatorClass = Neutral
+      , investigatorTraits = setFromList [Monster, Yithian]
+      , investigatorIsYithian = True
+      , investigatorDiscarding = Nothing
+      }
 
 handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) -> Investigator
 handleInvestigator o@(Investigator a) f = case cast a of

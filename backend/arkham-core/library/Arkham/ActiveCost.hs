@@ -373,9 +373,9 @@ instance RunMessage ActiveCost where
           pure
             $ c
             & costPaymentsL
-              <>~ SealChaosTokenPayment token
+            <>~ SealChaosTokenPayment token
             & costSealedChaosTokensL
-              %~ (token :)
+            %~ (token :)
         ReleaseChaosTokensCost n -> do
           case source of
             AssetSource aid -> do
@@ -827,7 +827,7 @@ instance RunMessage ActiveCost where
                 assets <- selectList $ AssetControlledBy whoMatcher
                 map (FromPlay,)
                   . filter (`cardMatch` cardMatcher)
-                    <$> traverse (field AssetCard) assets
+                  <$> traverse (field AssetCard) assets
               CostZones zs -> concatMapM getCards zs
           cards <- getCards zone
           c

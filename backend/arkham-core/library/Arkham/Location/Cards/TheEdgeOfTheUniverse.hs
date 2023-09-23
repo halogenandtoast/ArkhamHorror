@@ -38,8 +38,8 @@ instance HasAbilities TheEdgeOfTheUniverse where
       ActionAbility (Just Action.Move) _ ->
         action
           & abilityCriteriaL
-            <>~ InvestigatorExists
-              (You <> InvestigatorWithClues (AtLeast $ Static 2))
+          <>~ InvestigatorExists
+            (You <> InvestigatorWithClues (AtLeast $ Static 2))
       _ -> action
 
 instance RunMessage TheEdgeOfTheUniverse where

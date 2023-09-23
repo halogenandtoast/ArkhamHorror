@@ -115,19 +115,19 @@ agendaWith (n, side) f cardDef threshold g =
     , cbCardBuilder = \cardId (deckId, aid) ->
         f
           . g
-            $ AgendaAttrs
-              { agendaDoom = 0
-              , agendaDoomThreshold = Just threshold
-              , agendaId = aid
-              , agendaCardId = cardId
-              , agendaSequence = AS.Sequence n side
-              , agendaFlipped = False
-              , agendaTreacheries = mempty
-              , agendaCardsUnderneath = mempty
-              , agendaDeckId = deckId
-              , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
-              , agendaUsedWheelOfFortuneX = False
-              }
+          $ AgendaAttrs
+            { agendaDoom = 0
+            , agendaDoomThreshold = Just threshold
+            , agendaId = aid
+            , agendaCardId = cardId
+            , agendaSequence = AS.Sequence n side
+            , agendaFlipped = False
+            , agendaTreacheries = mempty
+            , agendaCardsUnderneath = mempty
+            , agendaDeckId = deckId
+            , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
+            , agendaUsedWheelOfFortuneX = False
+            }
     }
 
 instance HasCardDef AgendaAttrs where

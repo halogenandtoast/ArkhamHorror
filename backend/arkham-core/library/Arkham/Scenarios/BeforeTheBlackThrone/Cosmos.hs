@@ -198,9 +198,9 @@ cosmosRowToGrid :: CosmosRow a b -> GridTemplateRow
 cosmosRowToGrid (CosmosRow left center right) =
   GridTemplateRow
     . T.unwords
-      $ toList (fmap (maybe "." cosmosCellToGrid) left)
-      <> [maybe "." cosmosCellToGrid center]
-      <> toList (fmap (maybe "." cosmosCellToGrid) right)
+    $ toList (fmap (maybe "." cosmosCellToGrid) left)
+    <> [maybe "." cosmosCellToGrid center]
+    <> toList (fmap (maybe "." cosmosCellToGrid) right)
 
 cosmosCellToGrid :: CosmosLocation a b -> Text
 cosmosCellToGrid (EmptySpace pos _) = cosmicLabel pos

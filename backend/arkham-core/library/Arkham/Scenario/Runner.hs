@@ -186,7 +186,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ a
       & actStackL
       . at n
-        ?~ actStack'
+      ?~ actStack'
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
   SetCurrentActDeck n stack@(current : _) -> do
     actIds <- selectList $ Matcher.ActWithDeckId n
@@ -317,7 +317,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure
       $ a
       & countsL
-        %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
+      %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveChaosToken _drawnToken token iid -> do
     ChaosTokenValue _ tokenModifier <- getChaosTokenValue iid token ()
     when (tokenModifier == AutoFailModifier) $ push FailSkillTest
@@ -439,7 +439,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure
       $ a
       & discardLens handler
-        %~ (ec :)
+      %~ (ec :)
       & (encounterDeckL %~ withDeck (filter (/= ec)))
       & (victoryDisplayL %~ filter (/= EncounterCard ec))
       & (setAsideCardsL %~ filter (/= EncounterCard ec))
@@ -578,10 +578,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure
           $ a
           & storyCardsL
-            %~ insertWith
-              (<>)
-              iid
-              [card {pcOwner = Just iid}]
+          %~ insertWith
+            (<>)
+            iid
+            [card {pcOwner = Just iid}]
       else pure a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
@@ -955,10 +955,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ a
       & decksL
       . at deckKey
-        ?~ deck'
+      ?~ deck'
       & discardL
-        %~ filter
-          ((`notElem` cards) . EncounterCard)
+      %~ filter
+        ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do
     investigatorIds <-
       selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid
@@ -1046,7 +1046,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure
       $ a
       & (tarotCardsL . at GlobalTarot . non [] .~ [card])
-      & tarotDeckL %~ delete (toTarotArcana card)
+      & tarotDeckL
+      %~ delete (toTarotArcana card)
   PerformReading Balance -> do
     cards <- sampleN 2 (NE.fromList scenarioTarotDeck)
     case cards of
@@ -1055,7 +1056,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure
           $ a
           & (tarotCardsL . at GlobalTarot . non [] .~ [TarotCard Upright c1, TarotCard Reversed c2])
-          & tarotDeckL %~ filter (`notElem` cards)
+          & tarotDeckL
+          %~ filter (`notElem` cards)
       _ -> error "impossible"
   PerformReading Choice -> do
     lead <- getLead
@@ -1070,8 +1072,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ a
       & tarotCardsL
       . at GlobalTarot
-      . non [] .~ cards
-      & tarotDeckL %~ filter (`notElem` (map toTarotArcana cards))
+      . non []
+      .~ cards
+      & tarotDeckL
+      %~ filter (`notElem` (map toTarotArcana cards))
   DrawAndChooseTarot iid facing n -> do
     cards <- map (TarotCard facing) <$> sampleN n (NE.fromList scenarioTarotDeck)
     push $ chooseOrRunOne iid [TarotLabel card [PlaceTarot iid card] | card <- cards]

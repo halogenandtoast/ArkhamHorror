@@ -56,9 +56,9 @@ instance HasChaosTokenValue AtDeathsDoorstep where
       isHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation
       pure
         . uncurry (toChaosTokenValue attrs Skull)
-          $ if isHaunted
-            then (1, 2)
-            else (3, 4)
+        $ if isHaunted
+          then (1, 2)
+          else (3, 4)
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs

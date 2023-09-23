@@ -52,9 +52,9 @@ instance RunMessage AgencyBackup5 where
       targets <- selectList $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
       push
         . chooseOne iid
-          $ [ targetLabel target [EnemyDamage target $ nonAttack source 1]
-            | target <- targets
-            ]
+        $ [ targetLabel target [EnemyDamage target $ nonAttack source 1]
+          | target <- targets
+          ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 2) 1 Nothing

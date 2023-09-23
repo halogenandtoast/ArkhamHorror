@@ -47,9 +47,9 @@ instance RunMessage FirstAid where
         pure
           $ targetLabel i
           . only
-            $ chooseOrRunOne iid
-            $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `member` damageInvestigators]
-            <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
+          $ chooseOrRunOne iid
+          $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `member` damageInvestigators]
+          <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
       push $ chooseOne iid choices
       pure a
     _ -> FirstAid <$> runMessage msg attrs

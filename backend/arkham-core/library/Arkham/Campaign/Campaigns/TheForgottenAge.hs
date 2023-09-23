@@ -158,10 +158,10 @@ instance RunMessage TheForgottenAge where
         <> [NextCampaignStep Nothing]
       pure
         . TheForgottenAge
-          $ attrs
-          `with` Metadata
-            supplyMap
-            (yithians metadata)
+        $ attrs
+        `with` Metadata
+          supplyMap
+          (yithians metadata)
     CampaignStep (InvestigatorCampaignStep investigatorId PrologueStep) ->
       do
         let
@@ -332,7 +332,7 @@ instance RunMessage TheForgottenAge where
           any ((== Assets.alejandroVela) . toCardDef)
             . concat
             . toList
-              $ campaignStoryCards attrs
+            $ campaignStoryCards attrs
       pushAll
         $ [ story investigatorIds expeditionsEnd2
           , Record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
@@ -418,10 +418,10 @@ instance RunMessage TheForgottenAge where
         <> [NextCampaignStep Nothing]
       pure
         . TheForgottenAge
-          $ attrs
-          `with` Metadata
-            resupplyMap
-            (yithians metadata)
+        $ attrs
+        `with` Metadata
+          resupplyMap
+          (yithians metadata)
     CampaignStep (InvestigatorCampaignStep investigatorId ResupplyPoint) ->
       do
         let
@@ -566,7 +566,7 @@ instance RunMessage TheForgottenAge where
       pure
         . TheForgottenAge
         . (`with` metadata)
-          $ attrs
+        $ attrs
         & gasUpdate
         & canteenUpdate
     CampaignStep (InterludeStepPart 3 _ 2) -> do
@@ -580,7 +580,7 @@ instance RunMessage TheForgottenAge where
       pushAll
         $ guard (notNull withPoisoned)
         *> story withPoisoned thePoisonSpreadsInterlude3
-          : [SufferTrauma iid 1 0 | iid <- withPoisoned]
+        : [SufferTrauma iid 1 0 | iid <- withPoisoned]
       pure c
     CampaignStep (InterludeStep 4 mkey) -> do
       pushAll
@@ -652,8 +652,8 @@ instance RunMessage TheForgottenAge where
               results
           pure
             . TheForgottenAge
-              $ attrs
-              `With` Metadata (supplyPoints metadata) yithians
+            $ attrs
+            `With` Metadata (supplyPoints metadata) yithians
         else pure c
     CampaignStep (InterludeStepPart 4 mkey 2) -> do
       iids <- allInvestigatorIds
@@ -884,7 +884,7 @@ instance RunMessage TheForgottenAge where
       pure
         . TheForgottenAge
         . (`with` metadata)
-          $ attrs
+        $ attrs
         & ( modifiersL
               %~ insertWith
                 (<>)
@@ -903,10 +903,10 @@ instance RunMessage TheForgottenAge where
             (supplyPoints metadata)
       pure
         . TheForgottenAge
-          $ attrs
-          `with` Metadata
-            supplyMap
-            (yithians metadata)
+        $ attrs
+        `with` Metadata
+          supplyMap
+          (yithians metadata)
     PreScenarioSetup -> do
       pushAll $ map BecomeYithian $ toList $ yithians metadata
       pure c

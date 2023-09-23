@@ -261,7 +261,7 @@ investigator f cardDef Stats {..} =
                     fromJustNote "missing class symbol"
                       . headMay
                       . setToList
-                        $ cdClassSymbols cardDef
+                      $ cdClassSymbols cardDef
                 , investigatorHealth = health
                 , investigatorSanity = sanity
                 , investigatorWillpower = willpower

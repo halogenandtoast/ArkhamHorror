@@ -92,12 +92,12 @@ instance RunMessage TheRougarou where
                 TheRougarouMetadata
                   (damagePerPhase metadata `mod` damageThreshold)
             )
-            <$> runMessage msg attrs
+          <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
       Msg.EnemyDamage eid (damageAssignmentAmount -> n)
         | eid == enemyId ->
             TheRougarou
               . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
-                <$> runMessage msg attrs
+              <$> runMessage msg attrs
       _ -> TheRougarou . (`with` metadata) <$> runMessage msg attrs

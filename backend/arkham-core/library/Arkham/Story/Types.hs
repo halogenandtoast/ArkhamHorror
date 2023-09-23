@@ -60,12 +60,12 @@ storyWith f cardDef g =
     , cbCardBuilder = \cardId (mTarget, sid) ->
         f
           . g
-            $ StoryAttrs
-              { storyId = sid
-              , storyCardId = cardId
-              , storyPlacement = Unplaced
-              , storyOtherSide = mTarget
-              }
+          $ StoryAttrs
+            { storyId = sid
+            , storyCardId = cardId
+            , storyPlacement = Unplaced
+            , storyOtherSide = mTarget
+            }
     }
 
 story

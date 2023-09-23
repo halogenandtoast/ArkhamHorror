@@ -40,7 +40,7 @@ instance RunMessage ExploringTheRainforest where
       ichtaca <-
         fromJustNote "Ichtaca was not set aside"
           . listToMaybe
-            <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
+          <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
       locationId <- selectJust LeadInvestigatorLocation
       createIchtaca <- createEnemyAt_ ichtaca locationId Nothing
       pushAll

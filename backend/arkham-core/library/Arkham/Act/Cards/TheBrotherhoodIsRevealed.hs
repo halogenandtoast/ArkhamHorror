@@ -104,9 +104,9 @@ instance RunMessage TheBrotherhoodIsRevealed where
                 eid
             pure
               . TheBrotherhoodIsRevealed
-                $ attrs
-                `with` Metadata
-                  (Just location)
+              $ attrs
+              `with` Metadata
+                (Just location)
           else pure a
       _ ->
         TheBrotherhoodIsRevealed . (`with` metadata) <$> runMessage msg attrs

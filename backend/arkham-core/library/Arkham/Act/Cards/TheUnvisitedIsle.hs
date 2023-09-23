@@ -49,7 +49,7 @@ instance RunMessage TheUnvisitedIsle where
       storyMap <-
         groupOnKey
           . zip (cycle investigators)
-            <$> selectShuffled (UnderScenarioReferenceMatch StoryCard)
+          <$> selectShuffled (UnderScenarioReferenceMatch StoryCard)
 
       -- then for each player in player order we get the corresponding story cards and resolve them
       let

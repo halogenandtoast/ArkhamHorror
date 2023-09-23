@@ -216,14 +216,14 @@ instance RunMessage TheSecretName where
 
       TheSecretName
         . (`with` meta)
-          <$> runMessage
-            msg
-            ( attrs
-                & (decksL . at UnknownPlacesDeck ?~ unknownPlacesDeck)
-                & (setAsideCardsL .~ setAsideCards)
-                & (actStackL . at 1 ?~ acts)
-                & (agendaStackL . at 1 ?~ agendas)
-            )
+        <$> runMessage
+          msg
+          ( attrs
+              & (decksL . at UnknownPlacesDeck ?~ unknownPlacesDeck)
+              & (setAsideCardsL .~ setAsideCards)
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+          )
     ResolveChaosToken _ Cultist iid -> do
       push $ DrawAnotherChaosToken iid
       pure s
@@ -255,11 +255,11 @@ instance RunMessage TheSecretName where
       isNahab <- selectAny $ cardIs Enemies.nahab <> CardWithId cardId
       pure
         . TheSecretName
-          $ attrs
-          `with` meta
-            { brownJenkinDefeated = brownJenkinDefeated meta || isBrownJenkin
-            , nahabDefeated = nahabDefeated meta || isNahab
-            }
+        $ attrs
+        `with` meta
+          { brownJenkinDefeated = brownJenkinDefeated meta || isBrownJenkin
+          , nahabDefeated = nahabDefeated meta || isNahab
+          }
     ScenarioResolution resolution -> do
       iids <- allInvestigatorIds
       step <- getCurrentActStep

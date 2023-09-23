@@ -35,7 +35,7 @@ instance HasAbilities TheStrangerACityAflame where
               ]
         )
         & abilityLimitL
-          .~ PlayerLimit PerRound 1
+        .~ PlayerLimit PerRound 1
     ]
 
 instance RunMessage TheStrangerACityAflame where

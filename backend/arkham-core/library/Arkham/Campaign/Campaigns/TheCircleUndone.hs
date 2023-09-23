@@ -104,14 +104,14 @@ instance RunMessage TheCircleUndone where
     BecomePrologueInvestigator iid pId -> do
       pure
         . TheCircleUndone
-          $ attrs
-          `With` metadata
-            { prologueInvestigators =
-                insertMap
-                  iid
-                  pId
-                  (prologueInvestigators metadata)
-            }
+        $ attrs
+        `With` metadata
+          { prologueInvestigators =
+              insertMap
+                iid
+                pId
+                (prologueInvestigators metadata)
+          }
     CampaignStep (PrologueStepPart 2) -> do
       let
         prologueInvestigatorsNotTaken =
@@ -160,7 +160,7 @@ instance RunMessage TheCircleUndone where
               *> [ Record TheInvestigatorsRescuedJosef
                  , storyWithChooseOne lead iids thePriceOfProgress5 lodgeChoices
                  ]
-                <> gainXp
+              <> gainXp
            )
         <> ( guard showThePriceOfProgress6
               *> [Record JosefIsAliveAndWell, storyWithChooseOne lead iids thePriceOfProgress6 lodgeChoices]
@@ -302,10 +302,10 @@ instance RunMessage TheCircleUndone where
     EndOfScenario _ -> do
       pure
         . TheCircleUndone
-          $ attrs
-          `With` metadata
-            { prologueInvestigators = mempty
-            }
+        $ attrs
+        `With` metadata
+          { prologueInvestigators = mempty
+          }
     ResetGame -> do
       case mapToList (prologueInvestigators metadata) of
         [] -> defaultCampaignRunner msg c

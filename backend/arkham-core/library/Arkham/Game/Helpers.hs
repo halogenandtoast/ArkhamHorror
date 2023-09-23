@@ -376,7 +376,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
   ignoreLimit <-
     or
       . sequence [(IgnoreLimit `elem`), (CanIgnoreLimit `elem`)]
-        <$> getModifiers (AbilityTarget iid ability)
+      <$> getModifiers (AbilityTarget iid ability)
   if ignoreLimit && canIgnoreAbilityLimit == CanIgnoreAbilityLimit
     then pure True
     else case limit of
@@ -411,9 +411,9 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         pure
           . (< n)
           . maybe 0 usedTimes
-            $ find
-              ((== ability) . usedAbility)
-              usedAbilities
+          $ find
+            ((== ability) . usedAbility)
+            usedAbilities
       PerCopyLimit cardDef _ n -> do
         let
           abilityCardDef = \case
@@ -423,9 +423,9 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
           . (< n)
           . getSum
           . foldMap (Sum . usedTimes)
-            $ filter
-              ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
-              usedAbilities
+          $ filter
+            ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+            usedAbilities
       PerInvestigatorLimit _ n -> do
         -- This is difficult and based on the window, so we need to match out the
         -- relevant investigator ids from the window. If this becomes more prevalent
@@ -444,8 +444,8 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         usedAbilities' <-
           fmap (map usedAbility)
             . filterDepthSpecificAbilities
-              =<< concatMapM (field InvestigatorUsedAbilities)
-              =<< allInvestigatorIds
+            =<< concatMapM (field InvestigatorUsedAbilities)
+            =<< allInvestigatorIds
         let total = count (== ability) usedAbilities'
         pure $ total < n
 
@@ -565,7 +565,7 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
         FromHandOf whoMatcher ->
           fmap (filter (`cardMatch` cardMatcher) . concat)
             . traverse (field InvestigatorHand)
-              =<< selectList whoMatcher
+            =<< selectList whoMatcher
         FromPlayAreaOf whoMatcher -> do
           assets <- selectList $ Matcher.AssetControlledBy whoMatcher
           traverse (field AssetCard) assets
@@ -596,7 +596,7 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
     handCards <-
       mapMaybe (preview _PlayerCard)
         . filter (`cardMatch` Matcher.NonWeakness)
-          <$> field InvestigatorHand iid
+        <$> field InvestigatorHand iid
     let
       total = sum $ map (maybe 0 toPrintedCost . cdCost . toCardDef) handCards
     pure $ total >= n
@@ -1452,7 +1452,7 @@ passesCriteria iid mcard source windows' = \case
     n <-
       length
         . filter (`elem` logKeys)
-          <$> scenarioFieldMap ScenarioRemembered Set.toList
+        <$> scenarioFieldMap ScenarioRemembered Set.toList
     gameValueMatches n (Matcher.AtLeast value)
   Criteria.AtLeastNCriteriaMet n criteria -> do
     m <- countM (passesCriteria iid mcard source windows') criteria
@@ -2923,14 +2923,14 @@ getDoomCount :: HasGame m => m Int
 getDoomCount =
   getSum
     . fold
-      <$> sequence
-        [ selectAgg Sum AssetDoom Matcher.AnyAsset
-        , selectAgg Sum EnemyDoom Matcher.AnyEnemy
-        , selectAgg Sum LocationDoom Matcher.Anywhere
-        , selectAgg Sum TreacheryDoom Matcher.AnyTreachery
-        , selectAgg Sum AgendaDoom Matcher.AnyAgenda
-        , selectAgg Sum InvestigatorDoom Matcher.UneliminatedInvestigator
-        ]
+    <$> sequence
+      [ selectAgg Sum AssetDoom Matcher.AnyAsset
+      , selectAgg Sum EnemyDoom Matcher.AnyEnemy
+      , selectAgg Sum LocationDoom Matcher.Anywhere
+      , selectAgg Sum TreacheryDoom Matcher.AnyTreachery
+      , selectAgg Sum AgendaDoom Matcher.AnyAgenda
+      , selectAgg Sum InvestigatorDoom Matcher.UneliminatedInvestigator
+      ]
 
 getPotentialSlots
   :: (HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]

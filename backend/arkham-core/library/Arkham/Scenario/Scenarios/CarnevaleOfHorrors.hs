@@ -137,15 +137,15 @@ instance RunMessage CarnevaleOfHorrors where
       randomLocations <-
         traverse placeLocationCard
           . drop 1
-            =<< shuffleM
-              [ Locations.streetsOfVenice
-              , Locations.rialtoBridge
-              , Locations.venetianGarden
-              , Locations.bridgeOfSighs
-              , Locations.floodedSquare
-              , Locations.accademiaBridge
-              , Locations.theGuardian
-              ]
+          =<< shuffleM
+            [ Locations.streetsOfVenice
+            , Locations.rialtoBridge
+            , Locations.venetianGarden
+            , Locations.bridgeOfSighs
+            , Locations.floodedSquare
+            , Locations.accademiaBridge
+            , Locations.theGuardian
+            ]
       canalSide <- placeLocationCard Locations.canalSide
       sanMarcoBasilica@(sanMarcoBasilicaId, _) <-
         placeLocationCard

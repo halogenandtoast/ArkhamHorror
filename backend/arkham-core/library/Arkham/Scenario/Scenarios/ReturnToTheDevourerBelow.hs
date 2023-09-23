@@ -139,13 +139,13 @@ instance RunMessage ReturnToTheDevourerBelow where
 
         ReturnToTheDevourerBelow
           . TheDevourerBelow
-            <$> runMessage
-              msg
-              ( attrs
-                  & (setAsideCardsL .~ setAsideEncounterCards)
-                  & (actStackL . at 1 ?~ acts)
-                  & (agendaStackL . at 1 ?~ agendas)
-              )
+          <$> runMessage
+            msg
+            ( attrs
+                & (setAsideCardsL .~ setAsideEncounterCards)
+                & (actStackL . at 1 ?~ acts)
+                & (agendaStackL . at 1 ?~ agendas)
+            )
       CreateEnemy creation@(enemyCreationMethod -> SpawnAtLocation lid) | toCardCode (enemyCreationCard creation) == "01157" -> do
         name <- field LocationName lid
         when (name == "Ritual Site") $ do

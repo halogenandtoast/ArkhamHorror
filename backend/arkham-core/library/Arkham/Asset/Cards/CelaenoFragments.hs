@@ -21,9 +21,9 @@ instance HasModifiersFor CelaenoFragments where
         count' <- fieldMap InvestigatorHand length iid
         pure
           . toModifiers attrs
-            $ [SkillModifier SkillIntellect 1 | count' >= 5]
-            <> [SkillModifier SkillWillpower 1 | count' >= 10]
-            <> [SkillModifier SkillIntellect 1 | count' >= 15]
+          $ [SkillModifier SkillIntellect 1 | count' >= 5]
+          <> [SkillModifier SkillWillpower 1 | count' >= 10]
+          <> [SkillModifier SkillIntellect 1 | count' >= 15]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CelaenoFragments where

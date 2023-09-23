@@ -249,14 +249,14 @@ instance RunMessage BloodOnTheAltar where
 
         BloodOnTheAltar
           . (`with` metadata)
-            <$> runMessage
-              msg
-              ( attrs
-                  & (setAsideCardsL .~ setAsideCards)
-                  & (decksL . at PotentialSacrifices ?~ potentialSacrifices)
-                  & (actStackL . at 1 ?~ acts)
-                  & (agendaStackL . at 1 ?~ agendas)
-              )
+          <$> runMessage
+            msg
+            ( attrs
+                & (setAsideCardsL .~ setAsideCards)
+                & (decksL . at PotentialSacrifices ?~ potentialSacrifices)
+                & (actStackL . at 1 ?~ acts)
+                & (agendaStackL . at 1 ?~ agendas)
+            )
       ResolveChaosToken _ Tablet iid -> do
         lid <- getJustLocation iid
         matches <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid

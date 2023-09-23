@@ -104,9 +104,9 @@ instance RunMessage UndimensionedAndUnseen where
     StandaloneSetup ->
       pure
         . UndimensionedAndUnseen
-          $ attrs
+        $ attrs
         & standaloneCampaignLogL
-          .~ standaloneCampaignLog
+        .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       lead <- getLead
@@ -320,7 +320,7 @@ instance RunMessage UndimensionedAndUnseen where
       broodEscapedIntoTheWild <-
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
           . length
-            <$> getBroodOfYogSothoth
+          <$> getBroodOfYogSothoth
       pushAll
         $ [ story investigatorIds resolution1
           , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild

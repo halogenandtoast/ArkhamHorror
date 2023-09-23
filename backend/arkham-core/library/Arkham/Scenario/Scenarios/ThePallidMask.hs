@@ -105,7 +105,7 @@ instance HasChaosTokenValue ThePallidMask where
       distance <-
         unDistance
           . fromMaybe (Distance 0)
-            <$> getDistance startingLocation yourLocation
+          <$> getDistance startingLocation yourLocation
       pure $ toChaosTokenValue attrs Skull (min 5 distance) distance
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
@@ -147,9 +147,9 @@ instance RunMessage ThePallidMask where
           Enemies.theManInThePallidMask
       pure
         . ThePallidMask
-          $ attrs
+        $ attrs
         & standaloneCampaignLogL
-          .~ standaloneCampaignLog
+        .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       didNotEscapeGazeOfThePhantom <-

@@ -159,9 +159,9 @@ instance RunMessage TheDoomOfEztli where
       pure
         . TheDoomOfEztli
         . (`with` metadata)
-          $ attrs
+        $ attrs
         & standaloneCampaignLogL
-          .~ standaloneCampaignLog
+        .~ standaloneCampaignLog
     Setup -> do
       iids <- allInvestigatorIds
       -- \| Determine intro
@@ -251,14 +251,14 @@ instance RunMessage TheDoomOfEztli where
 
       TheDoomOfEztli
         . (`with` metadata)
-          <$> runMessage
-            msg
-            ( attrs
-                & (decksL . at ExplorationDeck ?~ explorationDeck)
-                & (setAsideCardsL .~ setAsideCards)
-                & (agendaStackL . at 1 ?~ agendas)
-                & (actStackL . at 1 ?~ acts)
-            )
+        <$> runMessage
+          msg
+          ( attrs
+              & (decksL . at ExplorationDeck ?~ explorationDeck)
+              & (setAsideCardsL .~ setAsideCards)
+              & (agendaStackL . at 1 ?~ agendas)
+              & (actStackL . at 1 ?~ acts)
+          )
     Explore iid _ _ -> do
       windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
       pushAll [windowMsg, Do msg]
@@ -360,9 +360,9 @@ instance RunMessage TheDoomOfEztli where
           let resetAttrs = toAttrs $ theDoomOfEztli (scenarioDifficulty attrs)
           pure
             . TheDoomOfEztli
-              $ resetAttrs
-              `with` Metadata
-                (resolution4Count metadata + 1)
+            $ resetAttrs
+            `with` Metadata
+              (resolution4Count metadata + 1)
         Resolution 5 -> do
           pushAll
             $ [ story investigatorIds resolution5

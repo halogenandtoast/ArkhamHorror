@@ -138,29 +138,29 @@ instance RunMessage EchoesOfThePast where
       groundFloor <-
         genCards
           . drop 1
-            =<< shuffleM
-              [ Locations.historicalSocietyMeetingRoom
-              , Locations.historicalSocietyRecordOffice_129
-              , Locations.historicalSocietyHistoricalMuseum_130
-              ]
+          =<< shuffleM
+            [ Locations.historicalSocietyMeetingRoom
+            , Locations.historicalSocietyRecordOffice_129
+            , Locations.historicalSocietyHistoricalMuseum_130
+            ]
 
       secondFloor <-
         genCards
           . drop 1
-            =<< shuffleM
-              [ Locations.historicalSocietyHistoricalMuseum_132
-              , Locations.historicalSocietyHistoricalLibrary_133
-              , Locations.historicalSocietyReadingRoom
-              ]
+          =<< shuffleM
+            [ Locations.historicalSocietyHistoricalMuseum_132
+            , Locations.historicalSocietyHistoricalLibrary_133
+            , Locations.historicalSocietyReadingRoom
+            ]
 
       thirdFloor <-
         genCards
           . drop 1
-            =<< shuffleM
-              [ Locations.historicalSocietyHistoricalLibrary_136
-              , Locations.historicalSocietyPeabodysOffice
-              , Locations.historicalSocietyRecordOffice_138
-              ]
+          =<< shuffleM
+            [ Locations.historicalSocietyHistoricalLibrary_136
+            , Locations.historicalSocietyPeabodysOffice
+            , Locations.historicalSocietyRecordOffice_138
+            ]
 
       (entryHallId, placeEntryHall) <- placeLocationCard Locations.entryHall
       (quietHalls1Id, placeQuietHalls1) <- placeLocationCard Locations.quietHalls_131

@@ -113,9 +113,9 @@ instance RunMessage WhereDoomAwaits where
     StandaloneSetup -> do
       pure
         . WhereDoomAwaits
-          $ attrs
+        $ attrs
         & standaloneCampaignLogL
-          .~ standaloneCampaignLog
+        .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- allInvestigatorIds
       lead <- getLead
@@ -184,22 +184,22 @@ instance RunMessage WhereDoomAwaits where
       divergingPaths <-
         genCards
           . take 3
-            =<< shuffleM
-              [ Locations.slaughteredWoods
-              , Locations.eerieGlade
-              , Locations.destroyedPath
-              , Locations.frozenSpring
-              ]
+          =<< shuffleM
+            [ Locations.slaughteredWoods
+            , Locations.eerieGlade
+            , Locations.destroyedPath
+            , Locations.frozenSpring
+            ]
 
       alteredPaths <-
         genCards
           . take 3
-            =<< shuffleM
-              [ Locations.dimensionalGap
-              , Locations.aTearInThePath
-              , Locations.uprootedWoods
-              , Locations.lostMemories
-              ]
+          =<< shuffleM
+            [ Locations.dimensionalGap
+            , Locations.aTearInThePath
+            , Locations.uprootedWoods
+            , Locations.lostMemories
+            ]
 
       let
         token = case scenarioDifficulty attrs of

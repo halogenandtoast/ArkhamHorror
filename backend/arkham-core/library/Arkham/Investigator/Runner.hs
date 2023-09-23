@@ -586,9 +586,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               }
         pure
           $ a
-          & handL %~ filter (/= card)
-          & discardL %~ (pc :)
-          & discardingL %~ fmap updateHandDiscard
+          & handL
+          %~ filter (/= card)
+          & discardL
+          %~ (pc :)
+          & discardingL
+          %~ fmap updateHandDiscard
       EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
       VengeanceCard _ -> error "vengeance card"
   DoneDiscarding iid | iid == investigatorId -> case investigatorDiscarding of
@@ -1141,7 +1144,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                   . intersection (setFromList healthDamageableAssets)
-                    <$> select (matcher <> AssetControlledBy You <> assetIs def)
+                  <$> select (matcher <> AssetControlledBy You <> assetIs def)
               pure
                 $ if null validAssets
                   then damageInvestigator : map damageAsset healthDamageableAssets
@@ -1201,7 +1204,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                   . intersection (setFromList sanityDamageableAssets)
-                    <$> select (matcher <> AssetControlledBy You <> assetIs def)
+                  <$> select (matcher <> AssetControlledBy You <> assetIs def)
               pure
                 $ if null validAssets
                   then damageInvestigator : map damageAsset sanityDamageableAssets
@@ -1460,9 +1463,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure
       $ a
       & tokensL
-        %~ ( addTokens Token.Damage investigatorAssignedHealthDamage
-              . addTokens Horror investigatorAssignedSanityDamage
-           )
+      %~ ( addTokens Token.Damage investigatorAssignedHealthDamage
+            . addTokens Horror investigatorAssignedSanityDamage
+         )
       & (assignedHealthDamageL .~ 0)
       & (assignedSanityDamageL .~ 0)
   CancelAssignedDamage target damageReduction horrorReduction | isTarget a target -> do
@@ -1498,8 +1501,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         push afterWindow
         pure
           $ a
-          & tokensL %~ subtractTokens Horror additional
-          & horrorHealedL .~ 0
+          & tokensL
+          %~ subtractTokens Horror additional
+          & horrorHealedL
+          .~ 0
   HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
@@ -2243,8 +2248,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure
           $ a
           & (deckL %~ Deck . (pc :) . unDeck)
-          & handL %~ filter (/= card)
-          & discardL %~ filter (/= pc)
+          & handL
+          %~ filter (/= card)
+          & discardL
+          %~ filter (/= pc)
           & (foundCardsL . each %~ filter (/= PlayerCard pc))
       EncounterCard _ ->
         error "Can not put encounter card on top of investigator deck"
@@ -2255,8 +2262,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure
         $ a
         & (deckL %~ Deck . filter (/= pc) . unDeck)
-        & handL %~ filter (/= card)
-        & discardL %~ filter (/= pc)
+        & handL
+        %~ filter (/= card)
+        & discardL
+        %~ filter (/= pc)
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure $ a & handL %~ filter (/= card)
     VengeanceCard vcard -> pure $ a & handL %~ filter (/= vcard)
@@ -2266,8 +2275,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure
           $ a
           & (deckL %~ Deck . (<> [pc]) . unDeck)
-          & handL %~ filter (/= card)
-          & discardL %~ filter (/= pc)
+          & handL
+          %~ filter (/= card)
+          & discardL
+          %~ filter (/= pc)
           & (foundCardsL . each %~ filter (/= PlayerCard pc))
       EncounterCard _ ->
         error "Can not put encounter card on bottom of investigator deck"
@@ -2278,8 +2289,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure
         $ a
         & (deckL %~ Deck . filter (/= pc) . unDeck)
-        & handL %~ filter (/= card)
-        & discardL %~ filter (/= pc)
+        & handL
+        %~ filter (/= card)
+        & discardL
+        %~ filter (/= pc)
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
@@ -2303,11 +2316,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
       $ a
-      & handL %~ (cards <>)
-      & cardsUnderneathL %~ filter (`notElem` cards)
-      & assetsL %~ Set.filter (`notElem` assetIds)
-      & slotsL %~ flip (foldr removeFromSlots) assetIds
-      & discardL %~ filter ((`notElem` cards) . PlayerCard)
+      & handL
+      %~ (cards <>)
+      & cardsUnderneathL
+      %~ filter (`notElem` cards)
+      & assetsL
+      %~ Set.filter (`notElem` assetIds)
+      & slotsL
+      %~ flip (foldr removeFromSlots) assetIds
+      & discardL
+      %~ filter ((`notElem` cards) . PlayerCard)
       & (foundCardsL . each %~ filter (`notElem` cards))
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [] | iid == investigatorId -> do
     -- can't shuffle zero cards
@@ -2317,10 +2335,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     deck <- shuffleM $ cards' <> filter (`notElem` cards') (unDeck investigatorDeck)
     pure
       $ a
-      & deckL .~ Deck deck
-      & handL %~ filter (`notElem` cards)
-      & cardsUnderneathL %~ filter (`notElem` cards)
-      & discardL %~ filter ((`notElem` cards) . PlayerCard)
+      & deckL
+      .~ Deck deck
+      & handL
+      %~ filter (`notElem` cards)
+      & cardsUnderneathL
+      %~ filter (`notElem` cards)
+      & discardL
+      %~ filter ((`notElem` cards) . PlayerCard)
       & (foundCardsL . each %~ filter (`notElem` cards))
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId | iid' == toId a -> do
     let
@@ -2388,22 +2410,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              case abilityLimitType (abilityLimit usedAbility) of
-                Just (PerSearch _) -> False
-                _ -> True
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just (PerSearch _) -> False
+              _ -> True
+        )
   EndSearch iid _ _ _ | iid == investigatorId -> do
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              case abilityLimitType (abilityLimit usedAbility) of
-                Just (PerSearch _) -> False
-                _ -> True
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just (PerSearch _) -> False
+              _ -> True
+        )
   SearchEnded iid | iid == investigatorId -> pure $ a & foundCardsL .~ mempty
   Search iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy | iid' == toId a -> do
     let
@@ -2532,11 +2554,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just pc ->
         pure
           $ a
-          & discardL %~ filter (/= pc)
-          & handL %~ filter (/= card)
+          & discardL
+          %~ filter (/= pc)
+          & handL
+          %~ filter (/= card)
           & (deckL %~ Deck . filter (/= pc) . unDeck)
           & foundCardsL
-          . each %~ filter (/= card)
+          . each
+          %~ filter (/= card)
       Nothing ->
         -- encounter cards can only be in hand
         pure $ a & (handL %~ filter (/= card))
@@ -2694,59 +2719,60 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   EndEnemy -> do
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   ScenarioCountIncrementBy CurrentDepth n | n > 0 -> do
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel
+        )
   EndUpkeep -> do
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   EndMythos -> do
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   EndRound -> do
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerRound
-          )
-      & additionalActionsL .~ mempty
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerRound
+        )
+      & additionalActionsL
+      .~ mempty
   EndTurn iid | iid == toId a -> do
     pure
       $ a
       & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
-          )
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
+        )
   UseCardAbility iid (isSource a -> True) 500 _ _ -> do
     otherInvestigators <-
       selectList $ colocatedWith investigatorId <> NotInvestigator (InvestigatorWithId investigatorId)
@@ -2793,7 +2819,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure
       $ a
       & usedAbilitiesL
-        %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a

@@ -29,8 +29,14 @@ parleyAction_ = ActionAbility (Just Parley) (ActionCost 1)
 instance IsLabel "parley" AbilityType where
   fromLabel = parleyAction_
 
+investigateAction :: Cost -> AbilityType
+investigateAction cost = ActionAbility (Just Investigate) (ActionCost 1 <> cost)
+
 actionAbility :: AbilityType
 actionAbility = ActionAbility Nothing (ActionCost 1)
+
+instance IsLabel "action" AbilityType where
+  fromLabel = actionAbility
 
 actionAbilityWithCost :: Cost -> AbilityType
 actionAbilityWithCost cost = ActionAbility Nothing (ActionCost 1 <> cost)

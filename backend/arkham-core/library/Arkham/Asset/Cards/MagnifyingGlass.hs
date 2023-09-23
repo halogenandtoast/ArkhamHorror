@@ -2,7 +2,6 @@ module Arkham.Asset.Cards.MagnifyingGlass where
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 
@@ -15,7 +14,7 @@ magnifyingGlass = asset MagnifyingGlass Cards.magnifyingGlass
 
 instance HasModifiersFor MagnifyingGlass where
   getModifiersFor (InvestigatorTarget iid) (MagnifyingGlass a) | controlledBy a iid = do
-    pure $ toModifiers a [ActionSkillModifier Action.Investigate #intellect 1]
+    pure $ toModifiers a [ActionSkillModifier #investigate #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MagnifyingGlass where

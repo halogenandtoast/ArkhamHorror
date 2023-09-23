@@ -21,15 +21,11 @@ burglary :: AssetCard Burglary
 burglary = asset Burglary Cards.burglary
 
 instance HasAbilities Burglary where
-  getAbilities (Burglary a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ Costs [ActionCost 1, exhaust a]
-    ]
+  getAbilities (Burglary a) = [restrictedAbility a 1 ControlsThis $ investigateAction (exhaust a)]
 
 instance RunMessage Burglary where
   runMessage msg a@(Burglary attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       lid <- fieldJust InvestigatorLocation iid
       skillType <- field LocationInvestigateSkill lid
       push $ Investigate iid lid (toSource attrs) (Just $ toTarget attrs) skillType False

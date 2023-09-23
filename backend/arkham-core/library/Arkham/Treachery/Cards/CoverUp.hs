@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
-import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -30,14 +29,9 @@ instance HasAbilities CoverUp where
       a
       1
       (OnSameLocation <> CluesOnThis (atLeast 1))
-      (freeReaction (Matcher.DiscoverClues Timing.When You YourLocation $ atLeast 1))
-      : [ restrictedAbility a 2 (CluesOnThis $ atLeast 1)
-          $ ForcedAbility
-          $ OrWindowMatcher
-            [ GameEnds Timing.When
-            , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
-            ]
-        | iid <- toList (treacheryOwner a)
+      (freeReaction (Matcher.DiscoverClues #when You YourLocation $ atLeast 1))
+      : [ restrictedAbility a 2 (CluesOnThis $ atLeast 1) $ forcedOnElimination iid
+        | iid <- maybeToList a.owner
         ]
 
 toClueCount :: [Window] -> Int

@@ -3,7 +3,6 @@ module Arkham.Event.Cards.DynamiteBlast where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (..))
@@ -20,7 +19,7 @@ dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 
 instance RunMessage DynamiteBlast where
   runMessage msg e@(DynamiteBlast attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
       currentLocation <- fieldJust InvestigatorLocation iid
       connectedLocations <- selectList $ AccessibleFrom $ LocationWithId currentLocation
       choices <- for (currentLocation : connectedLocations) $ \location -> do
@@ -28,10 +27,8 @@ instance RunMessage DynamiteBlast where
         investigators <- selectList $ investigatorAt location
         pure
           ( location
-          , map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemies
-              <> map
-                (\iid' -> assignDamage iid' attrs 3)
-                investigators
+          , map (nonAttackEnemyDamage attrs 3) enemies
+              <> map (\iid' -> assignDamage iid' attrs 3) investigators
           )
       let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices
       push $ chooseOne iid availableChoices

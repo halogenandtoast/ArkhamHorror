@@ -30,7 +30,6 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Token
-import Control.Monad.Trans.Maybe
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata {sacrifices :: [Card]}
   deriving stock (Show, Eq, Generic)

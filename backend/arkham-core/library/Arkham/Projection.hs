@@ -69,3 +69,6 @@ filterByField
   -> seq
   -> m seq
 filterByField fld f = filterByFieldM fld (pure . f)
+
+fieldSome :: (HasGame m, Projection a) => Field a Int -> EntityId a -> m Bool
+fieldSome fld = fieldP fld (> 0)

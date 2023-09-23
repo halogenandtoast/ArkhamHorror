@@ -7,7 +7,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
@@ -21,7 +20,7 @@ instance HasAbilities HeirloomOfHyperborea where
   getAbilities (HeirloomOfHyperborea x) =
     [ restrictedAbility x 1 (ControlsThis <> CanDrawCards)
         $ freeReaction
-        $ Matcher.PlayCard Timing.After You (BasicCardMatch $ CardWithTrait Spell)
+        $ Matcher.PlayCard #after You (BasicCardMatch $ CardWithTrait Spell)
     ]
 
 instance RunMessage HeirloomOfHyperborea where

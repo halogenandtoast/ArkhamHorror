@@ -497,3 +497,6 @@ additionalActionCovers source maction = \case
 
 getCanDrawCards :: HasGame m => InvestigatorId -> m Bool
 getCanDrawCards = selectAny . InvestigatorCanDrawCards . InvestigatorWithId
+
+eliminationWindow :: InvestigatorId -> WindowMatcher
+eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated #when (InvestigatorWithId iid)]

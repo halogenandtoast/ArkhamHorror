@@ -14,7 +14,7 @@ leoDeLuca1 = ally LeoDeLuca1 Cards.leoDeLuca1 (2, 2)
 
 instance HasModifiersFor LeoDeLuca1 where
   getModifiersFor (InvestigatorTarget iid) (LeoDeLuca1 a) =
-    pure [toModifier a (AdditionalActions 1) | controlledBy a iid]
+    pure $ toModifiers a [AdditionalActions 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LeoDeLuca1 where

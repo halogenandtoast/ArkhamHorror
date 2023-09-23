@@ -82,6 +82,7 @@ import Arkham.Event.Events (
   slipAwayEffect,
   stormOfSpirits3Effect,
   stormOfSpiritsEffect,
+  sureGamble3Effect,
   telescopicSight3Effect,
   vantagePointEffect,
   willToSurviveEffect,
@@ -219,13 +220,13 @@ allEffects =
   mapFromList
     [ ("01010", SomeEffect onTheLamEffect)
     , ("01036", SomeEffect mindOverMatterEffect)
+    , ("01056", SomeEffect sureGamble3Effect)
     , ("01060", SomeEffect shrivelling)
     , ("01066", SomeEffect blindingLight)
     , ("01068", SomeEffect mindWipe1)
     , ("01069", SomeEffect blindingLight2)
     , ("01074", SomeEffect baseballBat)
     , ("01085", SomeEffect willToSurvive3)
-    , ("01088", SomeEffect sureGamble3)
     , ("01151", SomeEffect arkhamWoodsTwistingPaths)
     , ("02028", SomeEffect riteOfSeeking)
     , ("02031", SomeEffect bindMonster2)

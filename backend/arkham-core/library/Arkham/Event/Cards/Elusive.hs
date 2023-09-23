@@ -18,18 +18,15 @@ elusive = event Elusive Cards.elusive
 
 instance RunMessage Elusive where
   runMessage msg e@(Elusive attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      enemies <- selectList $ enemyEngagedWith iid
       targets <- selectList $ EmptyLocation <> RevealedLocation
       pushAll
-        $ [DisengageEnemy iid enemyId | enemyId <- enemyIds]
-          <> [ chooseOrRunOne
-              iid
-              [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
-              | lid <- targets
-              ]
+        $ map (DisengageEnemy iid) enemies
+          <> [ chooseOrRunOne iid
+              $ targetLabels targets (only . MoveTo . move (toSource attrs) iid)
              | notNull targets
              ]
-          <> map EnemyCheckEngagement enemyIds
+          <> map EnemyCheckEngagement enemies
       pure e
     _ -> Elusive <$> runMessage msg attrs

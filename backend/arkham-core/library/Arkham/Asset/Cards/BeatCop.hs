@@ -32,8 +32,8 @@ instance HasAbilities BeatCop where
 instance RunMessage BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      enemies <- selectList $ enemyAtLocationWith iid
       let source = toAbilitySource attrs 1
+      enemies <- selectList $ enemyAtLocationWith iid
       push $ chooseOrRunOne iid $ targetLabels enemies (only . assignEnemyDamage (nonAttack source 1))
       pure a
     _ -> BeatCop <$> runMessage msg attrs

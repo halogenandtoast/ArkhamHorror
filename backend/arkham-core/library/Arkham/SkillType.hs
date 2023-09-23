@@ -17,6 +17,10 @@ data SkillType
 allSkills :: [SkillType]
 allSkills = [minBound ..]
 
+labeledSkills :: [(Text, SkillType)]
+labeledSkills =
+  [("Willpower", #willpower), ("Intellect", #intellect), ("Combat", #combat), ("Agility", #agility)]
+
 instance IsLabel "willpower" SkillType where
   fromLabel = SkillWillpower
 

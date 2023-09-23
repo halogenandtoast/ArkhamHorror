@@ -16,33 +16,21 @@ newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: EffectArgs -> ArkhamWoodsTwistingPaths
-arkhamWoodsTwistingPaths =
-  ArkhamWoodsTwistingPaths . uncurry4 (baseAttrs "01151")
+arkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths . uncurry4 (baseAttrs "01151")
 
 instance HasModifiersFor ArkhamWoodsTwistingPaths
 
 instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of
-    PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
-      do
-        arkhamWoodsTwistingPathsId <-
-          getJustLocationByName
-            ("Arkham Woods" <:> "Twisting Paths")
-        let disable = DisableEffect (effectId attrs)
-        e
-          <$ when
-            (lid == arkhamWoodsTwistingPathsId)
-            ( case effectMetadata attrs of
-                Just (EffectMessages msgs) -> pushAll (msgs <> [disable])
-                _ -> push disable
-            )
-    FailedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget {} _ _ ->
-      do
-        arkhamWoodsTwistingPathsId <-
-          getJustLocationByName
-            ("Arkham Woods" <:> "Twisting Paths")
-        e
-          <$ when
-            (lid == arkhamWoodsTwistingPathsId)
-            (push $ DisableEffect $ effectId attrs)
+    PassedThisSkillTest _ (LocationSource lid) -> do
+      arkhamWoodsTwistingPathsId <- getJustLocationByName ("Arkham Woods" <:> "Twisting Paths")
+      when (lid == arkhamWoodsTwistingPathsId)
+        $ case effectMetadata attrs of
+          Just (EffectMessages msgs) -> pushAll (msgs <> [disable attrs])
+          _ -> push $ disable attrs
+      pure e
+    FailedThisSkillTest _ (LocationSource lid) -> do
+      arkhamWoodsTwistingPathsId <- getJustLocationByName ("Arkham Woods" <:> "Twisting Paths")
+      when (lid == arkhamWoodsTwistingPathsId) (push $ disable attrs)
+      pure e
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

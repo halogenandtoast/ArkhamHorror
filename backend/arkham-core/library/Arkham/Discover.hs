@@ -41,3 +41,13 @@ discoverAtYourLocation iid (toSource -> source) n =
     , discoverSource = source
     , discoverAction = Nothing
     }
+
+discover :: Sourceable source => InvestigatorId -> LocationId -> source -> Int -> Discover
+discover iid lid (toSource -> source) n =
+  Discover
+    { discoverCount = n
+    , discoverInvestigator = iid
+    , discoverLocation = DiscoverAtLocation lid
+    , discoverSource = source
+    , discoverAction = Nothing
+    }

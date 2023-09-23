@@ -32,14 +32,13 @@ instance HasModifiersFor Machete where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Machete where
-  getAbilities (Machete a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
+  getAbilities (Machete a) = [fightAbility a 1 mempty ControlsThis]
 
 instance RunMessage Machete where
   runMessage msg a@(Machete attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
       pushAll
-        [ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 1)
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
-        ]
+        [skillTestModifier source iid (SkillModifier #combat 1), chooseFightEnemy iid source #combat]
       pure a
     _ -> Machete <$> runMessage msg attrs

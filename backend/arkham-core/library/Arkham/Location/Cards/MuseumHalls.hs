@@ -20,15 +20,11 @@ newtype MuseumHalls = MuseumHalls LocationAttrs
 
 museumHalls :: LocationCard MuseumHalls
 museumHalls =
-  locationWith
-    MuseumHalls
-    Cards.museumHalls
-    2
-    (Static 0)
-    (revealedConnectedMatchersL <>~ [LocationWithTitle "Exhibit Hall"])
+  locationWith MuseumHalls Cards.museumHalls 2 (Static 0)
+    $ revealedConnectedMatchersL <>~ ["Exhibit Hall"]
 
 instance HasModifiersFor MuseumHalls where
-  getModifiersFor target (MuseumHalls l) | isTarget l target = do
+  getModifiersFor target (MuseumHalls l) | l `is` target = do
     pure $ toModifiers l [Blocked | unrevealed l]
   getModifiersFor _ _ = pure []
 
@@ -42,13 +38,11 @@ instance HasAbilities MuseumHalls where
             (proxy (LocationMatcherSource "Museum Entrance") attrs)
             1
             (OnLocation "Museum Entrance")
-            actionAbility
+            #action
       ]
   getAbilities (MuseumHalls attrs) =
     withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here
-            $ ActionAbility Nothing
-            $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) "Museum Halls"]
+      $ [ restrictedAbility attrs 1 Here $ actionAbilityWithCost $ GroupClueCost (PerPlayer 1) "Museum Halls"
         ]
 
 instance RunMessage MuseumHalls where

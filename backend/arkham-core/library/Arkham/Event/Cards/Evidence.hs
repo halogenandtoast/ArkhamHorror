@@ -3,6 +3,7 @@ module Arkham.Event.Cards.Evidence where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
@@ -19,9 +20,10 @@ evidence = event Evidence Cards.evidence
 
 instance RunMessage Evidence where
   runMessage msg e@(Evidence attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
       currentLocation <- getJustLocation iid
-      hasClues <- fieldP LocationClues (> 0) currentLocation
-      pushWhen hasClues $ InvestigatorDiscoverClues iid currentLocation (toSource attrs) 1 Nothing
+      pushWhenM (fieldSome LocationClues currentLocation)
+        $ toMessage
+        $ discover iid currentLocation attrs 1
       pure e
     _ -> Evidence <$> runMessage msg attrs

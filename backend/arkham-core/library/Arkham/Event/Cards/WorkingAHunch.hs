@@ -3,6 +3,7 @@ module Arkham.Event.Cards.WorkingAHunch where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
@@ -19,10 +20,10 @@ workingAHunch = event WorkingAHunch Cards.workingAHunch
 
 instance RunMessage WorkingAHunch where
   runMessage msg e@(WorkingAHunch attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      currentLocationId <- getJustLocation iid
-      locationClueCount <- field LocationClues currentLocationId
-      pushWhen (locationClueCount > 0)
-        $ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) 1 Nothing
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      current <- getJustLocation iid
+      pushWhenM (fieldSome LocationClues current)
+        $ toMessage
+        $ discover iid current attrs 1
       pure e
     _ -> WorkingAHunch <$> runMessage msg attrs

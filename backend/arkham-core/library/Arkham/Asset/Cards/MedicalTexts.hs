@@ -19,19 +19,17 @@ medicalTexts :: AssetCard MedicalTexts
 medicalTexts = asset MedicalTexts Cards.medicalTexts
 
 instance HasAbilities MedicalTexts where
-  getAbilities (MedicalTexts a) =
-    [restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ ActionCost 1]
+  getAbilities (MedicalTexts a) = [restrictedAbility a 1 ControlsThis #action]
 
 instance RunMessage MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let controllerId = getController attrs
       investigators <- selectList $ colocatedWith controllerId
       push
         $ chooseOne iid
-        $ [ targetLabel iid' [beginSkillTest iid (toAbilitySource attrs 1) iid' #intellect 2]
-          | iid' <- investigators
-          ]
+        $ targetLabels investigators
+        $ \iid' -> only $ beginSkillTest iid (toAbilitySource attrs 1) iid' #intellect 2
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       mtarget <- getSkillTestTarget

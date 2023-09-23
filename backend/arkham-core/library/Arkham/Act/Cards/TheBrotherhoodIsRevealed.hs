@@ -18,7 +18,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype Metadata = Metadata {mariaDeSilvasLocation :: Maybe LocationId}
@@ -38,75 +37,53 @@ theBrotherhoodIsRevealed =
     Nothing
 
 instance HasModifiersFor TheBrotherhoodIsRevealed where
-  getModifiersFor (EnemyTarget eid) (TheBrotherhoodIsRevealed (a `With` _)) =
-    do
-      isPrey <- isIchtacasPrey eid
-      atLocationWithoutClues <-
-        selectAny $ locationWithEnemy eid <> LocationWithoutClues
-      n <- getPlayerCountValue (PerPlayer 1)
-      pure
-        $ if isPrey && atLocationWithoutClues
-          then toModifiers a [EnemyFight 1, HealthModifier n, EnemyEvade 1]
-          else []
+  getModifiersFor (EnemyTarget eid) (TheBrotherhoodIsRevealed (a `With` _)) = do
+    isPrey <- isIchtacasPrey eid
+    atLocationWithoutClues <- selectAny $ locationWithEnemy eid <> LocationWithoutClues
+    n <- perPlayer 1
+    pure
+      $ toModifiers a
+      $ guard (isPrey && atLocationWithoutClues)
+      *> [EnemyFight 1, HealthModifier n, EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBrotherhoodIsRevealed where
-  getAbilities (TheBrotherhoodIsRevealed (a `With` _))
-    | onSide E a =
-        [ restrictedAbility
-            a
-            1
-            (Negate $ EnemyCriteria $ EnemyExists $ IsIchtacasPrey)
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
+  getAbilities (TheBrotherhoodIsRevealed (a `With` _)) | onSide E a = do
+    [ restrictedAbility a 1 (Negate $ enemyExists IsIchtacasPrey)
+        $ Objective
+        $ ForcedAbility AnyWindow
+      ]
   getAbilities _ = []
 
 instance RunMessage TheBrotherhoodIsRevealed where
   runMessage msg a@(TheBrotherhoodIsRevealed (attrs `With` metadata)) =
     case msg of
       UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-        push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+        push $ advanceVia #other attrs attrs
         pure a
       AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
-        leadInvestigatorId <- getLeadInvestigatorId
+        lead <- getLead
         deckCount <- getActDecksInPlayCount
         ichtaca <- getSetAsideCard Assets.ichtacaTheForgottenGuardian
-        lid <-
-          maybe
-            (selectJust $ locationIs Locations.blackCave)
-            pure
-            (mariaDeSilvasLocation metadata)
+        lid <- maybe (selectJust $ locationIs Locations.blackCave) pure (mariaDeSilvasLocation metadata)
         iids <- selectList $ NearestToLocation $ LocationWithId lid
         -- TODO: we need to know the prey details
         let
           takeControlMessage =
-            chooseOrRunOne
-              leadInvestigatorId
-              [targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca] | iid <- iids]
+            chooseOrRunOne lead [targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca] | iid <- iids]
           nextMessage =
             if deckCount <= 1
-              then ScenarioResolution $ Resolution 1
+              then R1
               else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
         pushAll [takeControlMessage, nextMessage]
         pure a
       RemoveEnemy eid -> do
         isPrey <- isIchtacasPrey eid
-        isMariaDeSilva <-
-          eid
-            <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
+        isMariaDeSilva <- eid <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
         if isPrey && isMariaDeSilva
           then do
-            location <-
-              fieldMap
-                EnemyLocation
-                (fromJustNote "missing locatioN")
-                eid
-            pure
-              . TheBrotherhoodIsRevealed
-              $ attrs
-              `with` Metadata
-                (Just location)
+            location <- fieldJust EnemyLocation eid
+            pure . TheBrotherhoodIsRevealed $ attrs `with` Metadata (Just location)
           else pure a
       _ ->
         TheBrotherhoodIsRevealed . (`with` metadata) <$> runMessage msg attrs

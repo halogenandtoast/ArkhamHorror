@@ -29,25 +29,20 @@ newtype TheGathering = TheGathering ScenarioAttrs
 
 theGathering :: Difficulty -> TheGathering
 theGathering difficulty =
-  scenario
-    TheGathering
-    "01104"
-    "The Gathering"
-    difficulty
-    ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
+  scenario TheGathering "01104" "The Gathering" difficulty
+    $ ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
 
 instance HasChaosTokenValue TheGathering where
   getChaosTokenValue iid chaosTokenFace (TheGathering attrs) = case chaosTokenFace of
     Skull -> do
-      ghoulCount <- selectCount $ EnemyAt (locationWithInvestigator iid) <> withTrait Trait.Ghoul
+      ghoulCount <- selectCount $ enemyAtLocationWith iid <> withTrait Trait.Ghoul
       pure $ toChaosTokenValue attrs Skull ghoulCount 2
     Cultist -> pure $ ChaosTokenValue Cultist (mwhen (isEasyStandard attrs) (NegativeModifier 1))
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 theGatheringAgendaDeck :: [CardDef]
-theGatheringAgendaDeck =
-  [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
+theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of

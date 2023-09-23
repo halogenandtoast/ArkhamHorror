@@ -169,6 +169,9 @@ instance Exists InvestigatorMatcher where
 instance Exists AssetMatcher where
   exists = AssetExists
 
+instance Exists LocationMatcher where
+  exists = LocationExists
+
 instance Exists EnemyMatcher where
   exists = enemyExists
 

@@ -141,7 +141,7 @@ instance RunMessage AgendaAttrs where
         $ a
         & (sequenceL .~ flipSequence agendaSequence)
         & flippedL
-          .~ False
+        .~ False
     UseCardAbility
       iid
       source@(TarotSource (TarotCard Reversed WheelOfFortuneX))

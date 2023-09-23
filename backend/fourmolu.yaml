@@ -13,11 +13,3 @@ respectful: true
 unicode: never
 column-limit: 100
 single-constraint-parens: never
-fixities:
-  - infixl 0  .
-  - infixr 5  ++
-  - infixl 4  <$
-  - infixl 1  >>, >>=
-  - infixr 1  =<<
-  - infixl 0  &
-  - infixl 4 <*>, <*, *>, <**>

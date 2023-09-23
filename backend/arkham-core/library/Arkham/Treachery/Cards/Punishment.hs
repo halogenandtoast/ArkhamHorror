@@ -35,9 +35,9 @@ instance HasModifiersFor Punishment where
       guardM
         . lift
         . selectAny
-          $ ExhaustedEnemy
-          <> EnemyWithTrait Witch
-          <> EnemyAt (locationWithInvestigator iid)
+        $ ExhaustedEnemy
+        <> EnemyWithTrait Witch
+        <> EnemyAt (locationWithInvestigator iid)
       pure SkillTestAutomaticallySucceeds
 
     pure $ toModifiers attrs $ maybeToList mModifiers

@@ -43,24 +43,24 @@ instance HasModifiersFor TelescopicSight3 where
                 engaged <- selectAny $ enemyEngagedWith iid
                 pure
                   . toModifiers a
-                    $ if engaged
-                      then [EnemyFightActionCriteria $ CriteriaOverride Never]
-                      else
-                        [ CanModify
-                            $ EnemyFightActionCriteria
-                            $ CriteriaOverride
-                            $ EnemyCriteria
-                            $ ThisEnemy
-                            $ EnemyWithoutModifier CannotBeAttacked
-                            <> NonEliteEnemy
-                            <> EnemyAt
-                              ( LocationMatchAny
-                                  [ LocationWithId lid
-                                  , ConnectedTo $ LocationWithId lid
-                                  ]
-                              )
-                            <> NotEnemy (enemyEngagedWith $ eventOwner a)
-                        ]
+                  $ if engaged
+                    then [EnemyFightActionCriteria $ CriteriaOverride Never]
+                    else
+                      [ CanModify
+                          $ EnemyFightActionCriteria
+                          $ CriteriaOverride
+                          $ EnemyCriteria
+                          $ ThisEnemy
+                          $ EnemyWithoutModifier CannotBeAttacked
+                          <> NonEliteEnemy
+                          <> EnemyAt
+                            ( LocationMatchAny
+                                [ LocationWithId lid
+                                , ConnectedTo $ LocationWithId lid
+                                ]
+                            )
+                          <> NotEnemy (enemyEngagedWith $ eventOwner a)
+                      ]
           _ -> pure []
       _ -> pure []
   getModifiersFor _ _ = pure []

@@ -295,27 +295,27 @@ assetWith f cardDef g =
     , cbCardBuilder = \cardId (aid, mOwner) ->
         f
           . g
-            $ AssetAttrs
-              { assetId = aid
-              , assetCardId = cardId
-              , assetCardCode = toCardCode cardDef
-              , assetOriginalCardCode = toCardCode cardDef
-              , assetOwner = mOwner
-              , assetController = mOwner
-              , assetPlacement = Unplaced
-              , assetSlots = cdSlots cardDef
-              , assetHealth = Nothing
-              , assetSanity = Nothing
-              , assetUses = NoUses
-              , assetExhausted = False
-              , assetTokens = mempty
-              , assetCanLeavePlayByNormalMeans = True
-              , assetWhenNoUses = Nothing
-              , assetIsStory = False
-              , assetCardsUnderneath = []
-              , assetSealedChaosTokens = []
-              , assetKeys = mempty
-              }
+          $ AssetAttrs
+            { assetId = aid
+            , assetCardId = cardId
+            , assetCardCode = toCardCode cardDef
+            , assetOriginalCardCode = toCardCode cardDef
+            , assetOwner = mOwner
+            , assetController = mOwner
+            , assetPlacement = Unplaced
+            , assetSlots = cdSlots cardDef
+            , assetHealth = Nothing
+            , assetSanity = Nothing
+            , assetUses = NoUses
+            , assetExhausted = False
+            , assetTokens = mempty
+            , assetCanLeavePlayByNormalMeans = True
+            , assetWhenNoUses = Nothing
+            , assetIsStory = False
+            , assetCardsUnderneath = []
+            , assetSealedChaosTokens = []
+            , assetKeys = mempty
+            }
     }
 
 instance Entity AssetAttrs where

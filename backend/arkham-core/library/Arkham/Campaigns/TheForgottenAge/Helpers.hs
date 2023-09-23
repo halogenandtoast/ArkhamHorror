@@ -86,7 +86,7 @@ getSetAsidePoisoned :: HasGame m => m Card
 getSetAsidePoisoned =
   fromJustNote "not enough poison cards"
     . find ((== Treacheries.poisoned) . toCardDef)
-      <$> scenarioField ScenarioSetAsideCards
+    <$> scenarioField ScenarioSetAsideCards
 
 data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock (Eq)

@@ -212,20 +212,20 @@ treacheryWith f cardDef g =
     , cbCardBuilder = \cardId (iid, tid) ->
         f
           . g
-            $ TreacheryAttrs
-              { treacheryId = tid
-              , treacheryCardId = cardId
-              , treacheryCardCode = toCardCode cardDef
-              , treacheryPlacement = TreacheryLimbo
-              , treacheryOwner =
-                  if isJust (cdCardSubType cardDef)
-                    then Just iid
-                    else Nothing
-              , treacheryDrawnBy = iid
-              , treacheryTokens = mempty
-              , treacheryCanBeCommitted = False
-              , treacheryDrawnFrom = Nothing
-              }
+          $ TreacheryAttrs
+            { treacheryId = tid
+            , treacheryCardId = cardId
+            , treacheryCardCode = toCardCode cardDef
+            , treacheryPlacement = TreacheryLimbo
+            , treacheryOwner =
+                if isJust (cdCardSubType cardDef)
+                  then Just iid
+                  else Nothing
+            , treacheryDrawnBy = iid
+            , treacheryTokens = mempty
+            , treacheryCanBeCommitted = False
+            , treacheryDrawnFrom = Nothing
+            }
     }
 
 is :: Target -> TreacheryAttrs -> Bool

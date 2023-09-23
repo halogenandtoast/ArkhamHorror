@@ -51,24 +51,24 @@ defaultCampaignRunner msg a = case msg of
     pure $ updateAttrs a $ \attrs ->
       attrs
         & storyCardsL
-          %~ insertWith
-            (<>)
-            iid
-            [card {pcOwner = Just iid}]
+        %~ insertWith
+          (<>)
+          iid
+          [card {pcOwner = Just iid}]
   RemoveCampaignCard cardDef -> do
     pure $ updateAttrs a $ \attrs ->
       attrs
         & storyCardsL
-          %~ Map.map (filter ((/= cardDef) . toCardDef))
+        %~ Map.map (filter ((/= cardDef) . toCardDef))
         & decksL
-          %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
+        %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
   RemoveCampaignCardFromDeck iid cardDef ->
     pure $ updateAttrs a $ \attrs ->
       attrs
         & storyCardsL
-          %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
+        %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
         & decksL
-          %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
+        %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
   AddChaosToken token -> pure $ updateAttrs a (chaosBagL %~ (token :))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid deck -> do
@@ -132,11 +132,11 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ ( logL
             . recordedL
-              %~ insertSet key
+            %~ insertSet key
         )
       . ( logL
             . orderedKeysL
-              %~ (<> [key])
+            %~ (<> [key])
         )
   RecordSetInsert key recs -> do
     let defs = mapMaybe lookupCardDef $ recordedCardCodes recs
@@ -157,16 +157,16 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ ( logL
             . recordedSetsL
-              %~ adjustMap
-                ( map
-                    ( \case
-                        someRec@(SomeRecorded k (Recorded c))
-                          | someRec `elem` recs ->
-                              SomeRecorded k (CrossedOut c)
-                        other -> other
-                    )
-                )
-                key
+            %~ adjustMap
+              ( map
+                  ( \case
+                      someRec@(SomeRecorded k (Recorded c))
+                        | someRec `elem` recs ->
+                            SomeRecorded k (CrossedOut c)
+                      other -> other
+                  )
+              )
+              key
         )
   RecordCount key int ->
     pure $ updateAttrs a $ logL . recordedCountsL %~ insertMap key int
@@ -178,19 +178,19 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ logL
       . recordedSetsL
-        %~ insertWith
-          (<>)
-          DrivenInsaneInvestigators
-          (singleton $ recorded $ unInvestigatorId iid)
+      %~ insertWith
+        (<>)
+        DrivenInsaneInvestigators
+        (singleton $ recorded $ unInvestigatorId iid)
   InvestigatorKilled _ iid ->
     pure
       $ updateAttrs a
       $ logL
       . recordedSetsL
-        %~ insertWith
-          (<>)
-          KilledInvestigators
-          (singleton $ recorded $ unInvestigatorId iid)
+      %~ insertWith
+        (<>)
+        KilledInvestigators
+        (singleton $ recorded $ unInvestigatorId iid)
   CreateWeaknessInThreatArea (PlayerCard pc) iid -> do
     pure
       $ updateAttrs a

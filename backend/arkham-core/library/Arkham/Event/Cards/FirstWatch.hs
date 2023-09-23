@@ -47,8 +47,8 @@ instance RunMessage FirstWatch where
                 remainingInvestigatorIds =
                   setToList
                     . insertSet iid
-                      $ investigatorIds
-                      `difference` assignedInvestigatorIds
+                    $ investigatorIds
+                    `difference` assignedInvestigatorIds
               push
                 $ chooseOne
                   iid

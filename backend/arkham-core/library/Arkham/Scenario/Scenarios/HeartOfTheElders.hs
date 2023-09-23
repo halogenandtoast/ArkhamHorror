@@ -220,8 +220,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         explorationDeck <-
           shuffleM
             . (<> [ruinsLocation | not mappedOutTheWayForward])
-              =<< genCards
-                (explorationDeckLocations <> explorationDeckTreacheries)
+            =<< genCards
+              (explorationDeckLocations <> explorationDeckTreacheries)
 
         setAsidePoisonedCount <- getSetAsidePoisonedCount
 
@@ -256,14 +256,14 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
         HeartOfTheElders
           . (`with` metadata)
-            <$> runMessage
-              msg
-              ( attrs
-                  & (decksL . at ExplorationDeck ?~ explorationDeck)
-                  & (setAsideCardsL .~ setAsideCards)
-                  & (agendaStackL . at 1 ?~ agendas)
-                  & (actStackL . at 1 ?~ acts)
-              )
+          <$> runMessage
+            msg
+            ( attrs
+                & (decksL . at ExplorationDeck ?~ explorationDeck)
+                & (setAsideCardsL .~ setAsideCards)
+                & (agendaStackL . at 1 ?~ agendas)
+                & (actStackL . at 1 ?~ acts)
+            )
   ScenarioResolution r -> case r of
     NoResolution -> do
       pathsKnown <- getRecordCount PathsAreKnownToYou
@@ -370,16 +370,16 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
     HeartOfTheElders
       . (`with` metadata)
-        <$> runMessage
-          msg
-          ( attrs
-              & (locationLayoutL .~ part2Locations)
-              & (decksL . at ExplorationDeck ?~ explorationDeck)
-              & (setAsideCardsL .~ setAsideCards)
-              & (victoryDisplayL .~ theJungleWatchesCards)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (actStackL . at 1 ?~ acts)
-          )
+      <$> runMessage
+        msg
+        ( attrs
+            & (locationLayoutL .~ part2Locations)
+            & (decksL . at ExplorationDeck ?~ explorationDeck)
+            & (setAsideCardsL .~ setAsideCards)
+            & (victoryDisplayL .~ theJungleWatchesCards)
+            & (agendaStackL . at 1 ?~ agendas)
+            & (actStackL . at 1 ?~ acts)
+        )
   ScenarioResolution r -> do
     iids <- allInvestigatorIds
     vengeance <- getVengeanceInVictoryDisplay

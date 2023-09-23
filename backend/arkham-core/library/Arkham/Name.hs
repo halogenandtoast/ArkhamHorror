@@ -75,7 +75,8 @@ instance FromJSON a => FromJSON (Labeled a) where
     Labeled
       <$> o
       .: "getLabel"
-      <*> o .: "unLabel"
+      <*> o
+      .: "unLabel"
 
 labeled :: Named name => name -> a -> Labeled a
 labeled (toName -> name) = Labeled name

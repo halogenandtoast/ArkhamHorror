@@ -500,7 +500,8 @@ instance RunMessage EnemyAttrs where
             flip filterM matchingClosestLocationIds $ \lid -> do
               hasInvestigators <-
                 notNull
-                  . intersect preyIds <$> select (InvestigatorAt (locationMatcherModifier $ LocationWithId lid))
+                  . intersect preyIds
+                  <$> select (InvestigatorAt (locationMatcherModifier $ LocationWithId lid))
               hasEnemies <-
                 notNull
                   <$> select
@@ -879,7 +880,7 @@ instance RunMessage EnemyAttrs where
           pure
             $ a
             & assignedDamageL
-              %~ insertWith combine source damageAssignment'
+            %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source -> do
       do

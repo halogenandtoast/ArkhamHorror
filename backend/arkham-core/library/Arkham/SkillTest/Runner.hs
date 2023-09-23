@@ -656,9 +656,9 @@ instance RunMessage SkillTest where
       pure
         $ s
         & revealedChaosTokensL
-          %~ filter ((/= face) . chaosTokenFace)
+        %~ filter ((/= face) . chaosTokenFace)
         & setAsideChaosTokensL
-          %~ filter ((/= face) . chaosTokenFace)
+        %~ filter ((/= face) . chaosTokenFace)
         & resolvedChaosTokensL
-          %~ filter ((/= face) . chaosTokenFace)
+        %~ filter ((/= face) . chaosTokenFace)
     _ -> pure s

@@ -158,8 +158,8 @@ instance RunMessage TheEssexCountyExpress where
           end =
             fst
               . fromJustNote "No train cars?"
-                $ headMay
-                  (reverse placeTrainCars)
+              $ headMay
+                (reverse placeTrainCars)
           allCars = map fst placeTrainCars <> [engineCarId]
           token = case scenarioDifficulty of
             Easy -> MinusTwo

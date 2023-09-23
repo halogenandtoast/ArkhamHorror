@@ -48,7 +48,7 @@ instance RunMessage HuntingHorror where
     When (PlaceEnemyInVoid eid) | eid == enemyId -> do
       pure
         . HuntingHorror
-          $ attrs
+        $ attrs
         & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
         & (placementL .~ OutOfPlay VoidZone)
     _ -> HuntingHorror <$> runMessage msg attrs

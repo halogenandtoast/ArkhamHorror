@@ -389,7 +389,7 @@ instance RunMessage ThreadsOfFate where
             . (+ findWithDefault 0 n actPairCountMap)
             . length
             . fromMaybe []
-              $ lookup n (scenarioCompletedActStack attrs)
+            $ lookup n (scenarioCompletedActStack attrs)
 
         act3bCompleted = completedStack 1
         act3dCompleted = completedStack 2

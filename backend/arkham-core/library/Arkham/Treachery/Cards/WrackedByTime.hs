@@ -48,9 +48,9 @@ instance RunMessage WrackedByTime where
     AssetDamage aid (isSource attrs -> True) _ _ ->
       pure
         . WrackedByTime
-          $ attrs
-          `with` Metadata
-            (insertSet aid $ damagedAssets meta)
+        $ attrs
+        `with` Metadata
+          (insertSet aid $ damagedAssets meta)
     After (Revelation _ (isSource attrs -> True)) -> do
       assets <-
         selectWithField AssetOwner

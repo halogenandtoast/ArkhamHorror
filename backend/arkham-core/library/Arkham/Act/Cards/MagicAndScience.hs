@@ -152,7 +152,7 @@ instance RunMessage MagicAndScience where
       mposition <-
         getLast
           . foldMap Last
-            <$> traverse (selectOne . LocationWithLabel . Label) positions
+          <$> traverse (selectOne . LocationWithLabel . Label) positions
       case mposition of
         Nothing -> error "invalid logic"
         Just pos -> do

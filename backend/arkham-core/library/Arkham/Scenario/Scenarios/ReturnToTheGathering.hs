@@ -100,11 +100,11 @@ instance RunMessage ReturnToTheGathering where
 
         ReturnToTheGathering
           . TheGathering
-            <$> runMessage
-              msg
-              ( attrs
-                  & (setAsideCardsL .~ setAsideCards)
-                  & (actStackL . at 1 ?~ acts)
-                  & (agendaStackL . at 1 ?~ agendas)
-              )
+          <$> runMessage
+            msg
+            ( attrs
+                & (setAsideCardsL .~ setAsideCards)
+                & (actStackL . at 1 ?~ acts)
+                & (agendaStackL . at 1 ?~ agendas)
+            )
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

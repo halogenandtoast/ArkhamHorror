@@ -29,7 +29,9 @@ getCompletedScenarios = do
     Just campaignId -> do
       completedSteps <- field CampaignCompletedSteps campaignId
       pure
-        . setFromList $ flip mapMaybe completedSteps $ \case
+        . setFromList
+        $ flip mapMaybe completedSteps
+        $ \case
           ScenarioStep scenarioId -> Just scenarioId
           _ -> Nothing
 

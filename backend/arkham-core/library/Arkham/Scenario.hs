@@ -143,7 +143,8 @@ instance HasModifiersFor TarotCard where
             affected <- affectedByTarot iid c
             defeated <- iid <=~> Matcher.DefeatedInvestigator
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [XPModifier 2 | not defeated && affected]
                 Reversed -> [XPModifier (-2) | defeated && affected]
           _ -> pure []
@@ -154,7 +155,8 @@ instance HasModifiersFor TarotCard where
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
             pure
               . map setActiveDuringSetup
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [StartingResources 3 | affected]
                 Reversed -> guard affected *> (StartingResources (-3) : [CannotGainResources | firstTurn])
           _ -> pure []
@@ -168,7 +170,8 @@ instance HasModifiersFor TarotCard where
               skillTypes = concat $ historySkillTestsPerformed history
               firstIntellectTest = #intellect `notElem` skillTypes && #intellect `elem` currentSkillTypes
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [SkillModifier #intellect 1 | firstIntellectTest && affected]
                 Reversed -> [SkillModifier #intellect (-1) | firstIntellectTest && affected]
           _ -> pure []
@@ -182,7 +185,8 @@ instance HasModifiersFor TarotCard where
               skillTypes = concat $ historySkillTestsPerformed history
               firstAgilityTest = #agility `notElem` skillTypes && #agility `elem` currentSkillTypes
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [SkillModifier #agility 1 | firstAgilityTest && affected]
                 Reversed -> [SkillModifier #agility (-1) | firstAgilityTest && affected]
           _ -> pure []
@@ -196,7 +200,8 @@ instance HasModifiersFor TarotCard where
               skillTypes = concat $ historySkillTestsPerformed history
               firstCombatTest = #combat `notElem` skillTypes && #combat `elem` currentSkillTypes
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [SkillModifier #combat 1 | firstCombatTest && affected]
                 Reversed -> [SkillModifier #combat (-1) | firstCombatTest && affected]
           _ -> pure []
@@ -210,7 +215,8 @@ instance HasModifiersFor TarotCard where
               skillTypes = concat $ historySkillTestsPerformed history
               firstWillpowerTest = #willpower `notElem` skillTypes && #willpower `elem` currentSkillTypes
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [SkillModifier #willpower 1 | firstWillpowerTest && affected]
                 Reversed -> [SkillModifier #willpower (-1) | firstWillpowerTest && affected]
           _ -> pure []
@@ -225,7 +231,8 @@ instance HasModifiersFor TarotCard where
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
             pure
               . map setActiveDuringSetup
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [StartingHand 2 | affected]
                 Reversed -> guard affected *> (StartingHand (-2) : [CannotDrawCards | firstTurn])
           _ -> pure []
@@ -244,7 +251,8 @@ instance HasModifiersFor TarotCard where
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [HandSize 3 | affected]
                 Reversed -> [HandSize (-3) | affected]
           _ -> pure []
@@ -262,7 +270,8 @@ instance HasModifiersFor TarotCard where
             affected <- affectedByTarot iid c
             pure
               . map setActiveDuringSetup
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [Mulligans 2 | affected]
                 Reversed -> guard affected *> [CannotMulligan, CannotReplaceWeaknesses]
           _ -> pure []
@@ -271,7 +280,8 @@ instance HasModifiersFor TarotCard where
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [HealthModifier 1 | affected]
                 Reversed -> [HealthModifier (-1) | affected]
           _ -> pure []
@@ -280,7 +290,8 @@ instance HasModifiersFor TarotCard where
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [SanityModifier 1 | affected]
                 Reversed -> [SanityModifier (-1) | affected]
           _ -> pure []
@@ -306,7 +317,8 @@ instance HasModifiersFor TarotCard where
             affected <- affectedByTarot iid c
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
             pure
-              . toModifiers source $ case facing of
+              . toModifiers source
+              $ case facing of
                 Upright -> [AdditionalActions 2 | firstTurn && affected]
                 Reversed -> [FewerActions 2 | firstTurn && affected]
           _ -> pure []

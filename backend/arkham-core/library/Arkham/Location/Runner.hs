@@ -257,7 +257,9 @@ instance RunMessage LocationAttrs where
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
               pure
-                . not $ flip any modifiers' $ \case
+                . not
+                $ flip any modifiers'
+                $ \case
                   SpawnNonEliteAtConnectingInstead {} -> True
                   _ -> False
           withQueue_ $ filter (/= next)

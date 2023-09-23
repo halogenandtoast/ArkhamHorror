@@ -181,7 +181,8 @@ instance RunMessage BeforeTheBlackThrone where
           msg
           ( attrs
               & (decksL . at CosmosDeck ?~ cosmosCards)
-              & locationLayoutL .~ cosmosToGrid cosmos
+              & locationLayoutL
+              .~ cosmosToGrid cosmos
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
               & (metaL .~ toJSON cosmos)

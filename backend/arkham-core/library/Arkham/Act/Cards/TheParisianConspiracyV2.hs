@@ -40,7 +40,7 @@ instance RunMessage TheParisianConspiracyV2 where
       theOrganist <-
         fromJustNote "The Organist was not set aside"
           . listToMaybe
-            <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
+          <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
       case advanceMode of
         AdvancedWithClues -> do
           locationIds <- selectList $ FarthestLocationFromAll Anywhere

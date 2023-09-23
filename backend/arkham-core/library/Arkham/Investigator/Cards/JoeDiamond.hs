@@ -75,7 +75,7 @@ instance RunMessage JoeDiamond where
           pure
             $ JoeDiamond
             . (`with` Metadata (revealedHunchCard meta))
-              $ attrs'
+            $ attrs'
             & (deckL %~ withDeck (filter (`notElem` insights)))
             & (decksL . at HunchDeck ?~ hunchDeck')
         else do
@@ -101,8 +101,9 @@ instance RunMessage JoeDiamond where
       pure
         $ JoeDiamond
         . (`with` Metadata Nothing)
-          $ attrs
-        & deckL %~ filter ((/= insight) . toCard)
+        $ attrs
+        & deckL
+        %~ filter ((/= insight) . toCard)
         & (decksL . at HunchDeck ?~ hunchDeck')
     RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] | attrs `is` iid -> do
       case hunchDeck attrs of

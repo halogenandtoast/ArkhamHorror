@@ -72,7 +72,7 @@ instance RunMessage HuntressOfTheEztli where
           alejandroVela <-
             fromJustNote "Alejandro Vela was not set aside"
               . listToMaybe
-                <$> getSetAsideCardsMatching (CardWithTitle "Alejandro Vela")
+              <$> getSetAsideCardsMatching (CardWithTitle "Alejandro Vela")
           pushAll
             [ Remember YouFoughtWithIchtaca
             , chooseOne

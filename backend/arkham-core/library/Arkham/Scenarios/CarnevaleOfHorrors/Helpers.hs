@@ -55,19 +55,19 @@ getClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList
     . concat
-      <$> traverse
-        ( \lid ->
-            map (lid,) <$> selectList (AccessibleFrom $ LocationWithId lid)
-        )
-        lids
+    <$> traverse
+      ( \lid ->
+          map (lid,) <$> selectList (AccessibleFrom $ LocationWithId lid)
+      )
+      lids
 
 getCounterClockwiseMap :: HasGame m => m (Map LocationId LocationId)
 getCounterClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList
     . concat
-      <$> traverse
-        ( \lid ->
-            map (,lid) <$> selectList (AccessibleFrom $ LocationWithId lid)
-        )
-        lids
+    <$> traverse
+      ( \lid ->
+          map (,lid) <$> selectList (AccessibleFrom $ LocationWithId lid)
+      )
+      lids

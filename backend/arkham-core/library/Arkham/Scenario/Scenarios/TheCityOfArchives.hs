@@ -231,7 +231,7 @@ instance RunMessage TheCityOfArchives where
           ]
       pure
         . TheCityOfArchives
-          $ attrs
+        $ attrs
         & victoryDisplayUpdate
         & (setAsideCardsL %~ (<> setAsideCards))
         & (agendaStackL . at 1 ?~ agendas)

@@ -39,7 +39,7 @@ investigatorsNearestToEnemy eid = do
   investigatorIdWithLocationId <-
     fmap catMaybes
       . traverse (\i -> fmap (i,) <$> field InvestigatorLocation i)
-        =<< selectList UneliminatedInvestigator
+      =<< selectList UneliminatedInvestigator
 
   mappings <-
     catMaybes
@@ -54,9 +54,9 @@ investigatorsNearestToEnemy eid = do
     . (Distance minDistance,)
     . nub
     . map fst
-      $ filter
-        ((== minDistance) . unDistance . snd)
-        mappings
+    $ filter
+      ((== minDistance) . unDistance . snd)
+      mappings
 
 moveOrganistAwayFromNearestInvestigator :: HasGame m => m Message
 moveOrganistAwayFromNearestInvestigator = do
@@ -68,20 +68,20 @@ moveOrganistAwayFromNearestInvestigator = do
   lids <-
     setFromList
       . concat
-        <$> for
-          iids
-          ( \iid -> do
-              currentLocation <-
-                fieldMap
-                  InvestigatorLocation
-                  (fromJustNote "must be at a location")
-                  iid
-              rs <-
-                forToSnd
-                  everywhere
-                  (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)
-              pure $ map fst $ filter ((> minDistance) . snd) rs
-          )
+      <$> for
+        iids
+        ( \iid -> do
+            currentLocation <-
+              fieldMap
+                InvestigatorLocation
+                (fromJustNote "must be at a location")
+                iid
+            rs <-
+              forToSnd
+                everywhere
+                (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)
+            pure $ map fst $ filter ((> minDistance) . snd) rs
+        )
   withNoInvestigators <- select LocationWithoutInvestigators
   let
     forced = lids `intersect` withNoInvestigators

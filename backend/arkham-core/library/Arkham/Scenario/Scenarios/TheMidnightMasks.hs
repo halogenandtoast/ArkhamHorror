@@ -88,7 +88,7 @@ instance RunMessage TheMidnightMasks where
       (acolytes, darkCult) <-
         splitAt (count' - 1)
           . sortOn toCardCode
-            <$> gatherEncounterSet EncounterSet.DarkCult
+          <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
 
       (yourHouse, placeYourHouse) <- placeLocationCard Locations.yourHouse

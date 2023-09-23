@@ -55,10 +55,10 @@ instance RunMessage Backstage where
       backstageDoorways <-
         zip [backstageDoorwayCount ..]
           . take 2
-            <$> ( shuffleM
-                    =<< selectList
-                      (SetAsideCardMatch $ CardWithTitle "Backstage Doorway")
-                )
+          <$> ( shuffleM
+                  =<< selectList
+                    (SetAsideCardMatch $ CardWithTitle "Backstage Doorway")
+              )
       msgs <-
         concat <$> for
           backstageDoorways

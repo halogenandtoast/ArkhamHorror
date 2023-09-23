@@ -60,4 +60,4 @@ instance RunMessage RelicOfAgesForestallingTheFuture where
       _ ->
         RelicOfAgesForestallingTheFuture
           . (`with` metadata)
-            <$> runMessage msg attrs
+          <$> runMessage msg attrs

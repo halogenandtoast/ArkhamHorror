@@ -29,9 +29,9 @@ instance HasModifiersFor BrotherhoodCultist where
     doom <- field EnemyDoom (toId a)
     pure
       . toModifiers a
-        $ if doom > 0
-          then [EnemyFight doom, EnemyEvade doom]
-          else []
+      $ if doom > 0
+        then [EnemyFight doom, EnemyEvade doom]
+        else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrotherhoodCultist where

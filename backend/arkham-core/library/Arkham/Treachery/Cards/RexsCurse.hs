@@ -36,7 +36,7 @@ instance HasAbilities RexsCurse where
             $ SuccessResult AnyValue
         )
         & abilityLimitL
-          .~ PlayerLimit PerTestOrAbility 1
+        .~ PlayerLimit PerTestOrAbility 1
     ]
 
 instance RunMessage RexsCurse where

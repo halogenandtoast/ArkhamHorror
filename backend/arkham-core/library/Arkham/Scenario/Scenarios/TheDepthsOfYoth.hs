@@ -110,9 +110,9 @@ instance RunMessage TheDepthsOfYoth where
           (toTarget attrs)
       pure
         . TheDepthsOfYoth
-          $ attrs
+        $ attrs
         & standaloneCampaignLogL
-          .~ standaloneCampaignLog
+        .~ standaloneCampaignLog
     Setup -> do
       isStandalone <- getIsStandalone
       investigatorIds <- allInvestigatorIds

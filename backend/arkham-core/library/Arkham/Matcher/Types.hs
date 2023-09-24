@@ -603,6 +603,8 @@ data WindowMatcher
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
+  | WouldSearchDeck Timing Who DeckMatcher
+  | SearchedDeck Timing Who DeckMatcher
   | AmongSearchedCards Who
   | DeckWouldRunOutOfCards Timing Who
   | DeckHasNoCards Timing Who

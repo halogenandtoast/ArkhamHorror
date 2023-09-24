@@ -94,6 +94,7 @@ allInvestigatorCards =
       , ritaYoung
       , marieLambeau
       , tommyMuldoon
+      , mandyThompson
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -338,6 +339,14 @@ tommyMuldoon =
     ("Tommy Muldoon" <:> "The Rookie Cop")
     Guardian
     [Police, Warden]
+
+mandyThompson :: CardDef
+mandyThompson =
+  investigator
+    "06002"
+    ("Mandy Thompson" <:> "The Researcher")
+    Seeker
+    [Assistant, Scholar]
 
 dexterDrake :: CardDef
 dexterDrake =

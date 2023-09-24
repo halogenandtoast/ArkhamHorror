@@ -40,9 +40,9 @@ instance RunMessage ScrollOfSecretsSeeker3 where
           iid
           [ TargetLabel
             target
-            [ Search
+            [ search
                 iid
-                (toSource attrs)
+                attrs
                 target
                 [fromBottomOfDeck 3]
                 AnyCard

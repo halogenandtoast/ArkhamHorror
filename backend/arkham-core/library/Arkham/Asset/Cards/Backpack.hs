@@ -39,10 +39,10 @@ instance RunMessage Backpack where
   runMessage msg a@(Backpack attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
-        $ Search
+        $ search
           iid
           source
-          (InvestigatorTarget iid)
+          iid
           [fromTopOfDeck 6]
           ( NonWeakness <> CardWithOneOf [CardWithTrait Item, CardWithTrait Supply]
           )

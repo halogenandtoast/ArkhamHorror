@@ -39,9 +39,9 @@ instance RunMessage ScrollOfSecrets where
           iid
           [ TargetLabel
             target
-            [ Search
+            [ search
                 iid
-                (toSource attrs)
+                attrs
                 target
                 [fromBottomOfDeck 1]
                 AnyCard

@@ -104,6 +104,7 @@ allInvestigators =
       , SomeInvestigatorCard ritaYoung
       , SomeInvestigatorCard marieLambeau
       , SomeInvestigatorCard tommyMuldoon
+      , SomeInvestigatorCard mandyThompson
       , SomeInvestigatorCard dexterDrake
       , SomeInvestigatorCard normanWithers
       , SomeInvestigatorCard nathanielCho

@@ -1411,7 +1411,7 @@ trueSurvivor3 =
 
 eatLead2 :: CardDef
 eatLead2 =
-  (event "52002" "\"Eat lead!\"" 0 Guardian)
+  (event "03304" "\"Eat lead!\"" 0 Guardian)
     { cdCardTraits = singleton Tactic
     , cdFastWindow =
         Just
@@ -2445,7 +2445,7 @@ oops2 =
 
 eatLead :: CardDef
 eatLead =
-  (event "51002" "\"Eat lead!\"" 1 Guardian)
+  (event "52002" "\"Eat lead!\"" 1 Guardian)
     { cdCardTraits = singleton Tactic
     , cdFastWindow =
         Just

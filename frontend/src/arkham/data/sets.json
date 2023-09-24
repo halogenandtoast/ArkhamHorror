@@ -91,5 +91,6 @@
   { "name": "All or Nothing", "min": 90008, "max": 90016, "playerCards": 3, "code": "aon", "cycle": 90 },
   { "name": "Bad Blood", "min": 90017, "max": 90023, "playerCards": 3, "code": "bad", "cycle": 90 },
   { "name": "By the Book", "min": 90024, "max": 90036, "playerCards": 8, "code": "btb", "cycle": 90 },
-  { "name": "Red Tide Rising", "min": 90037, "max": 90045, "playerCards": 4, "code": "rtr", "cycle": 90 }
+  { "name": "Red Tide Rising", "min": 90037, "max": 90045, "playerCards": 4, "code": "rtr", "cycle": 90 },
+  { "name": "On the Road Again", "min": 90046, "max": 90048, "playerCards": 3, "code": "otr", "cycle": 90 }
 ]

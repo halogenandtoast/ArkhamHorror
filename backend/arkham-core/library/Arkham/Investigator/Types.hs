@@ -246,6 +246,12 @@ instance HasField "sanityDamage" InvestigatorAttrs Int where
 instance HasField "healthDamage" InvestigatorAttrs Int where
   getField = investigatorHealthDamage
 
+instance HasField "horror" InvestigatorAttrs Int where
+  getField = investigatorSanityDamage
+
+instance HasField "damage" InvestigatorAttrs Int where
+  getField = investigatorHealthDamage
+
 instance HasField "location" InvestigatorAttrs LocationId where
   getField = investigatorLocation
 

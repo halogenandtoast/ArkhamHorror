@@ -176,6 +176,7 @@ allPlayerAssetCards =
       , bauta
       , beatCop
       , beatCop2
+      , becky
       , berettaM19184
       , blackjack
       , blackjack2
@@ -471,6 +472,7 @@ allPlayerAssetCards =
       , sixthSense
       , sixthSense4
       , smokingPipe
+      , solemnVow
       , somethingWorthFightingFor
       , sophieInLovingMemory
       , sophieItWasAllMyFault
@@ -501,6 +503,7 @@ allPlayerAssetCards =
       , tennesseeSourMash
       , tennesseeSourMashRogue3
       , tennesseeSourMashSurvivor3
+      , tetsuoMori
       , theBlackBook
       , theChthonianStone
       , theChthonianStone3
@@ -3507,6 +3510,26 @@ sixthSense4 =
     , cdLevel = 4
     }
 
+becky :: CardDef
+becky =
+  (asset "06006" ("Becky" <:> "Custom Marlin Model 1894") 2 Neutral)
+    { cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSkills = [#combat, #agility, #wild]
+    , cdDeckRestrictions = [Signature "06001"]
+    , cdSlots = [#hand, #hand]
+    , cdUses = uses Ammo 2
+    , cdUnique = True
+    }
+
+solemnVow :: CardDef
+solemnVow =
+  fast
+    $ (asset "06020" "Solemn Vow" 0 Guardian)
+      { cdSkills = [#willpower, #willpower]
+      , cdCardTraits = singleton Spirit
+      , cdKeywords = singleton Keyword.Myriad
+      }
+
 scrollOfProphecies :: CardDef
 scrollOfProphecies =
   (asset "06116" "Scroll of Prophecies" 3 Mystic)
@@ -3514,6 +3537,15 @@ scrollOfProphecies =
     , cdCardTraits = setFromList [Item, Tome]
     , cdUses = uses Secret 4
     , cdSlots = [#hand]
+    }
+
+tetsuoMori :: CardDef
+tetsuoMori =
+  (asset "06155" ("Tetsuo Mori" <:> "Too Noble for His Own Good") 3 Guardian)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Ally, Police]
+    , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 oldBookOfLore3 :: CardDef

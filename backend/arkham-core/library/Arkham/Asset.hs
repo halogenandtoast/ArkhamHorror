@@ -534,9 +534,17 @@ allAssets =
     , --- mystic [bbt]
       SomeAssetCard wither4
     , SomeAssetCard sixthSense4
+    , -- The Dream-Eaters
+      --- signature [tde]
+      SomeAssetCard becky
+    , --- guardian [tde]
+      SomeAssetCard solemnVow
     , -- The Search for Kadath
       --- mystic [sfk]
       SomeAssetCard scrollOfProphecies
+    , -- A Thousand Shapes of Horror
+      --- guardian [tsh]
+      SomeAssetCard tetsuoMori
     , -- Where the Gods Dwell
       --- seeker [sfk]
       SomeAssetCard oldBookOfLore3

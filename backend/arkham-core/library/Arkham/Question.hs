@@ -33,10 +33,20 @@ pattern DamageLabel iid msgs <- ComponentLabel (InvestigatorComponent iid Damage
   where
     DamageLabel iid msgs = ComponentLabel (InvestigatorComponent iid DamageToken) msgs
 
+pattern AssetDamageLabel :: AssetId -> [msg] -> UI msg
+pattern AssetDamageLabel aid msgs <- ComponentLabel (AssetComponent aid DamageToken) msgs
+  where
+    AssetDamageLabel aid msgs = ComponentLabel (AssetComponent aid DamageToken) msgs
+
 pattern HorrorLabel :: InvestigatorId -> [msg] -> UI msg
 pattern HorrorLabel iid msgs <- ComponentLabel (InvestigatorComponent iid HorrorToken) msgs
   where
     HorrorLabel iid msgs = ComponentLabel (InvestigatorComponent iid HorrorToken) msgs
+
+pattern AssetHorrorLabel :: AssetId -> [msg] -> UI msg
+pattern AssetHorrorLabel aid msgs <- ComponentLabel (AssetComponent aid HorrorToken) msgs
+  where
+    AssetHorrorLabel aid msgs = ComponentLabel (AssetComponent aid HorrorToken) msgs
 
 pattern ResourceLabel :: InvestigatorId -> [msg] -> UI msg
 pattern ResourceLabel iid msgs <- ComponentLabel (InvestigatorComponent iid ResourceToken) msgs

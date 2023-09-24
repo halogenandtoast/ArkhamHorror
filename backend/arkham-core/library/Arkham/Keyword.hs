@@ -15,6 +15,7 @@ data Keyword
   | Hidden
   | Hunter
   | Massive
+  | Myriad
   | Peril
   | Retaliate
   | Surge

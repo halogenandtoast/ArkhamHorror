@@ -7,7 +7,9 @@ where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Field
+import Arkham.Asset.Uses
 import Arkham.Deck qualified as Deck
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
@@ -52,13 +54,104 @@ instance RunMessage TommyMuldoon where
     UseCardAbility iid (isSource attrs -> True) 1 (getAsset -> asset) _ -> do
       damage <- field Field.AssetDamage asset
       horror <- field Field.AssetHorror asset
+
+      hasBecky <- selectAny (assetIs Assets.becky)
+
       pushAll
-        [ TakeResources iid (damage + horror) (toAbilitySource attrs 1) False
-        , ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget asset)
-        ]
+        $ if hasBecky
+          then
+            [ chooseAmounts
+                iid
+                ("Distribute " <> tshow (damage + horror) <> " Resources")
+                (TotalAmountTarget $ damage + horror)
+                [("Tommy Muldoon Resources", (0, damage + horror)), ("Becky Resources", (0, damage + horror))]
+                (toTarget iid)
+            ]
+          else
+            [TakeResources iid (damage + horror) (toAbilitySource attrs 1) False]
+              <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget asset)]
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      -- AssetControlledBy You
-      -- <> AssetOneOf [AssetWithHorror, AssetWithDamage]
+      hasDamage <- fieldSome InvestigatorDamage iid
+      hasHorror <- fieldSome InvestigatorHorror iid
+      assetsWithDamage <- selectAny (AssetWithDamage <> AssetControlledBy You)
+      assetsWithHorror <- selectAny (AssetWithHorror <> AssetControlledBy You)
+      assetsWithHealth <- selectAny (AssetWithHealth <> AssetControlledBy You)
+      assetsWithSanity <- selectAny (AssetWithSanity <> AssetControlledBy You)
+
+      push
+        $ chooseOrRunOne iid
+        $ [ Label
+            "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control"
+            [HandleAbilityOption iid (toSource ElderSign) 1]
+          | (hasDamage && assetsWithHealth) || (hasHorror && assetsWithSanity)
+          ]
+        <> [ Label
+            "Move up to 2 damage and/or horror from an asset you control to Tommy Muldoon"
+            [HandleAbilityOption iid (toSource ElderSign) 2]
+           | assetsWithDamage || assetsWithHorror
+           ]
+        <> [Label "Do not move any damage and/or horror" []]
+      pure i
+    HandleAbilityOption iid _ n
+      | attrs `is` iid
+      , n `elem` [1, 11] -> do
+          hasDamage <- fieldSome InvestigatorDamage iid
+          hasHorror <- fieldSome InvestigatorHorror iid
+          assetsWithHealth <- selectList (AssetWithHealth <> AssetControlledBy You)
+          assetsWithSanity <- selectList (AssetWithSanity <> AssetControlledBy You)
+
+          when ((hasDamage && notNull assetsWithHealth) || (hasHorror && notNull assetsWithSanity)) $ do
+            push
+              $ chooseOrRunOne iid
+              $ [Label "Done moving damage/horror" [] | n == 11]
+              <> [ AssetHorrorLabel asset
+                  $ [ MovedHorror (toSource iid) (toTarget asset) 1
+                    , CheckDefeated (toSource asset)
+                    ]
+                  <> [HandleAbilityOption iid (toSource ElderSign) 11 | n == 1]
+                 | asset <- assetsWithSanity
+                 ]
+              <> [ AssetDamageLabel asset
+                  $ [ MovedDamage (toSource iid) (toTarget asset) 1
+                    , CheckDefeated (toSource attrs)
+                    ]
+                  <> [HandleAbilityOption iid (toSource ElderSign) 11 | n == 1]
+                 | asset <- assetsWithHealth
+                 ]
+
+          pure i
+    HandleAbilityOption iid _ n
+      | attrs `is` iid
+      , n `elem` [2, 22] -> do
+          assetsWithDamage <- selectList (AssetWithDamage <> AssetControlledBy You)
+          assetsWithHorror <- selectList (AssetWithHorror <> AssetControlledBy You)
+          when (notNull assetsWithDamage || notNull assetsWithHorror) $ do
+            push
+              $ chooseOrRunOne iid
+              $ [Label "Done moving damage/horror" [] | n == 22]
+              <> [ AssetHorrorLabel asset
+                  $ [ MovedHorror (toSource asset) (toTarget iid) 1
+                    , CheckDefeated (toSource iid)
+                    ]
+                  <> [HandleAbilityOption iid (toSource ElderSign) 22 | n == 2]
+                 | asset <- assetsWithHorror
+                 ]
+              <> [ AssetDamageLabel asset
+                  $ [MovedDamage (toSource asset) (toTarget iid) 1, CheckDefeated (toSource iid)]
+                  <> [HandleAbilityOption iid (toSource ElderSign) 22 | n == 2]
+                 | asset <- assetsWithDamage
+                 ]
+          pure i
+    ResolveAmounts iid choices (isTarget attrs -> True) -> do
+      let
+        tommyResources = getChoiceAmount "Tommy Muldoon Resources" choices
+        beckyUses = getChoiceAmount "Becky Resources" choices
+
+      becky <- selectJust $ assetIs Assets.becky
+
+      pushAll
+        $ [TakeResources iid tommyResources (toAbilitySource attrs 1) False | tommyResources > 0]
+        <> [AddUses becky Ammo beckyUses | beckyUses > 0]
       pure i
     _ -> TommyMuldoon <$> runMessage msg attrs

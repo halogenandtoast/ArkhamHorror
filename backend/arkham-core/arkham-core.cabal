@@ -353,6 +353,7 @@ library
       Arkham.Asset.Cards.BearTrap
       Arkham.Asset.Cards.BeatCop
       Arkham.Asset.Cards.BeatCop2
+      Arkham.Asset.Cards.Becky
       Arkham.Asset.Cards.BerettaM19184
       Arkham.Asset.Cards.Blackjack
       Arkham.Asset.Cards.Blackjack2
@@ -663,6 +664,7 @@ library
       Arkham.Asset.Cards.SixthSense
       Arkham.Asset.Cards.SixthSense4
       Arkham.Asset.Cards.SmokingPipe
+      Arkham.Asset.Cards.SolemnVow
       Arkham.Asset.Cards.SomethingWorthFightingFor
       Arkham.Asset.Cards.SongOfTheDead2
       Arkham.Asset.Cards.SophieInLovingMemory
@@ -694,6 +696,7 @@ library
       Arkham.Asset.Cards.TennesseeSourMash
       Arkham.Asset.Cards.TennesseeSourMashRogue3
       Arkham.Asset.Cards.TennesseeSourMashSurvivor3
+      Arkham.Asset.Cards.TetsuoMori
       Arkham.Asset.Cards.TheBlackBook
       Arkham.Asset.Cards.TheChthonianStone
       Arkham.Asset.Cards.TheChthonianStone3
@@ -2288,6 +2291,7 @@ library
       Arkham.Treachery.Cards.RexsCurse
       Arkham.Treachery.Cards.RipplesOnTheSurface
       Arkham.Treachery.Cards.RitesHowled
+      Arkham.Treachery.Cards.RookieMistake
       Arkham.Treachery.Cards.RottingRemains
       Arkham.Treachery.Cards.RottingRemainsBloodOnTheAltar
       Arkham.Treachery.Cards.RuinAndDestruction

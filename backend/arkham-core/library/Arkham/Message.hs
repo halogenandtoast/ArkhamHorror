@@ -519,6 +519,7 @@ data Message
   | HealDamage Target Source Int
   | HealHorror Target Source Int
   | MovedHorror Source Target Int
+  | MovedDamage Source Target Int
   | HealHorrorWithAdditional Target Source Int
   | AdditionalHealHorror Target Source Int
   | HealDamageDirectly Target Source Int
@@ -811,6 +812,7 @@ data Message
   | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment
   | UseCardAbilityChoiceTarget InvestigatorId Source Int Target [Window] Payment
   | HandleTargetChoice InvestigatorId Source Target
+  | HandleAbilityOption InvestigatorId Source Int
   | ResetMetadata Target
   | DoNotCountUseTowardsAbilityLimit InvestigatorId Ability
   | When Message

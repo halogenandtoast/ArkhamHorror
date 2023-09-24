@@ -342,6 +342,9 @@ allTreacheries =
     , SomeTreacheryCard whisperedBargain
     , SomeTreacheryCard theEndIsNigh
     , SomeTreacheryCard aWorldInDarkness
+    , -- The Dream-Eaters
+      -- signature
+      SomeTreacheryCard rookieMistake
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

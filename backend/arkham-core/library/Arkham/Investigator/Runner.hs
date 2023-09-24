@@ -1517,6 +1517,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & tokensL %~ addTokens Horror amount
   MovedHorror (isSource a -> True) _ amount -> do
     pure $ a & tokensL %~ subtractTokens Horror amount
+  MovedDamage _ (isTarget a -> True) amount -> do
+    pure $ a & tokensL %~ addTokens #damage amount
+  MovedDamage (isSource a -> True) _ amount -> do
+    pure $ a & tokensL %~ subtractTokens #damage amount
   HealHorrorDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
     pure $ a & tokensL %~ subtractTokens Horror amount

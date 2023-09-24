@@ -138,6 +138,7 @@ allPlayerTreacheryCards =
       , psychosis
       , rationalThought
       , rexsCurse
+      , rookieMistake
       , searchingForIzzie
       , selfDestructive
       , sellYourSoul
@@ -1653,6 +1654,12 @@ aWorldInDarkness :: CardDef
 aWorldInDarkness =
   (treachery "05345" "A World in Darkness" BeforeTheBlackThrone 2)
     { cdCardTraits = singleton Endtimes
+    }
+
+rookieMistake :: CardDef
+rookieMistake =
+  (weakness "06007" "Rookie Mistake")
+    { cdCardTraits = setFromList [Blunder, Flaw]
     }
 
 theHarbinger :: CardDef

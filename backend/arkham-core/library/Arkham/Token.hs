@@ -4,6 +4,7 @@ module Arkham.Token where
 
 import Arkham.Prelude hiding (Index)
 import Control.Lens.At
+import GHC.OverloadedLabels
 
 data Token
   = Resource
@@ -14,6 +15,12 @@ data Token
   | LostSoul
   deriving stock (Show, Eq, Ord, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+
+instance IsLabel "damage" Token where
+  fromLabel = Damage
+
+instance IsLabel "horror" Token where
+  fromLabel = Horror
 
 newtype Tokens = Tokens (Map Token Int)
   deriving newtype (Show, Eq, Ord, ToJSON, FromJSON, Monoid, Semigroup)

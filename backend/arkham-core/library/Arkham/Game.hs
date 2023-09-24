@@ -695,6 +695,17 @@ getInvestigatorsMatching matcher = do
   includeEliminated (IncludeEliminated _) = True
   includeEliminated _ = False
   go = \case
+    OwnsAsset matcher' -> selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
+    InvestigatorHasCardWithDamage -> \i -> do
+      orM
+        [ selectAny (AssetControlledBy (InvestigatorWithId $ toId i) <> AssetWithDamage)
+        , pure $ (toAttrs i).healthDamage > (0 :: Int)
+        ]
+    InvestigatorHasCardWithHorror -> \i -> do
+      orM
+        [ selectAny (AssetControlledBy (InvestigatorWithId $ toId i) <> AssetWithHorror)
+        , pure $ (toAttrs i).sanityDamage > (0 :: Int)
+        ]
     IncludeEliminated m -> go m
     NoOne -> pure . const False
     DeckIsEmpty -> fieldP InvestigatorDeck null . toId
@@ -1678,6 +1689,9 @@ getAssetsMatching matcher = do
     AssetControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
+    AssetOwnedBy investigatorMatcher -> do
+      iids <- selectList investigatorMatcher
+      filterM (fieldP AssetOwner (maybe False (`elem` iids)) . toId) as
     AssetAttachedToAsset assetMatcher -> do
       placements <- selectList assetMatcher
       let
@@ -2527,7 +2541,7 @@ instance Projection Asset where
             AsIfUnderControlOf iid -> Just iid
             _ -> Nothing
         pure $ mcontroller <|> assetController
-      AssetOwner -> pure assetController
+      AssetOwner -> pure assetOwner
       AssetLocation -> case assetPlacement of
         AtLocation lid -> pure $ Just lid
         AttachedToLocation lid -> pure $ Just lid

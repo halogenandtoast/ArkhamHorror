@@ -219,9 +219,8 @@ instance RunMessage AssetAttrs where
               <$> [Timing.When, Timing.After]
           )
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
-    ReplacedInvestigatorAsset iid aid
-      | aid == assetId ->
-          pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
+    ReplacedInvestigatorAsset iid aid | aid == assetId -> do
+      pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]

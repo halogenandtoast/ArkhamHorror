@@ -61,6 +61,7 @@ data InvestigatorMatcher
   | NearestToLocation LocationMatcher
   | HasMostMatchingAsset AssetMatcher
   | HasMatchingAsset AssetMatcher
+  | OwnsAsset AssetMatcher
   | HasMatchingEvent EventMatcher
   | HasMatchingSkill SkillMatcher
   | HasMatchingTreachery TreacheryMatcher
@@ -79,6 +80,8 @@ data InvestigatorMatcher
   | InvestigatorWithActionsRemaining ValueMatcher
   | InvestigatorWithClues ValueMatcher
   | InvestigatorWithDamage ValueMatcher
+  | InvestigatorHasCardWithDamage
+  | InvestigatorHasCardWithHorror
   | InvestigatorWithDoom ValueMatcher
   | InvestigatorWithHorror ValueMatcher
   | InvestigatorWithRemainingSanity ValueMatcher
@@ -135,6 +138,7 @@ data AssetMatcher
   | AssetAttachedToAsset AssetMatcher
   | AssetWithAttachedEvent EventMatcher
   | AssetControlledBy InvestigatorMatcher
+  | AssetOwnedBy InvestigatorMatcher
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
   | AssetAtLocation LocationId

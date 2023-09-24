@@ -163,6 +163,8 @@ data WindowType
   | WouldPlaceDoom Source Target Int
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId
+  | WouldSearchDeck InvestigatorId DeckSignifier
+  | SearchedDeck InvestigatorId DeckSignifier
   | PlacedBreaches Target -- BEGIN Breaches
   | PlacedBreach Target
   | WouldPlaceBreaches Target

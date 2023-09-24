@@ -2431,7 +2431,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               _ -> True
         )
   SearchEnded iid | iid == investigatorId -> pure $ a & foundCardsL .~ mempty
-  Search iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy | iid' == toId a -> do
+  Search iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
+    wouldDo
+      msg
+      (Window.WouldSearchDeck iid (Deck.InvestigatorDeck iid'))
+      (Window.SearchedDeck iid (Deck.InvestigatorDeck iid'))
+    pure a
+  Do (Search iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy) | iid' == toId a -> do
     let
       foundCards :: Map Zone [Card] =
         foldl'

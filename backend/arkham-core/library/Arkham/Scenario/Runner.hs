@@ -615,7 +615,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           pushAll [windows', ShuffleEncounterDiscardBackIn]
         pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
         pure $ a & (deckLens handler .~ Deck encounterDeck)
-  Search iid source EncounterDeckTarget cardSources _traits foundStrategy -> do
+  Search iid _ EncounterDeckTarget _ _ _ -> do
+    wouldDo
+      msg
+      (Window.WouldSearchDeck iid Deck.EncounterDeck)
+      (Window.SearchedDeck iid Deck.EncounterDeck)
+    pure a
+  Do (Search iid source EncounterDeckTarget cardSources _traits foundStrategy) -> do
     let
       foundCards :: Map Zone [Card] =
         foldl'

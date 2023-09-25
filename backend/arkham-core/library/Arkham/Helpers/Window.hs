@@ -54,11 +54,22 @@ doFrame msg window = do
   (before, atIf, after) <- frame window
   pure [before, atIf, Do msg, after]
 
+doBatch :: HasGame m => BatchId -> Message -> WindowType -> m [Message]
+doBatch batchId msg window = do
+  (before, atIf, after) <- frame window
+  pure [before, atIf, DoBatch batchId msg, after]
+
+pushBatch :: HasQueue Message m => BatchId -> Message -> m ()
+pushBatch batchId msg = push $ Would batchId [msg]
+
+pushBatched :: HasQueue Message m => BatchId -> [Message] -> m ()
+pushBatched batchId msgs = push $ Would batchId msgs
+
 wouldDo
   :: (MonadRandom m, HasGame m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
 wouldDo msg wouldWindow window = do
   (batchId, wouldWindowsMsgs) <- wouldWindows wouldWindow
-  framed <- doFrame msg window
+  framed <- doBatch batchId msg window
   push $ Would batchId $ wouldWindowsMsgs <> framed
 
 {- | Take a message which would operate on some value n and instead expand the

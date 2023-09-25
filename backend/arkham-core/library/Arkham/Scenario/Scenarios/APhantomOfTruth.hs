@@ -95,7 +95,7 @@ gatherTheMidnightMasks conviction doubt = do
         ]
       else [Treacheries.falseLead, Treacheries.falseLead]
 
-cultistEffect :: GameT ()
+cultistEffect :: (HasGame m, HasQueue Message m) => m ()
 cultistEffect = do
   lead <- getLead
   byakhee <- selectList $ EnemyWithTrait Byakhee <> UnengagedEnemy
@@ -120,11 +120,7 @@ cultistEffect = do
   moveTowardMessages leadId eid hset = case hset of
     [] -> []
     [x] -> [moveToward eid x]
-    xs ->
-      [ chooseOne
-          leadId
-          [TargetLabel (InvestigatorTarget x) [moveToward eid x] | x <- xs]
-      ]
+    xs -> [chooseOne leadId [targetLabel x [moveToward eid x] | x <- xs]]
   moveToward eid x = MoveToward (toTarget eid) (locationWithInvestigator x)
 
 instance RunMessage APhantomOfTruth where
@@ -172,9 +168,7 @@ instance RunMessage APhantomOfTruth where
           catMaybes
             [ Just dream1
             , Just dream2
-            , dream3
-                <$ guard
-                  (not theKingClaimedItsVictims && youIntrudedOnASecretMeeting)
+            , dream3 <$ guard (not theKingClaimedItsVictims && youIntrudedOnASecretMeeting)
             , dream4 <$ guard showDream4
             , dream6 <$ guard (not theKingClaimedItsVictims)
             , dream7 <$ guard showDream7
@@ -253,17 +247,9 @@ instance RunMessage APhantomOfTruth where
 
       setAsideCards <- genCards [theOrganist]
 
-      montmartre <-
-        genCard
-          =<< sample (Locations.montmartre209 :| [Locations.montmartre210])
-
-      operaGarnier <-
-        genCard
-          =<< sample (Locations.operaGarnier212 :| [Locations.operaGarnier213])
-
-      leMarais <-
-        genCard
-          =<< sample (Locations.leMarais217 :| [Locations.leMarais218])
+      montmartre <- genCard =<< sample2 Locations.montmartre209 Locations.montmartre210
+      operaGarnier <- genCard =<< sample2 Locations.operaGarnier212 Locations.operaGarnier213
+      leMarais <- genCard =<< sample2 Locations.leMarais217 Locations.leMarais218
 
       montparnasse <- genCard Locations.montparnasse
       grandGuignol <- genCard Locations.grandGuignol
@@ -302,14 +288,7 @@ instance RunMessage APhantomOfTruth where
         <> [RecordCount Doubt (doubt + 1) | n == 12]
         <> [story investigatorIds dream13, story investigatorIds awakening]
         <> [story investigatorIds jordansInformation | jordanInterviewed]
-        <> [ CreateWindowModifierEffect
-            EffectSetupWindow
-            (EffectModifiers $ toModifiers attrs [StartingResources 3])
-            (toSource attrs)
-            (InvestigatorTarget iid)
-           | jordanInterviewed
-           , iid <- investigatorIds
-           ]
+        <> [setupModifier attrs iid (StartingResources 3) | jordanInterviewed, iid <- investigatorIds]
         <> [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
         <> [MoveAllTo (toSource attrs) startingLocation]

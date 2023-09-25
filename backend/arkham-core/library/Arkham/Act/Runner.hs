@@ -103,7 +103,7 @@ instance RunMessage ActAttrs where
         (Window.RemovedBreaches (toTarget a))
         (Window.RemovedBreach (toTarget a))
       pure a
-    Do (RemoveBreaches (isTarget a -> True) n) -> do
+    DoBatch _ (RemoveBreaches (isTarget a -> True) n) -> do
       pure $ a & breachesL %~ fmap (max 0 . subtract n)
     UseCardAbility
       iid

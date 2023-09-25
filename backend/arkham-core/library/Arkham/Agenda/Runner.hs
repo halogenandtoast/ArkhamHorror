@@ -41,7 +41,7 @@ instance RunMessage AgendaAttrs where
     PlaceDoom source (isTarget a -> True) n -> do
       wouldDo msg (Window.WouldPlaceDoom source (toTarget a) n) (Window.PlacedDoom source (toTarget a) n)
       pure a
-    Do (PlaceDoom _ (isTarget a -> True) n) -> do
+    DoBatch _ (PlaceDoom _ (isTarget a -> True) n) -> do
       pure $ a & doomL +~ n
     RemoveDoom _ (AgendaTarget aid) n | aid == agendaId -> do
       pure $ a & doomL %~ max 0 . subtract n

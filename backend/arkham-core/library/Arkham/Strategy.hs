@@ -26,6 +26,7 @@ data ZoneReturnStrategy
   | DiscardRest
   deriving stock (Show, Eq, Ord, Data)
 
+-- NOTE: INT must be the number of targets to resolve
 data FoundCardsStrategy
   = PlayFound InvestigatorId Int
   | PlayFoundNoCost InvestigatorId Int
@@ -34,6 +35,7 @@ data FoundCardsStrategy
   | DeferSearchedToTarget Target
   | ReturnCards
   | RemoveFoundFromGame InvestigatorId Int
+  | DrawOrCommitFound InvestigatorId Int
   deriving stock (Show, Eq, Ord, Data)
 
 data AfterPlayStrategy

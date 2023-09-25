@@ -47,6 +47,7 @@ data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | InvestigatorIs CardCode
   | You
+  | ThatInvestigator
   | UnengagedInvestigator
   | NoOne
   | NotYou
@@ -945,6 +946,7 @@ data DeckMatcher
   | DeckOf InvestigatorMatcher
   | AnyDeck
   | DeckIs DeckSignifier
+  | DeckOneOf [DeckMatcher]
   deriving stock (Show, Eq, Ord, Data)
 
 data AgendaMatcher

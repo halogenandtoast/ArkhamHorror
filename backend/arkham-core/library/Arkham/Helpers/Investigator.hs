@@ -134,9 +134,9 @@ getAbilitiesForTurn attrs = do
   applyModifier _ n = n
 
 getCanDiscoverClues
-  :: HasGame m => InvestigatorAttrs -> LocationId -> m Bool
-getCanDiscoverClues attrs lid = do
-  modifiers <- getModifiers (toTarget attrs)
+  :: HasGame m => InvestigatorId -> LocationId -> m Bool
+getCanDiscoverClues iid lid = do
+  modifiers <- getModifiers (toTarget iid)
   not <$> anyM match modifiers
  where
   match CannotDiscoverClues {} = pure True
@@ -500,3 +500,10 @@ getCanDrawCards = selectAny . InvestigatorCanDrawCards . InvestigatorWithId
 
 eliminationWindow :: InvestigatorId -> WindowMatcher
 eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated #when (InvestigatorWithId iid)]
+
+getCanShuffleDeck :: HasGame m => InvestigatorId -> m Bool
+getCanShuffleDeck iid =
+  andM
+    [ withoutModifier iid CannotManipulateDeck
+    , fieldMap InvestigatorDeck notNull iid
+    ]

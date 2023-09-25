@@ -714,7 +714,7 @@ data Message
   | ResolveChaosToken ChaosToken ChaosTokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
   | ReturnSkillTestRevealedChaosTokens
   | ReturnChaosTokens [ChaosToken]
-  | RevealInHand CardId
+  | RevealCard CardId
   | RevealLocation (Maybe InvestigatorId) LocationId
   | UnrevealLocation LocationId
   | RevealSkillTestChaosTokens InvestigatorId
@@ -817,6 +817,7 @@ data Message
   | DoNotCountUseTowardsAbilityLimit InvestigatorId Ability
   | When Message
   | Would BatchId [Message]
+  | CancelBatch BatchId
   | IgnoreBatch BatchId
   | WhenWillEnterLocation InvestigatorId LocationId
   | EnterLocation InvestigatorId LocationId
@@ -863,6 +864,7 @@ data Message
   | If WindowType [Message]
   | -- Commit
     Do Message
+  | DoBatch BatchId Message
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''Message)

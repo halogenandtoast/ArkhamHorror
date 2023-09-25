@@ -644,6 +644,7 @@ getInvestigatorsMatching matcher = do
   results <- filterM (go matcher) investigators'
   -- We now need to handle the odd iteraction for Rational Thought, which we will treat like an investigator
   case matcher of
+    ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
     HealableInvestigator _source HorrorType _ -> do
       -- first let's look for the modifier for the active investigator
       let
@@ -695,6 +696,7 @@ getInvestigatorsMatching matcher = do
   includeEliminated (IncludeEliminated _) = True
   includeEliminated _ = False
   go = \case
+    ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
     OwnsAsset matcher' -> selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
     InvestigatorHasCardWithDamage -> \i -> do
       orM
@@ -4424,9 +4426,23 @@ runGameMessage msg g = case msg of
   Would bId (x : xs) -> do
     pushAll [x, Would bId xs]
     pure g
+  CancelBatch bId -> do
+    withQueue_ $ \q ->
+      flip map q $ \case
+        CheckWindow x ws -> CheckWindow x (filter ((/= Just bId) . windowBatchId) ws)
+        RunWindow x ws -> RunWindow x (filter ((/= Just bId) . windowBatchId) ws)
+        other -> other
+    removeAllMessagesMatching $ \case
+      Would bId' _ -> bId == bId'
+      DoBatch bId' _ -> bId == bId'
+      CheckWindow _ [] -> True
+      RunWindow _ [] -> True
+      _ -> False
+    pure g
   IgnoreBatch bId -> do
     removeAllMessagesMatching $ \case
       Would bId' _ -> bId == bId'
+      DoBatch bId' _ -> bId == bId'
       _ -> False
     pure g
   CancelEachNext source msgTypes -> do

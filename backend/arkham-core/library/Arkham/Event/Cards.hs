@@ -233,6 +233,7 @@ allPlayerEventCards =
       , narrowEscape
       , noStoneUnturned
       , noStoneUnturned5
+      , occultEvidence
       , occultInvocation
       , oneTwoPunch
       , oneTwoPunch5
@@ -252,6 +253,7 @@ allPlayerEventCards =
       , preposterousSketches
       , preposterousSketches2
       , quantumFlux
+      , readTheSigns
       , recharge2
       , recharge4
       , reliable1
@@ -2285,6 +2287,16 @@ eucatastrophe3 =
     , cdLevel = 3
     }
 
+occultEvidence :: CardDef
+occultEvidence =
+  (event "06008" "Occult Evidence" 0 Seeker)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Insight, Research]
+    , cdCardInSearchEffects = True
+    , cdCriteria = Just $ Criteria.CanManipulateDeck
+    , cdDeckRestrictions = [Signature "06002"]
+    }
+
 astoundingRevelation :: CardDef
 astoundingRevelation =
   (event "06023" "Astounding Revelation" 0 Seeker)
@@ -2300,6 +2312,14 @@ firstWatch =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Tactic]
     , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
+    }
+
+readTheSigns :: CardDef
+readTheSigns =
+  (event "06117" "Read the Signs" 2 Mystic)
+    { cdSkills = [#willpower, #intellect]
+    , cdActions = [#investigate]
+    , cdCardTraits = setFromList [Spell]
     }
 
 scroungeForSupplies :: CardDef

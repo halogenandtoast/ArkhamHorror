@@ -143,6 +143,7 @@ allPlayerTreacheryCards =
       , selfDestructive
       , sellYourSoul
       , shellShock
+      , shockingDiscovery
       , smiteTheWicked
       , starsOfHyades
       , terribleSecret
@@ -1660,6 +1661,13 @@ rookieMistake :: CardDef
 rookieMistake =
   (weakness "06007" "Rookie Mistake")
     { cdCardTraits = setFromList [Blunder, Flaw]
+    }
+
+shockingDiscovery :: CardDef
+shockingDiscovery =
+  (weakness "06009" "Shocking Discovery")
+    { cdCardTraits = setFromList [Blunder, Mystery]
+    , cdCardInSearchEffects = True
     }
 
 theHarbinger :: CardDef

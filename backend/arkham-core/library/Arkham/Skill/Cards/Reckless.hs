@@ -23,7 +23,7 @@ instance RunMessage Reckless where
   runMessage msg s@(Reckless attrs) = case msg of
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid' == iid -> do
       pushAll
-        [ RevealInHand $ toCardId attrs
+        [ RevealCard $ toCardId attrs
         , LoseResources iid (CardSource $ toCard attrs) 2
         ]
       pure s

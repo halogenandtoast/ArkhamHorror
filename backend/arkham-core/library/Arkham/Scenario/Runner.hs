@@ -37,6 +37,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
@@ -45,7 +46,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Modifier (ModifierType (DoNotRemoveDoom))
+import Arkham.Modifier qualified as Modifier
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
@@ -58,7 +59,8 @@ import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
-import Control.Lens (each, non, _1)
+import Control.Lens (each, non, over, _1)
+import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
@@ -621,8 +623,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       (Window.WouldSearchDeck iid Deck.EncounterDeck)
       (Window.SearchedDeck iid Deck.EncounterDeck)
     pure a
-  Do (Search iid source EncounterDeckTarget cardSources _traits foundStrategy) -> do
+  DoBatch batchId (Search iid source EncounterDeckTarget cardSources _traits foundStrategy) -> do
+    mods <- getModifiers iid
     let
+      additionalDepth = foldl' (+) 0 $ mapMaybe (preview Modifier._SearchDepth) mods
       foundCards :: Map Zone [Card] =
         foldl'
           ( \hmap (cardSource, _) -> case cardSource of
@@ -636,13 +640,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                 insertWith
                   (<>)
                   Zone.FromDeck
-                  (map EncounterCard . take n $ unDeck scenarioEncounterDeck)
+                  (map EncounterCard . take (n + additionalDepth) $ unDeck scenarioEncounterDeck)
                   hmap
               Zone.FromBottomOfDeck n ->
                 insertWith
                   (<>)
                   Zone.FromDeck
-                  (map EncounterCard . take n . reverse $ unDeck scenarioEncounterDeck)
+                  (map EncounterCard . take (n + additionalDepth) . reverse $ unDeck scenarioEncounterDeck)
                   hmap
               Zone.FromDiscard ->
                 insertWith
@@ -660,8 +664,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           )
           (unDeck scenarioEncounterDeck)
       targetCards = concat $ toList foundCards
-    push $ EndSearch iid source EncounterDeckTarget cardSources
-    case foundStrategy of
+    pushBatch batchId $ EndSearch iid source EncounterDeckTarget cardSources
+
+    let
+      applyMod (AdditionalTargets n) = over biplate (+ n)
+      applyMod _ = id
+      foundStrategy' = foldr applyMod foundStrategy mods
+
+    case foundStrategy' of
+      DrawOrCommitFound {} -> error "CommitFound not implemented for EncounterDeck"
       RemoveFoundFromGame _ _ -> error "Unhandled"
       DrawFound who n -> do
         let
@@ -671,7 +682,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
               [InvestigatorDrewEncounterCard who card]
             | card <- mapMaybe (preview _EncounterCard) targetCards
             ]
-        push
+        pushBatch batchId
           $ if null choices
             then chooseOne iid [Label "No cards found" []]
             else chooseN iid (min n (length choices)) choices
@@ -683,12 +694,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
               [InvestigatorDrewEncounterCard who card]
             | card <- mapMaybe (preview _EncounterCard) targetCards
             ]
-        push
+        pushBatch batchId
           $ if null choices
             then chooseOne iid [Label "No cards found" []]
             else chooseUpToN iid n "Do not draw more cards" choices
       DeferSearchedToTarget searchTarget -> do
-        push
+        pushBatch batchId
           $ if null targetCards
             then
               chooseOne
@@ -699,7 +710,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       PlayFoundNoCost {} -> error "PlayFound is not a valid EncounterDeck strategy"
       ReturnCards -> pure ()
 
-    push (FoundCards foundCards)
+    pushBatch batchId (FoundCards foundCards)
 
     pure $ a & (encounterDeckL .~ Deck encounterDeck)
   Discarded (AssetTarget _) _ card@(EncounterCard ec) -> do

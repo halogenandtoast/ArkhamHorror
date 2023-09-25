@@ -82,7 +82,7 @@ data WindowType
   | AllDrawEncounterCard
   | AfterCheckDoomThreshold
   | AllUndefeatedInvestigatorsResigned
-  | AmongSearchedCards InvestigatorId
+  | AmongSearchedCards BatchId InvestigatorId
   | AnyPhaseBegins
   | AssetDefeated AssetId DefeatedBy
   | AssignedHorror Source InvestigatorId [Target]

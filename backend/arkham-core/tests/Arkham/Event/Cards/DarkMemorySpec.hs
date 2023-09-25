@@ -33,7 +33,7 @@ spec = do
     it "is revealed and deals 2 horror if in hand at end of turn" $ gameTest $ \investigator -> do
       darkMemory <- genPlayerCard Events.darkMemory
 
-      didReveal <- createMessageMatcher (RevealInHand $ toCardId darkMemory)
+      didReveal <- createMessageMatcher (RevealCard $ toCardId darkMemory)
 
       pushAndRunAll
         [ addToHand (toId investigator) darkMemory

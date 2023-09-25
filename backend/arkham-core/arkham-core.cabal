@@ -1250,6 +1250,7 @@ library
       Arkham.Event.Cards.NarrowEscape
       Arkham.Event.Cards.NoStoneUnturned
       Arkham.Event.Cards.NoStoneUnturned5
+      Arkham.Event.Cards.OccultEvidence
       Arkham.Event.Cards.OccultInvocation
       Arkham.Event.Cards.OneTwoPunch
       Arkham.Event.Cards.OneTwoPunch5
@@ -1269,6 +1270,7 @@ library
       Arkham.Event.Cards.PreposterousSketches
       Arkham.Event.Cards.PreposterousSketches2
       Arkham.Event.Cards.QuantumFlux
+      Arkham.Event.Cards.ReadTheSigns
       Arkham.Event.Cards.Recharge2
       Arkham.Event.Cards.Recharge4
       Arkham.Event.Cards.Reliable1
@@ -2307,6 +2309,7 @@ library
       Arkham.Treachery.Cards.ShapesInTheMist
       Arkham.Treachery.Cards.ShatteredAges
       Arkham.Treachery.Cards.ShellShock
+      Arkham.Treachery.Cards.ShockingDiscovery
       Arkham.Treachery.Cards.SlitheringBehindYou
       Arkham.Treachery.Cards.SmiteTheWicked
       Arkham.Treachery.Cards.SnakeBite

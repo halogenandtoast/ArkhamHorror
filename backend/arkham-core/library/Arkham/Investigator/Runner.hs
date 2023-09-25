@@ -2500,7 +2500,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     then
                       chooseOne
                         iid
-                        [Label "Add to hand" [addFoundToHand], Label "Commit to skill test" [SkillTestCommitCard who card]]
+                        [Label "Add to hand" [addFoundToHand], Label "Commit to skill test" [CommitCard who card]]
                     else addFoundToHand
                 ]
               | (zone, cards) <- mapToList targetCards

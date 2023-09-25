@@ -32,7 +32,7 @@ instance HasAbilities AstoundingRevelation where
     ]
 
 instance RunMessage AstoundingRevelation where
-  runMessage msg e@(AstoundingRevelation attrs) = case traceShowId msg of
+  runMessage msg e@(AstoundingRevelation attrs) = case msg of
     InDiscard _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
       secretAssetIds <-
         selectList

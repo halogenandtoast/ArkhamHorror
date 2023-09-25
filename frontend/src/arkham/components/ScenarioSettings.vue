@@ -19,7 +19,7 @@ const standaloneSettings = ref<StandaloneSetting[]>([])
 // standaloneSettings in order to never alter its original value.
 const computedStandaloneSettings = computed<StandaloneSetting[]>(() => {
   const s = scenarioJSON.find((s) => s.id === props.scenario.id.replace(/^c/, ''))
-  return s ? s.settings as StandaloneSetting[] : []
+  return s?.settings ? s.settings as StandaloneSetting[] : []
 })
 
 watch(computedStandaloneSettings, (newSettings) => {

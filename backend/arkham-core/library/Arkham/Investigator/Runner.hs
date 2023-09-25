@@ -2850,7 +2850,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ]
     pure a
   UseAbility iid ability windows | iid == investigatorId -> do
-    pushAll [PayForAbility ability windows, ResolvedAbility ability]
+    mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
+    let
+      mayIgnore =
+        case abilitySource ability of
+          LocationSource _ -> mayIgnoreLocationEffectsAndKeywords
+          _ -> False
+      resolveAbility = [PayForAbility ability windows, ResolvedAbility ability]
+
+    if mayIgnore
+      then push $ chooseOne iid [Label "Ignore effect" [], Label "Do not ignore effect" resolveAbility]
+      else pushAll resolveAbility
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
         depth <- getWindowDepth

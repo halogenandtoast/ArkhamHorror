@@ -47,16 +47,7 @@ instance RunMessage ArcaneInitiate3 where
       push
         $ chooseOne
           iid
-          [ targetLabel
-              iid
-              [ Search
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  [fromTopOfDeck 3]
-                  (CardWithTrait Spell)
-                  $ DrawFound iid 1
-              ]
+          [ targetLabel iid [search iid source iid [fromTopOfDeck 3] (CardWithTrait Spell) $ DrawFound iid 1]
           ]
       pure a
     _ -> ArcaneInitiate3 <$> runMessage msg attrs

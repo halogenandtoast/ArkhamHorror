@@ -45,7 +45,7 @@ instance RunMessage DisquietingDreams where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       pushAll
         [ Discard (toSource attrs) (toTarget attrs)
-        , Search
+        , search
             iid
             (toSource attrs)
             (toTarget iid)

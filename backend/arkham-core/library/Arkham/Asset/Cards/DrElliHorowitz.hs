@@ -51,13 +51,8 @@ instance RunMessage DrElliHorowitz where
   runMessage msg a@(DrElliHorowitz attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
-        $ Search
-          iid
-          source
-          (InvestigatorTarget iid)
-          [fromTopOfDeck 9]
-          AnyCard -- no filter because we need to handle game logic
-          (DeferSearchedToTarget $ toTarget attrs)
+        $ search iid source iid [fromTopOfDeck 9] AnyCard -- no filter because we need to handle game logic
+        $ DeferSearchedToTarget (toTarget attrs)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       validCards <-

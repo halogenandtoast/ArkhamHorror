@@ -37,9 +37,9 @@ instance RunMessage ScrollOfSecretsMystic3 where
           $ InvestigatorWithoutModifier CannotManipulateDeck
       let
         doSearch target x =
-          Search
+          lookAt
             iid
-            (toSource attrs)
+            attrs
             target
             [x 1]
             AnyCard

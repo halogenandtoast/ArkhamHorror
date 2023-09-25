@@ -52,15 +52,7 @@ instance RunMessage CityOfTheGreatRace where
           else pure []
 
       pushAll
-        $ [ Search
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            [fromTopOfDeck 9]
-            (CardWithTrait Item)
-            (DrawFoundUpTo iid 2)
-          | iid <- iids
-          ]
+        $ [search iid attrs iid [fromTopOfDeck 9] (CardWithTrait Item) (DrawFoundUpTo iid 2) | iid <- iids]
         <> [ShuffleEncounterDiscardBackIn]
         <> custodianMessages
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]

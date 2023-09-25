@@ -46,12 +46,7 @@ instance RunMessage AnnaKaslow4 where
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push
-        $ Search
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          [(FromDeck, ShuffleBackIn)]
-          (CardWithTrait Tarot <> CardWithType AssetType)
+        $ search iid attrs iid [fromDeck] (CardWithTrait Tarot <> CardWithType AssetType)
         $ PlayFound iid 1
       pure a
     _ -> AnnaKaslow4 <$> runMessage msg attrs

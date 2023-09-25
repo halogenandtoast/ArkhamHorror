@@ -41,6 +41,6 @@ toSuccessResult (_ : xs) = toSuccessResult xs
 instance RunMessage LuckyCigaretteCase3 where
   runMessage msg a@(LuckyCigaretteCase3 attrs) = case msg of
     UseCardAbility iid source 1 (toSuccessResult -> n) _ | isSource attrs source -> do
-      push $ Search iid (toSource attrs) (toTarget iid) [fromTopOfDeck n] AnyCard (DrawFound iid 1)
+      push $ search iid attrs iid [fromTopOfDeck n] AnyCard (DrawFound iid 1)
       pure a
     _ -> LuckyCigaretteCase3 <$> runMessage msg attrs

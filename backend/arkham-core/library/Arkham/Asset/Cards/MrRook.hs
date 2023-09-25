@@ -25,37 +25,26 @@ mrRook = ally (MrRook . (`with` Metadata [])) Cards.mrRook (2, 2)
 
 instance HasAbilities MrRook where
   getAbilities (MrRook (a `With` _)) =
-    [ restrictedAbility a 1 ControlsThis
-        $ FastAbility
-        $ exhaust a
-        <> assetUseCost a Secret 1
-    ]
+    [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a <> assetUseCost a Secret 1]
 
 instance RunMessage MrRook where
   runMessage msg a@(MrRook (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let
-        source = toAbilitySource attrs 1
-        goSearch n = search iid source iid [fromTopOfDeck n] AnyCard (DeferSearchedToTarget $ toTarget attrs)
-      push
-        $ chooseOne
-          iid
-          [ Label "Top 3" [goSearch 3]
-          , Label "Top 6" [goSearch 6]
-          , Label "Top 9" [goSearch 9]
-          ]
+      let source = toAbilitySource attrs 1
+      let goSearch n = search iid source iid [fromTopOfDeck n] AnyCard (DeferSearchedToTarget $ toTarget attrs)
+      push $ chooseOne iid [Label ("Top " <> tshow x) [goSearch x] | x <- [3, 6, 9]]
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       pushAll
         [ FocusCards cards
-        , chooseOne
-            iid
-            [ targetLabel (toCardId card)
-              $ HandleTargetChoice iid (toSource attrs) (CardTarget card)
-              : [DoStep 1 msg]
-            | card <- cards
-            ]
-        , UnfocusCards
+        , chooseOne iid
+            $ [ targetLabel (toCardId card)
+                $ [ UnfocusCards
+                  , HandleTargetChoice iid (toSource attrs) (CardTarget card)
+                  , DoStep 1 msg
+                  ]
+              | card <- cards
+              ]
         ]
       pure a
     DoStep 1 msg'@(SearchFound iid (isTarget attrs -> True) _ cards) -> do
@@ -72,16 +61,20 @@ instance RunMessage MrRook where
       -- else we go to step 2
       if canChooseMore || needsToChooseWeakness
         then
-          push
-            $ chooseOne
-              iid
-              [ targetLabel (toCardId card)
-                $ HandleTargetChoice iid (toSource attrs) (CardTarget card)
-                : [DoStep 1 msg']
-              | card <- cards
-              , card `cardMatch` WeaknessCard || canChooseMore
-              , card `notElem` chosenCards meta
-              ]
+          pushAll
+            [ FocusCards cards
+            , chooseOne iid
+                $ [ targetLabel
+                    (toCardId card)
+                    [ UnfocusCards
+                    , HandleTargetChoice iid (toSource attrs) (CardTarget card)
+                    , DoStep 1 msg'
+                    ]
+                  | card <- cards
+                  , card `cardMatch` WeaknessCard || canChooseMore
+                  , card `notElem` chosenCards meta
+                  ]
+            ]
         else push $ DoStep 2 msg'
       pure a
     DoStep 2 (SearchFound iid (isTarget attrs -> True) _ _) -> do

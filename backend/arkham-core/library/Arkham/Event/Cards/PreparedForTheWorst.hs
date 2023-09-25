@@ -25,7 +25,7 @@ instance RunMessage PreparedForTheWorst where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e
         <$ pushAll
-          [ Search
+          [ search
               iid
               (toSource attrs)
               (InvestigatorTarget iid)

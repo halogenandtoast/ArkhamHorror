@@ -2442,15 +2442,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $ Endo $ deckL .~ deck'
       _ -> error "Unhandled zone, this was added for Shocking Discovery only which is FromDeck"
     pure $ a & foundCardsL .~ mempty & updates
-  Search iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
-    wouldDo
-      msg
-      (Window.WouldSearchDeck iid (Deck.InvestigatorDeck iid'))
-      (Window.SearchedDeck iid (Deck.InvestigatorDeck iid'))
+  Search searchType iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
+    if searchType == Searching
+      then
+        wouldDo
+          msg
+          (Window.WouldSearchDeck iid (Deck.InvestigatorDeck iid'))
+          (Window.SearchedDeck iid (Deck.InvestigatorDeck iid'))
+      else do
+        batchId <- getRandom
+        push $ DoBatch batchId msg
+
     pure a
   DoBatch
     batchId
-    (Search iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy) | iid' == toId a -> do
+    (Search _ iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy) | iid' == toId a -> do
       mods <- getModifiers iid
       let
         additionalDepth = foldl' (+) 0 $ mapMaybe (preview Modifier._SearchDepth) mods
@@ -2489,7 +2495,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         applyMod _ = id
         foundStrategy' = foldr applyMod foundStrategy mods
 
-      case traceShowId foundStrategy' of
+      case foundStrategy' of
         DrawOrCommitFound who n -> do
           committable <- filterM (getIsCommittable who) $ concatMap snd $ mapToList targetCards
           let

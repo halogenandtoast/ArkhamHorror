@@ -42,12 +42,7 @@ instance RunMessage BoxingGloves3 where
   runMessage msg a@(BoxingGloves3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
-        $ Search
-          iid
-          source
-          (InvestigatorTarget iid)
-          [fromTopOfDeck 9]
-          (CardWithType EventType <> CardWithTrait Spirit)
-          (DrawFound iid 1)
+        $ search iid source iid [fromTopOfDeck 9] (CardWithType EventType <> CardWithTrait Spirit)
+        $ DrawFound iid 1
       pure a
     _ -> BoxingGloves3 <$> runMessage msg attrs

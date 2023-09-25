@@ -47,7 +47,7 @@ instance RunMessage CallingInFavors where
                   (Just $ EffectInt cost)
                   (toSource attrs)
                   (InvestigatorTarget iid)
-              , Search
+              , search
                   iid
                   (toSource attrs)
                   (InvestigatorTarget iid)

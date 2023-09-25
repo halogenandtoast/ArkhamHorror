@@ -22,138 +22,110 @@ scrollOfSecretsSeeker3 =
 
 instance HasAbilities ScrollOfSecretsSeeker3 where
   getAbilities (ScrollOfSecretsSeeker3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Secret 1
+    [ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost $ exhaust a <> assetUseCost a Secret 1
     ]
 
 instance RunMessage ScrollOfSecretsSeeker3 where
   runMessage msg a@(ScrollOfSecretsSeeker3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <-
-        selectTargets
-          $ InvestigatorWithoutModifier CannotManipulateDeck
+      targets <- selectTargets $ InvestigatorWithoutModifier CannotManipulateDeck
       push
-        $ chooseOne
-          iid
-          [ TargetLabel
-            target
-            [ search
-                iid
-                attrs
-                target
-                [fromBottomOfDeck 3]
-                AnyCard
-                (DeferSearchedToTarget $ toTarget attrs)
-            ]
+        $ chooseOne iid
+        $ [ targetLabel target
+            $ [ lookAt
+                  iid
+                  attrs
+                  target
+                  [fromBottomOfDeck 3]
+                  AnyCard
+                  (DeferSearchedToTarget $ toTarget attrs)
+              ]
           | target <- EncounterDeckTarget : targets
           ]
       pure a
     SearchFound _ (isTarget attrs -> True) _ cards | notNull cards -> do
       push (DoStep 1 msg)
       pure a
-    DoStep 1 msg'@(SearchFound iid (isTarget attrs -> True) deck cards)
-      | notNull cards -> do
-          let
-            discardMsg (PlayerCard card) = case deck of
-              Deck.InvestigatorDeck iid' -> AddToDiscard iid' card
-              _ -> error "Deck mismatch"
-            discardMsg (EncounterCard card) = case deck of
-              Deck.EncounterDeck -> AddToEncounterDiscard card
-              _ -> error "Deck mismatch"
-            discardMsg _ = error "Card mismatch"
+    DoStep 1 msg'@(SearchFound iid (isTarget attrs -> True) deck cards) | notNull cards -> do
+      let
+        discardMsg (PlayerCard card) = case deck of
+          Deck.InvestigatorDeck iid' -> AddToDiscard iid' card
+          _ -> error "Deck mismatch"
+        discardMsg (EncounterCard card) = case deck of
+          Deck.EncounterDeck -> AddToEncounterDiscard card
+          _ -> error "Deck mismatch"
+        discardMsg _ = error "Card mismatch"
 
+      pushAll
+        [ FocusCards cards
+        , questionLabel "Discard 1 card?" iid
+            $ ChooseOne
+            $ Label "Do not discard" [UnfocusCards, DoStep 2 msg']
+            : [ targetLabel
+                (toCardId card)
+                [ UnfocusCards
+                , discardMsg card
+                , DoStep 2
+                    $ SearchFound
+                      iid
+                      (toTarget attrs)
+                      deck
+                      (deleteFirst card cards)
+                ]
+              | card <- cards
+              ]
+        ]
+      pure a
+    DoStep 2 msg'@(SearchFound _ (isTarget attrs -> True) Deck.EncounterDeck _) -> do
+      push $ DoStep 3 msg'
+      pure a
+    DoStep 2 msg'@(SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards) | notNull cards -> do
+      let playerCards = mapMaybe (preview _PlayerCard) cards
+      if null playerCards
+        then push $ DoStep 3 msg'
+        else
           pushAll
             [ FocusCards cards
-            , questionLabel "Discard 1 card?" iid
+            , questionLabel "Add 1 card to hand?" iid
                 $ ChooseOne
-                $ Label "Do not discard" [UnfocusCards, DoStep 2 msg']
+                $ Label "Do not add to hand" [UnfocusCards, DoStep 3 msg']
                 : [ targetLabel
                     (toCardId card)
                     [ UnfocusCards
-                    , discardMsg card
-                    , DoStep 2
-                        $ SearchFound
-                          iid
-                          (toTarget attrs)
-                          deck
-                          (deleteFirst card cards)
+                    , addToHand iid' (PlayerCard card)
+                    , DoStep 3 $ SearchFound iid (toTarget attrs) deck (deleteFirst (PlayerCard card) cards)
                     ]
-                  | card <- cards
+                  | card <- playerCards
                   ]
             ]
-          pure a
-    DoStep 2 msg'@(SearchFound _ (isTarget attrs -> True) Deck.EncounterDeck _) ->
-      do
-        push $ DoStep 3 msg'
-        pure a
-    DoStep 2 msg'@(SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards)
-      | notNull cards ->
-          do
-            let playerCards = mapMaybe (preview _PlayerCard) cards
-            if null playerCards
-              then push $ DoStep 3 msg'
-              else
-                pushAll
-                  [ FocusCards cards
-                  , questionLabel "Add 1 card to hand?" iid
-                      $ ChooseOne
-                      $ Label "Do not add to hand" [UnfocusCards, DoStep 3 msg']
-                      : [ targetLabel
-                          (toCardId card)
-                          [ UnfocusCards
-                          , addToHand iid' (PlayerCard card)
-                          , DoStep 3
-                              $ SearchFound
-                                iid
-                                (toTarget attrs)
-                                deck
-                                (deleteFirst (PlayerCard card) cards)
-                          ]
-                        | card <- playerCards
-                        ]
-                  ]
-            pure a
-    DoStep 3 (SearchFound iid (isTarget attrs -> True) deck cards)
-      | notNull cards -> do
-          pushAll
-            [ FocusCards cards
-            , chooseOrRunOne
-                iid
-                [ targetLabel
-                  (toCardId card)
-                  [ chooseOne
-                      iid
-                      [ Label
-                          "Place on bottom of deck"
-                          [ UnfocusCards
-                          , FocusCards [card]
-                          , PutCardOnBottomOfDeck iid deck card
-                          , DoStep 3
-                              $ SearchFound
-                                iid
-                                (toTarget attrs)
-                                deck
-                                (deleteFirst card cards)
-                          ]
-                      , Label
-                          "Place on top of deck"
-                          [ UnfocusCards
-                          , FocusCards [card]
-                          , PutCardOnTopOfDeck iid deck card
-                          , DoStep 3
-                              $ SearchFound
-                                iid
-                                (toTarget attrs)
-                                deck
-                                (deleteFirst card cards)
-                          ]
+      pure a
+    DoStep 3 (SearchFound iid (isTarget attrs -> True) deck cards) | notNull cards -> do
+      pushAll
+        [ FocusCards cards
+        , chooseOrRunOne
+            iid
+            [ targetLabel
+              (toCardId card)
+              [ chooseOne
+                  iid
+                  [ Label
+                      "Place on bottom of deck"
+                      [ UnfocusCards
+                      , FocusCards [card]
+                      , PutCardOnBottomOfDeck iid deck card
+                      , DoStep 3 $ SearchFound iid (toTarget attrs) deck (deleteFirst card cards)
+                      ]
+                  , Label
+                      "Place on top of deck"
+                      [ UnfocusCards
+                      , FocusCards [card]
+                      , PutCardOnTopOfDeck iid deck card
+                      , DoStep 3 $ SearchFound iid (toTarget attrs) deck (deleteFirst card cards)
                       ]
                   ]
-                | card <- cards
-                ]
+              ]
+            | card <- cards
             ]
-          pure a
+        ]
+      pure a
     _ -> ScrollOfSecretsSeeker3 <$> runMessage msg attrs

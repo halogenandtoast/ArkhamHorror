@@ -27,7 +27,7 @@ findAllyMessages iid investigatorIds e =
       iid
       [ targetLabel
         iid
-        [ Search
+        [ search
             iid'
             (toSource e)
             (InvestigatorTarget iid')

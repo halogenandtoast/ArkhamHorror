@@ -35,7 +35,7 @@ instance RunMessage Scrying3 where
           iid
           [ TargetLabel
             target
-            [ Search
+            [ lookAt
                 iid
                 source
                 target

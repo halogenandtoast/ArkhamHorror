@@ -30,7 +30,7 @@ instance RunMessage SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push
-        $ Search iid (toAbilitySource attrs 1) (toTarget iid) [fromDeck] IsAlly
+        $ search iid (toAbilitySource attrs 1) (toTarget iid) [fromDeck] IsAlly
         $ DrawFound iid 1
       pure l
     _ -> SouthsideMasBoardingHouse <$> runMessage msg attrs

@@ -49,10 +49,10 @@ instance RunMessage OldBookOfLore3 where
           iid
           [ targetLabel
             iid'
-            [ Search
+            [ search
                 iid'
                 source
-                (InvestigatorTarget iid')
+                iid'
                 [fromTopOfDeck 3]
                 AnyCard
                 (DeferSearchedToTarget $ toTarget attrs)

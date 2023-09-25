@@ -44,7 +44,7 @@ instance RunMessage RandallCho where
           , Just
               $ Label
                 "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
-                [ Search
+                [ search
                     iid
                     (toSource attrs)
                     (InvestigatorTarget iid)

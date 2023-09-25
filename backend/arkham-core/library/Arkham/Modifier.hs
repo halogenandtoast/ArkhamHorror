@@ -6,6 +6,7 @@ module Arkham.Modifier (
   ActionTarget (..),
   setActiveDuringSetup,
   _SearchDepth,
+  _AdditionalTargets,
 ) where
 
 import Arkham.Prelude
@@ -261,6 +262,11 @@ data ModifierType
 _SearchDepth :: Prism' ModifierType Int
 _SearchDepth = prism' SearchDepth $ \case
   SearchDepth n -> Just n
+  _ -> Nothing
+
+_AdditionalTargets :: Prism' ModifierType Int
+_AdditionalTargets = prism' AdditionalTargets $ \case
+  AdditionalTargets n -> Just n
   _ -> Nothing
 
 data Modifier = Modifier

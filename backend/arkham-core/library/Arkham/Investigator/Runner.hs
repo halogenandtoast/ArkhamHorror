@@ -567,6 +567,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Discard source (CardTarget card) | card `elem` investigatorHand -> do
     push $ DiscardCard investigatorId source (toCardId card)
     pure a
+  Discard _ (SearchedCardTarget cardId) -> do
+    pure $ a & foundCardsL . each %~ filter ((/= cardId) . toCardId)
   DiscardHand iid source | iid == investigatorId -> do
     pushAll $ map (DiscardCard iid source . toCardId) investigatorHand
     pure a
@@ -2432,6 +2434,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               _ -> True
         )
   SearchEnded iid | iid == investigatorId -> pure $ a & foundCardsL .~ mempty
+  CancelSearch iid | iid == investigatorId -> do
+    let zoneCards = mapToList investigatorFoundCards
+    updates <- fmap (appEndo . mconcat) $ for zoneCards $ \(zone, cards) -> case zone of
+      Zone.FromDeck -> do
+        deck' <- Deck <$> shuffleM (unDeck investigatorDeck <> onlyPlayerCards cards)
+        pure $ Endo $ deckL .~ deck'
+      _ -> error "Unhandled zone, this was added for Shocking Discovery only which is FromDeck"
+    pure $ a & foundCardsL .~ mempty & updates
   Search iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
     wouldDo
       msg

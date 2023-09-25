@@ -45,8 +45,7 @@ instance RunMessage ShockingDiscovery where
         [ RemoveCardFromSearch iid (toCardId card)
         , AddToDiscard iid card
         , CancelBatch batchId
-        , SearchEnded iid
-        , ShuffleDeck (Deck.InvestigatorDeck iid)
+        , CancelSearch iid -- shuffles the deck
         , InvestigatorDrawEncounterCard iid
         ]
       pure t

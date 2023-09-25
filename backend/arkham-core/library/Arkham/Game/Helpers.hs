@@ -301,7 +301,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Circle -> pure True
 
 getCanAffordAbility
-  :: HasGame m => InvestigatorId -> Ability -> Window -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordAbility iid ability window =
   andM [getCanAffordUse iid ability window, getCanAffordAbilityCost iid ability]
 
@@ -359,12 +359,12 @@ getAbilityLimit iid ability = do
 -- limits for instance won't work if we have a group limit higher than one, for
 -- that we need to sum uses across all investigators. So we should fix this
 -- soon.
-getCanAffordUse :: HasGame m => InvestigatorId -> Ability -> Window -> m Bool
+getCanAffordUse :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 
 -- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
 getCanAffordUseWith
-  :: HasGame m
+  :: (HasCallStack, HasGame m)
   => ([UsedAbility] -> [UsedAbility])
   -> CanIgnoreAbilityLimit
   -> InvestigatorId
@@ -641,11 +641,11 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
            )
   ResolveEachHauntedAbility _ -> pure True
 
-getActions :: HasGame m => InvestigatorId -> Window -> m [Ability]
+getActions :: (HasGame m, HasCallStack) => InvestigatorId -> Window -> m [Ability]
 getActions iid window = getActionsWith iid window id
 
 getActionsWith
-  :: HasGame m
+  :: (HasCallStack, HasGame m)
   => InvestigatorId
   -> Window
   -> (Ability -> Ability)

@@ -2433,6 +2433,7 @@ getEventMaybe eid = do
   g <- getGame
   pure
     $ preview (entitiesL . eventsL . ix eid) g
+    <|> preview (inSearchEntitiesL . eventsL . ix eid) g
     <|> getInDiscardEntity eventsL eid g
 
 getEffect :: HasGame m => EffectId -> m Effect
@@ -5538,16 +5539,19 @@ runGameMessage msg g = case msg of
   DiscardedCost (SearchedCardTarget cid) -> do
     -- There is only one card, Astounding Revelation, that does this so we just hard code for now
     iid <- getActiveInvestigatorId
-    eventId <- getRandom
-    let
-      event' = lookupEvent "06023" iid eventId cid
-      dEntities =
-        fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
-    pure
-      $ g
-      & inDiscardEntitiesL
-      . at iid
-      ?~ (dEntities & eventsL . at (toId event') ?~ event')
+    card <- getCard cid
+    case toCardType card of
+      EventType -> do
+        let
+          event' = lookupEvent (toCardCode card) iid (EventId $ unsafeCardIdToUUID cid) cid
+          dEntities =
+            fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
+        pure
+          $ g
+          & inDiscardEntitiesL
+          . at iid
+          ?~ (dEntities & eventsL . at (toId event') ?~ event')
+      _ -> error $ "Unhandled card type: " <> show card
   Discarded (TreacheryTarget aid) _ _ -> do
     push $ RemoveTreachery aid
     pure g

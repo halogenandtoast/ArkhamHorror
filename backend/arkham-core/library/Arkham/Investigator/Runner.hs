@@ -2489,7 +2489,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         applyMod _ = id
         foundStrategy' = foldr applyMod foundStrategy mods
 
-      case foundStrategy' of
+      case traceShowId foundStrategy' of
         DrawOrCommitFound who n -> do
           committable <- filterM (getIsCommittable who) $ concatMap snd $ mapToList targetCards
           let
@@ -2570,6 +2570,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ]
           pushBatch batchId $ chooseN iid n $ if null choices then [Label "No cards found" []] else choices
         DeferSearchedToTarget searchTarget -> do
+          -- N.B. You must handle target duplication (see Mandy Thompson) yourself
           pushBatch batchId
             $ if null targetCards
               then chooseOne iid [Label "No cards found" [SearchNoneFound iid searchTarget]]

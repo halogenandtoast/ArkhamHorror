@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
+import Control.Lens (each, sumOf)
 
 newtype Metadata = Metadata {chosenCards :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -26,22 +27,16 @@ instance HasAbilities MrRook where
   getAbilities (MrRook (a `With` _)) =
     [ restrictedAbility a 1 ControlsThis
         $ FastAbility
-        $ ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Secret 1
+        $ exhaust a
+        <> assetUseCost a Secret 1
     ]
 
 instance RunMessage MrRook where
   runMessage msg a@(MrRook (attrs `With` meta)) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let
-        goSearch n =
-          Search
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            [fromTopOfDeck n]
-            AnyCard
-            (DeferSearchedToTarget $ toTarget attrs)
+        source = toAbilitySource attrs 1
+        goSearch n = search iid source iid [fromTopOfDeck n] AnyCard (DeferSearchedToTarget $ toTarget attrs)
       push
         $ chooseOne
           iid
@@ -50,75 +45,48 @@ instance RunMessage MrRook where
           , Label "Top 9" [goSearch 9]
           ]
       pure a
-    SearchFound iid target@(isTarget attrs -> True) deck cards
-      | notNull cards -> do
-          let
-            anyWeaknesses = any (`cardMatch` WeaknessCard) cards
-            nextStep = SearchFound iid target deck
-          pushAll
-            [ FocusCards cards
-            , chooseOne
-                iid
-                [ targetLabel (toCardId card)
-                  $ HandleTargetChoice
-                    iid
-                    (toSource attrs)
-                    (CardTarget card)
-                  : [ if anyWeaknesses
-                        then
-                          DoStep
-                            (if card `cardMatch` WeaknessCard then 1 else 2)
-                            (nextStep $ deleteFirst card cards)
-                        else DoStep 3 msg
-                    ]
-                | card <- cards
-                ]
-            , UnfocusCards
+    SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
+      pushAll
+        [ FocusCards cards
+        , chooseOne
+            iid
+            [ targetLabel (toCardId card)
+              $ HandleTargetChoice iid (toSource attrs) (CardTarget card)
+              : [DoStep 1 msg]
+            | card <- cards
             ]
-          pure a
+        , UnfocusCards
+        ]
+      pure a
     DoStep 1 msg'@(SearchFound iid (isTarget attrs -> True) _ cards) -> do
-      -- already selected weakness so we can take anything
-      pushAll
-        [ chooseOne
-            iid
-            [ targetLabel
-              (toCardId card)
-              [ HandleTargetChoice
-                  iid
-                  (toSource attrs)
-                  (CardTarget card)
+      additionalTargets <- sumOf (each . _AdditionalTargets) <$> getModifiers iid
+
+      let
+        chosenWeakness = any (`cardMatch` WeaknessCard) (chosenCards meta)
+        anyWeaknesses = any (`cardMatch` WeaknessCard) cards
+        chosenNonWeakness = filter (not . (`cardMatch` WeaknessCard)) (chosenCards meta)
+        canChooseMore = length chosenNonWeakness < additionalTargets + 1
+        needsToChooseWeakness = not chosenWeakness && anyWeaknesses
+
+      -- if we need to draw weakness, or we need to draw more, repeat step 1
+      -- else we go to step 2
+      if canChooseMore || needsToChooseWeakness
+        then
+          push
+            $ chooseOne
+              iid
+              [ targetLabel (toCardId card)
+                $ HandleTargetChoice iid (toSource attrs) (CardTarget card)
+                : [DoStep 1 msg']
+              | card <- cards
+              , card `cardMatch` WeaknessCard || canChooseMore
+              , card `notElem` chosenCards meta
               ]
-            | card <- cards
-            ]
-        , DoStep 3 msg'
-        ]
+        else push $ DoStep 2 msg'
       pure a
-    DoStep 2 msg'@(SearchFound iid (isTarget attrs -> True) _ cards) -> do
-      -- must select weakness
-      pushAll
-        [ chooseOne
-            iid
-            [ targetLabel
-              (toCardId card)
-              [ HandleTargetChoice
-                  iid
-                  (toSource attrs)
-                  (CardTarget card)
-              ]
-            | card <- cards
-            , card `cardMatch` WeaknessCard
-            ]
-        , DoStep 3 msg'
-        ]
-      pure a
-    DoStep 3 (SearchFound iid (isTarget attrs -> True) _ _) -> do
+    DoStep 2 (SearchFound iid (isTarget attrs -> True) _ _) -> do
       push $ AddToHand iid (chosenCards meta)
       pure $ MrRook (attrs `with` Metadata [])
     HandleTargetChoice _ (isSource attrs -> True) (CardTarget card) -> do
-      pure
-        $ MrRook
-        $ attrs
-        `with` Metadata
-          { chosenCards = card : chosenCards meta
-          }
+      pure $ MrRook $ attrs `with` Metadata {chosenCards = card : chosenCards meta}
     _ -> MrRook . (`with` meta) <$> runMessage msg attrs

@@ -2434,6 +2434,7 @@ getEventMaybe eid = do
   pure
     $ preview (entitiesL . eventsL . ix eid) g
     <|> preview (inSearchEntitiesL . eventsL . ix eid) g
+    <|> preview (inHandEntitiesL . each . eventsL . ix eid) g
     <|> getInDiscardEntity eventsL eid g
 
 getEffect :: HasGame m => EffectId -> m Effect
@@ -5537,15 +5538,14 @@ runGameMessage msg g = case msg of
                 ?~ (dEntities & assetsL . at aid ?~ asset)
             )
   DiscardedCost (SearchedCardTarget cid) -> do
-    -- There is only one card, Astounding Revelation, that does this so we just hard code for now
     iid <- getActiveInvestigatorId
     card <- getCard cid
     case toCardType card of
       EventType -> do
+        -- There is only one card, Astounding Revelation, that does this so we just hard code for now
         let
           event' = lookupEvent (toCardCode card) iid (EventId $ unsafeCardIdToUUID cid) cid
-          dEntities =
-            fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
+          dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
         pure
           $ g
           & inDiscardEntitiesL

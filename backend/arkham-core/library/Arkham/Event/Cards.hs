@@ -2293,6 +2293,7 @@ occultEvidence =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Insight, Research]
     , cdCardInSearchEffects = True
+    , cdCardInHandEffects = True
     , cdCriteria = Just $ Criteria.CanManipulateDeck
     , cdDeckRestrictions = [Signature "06002"]
     }

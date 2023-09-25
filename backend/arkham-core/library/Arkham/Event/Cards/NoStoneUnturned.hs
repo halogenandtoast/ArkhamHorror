@@ -32,7 +32,7 @@ instance RunMessage NoStoneUnturned where
             iid
             [ targetLabel
               iid'
-              [ Search
+              [ search
                   iid'
                   (toSource attrs)
                   (InvestigatorTarget iid')

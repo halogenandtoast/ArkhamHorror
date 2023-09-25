@@ -35,7 +35,7 @@ instance RunMessage SecurityOffice_128 where
       | isSource attrs source ->
           l
             <$ push
-              ( Search
+              ( search
                   iid
                   source
                   (InvestigatorTarget iid)

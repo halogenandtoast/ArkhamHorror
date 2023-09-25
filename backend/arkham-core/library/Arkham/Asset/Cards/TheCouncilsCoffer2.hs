@@ -41,7 +41,7 @@ instance RunMessage TheCouncilsCoffer2 where
             iid
             [ Label
                 "Search Deck"
-                [ Search
+                [ search
                     iid
                     (toSource attrs)
                     (toTarget iid)
@@ -51,7 +51,7 @@ instance RunMessage TheCouncilsCoffer2 where
                 ]
             , Label
                 "Search Discard"
-                [ Search
+                [ search
                     iid
                     (toSource attrs)
                     (toTarget iid)

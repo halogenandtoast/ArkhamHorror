@@ -31,6 +31,6 @@ instance HasAbilities RabbitsFoot3 where
 instance RunMessage RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
     UseCardAbility iid source 1 [(windowType -> Window.FailSkillTest _ x)] _ | isSource attrs source -> do
-      push $ Search iid source (InvestigatorTarget iid) [fromTopOfDeck x] AnyCard (DrawFound iid 1)
+      push $ search iid source (InvestigatorTarget iid) [fromTopOfDeck x] AnyCard (DrawFound iid 1)
       pure a
     _ -> RabbitsFoot3 <$> runMessage msg attrs

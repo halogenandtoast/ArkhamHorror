@@ -30,6 +30,6 @@ instance RunMessage Scrying where
       push
         $ chooseOne iid
         $ targetLabels (EncounterDeckTarget : targets)
-        $ \target -> only $ search iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] AnyCard ReturnCards
+        $ \target -> only $ lookAt iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] AnyCard ReturnCards
       pure a
     _ -> Scrying <$> runMessage msg attrs

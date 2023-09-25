@@ -27,7 +27,7 @@ instance RunMessage OnTheHunt where
         InvestigatorDoDrawEncounterCard iid' -> iid == iid'
         _ -> False
       push
-        $ Search
+        $ search
           iid
           (toSource attrs)
           EncounterDeckTarget

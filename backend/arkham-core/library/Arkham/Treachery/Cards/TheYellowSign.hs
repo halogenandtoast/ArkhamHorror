@@ -25,7 +25,7 @@ instance RunMessage TheYellowSign where
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       pushAll
         [ assignHorror iid attrs 2
-        , Search
+        , search
             iid
             (toSource attrs)
             (toTarget iid)

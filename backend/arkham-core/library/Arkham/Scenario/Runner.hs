@@ -617,13 +617,18 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           pushAll [windows', ShuffleEncounterDiscardBackIn]
         pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
         pure $ a & (deckLens handler .~ Deck encounterDeck)
-  Search iid _ EncounterDeckTarget _ _ _ -> do
-    wouldDo
-      msg
-      (Window.WouldSearchDeck iid Deck.EncounterDeck)
-      (Window.SearchedDeck iid Deck.EncounterDeck)
+  Search searchType iid _ EncounterDeckTarget _ _ _ -> do
+    if searchType == Searching
+      then
+        wouldDo
+          msg
+          (Window.WouldSearchDeck iid Deck.EncounterDeck)
+          (Window.SearchedDeck iid Deck.EncounterDeck)
+      else do
+        batchId <- getRandom
+        push $ DoBatch batchId msg
     pure a
-  DoBatch batchId (Search iid source EncounterDeckTarget cardSources _traits foundStrategy) -> do
+  DoBatch batchId (Search _ iid source EncounterDeckTarget cardSources _traits foundStrategy) -> do
     mods <- getModifiers iid
     let
       additionalDepth = foldl' (+) 0 $ mapMaybe (preview Modifier._SearchDepth) mods

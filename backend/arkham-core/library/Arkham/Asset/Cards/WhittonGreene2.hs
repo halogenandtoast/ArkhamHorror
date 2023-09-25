@@ -51,7 +51,7 @@ instance RunMessage WhittonGreene2 where
   runMessage msg a@(WhittonGreene2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
-        $ Search
+        $ search
           iid
           source
           (InvestigatorTarget iid)

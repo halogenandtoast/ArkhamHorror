@@ -39,7 +39,7 @@ instance RunMessage AlyssaGraham where
         goSearch target =
           TargetLabel
             target
-            [ Search
+            [ lookAt
                 iid
                 source
                 target

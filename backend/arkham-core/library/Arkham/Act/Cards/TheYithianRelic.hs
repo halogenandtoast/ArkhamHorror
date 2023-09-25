@@ -83,13 +83,7 @@ instance RunMessage TheYithianRelic where
             iid
             [TargetLabel (CardIdTarget $ toCardId relic) [addToHand iid relic]]
         Nothing ->
-          Search
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            [fromDeck]
-            (CardWithTitle "Relic of Ages")
-            (DrawFound iid 1)
+          search iid attrs iid [fromDeck] (CardWithTitle "Relic of Ages") (DrawFound iid 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       relic <- selectJust $ AssetWithTitle "Relic of Ages"

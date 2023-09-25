@@ -39,7 +39,7 @@ instance RunMessage ScrollOfSecrets where
           iid
           [ TargetLabel
             target
-            [ search
+            [ lookAt
                 iid
                 attrs
                 target

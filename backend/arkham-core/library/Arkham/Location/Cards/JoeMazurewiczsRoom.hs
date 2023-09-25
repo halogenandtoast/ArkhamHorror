@@ -39,7 +39,7 @@ instance RunMessage JoeMazurewiczsRoom where
   runMessage msg l@(JoeMazurewiczsRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push
-        $ Search
+        $ search
           iid
           (toSource attrs)
           (InvestigatorTarget iid)

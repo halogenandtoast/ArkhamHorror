@@ -35,7 +35,7 @@ instance RunMessage SmuggledGoods where
             iid
             ( Label
                 "Search deck"
-                [ Search
+                [ search
                     iid
                     (toSource attrs)
                     (InvestigatorTarget iid)
@@ -45,7 +45,7 @@ instance RunMessage SmuggledGoods where
                 ]
                 : [ Label
                     "Search discard"
-                    [ Search
+                    [ search
                         iid
                         (toSource attrs)
                         (toTarget attrs)

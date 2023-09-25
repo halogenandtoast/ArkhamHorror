@@ -342,7 +342,18 @@ search
   -> CardMatcher
   -> FoundCardsStrategy
   -> Message
-search iid (toSource -> source) (toTarget -> target) = Search iid source target
+search iid (toSource -> source) (toTarget -> target) = Search Searching iid source target
+
+lookAt
+  :: (Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> target
+  -> [(Zone, ZoneReturnStrategy)]
+  -> CardMatcher
+  -> FoundCardsStrategy
+  -> Message
+lookAt iid (toSource -> source) (toTarget -> target) = Search Looking iid source target
 
 takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False

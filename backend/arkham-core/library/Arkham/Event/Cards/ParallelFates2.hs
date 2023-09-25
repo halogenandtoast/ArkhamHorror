@@ -37,7 +37,7 @@ instance RunMessage ParallelFates2 where
           iid
           [ TargetLabel
             target
-            [ Search
+            [ search
                 iid
                 (toSource attrs)
                 target

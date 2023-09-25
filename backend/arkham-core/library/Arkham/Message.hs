@@ -249,6 +249,10 @@ data IncludeDiscard = IncludeDiscard | ExcludeDiscard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data SearchType = Searching | Looking
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, Set Arbiter of Fates
@@ -730,7 +734,14 @@ data Message
   | RecalculateSkillTestResults
   | RemoveFromBearersDeckOrDiscard PlayerCard
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
-  | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] CardMatcher FoundCardsStrategy
+  | Search
+      SearchType
+      InvestigatorId
+      Source
+      Target
+      [(Zone, ZoneReturnStrategy)]
+      CardMatcher
+      FoundCardsStrategy
   | SearchFound InvestigatorId Target DeckSignifier [Card]
   | FoundCards (Map Zone [Card])
   | SearchNoneFound InvestigatorId Target

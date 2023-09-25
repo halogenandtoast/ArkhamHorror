@@ -51,7 +51,7 @@ instance RunMessage WhittonGreene where
       | isSource attrs source ->
           a
             <$ push
-              ( Search
+              ( search
                   iid
                   source
                   (InvestigatorTarget iid)

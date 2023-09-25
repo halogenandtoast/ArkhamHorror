@@ -37,7 +37,7 @@ instance RunMessage OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
-        $ Search
+        $ search
           iid
           source
           (InvestigatorTarget iid)

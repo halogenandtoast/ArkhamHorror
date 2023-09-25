@@ -1011,4 +1011,6 @@ targetToCard = \case
   TreacheryTarget aid -> field TreacheryCard aid
   LocationTarget aid -> field LocationCard aid
   CardTarget c -> pure c
+  SearchedCardTarget cId -> getCard cId
+  CardIdTarget cId -> getCard cId
   unknown -> error $ "unhandled: " <> show unknown

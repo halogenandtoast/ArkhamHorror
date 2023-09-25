@@ -13,6 +13,7 @@ import Application
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Game
+import Arkham.Id
 import Arkham.Message
 import Arkham.Scenario.Types
 import Arkham.Tarot
@@ -32,6 +33,9 @@ instance IsString UUID where
 
 instance IsString (Key ArkhamGame) where
   fromString = ArkhamGameKey . fromString
+
+instance IsString EventId where
+  fromString = EventId . fromString
 
 lookupGame :: Key ArkhamGame -> IO Game
 lookupGame gameId = do

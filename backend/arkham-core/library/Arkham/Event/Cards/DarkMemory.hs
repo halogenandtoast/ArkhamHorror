@@ -24,7 +24,7 @@ instance RunMessage DarkMemory where
   runMessage msg e@(DarkMemory attrs) = case msg of
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       pushAll
-        [ RevealInHand $ toCardId attrs
+        [ RevealCard $ toCardId attrs
         , assignHorror iid (CardSource $ toCard attrs) 2
         ]
       pure e

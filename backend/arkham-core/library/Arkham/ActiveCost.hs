@@ -441,6 +441,9 @@ instance RunMessage ActiveCost where
         RemoveCost target -> do
           push (RemoveFromGame target)
           withPayment $ RemovePayment [target]
+        RevealCost cardId -> do
+          push $ RevealCard cardId
+          pure c
         EnemyDoomCost x matcher -> do
           enemies <- selectListMap EnemyTarget matcher
           push

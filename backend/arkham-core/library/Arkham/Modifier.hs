@@ -5,6 +5,7 @@ module Arkham.Modifier (
   ModifierType (..),
   ActionTarget (..),
   setActiveDuringSetup,
+  _SearchDepth,
 ) where
 
 import Arkham.Prelude
@@ -33,6 +34,7 @@ import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Strategy
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait
+import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
@@ -251,7 +253,15 @@ data ModifierType
   | Omnipotent
   | CountAllDoomInPlay
   | SetAfterPlay AfterPlayStrategy
+  | SearchDepth Int
+  | AdditionalTargets Int
+  | MayIgnoreLocationEffectsAndKeywords
   deriving stock (Show, Eq, Ord, Data)
+
+_SearchDepth :: Prism' ModifierType Int
+_SearchDepth = prism' SearchDepth $ \case
+  SearchDepth n -> Just n
+  _ -> Nothing
 
 data Modifier = Modifier
   { modifierSource :: Source

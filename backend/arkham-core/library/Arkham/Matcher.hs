@@ -48,9 +48,13 @@ investigatorAt = InvestigatorAt . LocationWithId
 
 replaceYouMatcher
   :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
-replaceYouMatcher iid = transform go
+replaceYouMatcher iid = replaceInvestigatorMatcher iid You
+
+replaceInvestigatorMatcher
+  :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher -> InvestigatorMatcher
+replaceInvestigatorMatcher iid n = transform go
  where
-  go You = InvestigatorWithId iid
+  go m | m == n = InvestigatorWithId iid
   go m = m
 
 -- ** Prey Helpers **

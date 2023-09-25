@@ -73,7 +73,9 @@ import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
+import Control.Lens (over)
 import Control.Monad.Reader (local)
+import Data.Data.Lens (biplate)
 import Data.List.Extra (nubOrdOn)
 import Data.Set qualified as Set
 
@@ -82,7 +84,7 @@ replaceThisCard c = \case
   ThisCard -> CardCostSource (toCardId c)
   s -> s
 
-cancelChaosToken :: ChaosToken -> GameT ()
+cancelChaosToken :: HasQueue Message m => ChaosToken -> m ()
 cancelChaosToken token = withQueue_ $ \queue ->
   filter
     ( \case
@@ -473,6 +475,7 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
   DiscardHandCost {} -> pure True
   DiscardTopOfDeckCost {} -> pure True
   AdditionalActionsCost {} -> pure True
+  RevealCost {} -> pure True
   Costs xs ->
     and <$> traverse (getCanAffordCost iid source mAction windows') xs
   OrCost xs ->
@@ -938,7 +941,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       canAffordCost = modifiedCardCost <= (availableResources + additionalResources)
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
-      duringTurnWindow = mkWindow Timing.When (Window.DuringTurn iid)
+      duringTurnWindow = mkWindow #when (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
       canBecomeFast =
         CannotPlay Matcher.FastCard
@@ -1291,7 +1294,7 @@ passesCriteria iid mcard source windows' = \case
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
         Just tIid ->
-          nub $ mkWindow Timing.When (Window.DuringTurn tIid) : windows'
+          nub $ mkWindow #when (Window.DuringTurn tIid) : windows'
     availableResources <- getSpendableResources iid
     results <- selectList cardMatcher
     anyM
@@ -1309,7 +1312,7 @@ passesCriteria iid mcard source windows' = \case
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
         Just tIid ->
-          nub $ mkWindow Timing.When (Window.DuringTurn tIid) : windows'
+          nub $ mkWindow #when (Window.DuringTurn tIid) : windows'
     results <- selectList cardMatcher
     anyM (getIsPlayable iid source costStatus updatedWindows) results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
@@ -1318,8 +1321,8 @@ passesCriteria iid mcard source windows' = \case
         Criteria.DiscardOf matcher -> matcher
         Criteria.AnyPlayerDiscard -> Matcher.Anyone
       windows'' =
-        [ mkWindow Timing.When (Window.DuringTurn iid)
-        , mkWindow Timing.When Window.FastPlayerWindow
+        [ mkWindow #when (Window.DuringTurn iid)
+        , mkWindow #when Window.FastPlayerWindow
         ]
     investigatorIds <-
       filterM
@@ -1597,6 +1600,22 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   case mtchr of
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.WouldSearchDeck timing whoMatcher deckMatcher -> guardTiming timing $ \case
+      Window.WouldSearchDeck who deck -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , deckMatch iid deck
+              $ over biplate (Matcher.replaceInvestigatorMatcher who Matcher.ThatInvestigator) deckMatcher
+          ]
+      _ -> noMatch
+    Matcher.SearchedDeck timing whoMatcher deckMatcher -> guardTiming timing $ \case
+      Window.SearchedDeck who deck -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , deckMatch iid deck
+              $ over biplate (Matcher.replaceInvestigatorMatcher who Matcher.ThatInvestigator) deckMatcher
+          ]
+      _ -> noMatch
     Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
       guardTiming Timing.AtIf $ \case
         Window.RevealChaosTokenEffect who token effectId -> do
@@ -1787,7 +1806,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           andM [matchWho iid who whoMatcher, matchPhase p phaseMatcher]
         _ -> noMatch
     Matcher.AmongSearchedCards whoMatcher -> case wType of
-      Window.AmongSearchedCards who -> matchWho iid who whoMatcher
+      Window.AmongSearchedCards _ who -> matchWho iid who whoMatcher
       _ -> noMatch
     Matcher.Discarded timing whoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
@@ -2016,7 +2035,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
       _ -> noMatch
     Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
-      -- The Timing.When is questionable, but "Would" based timing really is
+      -- The #when is questionable, but "Would" based timing really is
       -- only meant to have a When window
       let
         isWindowMatch = \case
@@ -2027,7 +2046,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           Matcher.SuccessResult _ -> guardTiming timing $ \case
             Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
             _ -> noMatch
-          Matcher.AnyResult -> guardTiming Timing.When $ \case
+          Matcher.AnyResult -> guardTiming #when $ \case
             Window.WouldFailSkillTest who -> matchWho iid who whoMatcher
             Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
             _ -> noMatch
@@ -2133,7 +2152,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                   Window.PassSkillTest _ _ who _ -> matchWho iid who whoMatcher
                   _ -> noMatch
             isWindowMatch skillTestResultMatcher
-    Matcher.DuringTurn whoMatcher -> guardTiming Timing.When $ \case
+    Matcher.DuringTurn whoMatcher -> guardTiming #when $ \case
       Window.NonFast -> matchWho iid iid whoMatcher
       Window.DuringTurn who -> matchWho iid who whoMatcher
       Window.FastPlayerWindow -> do
@@ -2216,7 +2235,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , matchWho iid who whoMatcher
             ]
         _ -> noMatch
-    Matcher.MythosStep mythosStepMatcher -> guardTiming Timing.When $ \case
+    Matcher.MythosStep mythosStepMatcher -> guardTiming #when $ \case
       Window.AllDrawEncounterCard ->
         pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard
       Window.AfterCheckDoomThreshold ->
@@ -2291,7 +2310,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.EnemyWouldReady timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldReady (EnemyTarget enemyId) -> enemyMatches enemyId enemyMatcher
       _ -> noMatch
-    Matcher.FastPlayerWindow -> guardTiming Timing.When (pure . (== Window.FastPlayerWindow))
+    Matcher.FastPlayerWindow -> guardTiming #when (pure . (== Window.FastPlayerWindow))
     Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher ->
       case whoMatcher of
         Matcher.You -> guardTiming timing $ \case
@@ -2841,6 +2860,7 @@ deckMatch iid deckSignifier = \case
   Matcher.DeckOf investigatorMatcher -> matchWho iid iid investigatorMatcher
   Matcher.AnyDeck -> pure True
   Matcher.DeckIs deckSignifier' -> pure $ deckSignifier == deckSignifier'
+  Matcher.DeckOneOf matchers' -> anyM (deckMatch iid deckSignifier) matchers'
 
 agendaMatches :: HasGame m => AgendaId -> Matcher.AgendaMatcher -> m Bool
 agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
@@ -2876,17 +2896,17 @@ damageEffectMatches a = \case
   Matcher.AttackDamageEffect -> pure $ a == AttackDamageEffect
   Matcher.NonAttackDamageEffect -> pure $ a == NonAttackDamageEffect
 
-spawnAtOneOf :: InvestigatorId -> EnemyId -> [LocationId] -> GameT ()
+spawnAtOneOf :: (HasGame m, HasQueue Message m) => InvestigatorId -> EnemyId -> [LocationId] -> m ()
 spawnAtOneOf iid eid targetLids = do
   locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> push (Discard GameSource (EnemyTarget eid))
     [lid] -> do
-      windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid) Nothing]
+      windows' <- checkWindows [Window #when (Window.EnemyWouldSpawnAt eid lid) Nothing]
       pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
     lids -> do
       windowPairs <- for lids $ \lid -> do
-        windows' <- checkWindows [Window Timing.When (Window.EnemyWouldSpawnAt eid lid) Nothing]
+        windows' <- checkWindows [Window #when (Window.EnemyWouldSpawnAt eid lid) Nothing]
         pure (windows', lid)
 
       push

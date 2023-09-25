@@ -104,6 +104,7 @@ data Cost
   | DiscardAssetCost AssetMatcher
   | ExhaustAssetCost AssetMatcher
   | RemoveCost Target
+  | RevealCost CardId
   | Costs [Cost]
   | OrCost [Cost]
   | DamageCost Source Target Int
@@ -206,6 +207,7 @@ displayCostType = \case
   ExhaustCost _ -> "Exhaust"
   ExhaustAssetCost _ -> "Exhaust matching asset"
   RemoveCost _ -> "Remove from play"
+  RevealCost _ -> "Reveal this card"
   Costs cs -> T.intercalate ", " $ map displayCostType cs
   OrCost cs -> T.intercalate " or " $ map displayCostType cs
   DamageCost _ _ n -> tshow n <> " Damage"

@@ -3,16 +3,22 @@ module Arkham.Helpers.SkillTest where
 import Arkham.Prelude
 
 import Arkham.Action
-import Arkham.Card.CardDef
+import Arkham.Card
+import Arkham.ClassSymbol
+import Arkham.Classes.Query hiding (matches)
+import Arkham.CommitRestriction
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Message (Message (BeginSkillTest, RevelationSkillTest))
+import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -274,3 +280,78 @@ getModifiedSkillTestDifficulty s = do
   applyModifier _ n = n
   applyPreModifier (SetDifficulty m) _ = m
   applyPreModifier _ n = n
+
+getIsCommittable :: HasGame m => InvestigatorId -> Card -> m Bool
+getIsCommittable investigator card = do
+  mSkillTest <- getSkillTest
+  case mSkillTest of
+    Nothing -> pure False
+    Just skillTest -> do
+      let sInvestigator = skillTestInvestigator skillTest
+      modifiers' <- getModifiers (toTarget investigator)
+      committedCards <- field InvestigatorCommittedCards sInvestigator
+      allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
+      let
+        skillDifficulty = skillTestDifficulty skillTest
+        onlyCardComittedToTestCommitted =
+          any
+            (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
+            allCommittedCards
+        committedCardTitles = map toTitle allCommittedCards
+      isScenarioAbility <- getIsScenarioAbility
+      mLocation <- field InvestigatorLocation investigator
+      clueCount <- maybe (pure 0) (field LocationClues) mLocation
+      skillIcons <- getSkillTestMatchingSkillIcons
+      cannotCommitCards <- elem (CannotCommitCards AnyCard) <$> getModifiers (toTarget investigator)
+
+      if cannotCommitCards || onlyCardComittedToTestCommitted
+        then pure False
+        else do
+          case card of
+            PlayerCard pc -> do
+              let
+                passesCommitRestriction = \case
+                  CommittableTreachery -> error "unhandled"
+                  OnlyCardCommittedToTest -> pure $ null committedCardTitles
+                  MaxOnePerTest -> pure $ toTitle pc `notElem` committedCardTitles
+                  OnlyYourTest -> pure True
+                  MustBeCommittedToYourTest -> pure True
+                  OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                  OnlyTestWithActions as ->
+                    pure $ maybe False (`elem` as) (skillTestAction skillTest)
+                  ScenarioAbility -> pure isScenarioAbility
+                  SelfCanCommitWhen matcher -> notNull <$> select (InvestigatorWithId investigator <> matcher)
+                  MinSkillTestValueDifference n ->
+                    case skillTestType skillTest of
+                      SkillSkillTest skillType -> do
+                        baseValue <- baseSkillValueFor skillType Nothing [] investigator
+                        pure $ (skillDifficulty - baseValue) >= n
+                      AndSkillTest types -> do
+                        baseValue <-
+                          sum
+                            <$> traverse (\skillType -> baseSkillValueFor skillType Nothing [] investigator) types
+                        pure $ (skillDifficulty - baseValue) >= n
+                      ResourceSkillTest -> do
+                        resources <- field InvestigatorResources investigator
+                        pure $ (skillDifficulty - resources) >= n
+                prevented = flip any modifiers' $ \case
+                  CanOnlyUseCardsInRole role ->
+                    null
+                      $ intersect
+                        (cdClassSymbols $ toCardDef pc)
+                        (setFromList [Neutral, role])
+                  CannotCommitCards matcher -> cardMatch pc matcher
+                  _ -> False
+              passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef pc)
+
+              icons <- iconsForCard card
+
+              pure
+                $ card
+                `notElem` committedCards
+                && (any (`member` skillIcons) icons || (null icons && toCardType pc == SkillType))
+                && passesCommitRestrictions
+                && not prevented
+            EncounterCard ec ->
+              pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef ec)
+            VengeanceCard _ -> error "vengeance card"

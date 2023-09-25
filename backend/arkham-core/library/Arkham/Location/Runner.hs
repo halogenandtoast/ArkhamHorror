@@ -364,7 +364,7 @@ instance RunMessage LocationAttrs where
         (Window.PlacedBreaches (toTarget a))
         (Window.PlacedBreach (toTarget a))
       pure a
-    Do (PlaceBreaches (isTarget a -> True) n) -> do
+    DoBatch _ (PlaceBreaches (isTarget a -> True) n) -> do
       pure $ a & breachesL %~ Breach.addBreaches n
     RemoveBreaches (isTarget a -> True) n -> do
       pure $ a & breachesL %~ Breach.removeBreaches n

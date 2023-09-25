@@ -350,11 +350,15 @@ allEvents =
       SomeEventCard lure2
     , SomeEventCard eucatastrophe3
     , -- The Dream-Eaters
-      --- seeker [tde]
+      --- signature [tde]
+      SomeEventCard occultEvidence
+    , --- seeker [tde]
       SomeEventCard astoundingRevelation
     , -- The Search for Kadath
       --- guardian [sfk]
       SomeEventCard firstWatch
+    , --- mystic [sfk]
+      SomeEventCard readTheSigns
     , -- A Thousand Shapes of Horror
       --- survivor [tsh]
       SomeEventCard scroungeForSupplies

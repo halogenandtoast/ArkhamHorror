@@ -156,7 +156,13 @@ addCardEntityWith i f e card = case card of
         asset = f $ createAsset card assetId
        in
         e & assetsL %~ insertMap (toId asset) asset
-    _ -> error "Unhandled"
+    PlayerTreacheryType -> do
+      let
+        treacheryId = TreacheryId uuid
+        treachery = createTreachery card i treacheryId
+       in
+        e & treacheriesL %~ insertMap (toId treachery) treachery
+    _ -> error $ "Unable to handle " <> show pc
   EncounterCard ec -> case toCardType ec of
     TreacheryType -> do
       let

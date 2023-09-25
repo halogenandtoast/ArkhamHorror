@@ -345,6 +345,7 @@ allTreacheries =
     , -- The Dream-Eaters
       -- signature
       SomeTreacheryCard rookieMistake
+    , SomeTreacheryCard shockingDiscovery
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

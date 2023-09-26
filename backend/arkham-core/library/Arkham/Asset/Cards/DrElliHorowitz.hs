@@ -76,9 +76,11 @@ instance RunMessage DrElliHorowitz where
         then push $ chooseOne iid [Label "No Cards Found" []]
         else do
           assetId <- getRandom
+          additionalTargets <- getAdditionalSearchTargets iid
           push
-            $ chooseOne
+            $ chooseN
               iid
+              (min (length validCardsAfterSeal) (1 + additionalTargets))
               [ targetLabel
                 (toCardId c)
                 [ CreateAssetAt assetId c

@@ -792,6 +792,7 @@ library
       Arkham.Campaigns.ThePathToCarcosa.Helpers
       Arkham.Campaigns.ThePathToCarcosa.Import
       Arkham.CampaignStep
+      Arkham.Capability
       Arkham.Card
       Arkham.Card.CardCode
       Arkham.Card.CardDef

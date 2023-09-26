@@ -2456,7 +2456,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   DoBatch
     batchId
-    (Search _ iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy) | iid' == toId a -> do
+    (Search searchType iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy) | iid' == toId a -> do
       mods <- getModifiers iid
       let
         additionalDepth = foldl' (+) 0 $ mapMaybe (preview Modifier._SearchDepth) mods
@@ -2583,8 +2583,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               else SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
         ReturnCards -> pure ()
 
-      pushBatch batchId
-        $ CheckWindow [iid] [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
+      when (searchType == Searching) $ do
+        pushBatch batchId
+          $ CheckWindow [iid] [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
       pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId | iid == investigatorId -> do
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)

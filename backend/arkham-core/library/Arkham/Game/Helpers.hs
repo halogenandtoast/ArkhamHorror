@@ -898,9 +898,9 @@ withDepthGuard maxDepth defaultValue body = do
     if depth > maxDepth then pure defaultValue else local delve body
 
 getIsPlayableWithResources
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, HasGame m, Sourceable source)
   => InvestigatorId
-  -> Source
+  -> source
   -> Int
   -> CostStatus
   -> [Window]
@@ -908,7 +908,7 @@ getIsPlayableWithResources
   -> m Bool
 getIsPlayableWithResources _ _ _ _ _ (VengeanceCard _) = pure False
 getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayableWithResources iid source availableResources costStatus windows' c@(PlayerCard _) =
+getIsPlayableWithResources iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) =
   withDepthGuard 3 False $ do
     iids <- filter (/= iid) <$> getInvestigatorIds
     iidsWithModifiers <- for iids $ \iid' -> do

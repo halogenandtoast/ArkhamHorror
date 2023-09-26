@@ -49,10 +49,11 @@ instance RunMessage Backpack where
           (DeferSearchedToTarget $ toTarget attrs)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
+      additionalTargets <- getAdditionalSearchTargets iid
       pushAll
         [ chooseUpToN
             iid
-            3
+            (3 + additionalTargets)
             "Done choosing cards"
             [ TargetLabel
               (CardIdTarget $ toCardId c)

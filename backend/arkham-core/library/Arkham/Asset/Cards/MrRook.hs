@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
-import Control.Lens (each, sumOf)
 
 newtype Metadata = Metadata {chosenCards :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -48,7 +47,7 @@ instance RunMessage MrRook where
         ]
       pure a
     DoStep 1 msg'@(SearchFound iid (isTarget attrs -> True) _ cards) -> do
-      additionalTargets <- sumOf (each . _AdditionalTargets) <$> getModifiers iid
+      additionalTargets <- getAdditionalSearchTargets iid
 
       let
         chosenWeakness = any (`cardMatch` WeaknessCard) (chosenCards meta)

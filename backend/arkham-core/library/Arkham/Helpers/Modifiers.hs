@@ -151,3 +151,8 @@ chaosTokenEffect (toSource -> source) token modifier =
 
 getAdditionalSearchTargets :: HasGame m => InvestigatorId -> m Int
 getAdditionalSearchTargets iid = sumOf (each . _AdditionalTargets) <$> getModifiers iid
+
+getTotalSearchTargets :: HasGame m => InvestigatorId -> [a] -> Int -> m Int
+getTotalSearchTargets iid targets n = do
+  additionalTargets <- getAdditionalSearchTargets iid
+  pure $ min (length targets) (n + additionalTargets)

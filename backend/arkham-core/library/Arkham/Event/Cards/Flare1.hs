@@ -39,8 +39,8 @@ instance RunMessage Flare1 where
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let choices = [targetLabel (toCardId card) [putCardIntoPlay iid card] | card <- cards]
-      additionalTargets <- getAdditionalSearchTargets iid
-      pushAll [chooseN iid (min (length cards) (1 + additionalTargets)) choices, Exile (toTarget attrs)]
+      targetCount <- getTotalSearchTargets iid choices 1
+      pushAll [chooseN iid targetCount choices, Exile (toTarget attrs)]
       pure e
     SearchNoneFound _ (isTarget attrs -> True) -> do
       push $ Discard (toSource attrs) (toTarget attrs)

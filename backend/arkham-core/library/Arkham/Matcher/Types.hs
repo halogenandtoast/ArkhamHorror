@@ -250,6 +250,7 @@ data EnemyMatcher
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
   | IncludeOmnipotent EnemyMatcher
   | EnemyWithPlacement Placement
+  | EnemyWithBounty -- Tony Morgan
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyMatcher where

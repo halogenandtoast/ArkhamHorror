@@ -33,7 +33,7 @@ instance HasModifiersFor Blackjack2 where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Blackjack2 where
-  getAbilities (Blackjack2 a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
+  getAbilities (Blackjack2 a) = [fightAbility a 1 mempty ControlsThis]
 
 instance RunMessage Blackjack2 where
   runMessage msg a@(Blackjack2 attrs) = case msg of

@@ -23,7 +23,7 @@ survivalKnife2 = asset SurvivalKnife2 Cards.survivalKnife2
 
 instance HasAbilities SurvivalKnife2 where
   getAbilities (SurvivalKnife2 a) =
-    [ fightAbility a 1 (ActionCost 1) ControlsThis
+    [ fightAbility a 1 mempty ControlsThis
     , restrictedAbility a 2 (ControlsThis <> DuringPhase #enemy)
         $ ReactionAbility (EnemyAttacks #when You AnyEnemyAttack AnyEnemy) (exhaust a)
     ]

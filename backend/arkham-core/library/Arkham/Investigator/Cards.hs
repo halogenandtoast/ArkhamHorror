@@ -95,6 +95,7 @@ allInvestigatorCards =
       , marieLambeau
       , tommyMuldoon
       , mandyThompson
+      , tonyMorgan
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -347,6 +348,14 @@ mandyThompson =
     ("Mandy Thompson" <:> "The Researcher")
     Seeker
     [Assistant, Scholar]
+
+tonyMorgan :: CardDef
+tonyMorgan =
+  investigator
+    "06003"
+    ("Tony Morgan" <:> "The Bounty Hunter")
+    Rogue
+    [Criminal, Hunter]
 
 dexterDrake :: CardDef
 dexterDrake =

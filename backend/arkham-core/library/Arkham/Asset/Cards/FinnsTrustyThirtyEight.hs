@@ -35,7 +35,7 @@ instance HasModifiersFor FinnsTrustyThirtyEight where
 
 instance HasAbilities FinnsTrustyThirtyEight where
   getAbilities (FinnsTrustyThirtyEight a) =
-    [fightAbility a 1 (ActionCost 1 <> UseCost (AssetWithId $ toId a) Ammo 1) ControlsThis]
+    [fightAbility a 1 (assetUseCost a Ammo 1) ControlsThis]
 
 instance RunMessage FinnsTrustyThirtyEight where
   runMessage msg a@(FinnsTrustyThirtyEight attrs) = case msg of

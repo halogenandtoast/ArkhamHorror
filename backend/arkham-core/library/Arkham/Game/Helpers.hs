@@ -704,9 +704,15 @@ getActionsWith iid window f = do
       \ability -> do
         modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
         investigatorModifiers <- getModifiers (InvestigatorTarget iid)
+        let bountiesOnly = BountiesOnly `elem` investigatorModifiers
         cardClasses <- case abilitySource ability of
           AssetSource aid -> field AssetClasses aid
           _ -> pure $ singleton Neutral
+
+        -- if enemy only bounty enemies
+        sourceIsBounty <- case abilitySource ability of
+          EnemySource eid -> eid <=~> Matcher.EnemyWithBounty
+          _ -> pure True
 
         isForced <- isForcedAbility iid ability
         let
@@ -735,6 +741,7 @@ getActionsWith iid window f = do
           $ if any prevents investigatorModifiers
             || any blankPrevents modifiers'
             || needsToBeFast
+            || (bountiesOnly && not sourceIsBounty)
             then Nothing
             else Just $ applyAbilityModifiers ability modifiers'
 
@@ -1482,9 +1489,10 @@ passesEnemyCriteria
   -> [Window]
   -> Criteria.EnemyCriterion
   -> m Bool
-passesEnemyCriteria _iid source windows' criterion =
-  selectAny
-    =<< matcher criterion
+passesEnemyCriteria iid source windows' criterion = do
+  bountiesOnly <- hasModifier iid BountiesOnly
+  let matcherF = if bountiesOnly then (Matcher.EnemyWithBounty <>) else id
+  selectAny . matcherF =<< matcher criterion
  where
   matcher = \case
     Criteria.EnemyMatchesCriteria ms -> mconcatMapM matcher ms
@@ -2460,6 +2468,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.AssetLeavesPlay timing assetMatcher -> guardTiming timing $ \case
       Window.LeavePlay (AssetTarget aid) -> member aid <$> select assetMatcher
+      _ -> noMatch
+    Matcher.EnemyEntersPlay timing enemyMatcher -> guardTiming timing $ \case
+      Window.EnterPlay (EnemyTarget eid) -> member eid <$> select enemyMatcher
       _ -> noMatch
     Matcher.LocationLeavesPlay timing locationMatcher -> guardTiming timing $ \case
       Window.LeavePlay (LocationTarget aid) -> member aid <$> select locationMatcher

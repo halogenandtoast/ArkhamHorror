@@ -30,7 +30,7 @@ instance HasModifiersFor BaseballBat where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BaseballBat where
-  getAbilities (BaseballBat a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
+  getAbilities (BaseballBat a) = [fightAbility a 1 mempty ControlsThis]
 
 instance RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of

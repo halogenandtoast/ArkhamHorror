@@ -387,7 +387,7 @@ data Message
   | DiscardCard InvestigatorId Source CardId
   | ChooseEndTurn InvestigatorId
   | ChooseEvadeEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
-  | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
+  | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool -- If we add ChooseEngageEnemy update Tony Morgan
   | ChooseLeadInvestigator
   | PreScenarioSetup
   | StandaloneSetup

@@ -24,7 +24,7 @@ esotericFormula = asset EsotericFormula Cards.esotericFormula
 
 instance HasAbilities EsotericFormula where
   getAbilities (EsotericFormula x) =
-    [ fightAbility x 1 (ActionCost 1)
+    [ fightAbility x 1 mempty
         $ ControlsThis
         <> enemyExists (CanFightEnemy (toAbilitySource x 1) <> EnemyWithTrait Abomination)
     ]

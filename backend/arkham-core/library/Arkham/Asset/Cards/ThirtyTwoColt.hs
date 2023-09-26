@@ -18,7 +18,7 @@ thirtyTwoColt = asset ThirtyTwoColt Cards.thirtyTwoColt
 
 instance HasAbilities ThirtyTwoColt where
   getAbilities (ThirtyTwoColt a) =
-    [fightAbility a 1 (ActionCost 1 <> assetUseCost a Ammo 1) ControlsThis]
+    [fightAbility a 1 (assetUseCost a Ammo 1) ControlsThis]
 
 instance RunMessage ThirtyTwoColt where
   runMessage msg a@(ThirtyTwoColt attrs) = case msg of

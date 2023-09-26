@@ -41,6 +41,7 @@ import GHC.OverloadedLabels
 
 data ModifierType
   = ActionCostOf ActionTarget Int
+  | BountiesOnly
   | CommitCost Cost
   | AbilityModifier Target Int ModifierType
   | SkillTestResultValueModifier Int

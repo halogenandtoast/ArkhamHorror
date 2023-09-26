@@ -96,6 +96,7 @@ allPlayerEnemyCards =
       , theManInThePallidMask
       , serpentsOfYig
       , hoods
+      , tonysQuarry
       , tommyMalloy
       ]
 
@@ -1525,6 +1526,13 @@ azathoth :: CardDef
 azathoth =
   (enemy "05346" ("Azathoth" <:> "The Primal Chaos") BeforeTheBlackThrone 1)
     { cdCardTraits = setFromList [AncientOne, Elite]
+    }
+
+tonysQuarry :: CardDef
+tonysQuarry =
+  (weakness "06012" "Tony's Quarry")
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Aloof]
     }
 
 corpseHungryGhoul :: CardDef

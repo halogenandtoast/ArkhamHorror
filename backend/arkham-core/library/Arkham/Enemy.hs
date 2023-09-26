@@ -285,6 +285,9 @@ allEnemies =
     , -- Before the Black Throne
       SomeEnemyCard mindlessDancer
     , SomeEnemyCard azathoth
+    , -- The Dream-Eaters
+      -- signature
+      SomeEnemyCard tonysQuarry
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

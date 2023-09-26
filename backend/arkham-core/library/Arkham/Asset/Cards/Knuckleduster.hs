@@ -20,7 +20,7 @@ knuckleduster :: AssetCard Knuckleduster
 knuckleduster = asset Knuckleduster Cards.knuckleduster
 
 instance HasAbilities Knuckleduster where
-  getAbilities (Knuckleduster a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
+  getAbilities (Knuckleduster a) = [fightAbility a 1 mempty ControlsThis]
 
 instance HasModifiersFor Knuckleduster where
   getModifiersFor (EnemyTarget eid) (Knuckleduster attrs) = do

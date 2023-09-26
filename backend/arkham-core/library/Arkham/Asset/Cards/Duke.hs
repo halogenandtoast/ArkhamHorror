@@ -41,7 +41,7 @@ instance HasModifiersFor Duke where
 -- likely should change to just be an Investigate action
 instance HasAbilities Duke where
   getAbilities (Duke a) =
-    [ fightAbility a 1 (ActionCost 1 <> exhaust a) ControlsThis
+    [ fightAbility a 1 (exhaust a) ControlsThis
     , restrictedAbility a 2 ControlsThis
         $ ActionAbilityWithBefore (Just #investigate) (Just #move) (ActionCost 1 <> exhaust a)
     ]

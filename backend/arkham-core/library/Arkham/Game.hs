@@ -65,6 +65,7 @@ import Arkham.Game.Helpers hiding (
   EnemyFight,
   createWindowModifierEffect,
   getSpendableClueCount,
+  withModifiers,
  )
 import Arkham.Game.Json ()
 import {-# SOURCE #-} Arkham.GameEnv
@@ -159,6 +160,7 @@ import Arkham.Story.Types qualified as Story
 import Arkham.Target
 import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
+import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Treachery
 import Arkham.Treachery.Types (
@@ -2139,6 +2141,9 @@ enemyMatcherFilter = \case
   EnemyWithDoom gameValueMatcher -> \enemy -> do
     doom <- field EnemyDoom (toId enemy)
     doom `gameValueMatches` gameValueMatcher
+  EnemyWithBounty -> \enemy -> do
+    tokens <- field EnemyTokens (toId enemy)
+    pure $ Token.countTokens Token.Bounty tokens > 0
   EnemyWithMostDoom enemyMatcher -> \enemy -> do
     matches' <- getEnemiesMatching enemyMatcher
     elem enemy . maxes <$> forToSnd matches' (field EnemyDoom . toId)

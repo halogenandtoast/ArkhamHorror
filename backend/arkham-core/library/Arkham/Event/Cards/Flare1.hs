@@ -3,15 +3,12 @@ module Arkham.Event.Cards.Flare1 where
 import Arkham.Prelude
 
 import Arkham.Asset.Helpers
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Event.Runner
 import Arkham.Helpers.Enemy
-import Arkham.Id
-import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
-import Arkham.Window (defaultWindows)
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -20,52 +17,32 @@ newtype Flare1 = Flare1 EventAttrs
 flare1 :: EventCard Flare1
 flare1 = event Flare1 Cards.flare1
 
-findAllyMessages :: InvestigatorId -> [InvestigatorId] -> Flare1 -> [Message]
-findAllyMessages iid investigatorIds e =
-  [ CheckAttackOfOpportunity iid False
-  , chooseOne
-      iid
-      [ targetLabel
-        iid
-        [ search
-            iid'
-            (toSource e)
-            (InvestigatorTarget iid')
-            [fromTopOfDeck 9]
-            IsAlly
-            (DeferSearchedToTarget $ toTarget e)
-        ]
-      | iid' <- investigatorIds
-      ]
-  ]
-
 instance RunMessage Flare1 where
-  runMessage msg e@(Flare1 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      investigatorIds <- getInvestigatorIds
-      fightableEnemies <- getFightableEnemyIds iid (toSource e)
-      e
-        <$ if null fightableEnemies
-          then pushAll $ findAllyMessages iid investigatorIds e
-          else
-            push
-              $ chooseOne
-                iid
-                [ Label
-                    "Fight"
-                    [ skillTestModifiers
-                        attrs
-                        (InvestigatorTarget iid)
-                        [SkillModifier SkillCombat 3, DamageDealt 2]
-                    , ChooseFightEnemy iid (toSource e) Nothing SkillCombat mempty False
-                    , Exile (toTarget e)
-                    ]
-                , Label "Search for Ally" $ findAllyMessages iid investigatorIds e
-                ]
-    SearchFound iid target _ [card]
-      | isTarget e target ->
-          e
-            <$ pushAll
-              [PutCardIntoPlay iid card Nothing (defaultWindows iid), Exile target]
-    SearchNoneFound _ target | isTarget e target -> e <$ push (Discard (toSource attrs) target)
+  runMessage msg e@(Flare1 attrs) = case msg of
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      investigators <- getInvestigators
+      fightableEnemies <- getFightableEnemyIds iid attrs
+
+      let doSearch iid' = targetLabel iid' [search iid' e iid' [fromTopOfDeck 9] #ally (defer $ toTarget e)]
+      let searchForAlly = [CheckAttackOfOpportunity iid False, chooseOne iid $ map doSearch investigators]
+
+      push
+        $ chooseOrRunOne iid
+        $ [ Label "Fight"
+            $ [ skillTestModifiers attrs iid [SkillModifier #combat 3, DamageDealt 2]
+              , chooseFightEnemy iid e #combat
+              , Exile (toTarget e)
+              ]
+          | notNull fightableEnemies
+          ]
+        <> [Label "Search for Ally" searchForAlly]
+      pure e
+    SearchFound iid (isTarget attrs -> True) _ cards -> do
+      let choices = [targetLabel (toCardId card) [putCardIntoPlay iid card] | card <- cards]
+      additionalTargets <- getAdditionalSearchTargets iid
+      pushAll [chooseN iid (min (length cards) (1 + additionalTargets)) choices, Exile (toTarget attrs)]
+      pure e
+    SearchNoneFound _ (isTarget attrs -> True) -> do
+      push $ Discard (toSource attrs) (toTarget attrs)
+      pure e
     _ -> Flare1 <$> runMessage msg attrs

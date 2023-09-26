@@ -99,6 +99,12 @@ pattern InvestigatorCanDrawCards matcher <-
         , matcher
         ]
 
+pattern InvestigatorCanSearchDeck :: InvestigatorMatcher
+pattern InvestigatorCanSearchDeck <-
+  InvestigatorWithoutModifier CannotManipulateDeck
+  where
+    InvestigatorCanSearchDeck = InvestigatorWithoutModifier CannotManipulateDeck
+
 -- placeholder in case a modifier prevents spending resources
 pattern InvestigatorCanSpendResources :: GameValue -> InvestigatorMatcher
 pattern InvestigatorCanSpendResources value <-

@@ -37,8 +37,9 @@ instance RunMessage Backpack2 where
       push $ search iid source iid [fromTopOfDeck 12] cardMatcher (DeferSearchedToTarget $ toTarget attrs)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
+      additionalTargets <- getAdditionalSearchTargets iid
       push
-        $ chooseUpToN iid 3 "Done choosing cards"
+        $ chooseUpToN iid (3 + additionalTargets) "Done choosing cards"
         $ [targetLabel (toCardId c) [PlaceUnderneath (toTarget attrs) [c]] | c <- cards]
       pure a
     SearchNoneFound iid target | isTarget attrs target -> do

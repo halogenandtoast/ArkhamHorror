@@ -46,8 +46,7 @@ investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId
 investigatorAt :: LocationId -> InvestigatorMatcher
 investigatorAt = InvestigatorAt . LocationWithId
 
-replaceYouMatcher
-  :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
+replaceYouMatcher :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
 replaceYouMatcher iid = replaceInvestigatorMatcher iid You
 
 replaceInvestigatorMatcher

@@ -64,10 +64,11 @@ instance RunMessage StickToThePlan3 where
                 )
             )
             cards
+      additionalTargets <- getAdditionalSearchTargets iid
       push
         $ chooseUpToN
           iid
-          3
+          (3 + additionalTargets)
           "Choose no more events"
           [ targetLabel
             (toCardId card)

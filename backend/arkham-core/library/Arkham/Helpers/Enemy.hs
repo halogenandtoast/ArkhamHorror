@@ -152,8 +152,8 @@ canEnterLocation eid lid = do
     Modifier.CannotBeEnteredByNonElite {} -> Elite `notMember` traits
     _ -> False
 
-getFightableEnemyIds :: HasGame m => InvestigatorId -> Source -> m [EnemyId]
-getFightableEnemyIds iid source = do
+getFightableEnemyIds :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
+getFightableEnemyIds iid (toSource -> source) = do
   fightAnywhereEnemyIds <-
     selectList AnyEnemy >>= filterM \eid -> do
       modifiers' <- getModifiers (EnemyTarget eid)

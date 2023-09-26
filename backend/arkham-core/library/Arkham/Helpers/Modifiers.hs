@@ -11,12 +11,14 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Matcher.Types
 import Arkham.Message
 import Arkham.Modifier as X
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window)
+import Control.Lens (each, sumOf)
 
 getModifiers :: (HasGame m, Targetable a) => a -> m [ModifierType]
 getModifiers (toTarget -> target) = do
@@ -146,3 +148,6 @@ setupModifier (toSource -> source) (toTarget -> target) modifier = createWindowM
 chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType -> Message
 chaosTokenEffect (toSource -> source) token modifier =
   CreateChaosTokenEffect (EffectModifiers $ toModifiers source [modifier]) source token
+
+getAdditionalSearchTargets :: HasGame m => InvestigatorId -> m Int
+getAdditionalSearchTargets iid = sumOf (each . _AdditionalTargets) <$> getModifiers iid

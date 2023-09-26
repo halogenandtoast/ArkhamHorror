@@ -2,6 +2,7 @@
 
 module Arkham.Asset.Runner (
   module X,
+  hasUses,
 ) where
 
 import Arkham.Prelude
@@ -42,6 +43,9 @@ defeated AssetAttrs {assetId} source = do
     (Just a, _) | a <= 0 -> Just (DefeatedByDamage source)
     (_, Just b) | b <= 0 -> Just (DefeatedByHorror source)
     _ -> Nothing
+
+hasUses :: AssetAttrs -> Bool
+hasUses = (> 0) . useCount . assetUses
 
 instance RunMessage Asset where
   runMessage msg x@(Asset a) = do

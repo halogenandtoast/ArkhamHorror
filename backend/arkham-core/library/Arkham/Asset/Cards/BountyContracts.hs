@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Runner hiding (EnemyDefeated)
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Id
 import Arkham.Matcher
@@ -28,6 +28,7 @@ bountyContracts =
 instance HasAbilities BountyContracts where
   getAbilities (BountyContracts a) =
     [ restrictedAbility a 1 (available <> ControlsThis) $ freeReaction $ EnemyEntersPlay #after AnyEnemy
+    , restrictedAbility a 2 ControlsThis $ freeReaction $ EnemyDefeated #after You ByAny EnemyWithBounty
     ]
    where
     available = if hasUses a then mempty else Never
@@ -35,6 +36,7 @@ instance HasAbilities BountyContracts where
 getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
+  ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 
@@ -57,5 +59,9 @@ instance RunMessage BountyContracts where
         [ SpendUses (toTarget attrs) Bounty bounties
         , PlaceTokens (toAbilitySource attrs 1) (toTarget enemy) Token.Bounty bounties
         ]
+      pure a
+    UseCardAbility iid (isSource attrs -> True) 2 (getEnemy -> enemy) _ -> do
+      bounties <- fieldMap EnemyTokens (Token.countTokens Token.Bounty) enemy
+      push $ TakeResources iid bounties (toAbilitySource attrs 2) False
       pure a
     _ -> BountyContracts <$> runMessage msg attrs

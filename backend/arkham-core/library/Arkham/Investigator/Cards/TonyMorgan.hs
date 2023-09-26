@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Action.Additional
 import Arkham.Card
-import Arkham.Effect.Window
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -94,11 +93,7 @@ instance RunMessage TonyMorgan where
       push
         $ AskPlayer
         $ chooseOne iid
-        $ [ targetLabel
-            (toCardId c)
-            [ createWindowModifierEffect EffectCardResolutionWindow attrs attrs [BountiesOnly]
-            , InitiatePlayCard iid c Nothing windows' False
-            ]
+        $ [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing windows' False]
           | canPlay
           , c <- playableCards
           ]
@@ -109,9 +104,9 @@ instance RunMessage TonyMorgan where
       let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id
       result <-
         runMessage
-          (ChooseFightEnemy iid source mTarget skillType (traceShowId $ matcherF enemyMatcher) isAction)
+          (ChooseFightEnemy iid source mTarget skillType (matcherF enemyMatcher) isAction)
           attrs
       pure $ TonyMorgan . (`with` Meta False) $ result
-    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ TonyMorgan $ attrs `with` Meta False
     _ -> TonyMorgan . (`with` meta) <$> runMessage msg attrs

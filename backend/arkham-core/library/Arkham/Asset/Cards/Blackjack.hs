@@ -17,7 +17,7 @@ blackjack :: AssetCard Blackjack
 blackjack = asset Blackjack Cards.blackjack
 
 instance HasAbilities Blackjack where
-  getAbilities (Blackjack a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
+  getAbilities (Blackjack a) = [fightAbility a 1 mempty ControlsThis]
 
 instance RunMessage Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of

@@ -18,7 +18,7 @@ thirtyTwoColt2 = asset ThirtyTwoColt2 Cards.thirtyTwoColt2
 
 instance HasAbilities ThirtyTwoColt2 where
   getAbilities (ThirtyTwoColt2 a) =
-    [ fightAbility a 1 (ActionCost 1 <> assetUseCost a Ammo 1) ControlsThis
+    [ fightAbility a 1 (assetUseCost a Ammo 1) ControlsThis
     , restrictedAbility a 2 ControlsThis $ FastAbility $ ResourceCost 1
     ]
 

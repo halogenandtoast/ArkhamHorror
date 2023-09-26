@@ -99,6 +99,7 @@ const doom = computed(() => props.enemy.tokens[TokenType.Doom])
 const clues = computed(() => props.enemy.tokens[TokenType.Clue])
 const resources = computed(() => props.enemy.tokens[TokenType.Resource])
 const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
+const bounties = computed(() => props.enemy.tokens[TokenType.Bounty])
 
 const omnipotent = computed(() => {
   const {modifiers} = props.enemy
@@ -159,6 +160,7 @@ watch(abilities, (abilities) => {
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
           <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
+          <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
           <Token
             v-for="(sealedToken, index) in enemy.sealedChaosTokens"
             :key="index"

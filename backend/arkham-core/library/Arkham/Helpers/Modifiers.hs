@@ -20,6 +20,10 @@ import Arkham.Target
 import Arkham.Window (Window)
 import Control.Lens (each, sumOf)
 
+withModifiers
+  :: (HasGame m, Targetable target) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
+withModifiers = withModifiers'
+
 getModifiers :: (HasGame m, Targetable a) => a -> m [ModifierType]
 getModifiers (toTarget -> target) = do
   ignoreCanModifiers <- getIgnoreCanModifiers

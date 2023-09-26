@@ -537,6 +537,8 @@ allAssets =
     , -- The Dream-Eaters
       --- signature [tde]
       SomeAssetCard becky
+    , SomeAssetCard bountyContracts
+    , SomeAssetCard tonys38LongColt
     , --- guardian [tde]
       SomeAssetCard solemnVow
     , -- The Search for Kadath

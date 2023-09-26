@@ -494,6 +494,11 @@ additionalActionCovers source maction = \case
   ActionRestrictedAdditionalAction a -> pure $ maction == Just a
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True
+  BountyAction -> pure False -- Has to be handled by Tony Morgan
+
+-- canFight <- selectAny $ CanFightEnemy source <> EnemyWithBounty
+-- canEngage <- selectAny $ CanEngageEnemy <> EnemyWithBounty
+-- pure $ (canFight && maction == Just #fight) || (canEngage && maction == Just #engage)
 
 getCanDrawCards :: HasGame m => InvestigatorId -> m Bool
 getCanDrawCards = selectAny . InvestigatorCanDrawCards . InvestigatorWithId

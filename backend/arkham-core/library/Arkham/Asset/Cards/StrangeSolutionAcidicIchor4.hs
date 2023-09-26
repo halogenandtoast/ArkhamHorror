@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Matcher
 import Arkham.SkillType
 
 newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
@@ -25,7 +24,7 @@ instance HasAbilities StrangeSolutionAcidicIchor4 where
     [ fightAbility
         attrs
         1
-        (ActionCost 1 <> UseCost (AssetWithId $ toId attrs) Supply 1)
+        (assetUseCost attrs Supply 1)
         ControlsThis
     ]
 

@@ -20,7 +20,7 @@ alchemicalConcoction :: AssetCard AlchemicalConcoction
 alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
 instance HasAbilities AlchemicalConcoction where
-  getAbilities (AlchemicalConcoction a) = [fightAbility a 1 (ActionCost 1) ControlsThis]
+  getAbilities (AlchemicalConcoction a) = [fightAbility a 1 mempty ControlsThis]
 
 instance HasModifiersFor AlchemicalConcoction where
   getModifiersFor (InvestigatorTarget _) (AlchemicalConcoction a) = do

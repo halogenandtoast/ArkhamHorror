@@ -34,7 +34,7 @@ instance HasModifiersFor FireAxe where
 
 instance HasAbilities FireAxe where
   getAbilities (FireAxe a) =
-    [ fightAbility a 1 (ActionCost 1) ControlsThis
+    [ fightAbility a 1 mempty ControlsThis
     , limitedAbility (PlayerLimit PerTestOrAbility 3)
         $ fastAbility a 2 (ResourceCost 1)
         $ ControlsThis

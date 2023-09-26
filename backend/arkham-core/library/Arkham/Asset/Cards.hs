@@ -184,6 +184,7 @@ allPlayerAssetCards =
       , bookOfShadows1
       , bookOfShadows3
       , borrowedTime3
+      , bountyContracts
       , boxingGloves
       , boxingGloves3
       , brotherXavier1
@@ -531,6 +532,7 @@ allPlayerAssetCards =
       , thirtyTwoColt
       , thirtyTwoColt2
       , timewornBrand5
+      , tonys38LongColt
       , toothOfEztli
       , trackShoes
       , treasureHunter1
@@ -3519,6 +3521,25 @@ becky =
     , cdSlots = [#hand, #hand]
     , cdUses = uses Ammo 2
     , cdUnique = True
+    }
+
+bountyContracts :: CardDef
+bountyContracts =
+  permanent
+    $ (asset "06010" "Bounty Contracts" 0 Neutral)
+      { cdCardTraits = setFromList [Job]
+      , cdDeckRestrictions = [Signature "06003"]
+      , cdUses = uses Bounty 6
+      }
+
+tonys38LongColt :: CardDef
+tonys38LongColt =
+  (asset "06011" "Tony's .38 Long Colt" 3 Neutral)
+    { cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSkills = [#combat, #intellect, #wild]
+    , cdDeckRestrictions = [Signature "06003"]
+    , cdUses = uses Ammo 3
+    , cdSlots = [#hand]
     }
 
 solemnVow :: CardDef

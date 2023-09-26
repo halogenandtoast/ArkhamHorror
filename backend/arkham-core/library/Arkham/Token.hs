@@ -13,6 +13,7 @@ data Token
   | Clue
   | Doom
   | LostSoul
+  | Bounty
   deriving stock (Show, Eq, Ord, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 

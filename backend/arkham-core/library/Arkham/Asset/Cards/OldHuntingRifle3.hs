@@ -33,7 +33,7 @@ instance HasAbilities OldHuntingRifle3 where
     fightAbility
       a
       1
-      (ActionCost 1 <> UseCost (AssetWithId $ toId a) Ammo 1)
+      (assetUseCost a Ammo 1)
       (ControlsThis <> jammedRestriction)
       : [ withTooltip "You clear the jam."
           $ restrictedAbility a 2 ControlsThis

@@ -20,7 +20,7 @@ gravediggersShovel2 = asset GravediggersShovel2 Cards.gravediggersShovel2
 
 instance HasAbilities GravediggersShovel2 where
   getAbilities (GravediggersShovel2 x) =
-    [ fightAbility x 1 (ActionCost 1) ControlsThis
+    [ fightAbility x 1 mempty ControlsThis
     , restrictedAbility
         x
         2

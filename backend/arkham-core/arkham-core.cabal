@@ -361,6 +361,7 @@ library
       Arkham.Asset.Cards.BookOfShadows1
       Arkham.Asset.Cards.BookOfShadows3
       Arkham.Asset.Cards.BorrowedTime3
+      Arkham.Asset.Cards.BountyContracts
       Arkham.Asset.Cards.BoxingGloves
       Arkham.Asset.Cards.BoxingGloves3
       Arkham.Asset.Cards.BrotherXavier1
@@ -724,6 +725,7 @@ library
       Arkham.Asset.Cards.ThirtyTwoColt
       Arkham.Asset.Cards.ThirtyTwoColt2
       Arkham.Asset.Cards.TimewornBrand5
+      Arkham.Asset.Cards.Tonys38LongColt
       Arkham.Asset.Cards.ToothOfEztli
       Arkham.Asset.Cards.TrackShoes
       Arkham.Asset.Cards.TreasureHunter1
@@ -1069,6 +1071,7 @@ library
       Arkham.Enemy.Cards.Thrall
       Arkham.Enemy.Cards.TidalTerror
       Arkham.Enemy.Cards.TommyMalloy
+      Arkham.Enemy.Cards.TonysQuarry
       Arkham.Enemy.Cards.Umordhoth
       Arkham.Enemy.Cards.ValentinoRivas
       Arkham.Enemy.Cards.VengefulWitch
@@ -1418,6 +1421,7 @@ library
       Arkham.Investigator.Cards.SkidsOToole
       Arkham.Investigator.Cards.StellaClark
       Arkham.Investigator.Cards.TommyMuldoon
+      Arkham.Investigator.Cards.TonyMorgan
       Arkham.Investigator.Cards.UrsulaDowns
       Arkham.Investigator.Cards.ValentinoRivas
       Arkham.Investigator.Cards.WendyAdams

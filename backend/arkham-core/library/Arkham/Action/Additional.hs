@@ -18,6 +18,7 @@ data AdditionalAction
   | ActionRestrictedAdditionalAction Action
   | EffectAction Text EffectId
   | AnyAdditionalAction
+  | BountyAction -- Tony Morgan
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "evade" AdditionalAction where
@@ -30,6 +31,7 @@ additionalActionLabel = \case
   ActionRestrictedAdditionalAction action -> "Use on " <> tshow action <> " actions"
   EffectAction label _ -> label
   AnyAdditionalAction -> "Use on any action"
+  BountyAction -> "Use to engage or fight an enemy with 1 or more bounties on it."
 
 $(deriveJSON defaultOptions ''ActionRestriction)
 $(deriveJSON defaultOptions ''AdditionalAction)

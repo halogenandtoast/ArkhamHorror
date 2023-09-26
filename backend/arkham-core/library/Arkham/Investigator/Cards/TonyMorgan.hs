@@ -7,6 +7,8 @@ where
 import Arkham.Prelude
 
 import Arkham.Action.Additional
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
@@ -61,7 +63,7 @@ instance HasChaosTokenValue TonyMorgan where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage TonyMorgan where
-  runMessage msg (TonyMorgan (attrs `With` meta)) = case msg of
+  runMessage msg i@(TonyMorgan (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       modifiers <- getModifiers iid
       let windows' = defaultWindows iid
@@ -110,4 +112,8 @@ instance RunMessage TonyMorgan where
       pure $ TonyMorgan . (`with` Meta False) $ result
     DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ TonyMorgan $ attrs `with` Meta False
+    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+      bountyContracts <- selectJust $ assetIs Assets.bountyContracts
+      push $ AddUses bountyContracts Bounty 1
+      pure i
     _ -> TonyMorgan . (`with` meta) <$> runMessage msg attrs

@@ -66,6 +66,7 @@ instance RunMessage TonyMorgan where
       modifiers <- getModifiers iid
       let windows' = defaultWindows iid
 
+      -- we should move these to a helper function to reuse between the InvestigatorRunner and here
       actions <- withModifiers attrs (toModifiers attrs [ActionCostModifier (-1), BountiesOnly]) $ do
         map (over biplate (`decreaseActionCost` 1))
           . filter ((`elem` [Just #fight, Just #engage]) . abilityAction)

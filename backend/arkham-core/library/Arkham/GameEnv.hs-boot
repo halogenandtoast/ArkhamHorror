@@ -30,7 +30,8 @@ instance MonadReader GameEnv GameT
 
 instance HasQueue Message GameT
 
-withModifiers' :: (Targetable target, HasGame m) => target -> [Modifier] -> m a -> m a
+withModifiers'
+  :: (Targetable target, HasGame m) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]
 getPhase :: HasGame m => m Phase

@@ -942,8 +942,18 @@ getInvestigatorsMatching matcher = do
         . sequence [attr investigatorDefeated, attr investigatorResigned]
     ResignedInvestigator -> pure . attr investigatorResigned
     InvestigatorEngagedWith enemyMatcher -> \i -> do
+      mods <- getModifiers i
+      let
+        asIfEngagedWith = flip mapMaybe mods $ \case
+          AsIfEngagedWith eid -> Just eid
+          _ -> Nothing
+        engagedEnemies =
+          if null asIfEngagedWith
+            then investigatorEngagedEnemies $ toAttrs i
+            else setFromList asIfEngagedWith
+
       enemyIds <- select enemyMatcher
-      pure $ any (`member` enemyIds) (investigatorEngagedEnemies $ toAttrs i)
+      pure $ any (`member` enemyIds) engagedEnemies
     TopCardOfDeckIs cardMatcher -> \i ->
       pure $ case unDeck . investigatorDeck $ toAttrs i of
         [] -> False
@@ -1435,6 +1445,12 @@ getLocationsMatching lmatcher = do
       LocationWithMostClues locationMatcher -> do
         matches' <- getLocationsMatching locationMatcher
         maxes <$> forToSnd matches' (pure . attr locationClues)
+      LocationCanBeEnteredBy enemyId -> do
+        flip filterM ls $ \l -> do
+          mods <- getModifiers l
+          flip noneM mods $ \case
+            CannotBeEnteredBy matcher -> enemyId <=~> matcher
+            _ -> pure False
       LocationWithoutTreachery matcher -> do
         treacheryIds <- select matcher
         pure
@@ -2046,6 +2062,13 @@ enemyMatcherFilter = \case
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
+  EnemyCanEnter locationMatcher -> \enemy -> do
+    locations <- selectList locationMatcher
+    flip anyM locations $ \lid -> do
+      mods <- getModifiers lid
+      flip noneM mods \case
+        CannotBeEnteredBy matcher -> enemyMatcherFilter matcher enemy
+        _ -> pure False
   EnemyCanBeDamagedBySource source -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
@@ -2710,11 +2733,16 @@ instance Projection Investigator where
         pure (investigatorSanity - investigatorSanityDamage attrs)
       InvestigatorRemainingHealth ->
         pure (investigatorHealth - investigatorHealthDamage attrs)
-      InvestigatorLocation ->
+      InvestigatorLocation -> do
+        mods <- getModifiers iid
+        let
+          mAsIfAt = headMay $ flip mapMaybe mods $ \case
+            AsIfAt lid -> Just lid
+            _ -> Nothing
         pure
           $ if investigatorLocation == LocationId nil
-            then Nothing
-            else Just investigatorLocation
+            then mAsIfAt
+            else mAsIfAt <|> Just investigatorLocation
       InvestigatorWillpower -> pure investigatorWillpower
       InvestigatorIntellect -> pure investigatorIntellect
       InvestigatorCombat -> pure investigatorCombat

@@ -2065,12 +2065,7 @@ warningShot =
         Just
           $ UseCost (AssetWithTrait Firearm <> AssetControlledBy You) Uses.Ammo 1
     , cdCriteria =
-        Just
-          $ Criteria.LocationExists
-            ( ConnectedLocation
-                <> NotLocation (LocationWithModifier CannotBeEnteredByNonElite)
-            )
-          <> Criteria.enemyExists (EnemyAt YourLocation <> NonEliteEnemy)
+        Just $ Criteria.enemyExists (EnemyAt YourLocation <> EnemyCanEnter ConnectedLocation)
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 

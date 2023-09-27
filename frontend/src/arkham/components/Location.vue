@@ -137,7 +137,7 @@ const enemies = computed(() => {
   const enemyIds = props.location.enemies;
 
   return enemyIds
-    .filter((e) => props.game.enemies[e].engagedInvestigators.length === 0);
+    .filter((e) => props.game.enemies[e].placement.tag === 'OtherPlacement')
 })
 
 const blocked = computed(() => {

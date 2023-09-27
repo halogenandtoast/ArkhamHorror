@@ -21,7 +21,6 @@ import Arkham.Movement
 import Arkham.Projection
 import Arkham.Window (defaultWindows, mkAfter, mkWhen)
 import Arkham.Window qualified as Window
-import Data.Map.Strict qualified as Map
 
 newtype Meta = Meta {active :: Bool}
   deriving stock (Show, Eq, Generic)
@@ -125,20 +124,16 @@ instance RunMessage LukeRobinson where
                 , afterPlayCard
                 ]
 
-      lukePlayable <- traceShowId <$> getLukePlayable attrs
+      lukePlayable <- getLukePlayable attrs
 
       if card `elem` concatMap snd lukePlayable
         then do
-          currentLocation <- getJustLocation iid
-          currentEnemies <- selectList $ enemyEngagedWith iid
           let lids = map fst $ filter (elem card . snd) lukePlayable
           locationOptions <- forToSnd lids $ \lid -> do
             enemies <- selectList $ enemyAt lid
             pure
-              $ map (DisengageEnemy iid) currentEnemies
-              <> [SetLocationAsIf iid lid, SetEngagedAsIf iid enemies]
+              $ [cardResolutionModifiers attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies]
               <> playCard
-              <> [SetLocationAsIf iid currentLocation, SetEngagedAsIf iid currentEnemies]
 
           push
             $ chooseOrRunOne iid

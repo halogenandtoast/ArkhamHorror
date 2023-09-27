@@ -22,7 +22,7 @@ spec = do
         pushAndRun $ moveTo investigator location
         putCardIntoPlay investigator Events.barricade3
         getModifiers (toTarget location)
-          `shouldReturn` [ CannotBeEnteredByNonElite
+          `shouldReturn` [ CannotBeEnteredBy NonEliteEnemies
                          , SpawnNonEliteAtConnectingInstead
                          ]
         assert $ fieldPM LocationEvents (anyM (<=~> eventIs Events.barricade3) . setToList) (toId location)

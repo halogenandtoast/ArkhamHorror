@@ -1571,12 +1571,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pushAll
           $ movedByWindows
           <> [ WhenWillEnterLocation iid lid
+             , Do (WhenWillEnterLocation iid lid)
              , EnterLocation iid lid
              , afterEnterWindow
              , afterMoveButBeforeEnemyEngagement
              , CheckEnemyEngagement iid
              ]
-        pure $ a & locationL .~ lid
+        pure a
+  Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
+    pure $ a & locationL .~ lid
   CheckEnemyEngagement iid | iid == investigatorId -> do
     enemies <- selectList $ EnemyAt $ LocationWithId investigatorLocation
     a <$ pushAll [EnemyCheckEngagement eid | eid <- enemies]

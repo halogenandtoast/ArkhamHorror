@@ -27,6 +27,7 @@ import Arkham.Location.BreachStatus
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (..))
+import Arkham.Message
 import Arkham.Name
 import Arkham.SkillType
 import Arkham.Source
@@ -188,6 +189,9 @@ instance Targetable LocationAttrs where
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget attrs (BothTarget t1 t2) = isTarget attrs t1 || isTarget attrs t2
   isTarget _ _ = False
+
+instance Is LocationAttrs LocationId where
+  is = (==) . toId
 
 instance Sourceable LocationAttrs where
   toSource = LocationSource . toId

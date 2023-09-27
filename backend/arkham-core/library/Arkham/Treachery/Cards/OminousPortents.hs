@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Effect.Window
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Peril))
@@ -36,11 +35,7 @@ instance RunMessage OminousPortents where
           iid
         $ [ Label
             "Draw the top card of the spectral encounter deck. That card gains peril, and its effects cannot be canceled."
-            [ createWindowModifierEffect
-                EffectCardResolutionWindow
-                attrs
-                (toCardId topSpectralCard)
-                [AddKeyword Peril, EffectsCannotBeCanceled]
+            [ cardResolutionModifiers attrs (toCardId topSpectralCard) [AddKeyword Peril, EffectsCannotBeCanceled]
             , InvestigatorDrewEncounterCard iid (topSpectralCard {ecAddedPeril = True})
             ]
           | topSpectralCard <- maybeToList mTopSpectralCard

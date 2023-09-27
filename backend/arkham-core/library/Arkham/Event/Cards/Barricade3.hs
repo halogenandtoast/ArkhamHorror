@@ -31,7 +31,7 @@ instance HasModifiersFor Barricade3 where
         pure
           $ toModifiers
             attrs
-            [CannotBeEnteredByNonElite, SpawnNonEliteAtConnectingInstead]
+            [CannotBeEnteredBy NonEliteEnemy, SpawnNonEliteAtConnectingInstead]
       else pure []
   getModifiersFor _ _ = pure []
 

@@ -416,7 +416,7 @@ instance RunMessage LocationAttrs where
           iid
           locationId
           Free -- already paid by using ability
-          True
+          False
       pure a
     UseCardAbility iid source n _ _ | isSource a source && n >= 500 && n <= 520 -> do
       let k = fromJustNote "missing key" $ setToList locationKeys !!? (n - 500)
@@ -453,11 +453,10 @@ getInvestigateAllowed _iid attrs = do
 
 canEnterLocation :: EnemyId -> LocationId -> GameT Bool
 canEnterLocation eid lid = do
-  traits' <- field EnemyTraits eid
-  modifiers' <- getModifiers (LocationTarget lid)
-  pure $ not $ flip any modifiers' $ \case
-    CannotBeEnteredByNonElite {} -> Elite `notMember` traits'
-    _ -> False
+  modifiers' <- getModifiers lid
+  not <$> flip anyM modifiers' \case
+    CannotBeEnteredBy matcher -> eid <=~> matcher
+    _ -> pure False
 
 withResignAction
   :: (Entity location, EntityAttrs location ~ LocationAttrs)

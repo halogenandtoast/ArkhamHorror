@@ -96,7 +96,7 @@ getActionCostModifier ac = do
   let iid = activeCostInvestigator ac
   takenActions <- field InvestigatorActionsTaken iid
   performedActions <- field InvestigatorActionsPerformed iid
-  modifiers <- getModifiers (InvestigatorTarget iid)
+  modifiers <- getModifiers iid
   pure $ foldr (applyModifier takenActions performedActions) 0 modifiers
  where
   actions = case activeCostActions ac of

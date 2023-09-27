@@ -3,12 +3,10 @@ module Arkham.Treachery.Cards.FrozenInFear where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -24,27 +22,23 @@ instance HasModifiersFor FrozenInFear where
   getModifiersFor (InvestigatorTarget iid) (FrozenInFear attrs) =
     pure
       $ toModifiers attrs
-      $ [ ActionCostOf (FirstOneOfPerformed [Action.Move, Action.Fight, Action.Evade]) 1
+      $ [ ActionCostOf (FirstOneOfPerformed [#move, #fight, #evade]) 1
         | treacheryOnInvestigator iid attrs
         ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FrozenInFear where
-  getAbilities (FrozenInFear a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ TurnEnds Timing.After You
-    ]
+  getAbilities (FrozenInFear a) = [restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ TurnEnds #after You]
 
 instance RunMessage FrozenInFear where
-  runMessage msg t@(FrozenInFear attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(FrozenInFear attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery treacheryId $ InvestigatorTarget iid
+      push $ AttachTreachery (toId attrs) $ InvestigatorTarget iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ revelationSkillTest iid (toAbilitySource attrs 1) #willpower 3
       pure t
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> FrozenInFear <$> runMessage msg attrs

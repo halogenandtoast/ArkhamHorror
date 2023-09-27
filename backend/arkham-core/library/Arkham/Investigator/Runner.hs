@@ -1674,6 +1674,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (remainingActionsL .~ actionsForTurn)
       & (additionalActionsL %~ (additionalActions <>))
       & (actionsTakenL .~ mempty)
+      & (actionsPerformedL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
     let (cs, deck') = draw n investigatorDeck
     windowMsgs <-

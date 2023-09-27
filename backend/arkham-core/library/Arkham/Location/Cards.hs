@@ -239,6 +239,8 @@ allLocationCards =
       , dormitories
       , downtownArkhamAsylum
       , downtownFirstBankOfArkham
+      , dreamGatePointlessReality
+      , dreamGateWondrousJourney
       , dressingRoom
       , dunwichVillage_242
       , dunwichVillage_243
@@ -4900,6 +4902,108 @@ pathwayIntoVoid =
     NoSymbol
     []
     BeforeTheBlackThrone
+
+dreamGateWondrousJourney :: CardDef
+dreamGateWondrousJourney =
+  CardDef
+    { cdCardCode = "06015a"
+    , cdName = "Dream-Gate" <:> "Wondrous Journey"
+    , cdRevealedName = Just $ "Dream-Gate" <:> "Wondrous Journey"
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType = LocationType
+    , cdCardSubType = Nothing
+    , cdClassSymbols = mempty
+    , cdSkills = mempty
+    , cdCardTraits = setFromList [Dreamlands]
+    , cdRevealedCardTraits = setFromList [Dreamlands]
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = []
+    , cdRevelation = NoRevelation
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = Nothing
+    , cdEncounterSetQuantity = Nothing
+    , cdUnique = False
+    , cdDoubleSided = False
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Nothing
+    , cdSlots = []
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
+    , cdArt = "06015a"
+    , cdLocationSymbol = Just NoSymbol
+    , cdLocationRevealedSymbol = Just NoSymbol
+    , cdLocationConnections = mempty
+    , cdLocationRevealedConnections = mempty
+    , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    }
+
+dreamGatePointlessReality :: CardDef
+dreamGatePointlessReality =
+  CardDef
+    { cdCardCode = "06015b"
+    , cdName = "Dream-Gate" <:> "Pointless Reality"
+    , cdRevealedName = Just $ "Dream-Gate" <:> "Pointless Reality"
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType = LocationType
+    , cdCardSubType = Nothing
+    , cdClassSymbols = mempty
+    , cdSkills = mempty
+    , cdCardTraits = setFromList [Dreamlands]
+    , cdRevealedCardTraits = setFromList [Dreamlands]
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = []
+    , cdRevelation = NoRevelation
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = Nothing
+    , cdEncounterSetQuantity = Nothing
+    , cdUnique = False
+    , cdDoubleSided = False
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Nothing
+    , cdSlots = []
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
+    , cdArt = "06015b"
+    , cdLocationSymbol = Just NoSymbol
+    , cdLocationRevealedSymbol = Just NoSymbol
+    , cdLocationConnections = mempty
+    , cdLocationRevealedConnections = mempty
+    , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

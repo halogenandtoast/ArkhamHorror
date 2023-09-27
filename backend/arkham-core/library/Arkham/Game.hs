@@ -252,6 +252,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty include
       Game
         { gameCards = mempty
         , gameWindowDepth = 0
+        , gameRunWindows = True
         , gameDepthLock = 0
         , gameRoundHistory = mempty
         , gamePhaseHistory = mempty
@@ -3438,6 +3439,7 @@ runMessages mLogger = do
         MythosPhase {} -> pure ()
         EnemyPhase {} -> pure ()
         UpkeepPhase {} -> pure ()
+        InvestigationPhase {} | not (gameRunWindows g) -> pure ()
         InvestigationPhase {} -> do
           mTurnInvestigator <-
             runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
@@ -3494,6 +3496,8 @@ runMessages mLogger = do
               )
               >>= putGame
           AskMap askMap -> runWithEnv (toExternalGame g askMap) >>= putGame
+          RunWindow {} | not (gameRunWindows g) -> runMessages mLogger
+          CheckWindow {} | not (gameRunWindows g) -> runMessages mLogger
           _ -> do
             -- Hidden Library handling
             -- > While an enemy is moving, Hidden Library gains the Passageway trait.

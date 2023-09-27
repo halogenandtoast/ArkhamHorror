@@ -160,6 +160,7 @@ allPlayerEventCards =
       , emergencyCache
       , emergencyCache2
       , emergencyCache3
+      , etherealForm
       , eucatastrophe3
       , everVigilant1
       , evidence
@@ -2321,6 +2322,14 @@ readTheSigns =
   (event "06117" "Read the Signs" 2 Mystic)
     { cdSkills = [#willpower, #intellect]
     , cdActions = [#investigate]
+    , cdCardTraits = setFromList [Spell]
+    }
+
+etherealForm :: CardDef
+etherealForm =
+  (event "06164" "Ethereal Form" 2 Mystic)
+    { cdSkills = [#willpower, #agility]
+    , cdActions = [#evade]
     , cdCardTraits = setFromList [Spell]
     }
 

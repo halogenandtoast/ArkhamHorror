@@ -1584,6 +1584,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- In the as if situation we want to avoid callbacks
     -- so this sets the value directly
     pure $ a & locationL .~ lid
+  SetEngagedAsIf iid enemies | iid == investigatorId -> do
+    -- In the as if situation we want to avoid callbacks
+    -- so this sets the value directly
+    pure $ a & engagedEnemiesL .~ setFromList enemies
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
       slots = findWithDefault [] slotType investigatorSlots
@@ -2747,6 +2751,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         push
           $ AskPlayer
           $ chooseOne iid
+          $ nub
           $ additionalActions
           <> [ ComponentLabel (InvestigatorComponent iid ResourceToken)
               $ [TakeResources iid 1 (toSource a) usesAction]

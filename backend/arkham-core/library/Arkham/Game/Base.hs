@@ -37,6 +37,7 @@ data Game = Game
   , gameInitialSeed :: Int
   , gameSeed :: Int
   , gameWindowDepth :: Int
+  , gameRunWindows :: Bool
   , gameDepthLock :: Int
   , gameIgnoreCanModifiers :: Bool
   , -- Active Scenario/Campaign

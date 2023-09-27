@@ -258,6 +258,7 @@ data ModifierType
   | SearchDepth Int
   | AdditionalTargets Int
   | MayIgnoreLocationEffectsAndKeywords
+  | IsLuke
   deriving stock (Show, Eq, Ord, Data)
 
 _SearchDepth :: Prism' ModifierType Int

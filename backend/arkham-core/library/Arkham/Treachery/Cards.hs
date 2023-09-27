@@ -118,6 +118,7 @@ allPlayerTreacheryCards =
       , curseOfTheRougarou
       , damned
       , darkFuture
+      , detachedFromReality
       , doomed
       , drawingTheSign
       , finalRhapsody
@@ -1668,6 +1669,12 @@ shockingDiscovery =
   (weakness "06009" "Shocking Discovery")
     { cdCardTraits = setFromList [Blunder, Mystery]
     , cdCardInSearchEffects = True
+    }
+
+detachedFromReality :: CardDef
+detachedFromReality =
+  (weakness "06014" "Detached from Reality")
+    { cdCardTraits = setFromList [Madness]
     }
 
 theHarbinger :: CardDef

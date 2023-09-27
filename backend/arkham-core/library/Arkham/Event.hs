@@ -360,7 +360,9 @@ allEvents =
     , --- mystic [sfk]
       SomeEventCard readTheSigns
     , -- A Thousand Shapes of Horror
-      --- survivor [tsh]
+      --- mystic [tsh]
+      SomeEventCard etherealForm
+    , --- survivor [tsh]
       SomeEventCard scroungeForSupplies
     , -- Edge of the Earth
       --- guardian [eote]

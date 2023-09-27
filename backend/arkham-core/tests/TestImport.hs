@@ -474,6 +474,7 @@ newGame investigator = do
     game =
       Game
         { gameWindowDepth = 0
+        , gameRunWindows = True
         , gameDepthLock = 0
         , gamePhaseHistory = mempty
         , gameRoundHistory = mempty

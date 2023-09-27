@@ -86,6 +86,12 @@ class MonadRandom m => CardGen m where
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
 
+genPlayerCardWith :: (HasCardDef a, CardGen m) => a -> (PlayerCard -> PlayerCard) -> m PlayerCard
+genPlayerCardWith a f = do
+  result <- f <$> genPlayerCard a
+  replaceCard (toCardId result) (PlayerCard result)
+  pure result
+
 -- instance CardGen IO where
 --   genEncounterCard a =
 --     lookupEncounterCard (toCardDef a) . unsafeMakeCardId <$> getRandom

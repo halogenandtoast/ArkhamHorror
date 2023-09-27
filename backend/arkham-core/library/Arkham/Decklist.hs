@@ -3,7 +3,9 @@ module Arkham.Decklist where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Card.PlayerCard
 import Arkham.Id
+import Arkham.Investigator
 import Arkham.PlayerCard
 import Data.Aeson
 import Data.Aeson.Key (fromText)
@@ -49,7 +51,12 @@ decklistInvestigatorId decklist = case meta decklist of
 loadDecklistCards :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
 loadDecklistCards decklist = do
   results <- forM (Map.toList $ slots decklist) $ \(cardCode, count') ->
-    replicateM count' (applyCustomizations decklist <$> genPlayerCard (lookupPlayerCardDef cardCode))
+    replicateM
+      count'
+      ( genPlayerCardWith (lookupPlayerCardDef cardCode)
+          $ applyCustomizations decklist
+          . setPlayerCardOwner (normalizeInvestigatorId $ investigator_code decklist)
+      )
   pure $ fold results
 
 newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta

@@ -1056,7 +1056,8 @@ sleightOfHand =
     , cdCriteria =
         Just
           $ Criteria.PlayableCardExists PaidCost
-          $ BasicCardMatch (CardWithTrait Item)
+          $ InHandOf You
+          <> BasicCardMatch (CardWithTrait Item)
     }
 
 daringManeuver :: CardDef

@@ -44,7 +44,7 @@ import Control.Monad.Extra as X (
 import Control.Monad.Random as X (MonadRandom, uniform)
 import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
 import Control.Monad.Random.Strict as X (Random)
-import Control.Monad.Trans.Maybe as X (runMaybeT)
+import Control.Monad.Trans.Maybe as X (MaybeT (..), runMaybeT)
 import Data.Aeson as X hiding (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text

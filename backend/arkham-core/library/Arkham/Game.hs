@@ -195,6 +195,7 @@ import Data.Set qualified as Set
 import Data.Text qualified as T
 import Data.These
 import Data.These.Lens
+import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
 import Data.UUID qualified as UUID
@@ -308,15 +309,17 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty include
     let
       playersMap = map (toId . fst) investigatorsList
       investigatorsMap = mapFromList $ map (toFst toId . fst) investigatorsList
+      gameCards' =
+        mapFromList
+          $ flip concatMap investigatorsList
+          $ \(toId -> iid, cards) -> map (bimap toCardId (toCard . setPlayerCardOwner iid) . dupe) cards
 
     when (state == IsActive) $ do
       pushAll $ map (uncurry InitDeck . bimap toId Deck) investigatorsList <> [StartCampaign]
 
     overGame $ \g ->
       g
-        { gameCards =
-            mapFromList
-              $ concatMap (map (toFst toCardId . PlayerCard) . snd) investigatorsList
+        { gameCards = gameCards'
         , gamePlayerOrder = playersMap
         , gameEntities = defaultEntities {entitiesInvestigators = investigatorsMap}
         }
@@ -3375,8 +3378,6 @@ instance HasDistance Game where
 
 readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game
 readGame = view gameRefL >>= (`atomicModifyIORef'` dupe)
- where
-  dupe a = (a, a)
 
 putGame :: (MonadIO m, MonadReader env m, HasGameRef env) => Game -> m ()
 putGame g = do
@@ -4368,13 +4369,19 @@ runGameMessage msg g = case msg of
         PlayerTreacheryType -> do
           tid <- getRandom
           let treachery = lookupTreachery (toCardCode pc) iid tid cardId
-          pushAll
-            $ resolve (Revelation iid (TreacherySource tid))
-            <> [UnsetActiveCard]
-          pure
-            $ g
-            & (entitiesL . treacheriesL %~ insertMap tid treachery)
-            & (activeCardL ?~ card)
+          let isPermanent = cdPermanent $ toCardDef treachery
+          if isPermanent
+            then do
+              push $ PlaceTreachery tid (Placement.TreacheryAttachedTo $ toTarget iid)
+              pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
+            else do
+              pushAll
+                $ resolve (Revelation iid (TreacherySource tid))
+                <> [UnsetActiveCard]
+              pure
+                $ g
+                & (entitiesL . treacheriesL %~ insertMap tid treachery)
+                & (activeCardL ?~ card)
         AssetType -> do
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId

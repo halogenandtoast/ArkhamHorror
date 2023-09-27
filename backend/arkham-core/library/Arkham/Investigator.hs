@@ -14,6 +14,7 @@ import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
 import Arkham.Investigator.Types qualified as Attrs
 import Data.Aeson (Result (..))
+import Data.Map.Strict qualified as Map
 import Data.Typeable
 
 instance RunMessage Investigator where
@@ -26,6 +27,11 @@ lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid = case lookup (toCardCode iid) allInvestigators of
   Nothing -> lookupPromoInvestigator iid
   Just c -> toInvestigator c
+
+normalizeInvestigatorId :: InvestigatorId -> InvestigatorId
+normalizeInvestigatorId iid
+  | toCardCode iid `elem` Map.keys allInvestigators = iid
+  | otherwise = findWithDefault (error "Missing investigator") iid promoInvestigators
 
 {- | Handle promo investigators
 

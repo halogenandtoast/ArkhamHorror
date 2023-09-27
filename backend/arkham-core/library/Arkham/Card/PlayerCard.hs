@@ -59,4 +59,7 @@ lookupPlayerCard cardDef cardId =
     , pcCustomizations = mempty
     }
 
+setPlayerCardOwner :: InvestigatorId -> PlayerCard -> PlayerCard
+setPlayerCardOwner iid pc = pc {pcOwner = Just iid}
+
 $(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)

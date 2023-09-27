@@ -282,6 +282,7 @@ allPlayerAssetCards =
       , fortyOneDerringer
       , fortyOneDerringer2
       , fourOfCups1
+      , gateBox
       , gavriellaMizrah
       , gildedVolto
       , grannyOrne
@@ -3540,6 +3541,15 @@ tonys38LongColt =
     , cdDeckRestrictions = [Signature "06003"]
     , cdUses = uses Ammo 3
     , cdSlots = [#hand]
+    }
+
+gateBox :: CardDef
+gateBox =
+  (asset "06013" ("Gate Box" <:> "Worlds within Worlds") 3 Neutral)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdDeckRestrictions = [Signature "06004"]
+    , cdUses = uses Charge 3
+    , cdUnique = True
     }
 
 solemnVow :: CardDef

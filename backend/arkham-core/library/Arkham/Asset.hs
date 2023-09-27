@@ -539,6 +539,7 @@ allAssets =
       SomeAssetCard becky
     , SomeAssetCard bountyContracts
     , SomeAssetCard tonys38LongColt
+    , SomeAssetCard gateBox
     , --- guardian [tde]
       SomeAssetCard solemnVow
     , -- The Search for Kadath

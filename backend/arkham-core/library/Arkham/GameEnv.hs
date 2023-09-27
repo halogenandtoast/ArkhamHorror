@@ -64,6 +64,15 @@ instance Monad m => HasGame (ReaderT Game m) where
 runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
 runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
 
+asIfGame :: GameT a -> GameT a
+asIfGame body = do
+  game <- newIORef . (\g -> g {gameRunWindows = False}) =<< getGame
+  queue <- newQueue []
+  gen <- newIORef (mkStdGen 0)
+  let env = GameEnv game queue gen (const $ pure ())
+
+  runGameEnvT env body
+
 data GameEnv = GameEnv
   { gameEnvGame :: IORef Game
   , gameEnvQueue :: Queue Message

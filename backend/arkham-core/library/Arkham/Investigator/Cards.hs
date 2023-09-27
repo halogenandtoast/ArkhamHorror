@@ -96,6 +96,7 @@ allInvestigatorCards =
       , tommyMuldoon
       , mandyThompson
       , tonyMorgan
+      , lukeRobinson
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -356,6 +357,14 @@ tonyMorgan =
     ("Tony Morgan" <:> "The Bounty Hunter")
     Rogue
     [Criminal, Hunter]
+
+lukeRobinson :: CardDef
+lukeRobinson =
+  investigator
+    "06004"
+    ("Luke Robinson" <:> "The Dreamer")
+    Mystic
+    [Dreamer, Drifter, Wayfarer]
 
 dexterDrake :: CardDef
 dexterDrake =

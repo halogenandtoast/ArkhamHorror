@@ -463,6 +463,7 @@ library
       Arkham.Asset.Cards.FortyOneDerringer
       Arkham.Asset.Cards.FortyOneDerringer2
       Arkham.Asset.Cards.FourOfCups1
+      Arkham.Asset.Cards.GateBox
       Arkham.Asset.Cards.GavriellaMizrah
       Arkham.Asset.Cards.GildedVolto
       Arkham.Asset.Cards.GrannyOrne
@@ -1181,6 +1182,7 @@ library
       Arkham.Event.Cards.EmergencyCache
       Arkham.Event.Cards.EmergencyCache2
       Arkham.Event.Cards.EmergencyCache3
+      Arkham.Event.Cards.EtherealForm
       Arkham.Event.Cards.Eucatastrophe3
       Arkham.Event.Cards.EverVigilant1
       Arkham.Event.Cards.Evidence
@@ -1406,6 +1408,7 @@ library
       Arkham.Investigator.Cards.JoeDiamond
       Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LolaHayes
+      Arkham.Investigator.Cards.LukeRobinson
       Arkham.Investigator.Cards.MandyThompson
       Arkham.Investigator.Cards.MarieLambeau
       Arkham.Investigator.Cards.MarkHarrigan
@@ -1580,6 +1583,8 @@ library
       Arkham.Location.Cards.Dormitories
       Arkham.Location.Cards.DowntownArkhamAsylum
       Arkham.Location.Cards.DowntownFirstBankOfArkham
+      Arkham.Location.Cards.DreamGatePointlessReality
+      Arkham.Location.Cards.DreamGateWondrousJourney
       Arkham.Location.Cards.DressingRoom
       Arkham.Location.Cards.DunwichVillage_242
       Arkham.Location.Cards.DunwichVillage_243
@@ -2203,6 +2208,7 @@ library
       Arkham.Treachery.Cards.DeathApproaches
       Arkham.Treachery.Cards.DeepDark
       Arkham.Treachery.Cards.DescentIntoMadness
+      Arkham.Treachery.Cards.DetachedFromReality
       Arkham.Treachery.Cards.DiabolicVoices
       Arkham.Treachery.Cards.DismalCurse
       Arkham.Treachery.Cards.DisquietingDreams

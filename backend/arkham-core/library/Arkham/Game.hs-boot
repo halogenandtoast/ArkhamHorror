@@ -11,9 +11,11 @@ import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
 import Arkham.Classes.Entity
+import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasDistance
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Effect.Types
 import Arkham.Enemy.Types
@@ -24,6 +26,7 @@ import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
+import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types
@@ -81,7 +84,17 @@ instance HasChaosTokenValue ()
 
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game
-abilityMatches :: (HasGame m) => Ability -> AbilityMatcher -> m Bool
+abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 
 instance HasDistance Game
 instance HasAbilities Game
+
+runMessages
+  :: ( HasGameRef env
+     , HasStdGen env
+     , HasQueue Message m
+     , MonadReader env m
+     , HasGameLogger env
+     )
+  => Maybe (Message -> IO ())
+  -> m ()

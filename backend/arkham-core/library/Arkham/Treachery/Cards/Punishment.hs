@@ -17,7 +17,6 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
-import Control.Monad.Trans.Maybe
 
 newtype Punishment = Punishment TreacheryAttrs
   deriving anyclass (IsTreachery)

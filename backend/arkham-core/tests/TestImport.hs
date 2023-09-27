@@ -30,7 +30,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types
 import Arkham.Event as X
 import Arkham.Event.Types
-import Arkham.Game as X hiding (addInvestigator, getAsset, newGame, runMessages)
+import Arkham.Game as X hiding (addInvestigator, getAsset, newGame, runMessages, withModifiers)
 import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding (getCanAffordCost)
 import Arkham.GameValue as X
@@ -553,7 +553,7 @@ getActiveCost =
     . headMay
     . mapToList
     . gameActiveCost
-      <$> getGame
+    <$> getGame
 
 evadedBy :: Investigator -> Enemy -> TestAppT Bool
 evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId

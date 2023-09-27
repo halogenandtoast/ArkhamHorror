@@ -25,7 +25,7 @@ barricade = event Barricade Cards.barricade
 
 instance HasModifiersFor Barricade where
   getModifiersFor target (Barricade attrs) | target `elem` eventAttachedTarget attrs = do
-    pure $ toModifiers attrs [CannotBeEnteredByNonElite]
+    pure $ toModifiers attrs [CannotBeEnteredBy NonEliteEnemy]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Barricade where

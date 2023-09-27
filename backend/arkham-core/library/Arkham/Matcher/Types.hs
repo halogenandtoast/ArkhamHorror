@@ -206,6 +206,7 @@ data EnemyMatcher
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
   | EnemyAt LocationMatcher
+  | EnemyCanEnter LocationMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
   | EnemyWithClues ValueMatcher
@@ -327,6 +328,7 @@ data LocationMatcher
   | LocationWithHorror ValueMatcher
   | LocationWithMostClues LocationMatcher
   | LocationWithEnemy EnemyMatcher
+  | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher
   | LocationWithInvestigator InvestigatorMatcher
   | RevealedLocation

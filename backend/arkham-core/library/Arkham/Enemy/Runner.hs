@@ -363,9 +363,7 @@ instance RunMessage EnemyAttrs where
                 `notElem` modifiers'
                 && CannotBeEngaged
                 `notElem` modifiers'
-      investigatorIds' <-
-        filterM modifiedFilter
-          =<< getInvestigatorsAtSameLocation a
+      investigatorIds' <- filterM modifiedFilter =<< getInvestigatorsAtSameLocation a
       prey <- getPreyMatcher a
       preyIds <- selectList $ case prey of
         Prey m ->
@@ -1041,14 +1039,16 @@ instance RunMessage EnemyAttrs where
       massive <- eid <=~> MassiveEnemy
       pure $ a & (if massive then id else placementL .~ InThreatArea iid)
     WhenWillEnterLocation iid lid -> do
-      shouldRespoond <- member iid <$> select (investigatorEngagedWith enemyId)
-      when shouldRespoond $ do
-        keywords <- getModifiedKeywords a
-        willMove <- canEnterLocation enemyId lid
-        push
-          $ if Keyword.Massive `notElem` keywords && willMove
-            then EnemyEntered enemyId lid
-            else DisengageEnemy iid enemyId
+      case enemyPlacement of
+        InThreatArea iid' | iid' == iid -> do
+          keywords <- getModifiedKeywords a
+          willMove <- canEnterLocation enemyId lid
+          -- TODO: we may not need to check massive anymore since we look at placement
+          push
+            $ if Keyword.Massive `notElem` keywords && willMove
+              then EnemyEntered enemyId lid
+              else DisengageEnemy iid enemyId
+        _ -> pure ()
       pure a
     CheckAttackOfOpportunity iid isFast | not isFast && not enemyExhausted -> do
       willAttack <- member iid <$> select (investigatorEngagedWith enemyId)

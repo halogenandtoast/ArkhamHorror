@@ -30,7 +30,6 @@ import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Trait
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
@@ -146,11 +145,10 @@ getModifiedKeywords e@EnemyAttrs {..} = do
 
 canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
-  traits <- field EnemyTraits eid
-  modifiers' <- getModifiers (LocationTarget lid)
-  pure $ not $ flip any modifiers' $ \case
-    Modifier.CannotBeEnteredByNonElite {} -> Elite `notMember` traits
-    _ -> False
+  modifiers' <- getModifiers lid
+  not <$> flip anyM modifiers' \case
+    Modifier.CannotBeEnteredBy matcher -> eid <=~> matcher
+    _ -> pure False
 
 getFightableEnemyIds :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do
@@ -186,15 +184,7 @@ getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location
   connectedLocationIds <- selectList matcher
-  enemyIsElite <- fieldMap EnemyTraits (member Elite) eid
-  let
-    unblocked lid' = do
-      modifiers' <- getModifiers (LocationTarget lid')
-      pure
-        $ enemyIsElite
-        || Modifier.CannotBeEnteredByNonElite
-        `notElem` modifiers'
-  filterM unblocked connectedLocationIds
+  filterM (canEnterLocation eid) connectedLocationIds
 
 getUniqueEnemy :: HasGame m => CardDef -> m EnemyId
 getUniqueEnemy = selectJust . enemyIs

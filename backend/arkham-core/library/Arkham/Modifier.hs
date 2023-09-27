@@ -68,6 +68,8 @@ data ModifierType
   | AlternativeReady Source
   | AnySkillValue Int
   | AsIfInHand Card
+  | AsIfAt LocationId
+  | AsIfEngagedWith EnemyId
   | AsIfUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
   | BaseSkillOf {skillType :: SkillType, value :: Int}
@@ -102,7 +104,7 @@ data ModifierType
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
-  | CannotBeEnteredByNonElite
+  | CannotBeEnteredBy EnemyMatcher
   | CannotBeEvaded
   | CannotBeRevealed
   | CannotCancelHorror

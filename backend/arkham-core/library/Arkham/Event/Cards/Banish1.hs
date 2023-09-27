@@ -61,7 +61,7 @@ instance RunMessage Banish1Effect where
                     | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
                     ]
 
-          locations <- selectList (LocationWithoutModifier CannotBeEnteredByNonElite)
+          locations <- selectList (LocationCanBeEnteredBy eid)
           let locationMsgs =
                 if null locations
                   then []

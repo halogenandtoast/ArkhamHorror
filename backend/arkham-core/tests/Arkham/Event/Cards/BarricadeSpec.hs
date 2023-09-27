@@ -20,7 +20,7 @@ spec = do
       pushAndRun $ moveTo investigator location
       putCardIntoPlay investigator Events.barricade
       getModifiers (toTarget location)
-        `shouldReturn` [CannotBeEnteredByNonElite]
+        `shouldReturn` [CannotBeEnteredBy NonEliteEnemies]
       assert $ fieldPM LocationEvents (anyM (<=~> eventIs Events.barricade) . setToList) (toId location)
       assert $ fieldP InvestigatorDiscard null (toId investigator)
 

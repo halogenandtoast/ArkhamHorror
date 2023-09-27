@@ -26,7 +26,7 @@ instance RunMessage Shortcut where
       connectingLocations <- selectList AccessibleLocation
       unless (null connectingLocations)
         $ pushAll
-          [ chooseOne
+          [ chooseOrRunOne
               iid
               [ TargetLabel
                 (InvestigatorTarget iid')

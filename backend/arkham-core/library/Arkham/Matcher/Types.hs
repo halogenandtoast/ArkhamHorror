@@ -336,7 +336,7 @@ data LocationMatcher
   | FarthestLocationFromLocation LocationId LocationMatcher
   | NearestLocationToLocation LocationId LocationMatcher
   | --                           ^ start
-    FarthestLocationFromYou LocationMatcher
+    FarthestLocationFromInvestigator InvestigatorMatcher LocationMatcher
   | FarthestLocationFromAll LocationMatcher
   | NearestLocationToYou LocationMatcher
   | LocationWithTrait Trait

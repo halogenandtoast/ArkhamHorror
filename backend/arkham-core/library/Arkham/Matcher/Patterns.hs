@@ -236,6 +236,11 @@ pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0))
 
 -- ** Location Patterns **
 
+pattern FarthestLocationFromYou :: LocationMatcher -> LocationMatcher
+pattern FarthestLocationFromYou matcher <- FarthestLocationFromInvestigator You matcher
+  where
+    FarthestLocationFromYou matcher = FarthestLocationFromInvestigator You matcher
+
 pattern YourLocation :: LocationMatcher
 pattern YourLocation <- LocationWithInvestigator You
   where

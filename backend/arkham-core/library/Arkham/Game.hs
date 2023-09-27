@@ -1452,10 +1452,15 @@ getLocationsMatching lmatcher = do
           matches' =
             mapMaybe (lookup direction . attr locationDirections) starts
         pure $ filter ((`elem` matches') . toId) ls
-      FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
-        matchingLocationIds <- map toId <$> getLocationsMatching matcher
-        matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
-        pure $ filter ((`elem` matches') . toId) ls
+      FarthestLocationFromInvestigator investigatorMatcher matcher -> do
+        miid <- selectOne investigatorMatcher
+        mstart <- join <$> for miid (field InvestigatorLocation)
+        case mstart of
+          Nothing -> pure []
+          Just start -> do
+            matchingLocationIds <- map toId <$> getLocationsMatching matcher
+            matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+            pure $ filter ((`elem` matches') . toId) ls
       FarthestLocationFromLocation start matcher -> do
         matchingLocationIds <- map toId <$> getLocationsMatching matcher
         matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))

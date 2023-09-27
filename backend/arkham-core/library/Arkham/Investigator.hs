@@ -80,8 +80,8 @@ data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator
 allInvestigators :: Map CardCode SomeInvestigatorCard
 allInvestigators =
   mapFromList
-    $ map
-      (toFst someInvestigatorCardCode)
+    $ concatMap
+      (\c -> (,c) <$> someInvestigatorCardCodes c)
       [ SomeInvestigatorCard rolandBanks
       , SomeInvestigatorCard daisyWalker
       , SomeInvestigatorCard skidsOToole

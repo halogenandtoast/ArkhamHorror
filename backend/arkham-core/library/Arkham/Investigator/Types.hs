@@ -321,8 +321,10 @@ liftInvestigatorCard
   :: (forall a. InvestigatorCard a -> b) -> SomeInvestigatorCard -> b
 liftInvestigatorCard f (SomeInvestigatorCard a) = f a
 
-someInvestigatorCardCode :: SomeInvestigatorCard -> CardCode
-someInvestigatorCardCode = liftInvestigatorCard cbCardCode
+someInvestigatorCardCodes :: SomeInvestigatorCard -> [CardCode]
+someInvestigatorCardCodes = liftInvestigatorCard $ \c -> case lookup (cbCardCode c) allInvestigatorCards of
+  Just def -> cbCardCode c : cdAlternateCardCodes def
+  Nothing -> error $ "no such investigator" <> show (cbCardCode c)
 
 toInvestigator :: SomeInvestigatorCard -> Investigator
 toInvestigator (SomeInvestigatorCard f) = Investigator $ cbCardBuilder f nullCardId ()

@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Projection
 import Arkham.SkillType
 

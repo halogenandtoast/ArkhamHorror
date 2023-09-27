@@ -14,7 +14,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Strategy
-import Control.Monad.Trans.Maybe
 
 newtype HasturTheTatteredKing = HasturTheTatteredKing EnemyAttrs
   deriving anyclass (IsEnemy)

@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Control.Monad.Trans.Maybe
 
 newtype Machete = Machete AssetAttrs
   deriving anyclass (IsAsset)

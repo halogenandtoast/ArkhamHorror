@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Control.Monad.Trans.Maybe
 
 newtype Blackjack2 = Blackjack2 AssetAttrs
   deriving anyclass (IsAsset)

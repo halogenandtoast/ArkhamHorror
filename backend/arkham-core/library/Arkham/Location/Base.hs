@@ -32,9 +32,6 @@ data LocationAttrs = LocationAttrs
   , locationRevealedSymbol :: LocationSymbol
   , locationConnectedMatchers :: [LocationMatcher]
   , locationRevealedConnectedMatchers :: [LocationMatcher]
-  , locationTreacheries :: Set TreacheryId
-  , locationEvents :: Set EventId
-  , locationAssets :: Set AssetId
   , locationDirections :: Map Direction LocationId
   , locationConnectsTo :: Set Direction
   , locationCardsUnderneath :: [Card]

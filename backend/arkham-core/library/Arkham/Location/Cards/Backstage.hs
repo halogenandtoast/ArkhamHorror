@@ -14,7 +14,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype Backstage = Backstage LocationAttrs
   deriving anyclass (IsLocation)

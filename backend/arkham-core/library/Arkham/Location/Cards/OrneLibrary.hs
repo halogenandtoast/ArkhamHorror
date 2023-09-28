@@ -2,7 +2,6 @@ module Arkham.Location.Cards.OrneLibrary where
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (orneLibrary)

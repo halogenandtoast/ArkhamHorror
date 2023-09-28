@@ -24,27 +24,22 @@ backstage :: LocationCard Backstage
 backstage = location Backstage Cards.backstage 3 (Static 1)
 
 instance HasModifiersFor Backstage where
-  getModifiersFor (CardTarget card) (Backstage attrs)
-    | maybe False (`on` attrs) (toCardOwner card) =
-        pure
-          $ toModifiers
-            attrs
-            [HandSizeCardCount 3 | Hidden `elem` cdKeywords (toCardDef card)]
+  getModifiersFor (CardTarget card) (Backstage attrs) = do
+    here <- maybe (pure False) (`isAt` attrs) (toCardOwner card)
+    pure $ toModifiers attrs [HandSizeCardCount 3 | here, Hidden `elem` cdKeywords (toCardDef card)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Backstage where
   getAbilities (Backstage attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
-        then
-          [ mkAbility attrs 1
-              $ ForcedAbility
-              $ RevealLocation Timing.When Anyone
-              $ LocationWithId
-              $ toId attrs
-          , restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
-          ]
-        else []
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation #when Anyone
+          $ LocationWithId
+          $ toId attrs
+      , restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
+      ]
 
 instance RunMessage Backstage where
   runMessage msg l@(Backstage attrs) = case msg of

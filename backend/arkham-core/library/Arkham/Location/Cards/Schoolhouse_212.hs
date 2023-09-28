@@ -21,18 +21,13 @@ schoolhouse_212 :: LocationCard Schoolhouse_212
 schoolhouse_212 = location Schoolhouse_212 Cards.schoolhouse_212 4 (Static 1)
 
 instance HasModifiersFor Schoolhouse_212 where
-  getModifiersFor (InvestigatorTarget iid) (Schoolhouse_212 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CannotCommitCards (CardWithType SkillType)
-        | iid `member` locationInvestigators attrs
-        ]
+  getModifiersFor (InvestigatorTarget iid) (Schoolhouse_212 attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [CannotCommitCards #skill | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Schoolhouse_212 where
   getAbilities = withDrawCardUnderneathAction
 
 instance RunMessage Schoolhouse_212 where
-  runMessage msg (Schoolhouse_212 attrs) =
-    Schoolhouse_212 <$> runMessage msg attrs
+  runMessage msg (Schoolhouse_212 attrs) = Schoolhouse_212 <$> runMessage msg attrs

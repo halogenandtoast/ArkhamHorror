@@ -52,7 +52,6 @@ class Monad m => HasGame m where
 
 getCard :: HasGame m => CardId -> m Card
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
-asIfGame :: GameT a -> GameT a
 
 instance HasGame GameT
 

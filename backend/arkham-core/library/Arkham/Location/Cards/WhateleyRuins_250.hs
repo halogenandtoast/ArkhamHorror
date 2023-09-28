@@ -14,7 +14,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (whateleyRuins_250)
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Trait
 
 newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
@@ -26,11 +25,9 @@ whateleyRuins_250 =
   location WhateleyRuins_250 Cards.whateleyRuins_250 3 (PerPlayer 2)
 
 instance HasModifiersFor WhateleyRuins_250 where
-  getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_250 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [SkillModifier SkillWillpower (-1) | iid `on` attrs]
+  getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_250 attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [SkillModifier #willpower (-1) | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhateleyRuins_250 where
@@ -40,13 +37,8 @@ instance HasAbilities WhateleyRuins_250 where
           attrs
           1
           ( Here
-              <> InvestigatorExists
-                (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-              <> EnemyCriteria
-                ( EnemyExists
-                    $ EnemyAt YourLocation
-                    <> EnemyWithTrait Abomination
-                )
+              <> exists (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+              <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination)
           )
           (FastAbility Free)
           & (abilityLimitL .~ GroupLimit PerGame 1)

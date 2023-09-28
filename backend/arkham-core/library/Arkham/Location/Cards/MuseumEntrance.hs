@@ -20,19 +20,15 @@ museumEntrance :: LocationCard MuseumEntrance
 museumEntrance = location MuseumEntrance Cards.museumEntrance 3 (Static 2)
 
 instance HasModifiersFor MuseumEntrance where
-  getModifiersFor (InvestigatorTarget iid) (MuseumEntrance attrs) =
-    pure $ toModifiers attrs [CannotGainResources | iid `on` attrs]
+  getModifiersFor (InvestigatorTarget iid) (MuseumEntrance attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [CannotGainResources | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MuseumEntrance where
   getAbilities (MuseumEntrance a) =
-    withBaseAbilities
-      a
-      [ withTooltip
-        "\"Eh, How important can a book really be, anyway?\""
-        (locationResignAction a)
-      | locationRevealed a
-      ]
+    withRevealedAbilities a
+      $ [withTooltip "\"Eh, How important can a book really be, anyway?\"" $ locationResignAction a]
 
 instance RunMessage MuseumEntrance where
   runMessage msg (MuseumEntrance attrs) =

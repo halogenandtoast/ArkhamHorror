@@ -25,19 +25,16 @@ outerWall_286 = location OuterWall_286 Cards.outerWall_286 4 (PerPlayer 1)
 
 instance HasModifiersFor OuterWall_286 where
   getModifiersFor (CardIdTarget _) (OuterWall_286 a) = do
-    mInvestigator <- getSkillTestInvestigator
-    case mInvestigator of
-      Just iid -> do
-        mAgendaA <- selectOne $ AgendaWithSide A
-        mAgendaC <- selectOne $ AgendaWithSide C
-        case (mAgendaA, mAgendaC) of
-          (Just agendaA, Just agendaC) -> do
-            aDoom <- field AgendaDoom agendaA
-            cDoom <- field AgendaDoom agendaC
-            let atOuterWall = iid `member` locationInvestigators a
-            pure $ toModifiers a [DoubleSkillIcons | atOuterWall && cDoom > aDoom]
-          _ -> pure []
-      _ -> pure []
+    mMod <- runMaybeT $ do
+      iid <- MaybeT getSkillTestInvestigator
+      agendaA <- MaybeT $ selectOne $ AgendaWithSide A
+      agendaC <- MaybeT $ selectOne $ AgendaWithSide C
+      aDoom <- lift $ field AgendaDoom agendaA
+      cDoom <- lift $ field AgendaDoom agendaC
+      here <- lift $ iid `isAt` a
+      guard $ here && cDoom > aDoom
+      pure $ DoubleSkillIcons
+    pure $ toModifiers a $ maybeToList mMod
   getModifiersFor _ _ = pure []
 
 instance RunMessage OuterWall_286 where

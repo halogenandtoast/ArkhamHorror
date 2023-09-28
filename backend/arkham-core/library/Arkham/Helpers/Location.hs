@@ -3,10 +3,12 @@ module Arkham.Helpers.Location where
 import Arkham.Prelude
 
 import Arkham.Card.CardDef
+import Arkham.Classes.Entity
 import Arkham.Classes.Query hiding (matches)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding (LocationCard)
@@ -39,3 +41,6 @@ getConnectedMatcher l = do
     pure $ current <> [matcher | matches]
   applyModifier current _ = pure current
   self = LocationWithId l
+
+isAt :: (HasGame m, Entity a, EntityId a ~ LocationId) => InvestigatorId -> a -> m Bool
+isAt iid (toId -> lid) = fieldMap InvestigatorLocation (== Just lid) iid

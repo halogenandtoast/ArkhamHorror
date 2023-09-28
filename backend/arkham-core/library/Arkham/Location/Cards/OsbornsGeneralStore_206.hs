@@ -20,11 +20,9 @@ osbornsGeneralStore_206 =
   location OsbornsGeneralStore_206 Cards.osbornsGeneralStore_206 2 (PerPlayer 1)
 
 instance HasModifiersFor OsbornsGeneralStore_206 where
-  getModifiersFor (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [CannotGainResources | iid `member` locationInvestigators attrs]
+  getModifiersFor (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [CannotGainResources | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities OsbornsGeneralStore_206 where

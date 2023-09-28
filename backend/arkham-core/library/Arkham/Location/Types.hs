@@ -70,7 +70,7 @@ data instance Field Location :: Type -> Type where
   LocationRevealed :: Field Location Bool
   LocationConnectsTo :: Field Location (Set Direction)
   LocationCardsUnderneath :: Field Location [Card]
-  LocationInvestigators :: Field Location (Set InvestigatorId)
+  LocationInvestigators :: Field Location [InvestigatorId]
   LocationAssets :: Field Location (Set AssetId)
   LocationEvents :: Field Location (Set EventId)
   LocationTreacheries :: Field Location (Set TreacheryId)
@@ -108,7 +108,6 @@ fieldLens = \case
   LocationRevealed -> revealedL
   LocationConnectsTo -> connectsToL
   LocationCardsUnderneath -> cardsUnderneathL
-  LocationInvestigators -> investigatorsL
   LocationAssets -> assetsL
   LocationEvents -> eventsL
   LocationTreacheries -> treacheriesL
@@ -128,6 +127,7 @@ fieldLens = \case
   LocationAbilities -> virtual
   LocationPrintedSymbol -> virtual
   LocationVengeance -> virtual
+  LocationInvestigators -> virtual
  where
   virtual = error "virtual attribute can not be set directly"
 
@@ -244,7 +244,6 @@ locationWith f def shroud' revealClues g =
             , locationTokens = mempty
             , locationShroud = shroud'
             , locationRevealed = not (cdDoubleSided def)
-            , locationInvestigators = mempty
             , locationSymbol =
                 fromJustNote
                   "missing location symbol"
@@ -293,10 +292,6 @@ locationAbility ability = case abilitySource ability of
   LocationSource lid ->
     ability & abilityCriteriaL <>~ OnLocation (LocationWithId lid)
   _ -> ability
-
-on :: InvestigatorId -> LocationAttrs -> Bool
-on iid LocationAttrs {locationInvestigators} =
-  iid `member` locationInvestigators
 
 data Location = forall a. IsLocation a => Location a
 

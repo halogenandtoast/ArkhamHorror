@@ -2652,9 +2652,9 @@ locationMatches investigatorId source window locationId matcher' = do
   let matcher = Matcher.replaceYourLocation investigatorId matcher'
   case matcher of
     -- special cases
-    Matcher.NotLocation m ->
-      not <$> locationMatches investigatorId source window locationId m
+    Matcher.NotLocation m -> not <$> locationMatches investigatorId source window locationId m
     Matcher.IncludeEmptySpace _ -> locationId <=~> matcher
+    Matcher.LocationCanBeEnteredBy {} -> locationId <=~> matcher
     Matcher.MostBreaches _ -> locationId <=~> matcher
     Matcher.FewestBreaches {} -> locationId <=~> matcher
     Matcher.LocationWithBreaches _ -> locationId <=~> matcher

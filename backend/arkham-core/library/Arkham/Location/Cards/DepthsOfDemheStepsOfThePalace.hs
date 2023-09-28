@@ -20,16 +20,14 @@ newtype DepthsOfDemheStepsOfThePalace = DepthsOfDemheStepsOfThePalace LocationAt
 
 depthsOfDemheStepsOfThePalace :: LocationCard DepthsOfDemheStepsOfThePalace
 depthsOfDemheStepsOfThePalace =
-  locationWith
-    DepthsOfDemheStepsOfThePalace
-    Cards.depthsOfDemheStepsOfThePalace
-    4
-    (PerPlayer 1)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+  locationWith DepthsOfDemheStepsOfThePalace Cards.depthsOfDemheStepsOfThePalace 4 (PerPlayer 1)
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance HasModifiersFor DepthsOfDemheStepsOfThePalace where
-  getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheStepsOfThePalace a)
-    | iid `on` a = pure $ toModifiers a [CannotPlay FastCard]
+  getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheStepsOfThePalace a) = do
+    here <- iid `isAt` a
+    pure $ toModifiers a [CannotPlay FastCard | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DepthsOfDemheStepsOfThePalace where

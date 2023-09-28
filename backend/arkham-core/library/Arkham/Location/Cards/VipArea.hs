@@ -21,12 +21,12 @@ vipArea :: LocationCard VipArea
 vipArea = location VipArea Cards.vipArea 3 (PerPlayer 1)
 
 instance HasModifiersFor VipArea where
-  getModifiersFor (InvestigatorTarget iid) (VipArea attrs)
-    | iid `member` locationInvestigators attrs = do
-        phase <- getPhase
-        if phase == UpkeepPhase
-          then pure $ toModifiers attrs [CannotDrawCards, CannotGainResources]
-          else pure []
+  getModifiersFor (InvestigatorTarget iid) (VipArea attrs) = do
+    here <- iid `isAt` attrs
+    phase <- getPhase
+    if here && phase == UpkeepPhase
+      then pure $ toModifiers attrs [CannotDrawCards, CannotGainResources]
+      else pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage VipArea where

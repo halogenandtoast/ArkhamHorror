@@ -9,17 +9,13 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
-import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Movement
-import Arkham.Projection
-import Arkham.Window (defaultWindows, mkAfter, mkWhen)
+import Arkham.Window (Window, defaultWindows, mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
 newtype Meta = Meta {active :: Bool}
@@ -27,7 +23,7 @@ newtype Meta = Meta {active :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype LukeRobinson = LukeRobinson (InvestigatorAttrs `With` Meta)
-  deriving anyclass (IsInvestigator, HasAbilities)
+  deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lukeRobinson :: InvestigatorCard LukeRobinson
@@ -36,30 +32,20 @@ lukeRobinson =
     $ investigator (LukeRobinson . (`with` Meta True)) Cards.lukeRobinson
     $ Stats {health = 5, sanity = 9, willpower = 4, intellect = 3, combat = 2, agility = 3}
 
-instance HasModifiersFor LukeRobinson where
-  getModifiersFor target (LukeRobinson (attrs `With` meta)) | attrs `is` target = do
-    pure $ toModifiers attrs [IsLuke | active meta]
-  getModifiersFor _ _ = pure []
-
 instance HasChaosTokenValue LukeRobinson where
   getChaosTokenValue iid ElderSign (LukeRobinson (attrs `With` _)) | iid == toId attrs = do
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
-getLukePlayable :: InvestigatorAttrs -> GameT [(LocationId, [Card])]
-getLukePlayable attrs = do
+getLukePlayable :: HasGame m => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
+getLukePlayable attrs windows' = do
   let iid = toId attrs
   connectingLocations <- selectList $ ConnectedLocation
-  currentEnemies <- selectList $ enemyEngagedWith iid
-  forToSnd connectingLocations $ \lid -> asIfGame $ do
+  forToSnd connectingLocations $ \lid -> do
     enemies <- selectList $ enemyAt lid
-    pushAll
-      $ map (DisengageEnemy iid) currentEnemies
-      <> [MoveTo (move GameSource iid lid)]
-      <> [EngageEnemy iid eid False | eid <- enemies]
-    runMessages Nothing
-    filter (`cardMatch` CardWithType EventType)
-      <$> getPlayableCards attrs UnpaidCost (defaultWindows iid)
+    withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do
+      filter (`cardMatch` CardWithType EventType)
+        <$> getPlayableCards attrs UnpaidCost windows'
 
 instance RunMessage LukeRobinson where
   runMessage msg i@(LukeRobinson (attrs `With` meta)) = case msg of
@@ -67,64 +53,52 @@ instance RunMessage LukeRobinson where
       gateBox <- selectJust $ assetIs Assets.gateBox
       push $ AddUses gateBox Charge 1
       pure i
-    PlayerWindow iid additionalActions isAdditional | iid == toId attrs -> do
-      modifiers <- getModifiers iid
-      let
-        usesAction = not isAdditional
-        canDo action = not <$> anyM (prevents action) modifiers
-        prevents action = \case
-          CannotTakeAction x -> preventsAction action x
-          MustTakeAction x -> not <$> preventsAction action x -- reads a little weird but we want only thing things x would prevent with cannot take action
-          _ -> pure False
-        preventsAction action = \case
-          FirstOneOfPerformed as | action `elem` as -> do
-            fieldP InvestigatorActionsPerformed (\taken -> all (`notElem` taken) as) iid
-          FirstOneOfPerformed {} -> pure False
-          IsAction action' -> pure $ action == action'
-          EnemyAction {} -> pure False
+    PlayerWindow iid additionalActions isAdditional | active meta -> do
+      -- N.B. we are not checking if iid is us so we must be careful not to use it incorrectly
+      let usesAction = not isAdditional
+      canPlay <- canDo (toId attrs) #play
 
-      canPlay <- canDo #play
-
-      if active meta && canPlay
+      if canPlay
         then do
-          connectingLocations <- selectList $ ConnectedLocation
-          lukePlayable <- getLukePlayable attrs
+          lukePlayable <- getLukePlayable attrs (defaultWindows iid)
           let
             asIfActions =
-              [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing (defaultWindows iid) usesAction]
+              [ targetLabel (toCardId c) [InitiatePlayCard (toId attrs) c Nothing (defaultWindows iid) usesAction]
               | c <- concatMap snd lukePlayable
               ]
           LukeRobinson
             . (`with` meta)
             <$> runMessage (PlayerWindow iid (additionalActions <> asIfActions) isAdditional) attrs
         else LukeRobinson . (`with` meta) <$> runMessage msg attrs
-    PlayerWindow iid additionalActions isAdditional | iid /= toId attrs -> do
-      LukeRobinson . (`with` meta) <$> runMessage msg attrs
-    RunWindow iid windows
+    RunWindow iid windows'
       | iid == toId attrs
-      , ( not (investigatorDefeated attrs || investigatorResigned attrs) || Window.hasEliminatedWindow windows
+      , active meta
+      , ( not (investigatorDefeated attrs || investigatorResigned attrs)
+            || Window.hasEliminatedWindow windows'
         ) -> do
-          LukeRobinson . (`with` meta) <$> runMessage msg attrs
-    InitiatePlayCard iid card mtarget windows' asAction | iid == toId attrs -> do
+          lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
+          actions <- nub . concat <$> traverse (getActions iid) windows'
+          playableCards <- getPlayableCards attrs UnpaidCost windows'
+          runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
+          pure i
+    InitiatePlayCard iid card mtarget windows' asAction | iid == toId attrs && active meta -> do
       let a = attrs
-      modifiers' <- getModifiers (toTarget a)
-      playable <- getIsPlayable (toId a) (toSource a) UnpaidCost (defaultWindows iid) card
+      mods <- getModifiers (toTarget a)
+      playable <- getIsPlayable (toId a) (toSource a) UnpaidCost windows' card
       let
-        shouldSkip = flip any modifiers' $ \case
+        shouldSkip = flip any mods $ \case
           AsIfInHand card' -> card == card'
           _ -> False
-      playCard <-
-        if shouldSkip
-          then pure []
-          else do
-            afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
-            pure
-              $ [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
-                , PlayCard iid card mtarget windows' asAction
-                , afterPlayCard
-                ]
 
-      lukePlayable <- getLukePlayable attrs
+      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
+      let playCard =
+            guard (not shouldSkip)
+              *> [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
+                 , PlayCard iid card mtarget windows' asAction
+                 , afterPlayCard
+                 ]
+
+      lukePlayable <- getLukePlayable attrs windows'
 
       if card `elem` concatMap snd lukePlayable
         then do
@@ -140,9 +114,15 @@ instance RunMessage LukeRobinson where
             $ [Label "Play at current location" playCard | playable]
             <> [ Label
                 "Play at connecting location"
-                [chooseOrRunOne iid [targetLabel lid msgs | (lid, msgs) <- locationOptions]]
+                [ HandleTargetChoice iid (toSource attrs) (toTarget attrs)
+                , chooseOrRunOne iid [targetLabel lid msgs | (lid, msgs) <- locationOptions]
+                ]
                | notNull locationOptions
                ]
         else pushAll playCard
       pure i
+    HandleTargetChoice _ (isSource attrs -> True) (isTarget attrs -> True) -> do
+      pure $ LukeRobinson (attrs `with` Meta False)
+    EndTurn _ -> do
+      pure $ LukeRobinson (attrs `with` Meta True)
     _ -> LukeRobinson . (`with` meta) <$> runMessage msg attrs

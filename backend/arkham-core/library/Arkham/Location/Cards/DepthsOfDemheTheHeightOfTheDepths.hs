@@ -19,8 +19,9 @@ newtype DepthsOfDemheTheHeightOfTheDepths = DepthsOfDemheTheHeightOfTheDepths Lo
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 instance HasModifiersFor DepthsOfDemheTheHeightOfTheDepths where
-  getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheTheHeightOfTheDepths a)
-    | iid `on` a = pure $ toModifiers a [CannotPlay FastCard]
+  getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheTheHeightOfTheDepths a) = do
+    here <- iid `isAt` a
+    pure $ toModifiers a [CannotPlay FastCard | here]
   getModifiersFor _ _ = pure []
 
 depthsOfDemheTheHeightOfTheDepths
@@ -31,7 +32,8 @@ depthsOfDemheTheHeightOfTheDepths =
     Cards.depthsOfDemheTheHeightOfTheDepths
     4
     (PerPlayer 1)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
   runMessage msg (DepthsOfDemheTheHeightOfTheDepths attrs) = case msg of

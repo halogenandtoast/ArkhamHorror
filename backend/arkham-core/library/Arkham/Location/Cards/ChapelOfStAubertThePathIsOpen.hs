@@ -23,54 +23,29 @@ newtype ChapelOfStAubertThePathIsOpen = ChapelOfStAubertThePathIsOpen LocationAt
 
 chapelOfStAubertThePathIsOpen :: LocationCard ChapelOfStAubertThePathIsOpen
 chapelOfStAubertThePathIsOpen =
-  location
-    ChapelOfStAubertThePathIsOpen
-    Cards.chapelOfStAubertThePathIsOpen
-    3
-    (PerPlayer 2)
+  location ChapelOfStAubertThePathIsOpen Cards.chapelOfStAubertThePathIsOpen 3 (PerPlayer 2)
 
 instance HasModifiersFor ChapelOfStAubertThePathIsOpen where
-  getModifiersFor target (ChapelOfStAubertThePathIsOpen attrs)
-    | isTarget attrs target = do
-        foundAGuide <- remembered FoundAGuide
-        pure
-          $ toModifiers
-            attrs
-            [Blocked | not (locationRevealed attrs) && not foundAGuide]
-  getModifiersFor (InvestigatorTarget iid) (ChapelOfStAubertThePathIsOpen attrs)
-    | iid `member` locationInvestigators attrs =
-        do
-          remainingSanity <- field InvestigatorRemainingSanity iid
-          pure $ toModifiers attrs [CannotDiscoverClues | remainingSanity > 3]
+  getModifiersFor target (ChapelOfStAubertThePathIsOpen attrs) | isTarget attrs target = do
+    foundAGuide <- remembered FoundAGuide
+    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs) && not foundAGuide]
+  getModifiersFor (InvestigatorTarget iid) (ChapelOfStAubertThePathIsOpen attrs) = do
+    here <- iid `isAt` attrs
+    remainingSanity <- field InvestigatorRemainingSanity iid
+    pure $ toModifiers attrs [CannotDiscoverClues | here, remainingSanity > 3]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChapelOfStAubertThePathIsOpen where
   getAbilities (ChapelOfStAubertThePathIsOpen a) =
-    withBaseAbilities
-      a
-      [restrictedAbility a 1 Here $ ActionAbility Nothing $ ActionCost 1]
+    withBaseAbilities a [restrictedAbility a 1 Here actionAbility]
 
 instance RunMessage ChapelOfStAubertThePathIsOpen where
   runMessage msg l@(ChapelOfStAubertThePathIsOpen attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ chooseAmounts
-          iid
-          "Take up to 3 horror"
-          (MaxAmountTarget 3)
-          [("Horror", (0, 3))]
-          (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ chooseAmounts iid "Take up to 3 horror" (MaxAmountTarget 3) [("Horror", (0, 3))] attrs
       pure l
     ResolveAmounts iid choices target | isTarget attrs target -> do
-      let
-        horrorAmount = getChoiceAmount "Horror" choices
-      when (horrorAmount > 0)
-        $ push
-        $ InvestigatorAssignDamage
-          iid
-          (toSource attrs)
-          DamageAny
-          0
-          horrorAmount
+      let horrorAmount = getChoiceAmount "Horror" choices
+      pushWhen (horrorAmount > 0) $ assignHorror iid attrs horrorAmount
       pure l
     _ -> ChapelOfStAubertThePathIsOpen <$> runMessage msg attrs

@@ -20,6 +20,7 @@ import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Trait as X hiding (Cultist)
+import Data.UUID (nil)
 
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
@@ -92,11 +93,11 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
 -- There are a few conditions that can occur that mean we must need to use an ability.
 -- No valid targets. For example Marksmanship
 -- Can't afford card. For example On Your Own
-getAllAbilitiesSkippable :: InvestigatorAttrs -> [Window] -> GameT Bool
+getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> m Bool
 getAllAbilitiesSkippable attrs windows =
   allM (getWindowSkippable attrs windows) windows
 
-getWindowSkippable :: InvestigatorAttrs -> [Window] -> Window -> GameT Bool
+getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
 getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard pc)) | iid == toId attrs = do
   modifiers' <- getModifiers (toCardId card)
   modifiers'' <- getModifiers (CardTarget card)
@@ -173,6 +174,62 @@ getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
       [] -> pure mempty
       xs -> select (AssetOneOf xs)
   pure $ setFromList $ filter (`notMember` excludes) allAssets
+
+canDo :: HasGame m => InvestigatorId -> Action -> m Bool
+canDo iid action = do
+  mods <- getModifiers iid
+  let
+    prevents = \case
+      CannotTakeAction x -> preventsAction x
+      MustTakeAction x -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
+      _ -> pure False
+    preventsAction = \case
+      FirstOneOfPerformed as | action `elem` as -> do
+        fieldP InvestigatorActionsPerformed (\taken -> all (`notElem` taken) as) iid
+      FirstOneOfPerformed {} -> pure False
+      IsAction action' -> pure $ action == action'
+      EnemyAction {} -> pure False
+
+  not <$> anyM prevents mods
+
+runWindow
+  :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
+runWindow attrs windows actions playableCards = do
+  let iid = toId attrs
+  unless (null playableCards && null actions) $ do
+    anyForced <- anyM (isForcedAbility iid) actions
+    if anyForced
+      then do
+        let
+          (silent, normal) = partition isSilentForcedAbility actions
+          toForcedAbilities = map (($ windows) . UseAbility iid)
+          toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
+        -- Silent forced abilities should trigger automatically
+        pushAll
+          $ toForcedAbilities silent
+          <> [chooseOne iid (toUseAbilities normal) | notNull normal]
+          <> [RunWindow iid windows]
+      else do
+        actionsWithMatchingWindows <-
+          for actions $ \ability@Ability {..} ->
+            (ability,)
+              <$> filterM
+                ( \w -> windowMatches iid abilitySource w abilityWindow
+                )
+                windows
+        skippable <- getAllAbilitiesSkippable attrs windows
+        push
+          $ chooseOne iid
+          $ [ targetLabel (toCardId c)
+              $ [ InitiatePlayCard iid c Nothing windows False
+                , RunWindow iid windows
+                ]
+            | c <- playableCards
+            ]
+          <> map
+            (\(ability, windows') -> AbilityLabel iid ability windows' [RunWindow iid windows])
+            actionsWithMatchingWindows
+          <> [Label "Skip playing fast cards or using reactions" [] | skippable]
 
 runInvestigatorMessage
   :: Message -> InvestigatorAttrs -> GameT InvestigatorAttrs
@@ -470,9 +527,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & resignedL .~ True & endedTurnL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
+    mlid <- field InvestigatorLocation iid
     pushAll
-      $ PlaceTokens (toSource a) (toTarget investigatorLocation) Clue (investigatorClues a)
-      : [PlaceKey (toTarget investigatorLocation) k | k <- toList investigatorKeys]
+      $ [PlaceTokens (toSource a) (toTarget lid) Clue (investigatorClues a) | lid <- toList mlid]
+      <> [PlaceKey (toTarget lid) k | k <- toList investigatorKeys, lid <- toList mlid]
     pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
   EnemyMove eid lid | lid /= investigatorLocation -> do
     pure $ a & engagedEnemiesL %~ deleteSet eid
@@ -2158,40 +2216,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     , (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
         actions <- nub . concat <$> traverse (getActions iid) windows
         playableCards <- getPlayableCards a UnpaidCost windows
-        unless (null playableCards && null actions) $ do
-          anyForced <- anyM (isForcedAbility investigatorId) actions
-          if anyForced
-            then do
-              let
-                (silent, normal) = partition isSilentForcedAbility actions
-                toForcedAbilities = map (($ windows) . UseAbility iid)
-                toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
-              -- Silent forced abilities should trigger automatically
-              pushAll
-                $ toForcedAbilities silent
-                <> [chooseOne iid (toUseAbilities normal) | notNull normal]
-                <> [RunWindow iid windows]
-            else do
-              actionsWithMatchingWindows <-
-                for actions $ \ability@Ability {..} ->
-                  (ability,)
-                    <$> filterM
-                      ( \w -> windowMatches iid abilitySource w abilityWindow
-                      )
-                      windows
-              skippable <- getAllAbilitiesSkippable a windows
-              push
-                $ chooseOne iid
-                $ [ targetLabel (toCardId c)
-                    $ [ InitiatePlayCard iid c Nothing windows False
-                      , RunWindow iid windows
-                      ]
-                  | c <- playableCards
-                  ]
-                <> map
-                  (\(ability, windows') -> AbilityLabel iid ability windows' [RunWindow iid windows])
-                  actionsWithMatchingWindows
-                <> [Label "Skip playing fast cards or using reactions" [] | skippable]
+        runWindow a windows actions playableCards
         pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
     -- We want to try and spend the most restrictive action so we get any
@@ -2734,22 +2759,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         playableCards <- getPlayableCards a UnpaidCost windows
         drawing <- drawCardsF iid a 1
 
-        let
-          canDo action = not <$> anyM (prevents action) modifiers
-          prevents action = \case
-            CannotTakeAction x -> preventsAction action x
-            MustTakeAction x -> not <$> preventsAction action x -- reads a little weird but we want only thing things x would prevent with cannot take action
-            _ -> pure False
-          preventsAction action = \case
-            FirstOneOfPerformed as | action `elem` as -> do
-              fieldP InvestigatorActionsPerformed (\taken -> all (`notElem` taken) as) iid
-            FirstOneOfPerformed {} -> pure False
-            IsAction action' -> pure $ action == action'
-            EnemyAction {} -> pure False
-
-        canDraw <- canDo #draw
-        canTakeResource <- canDo #resource
-        canPlay <- canDo #play
+        canDraw <- canDo iid #draw
+        canTakeResource <- canDo iid #resource
+        canPlay <- canDo iid #play
 
         push
           $ AskPlayer
@@ -2911,6 +2923,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a
+  RemovedLocation lid | investigatorLocation == lid -> do
+    pure $ a & locationL .~ LocationId nil
   _ -> pure a
 
 getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool

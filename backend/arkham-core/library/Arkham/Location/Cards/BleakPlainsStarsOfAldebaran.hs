@@ -20,16 +20,14 @@ newtype BleakPlainsStarsOfAldebaran = BleakPlainsStarsOfAldebaran LocationAttrs
 
 bleakPlainsStarsOfAldebaran :: LocationCard BleakPlainsStarsOfAldebaran
 bleakPlainsStarsOfAldebaran =
-  locationWith
-    BleakPlainsStarsOfAldebaran
-    Cards.bleakPlainsStarsOfAldebaran
-    4
-    (PerPlayer 1)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+  locationWith BleakPlainsStarsOfAldebaran Cards.bleakPlainsStarsOfAldebaran 4 (PerPlayer 1)
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance HasModifiersFor BleakPlainsStarsOfAldebaran where
-  getModifiersFor (InvestigatorTarget iid) (BleakPlainsStarsOfAldebaran a) =
-    pure $ toModifiers a [CannotPlay IsAlly | iid `on` a]
+  getModifiersFor (InvestigatorTarget iid) (BleakPlainsStarsOfAldebaran a) = do
+    here <- iid `isAt` a
+    pure $ toModifiers a [CannotPlay IsAlly | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BleakPlainsStarsOfAldebaran where

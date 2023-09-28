@@ -11,6 +11,7 @@ import Arkham.Ability as X hiding (PaidCost)
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Location as X
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Location.Types as X
@@ -219,21 +220,12 @@ instance RunMessage LocationAttrs where
                 ]
           )
       pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
-    InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
-    EnterLocation iid lid
-      | lid /= locationId && iid `elem` locationInvestigators ->
-          pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
     EnterLocation iid lid | lid == locationId -> do
       push =<< checkWindows [mkWindow Timing.When $ Window.Entering iid lid]
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
-      pure $ a & investigatorsL %~ insertSet iid
-    SetFlippable lid flippable
-      | lid == locationId ->
-          pure $ a & canBeFlippedL .~ flippable
-    SetLocationAsIf iid lid | lid == locationId -> do
-      pure $ a & investigatorsL %~ insertSet iid
-    SetLocationAsIf iid lid | lid /= locationId -> do
-      pure $ a & investigatorsL %~ deleteSet iid
+      pure a
+    SetFlippable lid flippable | lid == locationId -> do
+      pure $ a & canBeFlippedL .~ flippable
     RemovePlayerCardFromGame _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= card)
     AddToHand _ cards -> do
@@ -411,12 +403,8 @@ instance RunMessage LocationAttrs where
           False
       pure a
     UseCardAbility iid source 102 _ _ | isSource a source -> do
-      push
-        $ MoveAction
-          iid
-          locationId
-          Free -- already paid by using ability
-          False
+      -- free because already paid for by ability
+      push $ MoveAction iid locationId Free False
       pure a
     UseCardAbility iid source n _ _ | isSource a source && n >= 500 && n <= 520 -> do
       let k = fromJustNote "missing key" $ setToList locationKeys !!? (n - 500)
@@ -425,8 +413,8 @@ instance RunMessage LocationAttrs where
     _ -> pure a
 
 locationInvestigatorsWithClues :: LocationAttrs -> GameT [InvestigatorId]
-locationInvestigatorsWithClues LocationAttrs {locationInvestigators} =
-  filterM (fieldMap InvestigatorClues (> 0)) (setToList locationInvestigators)
+locationInvestigatorsWithClues attrs =
+  filterM (fieldMap InvestigatorClues (> 0)) =<< field LocationInvestigators (toId attrs)
 
 getModifiedShroudValueFor :: LocationAttrs -> GameT Int
 getModifiedShroudValueFor attrs = do

@@ -14,7 +14,6 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Window (defaultWindows)
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
@@ -65,7 +64,6 @@ instance HasChaosTokenValue TonyMorgan where
 instance RunMessage TonyMorgan where
   runMessage msg i@(TonyMorgan (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      modifiers <- getModifiers iid
       let windows' = defaultWindows iid
 
       -- we should move these to a helper function to reuse between the InvestigatorRunner and here
@@ -78,20 +76,7 @@ instance RunMessage TonyMorgan where
         filter (any (`elem` [#fight, #engage]) . cdActions . toCardDef)
           <$> getPlayableCards attrs UnpaidCost windows'
 
-      let
-        canDo action = not <$> anyM (prevents action) modifiers
-        prevents action = \case
-          CannotTakeAction x -> preventsAction action x
-          MustTakeAction x -> not <$> preventsAction action x -- reads a little weird but we want only thing things x would prevent with cannot take action
-          _ -> pure False
-        preventsAction action = \case
-          FirstOneOfPerformed as | action `elem` as -> do
-            fieldP InvestigatorActionsPerformed (\taken -> all (`notElem` taken) as) iid
-          FirstOneOfPerformed {} -> pure False
-          IsAction action' -> pure $ action == action'
-          EnemyAction {} -> pure False
-
-      canPlay <- canDo #play
+      canPlay <- canDo (toId attrs) #play
 
       push
         $ AskPlayer

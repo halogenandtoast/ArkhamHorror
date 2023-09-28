@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Investigator.Types (Field (InvestigatorRemainingActions))
 import Arkham.Message
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -22,23 +21,21 @@ aTearInTime = treachery ATearInTime Cards.aTearInTime
 
 instance RunMessage ATearInTime where
   runMessage msg t@(ATearInTime attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillWillpower 3
+    Revelation iid (isSource attrs -> True) -> do
+      push $ revelationSkillTest iid attrs #willpower 3
       pure t
-    FailedSkillTest iid maction source target@SkillTestInitiatorTarget {} sType n
-      | isSource attrs source && n > 0 -> do
-          hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
-          pushAll
-            $ chooseOrRunOne
-              iid
-              ( [ Label "Lose 1 Action" [LoseActions iid source 1]
-                | hasRemainingActions
-                ]
-                  <> [ Label
-                        "Take 1 Horror"
-                        [InvestigatorAssignDamage iid source DamageAny 0 1]
-                     ]
-              )
-            : [FailedSkillTest iid maction source target sType (n - 1)]
-          pure t
+    FailedThisSkillTestBy _ (isSource attrs -> True) n | n > 0 -> do
+      push $ DoStep n msg
+      pure t
+    DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+      hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
+      let source = toSource attrs
+      pushAll
+        [ chooseOrRunOne
+            iid
+            $ [Label "Lose 1 Action" [LoseActions iid source 1] | hasRemainingActions]
+            <> [Label "Take 1 Horror" [assignHorror iid source 1]]
+        , DoStep (n - 1) msg'
+        ]
+      pure t
     _ -> ATearInTime <$> runMessage msg attrs

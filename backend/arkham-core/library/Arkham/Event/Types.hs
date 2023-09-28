@@ -22,6 +22,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -81,6 +82,9 @@ allEventCards = allPlayerEventCards
 
 instance Is EventAttrs EventId where
   is = (==) . toId
+
+instance HasField "placement" EventAttrs Placement where
+  getField = eventPlacement
 
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
@@ -155,6 +159,9 @@ instance Sourceable EventAttrs where
   isSource _ _ = False
 
 data Event = forall a. IsEvent a => Event a
+
+instance HasField "placement" Event Placement where
+  getField (Event a) = (toAttrs a).placement
 
 instance Named Event where
   toName (Event e) = toName (toAttrs e)

@@ -44,9 +44,9 @@ import Arkham.Matcher (
   InvestigatorMatcher (..),
   LocationMatcher (..),
   enemyAt,
+  investigatorAt,
  )
 import Arkham.Message (Message (DiscoverClues, MoveAction, RevealLocation))
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -153,30 +153,10 @@ instance RunMessage LocationAttrs where
       pure $ a & (directionsL .~ mempty)
     LocationMoved lid | lid /= locationId -> do
       pure $ a & (directionsL %~ filterMap (/= lid))
-    AttachTreachery tid (LocationTarget lid) | lid == locationId -> do
-      pure $ a & treacheriesL %~ insertSet tid
     PutLocationInFrontOf iid lid | lid == locationId -> do
       pure $ a & inFrontOfL ?~ iid
     PutLocationInCenter lid | lid == locationId -> do
       pure $ a & inFrontOfL .~ Nothing
-    PlaceEvent _ eid placement -> case placement of
-      AttachedToLocation lid
-        | lid == locationId ->
-            pure $ a & eventsL %~ insertSet eid
-      AtLocation lid
-        | lid == locationId ->
-            pure $ a & eventsL %~ insertSet eid
-      _ -> pure $ a & eventsL %~ deleteSet eid
-    Discarded (AssetTarget aid) _ _ -> pure $ a & assetsL %~ deleteSet aid
-    Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
-    Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-    Flipped (AssetSource aid) card
-      | toCardType card /= AssetType ->
-          pure $ a & assetsL %~ deleteSet aid
-    RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
-    RemoveFromGame (TreacheryTarget tid) ->
-      pure $ a & treacheriesL %~ deleteSet tid
-    RemoveFromGame (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discard source target | isTarget a target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
@@ -185,16 +165,6 @@ instance RunMessage LocationAttrs where
         <> [RemovedFromPlay $ toSource a]
         <> resolve (RemoveLocation $ toId a)
       pure a
-    AttachAsset aid (LocationTarget lid)
-      | lid == locationId ->
-          pure $ a & assetsL %~ insertSet aid
-    AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
-    PlaceAsset aid placement -> case placement of
-      AttachedToLocation lid
-        | lid == locationId ->
-            pure $ a & assetsL %~ insertSet aid
-      AtLocation lid | lid == locationId -> pure $ a & assetsL %~ insertSet aid
-      _ -> pure $ a & assetsL %~ deleteSet aid
     SetConnections lid connections | lid == locationId -> do
       pure
         $ a
@@ -268,7 +238,6 @@ instance RunMessage LocationAttrs where
                   | lid' <- availableLocationIds
                   ]
       pure a
-    TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo source target | not (isTarget a target) -> do
       when (locationClues a > 0) (push $ PlaceClues source (toTarget a) (locationClues a))
       pure $ a & tokensL %~ removeAllTokens Clue & withoutCluesL .~ True
@@ -414,7 +383,8 @@ instance RunMessage LocationAttrs where
 
 locationInvestigatorsWithClues :: LocationAttrs -> GameT [InvestigatorId]
 locationInvestigatorsWithClues attrs =
-  filterM (fieldMap InvestigatorClues (> 0)) =<< field LocationInvestigators (toId attrs)
+  filterM (fieldMap InvestigatorClues (> 0))
+    =<< selectList (investigatorAt $ toId attrs)
 
 getModifiedShroudValueFor :: LocationAttrs -> GameT Int
 getModifiedShroudValueFor attrs = do

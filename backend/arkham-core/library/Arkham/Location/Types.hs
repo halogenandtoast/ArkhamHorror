@@ -70,10 +70,6 @@ data instance Field Location :: Type -> Type where
   LocationRevealed :: Field Location Bool
   LocationConnectsTo :: Field Location (Set Direction)
   LocationCardsUnderneath :: Field Location [Card]
-  LocationInvestigators :: Field Location [InvestigatorId]
-  LocationAssets :: Field Location (Set AssetId)
-  LocationEvents :: Field Location (Set EventId)
-  LocationTreacheries :: Field Location (Set TreacheryId)
   LocationInvestigateSkill :: Field Location SkillType
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   LocationCardId :: Field Location CardId
@@ -108,9 +104,6 @@ fieldLens = \case
   LocationRevealed -> revealedL
   LocationConnectsTo -> connectsToL
   LocationCardsUnderneath -> cardsUnderneathL
-  LocationAssets -> assetsL
-  LocationEvents -> eventsL
-  LocationTreacheries -> treacheriesL
   LocationInvestigateSkill -> investigateSkillL
   LocationInFrontOf -> inFrontOfL
   LocationCardId -> cardIdL
@@ -127,7 +120,6 @@ fieldLens = \case
   LocationAbilities -> virtual
   LocationPrintedSymbol -> virtual
   LocationVengeance -> virtual
-  LocationInvestigators -> virtual
  where
   virtual = error "virtual attribute can not be set directly"
 
@@ -162,10 +154,6 @@ instance FromJSON (SomeField Location) where
     "LocationConnectsTo" -> pure $ SomeField LocationConnectsTo
     "LocationCardsUnderneath" -> pure $ SomeField LocationCardsUnderneath
     "LocationConnectedLocations" -> pure $ SomeField LocationConnectedLocations
-    "LocationInvestigators" -> pure $ SomeField LocationInvestigators
-    "LocationAssets" -> pure $ SomeField LocationAssets
-    "LocationEvents" -> pure $ SomeField LocationEvents
-    "LocationTreacheries" -> pure $ SomeField LocationTreacheries
     "LocationCardDef" -> pure $ SomeField LocationCardDef
     "LocationCard" -> pure $ SomeField LocationCard
     "LocationAbilities" -> pure $ SomeField LocationAbilities
@@ -244,14 +232,9 @@ locationWith f def shroud' revealClues g =
             , locationTokens = mempty
             , locationShroud = shroud'
             , locationRevealed = not (cdDoubleSided def)
-            , locationSymbol =
-                fromJustNote
-                  "missing location symbol"
-                  (cdLocationSymbol def)
+            , locationSymbol = fromJustNote "missing location symbol" (cdLocationSymbol def)
             , locationRevealedSymbol =
-                fromJustNote
-                  "missing revealed location symbol"
-                  (cdLocationRevealedSymbol def)
+                fromJustNote "missing revealed location symbol" (cdLocationRevealedSymbol def)
             , locationConnectedMatchers =
                 map
                   LocationWithSymbol
@@ -260,9 +243,6 @@ locationWith f def shroud' revealClues g =
                 map
                   LocationWithSymbol
                   (cdLocationRevealedConnections def)
-            , locationTreacheries = mempty
-            , locationEvents = mempty
-            , locationAssets = mempty
             , locationDirections = mempty
             , locationConnectsTo = mempty
             , locationCardsUnderneath = mempty

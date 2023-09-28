@@ -5,13 +5,11 @@ module Arkham.Location.Cards.Schoolhouse_212 (
 
 import Arkham.Prelude
 
-import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (schoolhouse_212)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Matcher
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
   deriving anyclass (IsLocation)

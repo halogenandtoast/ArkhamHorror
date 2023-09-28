@@ -6,6 +6,7 @@ module Arkham.Location.Cards.TheHiddenChamber (
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
@@ -15,6 +16,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
@@ -28,15 +30,11 @@ theHiddenChamber =
 instance HasModifiersFor TheHiddenChamber where
   getModifiersFor target (TheHiddenChamber attrs) | isTarget attrs target = do
     mKeyToTheChamber <- selectOne (assetIs Assets.keyToTheChamber)
-    pure
-      $ toModifiers
-        attrs
-        ( case mKeyToTheChamber of
-            Just keyToTheChamber
-              | keyToTheChamber `member` locationAssets attrs ->
-                  []
-            _ -> [Blocked]
-        )
+    case mKeyToTheChamber of
+      Just keyToTheChamber -> do
+        placement <- field AssetPlacement keyToTheChamber
+        pure $ toModifiers attrs [Blocked | placement /= AttachedToLocation (toId attrs)]
+      _ -> pure $ toModifiers attrs [Blocked]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheHiddenChamber where

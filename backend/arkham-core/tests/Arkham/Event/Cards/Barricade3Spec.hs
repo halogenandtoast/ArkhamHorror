@@ -6,10 +6,9 @@ import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Location.Types (Field (..))
-import Arkham.Matcher (eventIs)
+import Arkham.Matcher (eventAt, eventIs)
+import Arkham.Matcher.Patterns (pattern NonEliteEnemy)
 import Arkham.Movement
-import Arkham.Projection
 
 spec :: Spec
 spec = do
@@ -22,10 +21,11 @@ spec = do
         pushAndRun $ moveTo investigator location
         putCardIntoPlay investigator Events.barricade3
         getModifiers (toTarget location)
-          `shouldReturn` [ CannotBeEnteredBy NonEliteEnemies
+          `shouldReturn` [ CannotBeEnteredBy NonEliteEnemy
                          , SpawnNonEliteAtConnectingInstead
                          ]
-        assert $ fieldPM LocationEvents (anyM (<=~> eventIs Events.barricade3) . setToList) (toId location)
+
+        assert $ selectAny $ eventAt (toId location) <> eventIs Events.barricade3
 
     it "should be discarded if an investigator leaves the location" $ gameTest $ \investigator -> do
       location <- testLocation id
@@ -36,5 +36,5 @@ spec = do
       chooseOnlyOption "trigger barricade"
       getModifiers (toTarget location)
         `shouldReturn` []
-      assert $ fieldP LocationEvents null (toId location)
+      assert $ selectNone $ eventAt (toId location) <> eventIs Events.barricade3
       assert $ isInDiscardOf investigator Events.barricade3

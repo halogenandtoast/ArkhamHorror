@@ -1451,18 +1451,10 @@ getLocationsMatching lmatcher = do
           flip noneM mods $ \case
             CannotBeEnteredBy matcher -> enemyId <=~> matcher
             _ -> pure False
-      LocationWithoutTreachery matcher -> do
-        treacheryIds <- select matcher
-        pure
-          $ filter
-            (none (`elem` treacheryIds) . attr locationTreacheries)
-            ls
-      LocationWithTreachery matcher -> do
-        treacheryIds <- select matcher
-        pure
-          $ filter
-            (any (`elem` treacheryIds) . attr locationTreacheries)
-            ls
+      LocationWithoutTreachery matcher -> flip filterM ls $ \l -> do
+        selectNone $ treacheryAt (toId l) <> matcher
+      LocationWithTreachery matcher -> flip filterM ls $ \l -> do
+        selectAny $ treacheryAt (toId l) <> matcher
       LocationInDirection direction matcher -> do
         starts <- getLocationsMatching matcher
         let
@@ -1945,8 +1937,10 @@ getEventsMatching matcher = do
     EventMatches ms -> foldM filterMatcher as ms
     AnyEvent -> pure as
     EventAt locationMatcher -> do
-      eids <- selectAgg id LocationEvents locationMatcher
-      pure $ filter ((`member` eids) . toId) as
+      lids <- selectList locationMatcher
+      flip filterM as $ \a -> do
+        mlid <- Helpers.placementLocation a.placement
+        pure $ maybe False (`elem` lids) mlid
     EventAttachedToAsset assetMatcher -> do
       assets <- selectListMap AssetTarget assetMatcher
       let
@@ -2527,11 +2521,6 @@ instance Projection Location where
       LocationRevealed -> pure locationRevealed
       LocationConnectsTo -> pure locationConnectsTo
       LocationCardsUnderneath -> pure locationCardsUnderneath
-      LocationConnectedLocations -> select (ConnectedFrom $ LocationWithId lid)
-      LocationInvestigators -> selectList (investigatorAt lid)
-      LocationAssets -> pure locationAssets
-      LocationEvents -> pure locationEvents
-      LocationTreacheries -> pure locationTreacheries
       LocationCardId -> pure locationCardId
       -- virtual
       LocationCardDef -> pure $ toCardDef attrs
@@ -2539,6 +2528,7 @@ instance Projection Location where
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
+      LocationConnectedLocations -> select (ConnectedFrom $ LocationWithId lid)
 
 instance Projection Asset where
   field f aid = do
@@ -4021,18 +4011,10 @@ runGameMessage msg g = case msg of
       location' =
         flip overAttrs (lookupLocation (toCardCode card) lid (toCardId card))
           $ \attrs -> case replaceStrategy of
-            DefaultReplace ->
-              attrs
-                { locationEvents = locationEvents oldAttrs
-                , locationAssets = locationAssets oldAttrs
-                , locationTreacheries = locationTreacheries oldAttrs
-                }
+            DefaultReplace -> attrs
             Swap ->
               attrs
-                { locationEvents = locationEvents oldAttrs
-                , locationAssets = locationAssets oldAttrs
-                , locationTreacheries = locationTreacheries oldAttrs
-                , locationTokens = locationTokens oldAttrs
+                { locationTokens = locationTokens oldAttrs
                 , locationRevealed = locationRevealed oldAttrs
                 , locationCardsUnderneath = locationCardsUnderneath oldAttrs
                 , locationWithoutClues = locationWithoutClues oldAttrs

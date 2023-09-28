@@ -23,7 +23,7 @@ accursedFate = treachery AccursedFate Cards.accursedFate
 
 instance RunMessage AccursedFate where
   runMessage msg t@(AccursedFate attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       theHourIsNight <- getHasRecord TheHourIsNigh
       if theHourIsNight
         then do
@@ -33,17 +33,13 @@ instance RunMessage AccursedFate where
             VengeanceCard _ -> error "not a vengeance card"
             PlayerCard pc ->
               pushAll
-                [ InvestigatorAssignDamage iid source DamageAny 0 2
+                [ assignHorror iid attrs 2
                 , RemoveCardFromDeckForCampaign iid pc
                 , AddCardToDeckForCampaign iid theBellTolls
                 , PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard theBellTolls)
                 , RemoveTreachery (toId attrs)
                 ]
-        else do
-          pushAll
-            $ [ InvestigatorAssignDamage iid source DamageAny 0 2
-              , Record TheHourIsNigh
-              ]
+        else pushAll [assignHorror iid attrs 2, Record TheHourIsNigh]
 
       pure t
     _ -> AccursedFate <$> runMessage msg attrs

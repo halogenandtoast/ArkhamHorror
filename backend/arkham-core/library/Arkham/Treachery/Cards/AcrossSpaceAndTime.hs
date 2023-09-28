@@ -19,7 +19,7 @@ acrossSpaceAndTime = treachery AcrossSpaceAndTime Cards.acrossSpaceAndTime
 
 instance RunMessage AcrossSpaceAndTime where
   runMessage msg t@(AcrossSpaceAndTime attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (DiscardTopOfDeck iid 3 (toSource attrs) Nothing)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ DiscardTopOfDeck iid 3 (toSource attrs) Nothing
+      pure t
     _ -> AcrossSpaceAndTime <$> runMessage msg attrs

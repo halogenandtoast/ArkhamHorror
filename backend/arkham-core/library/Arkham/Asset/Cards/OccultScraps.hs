@@ -9,21 +9,19 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Placement
-import Arkham.SkillType
 
 newtype OccultScraps = OccultScraps AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 occultScraps :: AssetCard OccultScraps
-occultScraps =
-  asset OccultScraps Cards.occultScraps
+occultScraps = asset OccultScraps Cards.occultScraps
 
 instance HasModifiersFor OccultScraps where
   getModifiersFor (InvestigatorTarget iid) (OccultScraps a) = do
     pure $ toModifiers a $ case assetPlacement a of
-      InPlayArea iid' | iid == iid' -> [SkillModifier SkillWillpower (-1)]
-      StillInHand iid' | iid == iid' -> [SkillModifier SkillWillpower (-2)]
+      InPlayArea iid' | iid == iid' -> [SkillModifier #willpower (-1)]
+      StillInHand iid' | iid == iid' -> [SkillModifier #willpower (-2)]
       _ -> []
   getModifiersFor _ _ = pure []
 

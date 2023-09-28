@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -21,28 +20,20 @@ abduction = treachery Abduction Cards.abduction
 
 instance RunMessage Abduction where
   runMessage msg t@(Abduction attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillWillpower 3)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          allies <-
-            selectListMap
-              AssetTarget
-              (assetControlledBy iid <> AllyAsset <> DiscardableAsset)
-          case allies of
-            [] -> push $ LoseAllResources iid
-            targets ->
-              push
-                $ chooseOne
-                  iid
-                  [ Label "Lose all resources" [LoseAllResources iid]
-                  , Label
-                      "Discard an Ally asset you control"
-                      [ chooseOne
-                          iid
-                          [TargetLabel target [Discard (toSource attrs) target] | target <- targets]
-                      ]
-                  ]
-          pure t
+    Revelation iid (isSource attrs -> True) -> do
+      push $ revelationSkillTest iid attrs #willpower 3
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      allies <- selectTargets $ assetControlledBy iid <> #ally <> DiscardableAsset
+      case allies of
+        [] -> push $ LoseAllResources iid
+        targets ->
+          push
+            $ chooseOne iid
+            $ [ Label "Lose all resources" [LoseAllResources iid]
+              , Label
+                  "Discard an Ally asset you control"
+                  [chooseOne iid $ targetLabels targets (only . Discard (toSource attrs))]
+              ]
+      pure t
     _ -> Abduction <$> runMessage msg attrs

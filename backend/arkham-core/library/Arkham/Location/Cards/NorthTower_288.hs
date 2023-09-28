@@ -25,21 +25,17 @@ northTower_288 = location NorthTower_288 Cards.northTower_288 4 (PerPlayer 1)
 
 instance HasModifiersFor NorthTower_288 where
   getModifiersFor SkillTestTarget (NorthTower_288 a) = do
-    mInvestigator <- getSkillTestInvestigator
-    case mInvestigator of
-      Just iid -> do
-        mAgendaA <- selectOne $ AgendaWithSide A
-        mAgendaC <- selectOne $ AgendaWithSide C
-        case (mAgendaA, mAgendaC) of
-          (Just agendaA, Just agendaC) -> do
-            aDoom <- field AgendaDoom agendaA
-            cDoom <- field AgendaDoom agendaC
-            let atOuterWall = iid `member` locationInvestigators a
-            pure $ toModifiers a [Difficulty (-1) | atOuterWall && aDoom > cDoom]
-          _ -> pure []
-      _ -> pure []
+    mMod <- runMaybeT $ do
+      iid <- MaybeT getSkillTestInvestigator
+      agendaA <- MaybeT $ selectOne $ AgendaWithSide A
+      agendaC <- MaybeT $ selectOne $ AgendaWithSide C
+      aDoom <- lift $ field AgendaDoom agendaA
+      cDoom <- lift $ field AgendaDoom agendaC
+      here <- lift $ iid `isAt` a
+      guard $ here && aDoom > cDoom
+      pure $ Difficulty (-1)
+    pure $ toModifiers a $ toList mMod
   getModifiersFor _ _ = pure []
 
 instance RunMessage NorthTower_288 where
-  runMessage msg (NorthTower_288 attrs) =
-    NorthTower_288 <$> runMessage msg attrs
+  runMessage msg (NorthTower_288 attrs) = NorthTower_288 <$> runMessage msg attrs

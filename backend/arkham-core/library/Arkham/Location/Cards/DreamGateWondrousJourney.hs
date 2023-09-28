@@ -23,12 +23,12 @@ newtype DreamGateWondrousJourney = DreamGateWondrousJourney LocationAttrs
 dreamGateWondrousJourney :: LocationCard DreamGateWondrousJourney
 dreamGateWondrousJourney =
   locationWith DreamGateWondrousJourney Cards.dreamGateWondrousJourney 1 (Static 0)
-    $ (connectedMatchersL .~ [Anywhere])
-    . (revealedConnectedMatchersL .~ [Anywhere])
+    $ (connectedMatchersL .~ [RevealedLocation])
+    . (revealedConnectedMatchersL .~ [RevealedLocation])
 
 instance HasModifiersFor DreamGateWondrousJourney where
   getModifiersFor (LocationTarget lid) (DreamGateWondrousJourney a) | not (a `is` lid) = do
-    pure $ toModifiers a [ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)]
+    pure $ toModifiers a [ConnectedToWhen RevealedLocation (LocationWithId $ toId a)]
   getModifiersFor target (DreamGateWondrousJourney a) | a `is` target = do
     pure $ toModifiers a [CannotBeEnteredBy AnyEnemy]
   getModifiersFor (InvestigatorTarget iid) (DreamGateWondrousJourney a) = do

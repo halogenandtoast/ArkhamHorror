@@ -2,7 +2,6 @@ module Arkham.Location.Cards.GuestHall where
 
 import Arkham.Prelude
 
-import Arkham.Action
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (guestHall)
@@ -17,13 +16,9 @@ guestHall :: LocationCard GuestHall
 guestHall = location GuestHall Cards.guestHall 1 (Static 0)
 
 instance HasModifiersFor GuestHall where
-  getModifiersFor (InvestigatorTarget iid) (GuestHall attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CannotTakeAction (IsAction Draw)
-        | iid `elem` locationInvestigators attrs
-        ]
+  getModifiersFor (InvestigatorTarget iid) (GuestHall attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [CannotTakeAction #draw | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GuestHall where

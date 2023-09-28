@@ -5,7 +5,6 @@ module Arkham.Location.Cards.CuriositieShoppe (
 
 import Arkham.Prelude
 
-import Arkham.Card.CardType
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
@@ -30,13 +29,9 @@ instance HasModifiersFor CuriositieShoppe where
         [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
         | isNorthside
         ]
-  getModifiersFor (InvestigatorTarget iid) (CuriositieShoppe attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Relic) 2
-        | iid `member` locationInvestigators attrs
-        ]
+  getModifiersFor (InvestigatorTarget iid) (CuriositieShoppe attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [ReduceCostOf (#asset <> CardWithTrait Relic) 2 | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CuriositieShoppe where

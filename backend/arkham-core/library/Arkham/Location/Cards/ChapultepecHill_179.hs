@@ -11,8 +11,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype ChapultepecHill_179 = ChapultepecHill_179 LocationAttrs
@@ -21,16 +19,12 @@ newtype ChapultepecHill_179 = ChapultepecHill_179 LocationAttrs
 
 chapultepecHill_179 :: LocationCard ChapultepecHill_179
 chapultepecHill_179 =
-  locationWith
-    ChapultepecHill_179
-    Cards.chapultepecHill_179
-    4
-    (PerPlayer 1)
-    (labelL .~ "triangle")
+  locationWith ChapultepecHill_179 Cards.chapultepecHill_179 4 (PerPlayer 1) (labelL .~ "triangle")
 
 instance HasModifiersFor ChapultepecHill_179 where
-  getModifiersFor (InvestigatorTarget iid) (ChapultepecHill_179 a)
-    | iid `on` a = pure $ toModifiers a [SkillModifier SkillWillpower (-2)]
+  getModifiersFor (InvestigatorTarget iid) (ChapultepecHill_179 a) = do
+    here <- iid `isAt` a
+    pure $ toModifiers a [SkillModifier #willpower (-2) | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChapultepecHill_179 where
@@ -41,19 +35,9 @@ instance HasAbilities ChapultepecHill_179 where
           $ restrictedAbility
             attrs
             1
-            ( Here
-                <> CluesOnThis (AtLeast $ Static 1)
-                <> CanDiscoverCluesAt
-                  (LocationWithId $ toId attrs)
-            )
-          $ ReactionAbility
-            ( DrawCard
-                Timing.After
-                You
-                (BasicCardMatch $ CardWithTrait Hex)
-                AnyDeck
-            )
-            Free
+            (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId $ toId attrs))
+          $ freeReaction
+          $ DrawCard #after You (BasicCardMatch $ CardWithTrait Hex) AnyDeck
       ]
 
 instance RunMessage ChapultepecHill_179 where

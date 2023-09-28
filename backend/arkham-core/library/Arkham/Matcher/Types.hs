@@ -558,6 +558,9 @@ instance IsLabel "treachery" CardMatcher where
 instance IsLabel "event" CardMatcher where
   fromLabel = CardWithType EventType
 
+instance IsLabel "skill" CardMatcher where
+  fromLabel = CardWithType SkillType
+
 instance IsLabel "enemy" CardMatcher where
   fromLabel = CardWithType EnemyType
 

@@ -21,13 +21,10 @@ vastPassages :: LocationCard VastPassages
 vastPassages = location VastPassages Cards.vastPassages 2 (PerPlayer 1)
 
 instance HasModifiersFor VastPassages where
-  getModifiersFor (InvestigatorTarget iid) (VastPassages attrs)
-    | iid `on` attrs = do
-        withBinoculars <- getHasSupply iid Binoculars
-        pure
-          $ toModifiers
-            attrs
-            [ActionCostOf (IsAction Action.Explore) 1 | not withBinoculars]
+  getModifiersFor (InvestigatorTarget iid) (VastPassages attrs) = do
+    here <- iid `isAt` attrs
+    withBinoculars <- getHasSupply iid Binoculars
+    pure $ toModifiers attrs [ActionCostOf (IsAction Action.Explore) 1 | here, not withBinoculars]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities VastPassages where

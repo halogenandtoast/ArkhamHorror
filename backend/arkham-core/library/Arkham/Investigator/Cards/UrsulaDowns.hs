@@ -60,7 +60,8 @@ instance RunMessage UrsulaDowns where
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True
     SkillTestEnds _ _ | moveAfterTest metadata -> do
-      targets <- selectList $ accessibleFrom $ investigatorLocation attrs
+      lid <- getJustLocation (toId attrs)
+      targets <- selectList $ accessibleFrom lid
       pushWhen (notNull targets)
         $ chooseOne attrs.id
         $ [ Label "Do not move to a connecting location" []

@@ -14,7 +14,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype BrackishWaters = BrackishWaters LocationAttrs
   deriving anyclass (IsLocation)
@@ -24,43 +23,29 @@ brackishWaters :: LocationCard BrackishWaters
 brackishWaters = location BrackishWaters Cards.brackishWaters 1 (Static 0)
 
 instance HasModifiersFor BrackishWaters where
-  getModifiersFor (InvestigatorTarget iid) (BrackishWaters attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CannotPlay (CardWithType AssetType)
-        | iid `elem` locationInvestigators attrs
-        ]
+  getModifiersFor (InvestigatorTarget iid) (BrackishWaters attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [CannotPlay (CardWithType AssetType) | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrackishWaters where
   getAbilities (BrackishWaters attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-        attrs
-        1
-        (Here <> Negate (AssetExists $ assetIs Assets.fishingNet))
-        $ ActionAbility Nothing
-        $ Costs
-          [ ActionCost 1
-          , DiscardFromCost
-              2
-              (FromHandOf You <> FromPlayAreaOf You)
-              (CardWithType AssetType)
-          ]
-      | locationRevealed attrs
-      ]
+    withRevealedAbilities attrs
+      $ [ restrictedAbility attrs 1 (Here <> Negate (exists $ assetIs Assets.fishingNet))
+            $ ActionAbility Nothing
+            $ Costs
+              [ ActionCost 1
+              , DiscardFromCost 2 (FromHandOf You <> FromPlayAreaOf You) #asset
+              ]
+        ]
 
 instance RunMessage BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              (beginSkillTest iid source (toTarget attrs) SkillAgility 3)
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          fishingNet <- PlayerCard <$> genPlayerCard Assets.fishingNet
-          l <$ push (TakeControlOfSetAsideAsset iid fishingNet)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 1) attrs #agility 3
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      fishingNet <- getSetAsideCard Assets.fishingNet
+      push $ TakeControlOfSetAsideAsset iid fishingNet
+      pure l
     _ -> BrackishWaters <$> runMessage msg attrs

@@ -28,7 +28,6 @@ data LocationAttrs = LocationAttrs
   , locationTokens :: Tokens
   , locationShroud :: Int
   , locationRevealed :: Bool
-  , locationInvestigators :: Set InvestigatorId
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
   , locationConnectedMatchers :: [LocationMatcher]

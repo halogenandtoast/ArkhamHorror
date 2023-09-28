@@ -12,8 +12,6 @@ import Arkham.Location.Cards qualified as Cards (exhibitHallAthabaskanExhibit)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttrs
   deriving anyclass (IsLocation)
@@ -21,32 +19,22 @@ newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttr
 
 exhibitHallAthabaskanExhibit :: LocationCard ExhibitHallAthabaskanExhibit
 exhibitHallAthabaskanExhibit =
-  location
-    ExhibitHallAthabaskanExhibit
-    Cards.exhibitHallAthabaskanExhibit
-    1
-    (Static 0)
+  location ExhibitHallAthabaskanExhibit Cards.exhibitHallAthabaskanExhibit 1 (Static 0)
 
 instance HasModifiersFor ExhibitHallAthabaskanExhibit where
-  getModifiersFor (InvestigatorTarget iid) (ExhibitHallAthabaskanExhibit attrs) =
-    pure $ toModifiers attrs [SkillModifier SkillAgility 2 | iid `on` attrs]
+  getModifiersFor (InvestigatorTarget iid) (ExhibitHallAthabaskanExhibit attrs) = do
+    here <- iid `isAt` attrs
+    pure $ toModifiers attrs [SkillModifier #agility 2 | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ExhibitHallAthabaskanExhibit where
   getAbilities (ExhibitHallAthabaskanExhibit x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1
-        $ ForcedAbility
-        $ Enters Timing.After You
-        $ LocationWithId
-        $ toId x
-      | locationRevealed x
-      ]
+    withRevealedAbilities x
+      $ [mkAbility x 1 $ ForcedAbility $ Enters #after You $ LocationWithId $ toId x]
 
 instance RunMessage ExhibitHallAthabaskanExhibit where
   runMessage msg l@(ExhibitHallAthabaskanExhibit attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l <$ pushAll [SetActions iid source 0, ChooseEndTurn iid]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      pushAll [SetActions iid (toAbilitySource attrs 1) 0, ChooseEndTurn iid]
+      pure l
     _ -> ExhibitHallAthabaskanExhibit <$> runMessage msg attrs

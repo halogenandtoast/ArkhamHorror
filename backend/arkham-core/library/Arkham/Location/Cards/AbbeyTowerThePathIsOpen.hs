@@ -27,38 +27,24 @@ abbeyTowerThePathIsOpen =
   location AbbeyTowerThePathIsOpen Cards.abbeyTowerThePathIsOpen 3 (PerPlayer 2)
 
 instance HasModifiersFor AbbeyTowerThePathIsOpen where
-  getModifiersFor target (AbbeyTowerThePathIsOpen attrs)
-    | isTarget attrs target = do
-        foundAGuide <- remembered FoundTheTowerKey
-        pure
-          $ toModifiers
-            attrs
-            [Blocked | not (locationRevealed attrs) && not foundAGuide]
-  getModifiersFor (InvestigatorTarget iid) (AbbeyTowerThePathIsOpen attrs)
-    | iid `member` locationInvestigators attrs = do
-        cardsInHand <- fieldMap InvestigatorHand length iid
-        pure $ toModifiers attrs [CannotDiscoverClues | cardsInHand == 0]
+  getModifiersFor target (AbbeyTowerThePathIsOpen attrs) | isTarget attrs target = do
+    foundAGuide <- remembered FoundTheTowerKey
+    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs) && not foundAGuide]
+  getModifiersFor (InvestigatorTarget iid) (AbbeyTowerThePathIsOpen attrs) = do
+    here <- iid `isAt` attrs
+    cardsInHand <- fieldMap InvestigatorHand length iid
+    pure $ toModifiers attrs [CannotDiscoverClues | here, cardsInHand == 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AbbeyTowerThePathIsOpen where
   getAbilities (AbbeyTowerThePathIsOpen a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility
-          a
-          1
-          (Here <> InvestigatorExists (You <> HandWith (HasCard NonWeakness)))
-          $ ActionAbility Nothing
-          $ ActionCost 1
-      ]
+    withBaseAbilities a
+      $ [restrictedAbility a 1 (Here <> exists (You <> HandWith (HasCard NonWeakness))) actionAbility]
 
 instance RunMessage AbbeyTowerThePathIsOpen where
   runMessage msg l@(AbbeyTowerThePathIsOpen attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      maxDiscardAmount <-
-        selectCount
-          $ InHandOf (InvestigatorWithId iid)
-          <> BasicCardMatch NonWeakness
+      maxDiscardAmount <- selectCount $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch NonWeakness
       push
         $ chooseAmounts
           iid
@@ -68,12 +54,9 @@ instance RunMessage AbbeyTowerThePathIsOpen where
           (toTarget attrs)
       pure l
     ResolveAmounts iid choices target | isTarget attrs target -> do
-      let
-        discardAmount = getChoiceAmount "Cards" choices
+      let discardAmount = getChoiceAmount "Cards" choices
       when (discardAmount > 0)
         $ pushAll
-        $ replicate
-          discardAmount
-          (toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1))
+        $ replicate discardAmount (toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1))
       pure l
     _ -> AbbeyTowerThePathIsOpen <$> runMessage msg attrs

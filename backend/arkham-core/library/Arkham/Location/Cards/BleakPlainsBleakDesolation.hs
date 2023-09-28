@@ -20,16 +20,14 @@ newtype BleakPlainsBleakDesolation = BleakPlainsBleakDesolation LocationAttrs
 
 bleakPlainsBleakDesolation :: LocationCard BleakPlainsBleakDesolation
 bleakPlainsBleakDesolation =
-  locationWith
-    BleakPlainsBleakDesolation
-    Cards.bleakPlainsBleakDesolation
-    4
-    (PerPlayer 1)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+  locationWith BleakPlainsBleakDesolation Cards.bleakPlainsBleakDesolation 4 (PerPlayer 1)
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance HasModifiersFor BleakPlainsBleakDesolation where
-  getModifiersFor (InvestigatorTarget iid) (BleakPlainsBleakDesolation a) =
-    pure $ toModifiers a [CannotPlay IsAlly | iid `on` a]
+  getModifiersFor (InvestigatorTarget iid) (BleakPlainsBleakDesolation a) = do
+    here <- iid `isAt` a
+    pure $ toModifiers a [CannotPlay IsAlly | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BleakPlainsBleakDesolation where

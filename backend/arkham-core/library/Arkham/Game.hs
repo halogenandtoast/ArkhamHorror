@@ -451,9 +451,13 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     if investigatorLocation (toAttrs investigator') == LocationId nil
       then pure $ inner `with` ConnectionData []
       else do
-        location <- getLocation $ investigatorLocation (toAttrs investigator')
-        matcher <- getConnectedMatcher location
-        connectedLocationIds <- selectList (AccessibleLocation <> matcher)
+        mLocation <- field InvestigatorLocation (toId investigator')
+        connectedLocationIds <- case mLocation of
+          Nothing -> pure []
+          Just locationId -> do
+            location <- getLocation locationId
+            matcher <- getConnectedMatcher location
+            selectList (AccessibleLocation <> matcher)
         pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator
@@ -875,12 +879,14 @@ getInvestigatorsMatching matcher = do
     LeadInvestigator -> \i -> (== toId i) . gameLeadInvestigatorId <$> getGame
     InvestigatorWithTitle title -> pure . (`hasTitle` title)
     DefeatedInvestigator -> pure . attr investigatorDefeated
-    InvestigatorAt locationMatcher -> \i ->
-      if attr investigatorLocation i == LocationId nil
-        then pure False
-        else
-          member (attr investigatorLocation i)
-            <$> select locationMatcher
+    InvestigatorAt locationMatcher -> \i -> do
+      mlid <- field InvestigatorLocation (toId i)
+      case mlid of
+        Nothing -> pure False
+        Just lid ->
+          if lid == LocationId nil
+            then pure False
+            else member lid <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
     InvestigatorIs cardCode -> pure . (== cardCode) . toCardCode
     InvestigatorWithLowestSkill skillType -> \i ->
@@ -947,10 +953,7 @@ getInvestigatorsMatching matcher = do
         asIfEngagedWith = flip mapMaybe mods $ \case
           AsIfEngagedWith eid -> Just eid
           _ -> Nothing
-        engagedEnemies =
-          if null asIfEngagedWith
-            then investigatorEngagedEnemies $ toAttrs i
-            else setFromList asIfEngagedWith
+        engagedEnemies = investigatorEngagedEnemies (toAttrs i) <> setFromList asIfEngagedWith
 
       enemyIds <- select enemyMatcher
       pure $ any (`member` enemyIds) engagedEnemies
@@ -1423,10 +1426,9 @@ getLocationsMatching lmatcher = do
           pure . notNull $ intersection assets lmAssets
       LocationWithInvestigator whoMatcher -> do
         investigators <- select whoMatcher
-        pure
-          $ filter
-            (notNull . intersection investigators . attr locationInvestigators)
-            ls
+        flip filterM ls $ \l -> do
+          lmInvestigators <- select $ investigatorAt $ toId l
+          pure . notNull $ intersection investigators lmInvestigators
       RevealedLocation ->
         filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
       UnrevealedLocation -> pure $ filter (not . isRevealed) ls
@@ -2528,7 +2530,7 @@ instance Projection Location where
       LocationConnectsTo -> pure locationConnectsTo
       LocationCardsUnderneath -> pure locationCardsUnderneath
       LocationConnectedLocations -> select (ConnectedFrom $ LocationWithId lid)
-      LocationInvestigators -> pure locationInvestigators
+      LocationInvestigators -> selectList (investigatorAt lid)
       LocationAssets -> pure locationAssets
       LocationEvents -> pure locationEvents
       LocationTreacheries -> pure locationTreacheries
@@ -4023,15 +4025,13 @@ runGameMessage msg g = case msg of
           $ \attrs -> case replaceStrategy of
             DefaultReplace ->
               attrs
-                { locationInvestigators = locationInvestigators oldAttrs
-                , locationEvents = locationEvents oldAttrs
+                { locationEvents = locationEvents oldAttrs
                 , locationAssets = locationAssets oldAttrs
                 , locationTreacheries = locationTreacheries oldAttrs
                 }
             Swap ->
               attrs
-                { locationInvestigators = locationInvestigators oldAttrs
-                , locationEvents = locationEvents oldAttrs
+                { locationEvents = locationEvents oldAttrs
                 , locationAssets = locationAssets oldAttrs
                 , locationTreacheries = locationTreacheries oldAttrs
                 , locationTokens = locationTokens oldAttrs

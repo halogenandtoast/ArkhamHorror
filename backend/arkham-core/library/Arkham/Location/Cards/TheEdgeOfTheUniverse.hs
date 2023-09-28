@@ -25,10 +25,10 @@ theEdgeOfTheUniverse =
   location TheEdgeOfTheUniverse Cards.theEdgeOfTheUniverse 2 (PerPlayer 2)
 
 instance HasModifiersFor TheEdgeOfTheUniverse where
-  getModifiersFor (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs)
-    | iid `on` attrs = do
-        phase <- getPhase
-        pure $ toModifiers attrs [CannotDrawCards | phase == UpkeepPhase]
+  getModifiersFor (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs) = do
+    here <- iid `isAt` attrs
+    phase <- getPhase
+    pure $ toModifiers attrs [CannotDrawCards | here, phase == UpkeepPhase]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheEdgeOfTheUniverse where

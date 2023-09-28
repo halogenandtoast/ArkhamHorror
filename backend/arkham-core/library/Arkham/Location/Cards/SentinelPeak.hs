@@ -18,35 +18,20 @@ newtype SentinelPeak = SentinelPeak LocationAttrs
 
 sentinelPeak :: LocationCard SentinelPeak
 sentinelPeak =
-  locationWith
-    SentinelPeak
-    Cards.sentinelPeak
-    4
-    (PerPlayer 2)
-    ( costToEnterUnrevealedL
-        .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Anywhere]
-    )
+  locationWith SentinelPeak Cards.sentinelPeak 4 (PerPlayer 2)
+    $ costToEnterUnrevealedL
+    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Anywhere]
 
 instance RunMessage SentinelPeak where
   runMessage msg l@(SentinelPeak attrs) = case msg of
-    InvestigatorDrewEncounterCard iid card | iid `on` attrs -> do
-      when (Hex `member` toTraits card)
-        $ push
-        $ chooseOne
-          iid
-          [ TargetLabel
-              (toTarget attrs)
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-          ]
+    InvestigatorDrewEncounterCard iid card -> do
+      here <- iid `isAt` attrs
+      pushWhen (here && Hex `member` toTraits card)
+        $ chooseOne iid [targetLabel attrs [assignDamage iid attrs 1]]
       pure l
-    InvestigatorDrewPlayerCard iid card | iid `on` attrs -> do
-      when (Hex `member` toTraits card)
-        $ push
-        $ chooseOne
-          iid
-          [ TargetLabel
-              (toTarget attrs)
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-          ]
+    InvestigatorDrewPlayerCard iid card -> do
+      here <- iid `isAt` attrs
+      pushWhen (here && Hex `member` toTraits card)
+        $ chooseOne iid [targetLabel attrs [assignDamage iid attrs 1]]
       pure l
     _ -> SentinelPeak <$> runMessage msg attrs

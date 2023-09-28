@@ -260,7 +260,6 @@ data ModifierType
   | SearchDepth Int
   | AdditionalTargets Int
   | MayIgnoreLocationEffectsAndKeywords
-  | IsLuke
   deriving stock (Show, Eq, Ord, Data)
 
 _SearchDepth :: Prism' ModifierType Int
@@ -288,6 +287,9 @@ data ActionTarget
 
 instance IsLabel "draw" ActionTarget where
   fromLabel = IsAction #draw
+
+instance IsLabel "investigate" ActionTarget where
+  fromLabel = IsAction #investigate
 
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}

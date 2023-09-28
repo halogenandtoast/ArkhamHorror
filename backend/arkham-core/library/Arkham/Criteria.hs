@@ -39,14 +39,22 @@ pattern NoCluesOnThis <- CluesOnThis (EqualTo (Static 0))
     NoCluesOnThis = CluesOnThis (EqualTo (Static 0))
 
 pattern CanGainResources :: Criterion
-pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources)
+pattern CanGainResources <-
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotGainResources])
   where
-    CanGainResources = Negate (SelfHasModifier CannotGainResources)
+    CanGainResources = InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotGainResources])
 
 pattern CanDealDamage :: Criterion
-pattern CanDealDamage <- Negate (SelfHasModifier CannotDealDamage)
+pattern CanDealDamage <-
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDealDamage])
   where
-    CanDealDamage = Negate (SelfHasModifier CannotGainResources)
+    CanDealDamage = InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDealDamage])
+
+pattern CanAttack :: Criterion
+pattern CanAttack <-
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotAttack])
+  where
+    CanAttack = InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotAttack])
 
 pattern CanDiscoverCluesAt :: LocationMatcher -> Criterion
 pattern CanDiscoverCluesAt locationMatcher =
@@ -59,15 +67,23 @@ pattern AbleToDiscoverCluesAt locationMatcher =
 
 pattern CanTakeControlOfClues :: Criterion
 pattern CanTakeControlOfClues <-
-  Negate (SelfHasModifier CannotTakeControlOfClues)
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotTakeControlOfClues])
   where
-    CanTakeControlOfClues = Negate (SelfHasModifier CannotTakeControlOfClues)
+    CanTakeControlOfClues =
+      InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotTakeControlOfClues])
 
 pattern CanDrawCards :: Criterion
-pattern CanDrawCards <- Negate (SelfHasModifier CannotDrawCards)
+pattern CanDrawCards <-
+  Criteria
+    [ CanManipulateDeck
+      , InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDrawCards])
+      ]
   where
     CanDrawCards =
-      Criteria [Negate (SelfHasModifier CannotDrawCards), CanManipulateDeck]
+      Criteria
+        [ CanManipulateDeck
+        , InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDrawCards])
+        ]
 
 pattern CanSearchDeck :: Criterion
 pattern CanSearchDeck <- CanManipulateDeck
@@ -81,9 +97,9 @@ pattern CanShuffleDeck <- CanManipulateDeck
 
 pattern CanManipulateDeck :: Criterion
 pattern CanManipulateDeck <-
-  Negate (SelfHasModifier CannotManipulateDeck)
+  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotManipulateDeck])
   where
-    CanManipulateDeck = Negate (SelfHasModifier CannotManipulateDeck)
+    CanManipulateDeck = InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotManipulateDeck])
 
 data Criterion
   = AssetExists AssetMatcher

@@ -35,7 +35,7 @@ instance HasAbilities GuardDog2 where
         $ FastAbility
         $ ExhaustCost
         $ toTarget x
-    , restrictedAbility x 2 ControlsThis
+    , restrictedAbility x 2 (ControlsThis <> CanDealDamage)
         $ ReactionAbility
           ( AssetDealtDamage
               Timing.When

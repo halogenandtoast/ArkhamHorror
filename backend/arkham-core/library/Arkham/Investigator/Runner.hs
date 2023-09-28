@@ -792,8 +792,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ InvestigatorAssignDamage xid (InvestigatorSource iid) DamageAny damage 0
     pure a
   InvestigatorDamageEnemy iid eid source | iid == investigatorId -> do
-    damage <- damageValueFor 1 iid
-    push $ EnemyDamage eid $ attack source damage
+    cannotDamage <- hasModifier iid CannotDealDamage
+    unless cannotDamage $ do
+      damage <- damageValueFor 1 iid
+      push $ EnemyDamage eid $ attack source damage
     pure a
   EnemyEvaded iid eid | iid == investigatorId -> do
     doNotDisengage <- hasModifier a DoNotDisengageEvaded

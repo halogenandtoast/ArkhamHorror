@@ -102,6 +102,7 @@ data ModifierType
   | CanOnlyBeDefeatedByDamage
   | CancelAttacksByEnemies Card EnemyMatcher
   | CannotBeDamaged
+  | CannotDealDamage
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CannotBeEnteredBy EnemyMatcher
@@ -260,6 +261,7 @@ data ModifierType
   | SearchDepth Int
   | AdditionalTargets Int
   | MayIgnoreLocationEffectsAndKeywords
+  | Ethereal -- only for UI, from Ethereal Form
   deriving stock (Show, Eq, Ord, Data)
 
 _SearchDepth :: Prism' ModifierType Int

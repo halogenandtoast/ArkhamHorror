@@ -603,32 +603,31 @@ instance RunMessage EnemyAttrs where
           pure a
     Successful (Action.Fight, _) iid source target _ | isTarget a target -> do
       a <$ push (InvestigatorDamageEnemy iid enemyId source)
-    FailedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n
-      | isTarget a target -> do
-          keywords <- getModifiedKeywords a
-          modifiers' <- getModifiers iid
-          pushAll
-            $ [ FailedAttackEnemy iid enemyId
-              , CheckWindow
-                  [iid]
-                  [mkWindow Timing.After (Window.FailAttackEnemy iid enemyId n)]
-              , CheckWindow
-                  [iid]
-                  [mkWindow Timing.After (Window.EnemyAttacked iid source enemyId)]
-              ]
-            <> [ EnemyAttack
-                $ (enemyAttack enemyId a iid)
-                  { attackDamageStrategy = enemyDamageStrategy
-                  }
-               | Keyword.Retaliate
-                  `elem` keywords
-               , IgnoreRetaliate
-                  `notElem` modifiers'
-               , not enemyExhausted
-                  || CanRetaliateWhileExhausted
-                  `elem` modifiers'
-               ]
-          pure a
+    FailedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n | isTarget a target -> do
+      keywords <- getModifiedKeywords a
+      modifiers' <- getModifiers iid
+      pushAll
+        $ [ FailedAttackEnemy iid enemyId
+          , CheckWindow
+              [iid]
+              [mkWindow Timing.After (Window.FailAttackEnemy iid enemyId n)]
+          , CheckWindow
+              [iid]
+              [mkWindow Timing.After (Window.EnemyAttacked iid source enemyId)]
+          ]
+        <> [ EnemyAttack
+            $ (enemyAttack enemyId a iid)
+              { attackDamageStrategy = enemyDamageStrategy
+              }
+           | Keyword.Retaliate
+              `elem` keywords
+           , IgnoreRetaliate
+              `notElem` modifiers'
+           , not enemyExhausted
+              || CanRetaliateWhileExhausted
+              `elem` modifiers'
+           ]
+      pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
       case miid of
         Just iid -> do

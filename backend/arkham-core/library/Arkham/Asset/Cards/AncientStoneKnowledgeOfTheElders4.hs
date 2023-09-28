@@ -29,7 +29,7 @@ instance HasAbilities AncientStoneKnowledgeOfTheElders4 where
     [ restrictedAbility
         a
         1
-        (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation) <> CanDealDamage)
         $ ReactionAbility
           (DrawsCards Timing.When You AnyValue)
           (DynamicUseCost (AssetWithId $ toId a) Secret DrawnCardsValue)

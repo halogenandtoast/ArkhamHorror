@@ -22,7 +22,7 @@ agnesBaker =
 instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
     [ playerLimit PerPhase
-        $ restrictedAbility x 1 (Self <> enemyExists (EnemyAt YourLocation))
+        $ restrictedAbility x 1 (Self <> CanDealDamage <> enemyExists (EnemyAt YourLocation))
         $ freeReaction (PlacedCounter #when You AnySource HorrorCounter $ atLeast 1)
     ]
 

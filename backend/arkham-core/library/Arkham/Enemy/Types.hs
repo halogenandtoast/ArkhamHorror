@@ -185,6 +185,7 @@ instance HasAbilities EnemyAttrs where
               , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
               ]
             <> (EnemyCriteria $ ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+            <> (Negate $ SelfHasModifier CannotAttack)
         )
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility
@@ -200,6 +201,7 @@ instance HasAbilities EnemyAttrs where
             <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
             <> Negate (EnemyCriteria $ ThisEnemy $ EnemyWithPlacement Global)
             <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeEngaged)
+            <> Negate (SelfHasModifier CannotBeEngaged)
         )
         $ ActionAbility (Just Action.Engage) (ActionCost 1)
     ]

@@ -37,6 +37,7 @@ instance HasAbilities AgencyBackup5 where
         $ fastAbility a 1 (exhaust a <> DamageCost (toSource a) (toTarget a) 1)
         $ ControlsThis
         <> enemyExists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource a))
+        <> CanDealDamage
     , withTooltip
         "{fast} Exhaust Agency Backup and deal 1 horror to it: Discover 1 clue at your location."
         $ fastAbility a 2 (exhaust a <> HorrorCost (toSource a) (toTarget a) 1)

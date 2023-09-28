@@ -76,6 +76,7 @@ instance RunMessage BloodRite where
       pure e
     UseCardAbility iid source 1 _ (DiscardCardPayment xs) | isSource attrs source -> do
       enemyIds <- selectList $ enemyAtLocationWith iid
+      canDealDamage <- withoutModifier iid CannotDealDamage
       pushAll
         $ replicate (length xs)
         $ chooseOne iid
@@ -84,7 +85,8 @@ instance RunMessage BloodRite where
             $ [ SpendResources iid 1
               , chooseOne iid [targetLabel enemyId [EnemyDamage enemyId $ nonAttack source 1] | enemyId <- enemyIds]
               ]
-           | notNull enemyIds
+           | canDealDamage
+           , notNull enemyIds
            ]
       pure e
     _ -> BloodRite <$> runMessage msg attrs

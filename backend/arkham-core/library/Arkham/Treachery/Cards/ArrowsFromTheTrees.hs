@@ -22,7 +22,7 @@ arrowsFromTheTrees = treachery ArrowsFromTheTrees Cards.arrowsFromTheTrees
 instance RunMessage ArrowsFromTheTrees where
   runMessage msg t@(ArrowsFromTheTrees attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      let countAllies = \i -> selectCount $ assetControlledBy i <> AllyAsset
+      let countAllies = \i -> selectCount $ assetControlledBy i <> #ally
       allyCount <- countAllies iid
       investigatorAssetPairs <- do
         others <-
@@ -31,9 +31,7 @@ instance RunMessage ArrowsFromTheTrees where
             <> InvestigatorAt (LocationWithTrait Ancient)
         forToSnd others countAllies
       pushAll
-        $ InvestigatorAssignDamage iid source DamageAny (allyCount + 1) 0
-        : [ InvestigatorAssignDamage iid' source DamageAny (allyCount' + 1) 0
-          | (iid', allyCount') <- investigatorAssetPairs
-          ]
+        $ assignDamage iid source (allyCount + 1)
+        : [assignDamage iid' source (allyCount' + 1) | (iid', allyCount') <- investigatorAssetPairs]
       pure t
     _ -> ArrowsFromTheTrees <$> runMessage msg attrs

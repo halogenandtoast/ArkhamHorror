@@ -23,20 +23,15 @@ attractingAttention = treachery AttractingAttention Cards.attractingAttention
 
 instance RunMessage AttractingAttention where
   runMessage msg t@(AttractingAttention attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
         broodOfYogSothoth <- getBroodOfYogSothoth
 
-        pushAll
-          [ chooseOneAtATime
-            iid
-            [ targetLabel
-              eid
-              [MoveToward (EnemyTarget eid) (LocationWithId lid)]
+        pushIfAny broodOfYogSothoth
+          $ chooseOneAtATime iid
+          $ [ targetLabel eid [MoveToward (EnemyTarget eid) (LocationWithId lid)]
             | eid <- broodOfYogSothoth
             ]
-          | notNull broodOfYogSothoth
-          ]
       pure t
     _ -> AttractingAttention <$> runMessage msg attrs

@@ -51,21 +51,11 @@ pushAllEnd msgs = withQueue \queue -> (queue <> msgs, ())
 push :: HasQueue msg m => msg -> m ()
 push = pushAll . pure
 
-pushWhenM :: HasQueue msg m => m Bool -> msg -> m ()
-pushWhenM condM = whenM condM . pushAll . pure
-
-pushWhen :: HasQueue msg m => Bool -> msg -> m ()
-pushWhen cond = when cond . pushAll . pure
-
-pushIfAny :: (HasQueue msg m, MonoFoldable (t a)) => t a -> msg -> m ()
-pushIfAny collection = when (notNull collection) . pushAll . pure
-
 pushAll :: HasQueue msg m => [msg] -> m ()
 pushAll msgs = withQueue \queue -> (msgs <> queue, ())
 
 replaceMessage :: (HasQueue msg m, Eq msg) => msg -> [msg] -> m ()
-replaceMessage msg replacement =
-  replaceMessageMatching (== msg) (const replacement)
+replaceMessage msg replacement = replaceMessageMatching (== msg) (const replacement)
 
 replaceMessageMatching
   :: HasQueue msg m => (msg -> Bool) -> (msg -> [msg]) -> m ()

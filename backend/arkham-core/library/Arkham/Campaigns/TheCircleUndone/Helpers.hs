@@ -9,6 +9,7 @@ import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Log
+import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message

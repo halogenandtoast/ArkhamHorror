@@ -226,16 +226,25 @@ gainSurge a = GainSurge (toSource a) (toTarget a)
 toDiscard :: (Sourceable source, Targetable target) => source -> target -> Message
 toDiscard source target = Discard (toSource source) (toTarget target)
 
-pushAllM :: IsMessage msg => GameT [msg] -> GameT ()
+pushAllM :: (IsMessage msg, HasGame m, HasQueue Message m) => m [msg] -> m ()
 pushAllM mmsgs = do
   msgs <- mmsgs
   pushAll $ map toMessage msgs
 
-pushM :: IsMessage msg => GameT msg -> GameT ()
+pushM :: (HasQueue Message m, IsMessage msg) => m msg -> m ()
 pushM mmsg = mmsg >>= pushMessage
 
-pushMessage :: IsMessage msg => msg -> GameT ()
+pushWhenM :: (HasQueue Message m, HasGame m, IsMessage msg) => m Bool -> msg -> m ()
+pushWhenM condM = whenM condM . pushAll . pure . toMessage
+
+pushMessage :: (HasQueue Message m, IsMessage msg) => msg -> m ()
 pushMessage = push . toMessage
+
+pushWhen :: (HasQueue Message m, IsMessage msg) => Bool -> msg -> m ()
+pushWhen cond = when cond . pushAll . pure . toMessage
+
+pushIfAny :: (HasQueue Message m, MonoFoldable (t a), IsMessage msg) => t a -> msg -> m ()
+pushIfAny collection = when (notNull collection) . push . toMessage
 
 removeMessageType :: HasQueue Message m => MessageType -> m ()
 removeMessageType msgType = withQueue_ $ \queue ->

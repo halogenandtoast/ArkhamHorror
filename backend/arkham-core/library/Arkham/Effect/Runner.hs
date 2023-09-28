@@ -58,4 +58,6 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     ResolvedCard _ _ | isEndOfWindow a EffectCardResolutionWindow -> do
       a <$ push (DisableEffect effectId)
+    ResolvedAbility {} | isEndOfWindow a EffectAbilityWindow -> do
+      a <$ push (DisableEffect effectId)
     _ -> pure a

@@ -833,8 +833,6 @@ data Message
   | IgnoreBatch BatchId
   | WhenWillEnterLocation InvestigatorId LocationId
   | EnterLocation InvestigatorId LocationId
-  | SetLocationAsIf InvestigatorId LocationId
-  | SetEngagedAsIf InvestigatorId [EnemyId]
   | Will Message
   | WillMoveEnemy EnemyId Message
   | -- must be called on instance directly

@@ -246,9 +246,6 @@ instance HasField "sanityDamage" InvestigatorAttrs Int where
 instance HasField "healthDamage" InvestigatorAttrs Int where
   getField = investigatorHealthDamage
 
-instance HasField "location" InvestigatorAttrs LocationId where
-  getField = investigatorLocation
-
 instance HasField "cardsUnderneath" InvestigatorAttrs [Card] where
   getField = investigatorCardsUnderneath
 

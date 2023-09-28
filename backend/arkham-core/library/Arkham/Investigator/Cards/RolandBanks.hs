@@ -31,7 +31,8 @@ instance HasAbilities RolandBanks where
 
 instance HasChaosTokenValue RolandBanks where
   getChaosTokenValue iid ElderSign (RolandBanks attrs) | attrs `is` iid = do
-    clues <- field LocationClues attrs.location
+    mLocation <- field InvestigatorLocation iid
+    clues <- maybe (pure 0) (field LocationClues) mLocation
     pure $ ChaosTokenValue ElderSign (PositiveModifier clues)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 

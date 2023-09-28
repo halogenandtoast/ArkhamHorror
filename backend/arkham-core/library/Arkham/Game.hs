@@ -447,17 +447,15 @@ withInvestigatorConnectionData
   => With WithDeckSize ModifierData
   -> m (With (With WithDeckSize ModifierData) ConnectionData)
 withInvestigatorConnectionData inner@(With target _) = case target of
-  WithDeckSize investigator' ->
-    if investigatorLocation (toAttrs investigator') == LocationId nil
-      then pure $ inner `with` ConnectionData []
-      else do
-        mLocation <- field InvestigatorLocation (toId investigator')
-        connectedLocationIds <- case mLocation of
-          Nothing -> pure []
-          Just locationId -> do
-            location <- getLocation locationId
-            matcher <- getConnectedMatcher location
-            selectList (AccessibleLocation <> matcher)
+  WithDeckSize investigator' -> do
+    mLocation <- field InvestigatorLocation (toId investigator')
+    case mLocation of
+      Nothing -> pure $ inner `with` ConnectionData []
+      Just (LocationId uuid) | uuid == nil -> pure $ inner `with` ConnectionData []
+      Just locationId -> do
+        location <- getLocation locationId
+        matcher <- getConnectedMatcher location
+        connectedLocationIds <- selectList (AccessibleLocation <> matcher)
         pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator

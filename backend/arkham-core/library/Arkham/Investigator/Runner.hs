@@ -533,6 +533,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [PlaceKey (toTarget lid) k | k <- toList investigatorKeys, lid <- toList mlid]
     pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
   EnemyMove eid lid | lid /= investigatorLocation -> do
+    -- [AsIfAt]: Enemy engagement is currently based on real location
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId -> do
     pure $ a & engagedEnemiesL %~ insertSet eid
@@ -872,8 +873,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
     pure a
   MoveAction iid lid _cost False | iid == investigatorId -> do
-    afterWindowMsg <-
-      Helpers.checkWindows [mkAfter $ Window.MoveAction iid investigatorLocation lid]
+    from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
+    afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
     pushAll $ resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg]
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
@@ -1299,7 +1300,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
            ]
       pure a
   InvestigatorDiscoverCluesAtTheirLocation iid source n maction | iid == investigatorId -> do
-    runMessage (InvestigatorDiscoverClues iid investigatorLocation source n maction) a
+    mlid <- field InvestigatorLocation iid
+    case mlid of
+      Just lid -> runMessage (InvestigatorDiscoverClues iid lid source n maction) a
+      _ -> pure a
   InvestigatorDiscoverClues iid lid source n _ | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues iid lid
     when canDiscoverClues $ do
@@ -1639,16 +1643,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & locationL .~ lid
   CheckEnemyEngagement iid | iid == investigatorId -> do
+    -- [AsIfAt]: enemies don't move to threat with AsIf, so we use actual location here
+    -- This might not be correct and we should still check engagement and let
+    -- that handle whether or not to move to threat area
     enemies <- selectList $ EnemyAt $ LocationWithId investigatorLocation
     a <$ pushAll [EnemyCheckEngagement eid | eid <- enemies]
-  SetLocationAsIf iid lid | iid == investigatorId -> do
-    -- In the as if situation we want to avoid callbacks
-    -- so this sets the value directly
-    pure $ a & locationL .~ lid
-  SetEngagedAsIf iid enemies | iid == investigatorId -> do
-    -- In the as if situation we want to avoid callbacks
-    -- so this sets the value directly
-    pure $ a & engagedEnemiesL .~ setFromList enemies
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
       slots = findWithDefault [] slotType investigatorSlots
@@ -2036,7 +2035,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
     actions <- getActions iid window
     isScenarioAbility <- getIsScenarioAbility
-    clueCount <- field LocationClues investigatorLocation
+    mlid <- field InvestigatorLocation (toId a)
+    clueCount <- maybe (pure 0) (field LocationClues) mlid
     skillIcons <- getSkillTestMatchingSkillIcons
 
     skillTestModifiers' <- getModifiers SkillTestTarget
@@ -2132,7 +2132,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     clueCount <- field LocationClues locationId
     otherLocation <- field InvestigatorLocation (skillTestInvestigator skillTest)
     canCommit <- maybe (pure False) (canCommitToAnotherLocation a) otherLocation
-    when (not isPerlious && (locationId == investigatorLocation || canCommit)) $ do
+    lid <- field InvestigatorLocation (toId a)
+    when (not isPerlious && (Just locationId == lid || canCommit)) $ do
       committedCards <- field InvestigatorCommittedCards investigatorId
       allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
       let
@@ -2640,11 +2641,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   SpendXP iid amount | iid == investigatorId -> do
     pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
+    -- [AsIfAt] assuming as if is still in effect
+    mlid <- field InvestigatorLocation iid
     let cluesToPlace = min n (investigatorClues a)
-    push $ PlaceTokens source (LocationTarget investigatorLocation) Clue cluesToPlace
+    for_ mlid $ \lid ->
+      push $ PlaceTokens source (LocationTarget lid) Clue cluesToPlace
     pure $ a & tokensL %~ subtractTokens Clue cluesToPlace
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
-    push $ PlaceTokens source (LocationTarget investigatorLocation) Clue (investigatorClues a)
+    -- [AsIfAt] assuming as if is still in effect
+    mlid <- field InvestigatorLocation iid
+    for_ mlid $ \lid ->
+      push $ PlaceTokens source (LocationTarget lid) Clue (investigatorClues a)
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveFromBearersDeckOrDiscard card -> do
     if pcOwner card == Just investigatorId
@@ -2672,6 +2679,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & discardL .~ []
   After (FailedSkillTest iid mAction _ (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
+    mCurrentLocation <- field InvestigatorLocation iid
     let
       windows = do
         Action.Investigate <- maybeToList mAction
@@ -2680,10 +2688,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             [ mkWhen $ Window.FailInvestigationSkillTest iid lid n
             , mkWhen $ Window.FailInvestigationSkillTest iid lid n
             ]
-          _ ->
-            [ mkWhen $ Window.FailInvestigationSkillTest iid investigatorLocation n
-            , mkAfter $ Window.FailInvestigationSkillTest iid investigatorLocation n
-            ]
+          _ -> case mCurrentLocation of
+            Just currentLocation ->
+              [ mkWhen $ Window.FailInvestigationSkillTest iid currentLocation n
+              , mkAfter $ Window.FailInvestigationSkillTest iid currentLocation n
+              ]
+            _ -> []
     pushM
       $ checkWindows
       $ mkWhen (Window.FailSkillTest iid n)
@@ -2924,6 +2934,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a
   RemovedLocation lid | investigatorLocation == lid -> do
+    -- needs to look at the "real" location not as if
     pure $ a & locationL .~ LocationId nil
   _ -> pure a
 

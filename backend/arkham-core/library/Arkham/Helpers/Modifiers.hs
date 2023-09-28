@@ -157,6 +157,10 @@ setupModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 setupModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectSetupWindow source target [modifier]
 
+abilityModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+abilityModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectAbilityWindow source target [modifier]
+
 chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType -> Message
 chaosTokenEffect (toSource -> source) token modifier =
   CreateChaosTokenEffect (EffectModifiers $ toModifiers source [modifier]) source token

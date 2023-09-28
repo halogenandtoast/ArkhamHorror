@@ -466,21 +466,21 @@ i.action {
 
 @keyframes become-ghost {
   100% {
-    filter: drop-shadow(0px 0 20px red) invert(75%);
+    filter: drop-shadow(0px 0 20px #FF0099) invert(75%);
   }
 }
 
 @keyframes ghost {
   0% {
-    filter: drop-shadow(0px 0 20px red) invert(75%);
+    filter: drop-shadow(0px 0 20px #FF0099) invert(75%);
   }
 
   50% {
-    filter: drop-shadow(0px 0 10px red) invert(70%);
+    filter: drop-shadow(0px 0 10px #FF0099) invert(70%);
   }
 
   100% {
-    filter: drop-shadow(0px 0 20px red) invert(75%);
+    filter: drop-shadow(0px 0 20px #FF0099) invert(75%);
   }
 }
 

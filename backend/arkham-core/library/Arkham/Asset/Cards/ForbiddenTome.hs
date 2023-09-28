@@ -23,7 +23,7 @@ instance HasAbilities ForbiddenTome where
   getAbilities (ForbiddenTome a) =
     [ withCriteria
         (mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1 <> exhaust a <> assetUseCost a Secret 1)
-        (ControlsThis <> Negate (SelfHasModifier CannotDrawCards))
+        (ControlsThis <> CanDrawCards)
     ]
 
 instance RunMessage ForbiddenTome where

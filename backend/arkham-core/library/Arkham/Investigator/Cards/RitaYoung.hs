@@ -37,7 +37,7 @@ instance HasAbilities RitaYoung where
           ( Self
               <> AnyCriterion
                 [ LocationExists AccessibleLocation
-                , enemyExists $ EvadingEnemy <> EnemyCanBeDamagedBySource (toAbilitySource a 1)
+                , exists (EvadingEnemy <> EnemyCanBeDamagedBySource (toAbilitySource a 1)) <> CanDealDamage
                 ]
           )
           (freeReaction $ Matcher.EnemyEvaded Timing.After You AnyEnemy)
@@ -60,7 +60,11 @@ instance RunMessage RitaYoung where
       push $ createCardEffect Cards.ritaYoung Nothing (toSource attrs) (toTarget iid)
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (toEnemyId -> enemyId) _ -> do
-      canDamage <- enemyId <=~> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
+      canDamage <-
+        andM
+          [ enemyId <=~> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
+          , withoutModifier iid CannotDealDamage
+          ]
       connectingLocations <- selectList AccessibleLocation
       push
         $ chooseOrRunOne iid

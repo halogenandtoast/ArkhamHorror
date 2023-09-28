@@ -25,7 +25,7 @@ instance HasModifiersFor BeatCop where
 
 instance HasAbilities BeatCop where
   getAbilities (BeatCop x) =
-    [ restrictedAbility x 1 (ControlsThis <> enemyExists (EnemyAt YourLocation))
+    [ restrictedAbility x 1 (ControlsThis <> enemyExists (EnemyAt YourLocation) <> CanDealDamage)
         $ FastAbility (DiscardCost FromPlay $ toTarget x)
     ]
 

@@ -6,13 +6,11 @@ module Arkham.Asset.Cards.FortyFiveThompsonRogue3 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyFight)
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype FortyFiveThompsonRogue3 = FortyFiveThompsonRogue3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,45 +22,34 @@ fortyFiveThompsonRogue3 =
 
 instance HasAbilities FortyFiveThompsonRogue3 where
   getAbilities (FortyFiveThompsonRogue3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
-        $ ActionCost 1
-        <> UseCost (AssetWithId $ toId a) Ammo 1
-    ]
+    [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
 
 instance RunMessage FortyFiveThompsonRogue3 where
   runMessage msg a@(FortyFiveThompsonRogue3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
-        [ skillTestModifiers
-            attrs
-            (InvestigatorTarget iid)
-            [DamageDealt 1, SkillModifier SkillCombat 2]
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
+        [ skillTestModifiers attrs iid [DamageDealt 1, SkillModifier #combat 2]
+        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n
-      | useCount (assetUses attrs) > 0 -> do
-          mSkillTestTarget <- getSkillTestTarget
-          case mSkillTestTarget of
-            Just (EnemyTarget eid) -> do
-              fightValue <- field EnemyFight eid
-              when (n >= fightValue) $ do
-                enemies <-
-                  selectList
-                    $ EnemyAt (locationWithInvestigator iid)
-                    <> NotEnemy
-                      (EnemyWithId eid)
-                push
-                  $ chooseOrRunOne iid
-                  $ Label "Do not damage any enemies" []
-                  : [ targetLabel
-                      eid'
-                      [ SpendUses (toTarget attrs) Ammo 1
-                      , InvestigatorDamageEnemy iid eid' (toSource attrs)
-                      ]
-                    | eid' <- enemies
+    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | useCount (assetUses attrs) > 0 -> do
+      mSkillTestTarget <- getSkillTestTarget
+      case mSkillTestTarget of
+        Just (EnemyTarget eid) -> do
+          fightValue <- field EnemyFight eid
+          when (n >= fightValue) $ do
+            enemies <- selectList $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid)
+            canDealDamage <- withoutModifier iid CannotDealDamage
+            push
+              $ chooseOrRunOne iid
+              $ Label "Do not damage any enemies" []
+              : [ targetLabel eid'
+                  $ [ SpendUses (toTarget attrs) Ammo 1
+                    , InvestigatorDamageEnemy iid eid' (toSource attrs)
                     ]
-            _ -> pure ()
-          pure a
+                | canDealDamage
+                , eid' <- enemies
+                ]
+        _ -> pure ()
+      pure a
     _ -> FortyFiveThompsonRogue3 <$> runMessage msg attrs

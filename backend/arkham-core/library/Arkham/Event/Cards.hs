@@ -373,6 +373,7 @@ dynamiteBlast =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Tactic]
     , cdAlternateCardCodes = ["01524"]
+    , cdCriteria = Just $ Criteria.CanDealDamage
     }
 
 extraAmmunition1 :: CardDef
@@ -466,9 +467,11 @@ sneakAttack =
     , cdCardTraits = setFromList [Tactic]
     , cdCriteria =
         Just
-          $ Criteria.enemyExists
-          $ EnemyAt YourLocation
-          <> ExhaustedEnemy
+          $ Criteria.exists
+            ( EnemyAt YourLocation
+                <> ExhaustedEnemy
+            )
+          <> Criteria.CanDealDamage
     , cdAlternateCardCodes = ["01552"]
     }
 
@@ -768,10 +771,7 @@ oops =
     { cdSkills = [#combat, #combat]
     , cdCardTraits = singleton Fortune
     , cdCriteria =
-        Just
-          $ Criteria.enemyExists
-          $ EnemyAt YourLocation
-          <> NotEnemy AttackedEnemy
+        Just $ Criteria.exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy) <> Criteria.CanDealDamage
     , cdFastWindow =
         Just
           $ SkillTestResult #after You (WhileAttackingAnEnemy EnemyEngagedWithYou)
@@ -1170,9 +1170,11 @@ sneakAttack2 =
     , cdLevel = 2
     , cdCriteria =
         Just
-          $ Criteria.enemyExists
-          $ EnemyAt YourLocation
-          <> EnemyNotEngagedWithYou
+          $ Criteria.exists
+            ( EnemyAt YourLocation
+                <> EnemyNotEngagedWithYou
+            )
+          <> Criteria.CanDealDamage
     }
 
 stormOfSpirits :: CardDef
@@ -1306,7 +1308,7 @@ manoAMano1 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
-        Just $ Criteria.FirstAction <> Criteria.enemyExists EnemyEngagedWithYou
+        Just $ Criteria.FirstAction <> Criteria.enemyExists EnemyEngagedWithYou <> Criteria.CanDealDamage
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 1
     }
@@ -1788,9 +1790,11 @@ coupDeGrace =
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdCriteria =
         Just
-          $ Criteria.enemyExists
-          $ EnemyAt YourLocation
-          <> EnemyCanBeDamagedBySource ThisCard
+          $ Criteria.exists
+            ( EnemyAt YourLocation
+                <> EnemyCanBeDamagedBySource ThisCard
+            )
+          <> Criteria.CanDealDamage
     }
 
 wingingIt :: CardDef
@@ -2154,7 +2158,8 @@ smallFavor =
     , cdCardTraits = setFromList [Favor, Service]
     , cdCriteria =
         Just
-          $ Criteria.AnyCriterion
+          $ Criteria.CanDealDamage
+          <> Criteria.AnyCriterion
             [ Criteria.enemyExists $ EnemyAt YourLocation <> NonEliteEnemy
             , Criteria.enemyExists
                 ( EnemyOneOf
@@ -2462,6 +2467,7 @@ oops2 =
     { cdSkills = [#combat, #combat, #agility]
     , cdCardTraits = singleton Fortune
     , cdLevel = 2
+    , cdCriteria = Just Criteria.CanDealDamage
     , cdFastWindow =
         Just
           $ SkillTestResult #after You (WhileAttackingAnEnemy AnyEnemy)
@@ -2715,6 +2721,7 @@ manoAMano2 =
         Just
           $ Criteria.FirstAction
           <> Criteria.enemyExists EnemyEngagedWithYou
+          <> Criteria.CanDealDamage
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 2
     }

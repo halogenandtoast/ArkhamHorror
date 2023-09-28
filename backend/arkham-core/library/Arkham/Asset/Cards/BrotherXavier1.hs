@@ -39,7 +39,7 @@ instance HasModifiersFor BrotherXavier1 where
 
 instance HasAbilities BrotherXavier1 where
   getAbilities (BrotherXavier1 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restrictedAbility a 1 (ControlsThis <> CanDealDamage)
         $ ReactionAbility
           (Matcher.AssetDefeated Timing.When ByAny $ AssetWithId $ toId a)
           Free

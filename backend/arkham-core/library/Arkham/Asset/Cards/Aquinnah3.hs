@@ -31,7 +31,7 @@ instance HasAbilities Aquinnah3 where
     [ restrictedAbility
         a
         1
-        (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        (ControlsThis <> CanDealDamage <> exists (EnemyAt YourLocation))
         $ ReactionAbility
           (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
         $ Costs

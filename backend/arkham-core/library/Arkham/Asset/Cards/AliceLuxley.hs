@@ -33,11 +33,11 @@ instance HasAbilities AliceLuxley where
         a
         1
         ( ControlsThis
-            <> EnemyCriteria
-              ( EnemyExists
-                  $ EnemyAt YourLocation
+            <> exists
+              ( EnemyAt YourLocation
                   <> EnemyCanBeDamagedBySource (toAbilitySource a 1)
               )
+            <> CanDealDamage
         )
         $ ReactionAbility
           (Matcher.DiscoverClues Timing.After You Anywhere $ AtLeast $ Static 1)

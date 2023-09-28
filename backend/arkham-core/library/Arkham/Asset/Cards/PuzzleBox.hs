@@ -36,7 +36,8 @@ instance HasAbilities PuzzleBox where
           2
           ( ControlsThis
               <> AnyCriterion
-                [ enemyExists (enemyIs Enemies.theSpectralWatcher)
+                [ enemyExists (enemyIs Enemies.theSpectralWatcher <> NotEnemy ExhaustedEnemy)
+                , enemyExists (enemyIs Enemies.theSpectralWatcher <> ExhaustedEnemy) <> CanDealDamage
                 , LocationExists (YourLocation <> LocationWithBrazier Lit)
                 ]
           )
@@ -54,6 +55,7 @@ instance RunMessage PuzzleBox where
       exhaustedSpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ExhaustedEnemy
       readySpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ReadyEnemy
       locationLit <- selectOne $ LocationWithBrazier Lit <> locationWithInvestigator iid
+      canDealDamage <- withoutModifier iid CannotDealDamage
       push
         $ chooseOrRunOne iid
         $ [ Label
@@ -65,7 +67,8 @@ instance RunMessage PuzzleBox where
            | enemyId <- maybeToList readySpectralWatcher
            ]
         <> [ Label "Deal 5 damage to the Spectral Watcher" [EnemyDamage enemyId $ nonAttack attrs 5]
-           | enemyId <- maybeToList exhaustedSpectralWatcher
+           | canDealDamage
+           , enemyId <- maybeToList exhaustedSpectralWatcher
            ]
       pure a
     _ -> PuzzleBox <$> runMessage msg attrs

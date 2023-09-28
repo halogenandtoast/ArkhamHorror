@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
@@ -46,20 +47,18 @@ instance HasAbilities Ambush1 where
 instance RunMessage Ambush1 where
   runMessage msg e@(Ambush1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
+      lid <- fieldJust InvestigatorLocation iid
       push $ PlaceEvent iid eid (AttachedToLocation lid)
       pure e
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       pure e
     UseCardAbility _ source 2 [(windowType -> Window.EnemySpawns enemyId _)] _ | isSource attrs source -> do
+      iid <- field EventOwner (toId attrs)
+      canDealDamage <- withoutModifier iid CannotDealDamage
       pushAll
-        [ EnemyDamage enemyId $ nonAttack source 2
-        , Discard (toAbilitySource attrs 2) (toTarget attrs)
-        ]
+        $ [EnemyDamage enemyId $ nonAttack source 2 | canDealDamage]
+        <> [ Discard (toAbilitySource attrs 2) (toTarget attrs)
+           ]
       pure e
     _ -> Ambush1 <$> runMessage msg attrs

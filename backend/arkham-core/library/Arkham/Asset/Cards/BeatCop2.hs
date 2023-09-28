@@ -24,7 +24,7 @@ instance HasModifiersFor BeatCop2 where
 
 instance HasAbilities BeatCop2 where
   getAbilities (BeatCop2 x) =
-    [ restrictedAbility x 1 (ControlsThis <> enemyExists (EnemyAt YourLocation))
+    [ restrictedAbility x 1 (ControlsThis <> enemyExists (EnemyAt YourLocation) <> CanDealDamage)
         $ FastAbility
         $ Costs [exhaust x, DamageCost (toSource x) (toTarget x) 1]
     ]

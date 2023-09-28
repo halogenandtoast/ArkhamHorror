@@ -25,7 +25,7 @@ instance HasAbilities Lantern where
   getAbilities (Lantern x) =
     [ investigateAbility x 1 (ActionCost 1) ControlsThis
     , doesNotProvokeAttacksOfOpportunity
-        $ restrictedAbility x 2 (ControlsThis <> enemyExists (EnemyAt YourLocation))
+        $ restrictedAbility x 2 (ControlsThis <> CanDealDamage <> enemyExists (EnemyAt YourLocation))
         $ actionAbilityWithCost (discardCost x)
     ]
 

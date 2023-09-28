@@ -43,6 +43,11 @@ pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources)
   where
     CanGainResources = Negate (SelfHasModifier CannotGainResources)
 
+pattern CanDealDamage :: Criterion
+pattern CanDealDamage <- Negate (SelfHasModifier CannotDealDamage)
+  where
+    CanDealDamage = Negate (SelfHasModifier CannotGainResources)
+
 pattern CanDiscoverCluesAt :: LocationMatcher -> Criterion
 pattern CanDiscoverCluesAt locationMatcher =
   InvestigatorExists (InvestigatorMatches [You, InvestigatorCanDiscoverCluesAt locationMatcher])

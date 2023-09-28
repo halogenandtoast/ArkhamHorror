@@ -149,6 +149,10 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
 
 const modifiers = computed(() => props.player.modifiers)
 
+const ethereal = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Ethereal") ?? false
+})
+
 function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) {
   let modified = base
 
@@ -199,10 +203,11 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
 </script>
 
 <template>
-  <img v-if="portrait"
+  <img
+    v-if="portrait"
     :src="portraitImage"
     class="portrait"
-    :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1 }"
+    :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal }"
     @click="$emit('choose', investigatorAction)"
   />
   <div v-else>
@@ -458,4 +463,39 @@ i.action {
 .activeButton {
   border: 1px solid #FF00FF;
 }
+
+@keyframes become-ghost {
+  100% {
+    filter: drop-shadow(0px 0 20px red) invert(75%);
+  }
+}
+
+@keyframes ghost {
+  0% {
+    filter: drop-shadow(0px 0 20px red) invert(75%);
+  }
+
+  50% {
+    filter: drop-shadow(0px 0 10px red) invert(70%);
+  }
+
+  100% {
+    filter: drop-shadow(0px 0 20px red) invert(75%);
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+.ethereal {
+  height: fit-content;
+  will-change: filter;
+  transition: filter .2s ease-out;
+  animation-direction: forwards;
+  animation: become-ghost 1s linear, ghost 3s linear 1s infinite;
+}
+
 </style>

@@ -29,7 +29,7 @@ instance HasAbilities Aquinnah1 where
     [ controlledAbility
         a
         1
-        (EnemyCriteria (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation)))
+        (CanDealDamage <> EnemyCriteria (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation)))
         $ ReactionAbility
           (Matcher.EnemyAttacks #when You AnyEnemyAttack AnyEnemy)
           (exhaust a <> HorrorCost (toSource a) (toTarget a) 1)

@@ -22,7 +22,7 @@ guardDog = ally GuardDog Cards.guardDog (3, 1)
 
 instance HasAbilities GuardDog where
   getAbilities (GuardDog x) =
-    [ restrictedAbility x 1 ControlsThis
+    [ restrictedAbility x 1 (ControlsThis <> CanDealDamage)
         $ freeReaction
         $ AssetDealtDamage #when (SourceIsEnemyAttack AnyEnemy) (AssetWithId (toId x))
     ]

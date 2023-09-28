@@ -6,6 +6,7 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
@@ -31,8 +32,9 @@ instance RunMessage DynamiteBlast3 where
           $ AccessibleFrom
           $ LocationWithId
             currentLocationId
+      canDealDamage <- withoutModifier iid CannotDealDamage
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
-        enemyIds <- selectList $ EnemyAt $ LocationWithId lid
+        enemyIds <- if canDealDamage then selectList (enemyAt lid) else pure []
         investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
         pure
           ( lid

@@ -23,7 +23,7 @@ zoeysCross = asset ZoeysCross Cards.zoeysCross
 
 instance HasAbilities ZoeysCross where
   getAbilities (ZoeysCross x) =
-    [ restrictedAbility x 1 ControlsThis
+    [ restrictedAbility x 1 (ControlsThis <> CanDealDamage)
         $ ReactionAbility (EnemyEngaged Timing.After You AnyEnemy)
         $ Costs [ExhaustCost (toTarget x), ResourceCost 1]
     ]

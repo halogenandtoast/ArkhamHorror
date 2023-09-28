@@ -49,7 +49,11 @@ instance HasModifiersFor ImDoneRunninEffect where
 instance RunMessage ImDoneRunninEffect where
   runMessage msg e@(ImDoneRunninEffect attrs@EffectAttrs {..}) = case msg of
     EnemyEvaded iid eid | InvestigatorTarget iid == effectTarget -> do
-      canDamage <- eid <=~> EnemyCanBeDamagedBySource effectSource
+      canDamage <-
+        andM
+          [ eid <=~> EnemyCanBeDamagedBySource effectSource
+          , withoutModifier iid CannotDealDamage
+          ]
       when canDamage
         $ push
         $ chooseOne

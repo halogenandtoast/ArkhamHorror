@@ -115,7 +115,7 @@ import Arkham.Story.Stories (
   unfinishedBusiness_JEffect,
   valentinosFateEffect,
  )
-import Arkham.Treachery.Treacheries (mysteriesOfTheLodgeEffect)
+import Arkham.Treachery.Treacheries (arcaneBarrierEffect, mysteriesOfTheLodgeEffect)
 
 createEffect
   :: MonadRandom m
@@ -227,7 +227,7 @@ allEffects =
     , ("02028", SomeEffect riteOfSeeking)
     , ("02031", SomeEffect bindMonster2)
     , ("02100", SomeEffect pushedIntoTheBeyond)
-    , ("02102", SomeEffect arcaneBarrier)
+    , ("02102", SomeEffect arcaneBarrierEffect)
     , ("02112", SomeEffect songOfTheDead2)
     , ("02114", SomeEffect fireExtinguisher1)
     , ("02150", SomeEffect deduction2)

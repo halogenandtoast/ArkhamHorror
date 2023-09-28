@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -26,15 +25,13 @@ ants = treachery Ants Cards.ants
 instance RunMessage Ants where
   runMessage msg t@(Ants attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillAgility 3
+      push $ revelationSkillTest iid attrs #agility 3
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
-      do
-        push $ RevelationChoice iid (toSource attrs) n
-        pure t
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      push $ RevelationChoice iid (toSource attrs) n
+      pure t
     RevelationChoice iid (isSource attrs -> True) n | n > 0 -> do
-      hasDiscardableAssets <-
-        selectAny $ DiscardableAsset <> assetControlledBy iid
+      hasDiscardableAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
       push
         $ chooseOrRunOne iid
         $ Label "Discard hand card" [toMessage $ chooseAndDiscardCard iid attrs]

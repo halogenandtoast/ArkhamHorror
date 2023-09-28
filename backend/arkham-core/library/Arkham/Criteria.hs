@@ -175,6 +175,9 @@ instance Exists LocationMatcher where
 instance Exists EnemyMatcher where
   exists = enemyExists
 
+instance Exists ExtendedCardMatcher where
+  exists = ExtendedCardExists
+
 pattern CanPlaceDoomOnThis :: Criterion
 pattern CanPlaceDoomOnThis <- Negate (SelfHasModifier CannotPlaceDoomOnThis)
   where

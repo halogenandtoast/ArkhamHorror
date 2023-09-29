@@ -63,6 +63,9 @@ instance ToJSON EnemyAttrs where
 instance FromJSON EnemyAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
+instance Be EnemyAttrs EnemyMatcher where
+  be = EnemyWithId . enemyId
+
 instance HasCardCode EnemyAttrs where
   toCardCode = enemyCardCode
 

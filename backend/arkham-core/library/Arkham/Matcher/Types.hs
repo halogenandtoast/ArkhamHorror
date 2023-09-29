@@ -379,6 +379,7 @@ instance Plated LocationMatcher
 
 class IsMatcher a
 instance IsMatcher LocationMatcher
+instance IsMatcher EnemyMatcher
 class IsMatcher b => Be a b where
   be :: a -> b
 

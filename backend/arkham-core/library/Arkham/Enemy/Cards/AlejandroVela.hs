@@ -7,16 +7,13 @@ module Arkham.Enemy.Cards.AlejandroVela (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
 
 newtype AlejandroVela = AlejandroVela EnemyAttrs
@@ -24,44 +21,27 @@ newtype AlejandroVela = AlejandroVela EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alejandroVela :: EnemyCard AlejandroVela
-alejandroVela =
-  enemy AlejandroVela Cards.alejandroVela (6, PerPlayer 4, 3) (1, 2)
+alejandroVela = enemy AlejandroVela Cards.alejandroVela (6, PerPlayer 4, 3) (1, 2)
 
 instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 OnSameLocation
-          $ ActionAbility (Just Action.Parley)
-          $ ActionCost 1
-      ]
+    withBaseAbilities a [restrictedAbility a 1 OnSameLocation parleyAction_]
 
 instance RunMessage AlejandroVela where
   runMessage msg e@(AlejandroVela attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
-        [ createCardEffect
-            Cards.alejandroVela
-            Nothing
-            (toSource attrs)
-            SkillTestTarget
-        , parley
-            iid
-            (toSource attrs)
-            (toTarget attrs)
-            SkillIntellect
-            5
+        [ createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) SkillTestTarget
+        , parley iid (toAbilitySource attrs 1) attrs #intellect 5
         ]
       pure e
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
-        pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Flip iid (toSource attrs) (toTarget attrs)
-        pure e
-    Flip iid _ target | isTarget attrs target -> do
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ InitiateEnemyAttack $ enemyAttack (toId attrs) (toAbilitySource attrs 1) iid
+      pure e
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
+      pure e
+    Flip iid _ (isTarget attrs -> True) -> do
       anotherWay <- genCard Story.anotherWay
       push $ ReadStory iid anotherWay ResolveIt (Just $ toTarget attrs)
       pure e
@@ -72,19 +52,18 @@ newtype AlejandroVelaEffect = AlejandroVelaEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alejandroVelaEffect :: EffectArgs -> AlejandroVelaEffect
-alejandroVelaEffect =
-  cardEffect AlejandroVelaEffect Cards.alejandroVela
+alejandroVelaEffect = cardEffect AlejandroVelaEffect Cards.alejandroVela
 
 instance HasModifiersFor AlejandroVelaEffect where
   getModifiersFor (ChaosTokenTarget token) (AlejandroVelaEffect a)
-    | effectTarget a == SkillTestTarget && chaosTokenFace token == Tablet =
+    | a.target == SkillTestTarget && token.face == Tablet =
         pure $ toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AlejandroVelaEffect where
-  runMessage msg e@(AlejandroVelaEffect attrs@EffectAttrs {..}) =
+  runMessage msg e@(AlejandroVelaEffect attrs) =
     case msg of
-      SkillTestEnds _ _ | effectTarget == SkillTestTarget -> do
-        push (DisableEffect effectId)
+      SkillTestEnds _ _ | attrs.target == SkillTestTarget -> do
+        push $ disable attrs
         pure e
       _ -> AlejandroVelaEffect <$> runMessage msg attrs

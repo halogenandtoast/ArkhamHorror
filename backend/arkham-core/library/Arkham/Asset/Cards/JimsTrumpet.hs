@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (RevealChaosToken)
+import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Damage
 import Arkham.Helpers.Investigator

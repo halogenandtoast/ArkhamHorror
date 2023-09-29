@@ -12,11 +12,12 @@ import Arkham.Trait
 
 spec :: Spec
 spec = describe "Bandolier" $ do
-  it "adds a weapon hand slot" $
-    gameTest $ \investigator -> do
+  it "adds a weapon hand slot"
+    $ gameTest
+    $ \investigator -> do
       putCardIntoPlay investigator Assets.bandolier
       bandolier <- selectJust $ assetIs Assets.bandolier
       slots <- findWithDefault [] HandSlot <$> field InvestigatorSlots (toId investigator)
       slots
         `shouldSatisfy` elem
-          (TraitRestrictedSlot (toSource bandolier) Weapon Nothing)
+          (TraitRestrictedSlot (toSource bandolier) Weapon [])

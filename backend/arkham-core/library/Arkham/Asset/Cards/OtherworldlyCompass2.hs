@@ -6,14 +6,11 @@ module Arkham.Asset.Cards.OtherworldlyCompass2 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Investigate
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype OtherworldlyCompass2 = OtherworldlyCompass2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

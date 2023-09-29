@@ -12,7 +12,6 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 mkInvestigate :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m Investigate
 mkInvestigate iid source = mkInvestigateLocation iid source =<< fieldJust InvestigatorLocation iid

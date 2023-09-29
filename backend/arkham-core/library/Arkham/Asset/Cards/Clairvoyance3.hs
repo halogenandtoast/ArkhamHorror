@@ -14,8 +14,6 @@ import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Investigate
-import Arkham.Location.Types (Field (..))
-import Arkham.Projection
 import Arkham.Window qualified as Window
 
 newtype Clairvoyance3 = Clairvoyance3 AssetAttrs

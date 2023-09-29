@@ -10,9 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Investigate
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
-import Arkham.Projection
 
 newtype Flashlight = Flashlight AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

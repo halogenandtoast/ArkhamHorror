@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 

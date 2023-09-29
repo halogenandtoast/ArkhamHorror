@@ -23,7 +23,7 @@ theWingedSerpent =
     Cards.theWingedSerpent
     (8, Static 0, 5)
     (1, 1)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Mouth of K'n-yan"))
+    (spawnAtL ?~ SpawnAt (LocationWithTitle "Mouth of K'n-yan"))
 
 instance HasModifiersFor TheWingedSerpent where
   getModifiersFor target (TheWingedSerpent a)

@@ -22,7 +22,7 @@ eztliGuardian :: EnemyCard EztliGuardian
 eztliGuardian =
   enemyWith EztliGuardian Cards.eztliGuardian (4, Static 2, 2) (1, 0)
     $ spawnAtL
-    ?~ SpawnLocation
+    ?~ SpawnAt
       (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
 
 investigatorMatcher :: EnemyId -> InvestigatorMatcher

@@ -22,7 +22,7 @@ tidalTerror =
     (4, Static 4, 2)
     (1, 2)
     ( spawnAtL
-        ?~ SpawnLocation
+        ?~ SpawnAt
           ( LocationMatchAny
               [ LocationWithTitle "Porte de l'Avancée"
               , LocationWithTitle "Chapel of St. Aubert"

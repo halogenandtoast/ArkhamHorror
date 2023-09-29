@@ -23,7 +23,7 @@ lupineThrall =
     (4, Static 3, 4)
     (1, 1)
     ( (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
-        . (spawnAtL ?~ SpawnLocation (FarthestLocationFromYou Anywhere))
+        . (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
     )
 
 instance RunMessage LupineThrall where

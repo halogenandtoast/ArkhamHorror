@@ -21,7 +21,7 @@ corpseTaker :: EnemyCard CorpseTaker
 corpseTaker =
   enemyWith CorpseTaker Cards.corpseTaker (4, Static 3, 3) (1, 2)
     $ spawnAtL
-    ?~ SpawnLocation (FarthestLocationFromYou EmptyLocation)
+    ?~ SpawnAt (FarthestLocationFromYou EmptyLocation)
 
 instance HasAbilities CorpseTaker where
   getAbilities (CorpseTaker x) =

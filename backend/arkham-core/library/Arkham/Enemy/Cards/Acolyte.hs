@@ -19,7 +19,7 @@ acolyte :: EnemyCard Acolyte
 acolyte =
   enemyWith Acolyte Cards.acolyte (3, Static 1, 2) (1, 0)
     $ spawnAtL
-    ?~ SpawnLocation EmptyLocation
+    ?~ SpawnAt EmptyLocation
 
 instance HasAbilities Acolyte where
   getAbilities (Acolyte a) =

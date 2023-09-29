@@ -24,7 +24,7 @@ billyCooper =
     Cards.billyCooper
     (5, Static 4, 2)
     (2, 0)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Easttown"))
+    (spawnAtL ?~ SpawnAt (LocationWithTitle "Easttown"))
 
 instance HasAbilities BillyCooper where
   getAbilities (BillyCooper attrs) =

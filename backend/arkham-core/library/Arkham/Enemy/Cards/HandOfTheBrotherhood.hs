@@ -24,7 +24,7 @@ handOfTheBrotherhood =
     Cards.handOfTheBrotherhood
     (2, Static 2, 2)
     (0, 1)
-    (spawnAtL ?~ SpawnLocation EmptyLocation)
+    (spawnAtL ?~ SpawnAt EmptyLocation)
 
 instance HasModifiersFor HandOfTheBrotherhood where
   getModifiersFor (InvestigatorTarget _) (HandOfTheBrotherhood a) = do

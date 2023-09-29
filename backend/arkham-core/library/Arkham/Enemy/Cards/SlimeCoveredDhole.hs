@@ -25,7 +25,7 @@ slimeCoveredDhole =
     (2, Static 3, 3)
     (1, 1)
     ( (preyL .~ Prey LowestRemainingHealth)
-        . (spawnAtL ?~ SpawnLocation (LocationWithoutTrait Bayou))
+        . (spawnAtL ?~ SpawnAt (LocationWithoutTrait Bayou))
     )
 
 instance HasAbilities SlimeCoveredDhole where

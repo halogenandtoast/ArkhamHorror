@@ -19,38 +19,20 @@ newtype JeremiahPierce = JeremiahPierce EnemyAttrs
 
 jeremiahPierce :: EnemyCard JeremiahPierce
 jeremiahPierce =
-  enemyWith
-    JeremiahPierce
-    Cards.jeremiahPierce
-    (4, Static 3, 4)
-    (1, 1)
-    ( spawnAtL
-        ?~ SpawnLocation
-          ( FirstLocation
-              [LocationWithTitle "Your House", LocationWithTitle "Rivertown"]
-          )
-    )
+  enemyWith JeremiahPierce Cards.jeremiahPierce (4, Static 3, 4) (1, 1)
+    $ spawnAtL
+    ?~ SpawnAtFirst ["Your House", "Rivertown"]
 
 instance HasAbilities JeremiahPierce where
   getAbilities (JeremiahPierce attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 OnSameLocation
-          $ ActionAbility (Just Parley)
-          $ ActionCost 1
-      ]
+    withBaseAbilities attrs [restrictedAbility attrs 1 OnSameLocation parleyAction_]
 
 instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility iid (EnemySource eid) 1 _ _
-      | eid == enemyId ->
-          e
-            <$ pushAll
-              [ AddToVictory (EnemyTarget enemyId)
-              , CreateEffect
-                  (toCardCode attrs)
-                  Nothing
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-              ]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      pushAll
+        [ AddToVictory (toTarget attrs)
+        , CreateEffect (toCardCode attrs) Nothing (toSource attrs) (InvestigatorTarget iid)
+        ]
+      pure e
     _ -> JeremiahPierce <$> runMessage msg attrs

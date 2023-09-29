@@ -55,7 +55,7 @@ isActionTarget :: EnemyAttrs -> Target -> Bool
 isActionTarget attrs = isTarget attrs . toProxyTarget
 
 spawnAt :: EnemyId -> SpawnAt -> GameT ()
-spawnAt eid (SpawnLocation locationMatcher) = do
+spawnAt eid (SpawnAt locationMatcher) = do
   windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
   pushAll
     $ windows'
@@ -65,10 +65,10 @@ spawnAt eid (SpawnPlaced placement) = do
   push $ PlaceEnemy eid placement
 spawnAt _ (SpawnAtFirst []) = error "must have something"
 spawnAt eid (SpawnAtFirst (x : xs)) = case x of
-  SpawnLocation matcher -> do
+  SpawnAt matcher -> do
     willMatch <- selectAny matcher
     if willMatch
-      then spawnAt eid (SpawnLocation matcher)
+      then spawnAt eid (SpawnAt matcher)
       else spawnAt eid (SpawnAtFirst xs)
   other -> spawnAt eid other
 spawnAt eid SpawnAtRandomSetAsideLocation = do

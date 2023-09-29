@@ -25,7 +25,7 @@ knightOfTheOuterVoid =
     Cards.knightOfTheOuterVoid
     (3, Static 3, 4)
     (1, 1)
-    (spawnAtL ?~ SpawnLocation ConnectedLocation)
+    (spawnAtL ?~ SpawnAt ConnectedLocation)
 
 instance HasAbilities KnightOfTheOuterVoid where
   getAbilities (KnightOfTheOuterVoid attrs) =

@@ -26,7 +26,7 @@ malevolentSpirit =
     (2, Static 2, 4)
     (0, 1)
     ( spawnAtL
-        ?~ SpawnLocation
+        ?~ SpawnAt
           (LocationMatchAny [LocationWithTitle "Chapel Attic", LocationWithTitle "Chapel Crypt"])
     )
 

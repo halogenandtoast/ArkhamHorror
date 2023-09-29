@@ -21,7 +21,7 @@ poleman =
     Cards.poleman
     (4, Static 4, 2)
     (1, 1)
-    ( (spawnAtL ?~ SpawnLocation (LocationWithTitle "Canal-side"))
+    ( (spawnAtL ?~ "Canal-side")
         . (preyL .~ Prey (HasMostMatchingAsset (AssetWithTitle "Innocent Reveler")))
     )
 

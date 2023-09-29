@@ -28,7 +28,7 @@ lodgeJailor =
     Cards.lodgeJailor
     (2, Static 3, 3)
     (0, 2)
-    (spawnAtL ?~ SpawnLocation (LocationWithTrait Sanctum))
+    (spawnAtL ?~ SpawnAt (LocationWithTrait Sanctum))
 
 instance HasAbilities LodgeJailor where
   getAbilities (LodgeJailor attrs) =

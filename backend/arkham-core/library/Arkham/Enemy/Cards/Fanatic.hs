@@ -24,7 +24,7 @@ fanatic =
     Cards.fanatic
     (3, Static 2, 3)
     (1, 0)
-    (spawnAtL ?~ SpawnLocation (LocationWithMostClues RevealedLocation))
+    (spawnAtL ?~ SpawnAt (LocationWithMostClues RevealedLocation))
 
 instance HasAbilities Fanatic where
   getAbilities (Fanatic a) =

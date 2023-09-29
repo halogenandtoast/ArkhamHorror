@@ -21,7 +21,7 @@ corpseHungryGhoul =
     Cards.corpseHungryGhoul
     (4, Static 3, 3)
     (2, 2)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Bedroom"))
+    (spawnAtL ?~ SpawnAt (LocationWithTitle "Bedroom"))
 
 instance RunMessage CorpseHungryGhoul where
   runMessage msg (CorpseHungryGhoul attrs) =

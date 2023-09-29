@@ -24,7 +24,7 @@ theThingThatFollows =
     Cards.theThingThatFollows
     (3, Static 2, 3)
     (1, 1)
-    ( (spawnAtL ?~ SpawnLocation (FarthestLocationFromYou Anywhere))
+    ( (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
         . (\a -> a & preyL .~ BearerOf (toId a))
     )
 

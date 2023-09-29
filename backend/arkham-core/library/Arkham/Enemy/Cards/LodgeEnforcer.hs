@@ -24,7 +24,7 @@ lodgeEnforcer =
     (1, 1)
     ( spawnAtL
         ?~ SpawnAtFirst
-          [SpawnLocation $ MostBreaches $ LocationWithBreaches (AtLeast $ Static 1), "Silver Twilight Lodge"]
+          [SpawnAt $ MostBreaches $ LocationWithBreaches (AtLeast $ Static 1), "Silver Twilight Lodge"]
     )
 
 instance HasModifiersFor LodgeEnforcer where

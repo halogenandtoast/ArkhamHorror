@@ -26,7 +26,7 @@ temporalDevourer =
     (4, Static 5, 4)
     (1, 1)
     $ ( spawnAtL
-          ?~ SpawnLocation
+          ?~ SpawnAt
             ( FarthestLocationFromYou
                 (LocationMatchAny $ map LocationWithTrait [Shattered, Extradimensional])
             )

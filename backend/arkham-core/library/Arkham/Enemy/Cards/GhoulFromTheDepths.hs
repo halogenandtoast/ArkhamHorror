@@ -21,7 +21,7 @@ ghoulFromTheDepths =
     Cards.ghoulFromTheDepths
     (3, Static 4, 2)
     (1, 1)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Bathroom"))
+    (spawnAtL ?~ SpawnAt (LocationWithTitle "Bathroom"))
 
 instance RunMessage GhoulFromTheDepths where
   runMessage msg (GhoulFromTheDepths attrs) =

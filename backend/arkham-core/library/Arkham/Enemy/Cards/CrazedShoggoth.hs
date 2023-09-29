@@ -24,7 +24,7 @@ crazedShoggoth =
     Cards.crazedShoggoth
     (3, Static 6, 4)
     (2, 2)
-    (spawnAtL ?~ SpawnLocation (NearestLocationToYou $ LocationWithTrait Altered))
+    (spawnAtL ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait Altered))
 
 instance HasAbilities CrazedShoggoth where
   getAbilities (CrazedShoggoth attrs) =

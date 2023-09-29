@@ -24,7 +24,7 @@ witnessOfChaos =
     Cards.witnessOfChaos
     (4, Static 4, 2)
     (1, 1)
-    (spawnAtL ?~ SpawnLocation FewestBreaches)
+    (spawnAtL ?~ SpawnAt FewestBreaches)
 
 instance HasAbilities WitnessOfChaos where
   getAbilities (WitnessOfChaos attrs) =

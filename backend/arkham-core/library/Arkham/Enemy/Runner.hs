@@ -1079,7 +1079,7 @@ instance RunMessage EnemyAttrs where
       modifiers' <- getModifiers enemyId
       let
         getModifiedSpawnAt [] = enemySpawnAt
-        getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnLocation m
+        getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnAt m
         getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
         spawnAtMatcher = getModifiedSpawnAt modifiers'
       case spawnAtMatcher of
@@ -1093,8 +1093,8 @@ instance RunMessage EnemyAttrs where
             applyMatcherExclusions ms (SpawnAtFirst sas) =
               SpawnAtFirst (map (applyMatcherExclusions ms) sas)
             applyMatcherExclusions [] m = m
-            applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnLocation m) =
-              applyMatcherExclusions xs (SpawnLocation $ m <> NotLocation n)
+            applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnAt m) =
+              applyMatcherExclusions xs (SpawnAt $ m <> NotLocation n)
             applyMatcherExclusions (_ : xs) m = applyMatcherExclusions xs m
           spawnAt enemyId (applyMatcherExclusions modifiers' matcher)
       pure a

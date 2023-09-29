@@ -22,7 +22,7 @@ corpseDweller =
     Cards.corpseDweller
     (3, Static 5, 4)
     (2, 1)
-    ( (spawnAtL ?~ SpawnLocation (LocationWithEnemy (EnemyWithTrait Humanoid)))
+    ( (spawnAtL ?~ SpawnAt (LocationWithEnemy (EnemyWithTrait Humanoid)))
         . (surgeIfUnableToSpawnL .~ True)
     )
 

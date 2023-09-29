@@ -27,7 +27,7 @@ formlessSpawn =
     Cards.formlessSpawn
     (2, Static 10, 2)
     (3, 3)
-    (spawnAtL ?~ SpawnLocation (locationIs Locations.nexusOfNKai))
+    (spawnAtL ?~ SpawnAt (locationIs Locations.nexusOfNKai))
 
 instance HasModifiersFor FormlessSpawn where
   getModifiersFor target (FormlessSpawn a) | isTarget a target = do

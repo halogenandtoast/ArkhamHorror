@@ -22,7 +22,7 @@ marshGug =
     Cards.marshGug
     (3, Static 4, 3)
     (2, 1)
-    (spawnAtL ?~ SpawnLocation (LocationWithTrait Bayou))
+    (spawnAtL ?~ SpawnAt (LocationWithTrait Bayou))
 
 instance RunMessage MarshGug where
   runMessage msg (MarshGug attrs) = MarshGug <$> runMessage msg attrs

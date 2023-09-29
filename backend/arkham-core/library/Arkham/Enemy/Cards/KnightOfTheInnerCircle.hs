@@ -24,7 +24,7 @@ knightOfTheInnerCircle =
     Cards.knightOfTheInnerCircle
     (4, Static 4, 2)
     (2, 0)
-    ((spawnAtL ?~ SpawnLocation ConnectedLocation) . (preyL .~ Prey MostKeys))
+    ((spawnAtL ?~ SpawnAt ConnectedLocation) . (preyL .~ Prey MostKeys))
 
 instance HasAbilities KnightOfTheInnerCircle where
   getAbilities (KnightOfTheInnerCircle attrs) =

@@ -28,7 +28,7 @@ darkYoungHost =
     (4, Static 5, 2)
     (2, 2)
     $ spawnAtL
-    ?~ SpawnLocation (LocationWithTrait Bayou)
+    ?~ SpawnAt (LocationWithTrait Bayou)
 
 instance HasAbilities DarkYoungHost where
   getAbilities (DarkYoungHost attrs) =

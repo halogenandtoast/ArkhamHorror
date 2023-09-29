@@ -22,7 +22,7 @@ tonysQuarry :: EnemyCard TonysQuarry
 tonysQuarry =
   enemyWith TonysQuarry Cards.tonysQuarry (4, Static 3, 1) (1, 2)
     $ spawnAtL
-    ?~ SpawnLocation
+    ?~ SpawnAt
       (FarthestLocationFromInvestigator (investigatorIs Investigators.tonyMorgan) Anywhere)
 
 instance HasAbilities TonysQuarry where

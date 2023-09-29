@@ -9,13 +9,13 @@ import Arkham.Placement
 import Data.Aeson.TH
 
 data SpawnAt
-  = SpawnLocation LocationMatcher
+  = SpawnAt LocationMatcher
   | SpawnPlaced Placement
   | SpawnAtRandomSetAsideLocation
   | SpawnAtFirst [SpawnAt]
   deriving stock (Show, Eq)
 
 instance IsString SpawnAt where
-  fromString = SpawnLocation . fromString
+  fromString = SpawnAt . fromString
 
 $(deriveJSON defaultOptions ''SpawnAt)

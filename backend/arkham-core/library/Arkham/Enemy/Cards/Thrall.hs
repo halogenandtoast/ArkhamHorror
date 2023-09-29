@@ -21,7 +21,7 @@ thrall =
     Cards.thrall
     (2, Static 2, 2)
     (1, 1)
-    (spawnAtL ?~ SpawnLocation (LocationWithMostClues Anywhere))
+    (spawnAtL ?~ SpawnAt (LocationWithMostClues Anywhere))
 
 instance RunMessage Thrall where
   runMessage msg (Thrall attrs) = Thrall <$> runMessage msg attrs

@@ -58,7 +58,7 @@ instance RunMessage BalefulReveler where
           BalefulReveler
             <$> runMessage
               msg
-              (attrs & spawnAtL ?~ SpawnLocation (LocationWithId spawnLocation))
+              (attrs & spawnAtL ?~ SpawnAt (LocationWithId spawnLocation))
         Nothing -> error "could not find location for baleful reveler"
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       e <$ push (RequestChaosTokens source (Just iid) (Reveal 1) SetAside)

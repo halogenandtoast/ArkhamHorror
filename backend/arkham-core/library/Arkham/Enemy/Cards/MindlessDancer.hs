@@ -26,7 +26,7 @@ mindlessDancer =
     (6, Static 5, 3)
     (2, 1)
     ( spawnAtL
-        ?~ SpawnLocation (IncludeEmptySpace $ FarthestLocationFromYou $ locationIs Locations.emptySpace)
+        ?~ SpawnAt (IncludeEmptySpace $ FarthestLocationFromYou $ locationIs Locations.emptySpace)
     )
 
 instance HasAbilities MindlessDancer where

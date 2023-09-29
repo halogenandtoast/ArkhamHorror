@@ -23,7 +23,7 @@ keeperOfTheGreatLibrary =
     Cards.keeperOfTheGreatLibrary
     (3, Static 4, 3)
     (1, 1)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Great Library"))
+    (spawnAtL ?~ "Great Library")
 
 instance HasModifiersFor KeeperOfTheGreatLibrary where
   getModifiersFor target (KeeperOfTheGreatLibrary a) | isTarget a target = do

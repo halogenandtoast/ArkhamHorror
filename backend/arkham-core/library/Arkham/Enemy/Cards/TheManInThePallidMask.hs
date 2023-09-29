@@ -27,7 +27,7 @@ theManInThePallidMask =
     Cards.theManInThePallidMask
     (4, Static 3, 4)
     (0, 1)
-    (spawnAtL ?~ SpawnLocation (FarthestLocationFromAll Anywhere))
+    (spawnAtL ?~ SpawnAt (FarthestLocationFromAll Anywhere))
 
 instance HasAbilities TheManInThePallidMask where
   getAbilities (TheManInThePallidMask a) =

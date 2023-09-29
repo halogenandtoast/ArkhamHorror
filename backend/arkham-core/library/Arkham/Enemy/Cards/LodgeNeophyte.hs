@@ -26,7 +26,7 @@ lodgeNeophyte =
     Cards.lodgeNeophyte
     (3, Static 1, 2)
     (0, 1)
-    (spawnAtL ?~ SpawnLocation EmptyLocation)
+    (spawnAtL ?~ SpawnAt EmptyLocation)
 
 instance HasAbilities LodgeNeophyte where
   getAbilities (LodgeNeophyte a) =

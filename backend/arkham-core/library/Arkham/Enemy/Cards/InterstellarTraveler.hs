@@ -26,7 +26,7 @@ interstellarTraveler =
     Cards.interstellarTraveler
     (4, Static 3, 2)
     (1, 2)
-    (spawnAtL ?~ SpawnLocation (LocationWithTrait Extradimensional))
+    (spawnAtL ?~ SpawnAt (LocationWithTrait Extradimensional))
 
 instance HasAbilities InterstellarTraveler where
   getAbilities (InterstellarTraveler attrs) =

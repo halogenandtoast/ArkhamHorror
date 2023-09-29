@@ -27,7 +27,7 @@ cellKeeper =
     Cards.cellKeeper
     (3, Static 3, 2)
     (0, 2)
-    (spawnAtL ?~ SpawnLocation (LocationWithTrait Sanctum))
+    (spawnAtL ?~ SpawnAt (LocationWithTrait Sanctum))
 
 instance HasAbilities CellKeeper where
   getAbilities (CellKeeper attrs) =

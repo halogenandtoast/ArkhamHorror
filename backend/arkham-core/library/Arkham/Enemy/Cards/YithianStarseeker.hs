@@ -23,7 +23,7 @@ yithianStarseeker =
     Cards.yithianStarseeker
     (3, Static 4, 5)
     (2, 1)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Another Dimension"))
+    (spawnAtL ?~ SpawnAt (LocationWithTitle "Another Dimension"))
 
 instance HasAbilities YithianStarseeker where
   getAbilities (YithianStarseeker attrs) =

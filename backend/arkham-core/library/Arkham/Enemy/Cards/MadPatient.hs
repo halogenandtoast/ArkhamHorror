@@ -25,7 +25,7 @@ madPatient =
     (1, 0)
     ( (preyL .~ Prey MostRemainingSanity)
         . ( spawnAtL
-              ?~ SpawnLocation
+              ?~ SpawnAt
                 (NearestLocationToYou $ LocationWithTitle "Asylum Halls")
           )
     )

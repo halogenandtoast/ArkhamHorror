@@ -23,7 +23,7 @@ wizardOfTheOrder =
     Cards.wizardOfTheOrder
     (4, Static 2, 2)
     (1, 0)
-    (spawnAtL ?~ SpawnLocation EmptyLocation)
+    (spawnAtL ?~ SpawnAt EmptyLocation)
 
 instance HasAbilities WizardOfTheOrder where
   getAbilities (WizardOfTheOrder a) =

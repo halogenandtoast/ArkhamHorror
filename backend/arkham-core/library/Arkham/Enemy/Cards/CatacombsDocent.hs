@@ -24,7 +24,7 @@ catacombsDocent =
     Cards.catacombsDocent
     (3, Static 2, 2)
     (0, 1)
-    (spawnAtL ?~ SpawnLocation (NearestLocationToYou UnrevealedLocation))
+    (spawnAtL ?~ SpawnAt (NearestLocationToYou UnrevealedLocation))
 
 instance HasAbilities CatacombsDocent where
   getAbilities (CatacombsDocent a) =

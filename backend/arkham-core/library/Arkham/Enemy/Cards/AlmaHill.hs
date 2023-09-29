@@ -23,7 +23,7 @@ almaHill =
     Cards.almaHill
     (3, Static 3, 3)
     (0, 2)
-    (spawnAtL ?~ SpawnLocation (LocationWithTitle "Southside"))
+    (spawnAtL ?~ SpawnAt (LocationWithTitle "Southside"))
 
 instance HasAbilities AlmaHill where
   getAbilities (AlmaHill attrs) =

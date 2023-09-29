@@ -19,7 +19,7 @@ keeperOfSecrets :: EnemyCard KeeperOfSecrets
 keeperOfSecrets =
   enemyWith KeeperOfSecrets Cards.keeperOfSecrets (4, Static 2, 3) (1, 1)
     $ spawnAtL
-    ?~ SpawnLocation EmptyLocation
+    ?~ SpawnAt EmptyLocation
 
 instance HasAbilities KeeperOfSecrets where
   getAbilities (KeeperOfSecrets a) =

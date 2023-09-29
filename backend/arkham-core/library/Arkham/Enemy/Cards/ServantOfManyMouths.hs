@@ -23,7 +23,7 @@ servantOfManyMouths =
     Cards.servantOfManyMouths
     (3, Static 2, 1)
     (2, 0)
-    (spawnAtL ?~ SpawnLocation EmptyLocation)
+    (spawnAtL ?~ SpawnAt EmptyLocation)
 
 instance HasAbilities ServantOfManyMouths where
   getAbilities (ServantOfManyMouths attrs) =

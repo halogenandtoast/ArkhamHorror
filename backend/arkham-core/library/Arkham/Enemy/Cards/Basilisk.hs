@@ -21,7 +21,7 @@ basilisk :: EnemyCard Basilisk
 basilisk =
   enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
     $ spawnAtL
-    ?~ SpawnLocation (LocationWithDistanceFrom 1 $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
+    ?~ SpawnAt (LocationWithDistanceFrom 1 $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
 
 instance HasAbilities Basilisk where
   getAbilities (Basilisk a) =

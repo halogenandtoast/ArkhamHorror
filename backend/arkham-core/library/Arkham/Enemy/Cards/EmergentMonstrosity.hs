@@ -23,7 +23,7 @@ emergentMonstrosity =
     (4, Static 5, 3)
     (2, 2)
     ( ( spawnAtL
-          ?~ SpawnLocation
+          ?~ SpawnAt
             (FirstLocation [LocationInDirection RightOf YourLocation, YourLocation])
       )
         . (exhaustedL .~ True)

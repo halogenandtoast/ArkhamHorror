@@ -18,17 +18,12 @@ newtype PitWarden = PitWarden EnemyAttrs
 
 pitWarden :: EnemyCard PitWarden
 pitWarden =
-  enemyWith
-    PitWarden
-    Cards.pitWarden
-    (4, Static 4, 1)
-    (1, 1)
-    ( spawnAtL
-        ?~ SpawnAtFirst
-          [ SpawnLocation (LocationWithEnemy $ enemyIs Enemies.yig)
-          , SpawnPlaced (OutOfPlay PursuitZone)
-          ]
-    )
+  enemyWith PitWarden Cards.pitWarden (4, Static 4, 1) (1, 1)
+    $ spawnAtL
+    ?~ SpawnAtFirst
+      [ SpawnAt (LocationWithEnemy $ enemyIs Enemies.yig)
+      , SpawnPlaced (OutOfPlay PursuitZone)
+      ]
 
 instance RunMessage PitWarden where
   runMessage msg (PitWarden attrs) = PitWarden <$> runMessage msg attrs

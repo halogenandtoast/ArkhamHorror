@@ -25,7 +25,7 @@ vengefulWitch =
     (3, Static 3, 3)
     (1, 1)
     ( spawnAtL
-        ?~ SpawnLocation
+        ?~ SpawnAt
           (LocationMatchAny [LocationWithTitle "The Gallows", LocationWithTitle "Heretics' Graves"])
     )
 

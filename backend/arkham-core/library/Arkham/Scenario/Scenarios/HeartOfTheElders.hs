@@ -28,7 +28,6 @@ import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDamage)
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers

@@ -22,7 +22,6 @@ import Arkham.Helpers.Campaign
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Monoid (Endo (..))

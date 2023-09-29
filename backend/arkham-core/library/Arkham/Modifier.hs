@@ -60,6 +60,8 @@ data ModifierType
   | AdditionalStartingUses Int
   | SetAbilityCost Cost
   | AdditionalCost Cost
+  | CanIgnoreAspect AspectMatcher
+  | SharesSlotWith Int CardMatcher -- card matcher allows us to check more easily from hand
   | ChangeRevealStrategy RevealStrategy
   | CannotTriggerAbilityMatching AbilityMatcher
   | ConnectedToWhen LocationMatcher LocationMatcher
@@ -232,8 +234,8 @@ data ModifierType
   | TopCardOfDeckIsRevealed
   | TreatAllDamageAsDirect
   | TreatRevealedChaosTokenAs ChaosTokenFace
-  | UseSkillInPlaceOf SkillType SkillType
-  | UseSkillInsteadOf SkillType SkillType
+  | UseSkillInPlaceOf SkillType SkillType -- oh no, why are these similar, this let's you choose
+  | UseSkillInsteadOf SkillType SkillType -- this doesn't
   | SkillModifiersAffectOtherSkill SkillType SkillType
   | AddSkillToOtherSkill SkillType SkillType
   | XPModifier Int

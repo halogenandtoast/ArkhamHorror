@@ -14,7 +14,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.History
 import Arkham.Location.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 
 newtype Evidence1 = Evidence1 EventAttrs

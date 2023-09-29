@@ -11,7 +11,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Trait (Trait (Serpent))

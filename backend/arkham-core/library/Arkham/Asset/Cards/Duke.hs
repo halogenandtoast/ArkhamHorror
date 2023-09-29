@@ -9,9 +9,8 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
-import Arkham.Id
+import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Movement
@@ -46,11 +45,6 @@ instance HasAbilities Duke where
         $ ActionAbilityWithBefore (Just #investigate) (Just #move) (ActionCost 1 <> exhaust a)
     ]
 
-dukeInvestigate :: HasGame m => AssetAttrs -> InvestigatorId -> LocationId -> m Message
-dukeInvestigate attrs iid lid = do
-  skillType <- field LocationInvestigateSkill lid
-  pure $ Investigate iid lid (toSource attrs) Nothing skillType False
-
 instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
@@ -60,7 +54,7 @@ instance RunMessage Duke where
       let source = toAbilitySource attrs 2
       lid <- getJustLocation iid
       accessibleLocationIds <-
-        traverse (traverseToSnd (dukeInvestigate attrs iid)) =<< selectList (accessibleFrom lid)
+        traverse (traverseToSnd (mkInvestigateLocation iid attrs)) =<< selectList (accessibleFrom lid)
       investigateAbilities <-
         filterM
           ( andM
@@ -91,12 +85,12 @@ instance RunMessage Duke where
         <> [ targetLabel
             lid'
             [ Move $ move attrs iid lid'
-            , CheckAdditionalActionCosts iid (toTarget lid') #investigate [investigate']
+            , CheckAdditionalActionCosts iid (toTarget lid') #investigate [toMessage investigate']
             ]
            | (lid', investigate') <- accessibleLocationIds
            ]
       pure a
     UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 _ _ -> do
-      pushM $ dukeInvestigate attrs iid lid
+      pushM $ mkInvestigateLocation iid attrs lid
       pure a
     _ -> Duke <$> runMessage msg attrs

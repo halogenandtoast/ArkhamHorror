@@ -86,3 +86,12 @@ instance Ord PreyMatcher
 data ActionMatcher
 
 instance Data ActionMatcher
+
+data AspectMatcher
+
+instance Data AspectMatcher
+instance ToJSON AspectMatcher
+instance FromJSON AspectMatcher
+instance Show AspectMatcher
+instance Eq AspectMatcher
+instance Ord AspectMatcher

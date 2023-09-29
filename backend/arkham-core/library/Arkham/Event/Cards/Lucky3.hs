@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
-import Arkham.Message
 import Arkham.SkillTest.Base
 
 newtype Lucky3 = Lucky3 EventAttrs

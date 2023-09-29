@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (windowType), getBatchId)

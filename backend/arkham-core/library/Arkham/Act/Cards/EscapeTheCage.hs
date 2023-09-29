@@ -13,7 +13,6 @@ import Arkham.Helpers.Ability
 import Arkham.Helpers.Card
 import Arkham.Helpers.Query
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (SilverTwilight))
 

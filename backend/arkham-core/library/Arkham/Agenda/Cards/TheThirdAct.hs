@@ -12,7 +12,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Message
 
 newtype TheThirdAct = TheThirdAct AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

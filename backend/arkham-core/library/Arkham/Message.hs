@@ -45,6 +45,7 @@ import Arkham.Field
 import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
+import Arkham.Investigate.Types
 import Arkham.Key
 import {-# SOURCE #-} Arkham.Location.Types
 import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated, RevealChaosToken)
@@ -215,6 +216,10 @@ instance IsMessage Message where
 
 instance IsMessage EnemyAttackDetails where
   toMessage = InitiateEnemyAttack
+  {-# INLINE toMessage #-}
+
+instance IsMessage Investigate where
+  toMessage = Arkham.Message.Investigate
   {-# INLINE toMessage #-}
 
 instance IsMessage (HandDiscard Message) where
@@ -548,7 +553,7 @@ data Message
   | CheckAllAdditionalCommitCosts
   | CheckAdditionalCommitCosts InvestigatorId [Card]
   | -- Maybe Target is handler for success
-    Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool
+    Investigate Investigate
   | -- | uses the internal method and then checks defeat
     InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int
   | InvestigatorCommittedCard InvestigatorId Card

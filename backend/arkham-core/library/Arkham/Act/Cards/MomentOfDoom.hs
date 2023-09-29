@@ -15,7 +15,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message (Message (EnemyDamage))
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing

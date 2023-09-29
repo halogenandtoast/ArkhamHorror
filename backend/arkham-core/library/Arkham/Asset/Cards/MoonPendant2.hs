@@ -47,6 +47,6 @@ instance RunMessage MoonPendant2 where
       push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
       pure a
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
-      push $ AddSlot iid TarotSlot (Slot (toSource attrs) Nothing)
+      push $ AddSlot iid TarotSlot (Slot (toSource attrs) [])
       MoonPendant2 <$> runMessage msg attrs
     _ -> MoonPendant2 <$> runMessage msg attrs

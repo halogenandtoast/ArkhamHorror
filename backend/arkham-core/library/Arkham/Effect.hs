@@ -45,12 +45,15 @@ import Arkham.Asset.Assets (
   ineffableTruth5Effect,
   ineffableTruthEffect,
   libraryDocent1Effect,
+  lockpicks1Effect,
+  lockpicksEffect,
   miskatonicArchaeologyFunding4Effect,
   mistsOfRlyeh2Effect,
   mistsOfRlyeh4Effect,
   mistsOfRlyehEffect,
   oldBookOfLore3Effect,
   pnakoticManuscripts5Effect,
+  riteOfSeekingEffect,
   showmanshipEffect,
   shrivellingEffect,
   sixthSense4Effect,
@@ -224,7 +227,7 @@ allEffects =
     , ("01069", SomeEffect blindingLight2Effect)
     , ("01074", SomeEffect baseballBatEffect)
     , ("01151", SomeEffect arkhamWoodsTwistingPaths)
-    , ("02028", SomeEffect riteOfSeeking)
+    , ("02028", SomeEffect riteOfSeekingEffect)
     , ("02031", SomeEffect bindMonster2)
     , ("02100", SomeEffect pushedIntoTheBeyond)
     , ("02102", SomeEffect arcaneBarrierEffect)
@@ -235,7 +238,6 @@ allEffects =
     , ("02228", SomeEffect exposeWeakness1)
     , ("02229", SomeEffect quickThinking)
     , ("02230", SomeEffect luckyDice2)
-    , ("02233", SomeEffect riteOfSeeking4)
     , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
     , ("02246", SomeEffect tenAcreMeadow_246)
     , ("02270", SomeEffect aChanceEncounter)
@@ -247,7 +249,7 @@ allEffects =
     , ("03022", SomeEffect letMeHandleThis)
     , ("03024", SomeEffect fieldwork)
     , ("03029", SomeEffect sleightOfHand)
-    , ("03031", SomeEffect lockpicks1)
+    , ("03031", SomeEffect lockpicks1Effect)
     , ("03032", SomeEffect alchemicalTransmutationEffect)
     , ("03033", SomeEffect uncageTheSoul)
     , ("03047a", SomeEffect theStrangerACityAflame)
@@ -317,7 +319,6 @@ allEffects =
     , ("07012", SomeEffect showmanshipEffect)
     , ("50008", SomeEffect mindWipe3)
     , ("50044", SomeEffect jeremiahPierce)
-    , ("51007", SomeEffect riteOfSeeking2)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
@@ -330,7 +331,7 @@ allEffects =
     , ("60226", SomeEffect mindOverMatter2Effect)
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
     , ("60301", SomeEffect winifredHabbamockEffect)
-    , ("60305", SomeEffect lockpicks)
+    , ("60305", SomeEffect lockpicksEffect)
     , ("60323", SomeEffect cheapShot2Effect)
     , ("60328", SomeEffect pilfer3Effect)
     , ("60329", SomeEffect backstab3Effect)

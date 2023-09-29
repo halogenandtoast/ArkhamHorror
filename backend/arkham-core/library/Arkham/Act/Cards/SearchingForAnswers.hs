@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs

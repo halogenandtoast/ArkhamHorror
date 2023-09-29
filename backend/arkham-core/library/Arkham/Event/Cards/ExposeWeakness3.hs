@@ -15,7 +15,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers hiding (EnemyFight)
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 
 newtype ExposeWeakness3 = ExposeWeakness3 EventAttrs

@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))

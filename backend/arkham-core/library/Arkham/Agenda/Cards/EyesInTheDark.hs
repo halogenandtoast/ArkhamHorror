@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message
 
 newtype EyesInTheDark = EyesInTheDark AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

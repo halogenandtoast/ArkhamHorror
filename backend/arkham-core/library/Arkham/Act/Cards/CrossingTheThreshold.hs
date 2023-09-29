@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 import Arkham.Trait

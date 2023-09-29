@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message
 
 newtype CunningDistraction = CunningDistraction EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

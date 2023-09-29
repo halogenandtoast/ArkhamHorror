@@ -11,7 +11,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Trait

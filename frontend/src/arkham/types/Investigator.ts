@@ -102,11 +102,11 @@ export const slotDecoder = JsonDecoder.object<Slot>({
 }, 'Slot')
 
 interface SlotContents {
-  asset: string | null
+  assets: string[]
 }
 
 const slotContentsDecoder = JsonDecoder.object<SlotContents>({
-  asset: JsonDecoder.nullable(JsonDecoder.string),
+  assets: JsonDecoder.array(JsonDecoder.string, 'AssetId[]'),
 }, 'SlotContents')
 
 export const slotsDecoder = JsonDecoder.
@@ -118,7 +118,7 @@ export const slotsDecoder = JsonDecoder.
   , 'Slot[]').
   map((arr) =>
       arr.flatMap(([key, value]) =>
-        value.map((contents) => ({ tag: key , empty: contents.asset === null})
+        value.map((contents) => ({ tag: key , empty: contents.assets.length === 0})
   )))
 
 export const investigatorDecoder = JsonDecoder.object<Investigator>({

@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards

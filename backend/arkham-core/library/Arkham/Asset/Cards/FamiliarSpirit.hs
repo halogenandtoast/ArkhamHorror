@@ -19,7 +19,7 @@ familiarSpirit :: AssetCard FamiliarSpirit
 familiarSpirit = ally FamiliarSpirit Cards.familiarSpirit (1, 1)
 
 slot :: AssetAttrs -> Slot
-slot attrs = TraitRestrictedSlot (toSource attrs) Spell Nothing
+slot attrs = TraitRestrictedSlot (toSource attrs) Spell []
 
 instance RunMessage FamiliarSpirit where
   runMessage msg (FamiliarSpirit attrs) = case msg of

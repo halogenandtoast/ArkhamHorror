@@ -12,7 +12,6 @@ import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message
 
 newtype SaracenicScript = SaracenicScript ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

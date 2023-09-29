@@ -10,10 +10,10 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
@@ -25,37 +25,25 @@ decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5
 
 instance RunMessage DecipheredReality5 where
   runMessage msg e@(DecipheredReality5 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
+    PlayThisEvent iid eid | eid == toId attrs -> do
       locationIds <- selectList RevealedLocation
-      maxShroud <-
-        maximum . ncons 0 <$> traverse (field LocationShroud) locationIds
-      skillType <- field LocationInvestigateSkill lid
+      maxShroud <- maximum . ncons 0 <$> traverse (field LocationShroud) locationIds
+      investigation <- mkInvestigate iid attrs <&> setTarget attrs
+
       pushAll
         [ skillTestModifier attrs SkillTestTarget (SetDifficulty maxShroud)
-        , Investigate
-            iid
-            lid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            skillType
-            False
+        , toMessage investigation
         ]
       pure e
-    Successful (Action.Investigate, actionTarget) iid source target n
-      | isTarget attrs target -> do
-          -- Deciphered Reality is not a replacement effect; its effect doesn’t use
-          -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
-          -- standard rewards for successfully investigating.
-          locationIds <- selectList RevealedLocation
-          pushAll
-            $ Successful (Action.Investigate, actionTarget) iid source target n
-            : [ InvestigatorDiscoverClues iid lid' (toSource attrs) 1 Nothing
-              | lid' <- locationIds
-              ]
-          pure e
+    Successful (Action.Investigate, actionTarget) iid source target n | isTarget attrs target -> do
+      -- Deciphered Reality is not a replacement effect; its effect doesn’t use
+      -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
+      -- standard rewards for successfully investigating.
+      locationIds <- selectList RevealedLocation
+      pushAll
+        $ Successful (Action.Investigate, actionTarget) iid source target n
+        : [ InvestigatorDiscoverClues iid lid' (toSource attrs) 1 Nothing
+          | lid' <- locationIds
+          ]
+      pure e
     _ -> DecipheredReality5 <$> runMessage msg attrs

@@ -15,7 +15,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillType

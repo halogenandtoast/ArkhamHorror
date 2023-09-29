@@ -11,7 +11,6 @@ import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window

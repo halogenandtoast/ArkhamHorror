@@ -10,7 +10,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait (Trait (Spectral))
 
 -- Normally text like "Locations cannot be flipped" would be handled by

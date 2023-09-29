@@ -410,7 +410,7 @@ instance RunMessage Scenario where
           pushAll
             [ chooseOne
               investigator
-              [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source Nothing)]
+              [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
               | slotType <- allSlotTypes
               ]
             | investigator <- investigators

@@ -10,7 +10,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 
 newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

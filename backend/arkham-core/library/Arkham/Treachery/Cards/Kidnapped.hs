@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing

@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Message
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype TheMawWidens = TheMawWidens AgendaAttrs

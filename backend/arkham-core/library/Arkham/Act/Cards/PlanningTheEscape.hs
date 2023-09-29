@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.SkillType

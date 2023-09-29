@@ -7,11 +7,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Runner hiding (Run)
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message hiding (Run)
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing

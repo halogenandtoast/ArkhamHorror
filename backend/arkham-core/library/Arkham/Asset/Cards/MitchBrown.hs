@@ -18,7 +18,7 @@ mitchBrown :: AssetCard MitchBrown
 mitchBrown = ally MitchBrown Cards.mitchBrown (2, 2)
 
 slot :: AssetAttrs -> Slot
-slot attrs = RestrictedSlot (toSource attrs) (NotCard CardIsUnique) Nothing
+slot attrs = RestrictedSlot (toSource attrs) (NotCard CardIsUnique) []
 
 instance RunMessage MitchBrown where
   runMessage msg (MitchBrown attrs) = case msg of

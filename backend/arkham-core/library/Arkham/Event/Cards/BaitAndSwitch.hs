@@ -7,7 +7,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch)
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message
 import Arkham.SkillType
 
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs

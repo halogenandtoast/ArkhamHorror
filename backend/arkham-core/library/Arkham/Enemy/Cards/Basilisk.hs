@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype Basilisk = Basilisk EnemyAttrs

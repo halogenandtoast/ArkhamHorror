@@ -9,7 +9,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Message
 
 newtype CallingForthTheOldOnes = CallingForthTheOldOnes AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

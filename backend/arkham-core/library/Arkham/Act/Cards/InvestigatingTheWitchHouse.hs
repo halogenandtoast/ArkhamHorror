@@ -15,7 +15,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Message
 
 newtype InvestigatingTheWitchHouse = InvestigatingTheWitchHouse ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -9,7 +9,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

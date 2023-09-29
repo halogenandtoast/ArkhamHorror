@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 
 newtype QuietHalls = QuietHalls AgendaAttrs

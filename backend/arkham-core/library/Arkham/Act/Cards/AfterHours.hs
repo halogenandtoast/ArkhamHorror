@@ -8,7 +8,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Message
 
 newtype AfterHours = AfterHours ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

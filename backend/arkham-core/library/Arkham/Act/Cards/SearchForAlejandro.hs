@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 
 newtype SearchForAlejandro = SearchForAlejandro ActAttrs

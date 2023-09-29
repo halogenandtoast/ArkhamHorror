@@ -57,7 +57,7 @@ instance RunMessage SignMagick3 where
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push
         $ AddSlot iid ArcaneSlot
-        $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) Nothing
+        $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) []
       SignMagick3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (toOriginalAsset -> aid) _ -> do
       let nullifyActionCost ab = applyAbilityModifiers ab [ActionCostSetToModifier 0]

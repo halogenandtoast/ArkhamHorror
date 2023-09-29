@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype Mesmerize = Mesmerize EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

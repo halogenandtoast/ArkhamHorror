@@ -11,7 +11,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 
 newtype ExposeWeakness1 = ExposeWeakness1 EventAttrs

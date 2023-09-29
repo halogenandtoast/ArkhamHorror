@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait

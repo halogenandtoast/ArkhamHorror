@@ -9,7 +9,6 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message
 
 newtype FireExtinguisher1 = FireExtinguisher1 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

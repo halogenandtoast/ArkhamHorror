@@ -10,7 +10,6 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Helpers.Query
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
 
 newtype TheSpectralRealm = TheSpectralRealm ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

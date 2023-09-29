@@ -16,7 +16,6 @@ import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 

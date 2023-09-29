@@ -11,7 +11,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait
 

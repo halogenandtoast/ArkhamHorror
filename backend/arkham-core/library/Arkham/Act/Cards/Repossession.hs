@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Draw.Types
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype Repossession = Repossession ActAttrs

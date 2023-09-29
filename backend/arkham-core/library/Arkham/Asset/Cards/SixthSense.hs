@@ -5,18 +5,17 @@ module Arkham.Asset.Cards.SixthSense (
 ) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Window qualified as Window
 
 newtype SixthSense = SixthSense AssetAttrs
@@ -27,27 +26,19 @@ sixthSense :: AssetCard SixthSense
 sixthSense = asset SixthSense Cards.sixthSense
 
 instance HasAbilities SixthSense where
-  getAbilities (SixthSense a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ ActionCost 1
-    ]
+  getAbilities (SixthSense a) = [investigateAbility a 1 mempty ControlsThis]
 
 instance RunMessage SixthSense where
   runMessage msg a@(SixthSense attrs) = case msg of
-    UseCardAbility iid source@(isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
-      skillType <- field LocationInvestigateSkill lid
+      investigation <-
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
+
       pushAll
-        [ createCardEffect Cards.sixthSense Nothing source (InvestigationTarget iid lid)
-        , Investigate
-            iid
-            lid
-            source
-            Nothing
-            (if skillType == SkillIntellect then SkillWillpower else skillType)
-            False
-        ]
+        $ createCardEffect Cards.sixthSense Nothing source (InvestigationTarget iid lid)
+        : leftOr investigation
       pure a
     _ -> SixthSense <$> runMessage msg attrs
 

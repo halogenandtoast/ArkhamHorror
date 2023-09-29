@@ -14,7 +14,6 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Id
-import Arkham.Message
 import Arkham.Resolution
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs

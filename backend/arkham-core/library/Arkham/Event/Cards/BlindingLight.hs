@@ -8,7 +8,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Event.Runner
-import Arkham.Message
 import Arkham.Window qualified as Window
 
 newtype BlindingLight = BlindingLight EventAttrs

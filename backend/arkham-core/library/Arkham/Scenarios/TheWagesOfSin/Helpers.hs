@@ -7,7 +7,6 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
-import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Enemy.Runner
@@ -16,7 +15,6 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing

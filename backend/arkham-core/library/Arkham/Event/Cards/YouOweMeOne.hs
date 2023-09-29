@@ -11,7 +11,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Window (defaultWindows)
 

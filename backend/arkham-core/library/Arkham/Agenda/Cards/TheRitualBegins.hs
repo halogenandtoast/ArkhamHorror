@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs

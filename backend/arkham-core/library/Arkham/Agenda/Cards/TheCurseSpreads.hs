@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 
 newtype TheCurseSpreads = TheCurseSpreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

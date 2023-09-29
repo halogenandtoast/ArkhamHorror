@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Cultist, SilverTwilight))
 

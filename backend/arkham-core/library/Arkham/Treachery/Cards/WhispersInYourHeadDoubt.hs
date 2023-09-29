@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Matcher hiding (treacheryInHandOf)
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers

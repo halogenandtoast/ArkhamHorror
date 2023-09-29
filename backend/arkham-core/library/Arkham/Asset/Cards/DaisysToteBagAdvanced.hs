@@ -43,7 +43,7 @@ instance HasModifiersFor DaisysToteBagAdvanced where
   getModifiersFor _ _ = pure []
 
 slot :: AssetAttrs -> Slot
-slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
+slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
 
 instance RunMessage DaisysToteBagAdvanced where
   runMessage msg a@(DaisysToteBagAdvanced attrs) = case msg of

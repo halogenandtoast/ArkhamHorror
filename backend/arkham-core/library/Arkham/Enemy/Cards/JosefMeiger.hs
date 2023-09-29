@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
 import Arkham.Trait (Trait (SilverTwilight))

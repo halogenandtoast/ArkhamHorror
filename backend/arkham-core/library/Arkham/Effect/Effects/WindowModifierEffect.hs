@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Id
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Window (Window)
 

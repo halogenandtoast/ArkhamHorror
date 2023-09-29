@@ -11,7 +11,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype CrackTheCase = CrackTheCase EventAttrs

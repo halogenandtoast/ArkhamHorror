@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Message
 
 newtype QuickThinking = QuickThinking EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

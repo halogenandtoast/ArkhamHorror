@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
-import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

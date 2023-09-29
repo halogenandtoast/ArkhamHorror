@@ -7,18 +7,14 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Aspect
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
-import Arkham.EffectMetadata
+import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Field (InvestigatorLocation))
-import Arkham.Message
-import Arkham.Projection
-import Arkham.SkillType
+import Arkham.Investigate
 
 newtype Pilfer3 = Pilfer3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -30,13 +26,12 @@ pilfer3 = event Pilfer3 Cards.pilfer3
 instance RunMessage Pilfer3 where
   runMessage msg e@(Pilfer3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      investigation <- aspect iid attrs (#agility `InsteadOf` #intellect) (mkInvestigate iid attrs)
       pushAll
-        [ skillTestModifier attrs (toTarget iid) (DiscoveredClues 2)
-        , Investigate iid lid (toSource attrs) Nothing SkillAgility False
-        ]
+        $ skillTestModifier attrs (toTarget iid) (DiscoveredClues 2)
+        : leftOr investigation
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
+    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       push
         $ createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       pure e

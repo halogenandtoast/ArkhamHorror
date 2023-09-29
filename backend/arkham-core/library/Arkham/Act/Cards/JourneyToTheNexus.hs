@@ -17,7 +17,6 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, LocationCard)
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution

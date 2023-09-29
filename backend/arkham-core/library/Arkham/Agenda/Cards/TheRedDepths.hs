@@ -15,7 +15,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Timing qualified as Timing
 

@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.LightlessShadow (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Message
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

@@ -23,7 +23,7 @@ instance HasModifiersFor ArcaneEnlightenment where
   getModifiersFor _ _ = pure []
 
 slot :: AssetAttrs -> Slot
-slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
+slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
 
 instance RunMessage ArcaneEnlightenment where
   runMessage msg (ArcaneEnlightenment attrs) = case msg of

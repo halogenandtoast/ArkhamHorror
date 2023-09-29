@@ -12,7 +12,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs

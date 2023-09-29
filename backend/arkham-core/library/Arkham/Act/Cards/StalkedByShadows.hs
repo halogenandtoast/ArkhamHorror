@@ -12,7 +12,7 @@ import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message
+import Arkham.Message (Message (EnemyEvaded))
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype StalkedByShadows = StalkedByShadows ActAttrs

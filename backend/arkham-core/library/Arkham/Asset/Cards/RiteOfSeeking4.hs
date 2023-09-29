@@ -6,14 +6,11 @@ module Arkham.Asset.Cards.RiteOfSeeking4 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
-import Arkham.Projection
-import Arkham.SkillType
+import Arkham.Investigate
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,31 +20,21 @@ riteOfSeeking4 :: AssetCard RiteOfSeeking4
 riteOfSeeking4 = asset RiteOfSeeking4 Cards.riteOfSeeking4
 
 instance HasAbilities RiteOfSeeking4 where
-  getAbilities (RiteOfSeeking4 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility
-          (Just Action.Investigate)
-          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
-    ]
+  getAbilities (RiteOfSeeking4 a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]
 
 instance RunMessage RiteOfSeeking4 where
   runMessage msg a@(RiteOfSeeking4 attrs) = case msg of
-    UseCardAbility iid source@(isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
-      skillType <- field LocationInvestigateSkill lid
+      investigation <-
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
+
+      -- same effect as base
       pushAll
-        [ CreateEffect "02233" Nothing source (InvestigationTarget iid lid) -- same effect as base
-        , skillTestModifier
-            source
-            (InvestigatorTarget iid)
-            (SkillModifier SkillWillpower 2)
-        , Investigate
-            iid
-            lid
-            source
-            Nothing
-            (if skillType == SkillIntellect then SkillWillpower else skillType)
-            False
-        ]
+        $ [ createCardEffect Cards.riteOfSeeking Nothing source (InvestigationTarget iid lid)
+          , skillTestModifier source iid (SkillModifier #willpower 2)
+          ]
+        <> leftOr investigation
       pure a
     _ -> RiteOfSeeking4 <$> runMessage msg attrs

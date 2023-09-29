@@ -9,7 +9,6 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Types
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Trait

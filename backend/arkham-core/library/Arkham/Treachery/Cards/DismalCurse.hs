@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source

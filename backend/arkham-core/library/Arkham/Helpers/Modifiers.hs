@@ -24,7 +24,7 @@ withModifiers
   :: (HasGame m, Targetable target) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
 withModifiers = withModifiers'
 
-getModifiers :: (HasGame m, Targetable a) => a -> m [ModifierType]
+getModifiers :: forall a m. (HasGame m, Targetable a) => a -> m [ModifierType]
 getModifiers (toTarget -> target) = do
   ignoreCanModifiers <- getIgnoreCanModifiers
   let
@@ -64,7 +64,8 @@ skillTestModifier source target modifier =
   skillTestModifiers source target [modifier]
 
 skillTestModifiers
-  :: (Sourceable source, Targetable target)
+  :: forall target source
+   . (Sourceable source, Targetable target)
   => source
   -> target
   -> [ModifierType]

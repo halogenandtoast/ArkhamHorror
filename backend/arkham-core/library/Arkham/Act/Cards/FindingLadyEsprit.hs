@@ -15,7 +15,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait

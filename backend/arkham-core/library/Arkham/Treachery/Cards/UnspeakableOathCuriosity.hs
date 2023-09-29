@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (TreacheryInHandOf)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

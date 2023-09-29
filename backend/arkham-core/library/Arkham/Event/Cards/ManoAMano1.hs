@@ -10,7 +10,6 @@ import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message
 
 newtype ManoAMano1 = ManoAMano1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

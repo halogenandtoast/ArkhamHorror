@@ -15,7 +15,6 @@ import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 
 newtype WarmWelcome = WarmWelcome ActAttrs

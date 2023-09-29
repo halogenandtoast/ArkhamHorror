@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (WitchHouse))

@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.CampaignLogKey
-import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
@@ -12,7 +11,6 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 
 getHauntedAbilities :: HasGame m => InvestigatorId -> m [Ability]
 getHauntedAbilities iid =

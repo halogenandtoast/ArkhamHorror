@@ -10,7 +10,7 @@ import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (EnemyDefeated, NonAttackDamageEffect)
-import Arkham.Message
+import Arkham.Message (Message (EnemyDefeated))
 
 newtype CoupDeGrace = CoupDeGrace EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

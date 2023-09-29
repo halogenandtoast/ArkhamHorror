@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Deck
 import Arkham.Id
 import Arkham.Matcher hiding (EncounterDeck)
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.SkillType
 import Arkham.Trait (Trait (Shattered))
 import Arkham.Treachery.Cards qualified as Cards
@@ -45,7 +45,7 @@ instance RunMessage WrackedByTime where
       do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
         pure t
-    AssetDamage aid (isSource attrs -> True) _ _ ->
+    Msg.AssetDamage aid (isSource attrs -> True) _ _ ->
       pure
         . WrackedByTime
         $ attrs

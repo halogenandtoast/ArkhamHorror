@@ -11,7 +11,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Enemy
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 
 newtype Waylay = Waylay EventAttrs

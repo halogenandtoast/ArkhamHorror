@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers

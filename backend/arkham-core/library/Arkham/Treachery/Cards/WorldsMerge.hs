@@ -11,7 +11,6 @@ import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

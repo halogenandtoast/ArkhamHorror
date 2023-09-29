@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Trait
 

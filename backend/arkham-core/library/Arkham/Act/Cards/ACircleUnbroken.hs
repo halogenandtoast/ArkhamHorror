@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 
 newtype ACircleUnbroken = ACircleUnbroken ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

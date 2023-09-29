@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Data.List.NonEmpty qualified as NE
 

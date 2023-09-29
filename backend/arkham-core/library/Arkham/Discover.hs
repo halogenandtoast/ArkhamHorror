@@ -32,6 +32,9 @@ instance HasField "source" Discover Source where
 instance HasField "action" Discover (Maybe Action) where
   getField = discoverAction
 
+viaInvestigate :: Discover -> Discover
+viaInvestigate discover' = discover' {discoverAction = Just #investigate}
+
 discoverAtYourLocation :: Sourceable source => InvestigatorId -> source -> Int -> Discover
 discoverAtYourLocation iid (toSource -> source) n =
   Discover

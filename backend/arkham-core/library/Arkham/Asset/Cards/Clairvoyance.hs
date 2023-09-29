@@ -7,17 +7,12 @@ module Arkham.Asset.Cards.Clairvoyance (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
-import Arkham.Helpers.Investigator
-import Arkham.Location.Types (Field (..))
-import Arkham.Matcher hiding (RevealChaosToken)
-import Arkham.Projection
-import Arkham.SkillType
+import Arkham.Effect.Runner
+import Arkham.Investigate
 import Arkham.Window qualified as Window
 
 newtype Clairvoyance = Clairvoyance AssetAttrs
@@ -28,28 +23,19 @@ clairvoyance :: AssetCard Clairvoyance
 clairvoyance = asset Clairvoyance Cards.clairvoyance
 
 instance HasAbilities Clairvoyance where
-  getAbilities (Clairvoyance a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
-    ]
+  getAbilities (Clairvoyance a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]
 
 instance RunMessage Clairvoyance where
   runMessage msg a@(Clairvoyance attrs) = case msg of
-    UseCardAbility iid source@(isSource attrs -> True) 1 _ _ -> do
-      lid <- getJustLocation iid
-      skillType <- field LocationInvestigateSkill lid
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      let source = toAbilitySource attrs 1
+      investigation <- aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
+
       pushAll
-        [ createCardEffect Cards.clairvoyance Nothing source iid
-        , skillTestModifier attrs iid (DiscoveredClues 1)
-        , Investigate
-            iid
-            lid
-            source
-            Nothing
-            (if skillType == SkillIntellect then SkillWillpower else skillType)
-            False
-        ]
+        $ [ createCardEffect Cards.clairvoyance Nothing source iid
+          , skillTestModifier attrs iid (DiscoveredClues 1)
+          ]
+        <> leftOr investigation
       pure a
     _ -> Clairvoyance <$> runMessage msg attrs
 
@@ -63,12 +49,9 @@ clairvoyanceEffect = cardEffect ClairvoyanceEffect Cards.clairvoyance
 instance RunMessage ClairvoyanceEffect where
   runMessage msg e@(ClairvoyanceEffect attrs@EffectAttrs {..}) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
-      when
-        (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero])
+      when (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero])
         $ pushAll
-          [ If
-              (Window.RevealChaosTokenEffect iid token effectId)
-              [InvestigatorAssignDamage iid effectSource DamageAny 0 1]
+          [ If (Window.RevealChaosTokenEffect iid token effectId) [assignHorror iid effectSource 1]
           , DisableEffect effectId
           ]
       pure e

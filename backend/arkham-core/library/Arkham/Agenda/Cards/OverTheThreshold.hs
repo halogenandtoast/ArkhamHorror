@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Runner hiding (PhaseStep)
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Types (Field (EnemyHealthDamage))
@@ -15,7 +15,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Act
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message hiding (PhaseStep)
 import Arkham.Trait (Trait (Humanoid, SilverTwilight, Spectral), toTraits)
 
 newtype OverTheThreshold = OverTheThreshold AgendaAttrs

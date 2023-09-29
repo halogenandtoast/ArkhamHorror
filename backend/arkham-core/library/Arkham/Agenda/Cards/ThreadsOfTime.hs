@@ -14,7 +14,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Timing qualified as Timing
 
 newtype ThreadsOfTime = ThreadsOfTime AgendaAttrs

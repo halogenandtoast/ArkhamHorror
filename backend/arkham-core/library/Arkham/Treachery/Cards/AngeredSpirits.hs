@@ -10,7 +10,6 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher hiding (FastPlayerWindow)
-import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

@@ -35,7 +35,7 @@ instance HasAbilities MiskatonicArchaeologyFunding4 where
     ]
 
 slot :: AssetAttrs -> Slot
-slot attrs = TraitRestrictedSlot (toSource attrs) Miskatonic Nothing
+slot attrs = TraitRestrictedSlot (toSource attrs) Miskatonic []
 
 instance RunMessage MiskatonicArchaeologyFunding4 where
   runMessage msg a@(MiskatonicArchaeologyFunding4 attrs) = case msg of

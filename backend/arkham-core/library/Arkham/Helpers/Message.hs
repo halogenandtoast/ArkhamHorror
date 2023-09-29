@@ -2,10 +2,12 @@ module Arkham.Helpers.Message (module Arkham.Helpers.Message, module X) where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasQueue as X hiding (push, pushAll)
 import Arkham.Helpers.Message.Discard as X
+import Arkham.Message as X
 
 import Arkham.Card
-import Arkham.Classes.HasQueue
+import Arkham.Classes.HasQueue qualified as Queue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.Deck
@@ -18,7 +20,6 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Label (mkLabel)
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.SkillType
@@ -226,25 +227,29 @@ gainSurge a = GainSurge (toSource a) (toTarget a)
 toDiscard :: (Sourceable source, Targetable target) => source -> target -> Message
 toDiscard source target = Discard (toSource source) (toTarget target)
 
-pushAllM :: (IsMessage msg, HasGame m, HasQueue Message m) => m [msg] -> m ()
+pushAllM :: (IsMessage msg, HasQueue Message m) => m [msg] -> m ()
 pushAllM mmsgs = do
   msgs <- mmsgs
-  pushAll $ map toMessage msgs
+  Queue.pushAll $ map toMessage msgs
+
+pushAll :: (IsMessage msg, HasQueue Message m) => [msg] -> m ()
+pushAll = pushAllM . pure
+
+push :: (IsMessage msg, HasQueue Message m) => msg -> m ()
+push = Queue.push . toMessage
 
 pushM :: (HasQueue Message m, IsMessage msg) => m msg -> m ()
-pushM mmsg = mmsg >>= pushMessage
+pushM mmsg = mmsg >>= push
 
-pushWhenM :: (HasQueue Message m, HasGame m, IsMessage msg) => m Bool -> msg -> m ()
-pushWhenM condM = whenM condM . pushAll . pure . toMessage
-
-pushMessage :: (HasQueue Message m, IsMessage msg) => msg -> m ()
-pushMessage = push . toMessage
+pushWhenM :: (HasQueue Message m, IsMessage msg) => m Bool -> msg -> m ()
+pushWhenM condM = whenM condM . pushAll . pure
 
 pushWhen :: (HasQueue Message m, IsMessage msg) => Bool -> msg -> m ()
-pushWhen cond = when cond . pushAll . pure . toMessage
+pushWhen cond = when cond . push
 
-pushIfAny :: (HasQueue Message m, MonoFoldable (t a), IsMessage msg) => t a -> msg -> m ()
-pushIfAny collection = when (notNull collection) . push . toMessage
+pushIfAny
+  :: (HasQueue Message m, MonoFoldable (t a), IsMessage msg) => t a -> msg -> m ()
+pushIfAny collection = when (notNull collection) . push
 
 removeMessageType :: HasQueue Message m => MessageType -> m ()
 removeMessageType msgType = withQueue_ $ \queue ->

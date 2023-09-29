@@ -16,7 +16,6 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait (Trait (Spectral))
 
 newtype Metadata = Metadata {usedLocationIds :: [LocationId]}

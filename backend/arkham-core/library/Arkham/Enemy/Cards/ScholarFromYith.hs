@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message hiding (EnemyAttacks)
+import Arkham.Message qualified as Msg
 import Arkham.Timing qualified as Timing
 
 newtype ScholarFromYith = ScholarFromYith EnemyAttrs
@@ -58,7 +58,7 @@ instance RunMessage ScholarFromYith where
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       drawing <- drawCards iid (toAbilitySource attrs 2) 1
-      pushAll [drawing, EnemyEvaded iid (toId attrs)]
+      pushAll [drawing, Msg.EnemyEvaded iid (toId attrs)]
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       push $ toMessage $ enemyAttack (toId attrs) (toAbilitySource attrs 2) iid

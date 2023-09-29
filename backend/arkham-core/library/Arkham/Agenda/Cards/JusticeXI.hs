@@ -16,7 +16,6 @@ import Arkham.GameValue
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Monster, SilverTwilight))

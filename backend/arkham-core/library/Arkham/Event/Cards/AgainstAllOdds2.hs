@@ -13,7 +13,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
-import Arkham.Message
 import Arkham.SkillTest
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)

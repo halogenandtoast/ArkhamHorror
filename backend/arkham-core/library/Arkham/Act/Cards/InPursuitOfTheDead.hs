@@ -12,7 +12,6 @@ import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait (Trait (Spectral))
 
 newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs

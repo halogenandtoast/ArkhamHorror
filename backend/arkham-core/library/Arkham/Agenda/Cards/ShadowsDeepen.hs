@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries

@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source

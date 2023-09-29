@@ -15,7 +15,6 @@ import Arkham.EncounterSet
 import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Data.Maybe (fromJust)

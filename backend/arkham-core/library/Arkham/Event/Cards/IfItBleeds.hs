@@ -12,7 +12,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window

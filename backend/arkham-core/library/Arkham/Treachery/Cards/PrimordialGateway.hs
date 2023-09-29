@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Location.BreachStatus
 import Arkham.Location.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Treachery.Cards qualified as Cards

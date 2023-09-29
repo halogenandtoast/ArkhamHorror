@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.SkillType
 
@@ -40,7 +41,7 @@ instance RunMessage ShardsOfTheVoid3 where
         , ChooseFightEnemy iid (toSource attrs) Nothing SkillWillpower mempty False
         ]
       pure a
-    RevealChaosToken SkillTestSource _ token | chaosTokenFace token == Zero -> do
+    Msg.RevealChaosToken SkillTestSource _ token | chaosTokenFace token == Zero -> do
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator
       for_ ((,) <$> mSource <*> mInvestigator) $ \(source, iid) -> do

@@ -12,7 +12,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window

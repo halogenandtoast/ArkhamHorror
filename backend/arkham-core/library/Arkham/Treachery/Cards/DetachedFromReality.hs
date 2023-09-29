@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

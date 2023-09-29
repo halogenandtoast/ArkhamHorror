@@ -12,7 +12,6 @@ import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

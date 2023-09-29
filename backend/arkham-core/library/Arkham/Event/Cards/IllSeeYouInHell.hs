@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Enemy
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message
 
 newtype IllSeeYouInHell = IllSeeYouInHell EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 

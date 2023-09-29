@@ -64,7 +64,7 @@ instance RunMessage JeromeDavids where
       push $ CancelNext (toSource attrs) RevelationMessage
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      pushMessage $ discoverAtYourLocation iid ElderSign 1
+      push $ discoverAtYourLocation iid ElderSign 1
       pure i
     DrawStartingHand iid | attrs `is` iid -> pure i
     InvestigatorMulligan iid | attrs `is` iid -> do

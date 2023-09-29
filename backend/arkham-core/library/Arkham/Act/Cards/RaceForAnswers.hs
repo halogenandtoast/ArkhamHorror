@@ -10,7 +10,6 @@ import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
 
 newtype RaceForAnswers = RaceForAnswers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

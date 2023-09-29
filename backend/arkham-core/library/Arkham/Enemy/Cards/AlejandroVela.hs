@@ -16,7 +16,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
 

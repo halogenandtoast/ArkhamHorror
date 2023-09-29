@@ -9,7 +9,6 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

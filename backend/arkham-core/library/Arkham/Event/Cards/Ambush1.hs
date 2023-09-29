@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing

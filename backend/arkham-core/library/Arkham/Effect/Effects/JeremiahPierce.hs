@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Message
 import Arkham.SkillType
 
 newtype JeremiahPierce = JeremiahPierce EffectAttrs

@@ -12,7 +12,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyAttacks, PhaseStep)
 import Arkham.Trait
 
 newtype EztliGuardian = EztliGuardian EnemyAttrs

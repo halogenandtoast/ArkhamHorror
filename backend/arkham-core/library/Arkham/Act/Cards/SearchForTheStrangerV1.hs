@@ -15,7 +15,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Message
 
 newtype SearchForTheStrangerV1 = SearchForTheStrangerV1 ActAttrs
   deriving anyclass (IsAct)

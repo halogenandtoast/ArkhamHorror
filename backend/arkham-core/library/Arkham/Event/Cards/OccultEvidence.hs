@@ -17,7 +17,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait (Trait (Research))
 

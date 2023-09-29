@@ -9,7 +9,6 @@ import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

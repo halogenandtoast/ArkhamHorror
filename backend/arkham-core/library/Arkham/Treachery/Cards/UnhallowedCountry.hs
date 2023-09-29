@@ -10,7 +10,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType

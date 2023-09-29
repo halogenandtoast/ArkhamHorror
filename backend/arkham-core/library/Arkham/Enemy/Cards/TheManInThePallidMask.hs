@@ -11,11 +11,10 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Investigate
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype TheManInThePallidMask = TheManInThePallidMask EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -43,17 +42,12 @@ instance RunMessage TheManInThePallidMask where
   runMessage msg e@(TheManInThePallidMask attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       lid <- getJustLocation iid
-      e
-        <$ pushAll
-          [ skillTestModifier source (LocationTarget lid) (ShroudModifier 2)
-          , Investigate
-              iid
-              lid
-              source
-              (Just $ toTarget attrs)
-              SkillIntellect
-              False
-          ]
+      investigation <- mkInvestigate iid source <&> setTarget attrs
+      pushAll
+        [ skillTestModifier source (LocationTarget lid) (ShroudModifier 2)
+        , toMessage investigation
+        ]
+      pure e
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
       do
         enemyLocation <- field EnemyLocation (toId attrs)

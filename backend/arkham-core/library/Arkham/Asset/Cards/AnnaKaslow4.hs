@@ -22,7 +22,7 @@ annaKaslow4 :: AssetCard AnnaKaslow4
 annaKaslow4 = ally AnnaKaslow4 Cards.annaKaslow4 (1, 1)
 
 slot :: AssetAttrs -> Slot
-slot attrs = Slot (toSource attrs) Nothing
+slot attrs = Slot (toSource attrs) []
 
 instance HasAbilities AnnaKaslow4 where
   getAbilities (AnnaKaslow4 a) =

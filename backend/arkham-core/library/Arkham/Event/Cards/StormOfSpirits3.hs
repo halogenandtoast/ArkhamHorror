@@ -16,7 +16,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (AttackDamageEffect, RevealChaosToken)
-import Arkham.Message
 import Arkham.Window qualified as Window
 
 newtype StormOfSpirits3 = StormOfSpirits3 EventAttrs

@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait
 

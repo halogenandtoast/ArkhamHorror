@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls AgendaAttrs

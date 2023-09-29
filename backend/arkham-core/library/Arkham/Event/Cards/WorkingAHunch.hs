@@ -8,7 +8,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Location.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs

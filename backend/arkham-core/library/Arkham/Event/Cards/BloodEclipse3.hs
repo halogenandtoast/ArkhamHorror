@@ -11,7 +11,6 @@ import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Message
 
 newtype BloodEclipse3 = BloodEclipse3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

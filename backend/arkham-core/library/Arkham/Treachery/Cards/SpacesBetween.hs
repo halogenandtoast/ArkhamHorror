@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Trait

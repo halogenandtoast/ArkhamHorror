@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Item, Upgrade))

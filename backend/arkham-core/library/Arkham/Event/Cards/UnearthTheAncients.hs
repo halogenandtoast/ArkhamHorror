@@ -13,9 +13,9 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
+import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait
 import Arkham.Window (defaultWindows)
@@ -29,10 +29,7 @@ newtype UnearthTheAncients = UnearthTheAncients (EventAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unearthTheAncients :: EventCard UnearthTheAncients
-unearthTheAncients =
-  event
-    (UnearthTheAncients . (`with` Metadata Nothing))
-    Cards.unearthTheAncients
+unearthTheAncients = event (UnearthTheAncients . (`with` Metadata Nothing)) Cards.unearthTheAncients
 
 -- Rules as written says that yes, you could commit the chosen cards to the
 -- test, and put them into play when the test resolves. We may revisit this in
@@ -41,45 +38,27 @@ unearthTheAncients =
 instance RunMessage UnearthTheAncients where
   runMessage msg e@(UnearthTheAncients (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      assets <-
-        selectList
-          $ InHandOf (InvestigatorWithId iid)
-          <> BasicCardMatch
-            (CardWithClass Seeker <> CardWithType AssetType)
+      assets <- selectList $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (#seeker <> #asset)
       push
-        $ chooseOne
-          iid
-          [ TargetLabel
-            (CardIdTarget $ toCardId asset)
-            [ResolveEvent iid eid (Just $ CardTarget asset) windows']
+        $ chooseOne iid
+        $ [ targetLabel (toCardId asset) [ResolveEvent iid eid (Just $ CardTarget asset) windows']
           | asset <- assets
           ]
       pure e
     ResolveEvent iid eid (Just (CardTarget card)) _ | eid == toId attrs -> do
-      lid <- getJustLocation iid
-      skillType <- field LocationInvestigateSkill lid
+      investigation <- mkInvestigate iid attrs <&> setTarget attrs
       pushAll
-        [ skillTestModifier
-            (toSource attrs)
-            SkillTestTarget
-            (SetDifficulty $ getCost card)
-        , Investigate
-            iid
-            lid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            skillType
-            False
+        [ skillTestModifier attrs SkillTestTarget (SetDifficulty $ getCost card)
+        , toMessage investigation
         ]
       pure $ UnearthTheAncients $ attrs `with` Metadata (Just card)
-    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
-      do
-        case chosenCard metadata of
-          Just card -> do
-            drawing <- drawCards iid attrs 1
-            pushAll
-              $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
-              : [drawing | Relic `member` toTraits card]
-          Nothing -> error "this should not happen"
-        pure e
+    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
+      case chosenCard metadata of
+        Just card -> do
+          drawing <- drawCards iid attrs 1
+          pushAll
+            $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
+            : [drawing | Relic `member` toTraits card]
+        Nothing -> error "this should not happen"
+      pure e
     _ -> UnearthTheAncients . (`with` metadata) <$> runMessage msg attrs

@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 
 newtype HarlanIsInDanger = HarlanIsInDanger ActAttrs

@@ -15,7 +15,6 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Enemy
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries

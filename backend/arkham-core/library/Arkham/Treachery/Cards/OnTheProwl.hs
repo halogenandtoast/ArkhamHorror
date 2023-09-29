@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes hiding (matches)
 import Arkham.Location.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Treachery.Cards qualified as Cards

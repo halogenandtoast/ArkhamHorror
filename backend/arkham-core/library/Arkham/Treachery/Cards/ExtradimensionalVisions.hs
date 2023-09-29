@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Types (Field (ScenarioDiscard))
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

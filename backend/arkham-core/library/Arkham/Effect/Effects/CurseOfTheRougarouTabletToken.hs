@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Helpers
 import Arkham.Effect.Runner
-import Arkham.Message
 
 newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

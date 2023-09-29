@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype SeekerOfCarcosa = SeekerOfCarcosa EnemyAttrs

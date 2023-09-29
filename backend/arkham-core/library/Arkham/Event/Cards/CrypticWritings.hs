@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype CrypticWritings = CrypticWritings EventAttrs

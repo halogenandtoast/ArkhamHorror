@@ -13,7 +13,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards

@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 
 newtype TheEndOfAllThings = TheEndOfAllThings AgendaAttrs

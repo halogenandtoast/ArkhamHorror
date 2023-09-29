@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Enemy.Types
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards

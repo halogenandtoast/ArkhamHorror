@@ -16,7 +16,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (EncounterDeck)
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries

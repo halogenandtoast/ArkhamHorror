@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
-import Arkham.Message
 import Arkham.SkillType
 
 newtype MonsterSlayer = MonsterSlayer EventAttrs

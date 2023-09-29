@@ -12,11 +12,7 @@ import Arkham.Card.CardDef as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Location as X
-import Arkham.Helpers.Message as X
-import Arkham.Helpers.SkillTest as X
-import Arkham.Location.Types as X
-import Arkham.LocationSymbol as X
-import Arkham.Message as X hiding (
+import Arkham.Helpers.Message as X hiding (
   DiscoverClues,
   EnemyDamage,
   EnemyDefeated,
@@ -24,6 +20,9 @@ import Arkham.Message as X hiding (
   MoveAction,
   RevealLocation,
  )
+import Arkham.Helpers.SkillTest as X
+import Arkham.Location.Types as X
+import Arkham.LocationSymbol as X
 import Arkham.Source as X
 import Arkham.Target as X
 
@@ -34,6 +33,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
+import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.BreachStatus qualified as Breach
@@ -86,28 +86,17 @@ instance RunMessage LocationAttrs where
       pure $ updateLocation [upd] a
     FlipClues target n | isTarget a target -> do
       let clueCount = max 0 $ subtract n $ locationClues a
-      pure
-        $ a
-        & (tokensL %~ flipClues n)
-        & (withoutCluesL .~ (clueCount == 0))
+      pure $ a & tokensL %~ flipClues n & withoutCluesL .~ (clueCount == 0)
     FlipDoom target n | isTarget a target -> do
       let flipCount = min n $ locationDoom a
-      pure
-        $ a
-        & (tokensL %~ flipDoom n)
-        & (withoutCluesL .~ (flipCount >= 0))
-    Investigate iid lid source mTarget skillType False | lid == locationId -> do
+      pure $ a & tokensL %~ flipDoom n & withoutCluesL .~ (flipCount >= 0)
+    Investigate investigation | investigation.location == locationId && not investigation.isAction -> do
+      let iid = investigation.investigator
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
         shroudValue' <- getModifiedShroudValueFor a
-        push
-          $ investigate
-            iid
-            source
-            ( maybe (LocationTarget lid) (ProxyTarget (LocationTarget lid)) mTarget
-            )
-            skillType
-            shroudValue'
+        let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
+        push $ investigate iid investigation.source target investigation.skillType shroudValue'
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = locationClues a
@@ -362,14 +351,7 @@ instance RunMessage LocationAttrs where
         triggerSource = case source of
           ProxySource _ s -> s
           _ -> InvestigatorSource iid
-      push
-        $ Investigate
-          iid
-          (toId a)
-          triggerSource
-          Nothing
-          locationInvestigateSkill
-          False
+      pushM $ mkInvestigateLocation iid triggerSource (toId a)
       pure a
     UseCardAbility iid source 102 _ _ | isSource a source -> do
       -- free because already paid for by ability
@@ -383,17 +365,12 @@ instance RunMessage LocationAttrs where
 
 locationInvestigatorsWithClues :: LocationAttrs -> GameT [InvestigatorId]
 locationInvestigatorsWithClues attrs =
-  filterM (fieldMap InvestigatorClues (> 0))
-    =<< selectList (investigatorAt $ toId attrs)
+  filterM (fieldMap InvestigatorClues (> 0)) =<< selectList (investigatorAt $ toId attrs)
 
 getModifiedShroudValueFor :: LocationAttrs -> GameT Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
-  pure
-    $ foldr
-      applyPostModifier
-      (foldr applyModifier (locationShroud attrs) modifiers')
-      modifiers'
+  pure $ foldr applyPostModifier (foldr applyModifier (locationShroud attrs) modifiers') modifiers'
  where
   applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -432,24 +409,19 @@ withDrawCardUnderneathAction
   => location
   -> [Ability]
 withDrawCardUnderneathAction x =
-  withBaseAbilities
-    attrs
-    [drawCardUnderneathAction attrs | locationRevealed attrs]
+  withBaseAbilities attrs [drawCardUnderneathAction attrs | locationRevealed attrs]
  where
   attrs = toAttrs x
 
 instance HasAbilities LocationAttrs where
   getAbilities l =
-    [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
-        $ ActionAbility (Just Action.Investigate) (ActionCost 1)
+    [ investigateAbility l 101 mempty (OnLocation $ LocationWithId $ toId l)
     , restrictedAbility
         l
         102
         ( OnLocation (AccessibleTo $ LocationWithId $ toId l)
-            <> InvestigatorExists
-              ( You
-                  <> InvestigatorWithoutModifier CannotMove
-                  <> InvestigatorWithoutModifier (CannotEnter $ toId l)
+            <> exists
+              ( You <> InvestigatorWithoutModifier CannotMove <> InvestigatorWithoutModifier (CannotEnter $ toId l)
               )
         )
         $ ActionAbility (Just Action.Move) moveCost

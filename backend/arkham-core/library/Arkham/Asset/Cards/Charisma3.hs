@@ -17,7 +17,7 @@ charisma3 :: AssetCard Charisma3
 charisma3 = asset Charisma3 Cards.charisma3
 
 slot :: AssetAttrs -> Slot
-slot attrs = Slot (toSource attrs) Nothing
+slot attrs = Slot (toSource attrs) []
 
 instance RunMessage Charisma3 where
   runMessage msg (Charisma3 attrs) = case msg of

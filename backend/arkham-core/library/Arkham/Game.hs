@@ -76,7 +76,14 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Location qualified as Helpers
-import Arkham.Helpers.Message hiding (createEnemy)
+import Arkham.Helpers.Message hiding (
+  AssetDamage,
+  EnemyDamage,
+  InvestigatorDamage,
+  InvestigatorDefeated,
+  InvestigatorResigned,
+  createEnemy,
+ )
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
@@ -130,13 +137,6 @@ import Arkham.Matcher hiding (
   StoryCard,
  )
 import Arkham.Matcher qualified as M
-import Arkham.Message hiding (
-  AssetDamage,
-  EnemyDamage,
-  InvestigatorDamage,
-  InvestigatorDefeated,
-  InvestigatorResigned,
- )
 import Arkham.Message qualified as Msg
 import Arkham.ModifierData
 import Arkham.Movement

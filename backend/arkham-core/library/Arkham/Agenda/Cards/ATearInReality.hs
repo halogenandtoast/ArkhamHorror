@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 

@@ -31,7 +31,6 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationName))
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDamage)
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Projection

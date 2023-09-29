@@ -17,7 +17,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Timing qualified as Timing
 import Arkham.Window (mkWindow)

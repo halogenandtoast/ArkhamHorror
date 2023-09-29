@@ -8,8 +8,7 @@ module Arkham.Story.Runner (
 import Arkham.Prelude
 
 import Arkham.Classes as X
-import Arkham.Helpers.Message as X
-import Arkham.Message as X hiding (story)
+import Arkham.Helpers.Message as X hiding (story)
 import Arkham.Source as X
 import Arkham.Story.Types as X
 import Arkham.Target as X

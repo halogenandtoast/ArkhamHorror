@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
-import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

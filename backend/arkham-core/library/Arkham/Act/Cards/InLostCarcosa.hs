@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Message
 
 newtype InLostCarcosa = InLostCarcosa ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

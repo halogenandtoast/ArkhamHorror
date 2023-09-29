@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Message hiding (RevealChaosToken)
 import Arkham.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs

@@ -8,9 +8,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyDefeated)
+import Arkham.Discover
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype GreteWagner = GreteWagner AssetAttrs
   deriving anyclass (IsAsset)
@@ -20,28 +19,24 @@ greteWagner :: AssetCard GreteWagner
 greteWagner = ally GreteWagner Cards.greteWagner (3, 2)
 
 instance HasModifiersFor GreteWagner where
-  getModifiersFor (InvestigatorTarget iid) (GreteWagner a)
-    | controlledBy a iid = pure $ toModifiers a [SkillModifier SkillCombat 1]
+  getModifiersFor (InvestigatorTarget iid) (GreteWagner a) | controlledBy a iid = do
+    pure $ toModifiers a [SkillModifier #combat 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GreteWagner where
   getAbilities (GreteWagner a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> ClueOnLocation
-            <> InvestigatorExists
-              (You <> InvestigatorCanDiscoverCluesAt YourLocation)
-        )
+        (ClueOnLocation <> exists (You <> InvestigatorCanDiscoverCluesAt YourLocation))
         $ ReactionAbility
-          (EnemyDefeated Timing.After You ByAny AnyEnemy)
-          (ExhaustCost (toTarget a) <> DamageCost (toSource a) (toTarget a) 1)
+          (EnemyDefeated #after You ByAny AnyEnemy)
+          (exhaust a <> DamageCost (toSource a) (toTarget a) 1)
     ]
 
 instance RunMessage GreteWagner where
   runMessage msg a@(GreteWagner attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
       pure a
     _ -> GreteWagner <$> runMessage msg attrs

@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Projection
@@ -21,26 +22,19 @@ oldKeyring :: AssetCard OldKeyring
 oldKeyring = assetWith OldKeyring Cards.oldKeyring (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities OldKeyring where
-  getAbilities (OldKeyring attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ ActionCost 1
-    ]
+  getAbilities (OldKeyring attrs) = [investigateAbility attrs 1 mempty ControlsThis]
 
 instance RunMessage OldKeyring where
   runMessage msg a@(OldKeyring attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      skillType <- field LocationInvestigateSkill lid
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      lid <- fieldJust InvestigatorLocation iid
+      investigation <- mkInvestigate iid (toAbilitySource attrs 1)
       pushAll
-        [ skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-2))
-        , Investigate iid lid source Nothing skillType False
+        [ skillTestModifier (toAbilitySource attrs 1) lid (ShroudModifier (-2))
+        , toMessage investigation
         ]
       pure a
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> a <$ push (SpendUses (toTarget attrs) Key 1)
+    PassedThisSkillTest _ (isSource attrs -> True) -> do
+      push $ SpendUses (toTarget attrs) Key 1
+      pure a
     _ -> OldKeyring <$> runMessage msg attrs

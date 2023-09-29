@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 
 newtype Metadata = Metadata {drawnCards :: [EncounterCard]}

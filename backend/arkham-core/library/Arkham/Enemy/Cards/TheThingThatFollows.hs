@@ -11,7 +11,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 
 newtype TheThingThatFollows = TheThingThatFollows EnemyAttrs

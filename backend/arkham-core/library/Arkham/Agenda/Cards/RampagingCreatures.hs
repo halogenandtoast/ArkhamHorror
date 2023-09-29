@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher hiding (ChosenRandomLocation)
-import Arkham.Message
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs

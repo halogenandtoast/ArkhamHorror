@@ -6,37 +6,47 @@ module Arkham.Helpers.Slot (
 import Arkham.Prelude
 
 import Arkham.Card
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Slot as X
 
 isEmptySlot :: Slot -> Bool
-isEmptySlot = isNothing . slotItem
+isEmptySlot = null . slotItems
 
-canPutIntoSlot :: IsCard a => a -> Slot -> Bool
+canPutIntoSlot :: (HasGame m, IsCard a) => a -> Slot -> m Bool
 canPutIntoSlot a = \case
-  slot@Slot {} -> isEmptySlot slot
-  tslot@(RestrictedSlot _ matcher _) -> isEmptySlot tslot && cardMatch a matcher
+  slot@(Slot _ []) -> pure $ isEmptySlot slot
+  tslot@(RestrictedSlot _ matcher []) -> pure $ isEmptySlot tslot && cardMatch a matcher
+  Slot _ (x : xs) -> do
+    mods <- getModifiers x
+    let canFit = \case
+          SharesSlotWith n matcher -> length xs + 1 < n && cardMatch a matcher
+          _ -> False
+    pure $ any canFit mods
+  RestrictedSlot _ matcher (x : xs) -> do
+    mods <- getModifiers x
+    let canFit = \case
+          SharesSlotWith n matcher' -> length xs + 1 < n && cardMatch a matcher'
+          _ -> False
+    pure $ any canFit mods && cardMatch a matcher
 
 putIntoSlot :: AssetId -> Slot -> Slot
 putIntoSlot aid = \case
-  Slot source _ -> Slot source (Just aid)
-  RestrictedSlot source t _ -> RestrictedSlot source t (Just aid)
+  Slot source assets -> Slot source (aid : assets)
+  RestrictedSlot source t assets -> RestrictedSlot source t (aid : assets)
 
 emptySlot :: Slot -> Slot
 emptySlot = \case
-  Slot source _ -> Slot source Nothing
-  RestrictedSlot source t _ -> RestrictedSlot source t Nothing
+  Slot source _ -> Slot source []
+  RestrictedSlot source t _ -> RestrictedSlot source t []
 
-slotItem :: Slot -> Maybe AssetId
-slotItem = \case
-  Slot _ masset -> masset
-  RestrictedSlot _ _ masset -> masset
+slotItems :: Slot -> [AssetId]
+slotItems = \case
+  Slot _ assets -> assets
+  RestrictedSlot _ _ assets -> assets
 
 removeIfMatches :: AssetId -> Slot -> Slot
 removeIfMatches aid = \case
-  Slot source masset ->
-    if masset == Just aid then Slot source Nothing else Slot source masset
-  RestrictedSlot source trait masset ->
-    if masset == Just aid
-      then RestrictedSlot source trait Nothing
-      else RestrictedSlot source trait masset
+  Slot source assets -> Slot source (filter (/= aid) assets)
+  RestrictedSlot source trait assets -> RestrictedSlot source trait (filter (/= aid) assets)

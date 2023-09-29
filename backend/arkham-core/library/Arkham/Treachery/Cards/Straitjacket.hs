@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Message
 import Arkham.Slot
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

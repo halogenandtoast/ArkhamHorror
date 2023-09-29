@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message
 import Arkham.SkillType
 
 newtype ATestOfWill2 = ATestOfWill2 EventAttrs

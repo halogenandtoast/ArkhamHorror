@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Runner hiding (Label)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
@@ -22,7 +22,6 @@ import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
-import Arkham.Message hiding (Label)
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Control.Monad.Extra (findM)

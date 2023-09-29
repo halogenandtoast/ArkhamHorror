@@ -10,7 +10,6 @@ import Arkham.Cost
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source

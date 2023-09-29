@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 
 newtype Trusted = Trusted EventAttrs

@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Agenda.Helpers as X
 import Arkham.Agenda.Sequence as X
 import Arkham.Agenda.Types as X
-import Arkham.Helpers.Message as X
+import Arkham.Helpers.Message as X hiding (EnemyDefeated, InvestigatorEliminated)
 import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X
 import Arkham.Target as X
@@ -19,7 +19,6 @@ import Arkham.Agenda.AdvancementReason
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Message
 import Arkham.Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window, mkWindow, windowType)

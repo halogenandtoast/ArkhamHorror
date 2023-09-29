@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Agenda
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 
 newtype PossessedOathspeaker = PossessedOathspeaker EnemyAttrs
   deriving anyclass (IsEnemy)

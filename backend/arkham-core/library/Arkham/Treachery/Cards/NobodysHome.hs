@@ -12,7 +12,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (InvestigatorLocation))
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards

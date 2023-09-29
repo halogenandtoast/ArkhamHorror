@@ -10,7 +10,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message
 import Arkham.Resolution
 
 newtype OutOfTime = OutOfTime AgendaAttrs

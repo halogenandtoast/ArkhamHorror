@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype TruthFromFiction2 = TruthFromFiction2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

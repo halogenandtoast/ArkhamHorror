@@ -25,6 +25,6 @@ instance RunMessage SignMagick where
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push
         $ AddSlot iid ArcaneSlot
-        $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) Nothing
+        $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) []
       SignMagick <$> runMessage msg attrs
     _ -> SignMagick <$> runMessage msg attrs

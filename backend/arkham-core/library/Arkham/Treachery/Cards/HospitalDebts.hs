@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Modifier
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers

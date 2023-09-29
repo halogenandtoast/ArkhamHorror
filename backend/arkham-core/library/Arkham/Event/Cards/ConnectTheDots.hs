@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message
 
 newtype ConnectTheDots = ConnectTheDots EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

@@ -18,7 +18,7 @@ daisysToteBag :: AssetCard DaisysToteBag
 daisysToteBag = asset DaisysToteBag Cards.daisysToteBag
 
 slot :: AssetAttrs -> Slot
-slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
+slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
 
 instance RunMessage DaisysToteBag where
   runMessage msg (DaisysToteBag attrs) = case msg of

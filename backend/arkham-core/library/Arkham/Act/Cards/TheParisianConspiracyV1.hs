@@ -11,8 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message hiding (When)
-import Arkham.Timing
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -29,7 +27,7 @@ instance HasAbilities TheParisianConspiracyV1 where
     [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
         $ Objective
         $ ForcedAbility
-        $ RoundEnds When
+        $ RoundEnds #when
     ]
 
 instance RunMessage TheParisianConspiracyV1 where

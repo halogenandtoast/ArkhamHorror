@@ -30,7 +30,7 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
-import Arkham.Helpers.Message.Discard
+import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -41,7 +41,6 @@ import Arkham.Matcher hiding (
   PlayCard,
   SkillCard,
  )
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Skill.Types (Field (..))

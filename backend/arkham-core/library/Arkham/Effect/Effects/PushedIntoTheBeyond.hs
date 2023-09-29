@@ -9,7 +9,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Exception
-import Arkham.Message
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

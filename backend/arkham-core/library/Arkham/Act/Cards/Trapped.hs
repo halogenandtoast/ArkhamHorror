@@ -8,7 +8,6 @@ import Arkham.Classes
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (LocationMatcher (..))
-import Arkham.Message
 
 newtype Trapped = Trapped ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

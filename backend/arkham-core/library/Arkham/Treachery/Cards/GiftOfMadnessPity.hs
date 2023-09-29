@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath, treacheryInHandOf)
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Trait

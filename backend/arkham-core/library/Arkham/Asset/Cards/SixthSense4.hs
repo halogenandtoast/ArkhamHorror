@@ -5,13 +5,13 @@ module Arkham.Asset.Cards.SixthSense4 (
 ) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
@@ -27,28 +27,21 @@ sixthSense4 :: AssetCard SixthSense4
 sixthSense4 = asset SixthSense4 Cards.sixthSense4
 
 instance HasAbilities SixthSense4 where
-  getAbilities (SixthSense4 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ ActionCost 1
-    ]
+  getAbilities (SixthSense4 a) = [investigateAbility a 1 mempty ControlsThis]
 
 instance RunMessage SixthSense4 where
   runMessage msg a@(SixthSense4 attrs) = case msg of
-    UseCardAbility iid source@(isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
-      skillType <- field LocationInvestigateSkill lid
+      investigation <-
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
+
       pushAll
-        [ createCardEffect Cards.sixthSense4 Nothing source (InvestigationTarget iid lid)
-        , skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier SkillWillpower 2)
-        , Investigate
-            iid
-            lid
-            source
-            Nothing
-            (if skillType == SkillIntellect then SkillWillpower else skillType)
-            False
-        ]
+        $ [ createCardEffect Cards.sixthSense4 Nothing source (InvestigationTarget iid lid)
+          , skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier SkillWillpower 2)
+          ]
+        <> leftOr investigation
       pure a
     _ -> SixthSense4 <$> runMessage msg attrs
 

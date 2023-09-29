@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards

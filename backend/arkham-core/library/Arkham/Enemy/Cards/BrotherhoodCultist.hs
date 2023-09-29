@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade, EnemyFight)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token

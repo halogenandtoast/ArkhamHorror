@@ -15,7 +15,6 @@ import Arkham.Helpers.Query
 import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Data.List (cycle)
 import Data.Map.Strict qualified as Map

@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message
 
 newtype UncageTheSoul = UncageTheSoul EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

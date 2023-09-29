@@ -10,8 +10,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Window qualified as Window
 
 newtype AlchemicalTransmutation2 = AlchemicalTransmutation2 AssetAttrs

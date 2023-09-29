@@ -11,7 +11,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))

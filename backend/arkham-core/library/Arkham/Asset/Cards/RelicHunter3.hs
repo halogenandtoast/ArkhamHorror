@@ -17,7 +17,7 @@ relicHunter3 :: AssetCard RelicHunter3
 relicHunter3 = asset RelicHunter3 Cards.relicHunter3
 
 slot :: AssetAttrs -> Slot
-slot attrs = Slot (toSource attrs) Nothing
+slot attrs = Slot (toSource attrs) []
 
 instance RunMessage RelicHunter3 where
   runMessage msg (RelicHunter3 attrs) = case msg of

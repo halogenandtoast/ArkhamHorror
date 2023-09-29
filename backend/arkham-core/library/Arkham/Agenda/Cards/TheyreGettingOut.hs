@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Act
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Resolution
 import Arkham.Trait
 

@@ -13,7 +13,6 @@ import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyAttacks)
 import Arkham.Timing qualified as Timing
 
 newtype RiftSeeker = RiftSeeker EnemyAttrs

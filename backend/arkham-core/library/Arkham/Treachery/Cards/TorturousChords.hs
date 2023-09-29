@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Matcher (CardMatcher (AnyCard))
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Token

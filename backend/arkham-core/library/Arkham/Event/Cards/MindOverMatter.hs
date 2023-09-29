@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Message
 
 newtype MindOverMatter = MindOverMatter EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

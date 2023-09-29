@@ -12,7 +12,6 @@ import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait
 

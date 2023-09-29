@@ -8,7 +8,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Query
-import Arkham.Message
 import Arkham.Prelude
 
 newtype SwiftReflexes = SwiftReflexes EventAttrs

@@ -13,7 +13,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 
 newtype GetToTheBoats = GetToTheBoats ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

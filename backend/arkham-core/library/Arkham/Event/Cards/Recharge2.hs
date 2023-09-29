@@ -13,7 +13,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Trait hiding (Cultist)
 import Arkham.Window qualified as Window

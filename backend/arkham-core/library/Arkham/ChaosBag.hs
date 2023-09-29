@@ -16,9 +16,9 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Timing qualified as Timing

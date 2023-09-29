@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Message
 
 newtype PereLachaiseCemetery = PereLachaiseCemetery EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

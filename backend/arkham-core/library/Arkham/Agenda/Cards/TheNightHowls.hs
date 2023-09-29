@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Curse, Omen, Witch))
 

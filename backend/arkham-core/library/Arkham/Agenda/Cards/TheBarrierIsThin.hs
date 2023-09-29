@@ -16,7 +16,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Trait

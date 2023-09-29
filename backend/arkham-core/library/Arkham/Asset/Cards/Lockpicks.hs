@@ -1,5 +1,6 @@
 module Arkham.Asset.Cards.Lockpicks (
   lockpicks,
+  lockpicksEffect,
   Lockpicks (..),
 ) where
 
@@ -10,8 +11,10 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card.CardDef
+import Arkham.Effect.Runner
 import Arkham.EffectMetadata
 import Arkham.Helpers.Investigator
+import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Projection
@@ -25,30 +28,43 @@ lockpicks :: AssetCard Lockpicks
 lockpicks = asset Lockpicks Cards.lockpicks
 
 instance HasAbilities Lockpicks where
-  getAbilities (Lockpicks a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate)
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-    ]
+  getAbilities (Lockpicks a) = [investigateAbility a 1 (exhaust a) ControlsThis]
 
 instance RunMessage Lockpicks where
   runMessage msg a@(Lockpicks attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      agility <- getSkillValue SkillAgility iid
-      skillType <- field LocationInvestigateSkill lid
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigation <- mkInvestigate iid (toAbilitySource attrs 1)
+
       pushAll
-        [ CreateEffect
-            (cdCardCode $ toCardDef attrs)
-            (Just $ EffectInt agility)
-            (toSource attrs)
-            (InvestigatorTarget iid)
-        , Investigate iid lid source Nothing skillType False
+        [ createCardEffect Cards.lockpicks Nothing attrs iid
+        , toMessage investigation
         ]
       pure a
     _ -> Lockpicks <$> runMessage msg attrs
+
+newtype LockpicksEffect = LockpicksEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+lockpicksEffect :: EffectArgs -> LockpicksEffect
+lockpicksEffect = cardEffect LockpicksEffect Cards.lockpicks
+
+instance HasModifiersFor LockpicksEffect where
+  getModifiersFor target (LockpicksEffect a) | a.target `is` target = do
+    pure $ toModifiers a [AddSkillValue #agility]
+  getModifiersFor _ _ = pure []
+
+instance RunMessage LockpicksEffect where
+  runMessage msg e@(LockpicksEffect attrs) = case msg of
+    SkillTestEnds _ _ -> do
+      push $ disable attrs
+      pure e
+    PassedThisSkillTestBy _ _ n | n < 2 -> do
+      let aid = fromJustNote "must be an asset" attrs.source.asset
+      pushAll [Discard attrs.source (AssetTarget aid), disable attrs]
+      pure e
+    FailedThisSkillTestBy _ _ n | n < 2 -> do
+      let aid = fromJustNote "must be an asset" attrs.source.asset
+      pushAll [Discard attrs.source (AssetTarget aid), disable attrs]
+      pure e
+    _ -> LockpicksEffect <$> runMessage msg attrs

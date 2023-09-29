@@ -11,7 +11,6 @@ import Arkham.Enemy.Runner hiding (EnemyFight)
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Token
 
 -- Do not remove doom from Nahab when the agenda advances.

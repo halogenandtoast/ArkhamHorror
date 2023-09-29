@@ -12,10 +12,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
+import Arkham.Effect.Runner
 import Arkham.SkillType
 import Arkham.Window qualified as Window
 
@@ -37,14 +34,13 @@ instance HasAbilities Wither4 where
 
 instance RunMessage Wither4 where
   runMessage msg a@(Wither4 attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ pushAll
-              [ createCardEffect Cards.wither4 Nothing source (InvestigatorTarget iid)
-              , skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier SkillWillpower 2)
-              , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
-              ]
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      pushAll
+        [ createCardEffect Cards.wither4 Nothing source (InvestigatorTarget iid)
+        , skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier SkillWillpower 2)
+        , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
+        ]
+      pure a
     _ -> Wither4 <$> runMessage msg attrs
 
 newtype Wither4Effect = Wither4Effect EffectAttrs

@@ -10,6 +10,7 @@ import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes hiding (Entity (..), select)
+import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.GameEnv
 import Arkham.Message

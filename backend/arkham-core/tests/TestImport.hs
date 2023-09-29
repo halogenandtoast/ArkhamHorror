@@ -45,7 +45,6 @@ import Arkham.Location as X
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Types
 import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
-import Arkham.Message as X
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Scenario as X

@@ -19,7 +19,6 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))

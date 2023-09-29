@@ -16,7 +16,6 @@ import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait
 

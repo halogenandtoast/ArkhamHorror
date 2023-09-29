@@ -12,7 +12,6 @@ import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
 import Arkham.Projection
 import Arkham.Zone qualified as Zone
 

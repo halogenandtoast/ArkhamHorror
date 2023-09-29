@@ -208,7 +208,7 @@ nonEmptySlotsFirst :: [Slot] -> [Slot]
 nonEmptySlotsFirst = sortOn isEmptySlot
 
 placeInAvailableSlot :: (HasGame m, IsCard a) => AssetId -> a -> [Slot] -> m [Slot]
-placeInAvailableSlot aid card = go . traceShowId . nonEmptySlotsFirst
+placeInAvailableSlot aid card = go . nonEmptySlotsFirst
  where
   go [] = pure []
   go (x : xs) = do

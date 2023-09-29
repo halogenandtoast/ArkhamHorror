@@ -9,11 +9,8 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Helpers.Investigator
 import Arkham.Investigate
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype SeekingAnswers2 = SeekingAnswers2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

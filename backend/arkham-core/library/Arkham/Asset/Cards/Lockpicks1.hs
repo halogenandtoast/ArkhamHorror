@@ -7,18 +7,10 @@ module Arkham.Asset.Cards.Lockpicks1 (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card.CardDef
 import Arkham.Effect.Runner
-import Arkham.EffectMetadata
-import Arkham.Helpers.Investigator
 import Arkham.Investigate
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
-import Arkham.Projection
-import Arkham.SkillType
 
 newtype Lockpicks1 = Lockpicks1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Helpers
+import Arkham.Investigate.Types (Investigate (..))
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Message
@@ -68,7 +69,15 @@ playCard i c = InitiatePlayCard (toId i) c Nothing (defaultWindows $ toId i) Tru
 
 investigate :: Investigator -> Location -> Message
 investigate i l =
-  Investigate (toId i) (toId l) (TestSource mempty) Nothing SkillIntellect False
+  Investigate
+    $ MkInvestigate
+      { investigateInvestigator = toId i
+      , investigateLocation = toId l
+      , investigateSkillType = SkillIntellect
+      , investigateSource = TestSource mempty
+      , investigateTarget = Nothing
+      , investigateIsAction = False
+      }
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i sType n =

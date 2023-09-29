@@ -6,12 +6,10 @@ module Arkham.Asset.Cards.OldKeyring (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
 import Arkham.Projection
 
 newtype OldKeyring = OldKeyring AssetAttrs

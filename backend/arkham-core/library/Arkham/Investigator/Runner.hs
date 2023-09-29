@@ -697,7 +697,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- if we are planning to discard another asset immediately, wait to refill slots
     mmsg <- peekMessage
     case mmsg of
-      Just (Discard _ (AssetTarget aid)) | aid `elem` investigatorAssets -> pure ()
+      Just (Discard _ (AssetTarget aid')) | aid' `elem` investigatorAssets -> pure ()
+      -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
       _ -> push $ RefillSlots investigatorId
 
     pure $ a & (assetsL %~ deleteSet aid) & (discardL %~ (card :)) & (slotsL %~ removeFromSlots aid)
@@ -1438,7 +1439,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             <> DiscardableAsset
             <> AssetOneOf (map AssetInSlot missingSlotTypes)
 
-        let assetsInSlotsOf aid' = traceShowId $ nub $ concat $ filter (elem aid') $ map slotItems $ concat $ toList (a ^. slotsL)
+        -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
+        let assetsInSlotsOf aid' = nub $ concat $ filter (elem aid') $ map slotItems $ concat $ toList (a ^. slotsL)
         push
           $ if null assetsThatCanProvideSlots
             then InvestigatorPlayedAsset iid aid
@@ -1735,7 +1737,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     failedAssetIds <- selectFilter AssetCanLeavePlayByNormalMeans failedAssetIds'
 
-    let assetsInSlotsOf aid = traceShowId $ nub $ concat $ filter (elem aid) $ map slotItems $ concat $ toList (a ^. slotsL)
+    -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
+    let assetsInSlotsOf aid = nub $ concat $ filter (elem aid) $ map slotItems $ concat $ toList (a ^. slotsL)
 
     if null failedAssetIds
       then do

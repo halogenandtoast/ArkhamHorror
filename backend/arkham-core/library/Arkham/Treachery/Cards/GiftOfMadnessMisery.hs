@@ -12,7 +12,6 @@ import Arkham.Matcher hiding (
   TreacheryInHandOf,
   treacheryInHandOf,
  )
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards

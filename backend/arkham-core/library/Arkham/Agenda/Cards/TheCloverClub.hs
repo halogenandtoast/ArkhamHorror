@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Campaign
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 

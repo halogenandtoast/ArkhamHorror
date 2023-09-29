@@ -10,7 +10,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Enemy.Types (Field (EnemyTraits))
 import Arkham.GameValue
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Trait

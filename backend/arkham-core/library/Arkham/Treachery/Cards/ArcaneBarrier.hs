@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Investigator.Types
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 

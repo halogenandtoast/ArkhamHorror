@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs

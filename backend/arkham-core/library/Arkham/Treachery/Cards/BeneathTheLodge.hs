@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

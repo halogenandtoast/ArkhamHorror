@@ -12,8 +12,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.DamageEffect
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Runner
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.SkillType
 import Arkham.Window qualified as Window

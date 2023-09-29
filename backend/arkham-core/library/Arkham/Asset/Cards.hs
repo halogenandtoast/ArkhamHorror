@@ -242,6 +242,9 @@ allPlayerAssetCards =
       , eighteenDerringer
       , eighteenDerringer2
       , elderSignAmulet3
+      , empowerSelfAcuity2
+      , empowerSelfAlacrity2
+      , empowerSelfStamina2
       , enchantedBlade
       , enchantedBladeGuardian3
       , enchantedBladeMystic3
@@ -3577,6 +3580,33 @@ tetsuoMori =
     , cdCardTraits = setFromList [Ally, Police]
     , cdSlots = [#ally]
     , cdUnique = True
+    }
+
+empowerSelfStamina2 :: CardDef
+empowerSelfStamina2 =
+  (asset "06241" ("Empower Self" <:> "Stamina") 3 Mystic)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdLevel = 2
+    }
+
+empowerSelfAlacrity2 :: CardDef
+empowerSelfAlacrity2 =
+  (asset "06242" ("Empower Self" <:> "Alacrity") 3 Mystic)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdLevel = 2
+    }
+
+empowerSelfAcuity2 :: CardDef
+empowerSelfAcuity2 =
+  (asset "06243" ("Empower Self" <:> "Acuity") 3 Mystic)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdLevel = 2
     }
 
 oldBookOfLore3 :: CardDef

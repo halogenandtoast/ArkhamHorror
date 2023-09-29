@@ -11,7 +11,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message
 
 newtype SneakAttack2 = SneakAttack2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

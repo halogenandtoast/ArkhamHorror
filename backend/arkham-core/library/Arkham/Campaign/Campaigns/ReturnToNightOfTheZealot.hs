@@ -9,7 +9,6 @@ import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Id
-import Arkham.Message
 
 newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)

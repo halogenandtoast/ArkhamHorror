@@ -10,7 +10,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message
 
 newtype TheTempleWarden = TheTempleWarden AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

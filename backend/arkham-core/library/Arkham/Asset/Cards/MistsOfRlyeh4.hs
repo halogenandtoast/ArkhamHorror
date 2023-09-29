@@ -12,9 +12,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
-import Arkham.EffectMetadata
+import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Movement

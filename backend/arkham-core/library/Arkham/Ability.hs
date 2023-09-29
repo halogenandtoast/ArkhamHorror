@@ -105,7 +105,7 @@ evadeAbility entity idx cost criteria =
 
 investigateAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
 investigateAbility entity idx cost criteria =
-  (mkAbility entity idx (ActionAbility (Just #investigate) cost))
+  (mkAbility entity idx (investigateAction cost))
     { abilityCriteria = criteria
     }
 

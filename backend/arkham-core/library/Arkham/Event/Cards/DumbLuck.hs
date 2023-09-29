@@ -10,7 +10,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Id
-import Arkham.Message
 import Arkham.Window
 
 newtype DumbLuck = DumbLuck EventAttrs

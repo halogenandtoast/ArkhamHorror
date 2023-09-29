@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait (Trait (Power))
 import Arkham.Treachery.Cards qualified as Cards

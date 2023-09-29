@@ -59,7 +59,7 @@ instance HasChaosTokenValue GavriellaMizrah where
 instance RunMessage GavriellaMizrah where
   runMessage msg i@(GavriellaMizrah (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushMessage $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       pushAll

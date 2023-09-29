@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -48,7 +48,7 @@ instance RunMessage PassageIntoTheVeil where
               , Label
                   "Take 1 direct damage and deal 1 damage to each of your Ally assets"
                   ( InvestigatorDirectDamage iid source 1 0
-                      : [AssetDamage aid source 1 0 | aid <- assetIds]
+                      : [Msg.AssetDamage aid source 1 0 | aid <- assetIds]
                   )
               ]
           pure t

@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Timing qualified as Timing

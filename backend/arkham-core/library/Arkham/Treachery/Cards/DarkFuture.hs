@@ -12,7 +12,6 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards

@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
-import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

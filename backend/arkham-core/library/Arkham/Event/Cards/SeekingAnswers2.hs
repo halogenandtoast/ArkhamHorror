@@ -10,9 +10,9 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype SeekingAnswers2 = SeekingAnswers2 EventAttrs
@@ -24,18 +24,8 @@ seekingAnswers2 = event SeekingAnswers2 Cards.seekingAnswers2
 
 instance RunMessage SeekingAnswers2 where
   runMessage msg e@(SeekingAnswers2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      lid <- getJustLocation iid
-      skillType <- field LocationInvestigateSkill lid
-      pushAll
-        [ Investigate
-            iid
-            lid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            skillType
-            False
-        ]
+    PlayThisEvent iid eid | eid == eventId -> do
+      pushM $ mkInvestigate iid attrs <&> setTarget attrs
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       pushAll
@@ -48,14 +38,11 @@ instance RunMessage SeekingAnswers2 where
         selectList
           $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
           <> locationWithDiscoverableCluesBy iid
-      when (notNull lids) $ do
-        push
-          $ chooseOrRunOne
-            iid
-            [ targetLabel
-              lid'
-              [InvestigatorDiscoverClues iid lid' (toSource attrs) 1 (Just Action.Investigate)]
-            | lid' <- lids
-            ]
+      pushIfAny lids
+        $ chooseOrRunOne iid
+        $ [ targetLabel lid'
+            $ [InvestigatorDiscoverClues iid lid' (toSource attrs) 1 (Just #investigate)]
+          | lid' <- lids
+          ]
       pure e
     _ -> SeekingAnswers2 <$> runMessage msg attrs

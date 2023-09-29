@@ -16,7 +16,6 @@ import Arkham.Exception
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (ChosenRandomLocation)
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
@@ -62,6 +61,6 @@ instance RunMessage BidingItsTime where
           ]
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) (Initiator (EnemyTarget enemy)) _ _ -> do
-      pushMessage $ enemyAttack enemy attrs iid
+      push $ enemyAttack enemy attrs iid
       pure a
     _ -> BidingItsTime <$> runMessage msg attrs

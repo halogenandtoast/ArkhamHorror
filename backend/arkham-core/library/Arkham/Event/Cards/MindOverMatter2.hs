@@ -12,7 +12,6 @@ import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Message
 import Arkham.SkillType
 
 newtype MindOverMatter2 = MindOverMatter2 EventAttrs

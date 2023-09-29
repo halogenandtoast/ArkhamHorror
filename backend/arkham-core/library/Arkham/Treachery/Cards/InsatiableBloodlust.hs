@@ -6,7 +6,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards

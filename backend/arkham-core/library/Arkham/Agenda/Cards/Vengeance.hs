@@ -7,11 +7,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Runner hiding (InvestigatorDefeated)
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorDefeated)
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 import Data.List (cycle)

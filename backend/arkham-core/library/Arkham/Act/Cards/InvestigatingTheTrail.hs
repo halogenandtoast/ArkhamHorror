@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.EncounterCard
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

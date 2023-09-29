@@ -8,7 +8,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Event.Runner
 import Arkham.Helpers.Enemy
-import Arkham.Message
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

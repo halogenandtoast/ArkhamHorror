@@ -15,9 +15,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Log
-import Arkham.Matcher
-import Arkham.Message
-import Arkham.Message qualified as Msg
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
 import Arkham.Scenario.Deck
 import Data.List qualified as List
@@ -68,7 +66,7 @@ instance RunMessage WhatMustBeDone where
               [ UnfocusCards
               , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
               , placement
-              , Msg.RevealLocation (Just iid) lid
+              , RevealLocation (Just iid) lid
               , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
               ]
             | (card, (lid, placement)) <- cardsWithMsgs

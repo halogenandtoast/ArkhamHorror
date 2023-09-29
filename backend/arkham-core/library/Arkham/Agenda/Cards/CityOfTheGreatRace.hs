@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Trait (Trait (Item))
 

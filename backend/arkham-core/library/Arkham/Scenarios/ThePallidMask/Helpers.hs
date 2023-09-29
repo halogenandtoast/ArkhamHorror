@@ -6,12 +6,11 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Direction
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Message
+import Arkham.Helpers.Message hiding (Label)
 import Arkham.Id
 import Arkham.Label
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Message hiding (Label)
 import Control.Monad (zipWithM)
 
 posLabelToPosition :: Label -> (Int, Int)

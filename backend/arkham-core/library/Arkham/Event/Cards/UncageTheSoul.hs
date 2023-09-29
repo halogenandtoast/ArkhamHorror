@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window (mkWindow)

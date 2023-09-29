@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
+import Arkham.Discover
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -58,6 +59,6 @@ instance RunMessage AgencyBackup5 where
           ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 2) 1 Nothing
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 2) 1
       pure a
     _ -> AgencyBackup5 <$> runMessage msg attrs

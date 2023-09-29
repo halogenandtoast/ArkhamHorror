@@ -180,11 +180,10 @@ fitsAvailableSlots aid a = do
   -- every Accessory Slot as an Arcane Slot
   -- WARNING This only works if the slots are bidirectional and if we need it
   -- to work in other cases we'll need to alter this logic
-  let availableSlots =
-        flip
-          concatMap
-          (nub slotTypes)
-          (\slotType -> map (const slotType) $ availableSlotTypesFor slotType canHoldMap assetCard a)
+  availableSlots <-
+    concatForM
+      (nub slotTypes)
+      (\slotType -> map (const slotType) <$> availableSlotTypesFor slotType canHoldMap assetCard a)
   let missingSlotTypes = slotTypes \\ availableSlots
 
   if null missingSlotTypes
@@ -192,24 +191,31 @@ fitsAvailableSlots aid a = do
     else pure $ MissingSlots missingSlotTypes
 
 availableSlotTypesFor
-  :: IsCard a
+  :: (IsCard a, HasGame m)
   => SlotType
   -> Map SlotType [SlotType]
   -> a
   -> InvestigatorAttrs
-  -> [SlotType]
-availableSlotTypesFor slotType canHoldMap a attrs =
+  -> m [SlotType]
+availableSlotTypesFor slotType canHoldMap a attrs = do
   let possibleSlotTypes = slotType : findWithDefault [] slotType canHoldMap
-   in flip concatMap possibleSlotTypes $ \sType ->
-        let slots = findWithDefault [] sType (attrs ^. slotsL)
-         in replicate (length (filter (canPutIntoSlot a) slots)) sType
+  concatForM possibleSlotTypes $ \sType -> do
+    let slots = findWithDefault [] sType (attrs ^. slotsL)
+    xs <- filterM (canPutIntoSlot a) slots
+    pure $ replicate (length xs) sType
 
-placeInAvailableSlot :: IsCard a => AssetId -> a -> [Slot] -> [Slot]
-placeInAvailableSlot _ _ [] = []
-placeInAvailableSlot aid card (x : xs) =
-  if canPutIntoSlot card x
-    then putIntoSlot aid x : xs
-    else x : placeInAvailableSlot aid card xs
+nonEmptySlotsFirst :: [Slot] -> [Slot]
+nonEmptySlotsFirst = sortOn isEmptySlot
+
+placeInAvailableSlot :: (HasGame m, IsCard a) => AssetId -> a -> [Slot] -> m [Slot]
+placeInAvailableSlot aid card = go . traceShowId . nonEmptySlotsFirst
+ where
+  go [] = pure []
+  go (x : xs) = do
+    fits <- canPutIntoSlot card x
+    if fits
+      then pure $ putIntoSlot aid x : xs
+      else (x :) <$> go xs
 
 discardableCards :: InvestigatorAttrs -> [Card]
 discardableCards InvestigatorAttrs {..} =
@@ -289,24 +295,24 @@ investigator f cardDef Stats {..} =
                 , investigatorResigned = False
                 , investigatorSlots =
                     mapFromList
-                      [ (AccessorySlot, [Slot (InvestigatorSource iid) Nothing])
-                      , (BodySlot, [Slot (InvestigatorSource iid) Nothing])
-                      , (AllySlot, [Slot (InvestigatorSource iid) Nothing])
+                      [ (AccessorySlot, [Slot (InvestigatorSource iid) []])
+                      , (BodySlot, [Slot (InvestigatorSource iid) []])
+                      , (AllySlot, [Slot (InvestigatorSource iid) []])
                       ,
                         ( HandSlot
                         ,
-                          [ Slot (InvestigatorSource iid) Nothing
-                          , Slot (InvestigatorSource iid) Nothing
+                          [ Slot (InvestigatorSource iid) []
+                          , Slot (InvestigatorSource iid) []
                           ]
                         )
                       ,
                         ( ArcaneSlot
                         ,
-                          [ Slot (InvestigatorSource iid) Nothing
-                          , Slot (InvestigatorSource iid) Nothing
+                          [ Slot (InvestigatorSource iid) []
+                          , Slot (InvestigatorSource iid) []
                           ]
                         )
-                      , (TarotSlot, [Slot (InvestigatorSource iid) Nothing])
+                      , (TarotSlot, [Slot (InvestigatorSource iid) []])
                       ]
                 , investigatorXp = 0
                 , investigatorPhysicalTrauma = 0

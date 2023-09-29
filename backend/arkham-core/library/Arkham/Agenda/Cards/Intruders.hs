@@ -14,7 +14,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Treacheries
 

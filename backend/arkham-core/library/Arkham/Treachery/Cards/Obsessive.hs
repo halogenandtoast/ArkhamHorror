@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

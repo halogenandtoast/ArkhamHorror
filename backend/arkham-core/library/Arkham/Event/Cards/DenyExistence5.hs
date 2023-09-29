@@ -7,8 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Message hiding (Discarded)
+import Arkham.Event.Runner hiding (Discarded)
 import Arkham.Window
 
 newtype DenyExistence5 = DenyExistence5 EventAttrs

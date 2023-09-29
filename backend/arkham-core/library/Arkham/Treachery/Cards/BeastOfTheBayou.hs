@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

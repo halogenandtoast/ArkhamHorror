@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Effect
-import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Timing

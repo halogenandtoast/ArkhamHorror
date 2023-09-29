@@ -13,7 +13,6 @@ import Arkham.Enemy.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Strategy
 
 newtype HasturLordOfCarcosa = HasturLordOfCarcosa EnemyAttrs
   deriving anyclass (IsEnemy)

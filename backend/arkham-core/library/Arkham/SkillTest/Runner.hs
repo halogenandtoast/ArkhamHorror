@@ -17,8 +17,8 @@ import Arkham.Classes hiding (matches)
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
+import Arkham.Helpers.Message
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.SkillTestResult
 import Arkham.SkillType

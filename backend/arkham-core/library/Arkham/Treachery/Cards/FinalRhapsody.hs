@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

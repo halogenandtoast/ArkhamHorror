@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.Indebted (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers

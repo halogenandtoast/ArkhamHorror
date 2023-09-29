@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Message
 
 newtype MomentOfRespite3 = MomentOfRespite3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

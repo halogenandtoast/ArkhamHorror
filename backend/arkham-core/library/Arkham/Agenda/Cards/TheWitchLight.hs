@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Act
 import Arkham.Helpers.Enemy
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 

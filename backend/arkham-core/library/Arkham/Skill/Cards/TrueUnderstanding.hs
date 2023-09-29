@@ -6,6 +6,7 @@ module Arkham.Skill.Cards.TrueUnderstanding (
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
@@ -27,6 +28,6 @@ instance RunMessage TrueUnderstanding where
     PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == skillId -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
-        push $ InvestigatorDiscoverClues iid lid (toSource attrs) 1 Nothing
+        push $ discover iid lid (toSource attrs) 1
       pure s
     _ -> TrueUnderstanding <$> runMessage msg attrs

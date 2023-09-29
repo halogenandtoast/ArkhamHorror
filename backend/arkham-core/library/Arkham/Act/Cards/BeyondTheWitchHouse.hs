@@ -15,7 +15,6 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype BeyondTheWitchHouse = BeyondTheWitchHouse ActAttrs

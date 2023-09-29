@@ -7,7 +7,7 @@ module Arkham.Scenario.Runner (
 
 import Arkham.Prelude
 
-import Arkham.Helpers.Message as X
+import Arkham.Helpers.Message as X hiding (EnemyDamage, InvestigatorDamage)
 import Arkham.Scenario.Types as X
 import Arkham.Source as X
 import Arkham.Target as X
@@ -23,7 +23,6 @@ import Arkham.ChaosBag ()
 import Arkham.ChaosToken
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasChaosTokenValue
-import Arkham.Classes.HasQueue
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Classes.RunMessage
 import Arkham.Deck qualified as Deck
@@ -45,7 +44,6 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message
 import Arkham.Modifier qualified as Modifier
 import Arkham.Phase
 import Arkham.Projection

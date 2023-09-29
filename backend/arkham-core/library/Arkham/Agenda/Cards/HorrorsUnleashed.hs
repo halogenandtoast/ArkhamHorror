@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
 import Arkham.Matcher hiding (ChosenRandomLocation)
-import Arkham.Message
 import Arkham.Modifier qualified as Modifier
 import Arkham.Projection
 import Arkham.Trait

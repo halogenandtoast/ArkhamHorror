@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 

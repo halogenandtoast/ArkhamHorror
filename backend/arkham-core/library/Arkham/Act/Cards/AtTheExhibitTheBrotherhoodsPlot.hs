@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 

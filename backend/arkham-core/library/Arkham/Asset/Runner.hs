@@ -12,9 +12,8 @@ import Arkham.Asset.Types as X
 import Arkham.Asset.Uses as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
-import Arkham.Helpers.Message as X
+import Arkham.Helpers.Message as X hiding (AssetDamage, RevealChaosToken)
 import Arkham.Helpers.SkillTest as X
-import Arkham.Message as X hiding (AssetDamage)
 import Arkham.Source as X
 import Arkham.Target as X
 

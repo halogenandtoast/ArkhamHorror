@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
-import Arkham.Message
 
 newtype DaringManeuver = DaringManeuver EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

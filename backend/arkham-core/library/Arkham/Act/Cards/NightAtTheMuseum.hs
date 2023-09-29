@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Timing qualified as Timing
 

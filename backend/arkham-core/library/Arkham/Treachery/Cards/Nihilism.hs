@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message hiding (RevealChaosToken)
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

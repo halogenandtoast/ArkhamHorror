@@ -16,7 +16,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 
 newtype LostMemories = LostMemories AgendaAttrs

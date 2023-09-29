@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Discover
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Movement
@@ -17,8 +18,7 @@ newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenTomeSecretsRevealed3 :: AssetCard ForbiddenTomeSecretsRevealed3
-forbiddenTomeSecretsRevealed3 =
-  asset ForbiddenTomeSecretsRevealed3 Cards.forbiddenTomeSecretsRevealed3
+forbiddenTomeSecretsRevealed3 = asset ForbiddenTomeSecretsRevealed3 Cards.forbiddenTomeSecretsRevealed3
 
 instance HasModifiersFor ForbiddenTomeSecretsRevealed3 where
   getModifiersFor (AbilityTarget iid ab) (ForbiddenTomeSecretsRevealed3 a)
@@ -30,29 +30,22 @@ instance HasModifiersFor ForbiddenTomeSecretsRevealed3 where
 
 instance HasAbilities ForbiddenTomeSecretsRevealed3 where
   getAbilities (ForbiddenTomeSecretsRevealed3 a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> LocationExists
-              ( LocationMatchAny
-                  [AccessibleLocation, YourLocation <> LocationWithAnyClues]
-              )
-        )
-        $ ActionAbility Nothing
-        $ ActionCost 4
-        <> ExhaustCost (toTarget a)
+        (exists $ LocationMatchAny [AccessibleLocation, YourLocation <> LocationWithAnyClues])
+        $ ActionAbility Nothing (ActionCost 4 <> exhaust a)
     ]
 
 instance RunMessage ForbiddenTomeSecretsRevealed3 where
   runMessage msg a@(ForbiddenTomeSecretsRevealed3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       lids <- selectList AccessibleLocation
       pushAll
         [ chooseOrRunOne iid
             $ Label "Do not move" []
             : [targetLabel lid [MoveTo $ move (toSource attrs) iid lid] | lid <- lids]
-        , InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
+        , toMessage $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
         ]
       pure a
     _ -> ForbiddenTomeSecretsRevealed3 <$> runMessage msg attrs

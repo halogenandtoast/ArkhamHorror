@@ -8,10 +8,8 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 
 newtype WilliamYorick = WilliamYorick EffectAttrs

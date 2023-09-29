@@ -9,7 +9,6 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Message
 import Arkham.SkillType
 
 newtype MinhThiPhan = MinhThiPhan EffectAttrs

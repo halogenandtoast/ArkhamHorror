@@ -16,7 +16,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (EncounterDeck)
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillType

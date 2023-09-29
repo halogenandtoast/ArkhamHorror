@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message hiding (AssetDamage)
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -34,10 +33,13 @@ instance RunMessage LostInTime where
             $ chooseOne
               iid
               [ targetLabel aid
-                $ shuffleIntoDeck iid aid
-                : [ InvestigatorDamage iid (toSource attrs) dmg hrr
-                  | dmg > 0 || hrr > 0
+                $ [ MovedDamage (toSource aid) (toTarget iid) dmg
+                  | dmg > 0
                   ]
+                <> [ MovedHorror (toSource aid) (toTarget iid) hrr
+                   | hrr > 0
+                   ]
+                <> [shuffleIntoDeck iid aid, CheckDefeated (toSource attrs)]
               | (aid, dmg, hrr) <- assetsWithDamageAndHorror
               ]
         else pushAll $ replicate 3 $ toMessage $ chooseAndDiscardCard iid attrs

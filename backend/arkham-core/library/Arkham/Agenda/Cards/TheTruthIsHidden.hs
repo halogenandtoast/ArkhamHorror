@@ -12,7 +12,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Phase
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window

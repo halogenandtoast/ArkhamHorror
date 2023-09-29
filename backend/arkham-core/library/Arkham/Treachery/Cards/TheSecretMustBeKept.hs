@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.TheSecretMustBeKept (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Message
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

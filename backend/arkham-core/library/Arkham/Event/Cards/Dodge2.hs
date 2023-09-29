@@ -8,7 +8,6 @@ import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Id
-import Arkham.Message
 import Arkham.SkillType
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}

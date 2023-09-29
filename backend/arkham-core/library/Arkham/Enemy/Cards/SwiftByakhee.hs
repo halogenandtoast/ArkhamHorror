@@ -15,7 +15,6 @@ import Arkham.Enemy.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

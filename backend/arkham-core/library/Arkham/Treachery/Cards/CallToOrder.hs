@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards

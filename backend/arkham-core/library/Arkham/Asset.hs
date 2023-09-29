@@ -548,6 +548,11 @@ allAssets =
     , -- A Thousand Shapes of Horror
       --- guardian [tsh]
       SomeAssetCard tetsuoMori
+    , -- Point of No Return
+      --- mystic [pnr]
+      SomeAssetCard empowerSelfStamina2
+    , SomeAssetCard empowerSelfAlacrity2
+    , SomeAssetCard empowerSelfAcuity2
     , -- Where the Gods Dwell
       --- seeker [sfk]
       SomeAssetCard oldBookOfLore3

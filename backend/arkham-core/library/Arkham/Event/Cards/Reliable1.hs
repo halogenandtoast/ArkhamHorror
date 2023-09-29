@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Trait

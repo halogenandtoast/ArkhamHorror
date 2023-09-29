@@ -11,7 +11,6 @@ import Arkham.Enemy.Runner hiding (EnemyFight)
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait (Trait (Creature))
 
 newtype BrownJenkin = BrownJenkin EnemyAttrs

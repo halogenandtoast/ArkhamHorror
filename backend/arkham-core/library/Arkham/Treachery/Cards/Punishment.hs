@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Timing qualified as Timing

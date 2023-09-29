@@ -19,7 +19,6 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos

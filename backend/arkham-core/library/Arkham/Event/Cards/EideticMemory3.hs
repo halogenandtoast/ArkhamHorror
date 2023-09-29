@@ -15,7 +15,6 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window

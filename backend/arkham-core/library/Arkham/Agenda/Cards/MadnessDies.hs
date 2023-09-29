@@ -11,7 +11,6 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Resolution
 
 newtype MadnessDies = MadnessDies AgendaAttrs

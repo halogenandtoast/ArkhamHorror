@@ -16,7 +16,6 @@ import Arkham.Enemy.Creation
 import Arkham.Helpers.Ability
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype DarkKnowledgeV2 = DarkKnowledgeV2 ActAttrs

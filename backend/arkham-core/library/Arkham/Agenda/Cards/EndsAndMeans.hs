@@ -14,7 +14,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Sanctum, SilverTwilight))
 

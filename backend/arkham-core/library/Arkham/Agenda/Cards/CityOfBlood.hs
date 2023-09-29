@@ -11,7 +11,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Zone

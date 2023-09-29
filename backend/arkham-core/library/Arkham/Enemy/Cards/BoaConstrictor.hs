@@ -15,7 +15,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyAttacks)
 import Arkham.Phase
 import Arkham.Timing qualified as Timing
 

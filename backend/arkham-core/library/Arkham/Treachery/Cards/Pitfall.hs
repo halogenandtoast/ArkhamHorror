@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Deck
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.SkillType

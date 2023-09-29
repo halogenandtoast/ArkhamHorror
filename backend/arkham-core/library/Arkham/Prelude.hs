@@ -296,6 +296,9 @@ ala _ hof = coerce . hof coerce
 filterBy :: [a -> Bool] -> [a] -> [a]
 filterBy fs = filter (and . sequence fs)
 
+filterByM :: Monad m => [a -> m Bool] -> [a] -> m [a]
+filterByM fs = filterM (andM . sequence fs)
+
 foldAllM
   :: (Monoid a, Applicative m, Traversable t, a ~ Element (t a), MonoFoldable (t a)) => t (m a) -> m a
 foldAllM xs = fold <$> sequenceA xs

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -42,7 +42,7 @@ instance RunMessage SnakeBite where
         $ chooseOrRunOne iid
         $ [ Label
             "Deal 5 damage to an Ally asset you control"
-            [chooseOne iid [targetLabel ally [AssetDamage ally source 5 0] | ally <- allies]]
+            [chooseOne iid [targetLabel ally [Msg.AssetDamage ally source 5 0] | ally <- allies]]
           | notNull allies
           ]
         <> [ Label

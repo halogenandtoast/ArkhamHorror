@@ -10,7 +10,6 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 
 newtype VoiceOfRa = VoiceOfRa EventAttrs

@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Message qualified as Msg
 import Arkham.SkillType
 
 data RifleStatus = NotJammed | Jammed
@@ -54,7 +55,7 @@ instance RunMessage OldHuntingRifle3 where
           , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat AnyEnemy False
           ]
         pure a
-      RevealChaosToken SkillTestSource _ t | chaosTokenFace t `elem` [Skull, AutoFail] -> do
+      Msg.RevealChaosToken SkillTestSource _ t | chaosTokenFace t `elem` [Skull, AutoFail] -> do
         mSkillTestSource <- getSkillTestSource
         for_ mSkillTestSource $ \skillTestSource ->
           pushWhen (isSource attrs skillTestSource) FailSkillTest

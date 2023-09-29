@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Message
 
 newtype Lucky = Lucky EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

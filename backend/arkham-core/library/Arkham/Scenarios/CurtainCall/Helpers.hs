@@ -5,9 +5,9 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 

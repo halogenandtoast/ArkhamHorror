@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards

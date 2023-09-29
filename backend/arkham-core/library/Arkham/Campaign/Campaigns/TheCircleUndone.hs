@@ -21,7 +21,6 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype Metadata = Metadata

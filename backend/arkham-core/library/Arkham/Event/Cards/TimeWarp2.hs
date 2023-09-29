@@ -9,7 +9,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message
 import Arkham.Projection
 
 newtype TimeWarp2 = TimeWarp2 EventAttrs

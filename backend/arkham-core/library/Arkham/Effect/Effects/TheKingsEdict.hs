@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Types (Field (EnemyClues, EnemyDoom))
 import Arkham.Game.Helpers
-import Arkham.Message
 import Arkham.Projection
 
 newtype TheKingsEdict = TheKingsEdict EffectAttrs

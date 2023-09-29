@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (MoveAction)
-import Arkham.Message
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Trait qualified as Trait
 import Arkham.Window qualified as Window

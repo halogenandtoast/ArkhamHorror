@@ -10,7 +10,6 @@ import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Message
 import Arkham.Scenario.Deck
 
 newtype LockedInside = LockedInside AgendaAttrs

@@ -18,7 +18,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 

@@ -14,7 +14,6 @@ import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Phase
 import Arkham.SkillType
 

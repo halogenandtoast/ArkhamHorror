@@ -13,7 +13,6 @@ import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype PathsIntoTwilight = PathsIntoTwilight ActAttrs

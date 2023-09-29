@@ -15,7 +15,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 

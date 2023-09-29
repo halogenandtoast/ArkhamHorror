@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.GameValue
-import Arkham.Message
 import Arkham.Placement
 
 newtype EmpireOfTheDead = EmpireOfTheDead AgendaAttrs

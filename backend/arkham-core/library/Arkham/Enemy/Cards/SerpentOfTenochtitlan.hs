@@ -12,7 +12,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Ancient))
 import Arkham.Treachery.Cards qualified as Treacheries

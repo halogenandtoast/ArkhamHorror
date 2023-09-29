@@ -12,7 +12,6 @@ import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Timing qualified as Timing

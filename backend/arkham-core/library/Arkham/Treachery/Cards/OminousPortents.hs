@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Peril))
-import Arkham.Message
 import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

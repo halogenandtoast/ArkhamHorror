@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.Message
 
 newtype LookWhatIFound2 = LookWhatIFound2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

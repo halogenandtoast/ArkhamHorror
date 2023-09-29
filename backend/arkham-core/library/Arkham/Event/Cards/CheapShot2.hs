@@ -14,7 +14,6 @@ import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message
 import Arkham.SkillType
 
 newtype CheapShot2 = CheapShot2 EventAttrs

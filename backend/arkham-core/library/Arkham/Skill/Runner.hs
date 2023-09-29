@@ -6,14 +6,18 @@ module Arkham.Skill.Runner (
 
 import Arkham.Prelude
 
-import Arkham.Helpers.Message as X
+import Arkham.Helpers.Message as X hiding (
+  InvestigatorDamage,
+  InvestigatorEliminated,
+  PlayCard,
+  RevealLocation,
+ )
 import Arkham.Skill.Types as X
 import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
-import Arkham.Message
 import Arkham.Placement
 
 instance RunMessage SkillAttrs where

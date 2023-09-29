@@ -11,7 +11,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Enemy
-import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Trait

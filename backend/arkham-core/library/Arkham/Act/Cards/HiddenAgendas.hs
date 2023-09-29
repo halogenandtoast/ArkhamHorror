@@ -16,7 +16,6 @@ import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Trait (Trait (Monster))

@@ -9,7 +9,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

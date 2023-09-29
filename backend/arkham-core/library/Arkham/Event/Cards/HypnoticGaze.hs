@@ -15,7 +15,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Window
 import Arkham.Id
-import Arkham.Message
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Timing qualified as Timing

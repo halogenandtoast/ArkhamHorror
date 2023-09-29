@@ -11,7 +11,6 @@ import Arkham.Difficulty
 import Arkham.Effect.Helpers
 import Arkham.Effect.Runner
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers

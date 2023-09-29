@@ -13,7 +13,6 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
 

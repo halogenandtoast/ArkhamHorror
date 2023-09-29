@@ -20,9 +20,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field
-import Arkham.Matcher
-import Arkham.Message
-import Arkham.Message qualified as Msg
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Deck
@@ -73,7 +71,7 @@ instance RunMessage TheCosmosBeckons where
               [ UnfocusCards
               , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
               , placement
-              , Msg.RevealLocation (Just iid) lid
+              , RevealLocation (Just iid) lid
               , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
               ]
             | (card, (lid, placement)) <- cardsWithMsgs

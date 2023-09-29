@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade, EnemyFight)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Trait (Trait (Humanoid))
 
 newtype SummonedBeast = SummonedBeast EnemyAttrs

@@ -298,6 +298,8 @@ library
       Arkham.Agenda.Runner
       Arkham.Agenda.Sequence
       Arkham.Agenda.Types
+      Arkham.Aspect
+      Arkham.Aspect.Types
       Arkham.Asset
       Arkham.Asset.Assets
       Arkham.Asset.Cards
@@ -422,6 +424,9 @@ library
       Arkham.Asset.Cards.EighteenDerringer
       Arkham.Asset.Cards.EighteenDerringer2
       Arkham.Asset.Cards.ElderSignAmulet3
+      Arkham.Asset.Cards.EmpowerSelfAcuity2
+      Arkham.Asset.Cards.EmpowerSelfAlacrity2
+      Arkham.Asset.Cards.EmpowerSelfStamina2
       Arkham.Asset.Cards.EnchantedBlade
       Arkham.Asset.Cards.EnchantedBladeGuardian3
       Arkham.Asset.Cards.EnchantedBladeMystic3
@@ -865,8 +870,6 @@ library
       Arkham.Effect.Effects.JeremiahPierce
       Arkham.Effect.Effects.LeMarais218
       Arkham.Effect.Effects.LetMeHandleThis
-      Arkham.Effect.Effects.Lockpicks
-      Arkham.Effect.Effects.Lockpicks1
       Arkham.Effect.Effects.LuckyDice2
       Arkham.Effect.Effects.MeatCleaver
       Arkham.Effect.Effects.Mesmerize
@@ -879,9 +882,6 @@ library
       Arkham.Effect.Effects.PereLachaiseCemetery
       Arkham.Effect.Effects.PushedIntoTheBeyond
       Arkham.Effect.Effects.QuickThinking
-      Arkham.Effect.Effects.RiteOfSeeking
-      Arkham.Effect.Effects.RiteOfSeeking2
-      Arkham.Effect.Effects.RiteOfSeeking4
       Arkham.Effect.Effects.SleightOfHand
       Arkham.Effect.Effects.SongOfTheDead2
       Arkham.Effect.Effects.SurgeEffect
@@ -1384,6 +1384,8 @@ library
       Arkham.Helpers.Xp
       Arkham.History
       Arkham.Id
+      Arkham.Investigate
+      Arkham.Investigate.Types
       Arkham.Investigator
       Arkham.Investigator.Cards
       Arkham.Investigator.Cards.AgnesBaker

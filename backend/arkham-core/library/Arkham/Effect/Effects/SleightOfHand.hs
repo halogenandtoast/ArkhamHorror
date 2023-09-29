@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Message
 
 newtype SleightOfHand = SleightOfHand EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

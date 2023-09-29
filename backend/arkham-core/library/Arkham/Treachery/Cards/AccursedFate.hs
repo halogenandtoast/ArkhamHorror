@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Log
-import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Helpers.Log
 import Arkham.Key
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Resolution
 
 newtype TheFourKeys = TheFourKeys ActAttrs

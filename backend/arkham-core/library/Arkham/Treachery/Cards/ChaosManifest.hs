@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Helpers.Query
-import Arkham.Message
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

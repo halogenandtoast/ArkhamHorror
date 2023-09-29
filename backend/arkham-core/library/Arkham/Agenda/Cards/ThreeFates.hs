@@ -11,7 +11,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Message
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype ThreeFates = ThreeFates AgendaAttrs

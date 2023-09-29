@@ -11,14 +11,14 @@ import Arkham.SlotType as X
 import Arkham.Source
 import Arkham.Trait (Trait)
 
-pattern TraitRestrictedSlot :: Source -> Trait -> Maybe AssetId -> Slot
-pattern TraitRestrictedSlot source trait massetId <- RestrictedSlot source (CardWithTrait trait) massetId
+pattern TraitRestrictedSlot :: Source -> Trait -> [AssetId] -> Slot
+pattern TraitRestrictedSlot source trait assetIds <- RestrictedSlot source (CardWithTrait trait) assetIds
   where
-    TraitRestrictedSlot source trait massetId = RestrictedSlot source (CardWithTrait trait) massetId
+    TraitRestrictedSlot source trait assetIds = RestrictedSlot source (CardWithTrait trait) assetIds
 
 data Slot
-  = Slot {source :: Source, asset :: Maybe AssetId}
-  | RestrictedSlot {source :: Source, matcher :: CardMatcher, asset :: Maybe AssetId}
+  = Slot {source :: Source, assets :: [AssetId]}
+  | RestrictedSlot {source :: Source, matcher :: CardMatcher, assets :: [AssetId]}
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

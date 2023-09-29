@@ -17,7 +17,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 

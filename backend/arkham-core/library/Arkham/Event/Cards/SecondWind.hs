@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
-import Arkham.Message
 
 newtype SecondWind = SecondWind EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

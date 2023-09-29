@@ -10,7 +10,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards

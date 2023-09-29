@@ -15,7 +15,6 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Scenario.Deck
 

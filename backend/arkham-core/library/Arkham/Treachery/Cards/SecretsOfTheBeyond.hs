@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards

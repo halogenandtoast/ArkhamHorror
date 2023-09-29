@@ -21,7 +21,7 @@ bandolier2 :: AssetCard Bandolier2
 bandolier2 = assetWith Bandolier2 Cards.bandolier2 (healthL ?~ 1)
 
 slot :: AssetAttrs -> Slot
-slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
+slot attrs = TraitRestrictedSlot (toSource attrs) Weapon []
 
 instance HasModifiersFor Bandolier2 where
   getModifiersFor (InvestigatorTarget iid) (Bandolier2 a) | controlledBy a iid = do

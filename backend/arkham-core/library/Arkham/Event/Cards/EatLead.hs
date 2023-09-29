@@ -14,7 +14,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Id
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window

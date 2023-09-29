@@ -12,7 +12,6 @@ import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 
 createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy
 createEnemy a eid = lookupEnemy (toCardCode a) eid (toCardId a)

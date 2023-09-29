@@ -22,7 +22,6 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyEvaded)
 import Arkham.Placement
 import Arkham.Timing qualified as Timing
 

@@ -13,7 +13,15 @@ import Arkham.Enemy.Helpers as X hiding (EnemyEvade, EnemyFight)
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
-import Arkham.Helpers.Message as X
+import Arkham.Helpers.Message as X hiding (
+  EnemyAttacks,
+  EnemyDamage,
+  EnemyDefeated,
+  EnemyEvaded,
+  InvestigatorDefeated,
+  PaidCost,
+  PhaseStep,
+ )
 import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X
 import Arkham.Spawn as X

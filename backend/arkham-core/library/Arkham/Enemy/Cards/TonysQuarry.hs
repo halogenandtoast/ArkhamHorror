@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Token
 

@@ -41,6 +41,6 @@ instance RunMessage TheHierophantV3 where
       push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
       pure a
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
-      push $ AddSlot iid ArcaneSlot (Slot (toSource attrs) Nothing)
+      push $ AddSlot iid ArcaneSlot (Slot (toSource attrs) [])
       TheHierophantV3 <$> runMessage msg attrs
     _ -> TheHierophantV3 <$> runMessage msg attrs

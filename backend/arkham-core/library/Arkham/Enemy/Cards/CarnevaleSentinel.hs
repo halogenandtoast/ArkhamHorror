@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers

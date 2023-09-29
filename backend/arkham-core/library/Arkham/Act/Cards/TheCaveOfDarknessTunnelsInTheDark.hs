@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Name
 import Arkham.ScenarioLogKey
 

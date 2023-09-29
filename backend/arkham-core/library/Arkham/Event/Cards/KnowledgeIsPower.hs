@@ -15,7 +15,6 @@ import Arkham.Helpers.Card
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Trait (Trait (Spell, Tome))
 import Arkham.Window qualified as Window

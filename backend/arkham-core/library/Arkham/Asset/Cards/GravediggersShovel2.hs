@@ -37,9 +37,9 @@ instance RunMessage GravediggersShovel2 where
         ]
       pure a
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      pushMessage $ discoverAtYourLocation iid (toAbilitySource attrs 2) 1
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 2) 1
       pure a
     InOutOfPlay (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      pushMessage $ discoverAtYourLocation iid (toAbilitySource attrs 2) 2
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 2) 2
       pure a
     _ -> GravediggersShovel2 <$> runMessage msg attrs

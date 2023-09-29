@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Runner hiding (InvestigatorDefeated)
 import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.DefeatedBy
@@ -15,7 +15,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (InvestigatorCardCode))
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Monster))

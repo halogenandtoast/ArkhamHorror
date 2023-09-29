@@ -35,6 +35,9 @@ instance IsLabel "parley" AbilityType where
 investigateAction :: Cost -> AbilityType
 investigateAction cost = ActionAbility (Just Investigate) (ActionCost 1 <> cost)
 
+investigateAction_ :: AbilityType
+investigateAction_ = investigateAction mempty
+
 actionAbility :: AbilityType
 actionAbility = ActionAbility Nothing (ActionCost 1)
 

@@ -19,7 +19,6 @@ import Arkham.History
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Treachery.Types

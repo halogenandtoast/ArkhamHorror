@@ -7,7 +7,6 @@ module Arkham.Investigator.Cards.PennyWhite (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards hiding (pennyWhite)
 import Arkham.Card
 import Arkham.Draw.Types
@@ -21,7 +20,6 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base
-import Arkham.Timing qualified as Timing
 
 newtype PennyWhite = PennyWhite (InvestigatorAttrs `With` PrologueMetadata)
   deriving stock (Show, Eq, Generic)
@@ -30,55 +28,36 @@ newtype PennyWhite = PennyWhite (InvestigatorAttrs `With` PrologueMetadata)
 
 pennyWhite :: PrologueMetadata -> InvestigatorCard PennyWhite
 pennyWhite meta =
-  investigatorWith
-    (PennyWhite . (`with` meta))
-    Cards.pennyWhite
-    (Stats {health = 7, sanity = 5, willpower = 4, intellect = 1, combat = 3, agility = 2})
-    $ (startsWithL .~ [Cards.digDeep, Cards.knife, Cards.flashlight])
-    . ( startsWithInHandL
-          .~ [ Cards.strayCat
-             , Cards.lucky
-             , Cards.knife
-             , Cards.flashlight
-             , Cards.actOfDesperation
-             , Cards.actOfDesperation
-             , Cards.ableBodied
-             , Cards.ableBodied
-             ]
-      )
+  startsWithInHand
+    [ Cards.strayCat
+    , Cards.lucky
+    , Cards.knife
+    , Cards.flashlight
+    , Cards.actOfDesperation
+    , Cards.actOfDesperation
+    , Cards.ableBodied
+    , Cards.ableBodied
+    ]
+    $ startsWith [Cards.digDeep, Cards.knife, Cards.flashlight]
+    $ investigator (PennyWhite . (`with` meta)) Cards.pennyWhite
+    $ Stats {health = 7, sanity = 5, willpower = 4, intellect = 1, combat = 3, agility = 2}
 
 instance HasModifiersFor PennyWhite where
-  getModifiersFor target (PennyWhite (a `With` _)) | isTarget a target = do
+  getModifiersFor target (PennyWhite (a `With` _)) | a `is` target = do
     pure
-      $ toModifiersWith
-        a
-        setActiveDuringSetup
-        [ CannotTakeAction (IsAction Action.Draw)
-        , CannotDrawCards
-        , CannotManipulateDeck
-        , StartingResources (-3)
-        ]
+      $ toModifiersWith a setActiveDuringSetup
+      $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
   getModifiersFor (AssetTarget aid) (PennyWhite (a `With` _)) = do
     isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
-    pure
-      $ toModifiersWith
-        a
-        setActiveDuringSetup
-        [AdditionalStartingUses (-1) | isFlashlight]
+    pure $ toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-1) | isFlashlight]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite (a `With` _)) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 (Self <> ClueOnLocation)
-        $ ReactionAbility
-          ( SkillTestResult
-              Timing.After
-              You
-              SkillTestFromRevelation
-              (SuccessResult AnyValue)
-          )
-          Free
+        $ freeReaction
+        $ SkillTestResult #after You SkillTestFromRevelation (SuccessResult AnyValue)
     ]
 
 instance HasChaosTokenValue PennyWhite where
@@ -122,11 +101,8 @@ pennyWhiteEffect :: EffectArgs -> PennyWhiteEffect
 pennyWhiteEffect = cardEffect PennyWhiteEffect Cards.pennyWhite
 
 instance RunMessage PennyWhiteEffect where
-  runMessage msg e@(PennyWhiteEffect attrs@EffectAttrs {..}) = case msg of
-    BeginTurn iid | InvestigatorTarget iid == effectTarget -> do
-      pushAll
-        [ DisableEffect effectId
-        , GainActions iid (ChaosTokenEffectSource ElderSign) 1
-        ]
+  runMessage msg e@(PennyWhiteEffect attrs) = case msg of
+    BeginTurn iid | InvestigatorTarget iid == attrs.target -> do
+      pushAll [disable attrs, GainActions iid (ChaosTokenEffectSource ElderSign) 1]
       pure e
     _ -> PennyWhiteEffect <$> runMessage msg attrs

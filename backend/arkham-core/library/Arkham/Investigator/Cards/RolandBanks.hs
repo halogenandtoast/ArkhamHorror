@@ -39,6 +39,6 @@ instance HasChaosTokenValue RolandBanks where
 instance RunMessage RolandBanks where
   runMessage msg i@(RolandBanks attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushMessage $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
       pure i
     _ -> RolandBanks <$> runMessage msg attrs

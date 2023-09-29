@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Timing qualified as Timing
 

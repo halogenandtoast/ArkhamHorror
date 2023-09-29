@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

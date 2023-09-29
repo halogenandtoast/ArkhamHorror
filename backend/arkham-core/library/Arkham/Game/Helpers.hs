@@ -44,13 +44,13 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor)
+import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
 import Arkham.Helpers.Tarot
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), InvestigatorAttrs (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types hiding (location)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
@@ -2978,9 +2978,18 @@ getPotentialSlots card iid = do
     <$> filterM
       ( \(_, slot) ->
           if passesRestriction slot
-            then case slotItem slot of
-              Nothing -> pure True
-              Just aid -> member aid <$> select Matcher.DiscardableAsset
+            then case slotItems slot of
+              [] -> pure True
+              (x : xs) -> do
+                mods <- getModifiers x
+                let canFit = \case
+                      SharesSlotWith n matcher -> length xs + 1 < n && cardMatch card matcher
+                      _ -> False
+                let willFit = any canFit mods
+                orM
+                  [ allM (<=~> Matcher.DiscardableAsset) (x : xs) -- either all can be discarded
+                  , pure willFit
+                  ]
             else pure False
       )
       slotTypesAndSlots

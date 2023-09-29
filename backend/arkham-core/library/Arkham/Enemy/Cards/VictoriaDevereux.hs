@@ -10,7 +10,6 @@ import Arkham.Action hiding (Ability)
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Message
 
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

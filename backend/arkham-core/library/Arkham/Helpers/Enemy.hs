@@ -12,17 +12,17 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Helpers.Message
+import Arkham.Helpers.Message (
+  Message (DefeatEnemy, EnemySpawnAtLocationMatching, PlaceEnemy),
+  placeLocation,
+  resolve,
+ )
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message (
-  Message (DefeatEnemy, EnemySpawnAtLocationMatching, PlaceEnemy),
-  resolve,
- )
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Projection

@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.EphemeralExhibits (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

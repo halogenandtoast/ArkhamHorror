@@ -17,7 +17,6 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (RevealChaosToken)
 import Arkham.ScenarioLogKey
 import Arkham.Timing qualified as Timing
 import Arkham.Trait

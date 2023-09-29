@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 
 newtype OutOfThisWorld = OutOfThisWorld ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

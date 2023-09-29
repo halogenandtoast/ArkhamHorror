@@ -11,7 +11,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Id
+import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Projection
 import Arkham.SkillTest.Base
@@ -24,36 +25,25 @@ ancientStone1 :: AssetCard AncientStone1
 ancientStone1 = asset AncientStone1 Cards.ancientStone1
 
 instance HasAbilities AncientStone1 where
-  getAbilities (AncientStone1 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Investigate) (ActionCost 1)
-    ]
+  getAbilities (AncientStone1 a) = [restrictedAbility a 1 ControlsThis investigateAction_]
 
 instance RunMessage AncientStone1 where
   runMessage msg a@(AncientStone1 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      skillType <- field LocationInvestigateSkill lid
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigation <- mkInvestigate iid (toAbilitySource attrs 1) <&> setTarget attrs
       pushAll
-        [ skillTestModifiers attrs (LocationTarget lid) [ShroudModifier 3]
-        , Investigate iid lid source (Just $ toTarget attrs) skillType False
+        [ skillTestModifiers @LocationId attrs investigation.location [ShroudModifier 3]
+        , toMessage investigation
         ]
       pure a
-    Successful (Action.Investigate, LocationTarget lid) iid _ target _
-      | isTarget attrs target -> do
-          clueCount <- field LocationClues lid
-          let amount = min clueCount 2
-          difficulty <-
-            skillTestDifficulty . fromJustNote "no skill test" <$> getSkillTest
-          shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
-          pushAll
-            $ [ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) amount (Just Action.Investigate)
-              , Discard (toAbilitySource attrs 1) (toTarget attrs)
-              ]
-            <> [RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord]
-          pure a
+    Successful (Action.Investigate, LocationTarget lid) iid _ target _ | attrs `is` target -> do
+      amount <- min 2 <$> field LocationClues lid
+      difficulty <- skillTestDifficulty <$> getJustSkillTest
+      shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
+      pushAll
+        $ [ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) amount (Just Action.Investigate)
+          , Discard (toAbilitySource attrs 1) (toTarget attrs)
+          ]
+        <> [RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord]
+      pure a
     _ -> AncientStone1 <$> runMessage msg attrs

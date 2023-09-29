@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 
 newtype WitchHauntings = WitchHauntings ActAttrs

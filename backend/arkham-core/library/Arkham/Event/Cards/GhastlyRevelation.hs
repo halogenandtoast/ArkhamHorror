@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message
 import Arkham.Projection
 
 newtype GhastlyRevelation = GhastlyRevelation EventAttrs

@@ -12,7 +12,6 @@ import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
-import Arkham.Message
 import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
 

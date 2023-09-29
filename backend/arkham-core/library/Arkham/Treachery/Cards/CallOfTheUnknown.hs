@@ -12,7 +12,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

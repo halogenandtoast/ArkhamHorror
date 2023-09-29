@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Helpers
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs

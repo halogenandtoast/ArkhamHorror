@@ -12,7 +12,6 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Resolution
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs

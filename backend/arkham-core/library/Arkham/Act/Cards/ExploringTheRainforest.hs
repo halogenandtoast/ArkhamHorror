@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 

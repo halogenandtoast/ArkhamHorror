@@ -85,6 +85,10 @@ pattern InitiatorProxy t a <- SkillTestInitiatorTarget (ProxyTarget t a)
   where
     InitiatorProxy t a = SkillTestInitiatorTarget (ProxyTarget t a)
 
+class WithTarget a where
+  getTarget :: a -> Maybe Target
+  setTarget :: Targetable target => target -> a -> a
+
 class Targetable a where
   toTarget :: a -> Target
   isTarget :: a -> Target -> Bool

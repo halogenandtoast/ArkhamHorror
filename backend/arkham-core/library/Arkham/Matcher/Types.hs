@@ -8,6 +8,7 @@ import Arkham.Act.Sequence (ActSide)
 import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence
+import Arkham.Aspect.Types
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
@@ -552,6 +553,9 @@ instance IsString CardMatcher where
 instance IsLabel "survivor" CardMatcher where
   fromLabel = CardWithClass Survivor
 
+instance IsLabel "seeker" CardMatcher where
+  fromLabel = CardWithClass Seeker
+
 instance IsLabel "treachery" CardMatcher where
   fromLabel = CardWithType TreacheryType
 
@@ -1043,11 +1047,15 @@ instance Semigroup StoryMatcher where
   x <> StoryMatchAll xs = StoryMatchAll (x : xs)
   x <> y = StoryMatchAll [x, y]
 
+data AspectMatcher = AspectIs Aspect
+  deriving stock (Show, Eq, Ord, Data)
+
 $( do
     ability <- deriveJSON defaultOptions ''AbilityMatcher
     act <- deriveJSON defaultOptions ''ActMatcher
     action <- deriveJSON defaultOptions ''ActionMatcher
     agenda <- deriveJSON defaultOptions ''AgendaMatcher
+    aspect <- deriveJSON defaultOptions ''AspectMatcher
     asset <- deriveJSON defaultOptions ''AssetMatcher
     card <- deriveJSON defaultOptions ''CardMatcher
     cardList <- deriveJSON defaultOptions ''CardListMatcher
@@ -1086,6 +1094,7 @@ $( do
         , act
         , action
         , agenda
+        , aspect
         , asset
         , card
         , cardList

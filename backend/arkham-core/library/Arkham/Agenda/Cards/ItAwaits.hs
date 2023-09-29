@@ -12,7 +12,6 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 

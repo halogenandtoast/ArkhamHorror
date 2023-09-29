@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Treachery.Cards qualified as Cards

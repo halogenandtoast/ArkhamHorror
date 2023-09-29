@@ -13,7 +13,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard, PlaceUnderneath)
-import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Resolution

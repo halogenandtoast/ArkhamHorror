@@ -9,7 +9,6 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Message
 
 newtype ExposeWeakness1 = ExposeWeakness1 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

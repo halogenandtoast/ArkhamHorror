@@ -9,8 +9,8 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
-import Arkham.Message
 import Arkham.Projection
 
 newtype BurningTheMidnightOil = BurningTheMidnightOil EventAttrs
@@ -22,12 +22,11 @@ burningTheMidnightOil = event BurningTheMidnightOil Cards.burningTheMidnightOil
 
 instance RunMessage BurningTheMidnightOil where
   runMessage msg e@(BurningTheMidnightOil attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- getJustLocation iid
-      skillType <- field LocationInvestigateSkill lid
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      investigation <- mkInvestigate iid attrs
       pushAll
         [ TakeResources iid 2 (toSource attrs) False
-        , Investigate iid lid (toSource attrs) Nothing skillType False
+        , toMessage investigation
         ]
       pure e
     _ -> BurningTheMidnightOil <$> runMessage msg attrs

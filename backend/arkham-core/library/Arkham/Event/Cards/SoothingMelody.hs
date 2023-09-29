@@ -14,7 +14,6 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 

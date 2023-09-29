@@ -12,7 +12,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 
 newtype MistakesOfThePast = MistakesOfThePast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -12,7 +12,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

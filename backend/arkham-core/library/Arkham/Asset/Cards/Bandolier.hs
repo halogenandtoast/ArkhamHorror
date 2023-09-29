@@ -18,7 +18,7 @@ bandolier :: AssetCard Bandolier
 bandolier = assetWith Bandolier Cards.bandolier (healthL ?~ 1)
 
 slot :: AssetAttrs -> Slot
-slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
+slot attrs = TraitRestrictedSlot (toSource attrs) Weapon []
 
 instance RunMessage Bandolier where
   runMessage msg (Bandolier attrs) = case msg of

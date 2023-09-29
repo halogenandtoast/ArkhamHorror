@@ -12,7 +12,6 @@ import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 
 newtype HidingSpot = HidingSpot EventAttrs

@@ -13,7 +13,6 @@ import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype DrawnIn = DrawnIn AgendaAttrs

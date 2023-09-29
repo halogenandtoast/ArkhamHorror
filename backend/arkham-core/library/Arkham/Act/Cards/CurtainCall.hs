@@ -14,7 +14,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 

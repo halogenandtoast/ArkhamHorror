@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

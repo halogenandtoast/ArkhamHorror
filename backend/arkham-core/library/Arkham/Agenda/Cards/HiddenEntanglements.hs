@@ -12,7 +12,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher hiding (WindowMatcher (InvestigatorDefeated))
-import Arkham.Message
 
 newtype HiddenEntanglements = HiddenEntanglements AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

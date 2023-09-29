@@ -14,7 +14,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Campaign
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Trait
 

@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Message
 
 newtype MeatCleaver = MeatCleaver EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

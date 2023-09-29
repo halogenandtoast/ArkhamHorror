@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
-import Arkham.Message
 
 newtype SurgeEffect = SurgeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

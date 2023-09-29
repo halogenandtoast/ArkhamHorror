@@ -11,7 +11,6 @@ import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Event.Runner
 import Arkham.Exception
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 

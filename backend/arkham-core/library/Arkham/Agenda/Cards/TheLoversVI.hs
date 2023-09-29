@@ -17,7 +17,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyTokens))
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Token
 import Arkham.Zone

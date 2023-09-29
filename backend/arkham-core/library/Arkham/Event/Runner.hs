@@ -8,7 +8,12 @@ import Arkham.Prelude
 
 import Arkham.Event.Types as X
 import Arkham.Helpers.Event as X
-import Arkham.Helpers.Message as X
+import Arkham.Helpers.Message as X hiding (
+  EnemyDefeated,
+  InvestigatorEliminated,
+  PlayCard,
+  RevealLocation,
+ )
 import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X
 import Arkham.Target as X
@@ -19,7 +24,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Placement
 
 instance RunMessage EventAttrs where
@@ -35,7 +40,7 @@ instance RunMessage EventAttrs where
 runEventMessage :: Message -> EventAttrs -> GameT EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-  InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
+  Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
     push $ Discard GameSource (toTarget eventId)
     pure a
   Discard _ target | eventAttachedTarget a == Just target -> do

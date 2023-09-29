@@ -7,15 +7,14 @@ import Arkham.Prelude
 import Arkham.Effect.Types as X
 import Arkham.Effect.Window as X
 import Arkham.EffectMetadata as X
+import Arkham.Helpers.Message as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
-import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Message
 
 intFromMetadata :: EffectMetadata window a -> Int
 intFromMetadata = \case

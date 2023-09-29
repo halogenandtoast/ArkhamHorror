@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 
 newtype DescentIntoDark = DescentIntoDark ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

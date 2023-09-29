@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.AcrossSpaceAndTime (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards (acrossSpaceAndTime)
 import Arkham.Treachery.Runner
 

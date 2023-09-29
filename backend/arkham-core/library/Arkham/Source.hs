@@ -15,7 +15,9 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Tarot
 import Arkham.Trait
+import Control.Lens (Prism', prism')
 import Data.Aeson.TH
+import GHC.Records
 
 data Source
   = AbilitySource Source Int
@@ -59,6 +61,14 @@ data Source
   | BothSource Source Source
   | TarotSource TarotCard
   deriving stock (Show, Eq, Ord, Data)
+
+_AssetSource :: Prism' Source AssetId
+_AssetSource = prism' AssetSource $ \case
+  AssetSource aid -> Just aid
+  _ -> Nothing
+
+instance HasField "asset" Source (Maybe AssetId) where
+  getField = preview _AssetSource
 
 $(deriveJSON defaultOptions ''Source)
 

@@ -17,7 +17,6 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Scenario.Deck
 
 newtype IntoTheRuinsOnceAgain = IntoTheRuinsOnceAgain ActAttrs

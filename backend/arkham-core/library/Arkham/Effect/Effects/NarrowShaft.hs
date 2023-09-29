@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Helpers.Message
-import Arkham.Message
 
 newtype NarrowShaft = NarrowShaft EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

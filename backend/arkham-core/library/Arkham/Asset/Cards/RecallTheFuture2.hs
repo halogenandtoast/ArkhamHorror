@@ -10,7 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
-import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
@@ -52,7 +53,7 @@ instance RunMessage RecallTheFuture2 where
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (ChaosTokenFaceTarget t) -> do
       pure . RecallTheFuture2 $ attrs `with` Metadata (Just t)
-    When (RevealChaosToken _ _ token@(ChaosToken _ t)) | Just t == chosenChaosToken metadata -> do
+    When (Msg.RevealChaosToken _ _ token@(ChaosToken _ t)) | Just t == chosenChaosToken metadata -> do
       unless (assetExhausted attrs) $ for_ (assetController attrs) $ \iid -> do
         push
           $ If

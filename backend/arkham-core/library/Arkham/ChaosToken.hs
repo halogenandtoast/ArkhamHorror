@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Data.Aeson.TH
 import GHC.OverloadedLabels
+import GHC.Records
 
 newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: UUID}
   deriving stock (Data)
@@ -67,6 +68,9 @@ data ChaosToken = ChaosToken
   , chaosTokenFace :: ChaosTokenFace
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "face" ChaosToken ChaosTokenFace where
+  getField = chaosTokenFace
 
 data ChaosTokenFace
   = PlusOne

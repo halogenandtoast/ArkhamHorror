@@ -10,8 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
-import Arkham.Token
 
 newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,38 +17,28 @@ newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs
 
 agentOfTheKing :: EnemyCard AgentOfTheKing
 agentOfTheKing =
-  enemyWith
-    AgentOfTheKing
-    Cards.agentOfTheKing
-    (4, Static 4, 2)
-    (1, 2)
-    (preyL .~ Prey MostClues)
+  enemyWith AgentOfTheKing Cards.agentOfTheKing (4, Static 4, 2) (1, 2)
+    $ preyL
+    .~ Prey MostClues
 
 instance HasAbilities AgentOfTheKing where
   getAbilities (AgentOfTheKing a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyAttacks Timing.After (You <> InvestigatorWithAnyClues) AnyEnemyAttack
-          $ EnemyWithId
-          $ toId a
-      , mkAbility a 2
-          $ ForcedAbility
-          $ EnemyDefeated Timing.When You ByAny
-          $ EnemyWithId (toId a)
-          <> EnemyWithAnyClues
-      ]
+    withBaseAbilities a
+      $ [ mkAbility a 1
+            $ ForcedAbility
+            $ EnemyAttacks #after (You <> InvestigatorWithAnyClues) AnyEnemyAttack
+            $ be a
+        , mkAbility a 2 $ ForcedAbility $ EnemyDefeated #when You ByAny $ be a <> EnemyWithAnyClues
+        ]
 
 instance RunMessage AgentOfTheKing where
   runMessage msg e@(AgentOfTheKing attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [InvestigatorSpendClues iid 1, PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Clue 1]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
       pure e
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       pushAll
-        [ RemoveTokens (toAbilitySource attrs 2) (toTarget attrs) Clue (enemyClues attrs)
+        [ RemoveClues (toAbilitySource attrs 2) (toTarget attrs) (enemyClues attrs)
         , GainClues iid (toAbilitySource attrs 2) (enemyClues attrs)
         ]
       pure e

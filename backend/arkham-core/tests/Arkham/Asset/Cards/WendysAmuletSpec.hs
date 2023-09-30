@@ -23,3 +23,17 @@ spec = describe "Wendy's Amulet" $ do
         -- useForcedAbility -- TODO: apparently after play should be before putting into discard
         self.discard `shouldReturn` []
         asDefs self.deck `shouldReturn` [Assets.flashlight, Events.emergencyCache]
+
+    errata "or discard an event from play" $ do
+      it "places it on the bottom of you deck instead of in your discard" . gameTest $ \self -> do
+        (location1, location2) <- testConnectedLocations id id
+        barricade <- genCard Events.barricade
+        withProp @"deck" [Assets.flashlight] self
+        withProp @"hand" [barricade] self
+        self `moveTo` location1
+        self `putCardIntoPlay` Assets.wendysAmulet
+        self `playCard` barricade
+        self `moveTo` location2
+        useForcedAbility
+        self.discard `shouldReturn` []
+        asDefs self.deck `shouldReturn` [Assets.flashlight, Events.barricade]

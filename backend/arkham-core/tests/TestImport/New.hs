@@ -78,7 +78,7 @@ spawnAt :: Enemy -> Location -> TestAppT ()
 spawnAt e l = run $ EnemySpawn Nothing (toId l) (toId e)
 
 moveTo :: Investigator -> Location -> TestAppT ()
-moveTo i l = run $ MoveTo $ move (toSource i) (toId i) (toId l)
+moveTo i l = run $ Move $ move (toSource i) (toId i) (toId l)
 
 fightEnemy :: Investigator -> Enemy -> TestAppT ()
 fightEnemy i e = run $ FightEnemy (toId i) (toId e) (toSource i) Nothing SkillCombat False
@@ -203,3 +203,9 @@ hasDeck i cs = i.deck `shouldSatisfyM` ((== cs) . map toCardDef . unDeck)
 
 asDefs :: (MonoFoldable (t a), HasCardDef (Element (t a))) => TestAppT (t a) -> TestAppT [CardDef]
 asDefs action = map toCardDef . toList <$> action
+
+errata :: String -> SpecWith a -> SpecWith a
+errata = context
+
+faq :: String -> SpecWith a -> SpecWith a
+faq = context

@@ -274,6 +274,9 @@ instance UpdateField "deck" Investigator [CardDef] where
     cards <- traverse genPlayerCard defs
     pure $ overAttrs (\attrs -> attrs {investigatorDeck = Deck cards}) i
 
+instance UpdateField "deck" Investigator [PlayerCard] where
+  updateField cards = pure . overAttrs (\attrs -> attrs {investigatorDeck = Deck cards})
+
 instance UpdateField "hand" Investigator [Card] where
   updateField cards = pure . overAttrs (\attrs -> attrs {investigatorHand = cards})
 

@@ -63,10 +63,9 @@ spec = describe "Daisy Walker" $ do
     it "forces you to draw one card for each Tome you control" $ gameTestWith daisyWalker $ \self -> do
       deckCards <- testPlayerCards 2
       setChaosTokens [ElderSign]
-      run $ LoadDeck (toId self) (Deck deckCards)
+      withProp @"deck" deckCards self
       self `putCardIntoPlay` Cards.oldBookOfLore
       self `putCardIntoPlay` Cards.medicalTexts
-      run $ beginSkillTest self SkillIntellect 5
-      click "start skill test"
+      runSkillTest self #intellect 5
       click "apply results"
-      self.hand `shouldMatchListM` map PlayerCard deckCards
+      self.hand `shouldMatchListM` map toCard deckCards

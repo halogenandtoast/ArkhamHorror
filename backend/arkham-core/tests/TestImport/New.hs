@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module TestImport.New (module TestImport.New, module X) where
 
@@ -9,6 +9,7 @@ import TestImport.Lifted as X hiding (
   investigate,
   loadDeck,
   moveTo,
+  playCard,
   spawnAt,
  )
 
@@ -44,6 +45,9 @@ drawCards :: Investigator -> Int -> TestAppT ()
 drawCards i n = do
   drawing <- Helpers.drawCards (toId i) i n
   run drawing
+
+playCard :: Investigator -> Card -> TestAppT ()
+playCard i c = run $ InitiatePlayCard (toId i) c Nothing (defaultWindows $ toId i) True
 
 addToHand :: IsCard a => Investigator -> a -> TestAppT ()
 addToHand i (toCard -> c) = run $ AddToHand (toId i) [c]
@@ -91,6 +95,15 @@ investigate i l =
       , investigateTarget = Nothing
       , investigateIsAction = False
       }
+
+instance HasField "playableCards" Investigator (TestAppT [Card]) where
+  getField self = getPlayableCards (toAttrs self) UnpaidCost (defaultWindows $ toId self)
+
+instance HasField "discard" Investigator (TestAppT [PlayerCard]) where
+  getField = field InvestigatorDiscard . toEntityId
+
+instance HasField "deck" Investigator (TestAppT (Deck PlayerCard)) where
+  getField = field InvestigatorDeck . toEntityId
 
 instance HasField "clues" Investigator (TestAppT Int) where
   getField = field InvestigatorClues . toEntityId
@@ -181,3 +194,12 @@ getActionsFrom :: Sourceable source => Investigator -> source -> TestAppT [Abili
 getActionsFrom i s = do
   actions <- nub <$> concatMapM (getActions (toId i)) (defaultWindows $ toId i)
   pure $ filter ((== toSource s) . abilitySource) actions
+
+hasDiscardPile :: Investigator -> [CardDef] -> TestAppT ()
+hasDiscardPile i cs = i.discard `shouldSatisfyM` ((== cs) . map toCardDef)
+
+hasDeck :: Investigator -> [CardDef] -> TestAppT ()
+hasDeck i cs = i.deck `shouldSatisfyM` ((== cs) . map toCardDef . unDeck)
+
+asDefs :: (MonoFoldable (t a), HasCardDef (Element (t a))) => TestAppT (t a) -> TestAppT [CardDef]
+asDefs action = map toCardDef . toList <$> action

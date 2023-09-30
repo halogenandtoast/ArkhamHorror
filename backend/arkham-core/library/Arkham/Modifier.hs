@@ -91,7 +91,7 @@ data ModifierType
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
   | CanOnlyBeAttackedByAbilityOn (Set CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
-  | CanPlayTopOfDiscard (Maybe CardType, [Trait])
+  | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
   | CanPlayTopOfDeck CardMatcher
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CancelSkills

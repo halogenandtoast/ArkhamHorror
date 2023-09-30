@@ -250,33 +250,56 @@ instance TestHasHealth Enemy where
     updateThis this $ \attrs -> attrs {enemyHealth = Static health}
 
 class UpdateField (s :: Symbol) a b where
-  updateField :: b -> a -> a
+  updateField :: b -> a -> TestAppT a
 
 prop :: forall (s :: Symbol) b a. (TestUpdate a, UpdateField s a b) => b -> TestAppT a -> TestAppT a
 prop b action = do
-  this' <- updateField @s b <$> action
+  this' <- updateField @s b =<< action
   overTest $ updateLens this' .~ this'
   pure this'
 
-withProp :: forall (s :: Symbol) b a. (TestUpdate a, UpdateField s a b) => b -> a -> TestAppT ()
-withProp b a = void $ prop @s b (pure a)
+withProp
+  :: forall (s :: Symbol) b
+   . UpdateField s Investigator b
+  => b
+  -> Investigator
+  -> TestAppT ()
+withProp b a = void $ prop @s b (getInvestigator $ toId a)
 
 instance UpdateField "combat" Investigator Int where
-  updateField combat = overAttrs (\attrs -> attrs {investigatorCombat = combat})
+  updateField combat = pure . overAttrs (\attrs -> attrs {investigatorCombat = combat})
+
+instance UpdateField "deck" Investigator [CardDef] where
+  updateField defs i = do
+    cards <- traverse genPlayerCard defs
+    pure $ overAttrs (\attrs -> attrs {investigatorDeck = Deck cards}) i
+
+instance UpdateField "hand" Investigator [Card] where
+  updateField cards = pure . overAttrs (\attrs -> attrs {investigatorHand = cards})
+
+instance UpdateField "discard" Investigator [CardDef] where
+  updateField defs i = do
+    cards <- traverse genPlayerCard defs
+    pure $ overAttrs (\attrs -> attrs {investigatorDiscard = cards}) i
+
+instance UpdateField "resources" Investigator Int where
+  updateField resources =
+    pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens Resource resources)
 
 instance UpdateField "fight" Enemy Int where
-  updateField fight = overAttrs (\attrs -> attrs {enemyFight = fight})
+  updateField fight = pure . overAttrs (\attrs -> attrs {enemyFight = fight})
 
 instance UpdateField "health" Enemy Int where
-  updateField health = overAttrs (\attrs -> attrs {enemyHealth = Static health})
+  updateField health = pure . overAttrs (\attrs -> attrs {enemyHealth = Static health})
 
 instance UpdateField "clues" Location Int where
   updateField clues =
-    overAttrs
-      (\attrs -> attrs {locationTokens = setTokens Clue clues mempty, locationRevealClues = Static 0})
+    pure
+      . overAttrs
+        (\attrs -> attrs {locationTokens = setTokens Clue clues mempty, locationRevealClues = Static 0})
 
 instance UpdateField "shroud" Location Int where
-  updateField shroud = overAttrs (\attrs -> attrs {locationShroud = shroud})
+  updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = shroud})
 
 testEnemy :: TestAppT Enemy
 testEnemy = testEnemyWithDef Cards.swarmOfRats id

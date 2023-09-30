@@ -23,6 +23,7 @@ spec = describe "Hospital Debts" $ do
         getActionsFrom self hospitalDebts `shouldReturn` []
       duringRound $ do
         getActionsFrom self hospitalDebts `shouldSatisfyM` ((== 1) . length)
+
     it "moves 1 resource to it" . gameTest $ \self -> do
       self `gainResources` 3
       self `putCardIntoPlay` Treacheries.hospitalDebts
@@ -34,6 +35,7 @@ spec = describe "Hospital Debts" $ do
         self `useAbility` ability2
       hospitalDebts.resources `shouldReturn` 2
       self.resources `shouldReturn` 1
+
   context "forced ability" $ do
     context "with less than 6 resources on it" $ do
       it "causes you to earn 2 fewer experience" . gameTest $ \self -> do
@@ -41,6 +43,7 @@ spec = describe "Hospital Debts" $ do
         run $ EndOfGame Nothing
         useForcedAbility
         getXpWithBonus 3 `shouldReturn` [(toId self, 1)]
+
     context "with 6 or more resources on it" $ do
       it "does not cause you to earn 2 fewer experience" . gameTest $ \self -> do
         self `putCardIntoPlay` Treacheries.hospitalDebts

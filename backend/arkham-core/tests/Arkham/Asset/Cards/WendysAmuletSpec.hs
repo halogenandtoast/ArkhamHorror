@@ -5,7 +5,7 @@ import Arkham.Event.Cards qualified as Events
 import TestImport.New
 
 spec :: Spec
-spec = fdescribe "Wendy's Amulet" $ do
+spec = describe "Wendy's Amulet" $ do
   context "constant ability" $ do
     it "you may play the topmost event in your discard pile as if it were in your hand" . gameTest $ \self -> do
       self `putCardIntoPlay` Assets.wendysAmulet
@@ -20,6 +20,6 @@ spec = fdescribe "Wendy's Amulet" $ do
         withProp @"hand" [emergencyCache] self
         self `putCardIntoPlay` Assets.wendysAmulet
         self `playCard` emergencyCache
-        -- useForcedAbility
+        -- useForcedAbility -- TODO: apparently after play should be before putting into discard
         self.discard `shouldReturn` []
         asDefs self.deck `shouldReturn` [Assets.flashlight, Events.emergencyCache]

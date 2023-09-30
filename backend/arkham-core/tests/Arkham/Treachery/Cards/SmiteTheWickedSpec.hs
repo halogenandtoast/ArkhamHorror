@@ -35,7 +35,7 @@ spec = describe "Smite the Wicked" $ do
   it "causes 1 mental trauma if enemy not defeated" $ gameTest $ \investigator -> do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
-    location <- testLocation id
+    location <- testLocationWith id
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ SetEncounterDeck (Deck [enemy])
@@ -50,7 +50,7 @@ spec = describe "Smite the Wicked" $ do
   it "won't cause trauma if enemy is defeated" $ gameTest $ \investigator -> do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
-    location <- testLocation id
+    location <- testLocationWith id
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ placedLocation location
@@ -74,7 +74,7 @@ spec = describe "Smite the Wicked" $ do
   it "will cause trauma if player is eliminated" $ gameTest $ \investigator -> do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
-    location <- testLocation id
+    location <- testLocationWith id
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ placedLocation location

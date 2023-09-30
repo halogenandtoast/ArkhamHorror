@@ -63,3 +63,6 @@ instance IsLabel "resource" Action where
 
 instance IsLabel "draw" Action where
   fromLabel = Draw
+
+instance IsLabel "explore" Action where
+  fromLabel = Explore

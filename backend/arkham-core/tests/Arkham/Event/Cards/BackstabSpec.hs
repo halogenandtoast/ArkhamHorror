@@ -15,14 +15,14 @@ spec :: Spec
 spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ gameTest $ \investigator -> do
-      location <- testLocation id
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1, investigatorAgility = 4}
+      location <- testLocationWith id
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorCombat = 1, investigatorAgility = 4}
       enemy <-
-        testEnemy
+        testEnemyWith
           ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))
       pushAndRun $ SetChaosTokens [MinusOne]
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       putCardIntoPlay investigator Events.backstab
       chooseOnlyOption "Fight enemy"

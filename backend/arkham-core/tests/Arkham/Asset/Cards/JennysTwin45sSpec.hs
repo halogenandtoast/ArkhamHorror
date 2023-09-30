@@ -40,13 +40,13 @@ spec = describe "Jenny's Twin .45s" $ do
         , investigatorHand = [PlayerCard jennysTwin45s]
         , investigatorCombat = 3
         }
-    enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
-    location <- testLocation id
+    enemy <- testEnemyWith ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
+    location <- testLocationWith id
     pushAndRunAll [SetChaosTokens [Zero], playAssetCard jennysTwin45s investigator]
     activeCost <- getActiveCost
     pushAndRunAll
       [ PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
-      , enemySpawn location enemy
+      , spawnAt enemy location
       , moveTo investigator location
       ]
     [ability] <- getAbilitiesMatching (AbilityOnCardControlledBy $ toId investigator)

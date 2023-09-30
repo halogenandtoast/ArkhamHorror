@@ -12,6 +12,7 @@ default-extensions:
 - DeriveAnyClass
 - DerivingStrategies
 - DerivingVia
+- ExtendedDefaultRules
 - FunctionalDependencies
 - GADTs
 - LambdaCase
@@ -60,7 +61,7 @@ tests:
   spec:
     main: Spec.hs
     source-dirs: tests
-    ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+    ghc-options: -Wno-type-defaults -threaded -rtsopts -O0 "-with-rtsopts=-N"
     dependencies:
       - arkham-core
       - hspec

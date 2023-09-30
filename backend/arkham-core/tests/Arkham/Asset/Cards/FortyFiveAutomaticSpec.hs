@@ -19,12 +19,12 @@ spec = describe ".45 Automatic" $ do
         \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fortyFiveAutomatic
       fortyFiveAutomatic <- selectJust $ assetIs Assets.fortyFiveAutomatic
-      enemy <- testEnemy $
+      enemy <- testEnemyWith $
         \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [doFight] <- field AssetAbilities fortyFiveAutomatic
       pushAndRun $ UseAbility (toId investigator) doFight []

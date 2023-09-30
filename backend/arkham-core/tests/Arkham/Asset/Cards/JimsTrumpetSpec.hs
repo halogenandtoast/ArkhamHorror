@@ -17,7 +17,7 @@ spec = describe "Jim's Trumpet" $ do
     it "on yourself" $ gameTest $ \investigator -> do
       updateInvestigator investigator (Investigator.tokensL %~ setTokens Horror 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ moveTo investigator location
       pushAndRun $ beginSkillTest investigator SkillIntellect 0
@@ -37,7 +37,7 @@ spec = describe "Jim's Trumpet" $ do
           Investigators.rolandBanks
           (Investigator.tokensL %~ setTokens Horror 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ moveAllTo location
       pushAndRun $ beginSkillTest investigator SkillIntellect 0
@@ -57,7 +57,7 @@ spec = describe "Jim's Trumpet" $ do
           Investigators.rolandBanks
           (Investigator.tokensL %~ setTokens Horror 1)
       putCardIntoPlay investigator Assets.jimsTrumpet
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Skull]
       pushAndRun $ moveAllTo location
       pushAndRun $ beginSkillTest investigator2 SkillIntellect 0

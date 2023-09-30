@@ -17,15 +17,15 @@ spec = describe "On The Lam" $ do
       _ -> False
     updateInvestigator investigator $ \i -> i {investigatorTokens = setTokens Resource 1 mempty}
     onTheLam <- genCard Events.onTheLam
-    location <- testLocation id
+    location <- testLocationWith id
     pushAndRunAll
       [ addToHand (toId investigator) onTheLam
       , MoveAllTo GameSource (toId location)
       , BeginTurn (toId investigator)
       ]
     chooseFirstOption "Play on the lam"
-    enemy <- testEnemy id
-    pushAndRun $ enemySpawn location enemy
+    enemy <- testEnemyWith id
+    pushAndRun $ spawnAt enemy location
     pushAndRun $ TakeResources (toId investigator) 1 (toSource investigator) True
     ref `refShouldBe` False
 

@@ -30,12 +30,12 @@ spec = describe "Beat Cop" $ do
       updateInvestigator investigator $
         \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.beatCop
-      enemy <- testEnemy $
+      enemy <- testEnemyWith $
         \attrs -> attrs {enemyHealth = Static 2}
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       beatCop <- selectJust $ assetIs Assets.beatCop
       [discardAbility] <- field AssetAbilities beatCop

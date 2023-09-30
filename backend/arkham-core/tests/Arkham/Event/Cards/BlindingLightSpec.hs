@@ -15,13 +15,11 @@ spec = do
     it "Uses willpower to evade an enemy" $ gameTest $ \investigator -> do
       updateInvestigator investigator $ \attrs ->
         attrs {investigatorWillpower = 5, investigatorAgility = 3}
-      enemy <-
-        testEnemy
-          ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
-      location <- testLocation id
+      enemy <- testEnemyWith ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
+      location <- testLocationWith id
       pushAndRunAll
         [ SetChaosTokens [MinusOne]
-        , enemySpawn location enemy
+        , spawnAt enemy location
         , moveTo investigator location
         ]
       putCardIntoPlay investigator Events.blindingLight
@@ -34,13 +32,11 @@ spec = do
 
     it "deals 1 damage to the evaded enemy" $ gameTest $ \investigator -> do
       updateInvestigator investigator (willpowerL .~ 5)
-      enemy <-
-        testEnemy
-          ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
-      location <- testLocation id
+      enemy <- testEnemyWith ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
+      location <- testLocationWith id
       pushAndRunAll
         [ SetChaosTokens [MinusOne]
-        , enemySpawn location enemy
+        , spawnAt enemy location
         , moveTo investigator location
         ]
       putCardIntoPlay investigator Events.blindingLight
@@ -56,13 +52,11 @@ spec = do
       $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
       $ \token -> gameTest $ \investigator -> do
         updateInvestigator investigator (willpowerL .~ 5)
-        enemy <-
-          testEnemy
-            ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
-        location <- testLocation id
+        enemy <- testEnemyWith ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 2))
+        location <- testLocationWith id
         pushAndRunAll
           [ SetChaosTokens [token]
-          , enemySpawn location enemy
+          , spawnAt enemy location
           , moveTo investigator location
           ]
         putCardIntoPlay investigator Events.blindingLight

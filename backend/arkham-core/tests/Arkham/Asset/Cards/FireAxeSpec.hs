@@ -20,11 +20,11 @@ spec = describe "Fire Axe" $ do
         \attrs -> attrs {investigatorTokens = setTokens Resource 0 mempty, investigatorCombat = 3}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemy $
+      enemy <- testEnemyWith $
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []
@@ -39,11 +39,11 @@ spec = describe "Fire Axe" $ do
         \attrs -> attrs {investigatorTokens = setTokens Resource 2 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemy $
+      enemy <- testEnemyWith $
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []
@@ -81,12 +81,12 @@ spec = describe "Fire Axe" $ do
         \attrs -> attrs {investigatorTokens = setTokens Resource 1 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemy $
+      enemy <- testEnemyWith $
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
-      location <- testLocation id
+      location <- testLocationWith id
 
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []
@@ -112,11 +112,11 @@ spec = describe "Fire Axe" $ do
         \attrs -> attrs {investigatorTokens = setTokens Resource 4 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemy $
+      enemy <- testEnemyWith $
         \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []

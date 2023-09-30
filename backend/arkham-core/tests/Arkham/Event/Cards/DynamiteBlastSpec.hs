@@ -13,12 +13,12 @@ spec :: Spec
 spec = describe "Dynamite Blast" $ do
   it "does 3 damage to each enemy and investigator at your location" $ gameTest $ \investigator -> do
     investigator2 <- addInvestigator Investigators.rolandBanks id
-    enemy1 <- testEnemy (healthL .~ Static 4)
-    enemy2 <- testEnemy (healthL .~ Static 4)
-    location <- testLocation id
+    enemy1 <- testEnemyWith (healthL .~ Static 4)
+    enemy2 <- testEnemyWith (healthL .~ Static 4)
+    location <- testLocationWith id
     pushAndRunAll
-      [ enemySpawn location enemy1
-      , enemySpawn location enemy2
+      [ spawnAt enemy1 location
+      , spawnAt enemy2 location
       , moveTo investigator location
       , moveTo investigator2 location
       ]
@@ -36,12 +36,12 @@ spec = describe "Dynamite Blast" $ do
     $ gameTest
     $ \investigator -> do
       investigator2 <- addInvestigator Investigators.rolandBanks id
-      enemy1 <- testEnemy (healthL .~ Static 4)
-      enemy2 <- testEnemy (healthL .~ Static 4)
+      enemy1 <- testEnemyWith (healthL .~ Static 4)
+      enemy2 <- testEnemyWith (healthL .~ Static 4)
       (location1, location2) <- testConnectedLocations id id
       pushAndRunAll
-        [ enemySpawn location1 enemy1
-        , enemySpawn location2 enemy2
+        [ spawnAt enemy1 location1
+        , spawnAt enemy2 location2
         , moveTo investigator location1
         , moveTo investigator2 location2
         ]

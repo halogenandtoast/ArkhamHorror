@@ -1,50 +1,30 @@
-module Arkham.Investigator.Cards.RolandBanksSpec (
-  spec,
-) where
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 
-import TestImport.Lifted
+module Arkham.Investigator.Cards.RolandBanksSpec (spec) where
 
-import Arkham.Enemy.Types (EnemyAttrs (..))
-import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (LocationAttrs (..))
-import Arkham.Token
+import Arkham.Investigator.Cards (rolandBanks)
+import TestImport.New
+
+default (Int)
 
 spec :: Spec
 spec = describe "Roland Banks" $ do
-  context "ability" $ do
-    it
-      "after defeating an enemy, allows you to discover a clue at your location"
-      $ gameTestWith Investigators.rolandBanks
-      $ \rolandBanks -> do
-        enemy <- testEnemy $
-          \attrs -> attrs {enemyFight = 4, enemyHealth = Static 1}
-        location <- testLocation $ \attrs -> attrs {locationTokens = setTokens Clue 1 mempty}
-        pushAndRunAll
-          [ SetChaosTokens [Zero]
-          , enemySpawn location enemy
-          , moveTo rolandBanks location
-          , fightEnemy rolandBanks enemy
-          ]
-        chooseOnlyOption "start skill test"
-        chooseOnlyOption "apply results"
-        chooseOptionMatching
-          "use ability"
-          ( \case
-              AbilityLabel {} -> True
-              _ -> False
-          )
-        fieldAssert InvestigatorClues (== 1) rolandBanks
+  context "after defeating an enemy" $ do
+    it "reaction discovers a clue at your location" . gameTestWith rolandBanks $ \self -> do
+      enemy <- testEnemy & prop @"fight" 4 & prop @"health" 1
+      location <- testLocation & prop @"clues" 1
+      setChaosTokens [Zero]
+      enemy `spawnAt` location
+      self `moveTo` location
+      self `fightEnemy` enemy
+      click "start skill test"
+      click "apply results"
+      useReaction
+      self.clues `shouldReturn` 1
 
   context "elder sign" $ do
-    it "gives +1 for each clue on your location" $ gameTestWith Investigators.rolandBanks $ \rolandBanks -> do
-      location <- testLocation $
-        \attrs -> attrs {locationTokens = setTokens Clue 1 mempty, locationShroud = 4}
-      pushAndRunAll
-        [ SetChaosTokens [ElderSign]
-        , moveTo rolandBanks location
-        , investigate rolandBanks location
-        ]
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-      fieldAssert InvestigatorClues (== 1) rolandBanks
+    it "gives +1 for each clue on your location" . gameTestWith rolandBanks $ \self -> do
+      location <- testLocation & prop @"clues" 4
+      setChaosTokens [ElderSign]
+      self `moveTo` location
+      self.elderSignModifier `shouldReturn` PositiveModifier 4

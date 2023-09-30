@@ -2,6 +2,7 @@
 
 module Arkham.SkillTest.Runner (
   module X,
+  totalModifiedSkillValue,
 ) where
 
 import Arkham.Prelude
@@ -29,6 +30,21 @@ import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
+
+totalModifiedSkillValue :: HasGame m => SkillTest -> m Int
+totalModifiedSkillValue s = do
+  results <- calculateSkillTestResultsData s
+  chaosTokenValues <-
+    sum
+      <$> for
+        (skillTestResolvedChaosTokens s)
+        (getModifiedChaosTokenValue s)
+
+  let totaledChaosTokenValues = chaosTokenValues + skillTestValueModifier s
+  pure
+    $ max
+      0
+      (skillTestResultsSkillValue results + totaledChaosTokenValues + skillTestResultsIconValue results)
 
 calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do

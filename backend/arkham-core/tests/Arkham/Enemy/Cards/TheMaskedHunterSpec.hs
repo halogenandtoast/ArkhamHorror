@@ -11,7 +11,7 @@ spec = describe "The Masked Hunter" $ do
   context "modifiers" $ do
     it "prevents engaged investigators from discovering or spending clues" $ gameTest $ \investigator -> do
       theMaskedHunter <- testEnemyWithDef Enemies.theMaskedHunter id
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ placedLocation location
       pushAndRun $ moveTo investigator location
       pushAndRun $ engageEnemy investigator theMaskedHunter
@@ -22,7 +22,7 @@ spec = describe "The Masked Hunter" $ do
       $ gameTest
       $ \investigator -> do
         theMaskedHunter <- testEnemyWithDef Enemies.theMaskedHunter id
-        location <- testLocation id
+        location <- testLocationWith id
         pushAndRun $ placedLocation location
         pushAndRun $ moveTo investigator location
         pushAndRun $ engageEnemy investigator theMaskedHunter

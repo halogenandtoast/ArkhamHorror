@@ -6,12 +6,10 @@ module Arkham.Enemy.Cards.JeremiahPierce (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action hiding (Ability)
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Matcher
 
 newtype JeremiahPierce = JeremiahPierce EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -28,7 +26,7 @@ instance HasAbilities JeremiahPierce where
     withBaseAbilities attrs [restrictedAbility attrs 1 OnSameLocation parleyAction_]
 
 instance RunMessage JeremiahPierce where
-  runMessage msg e@(JeremiahPierce attrs@EnemyAttrs {..}) = case msg of
+  runMessage msg e@(JeremiahPierce attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ AddToVictory (toTarget attrs)

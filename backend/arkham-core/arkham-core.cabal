@@ -2415,6 +2415,7 @@ library
       DeriveAnyClass
       DerivingStrategies
       DerivingVia
+      ExtendedDefaultRules
       FunctionalDependencies
       GADTs
       LambdaCase
@@ -2536,6 +2537,7 @@ test-suite spec
       Helpers.Message
       TestImport
       TestImport.Lifted
+      TestImport.New
       Paths_arkham_core
   hs-source-dirs:
       tests
@@ -2546,6 +2548,7 @@ test-suite spec
       DeriveAnyClass
       DerivingStrategies
       DerivingVia
+      ExtendedDefaultRules
       FunctionalDependencies
       GADTs
       LambdaCase
@@ -2561,7 +2564,7 @@ test-suite spec
       TypeOperators
       UndecidableInstances
       ViewPatterns
-  ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+  ghc-options: -Wno-type-defaults -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-tool-depends:
       cards-discover:cards-discover
   build-depends:

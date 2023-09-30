@@ -11,11 +11,11 @@ spec :: Spec
 spec = describe "Guard Dog" $ do
   it "does 1 damage to the attacking enemy when damaged by the attack" $
     gameTest $ \investigator -> do
-      enemy <- testEnemy ((healthDamageL .~ 1) . (healthL .~ Static 2))
-      location <- testLocation id
+      enemy <- testEnemyWith ((healthDamageL .~ 1) . (healthL .~ Static 2))
+      location <- testLocationWith id
       putCardIntoPlay investigator Assets.guardDog
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       pushAndRun EnemiesAttack
       chooseOptionMatching "damage guard dog" $ \case

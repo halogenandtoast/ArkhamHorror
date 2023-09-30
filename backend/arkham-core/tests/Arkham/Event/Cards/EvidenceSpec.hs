@@ -17,13 +17,13 @@ spec = describe
   do
     it "discovers a clue at your location after you defeat an enemy" $ gameTest $ \investigator -> do
       updateInvestigator investigator ((combatL .~ 1) . (tokensL %~ setTokens Resource 1))
-      enemy <- testEnemy ((healthL .~ Static 1) . (fightL .~ 1))
-      location <- testLocation (revealCluesL .~ Static 1)
+      enemy <- testEnemyWith ((healthL .~ Static 1) . (fightL .~ 1))
+      location <- testLocationWith (revealCluesL .~ Static 1)
       evidence <- genCard Events.evidence
       pushAndRunAll
         [ SetChaosTokens [Zero]
         , addToHand (toId investigator) evidence
-        , enemySpawn location enemy
+        , spawnAt enemy location
         , moveTo investigator location
         ]
       (fight : _) <- field EnemyAbilities (toId enemy)

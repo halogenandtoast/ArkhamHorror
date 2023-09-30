@@ -13,12 +13,12 @@ spec :: Spec
 spec = describe "Vicious Blow" $ do
   it "does 1 extra damage when attack is successful" $ gameTest $ \investigator -> do
     updateInvestigator investigator (combatL .~ 1)
-    enemy <- testEnemy ((healthL .~ Static 3) . (fightL .~ 1))
-    location <- testLocation id
+    enemy <- testEnemyWith ((healthL .~ Static 3) . (fightL .~ 1))
+    location <- testLocationWith id
     viciousBlow <- genCard Skills.viciousBlow
     pushAndRunAll
       [ SetChaosTokens [Zero]
-      , enemySpawn location enemy
+      , spawnAt enemy location
       , moveTo investigator location
       , addToHand (toId investigator) viciousBlow
       ]

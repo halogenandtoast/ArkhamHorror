@@ -20,12 +20,11 @@ spec = describe "Machete" $ do
         $ \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.machete
       machete <- selectJust $ assetIs Assets.machete
-      enemy <- testEnemy
-        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
-      location <- testLocation id
+      enemy <- testEnemyWith $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [doFight] <- field AssetAbilities machete
       pushAndRun $ UseAbility (toId investigator) doFight []
@@ -41,12 +40,11 @@ spec = describe "Machete" $ do
         $ \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.machete
       machete <- selectJust $ assetIs Assets.machete
-      enemy <- testEnemy
-        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3, enemyExhausted = True}
-      location <- testLocation id
+      enemy <- testEnemyWith $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3, enemyExhausted = True}
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [doFight] <- field AssetAbilities machete
       pushAndRun $ UseAbility (toId investigator) doFight []
@@ -62,15 +60,13 @@ spec = describe "Machete" $ do
         $ \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.machete
       machete <- selectJust $ assetIs Assets.machete
-      enemy1 <- testEnemy
-        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
-      enemy2 <- testEnemy
-        $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
-      location <- testLocation id
+      enemy1 <- testEnemyWith $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
+      enemy2 <- testEnemyWith $ \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ placedLocation location
-      pushAndRun $ enemySpawn location enemy1
-      pushAndRun $ enemySpawn location enemy2
+      pushAndRun $ spawnAt enemy1 location
+      pushAndRun $ spawnAt enemy2 location
       pushAndRun $ moveTo investigator location
       [doFight] <- field AssetAbilities machete
       pushAndRun $ UseAbility (toId investigator) doFight []

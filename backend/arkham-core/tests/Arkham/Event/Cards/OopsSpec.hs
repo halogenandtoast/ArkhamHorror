@@ -18,19 +18,19 @@ import Arkham.Token
 spec :: Spec
 spec = describe "Oops!" $ do
   it "deals damage that attack would have done" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      (Investigator.combatL .~ 1)
-        . (Investigator.tokensL %~ setTokens Resource 2)
+    updateInvestigator investigator
+      $ (Investigator.combatL .~ 1)
+      . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
-    enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 2)
-    enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
-    location <- testLocation (revealCluesL .~ Static 0)
+    enemy <- testEnemyWith $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 2)
+    enemy2 <- testEnemyWith (Enemy.healthL .~ Static 3)
+    location <- testLocationWith (revealCluesL .~ Static 0)
 
     pushAndRunAll
       [ SetChaosTokens [MinusOne]
       , addToHand (toId investigator) oops
-      , enemySpawn location enemy
-      , enemySpawn location enemy2
+      , spawnAt enemy location
+      , spawnAt enemy2 location
       ]
     putCardIntoPlay investigator Assets.rolands38Special
     rolands38Special <- selectJust $ assetIs Assets.rolands38Special
@@ -61,19 +61,19 @@ spec = describe "Oops!" $ do
     fieldAssert EnemyDamage (== 2) enemy2
 
   it "[FAQ] does not deal on success damage" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      (Investigator.combatL .~ 1)
-        . (Investigator.tokensL %~ setTokens Resource 2)
+    updateInvestigator investigator
+      $ (Investigator.combatL .~ 1)
+      . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
-    enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 4)
-    enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
-    location <- testLocation id
+    enemy <- testEnemyWith $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 4)
+    enemy2 <- testEnemyWith (Enemy.healthL .~ Static 3)
+    location <- testLocationWith id
 
     pushAndRunAll
       [ SetChaosTokens [MinusOne]
       , addToHand (toId investigator) oops
-      , enemySpawn location enemy
-      , enemySpawn location enemy2
+      , spawnAt enemy location
+      , spawnAt enemy2 location
       ]
     putCardIntoPlay investigator Assets.fortyOneDerringer
     fortyOneDerringer <- selectJust $ assetIs Assets.fortyOneDerringer
@@ -104,19 +104,19 @@ spec = describe "Oops!" $ do
     fieldAssert EnemyDamage (== 1) enemy2
 
   it "[FAQ] shotgun only deals 1 damage" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      (Investigator.combatL .~ 1)
-        . (Investigator.tokensL %~ setTokens Resource 2)
+    updateInvestigator investigator
+      $ (Investigator.combatL .~ 1)
+      . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
-    enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 5)
-    enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
-    location <- testLocation id
+    enemy <- testEnemyWith $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 5)
+    enemy2 <- testEnemyWith (Enemy.healthL .~ Static 3)
+    location <- testLocationWith id
 
     pushAndRunAll
       [ SetChaosTokens [MinusOne]
       , addToHand (toId investigator) oops
-      , enemySpawn location enemy
-      , enemySpawn location enemy2
+      , spawnAt enemy location
+      , spawnAt enemy2 location
       ]
 
     putCardIntoPlay investigator Assets.shotgun4

@@ -13,15 +13,15 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Bait and Switch" $ do
   it "will move the enemy to a connected location if you succeed" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      \attrs -> attrs {investigatorAgility = 3}
-    enemy <- testEnemy (EnemyAttrs.evadeL ?~ 3)
+    updateInvestigator investigator
+      $ \attrs -> attrs {investigatorAgility = 3}
+    enemy <- testEnemyWith (EnemyAttrs.evadeL ?~ 3)
     (location1, location2) <- testConnectedLocations id id
     pushAndRunAll
       [ placedLocation location1
       , placedLocation location2
       , SetChaosTokens [Zero]
-      , enemySpawn location1 enemy
+      , spawnAt enemy location1
       , moveTo investigator location1
       ]
 

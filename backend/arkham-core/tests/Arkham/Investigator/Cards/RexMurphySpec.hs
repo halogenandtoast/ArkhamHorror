@@ -15,7 +15,7 @@ spec :: Spec
 spec = describe "Rex Murphy" $ do
   context "special ability" $ do
     it "discovers a clue if succeed a skill test by 2 or more" $ gameTestWith Investigators.rexMurphy $ \rexMurphy -> do
-      location1 <- testLocation (Location.revealCluesL .~ Static 2)
+      location1 <- testLocationWith (Location.revealCluesL .~ Static 2)
       pushAndRunAll
         [ SetChaosTokens [Zero]
         , moveTo rexMurphy location1

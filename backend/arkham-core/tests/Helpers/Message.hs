@@ -36,8 +36,8 @@ moveFrom i l = MoveFrom (toSource i) (toId i) (toId l)
 moveAllTo :: Location -> Message
 moveAllTo = MoveAllTo (TestSource mempty) . toId
 
-enemySpawn :: Location -> Enemy -> Message
-enemySpawn l e = EnemySpawn Nothing (toId l) (toId e)
+spawnAt :: Enemy -> Location -> Message
+spawnAt e l = EnemySpawn Nothing (toId l) (toId e)
 
 loadDeck :: Investigator -> [PlayerCard] -> Message
 loadDeck i cs = LoadDeck (toId i) (Deck cs)

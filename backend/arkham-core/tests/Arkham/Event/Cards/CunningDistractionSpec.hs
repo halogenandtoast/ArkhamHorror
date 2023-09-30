@@ -12,10 +12,10 @@ spec :: Spec
 spec = do
   describe "Cunning Distraction" $ do
     it "Evades enemies engaged with you" $ gameTest $ \investigator -> do
-      location <- testLocation id
-      enemy <- testEnemy id
+      location <- testLocationWith id
+      enemy <- testEnemyWith id
       pushAndRunAll
-        [ enemySpawn location enemy
+        [ spawnAt enemy location
         , moveTo investigator location
         ]
       putCardIntoPlay investigator Events.cunningDistraction
@@ -24,10 +24,10 @@ spec = do
 
     it "Evades enemies engaged with other investigators at your location" $ gameTest $ \investigator -> do
       investigator2 <- addInvestigator Investigators.rolandBanks id
-      location <- testLocation id
-      enemy <- testEnemy id
+      location <- testLocationWith id
+      enemy <- testEnemyWith id
       pushAndRunAll
-        [ enemySpawn location enemy
+        [ spawnAt enemy location
         , moveTo investigator2 location -- move investigator 2 first to engage
         , moveTo investigator location
         ]
@@ -36,10 +36,10 @@ spec = do
       assert $ evadedBy investigator2 enemy
 
     it "Evades aloof enemies at your location" $ gameTest $ \investigator -> do
-      location <- testLocation id
+      location <- testLocationWith id
       enemy <- testEnemyWithDef Enemies.whippoorwill id
       pushAndRunAll
-        [ enemySpawn location enemy
+        [ spawnAt enemy location
         , moveTo investigator location
         ]
       putCardIntoPlay investigator Events.cunningDistraction

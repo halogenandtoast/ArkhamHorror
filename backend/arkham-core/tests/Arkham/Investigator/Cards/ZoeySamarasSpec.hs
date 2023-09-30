@@ -19,11 +19,11 @@ spec = do
       chaosTokenValue token `shouldBe` Just 1
 
     it "elder sign token gives +1 and does +1 damage for attacks" $ gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
-      enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
-      location <- testLocation id
+      enemy <- testEnemyWith ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
+      location <- testLocationWith id
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
-        , enemySpawn location enemy
+        , spawnAt enemy location
         , moveTo zoeySamaras location
         , fightEnemy zoeySamaras enemy
         ]
@@ -37,15 +37,16 @@ spec = do
       chooseOnlyOption "apply results"
       fieldAssert EnemyDamage (== 2) enemy
 
-    it "allows you to gain a resource each time you are engaged by an enemy" $
-      gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
-        location <- testLocation id
-        enemy1 <- testEnemy id
-        enemy2 <- testEnemy id
+    it "allows you to gain a resource each time you are engaged by an enemy"
+      $ gameTestWith Investigators.zoeySamaras
+      $ \zoeySamaras -> do
+        location <- testLocationWith id
+        enemy1 <- testEnemyWith id
+        enemy2 <- testEnemyWith id
         pushAndRunAll
-          [ enemySpawn location enemy1
+          [ spawnAt enemy1 location
           , moveTo zoeySamaras location
-          , enemySpawn location enemy2
+          , spawnAt enemy2 location
           ]
         chooseOptionMatching
           "use ability"

@@ -14,8 +14,8 @@ spec = do
   describe "Dodge" $ do
     it "cancels the attack" $ gameTest $ \investigator -> do
       updateInvestigator investigator $ \attrs -> attrs {investigatorTokens = setTokens Resource 1 mempty}
-      enemy <- testEnemy id
-      location <- testLocation id
+      enemy <- testEnemyWith id
+      location <- testLocationWith id
       dodge <- genCard Cards.dodge
 
       didRunMessage <-
@@ -28,7 +28,7 @@ spec = do
 
       pushAndRunAll
         [ addToHand (toId investigator) dodge
-        , enemySpawn location enemy
+        , spawnAt enemy location
         , moveTo investigator location
         , enemyAttack investigator enemy
         ]

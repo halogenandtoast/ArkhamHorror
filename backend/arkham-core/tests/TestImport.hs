@@ -9,14 +9,8 @@ module TestImport (
 
 import Arkham.Prelude as X hiding (assert)
 
-import Arkham.ActiveCost
 import Arkham.Agenda as X
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Cards.WhatsGoingOn
-import Arkham.Agenda.Types
 import Arkham.Asset as X (createAsset, lookupAsset)
-import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Types
 import Arkham.Card as X
 import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
@@ -24,61 +18,69 @@ import Arkham.ChaosBag as X
 import Arkham.ChaosToken as X
 import Arkham.Classes as X hiding (getChaosTokenValue)
 import Arkham.Cost as X hiding (PaidCost)
-import Arkham.Difficulty
 import Arkham.Enemy as X
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Types
+import Arkham.Entities as X
 import Arkham.Event as X
-import Arkham.Event.Types
 import Arkham.Game as X hiding (addInvestigator, getAsset, newGame, runMessages, withModifiers)
-import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding (getCanAffordCost)
 import Arkham.GameValue as X
-import Arkham.Git
 import Arkham.Helpers as X
 import Arkham.Helpers.Message as X hiding (createEnemy, putCardIntoPlay)
 import Arkham.Id as X
 import Arkham.Investigator as X hiding (allInvestigators)
-import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types hiding (assetsL)
 import Arkham.Location as X
-import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Types
-import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
-import Arkham.Phase
-import Arkham.Projection
 import Arkham.Scenario as X
-import Arkham.Scenario.Scenarios.TheGathering (TheGathering (..))
-import Arkham.Scenario.Types
 import Arkham.SkillType as X
 import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
-import Arkham.Timing qualified as Timing
 import Arkham.Window as X (
   Window (..),
   WindowType (DuringTurn, FastPlayerWindow, NonFast),
  )
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
-import Control.Monad.State
 import Control.Monad.State as X (get)
-import Data.Map.Strict qualified as Map
 import Data.Maybe as X (fromJust)
-import Data.These
 import Data.UUID.V4 as X
 import Helpers.Message as X
-import System.Random (StdGen, mkStdGen)
 import Test.Hspec as X
 
+import Arkham.ActiveCost
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Agenda.Cards.WhatsGoingOn
 import Arkham.Agenda.Sequence
-import Arkham.Entities as X
+import Arkham.Agenda.Types
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Types
+import Arkham.Difficulty
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.Types
 import Arkham.Entities qualified as Entities
+import Arkham.Event.Types
+import Arkham.Game qualified as Game
 import Arkham.GameEnv
+import Arkham.Git
+import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Types hiding (assetsL)
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Types
 import Arkham.LocationSymbol
+import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Name
+import Arkham.Phase
+import Arkham.Projection
+import Arkham.Scenario.Scenarios.TheGathering (TheGathering (..))
+import Arkham.Scenario.Types
 import Arkham.SkillTest.Type
+import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
+import Data.Map.Strict qualified as Map
+import Data.These
+import GHC.TypeLits
+import System.Random (StdGen, mkStdGen)
 
 runMessages :: TestAppT ()
 runMessages = do
@@ -89,8 +91,14 @@ runMessages = do
 pushAndRun :: Message -> TestAppT ()
 pushAndRun msg = push msg >> runMessages
 
+run :: Message -> TestAppT ()
+run = pushAndRun
+
 pushAndRunAll :: [Message] -> TestAppT ()
 pushAndRunAll msgs = pushAll msgs >> runMessages
+
+runAll :: [Message] -> TestAppT ()
+runAll = pushAndRunAll
 
 shouldSatisfyM
   :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()
@@ -206,8 +214,75 @@ testPlayerCards count' = replicateM count' (testPlayerCard id)
 testPlayerCard :: CardGen m => (CardDef -> CardDef) -> m PlayerCard
 testPlayerCard f = genPlayerCard (f Cards.adaptable1) -- use adaptable because it has no in game effects
 
-testEnemy :: (EnemyAttrs -> EnemyAttrs) -> TestAppT Enemy
-testEnemy = testEnemyWithDef Cards.swarmOfRats
+class TestUpdate a where
+  updateLens :: a -> Traversal' Game a
+
+instance TestUpdate Investigator where
+  updateLens a = entitiesL . Entities.investigatorsL . ix a.id
+
+instance TestUpdate Enemy where
+  updateLens a = entitiesL . Entities.enemiesL . ix a.id
+
+instance TestUpdate Location where
+  updateLens a = entitiesL . Entities.locationsL . ix a.id
+
+updateThis
+  :: forall a. (TestUpdate a, Entity a) => a -> (EntityAttrs a -> EntityAttrs a) -> TestAppT a
+updateThis this f = do
+  let this' = overAttrs f this
+  overTest $ updateLens this .~ this'
+  pure this'
+
+class TestHasFight a where
+  setFight :: Int -> TestAppT a -> TestAppT a
+
+instance TestHasFight Enemy where
+  setFight fight action = do
+    this <- action
+    updateThis this $ \attrs -> attrs {enemyFight = fight}
+
+class TestHasHealth a where
+  setHealth :: Int -> TestAppT a -> TestAppT a
+
+instance TestHasHealth Enemy where
+  setHealth health action = do
+    this <- action
+    updateThis this $ \attrs -> attrs {enemyHealth = Static health}
+
+class UpdateField (s :: Symbol) a b where
+  updateField :: b -> a -> a
+
+prop :: forall (s :: Symbol) b a. (TestUpdate a, UpdateField s a b) => b -> TestAppT a -> TestAppT a
+prop b action = do
+  this' <- updateField @s b <$> action
+  overTest $ updateLens this' .~ this'
+  pure this'
+
+withProp :: forall (s :: Symbol) b a. (TestUpdate a, UpdateField s a b) => b -> a -> TestAppT ()
+withProp b a = void $ prop @s b (pure a)
+
+instance UpdateField "combat" Investigator Int where
+  updateField combat = overAttrs (\attrs -> attrs {investigatorCombat = combat})
+
+instance UpdateField "fight" Enemy Int where
+  updateField fight = overAttrs (\attrs -> attrs {enemyFight = fight})
+
+instance UpdateField "health" Enemy Int where
+  updateField health = overAttrs (\attrs -> attrs {enemyHealth = Static health})
+
+instance UpdateField "clues" Location Int where
+  updateField clues =
+    overAttrs
+      (\attrs -> attrs {locationTokens = setTokens Clue clues mempty, locationRevealClues = Static 0})
+
+instance UpdateField "shroud" Location Int where
+  updateField shroud = overAttrs (\attrs -> attrs {locationShroud = shroud})
+
+testEnemy :: TestAppT Enemy
+testEnemy = testEnemyWithDef Cards.swarmOfRats id
+
+testEnemyWith :: (EnemyAttrs -> EnemyAttrs) -> TestAppT Enemy
+testEnemyWith = testEnemyWithDef Cards.swarmOfRats
 
 testEnemyWithDef
   :: CardDef
@@ -219,9 +294,11 @@ testEnemyWithDef def attrsF = do
   let enemy' =
         overAttrs (\attrs -> attrsF $ attrs {enemyHealthDamage = 0, enemySanityDamage = 0})
           $ lookupEnemy (toCardCode card) enemyId (toCardId card)
-  env <- get
-  runReaderT (overGame (entitiesL . Entities.enemiesL %~ insertEntity enemy')) env
+  overTest $ entitiesL . Entities.enemiesL %~ insertEntity enemy'
   pure enemy'
+
+overTest :: (Game -> Game) -> TestAppT ()
+overTest body = get >>= runReaderT (overGame body)
 
 testAsset
   :: (AssetAttrs -> AssetAttrs)
@@ -262,8 +339,11 @@ testAgenda cardCode f = do
   runReaderT (overGame (entitiesL . Entities.agendasL %~ insertEntity agenda')) env
   pure agenda'
 
-testLocation :: (LocationAttrs -> LocationAttrs) -> TestAppT Location
-testLocation = testLocationWithDef Cards.study
+testLocation :: TestAppT Location
+testLocation = testLocationWithDef Cards.study id
+
+testLocationWith :: (LocationAttrs -> LocationAttrs) -> TestAppT Location
+testLocationWith = testLocationWithDef Cards.study
 
 testLocationWithDef
   :: CardDef
@@ -340,10 +420,10 @@ testUnconnectedLocations
   -> TestAppT (Location, Location)
 testUnconnectedLocations f1 f2 = do
   location1 <-
-    testLocation
+    testLocationWith
       (f1 . (symbolL .~ Square) . (revealedSymbolL .~ Square))
   location2 <-
-    testLocation
+    testLocationWith
       (f2 . (symbolL .~ Triangle) . (revealedSymbolL .~ Triangle))
   pure (location1, location2)
 

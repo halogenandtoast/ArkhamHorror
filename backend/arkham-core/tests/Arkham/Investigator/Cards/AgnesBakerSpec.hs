@@ -1,50 +1,26 @@
-module Arkham.Investigator.Cards.AgnesBakerSpec (
-  spec,
-) where
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 
-import TestImport hiding (EnemyDamage)
+module Arkham.Investigator.Cards.AgnesBakerSpec (spec) where
 
-import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
-import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Cards
+import TestImport.New
+
+default (Int)
 
 spec :: Spec
 spec = describe "Agnes Baker" $ do
   context "ability" $ do
-    it "can deal 1 damage to an enemy at your location when taking horror" $ gameTestWith Investigators.agnesBaker $ \agnesBaker -> do
-      enemy <- testEnemy $ \attrs -> attrs {enemyHealth = Static 2}
-      location <- testLocation id
-      pushAndRunAll
-        [ placedLocation location
-        , enemySpawn location enemy
-        , moveTo agnesBaker location
-        , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 1
-        ]
-      chooseOnlyOption "apply damage"
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "damage enemy"
-      fieldAssert EnemyDamage (== 1) enemy
+    it "can deal 1 damage to an enemy at your location when taking horror" . gameTestWith agnesBaker $ \self -> do
+      enemy <- testEnemy & prop @"health" 2
+      location <- testLocation
+      enemy `spawnAt` location
+      self `moveTo` location
+      self `addHorror` 1
+      useReaction
+      click "damage enemy"
+      enemy.damage `shouldReturn` 1
 
   context "elder sign" $ do
-    it "gives +1 for each horror on Agnes" $ gameTestWith Investigators.agnesBaker $ \agnesBaker -> do
-      location <- testLocation id
-
-      didPassTest <- didPassSkillTestBy agnesBaker SkillIntellect 0
-
-      pushAndRunAll
-        [ SetChaosTokens [ElderSign]
-        , placedLocation location
-        , moveTo agnesBaker location
-        , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2
-        , beginSkillTest agnesBaker SkillIntellect 4
-        ]
-      chooseOnlyOption "apply damage"
-      chooseOnlyOption "apply damage"
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-
-      didPassTest `refShouldBe` True
+    it "gives +1 for each horror on Agnes" . gameTestWith agnesBaker $ \self -> do
+      self `addHorror` 2
+      self.elderSignModifier `shouldReturn` PositiveModifier 2

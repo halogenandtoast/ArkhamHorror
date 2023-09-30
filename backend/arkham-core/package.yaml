@@ -61,7 +61,7 @@ tests:
   spec:
     main: Spec.hs
     source-dirs: tests
-    ghc-options: -Wno-type-defaults -threaded -rtsopts -O0 "-with-rtsopts=-N"
+    ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
     dependencies:
       - arkham-core
       - hspec

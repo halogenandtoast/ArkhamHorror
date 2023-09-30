@@ -128,28 +128,27 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
   canPlayFromDiscard modifiers (n, card) =
     cdPlayableFromDiscard (toCardDef card)
       || any (allowsPlayFromDiscard n card) modifiers
-  allowsPlayFromDiscard 0 card (CanPlayTopOfDiscard (mcardType, traits)) =
-    maybe True (== cdCardType (toCardDef card)) mcardType
-      && ( null traits
-            || ( setFromList traits `Set.isSubsetOf` toTraits (toCardDef card)
-               )
-         )
+  allowsPlayFromDiscard 0 card (CanPlayTopmostOfDiscard (mcardType, traits)) =
+    let cardMatcher = maybe Matcher.AnyCard Matcher.CardWithType mcardType <> foldMap Matcher.CardWithTrait traits
+        allMatches = filter (`cardMatch` cardMatcher) investigatorDiscard
+     in case allMatches of
+          (topmost : _) -> topmost == card
+          _ -> False
   allowsPlayFromDiscard _ _ _ = False
 
 getAsIfInHandCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
 getAsIfInHandCards iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   let
-    modifiersPermitPlayOfDiscard c =
-      any (modifierPermitsPlayOfDiscard c) modifiers
-    modifierPermitsPlayOfDiscard (c, depth) = \case
-      CanPlayTopOfDiscard (mType, traits)
-        | depth == 0 ->
-            maybe True (== toCardType c) mType
-              && ( null traits
-                    || notNull
-                      (setFromList traits `intersection` toTraits c)
-                 )
+    modifiersPermitPlayOfDiscard discard c =
+      any (modifierPermitsPlayOfDiscard discard c) modifiers
+    modifierPermitsPlayOfDiscard discard (c, _) = \case
+      CanPlayTopmostOfDiscard (mType, traits) ->
+        let cardMatcher = maybe Matcher.AnyCard Matcher.CardWithType mType <> foldMap Matcher.CardWithTrait traits
+            allMatches = filter (`cardMatch` cardMatcher) discard
+         in case allMatches of
+              (topmost : _) -> topmost == c
+              _ -> False
       _ -> False
     modifiersPermitPlayOfDeck c = any (modifierPermitsPlayOfDeck c) modifiers
     modifierPermitsPlayOfDeck (c, depth) = \case
@@ -163,7 +162,7 @@ getAsIfInHandCards iid = do
   pure
     $ map
       (PlayerCard . fst)
-      (filter modifiersPermitPlayOfDiscard (zip discard [0 :: Int ..]))
+      (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
     <> map
       (PlayerCard . fst)
       (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))

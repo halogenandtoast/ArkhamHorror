@@ -2479,6 +2479,7 @@ test-suite spec
       Arkham.Asset.Cards.GuardDogSpec
       Arkham.Asset.Cards.HardKnocks2Spec
       Arkham.Asset.Cards.HardKnocksSpec
+      Arkham.Asset.Cards.HeirloomOfHyperboreaSpec
       Arkham.Asset.Cards.Hyperawareness2Spec
       Arkham.Asset.Cards.HyperawarenessSpec
       Arkham.Asset.Cards.JennysTwin45sSpec
@@ -2490,6 +2491,7 @@ test-suite spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
       Arkham.Asset.Cards.Rolands38SpecialSpec
       Arkham.Asset.Cards.TheNecronomiconSpec
+      Arkham.Asset.Cards.WendysAmuletSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Event.Cards.BackstabSpec
@@ -2565,7 +2567,7 @@ test-suite spec
       TypeOperators
       UndecidableInstances
       ViewPatterns
-  ghc-options: -Wno-type-defaults -threaded -rtsopts -O0 "-with-rtsopts=-N"
+  ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-tool-depends:
       cards-discover:cards-discover
   build-depends:

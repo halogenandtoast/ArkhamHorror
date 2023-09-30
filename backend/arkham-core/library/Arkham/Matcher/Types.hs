@@ -507,6 +507,9 @@ instance Semigroup ExtendedCardMatcher where
 instance IsLabel "ally" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #ally
 
+instance IsLabel "spell" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #spell
+
 instance IsLabel "asset" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #asset
 
@@ -550,6 +553,9 @@ data CardMatcher
 
 instance IsString CardMatcher where
   fromString = CardWithTitle . fromString
+
+instance IsLabel "spell" CardMatcher where
+  fromLabel = CardWithTrait Spell
 
 instance IsLabel "survivor" CardMatcher where
   fromLabel = CardWithClass Survivor

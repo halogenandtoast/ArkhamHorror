@@ -27,7 +27,7 @@ spec = do
       chooseOnlyOption "Run skill check"
       chooseOnlyOption "Apply results"
 
-      assert $ isInDiscardOf investigator Events.blindingLight
+      assert $ Events.blindingLight `isInDiscardOf` investigator
       assert $ evadedBy investigator enemy
 
     it "deals 1 damage to the evaded enemy" $ gameTest $ \investigator -> do
@@ -44,7 +44,7 @@ spec = do
       chooseOnlyOption "Run skill check"
       chooseOnlyOption "Apply results"
 
-      assert $ isInDiscardOf investigator Events.blindingLight
+      assert $ Events.blindingLight `isInDiscardOf` investigator
       fieldAssert EnemyDamage (== 1) enemy
 
     it
@@ -64,5 +64,5 @@ spec = do
         chooseOnlyOption "Run skill check"
         chooseOnlyOption "Apply results"
 
-        assert $ isInDiscardOf investigator Events.blindingLight
+        assert $ Events.blindingLight `isInDiscardOf` investigator
         getRemainingActions investigator `shouldReturn` 2

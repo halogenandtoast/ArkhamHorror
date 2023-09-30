@@ -27,8 +27,12 @@ import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
 import Arkham.Treachery.Types
+import Arkham.Window (defaultWindows)
 import GHC.Records
 import Helpers.Message qualified
+
+discard :: Targetable a => a -> TestAppT ()
+discard = run . Discard GameSource . toTarget
 
 click :: String -> TestAppT ()
 click = chooseOnlyOption
@@ -53,8 +57,13 @@ loseActions i n = run $ LoseActions (toId i) (TestSource mempty) n
 useAbility :: Investigator -> Ability -> TestAppT ()
 useAbility i a = run $ UseAbility (toId i) a []
 
-useReaction :: TestAppT ()
-useReaction = chooseOptionMatching "use ability" \case
+useReaction :: HasCallStack => TestAppT ()
+useReaction = chooseOptionMatching "use reaction ability" \case
+  AbilityLabel {} -> True
+  _ -> False
+
+useForcedAbility :: HasCallStack => TestAppT ()
+useForcedAbility = chooseOptionMatching "use forced ability" \case
   AbilityLabel {} -> True
   _ -> False
 
@@ -92,8 +101,14 @@ instance HasField "clues" Location (TestAppT Int) where
 instance HasField "clues" TreacheryId (TestAppT Int) where
   getField = field TreacheryClues
 
+instance HasField "resources" TreacheryId (TestAppT Int) where
+  getField = field TreacheryResources
+
 instance HasField "resources" Investigator (TestAppT Int) where
   getField = field InvestigatorResources . toEntityId
+
+instance HasField "slots" Investigator (TestAppT (Map SlotType [Slot])) where
+  getField = field InvestigatorSlots . toEntityId
 
 instance HasField "mentalTrauma" Investigator (TestAppT Int) where
   getField = field InvestigatorMentalTrauma . toEntityId
@@ -116,8 +131,17 @@ instance HasField "abilities" Investigator (TestAppT [Ability]) where
 instance HasField "abilities" AssetId (TestAppT [Ability]) where
   getField = field AssetAbilities
 
+instance HasField "abilities" TreacheryId (TestAppT [Ability]) where
+  getField = field TreacheryAbilities
+
+instance HasField "horror" AssetId (TestAppT Int) where
+  getField = field AssetHorror
+
 instance HasField "skillValue" Investigator (TestAppT Int) where
   getField _ = getJustSkillTest >>= totalModifiedSkillValue
+
+instance HasField "horror" Investigator (TestAppT Int) where
+  getField = field InvestigatorHorror . toEntityId
 
 instance HasField "damage" Enemy (TestAppT Int) where
   getField = field Field.EnemyDamage . toEntityId
@@ -135,6 +159,14 @@ assertPassedSkillTest = do
     FailedBy {} -> expectationFailure "Expected skill test to pass, but failed"
     Unrun {} -> expectationFailure "Expected skill test to pass, but is unrun"
 
+assertFailedSkillTest :: TestAppT ()
+assertFailedSkillTest = do
+  st <- getJustSkillTest
+  case skillTestResult st of
+    FailedBy {} -> pure ()
+    SucceededBy {} -> expectationFailure "Expected skill test to fail, but passed"
+    Unrun {} -> expectationFailure "Expected skill test to pass, but is unrun"
+
 runSkillTest :: Investigator -> SkillType -> Int -> TestAppT ()
 runSkillTest i st n = do
   run $ Helpers.Message.beginSkillTest i st n
@@ -144,3 +176,8 @@ discoverClues :: Investigator -> Int -> TestAppT ()
 discoverClues i n = do
   lid <- fieldJust InvestigatorLocation i.id
   run $ InvestigatorDiscoverClues i.id lid GameSource n Nothing
+
+getActionsFrom :: Sourceable source => Investigator -> source -> TestAppT [Ability]
+getActionsFrom i s = do
+  actions <- nub <$> concatMapM (getActions (toId i)) (defaultWindows $ toId i)
+  pure $ filter ((== toSource s) . abilitySource) actions

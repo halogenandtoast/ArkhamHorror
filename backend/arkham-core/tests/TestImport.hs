@@ -619,8 +619,8 @@ newGame investigator = do
 -- Helpers
 
 isInDiscardOf
-  :: HasCardDef cardDef => Investigator -> cardDef -> TestAppT Bool
-isInDiscardOf i (toCardDef -> cardDef) = do
+  :: HasCardDef cardDef => cardDef -> Investigator -> TestAppT Bool
+isInDiscardOf (toCardDef -> cardDef) i = do
   fieldP InvestigatorDiscard (any (`cardMatch` cardIs cardDef)) (toId i)
 
 getRemainingActions :: Investigator -> TestAppT Int
@@ -692,3 +692,9 @@ updateInvestigator i f = do
   runReaderT
     (overGame (entitiesL . Entities.investigatorsL . ix (toId i) %~ overAttrs f))
     env
+
+duringRound :: TestAppT () -> TestAppT ()
+duringRound body = do
+  run BeginRound
+  body
+  run EndRound

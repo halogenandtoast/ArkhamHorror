@@ -19,7 +19,7 @@ spec = do
         , moveTo investigator location
         ]
       putCardIntoPlay investigator Events.cunningDistraction
-      assert $ isInDiscardOf investigator Events.cunningDistraction
+      assert $ Events.cunningDistraction `isInDiscardOf` investigator
       assert $ evadedBy investigator enemy
 
     it "Evades enemies engaged with other investigators at your location" $ gameTest $ \investigator -> do
@@ -32,7 +32,7 @@ spec = do
         , moveTo investigator location
         ]
       putCardIntoPlay investigator Events.cunningDistraction
-      assert $ isInDiscardOf investigator Events.cunningDistraction
+      assert $ Events.cunningDistraction `isInDiscardOf` investigator
       assert $ evadedBy investigator2 enemy
 
     it "Evades aloof enemies at your location" $ gameTest $ \investigator -> do
@@ -43,5 +43,5 @@ spec = do
         , moveTo investigator location
         ]
       putCardIntoPlay investigator Events.cunningDistraction
-      assert $ isInDiscardOf investigator Events.cunningDistraction
+      assert $ Events.cunningDistraction `isInDiscardOf` investigator
       assert $ evadedBy investigator enemy

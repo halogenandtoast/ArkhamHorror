@@ -31,6 +31,6 @@ spec = describe "Bait and Switch" $ do
     chooseOnlyOption "Apply results"
     chooseOnlyOption "Move enemy"
 
-    assert $ isInDiscardOf investigator Events.baitAndSwitch
+    assert $ Events.baitAndSwitch `isInDiscardOf` investigator
     assert $ fieldP EnemyEngagedInvestigators null (toId enemy)
     assert $ fieldP EnemyLocation (== Just (toId location2)) (toId enemy)

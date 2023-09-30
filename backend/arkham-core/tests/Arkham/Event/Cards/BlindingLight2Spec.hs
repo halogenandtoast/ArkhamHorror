@@ -27,7 +27,7 @@ spec = do
       chooseOnlyOption "Evade enemy"
       chooseOnlyOption "Run skill check"
       chooseOnlyOption "Apply results"
-      assert $ isInDiscardOf investigator Events.blindingLight2
+      assert $ Events.blindingLight2 `isInDiscardOf` investigator
       assert $ fieldP EnemyEngagedInvestigators null (toId enemy)
 
     it "deals 2 damage to the evaded enemy" $ gameTest $ \investigator -> do
@@ -43,7 +43,7 @@ spec = do
       chooseOnlyOption "Evade enemy"
       chooseOnlyOption "Run skill check"
       chooseOnlyOption "Apply results"
-      assert $ isInDiscardOf investigator Events.blindingLight2
+      assert $ Events.blindingLight2 `isInDiscardOf` investigator
       assert $ fieldP EnemyDamage (== 2) (toId enemy)
 
     it
@@ -63,6 +63,6 @@ spec = do
         chooseOnlyOption "Run skill check"
         chooseOnlyOption "Apply results"
         chooseOnlyOption "take event damage"
-        assert $ isInDiscardOf investigator Events.blindingLight2
+        assert $ Events.blindingLight2 `isInDiscardOf` investigator
         fieldAssert InvestigatorRemainingActions (== 2) investigator
         fieldAssert InvestigatorHorror (== 1) investigator

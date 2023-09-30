@@ -36,6 +36,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Data.Data
+import GHC.Records
 
 class
   ( Typeable a
@@ -232,6 +233,9 @@ instance Sourceable EnemyAttrs where
   isSource _ _ = False
 
 data Enemy = forall a. IsEnemy a => Enemy a
+
+instance HasField "id" Enemy EnemyId where
+  getField (Enemy e) = attr enemyId e
 
 instance Data Enemy where
   gunfold _ _ _ = error "gunfold(Enemy)"

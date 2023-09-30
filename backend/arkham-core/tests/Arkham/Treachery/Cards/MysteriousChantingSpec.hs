@@ -19,7 +19,7 @@ spec = describe "Mysterious Chanting" $ do
       [ SetEncounterDeck (Deck [mysteriousChanting, mysteriousChanting])
       , placedLocation location1
       , placedLocation location2
-      , enemySpawn location1 cultist
+      , spawnAt cultist location1
       , moveTo investigator location1
       , RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       , InvestigatorDrawEncounterCard (toId investigator)

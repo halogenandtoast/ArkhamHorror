@@ -16,15 +16,15 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Knife" $ do
   it "Fight. You get +1 for this attack." $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      \attrs -> attrs {investigatorCombat = 2}
+    updateInvestigator investigator
+      $ \attrs -> attrs {investigatorCombat = 2}
     putCardIntoPlay investigator Assets.knife
     knife <- selectJust $ assetIs Assets.knife
-    enemy <- testEnemy $
-      \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
-    location <- testLocation id
+    enemy <- testEnemyWith
+      $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+    location <- testLocationWith id
     pushAndRun $ SetChaosTokens [Zero]
-    pushAndRun $ enemySpawn location enemy
+    pushAndRun $ spawnAt enemy location
     pushAndRun $ moveTo investigator location
     [knifeFightAction, _] <- field AssetAbilities knife
     pushAndRun $ UseAbility (toId investigator) knifeFightAction []
@@ -38,16 +38,16 @@ spec = describe "Knife" $ do
     "Discard Knife: Fight. You get +2 for this attack. This attack deals +1 damage."
     $ gameTest
     $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorCombat = 1}
       putCardIntoPlay investigator Assets.knife
       knife <- selectJust $ assetIs Assets.knife
       Just knifeCard <- preview _PlayerCard <$> field AssetCard knife
-      enemy <- testEnemy $
-        \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
-      location <- testLocation id
+      enemy <- testEnemyWith
+        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+      location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ enemySpawn location enemy
+      pushAndRun $ spawnAt enemy location
       pushAndRun $ moveTo investigator location
       [_, knifeDiscardFightAction] <- field AssetAbilities knife
       pushAndRun $ UseAbility (toId investigator) knifeDiscardFightAction []

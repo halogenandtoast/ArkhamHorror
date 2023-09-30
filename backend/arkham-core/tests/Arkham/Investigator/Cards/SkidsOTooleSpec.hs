@@ -1,38 +1,23 @@
-module Arkham.Investigator.Cards.SkidsOTooleSpec (
-  spec,
-) where
+module Arkham.Investigator.Cards.SkidsOTooleSpec (spec) where
 
-import TestImport.Lifted
-
-import Arkham.Game.Helpers (getCanAffordCost)
-import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
+import Arkham.Investigator.Cards
+import TestImport.New
 
 spec :: Spec
 spec = describe "\"Skids\" O'Toole" $ do
   context "ability" $ do
-    it
-      "allows you to spend two resources to buy an additional action"
-      $ gameTestWith Investigators.skidsOToole
-      $ \skidsOToole -> do
-        pushAndRunAll
-          [ TakeResources (toId skidsOToole) 2 (toSource skidsOToole) False
-          , LoseActions (toId skidsOToole) (TestSource mempty) 3
-          ]
-        [buyAction] <- field InvestigatorAbilities (toId skidsOToole)
-        pushAndRun $ UseAbility (toId skidsOToole) buyAction []
-        assert $
-          getCanAffordCost
-            (toId skidsOToole)
-            (TestSource mempty)
-            Nothing
-            []
-            (ActionCost 1)
+    it "allows you to spend two resources to buy an additional action" . gameTestWith skidsOToole $ \self -> do
+      self `gainResources` 2
+      self `loseActions` 3
+      [buyAction] <- self.abilities
+      self `useAbility` buyAction
+      self.resources `shouldReturn` 0
+      self.remainingActions `shouldReturn` 1
 
   context "elder sign" $ do
-    it "gains 2 resources on success" $ gameTestWith Investigators.skidsOToole $ \skidsOToole -> do
-      pushAndRunAll [SetChaosTokens [ElderSign], beginSkillTest skidsOToole SkillAgility 4]
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-      fieldAssert InvestigatorResources (== 2) skidsOToole
+    it "gains 2 resources on success" . gameTestWith skidsOToole $ \self -> do
+      setChaosTokens [ElderSign]
+      run $ beginSkillTest self #agility 4
+      click "start skill test"
+      click "apply results"
+      self.resources `shouldReturn` 2

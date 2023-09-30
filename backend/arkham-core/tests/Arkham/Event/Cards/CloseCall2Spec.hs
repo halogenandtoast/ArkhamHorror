@@ -16,12 +16,12 @@ spec = describe "Close Call (2)" $ do
   it "shuffles the enemy just evaded back into the encounter deck" $ gameTest $ \investigator -> do
     updateInvestigator investigator (Investigator.tokensL %~ setTokens Resource 2)
     closeCall2 <- genCard Cards.closeCall2
-    enemy <- testEnemy id
-    location <- testLocation id
+    enemy <- testEnemyWith id
+    location <- testLocationWith id
     pushAndRunAll
       [ addToHand (toId investigator) closeCall2
       , placedLocation location
-      , enemySpawn location enemy
+      , spawnAt enemy location
       , moveTo investigator location
       , EnemyEvaded (toId investigator) (toId enemy)
       ]
@@ -36,12 +36,12 @@ spec = describe "Close Call (2)" $ do
     selectCount AnyEnemy `shouldReturn` 0
 
   it "does not work on Elite enemies" $ gameTest $ \investigator -> do
-    location <- testLocation id
+    location <- testLocationWith id
     closeCall2 <- genCard Cards.closeCall2
     enemy <- testEnemyWithDef Cards.ghoulPriest id
     pushAndRunAll
       [ moveTo investigator location
-      , enemySpawn location enemy
+      , spawnAt enemy location
       , addToHand (toId investigator) closeCall2
       , EnemyEvaded (toId investigator) (toId enemy)
       ]
@@ -49,13 +49,13 @@ spec = describe "Close Call (2)" $ do
     queueRef `refShouldBe` []
 
   it "does not work on weakness enemies" $ gameTest $ \investigator -> do
-    location <- testLocation id
+    location <- testLocationWith id
     closeCall2 <- genCard Cards.closeCall2
     enemy <- testEnemyWithDef Cards.mobEnforcer id
     pushAndRunAll
       [ SetBearer (toTarget enemy) (toId investigator)
       , moveTo investigator location
-      , enemySpawn location enemy
+      , spawnAt enemy location
       , addToHand (toId investigator) closeCall2
       , EnemyEvaded (toId investigator) (toId enemy)
       ]

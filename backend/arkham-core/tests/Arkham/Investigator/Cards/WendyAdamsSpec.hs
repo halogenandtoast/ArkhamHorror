@@ -1,54 +1,29 @@
-module Arkham.Investigator.Cards.WendyAdamsSpec (
-  spec,
-) where
+module Arkham.Investigator.Cards.WendyAdamsSpec (spec) where
 
-import TestImport.Lifted
+import TestImport.New
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Cards
 
 spec :: Spec
 spec = describe "Wendy Adams" $ do
   context "ability" $ do
-    it "allows you to discard a card to redraw a chaos token" $ gameTestWith Investigators.wendyAdams $ \wendyAdams -> do
+    it "allows you to discard a card to redraw a chaos token" . gameTestWith wendyAdams $ \self -> do
       card <- testPlayerCard id
-
-      didPassTest <- didPassSkillTestBy wendyAdams SkillWillpower 0
-
-      pushAndRunAll
-        [ SetChaosTokens [MinusOne]
-        , addToHand (toId wendyAdams) (PlayerCard card)
-        , beginSkillTest wendyAdams SkillWillpower 3
-        ]
-      chooseOnlyOption "start skill test"
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "discard card"
-      chooseOnlyOption "apply results"
-      didPassTest `refShouldBe` True
+      setChaosTokens [MinusOne]
+      self `addToHand` PlayerCard card
+      runSkillTest self #willpower 3
+      useReaction
+      click "discard card"
+      assertPassedSkillTest
 
   context "elder sign" $ do
-    it "gives +0" $ gameTestWith Investigators.wendyAdams $ \wendyAdams -> do
-      didPassTest <- didPassSkillTestBy wendyAdams SkillWillpower 0
+    it "gives +0" . gameTestWith wendyAdams $ \self -> do
+      self.elderSignModifier `shouldReturn` PositiveModifier 0
 
-      pushAndRunAll [SetChaosTokens [ElderSign], beginSkillTest wendyAdams SkillWillpower 4]
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-      didPassTest `refShouldBe` True
-
-    it "automatically succeeds if Wendy's Amulet is in play" $ gameTestWith Investigators.wendyAdams $ \wendyAdams -> do
-      putCardIntoPlay wendyAdams Assets.wendysAmulet
-
-      didPassTest <- didPassSkillTestBy wendyAdams SkillWillpower 4
-
-      pushAndRunAll
-        [ SetChaosTokens [ElderSign]
-        , beginSkillTest wendyAdams SkillWillpower 20
-        ]
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-      didPassTest `refShouldBe` True
+    it "automatically succeeds if Wendy's Amulet is in play" . gameTestWith wendyAdams $ \self -> do
+      -- N.B: We must run the skill test to resolve the effect of the Elder Sign
+      self `putCardIntoPlay` Assets.wendysAmulet
+      setChaosTokens [ElderSign]
+      runSkillTest self #willpower 20
+      assertPassedSkillTest

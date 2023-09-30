@@ -37,6 +37,7 @@ import Arkham.Trait (Trait)
 import Control.Lens (non, over, set)
 import Data.Data
 import Data.Text qualified as T
+import GHC.Records
 
 class
   ( Typeable a
@@ -274,6 +275,9 @@ locationAbility ability = case abilitySource ability of
   _ -> ability
 
 data Location = forall a. IsLocation a => Location a
+
+instance HasField "id" Location LocationId where
+  getField (Location a) = attr locationId a
 
 instance Data Location where
   gunfold _ _ _ = error "gunfold(Location)"

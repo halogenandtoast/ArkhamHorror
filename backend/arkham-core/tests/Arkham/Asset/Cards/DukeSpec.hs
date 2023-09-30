@@ -20,14 +20,14 @@ spec = describe "Duke" $ do
     it "uses a base combat skill of 4 and does +1 damage"
       $ gameTest
       $ \investigator -> do
-        enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
+        enemy <- testEnemyWith ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
         updateInvestigator investigator
           $ \attrs -> attrs {investigatorCombat = 1}
         putCardIntoPlay investigator Assets.duke
         duke <- selectJust $ assetIs Assets.duke
-        location <- testLocation id
+        location <- testLocationWith id
         pushAndRun $ SetChaosTokens [Zero]
-        pushAndRun $ enemySpawn location enemy
+        pushAndRun $ spawnAt enemy location
         pushAndRun $ moveTo investigator location
         [doFight, _] <- field AssetAbilities duke
         pushAndRun $ UseAbility (toId investigator) doFight []
@@ -45,7 +45,7 @@ spec = describe "Duke" $ do
         putCardIntoPlay investigator Assets.duke
         duke <- selectJust $ assetIs Assets.duke
         location <-
-          testLocation
+          testLocationWith
             (\attrs -> attrs {locationShroud = 4, locationTokens = setTokens Clue 1 mempty})
         pushAndRun $ SetChaosTokens [Zero]
         pushAndRun $ moveTo investigator location

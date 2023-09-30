@@ -11,18 +11,15 @@ import Arkham.Investigator.Types (Field (..))
 
 spec :: Spec
 spec = describe "Aquinnah (1)" $ do
-  it "can redirect damage to another enemy at your location" $
-    gameTest $ \investigator -> do
-      enemy1 <-
-        testEnemy
-          ( \attrs ->
-              attrs {Enemy.enemyHealthDamage = 2, Enemy.enemySanityDamage = 1}
-          )
-      enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
+  it "can redirect damage to another enemy at your location"
+    $ gameTest
+    $ \investigator -> do
+      enemy1 <- testEnemyWith \attrs -> attrs {Enemy.enemyHealthDamage = 2, Enemy.enemySanityDamage = 1}
+      enemy2 <- testEnemyWith (Enemy.healthL .~ Static 3)
       putCardIntoPlay investigator Assets.aquinnah1
-      location <- testLocation id
-      pushAndRun $ enemySpawn location enemy1
-      pushAndRun $ enemySpawn location enemy2
+      location <- testLocationWith id
+      pushAndRun $ spawnAt enemy1 location
+      pushAndRun $ spawnAt enemy2 location
       pushAndRun $ moveTo investigator location
       pushAndRun $ enemyAttack investigator enemy1
       chooseOptionMatching

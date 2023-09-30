@@ -16,7 +16,7 @@ spec :: Spec
 spec = do
   describe "Barricade" $ do
     it "should make the current location unenterable by non elites" $ gameTest $ \investigator -> do
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRun $ moveTo investigator location
       putCardIntoPlay investigator Events.barricade
       getModifiers (toTarget location)

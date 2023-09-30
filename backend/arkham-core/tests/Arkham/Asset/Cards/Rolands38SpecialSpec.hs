@@ -1,58 +1,45 @@
-module Arkham.Asset.Cards.Rolands38SpecialSpec (
-  spec,
-) where
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 
-import TestImport hiding (EnemyDamage)
+module Arkham.Asset.Cards.Rolands38SpecialSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
-import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
-import Arkham.Location.Types (LocationAttrs (..))
 import Arkham.Matcher (assetIs)
-import Arkham.Projection
-import Arkham.Token
+import TestImport.New
+
+default (Int)
 
 spec :: Spec
 spec = describe "Roland's .39 Special" $ do
-  it "gives +1 combat and +1 damage" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      \attrs -> attrs {investigatorCombat = 1}
-    putCardIntoPlay investigator Assets.rolands38Special
+  it "gives +1 combat and +1 damage" . gameTest $ \self -> do
+    withProp @"combat" 1 self
+    self `putCardIntoPlay` Assets.rolands38Special
     rolands38Special <- selectJust $ assetIs Assets.rolands38Special
-    enemy <- testEnemy $
-      \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
-    location <- testLocation id
-    pushAndRun $ SetChaosTokens [Zero]
-    pushAndRun $ placedLocation location
-    pushAndRun $ enemySpawn location enemy
-    pushAndRun $ moveTo investigator location
-    [doFight] <- field AssetAbilities rolands38Special
-    pushAndRun $ UseAbility (toId investigator) doFight []
-    chooseOnlyOption "choose enemy"
-    chooseOnlyOption "start skill test"
-    chooseOnlyOption "apply results"
+    enemy <- testEnemy & prop @"fight" 2 & prop @"health" 3
+    location <- testLocation
+    setChaosTokens [Zero]
+    run $ placedLocation location
+    enemy `spawnAt` location
+    self `moveTo` location
+    [doFight] <- rolands38Special.abilities
+    self `useAbility` doFight
+    click "choose enemy"
+    click "start skill test"
+    click "apply results"
+    enemy.damage `shouldReturn` 2
 
-    fieldAssert EnemyDamage (== 2) enemy
-
-  it
-    "gives +3 combat and +1 damage if there are 1 or more clues on your location"
-    $ gameTest
-    $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
-      putCardIntoPlay investigator Assets.rolands38Special
-      rolands38Special <- selectJust $ assetIs Assets.rolands38Special
-      enemy <- testEnemy $
-        \attrs -> attrs {enemyFight = 4, enemyHealth = Static 3}
-      location <- testLocation $ \attrs -> attrs {locationTokens = setTokens Clue 1 mempty}
-      pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ placedLocation location
-      pushAndRun $ enemySpawn location enemy
-      pushAndRun $ moveTo investigator location
-      [doFight] <- field AssetAbilities rolands38Special
-      pushAndRun $ UseAbility (toId investigator) doFight []
-      chooseOnlyOption "choose enemy"
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-      fieldAssert EnemyDamage (== 2) enemy
+  it "gives +3 combat and +1 damage if there are 1 or more clues on your location" . gameTest $ \self -> do
+    withProp @"combat" 1 self
+    self `putCardIntoPlay` Assets.rolands38Special
+    rolands38Special <- selectJust $ assetIs Assets.rolands38Special
+    enemy <- testEnemy & prop @"fight" 4 & prop @"health" 3
+    location <- testLocation & prop @"clues" 1
+    setChaosTokens [Zero]
+    run $ placedLocation location
+    enemy `spawnAt` location
+    self `moveTo` location
+    [doFight] <- rolands38Special.abilities
+    self `useAbility` doFight
+    click "choose enemy"
+    click "start skill test"
+    click "apply results"
+    enemy.damage `shouldReturn` 2

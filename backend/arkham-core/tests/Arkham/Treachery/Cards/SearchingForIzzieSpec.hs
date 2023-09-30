@@ -30,7 +30,7 @@ spec = describe "Searching for Izzie" $ do
 
   it "takes 2 actions and is discarded on a successful investigation" $ gameTest $ \investigator -> do
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
-    location <- testLocation id
+    location <- testLocationWith id
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ SetChaosTokens [Zero]
@@ -59,7 +59,7 @@ spec = describe "Searching for Izzie" $ do
 
   it "causes 1 mental trauma if not discarded" $ gameTest $ \investigator -> do
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
-    location <- testLocation id
+    location <- testLocationWith id
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ loadDeck investigator [searchingForIzzie]

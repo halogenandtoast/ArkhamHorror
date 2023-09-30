@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher
 import Arkham.ScenarioLogKey
 
 newtype KeeperOfTheGreatLibrary = KeeperOfTheGreatLibrary EnemyAttrs

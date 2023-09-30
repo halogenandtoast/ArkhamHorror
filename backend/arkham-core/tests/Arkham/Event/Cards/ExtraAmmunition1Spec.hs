@@ -18,7 +18,7 @@ spec = describe "Extra Ammunition (1)" $ do
     $ gameTest
     $ \investigator -> do
       investigator2 <- addInvestigator Investigators.rolandBanks id
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRunAll
         [ moveTo investigator location
         , moveTo investigator2 location

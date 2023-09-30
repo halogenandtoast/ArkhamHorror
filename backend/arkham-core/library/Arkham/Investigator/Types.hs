@@ -257,6 +257,9 @@ instance HasField "deck" InvestigatorAttrs (Deck PlayerCard) where
 
 data Investigator = forall a. IsInvestigator a => Investigator a
 
+instance HasField "id" Investigator InvestigatorId where
+  getField (Investigator a) = attr investigatorId a
+
 instance Named Investigator where
   toName (Investigator a) = toName (toAttrs a)
 

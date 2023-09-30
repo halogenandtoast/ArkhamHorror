@@ -14,7 +14,7 @@ spec = do
   describe "Cryptic Research 4" $ do
     it "causes the selected investigator to draw 3 cards" $ gameTest $ \investigator -> do
       cards <- testPlayerCards 3
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRunAll
         [ loadDeck investigator cards
         , moveTo investigator location
@@ -29,7 +29,7 @@ spec = do
     it "can select any investigator at the same location" $ gameTest $ \investigator -> do
       investigator2 <- addInvestigator Investigators.rolandBanks id
       cards <- testPlayerCards 3
-      location <- testLocation id
+      location <- testLocationWith id
       pushAndRunAll
         [ loadDeck investigator2 cards
         , moveAllTo location

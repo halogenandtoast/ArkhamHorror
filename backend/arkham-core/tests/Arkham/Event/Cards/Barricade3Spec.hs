@@ -17,7 +17,7 @@ spec = do
       "should make the current location unenterable by non elites and non elites cannot spawn there"
       $ gameTest
       $ \investigator -> do
-        location <- testLocation id
+        location <- testLocationWith id
         pushAndRun $ moveTo investigator location
         putCardIntoPlay investigator Events.barricade3
         getModifiers (toTarget location)
@@ -28,7 +28,7 @@ spec = do
         assert $ selectAny $ eventAt (toId location) <> eventIs Events.barricade3
 
     it "should be discarded if an investigator leaves the location" $ gameTest $ \investigator -> do
-      location <- testLocation id
+      location <- testLocationWith id
       investigator2 <- addInvestigator Investigators.rolandBanks id
       pushAndRun $ moveAllTo location
       putCardIntoPlay investigator Events.barricade3

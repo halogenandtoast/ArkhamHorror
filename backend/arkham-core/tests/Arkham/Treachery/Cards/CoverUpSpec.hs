@@ -9,7 +9,7 @@ import TestImport.New
 default (Int)
 
 spec :: Spec
-spec = fdescribe "Cover Up" $ do
+spec = describe "Cover Up" $ do
   it "starts with 3 clues on it" $ gameTest $ \self -> do
     self `loadDeck` [Cards.coverUp]
     self `drawCards` 1

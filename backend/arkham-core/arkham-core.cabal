@@ -2529,6 +2529,7 @@ test-suite spec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
+      Arkham.Treachery.Cards.HospitalDebtsSpec
       Arkham.Treachery.Cards.MysteriousChantingSpec
       Arkham.Treachery.Cards.RexsCurseSpec
       Arkham.Treachery.Cards.SearchingForIzzieSpec

@@ -34,4 +34,4 @@ spec = do
       getModifiers (toTarget location1)
         `shouldReturn` []
       assert $ selectNone $ eventAt (toId location1) <> eventIs Events.barricade
-      assert $ isInDiscardOf investigator Events.barricade
+      assert $ Events.barricade `isInDiscardOf` investigator

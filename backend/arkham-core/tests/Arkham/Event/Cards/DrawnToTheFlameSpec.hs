@@ -34,4 +34,4 @@ spec = describe "Drawn to the flame" $ do
     chooseFirstOption "apply horror/damage"
     chooseOnlyOption "move to central location"
     fieldAssert InvestigatorClues (== 2) investigator
-    assert $ isInDiscardOf investigator Events.drawnToTheFlame
+    assert $ Events.drawnToTheFlame `isInDiscardOf` investigator

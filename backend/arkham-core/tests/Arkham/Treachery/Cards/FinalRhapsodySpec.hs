@@ -26,4 +26,4 @@ spec = describe "Final Rhapsody" $ do
     chooseFirstOption "take horror"
     fieldAssert InvestigatorDamage (== 3) investigator
     fieldAssert InvestigatorHorror (== 3) investigator
-    assert $ isInDiscardOf investigator Cards.finalRhapsody
+    assert $ Cards.finalRhapsody `isInDiscardOf` investigator

@@ -98,6 +98,9 @@ instance Sourceable a => Sourceable (a `With` b) where
   toSource (a `With` _) = toSource a
   isSource (a `With` _) = isSource a
 
+instance Sourceable TreacheryId where
+  toSource = TreacherySource
+
 instance Sourceable InvestigatorId where
   toSource = InvestigatorSource
 

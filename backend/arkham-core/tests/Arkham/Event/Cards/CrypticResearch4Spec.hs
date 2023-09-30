@@ -22,7 +22,7 @@ spec = do
       putCardIntoPlay investigator Events.crypticResearch4
       chooseOnlyOption "choose self"
 
-      assert $ isInDiscardOf investigator Events.crypticResearch4
+      assert $ Events.crypticResearch4 `isInDiscardOf` investigator
       field InvestigatorHand (toId investigator)
         `shouldMatchListM` map PlayerCard cards
 
@@ -42,6 +42,6 @@ spec = do
               | iid' == toId investigator2 -> True
             _ -> False
         )
-      assert $ isInDiscardOf investigator Events.crypticResearch4
+      assert $ Events.crypticResearch4 `isInDiscardOf` investigator
       field InvestigatorHand (toId investigator2)
         `shouldMatchListM` map PlayerCard cards

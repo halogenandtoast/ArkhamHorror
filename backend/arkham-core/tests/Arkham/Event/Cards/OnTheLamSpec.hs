@@ -1,36 +1,28 @@
-module Arkham.Event.Cards.OnTheLamSpec (
-  spec,
-)
-where
-
-import TestImport
+module Arkham.Event.Cards.OnTheLamSpec (spec) where
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types
-import Arkham.Token
+import TestImport.New
 
 spec :: Spec
 spec = describe "On The Lam" $ do
-  it "prevents non-elite enemies from attacking you until the end of the round" . gameTest $ \investigator -> do
+  it "prevents non-elite enemies from attacking you until the end of the round" . gameTest $ \self -> do
     ref <- createMessageChecker \case
       EnemyAttack {} -> True
       _ -> False
-    updateInvestigator investigator $ \i -> i {investigatorTokens = setTokens Resource 1 mempty}
+    self `gainResources` 1
     onTheLam <- genCard Events.onTheLam
-    location <- testLocationWith id
-    pushAndRunAll
-      [ addToHand (toId investigator) onTheLam
-      , MoveAllTo GameSource (toId location)
-      , BeginTurn (toId investigator)
-      ]
+    location <- testLocation
+    self `addToHand` onTheLam
+    self `moveTo` location
+    run $ BeginTurn (toId self)
     chooseFirstOption "Play on the lam"
-    enemy <- testEnemyWith id
-    pushAndRun $ spawnAt enemy location
-    pushAndRun $ TakeResources (toId investigator) 1 (toSource investigator) True
+    enemy <- testEnemy
+    enemy `spawnAt` location
+    push $ TakeResources (toId self) 1 (toSource self) True
     ref `refShouldBe` False
 
-    pushAndRunAll [ChooseEndTurn (toId investigator), EnemiesAttack]
+    runAll [ChooseEndTurn (toId self), EnemiesAttack]
     ref `refShouldBe` False
 
-    pushAndRunAll [EndRound, EnemiesAttack]
+    runAll [EndRound, EnemiesAttack]
     ref `refShouldBe` True

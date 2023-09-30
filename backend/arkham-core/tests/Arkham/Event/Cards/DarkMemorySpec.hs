@@ -27,7 +27,7 @@ spec = do
         )
       chooseFirstOption "assign first horror"
       chooseFirstOption "assign second horror"
-      assert $ isInDiscardOf investigator Events.darkMemory
+      assert $ Events.darkMemory `isInDiscardOf` investigator
       didAdvanceAgenda `refShouldBe` True
 
     it "is revealed and deals 2 horror if in hand at end of turn" $ gameTest $ \investigator -> do

@@ -16,6 +16,7 @@ import TestImport.Lifted as X hiding (
 import Arkham.Ability.Types
 import Arkham.Asset.Types
 import Arkham.Classes.HasChaosTokenValue
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.GameEnv
@@ -230,3 +231,9 @@ assertHasNoReaction = do
         Nothing -> pure ()
       _ -> pure ()
     _ -> pure ()
+
+drawsCard :: Investigator -> CardDef -> TestAppT ()
+drawsCard i cd = do
+  c <- genCard cd
+  drawing <- Helpers.drawCards (toId i) GameSource 1
+  runAll [PutCardOnTopOfDeck (toId i) (Deck.InvestigatorDeck $ toId i) c, drawing]

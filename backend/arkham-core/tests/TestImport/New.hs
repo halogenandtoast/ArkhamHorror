@@ -205,10 +205,10 @@ asDefs :: (MonoFoldable (t a), HasCardDef (Element (t a))) => TestAppT (t a) -> 
 asDefs action = map toCardDef . toList <$> action
 
 errata :: String -> SpecWith a -> SpecWith a
-errata = context
+errata s = context ("[ERRATA]: " <> s)
 
 faq :: String -> SpecWith a -> SpecWith a
-faq = context
+faq s = context ("[FAQ]: " <> s)
 
 attackedBy :: Investigator -> Enemy -> TestAppT ()
 attackedBy i = run . enemyAttack i

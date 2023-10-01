@@ -209,3 +209,24 @@ errata = context
 
 faq :: String -> SpecWith a -> SpecWith a
 faq = context
+
+attackedBy :: Investigator -> Enemy -> TestAppT ()
+attackedBy i = run . enemyAttack i
+
+assertHasNoReaction :: TestAppT ()
+assertHasNoReaction = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    isReaction = \case
+      AbilityLabel {} -> True
+      _ -> False
+  case mapToList questionMap of
+    [(_, question)] -> case question of
+      ChooseOne msgs -> case find isReaction msgs of
+        Just msg -> expectationFailure $ "expected no reaction, but found " <> show msg
+        Nothing -> pure ()
+      ChooseN _ msgs -> case find isReaction msgs of
+        Just msg -> expectationFailure $ "expected no reaction, but found " <> show msg
+        Nothing -> pure ()
+      _ -> pure ()
+    _ -> pure ()

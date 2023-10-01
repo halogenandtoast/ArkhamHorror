@@ -38,7 +38,8 @@ spec = describe "Roland Banks" $ do
         useReaction -- roland banks reaction
         self.clues `shouldReturn` 1
 
-      it "can only discover if there is a clue on your location" . gameTestWith rolandBanks $ \self -> do
+    faq "can only discover if there is a clue on your location" $ do
+      it "doesn't trigger if there are no clues" . gameTestWith rolandBanks $ \self -> do
         enemy <- testEnemy & prop @"fight" 4 & prop @"health" 1
         location <- testLocation & prop @"clues" 0
         setChaosTokens [Zero]

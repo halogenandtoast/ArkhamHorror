@@ -1,43 +1,27 @@
-module Arkham.Asset.Cards.BeatCopSpec (
-  spec,
-) where
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 
-import TestImport.Lifted hiding (EnemyDamage)
+module Arkham.Asset.Cards.BeatCopSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
-import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
-import Arkham.Helpers.Investigator (modifiedStatsOf)
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
-import Arkham.Matcher
-import Arkham.Projection
+import TestImport.New
+
+default (Int)
 
 spec :: Spec
 spec = describe "Beat Cop" $ do
-  it "gives you +1 combat" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
-      putCardIntoPlay investigator Assets.beatCop
-      stats <-
-        modifiedStatsOf
-          Nothing
-          (toId investigator)
-      combat stats `shouldBe` 2
+  it "gives you +1 combat" . gameTest $ \self -> do
+    withProp @"combat" 0 self
+    self `putCardIntoPlay` Assets.beatCop
+    self.combat `shouldReturn` 1
 
-  it "can be discarded to do 1 damage to an enemy at your location" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
-      putCardIntoPlay investigator Assets.beatCop
-      enemy <- testEnemyWith $
-        \attrs -> attrs {enemyHealth = Static 2}
-      location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ placedLocation location
-      pushAndRun $ spawnAt enemy location
-      pushAndRun $ moveTo investigator location
-      beatCop <- selectJust $ assetIs Assets.beatCop
-      [discardAbility] <- field AssetAbilities beatCop
-      pushAndRun $ UseAbility (toId investigator) discardAbility []
-      fieldAssert EnemyDamage (== 1) enemy
+  it "can be discarded to do 1 damage to an enemy at your location" . gameTest $ \self -> do
+    withProp @"combat" 0 self
+    self `putCardIntoPlay` Assets.beatCop
+    enemy <- testEnemy & prop @"health" 2
+    location <- testLocation
+    setChaosTokens [Zero]
+    run $ placedLocation location
+    enemy `spawnAt` location
+    self `moveTo` location
+    inWindow self $ useFastActionOf Assets.beatCop 1
+    enemy.damage `shouldReturn` 1

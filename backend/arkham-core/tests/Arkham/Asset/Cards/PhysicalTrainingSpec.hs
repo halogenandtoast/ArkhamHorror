@@ -17,8 +17,7 @@ spec = describe "Physical Training" $ do
     run $ beginSkillTest self #willpower 3
     useFastActionOf Assets.physicalTraining 1
     useFastActionOf Assets.physicalTraining 1
-    startSkillTest
-    self.skillValue `shouldReturn` 2
+    self.willpower `shouldReturn` 2
 
   it "Adds 1 to combat check for each resource spent" $ gameTest $ \self -> do
     withProp @"combat" 0 self
@@ -28,5 +27,4 @@ spec = describe "Physical Training" $ do
     run $ beginSkillTest self #combat 3
     useFastActionOf Assets.physicalTraining 2
     useFastActionOf Assets.physicalTraining 2
-    startSkillTest
-    self.skillValue `shouldReturn` 2
+    self.combat `shouldReturn` 2

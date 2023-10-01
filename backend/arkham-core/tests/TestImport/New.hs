@@ -74,7 +74,7 @@ useFastActionOf :: (HasCallStack, HasCardDef a) => a -> Int -> TestAppT ()
 useFastActionOf (toCardDef -> def) idx = do
   msource <- AssetSource <$$> selectOne (Matcher.assetIs def)
   case msource of
-    Nothing -> error $ "could not find source, make sure it is in the query above"
+    Nothing -> error "could not find source, make sure it is in the query above"
     Just source -> chooseOptionMatching "use fast action" \case
       AbilityLabel {ability} -> abilityIndex ability == idx && abilitySource ability == source
       _ -> False
@@ -119,10 +119,10 @@ instance HasField "deck" Investigator (TestAppT (Deck PlayerCard)) where
   getField = field InvestigatorDeck . toEntityId
 
 instance HasField "willpower" Investigator (TestAppT Int) where
-  getField = Helpers.skillValueFor #willpower Nothing [] . toId
+  getField i = willpower <$> Helpers.modifiedStatsOf Nothing (toId i)
 
 instance HasField "combat" Investigator (TestAppT Int) where
-  getField = Helpers.skillValueFor #combat Nothing [] . toId
+  getField i = combat <$> Helpers.modifiedStatsOf Nothing (toId i)
 
 instance HasField "clues" Investigator (TestAppT Int) where
   getField = field InvestigatorClues . toEntityId
@@ -260,3 +260,8 @@ startSkillTest :: TestAppT ()
 startSkillTest = chooseOptionMatching "start skill test" \case
   StartSkillTestButton {} -> True
   _ -> False
+
+inWindow :: Investigator -> TestAppT () -> TestAppT ()
+inWindow self body = do
+  run $ CheckWindow [toId self] (defaultWindows $ toId self)
+  body

@@ -269,6 +269,9 @@ withProp b a = void $ prop @s b (getInvestigator $ toId a)
 instance UpdateField "combat" Investigator Int where
   updateField combat = pure . overAttrs (\attrs -> attrs {investigatorCombat = combat})
 
+instance UpdateField "willpower" Investigator Int where
+  updateField willpower = pure . overAttrs (\attrs -> attrs {investigatorWillpower = willpower})
+
 instance UpdateField "deck" Investigator [CardDef] where
   updateField defs i = do
     cards <- traverse genPlayerCard defs

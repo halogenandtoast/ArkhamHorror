@@ -20,10 +20,12 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.GameEnv
+import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types
 import Arkham.Location.Types
+import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillTest.Runner
@@ -67,6 +69,16 @@ useReaction = chooseOptionMatching "use reaction ability" \case
   AbilityLabel {} -> True
   _ -> False
 
+-- N.B. This won't work for multiple assets for the same card type
+useFastActionOf :: (HasCallStack, HasCardDef a) => a -> Int -> TestAppT ()
+useFastActionOf (toCardDef -> def) idx = do
+  msource <- AssetSource <$$> selectOne (Matcher.assetIs def)
+  case msource of
+    Nothing -> error $ "could not find source, make sure it is in the query above"
+    Just source -> chooseOptionMatching "use fast action" \case
+      AbilityLabel {ability} -> abilityIndex ability == idx && abilitySource ability == source
+      _ -> False
+
 useForcedAbility :: HasCallStack => TestAppT ()
 useForcedAbility = chooseOptionMatching "use forced ability" \case
   AbilityLabel {} -> True
@@ -105,6 +117,12 @@ instance HasField "discard" Investigator (TestAppT [PlayerCard]) where
 
 instance HasField "deck" Investigator (TestAppT (Deck PlayerCard)) where
   getField = field InvestigatorDeck . toEntityId
+
+instance HasField "willpower" Investigator (TestAppT Int) where
+  getField = Helpers.skillValueFor #willpower Nothing [] . toId
+
+instance HasField "combat" Investigator (TestAppT Int) where
+  getField = Helpers.skillValueFor #combat Nothing [] . toId
 
 instance HasField "clues" Investigator (TestAppT Int) where
   getField = field InvestigatorClues . toEntityId
@@ -237,3 +255,8 @@ drawsCard i cd = do
   c <- genCard cd
   drawing <- Helpers.drawCards (toId i) GameSource 1
   runAll [PutCardOnTopOfDeck (toId i) (Deck.InvestigatorDeck $ toId i) c, drawing]
+
+startSkillTest :: TestAppT ()
+startSkillTest = chooseOptionMatching "start skill test" \case
+  StartSkillTestButton {} -> True
+  _ -> False

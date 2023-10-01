@@ -295,6 +295,9 @@ instance UpdateField "fight" Enemy Int where
 instance UpdateField "health" Enemy Int where
   updateField health = pure . overAttrs (\attrs -> attrs {enemyHealth = Static health})
 
+instance UpdateField "healthDamage" Enemy Int where
+  updateField damage = pure . overAttrs (\attrs -> attrs {enemyHealthDamage = damage})
+
 instance UpdateField "clues" Location Int where
   updateField clues =
     pure
@@ -724,3 +727,12 @@ duringRound body = do
   run BeginRound
   body
   run EndRound
+
+assignDamageTo :: Sourceable source => Investigator -> source -> TestAppT ()
+assignDamageTo _ (toSource -> source) = case source of
+  AssetSource aid -> chooseOptionMatching "assign to asset" $ \case
+    ComponentLabel component _ -> case component of
+      AssetComponent aid' _ -> aid == aid'
+      _ -> False
+    _ -> False
+  _ -> error "unhandled source, consider adding it to assignDamageTo"

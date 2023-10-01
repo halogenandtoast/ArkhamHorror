@@ -1,40 +1,37 @@
-module Arkham.Asset.Cards.FirstAidSpec (
-  spec,
-) where
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 
-import TestImport.Lifted hiding (Damage, InvestigatorDamage)
+module Arkham.Asset.Cards.FirstAidSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
 import Arkham.Investigator.Cards (daisyWalker, rolandBanks)
-import Arkham.Investigator.Types (Field (..), tokensL)
+import Arkham.Investigator.Types (tokensL)
 import Arkham.Matcher (assetIs)
-import Arkham.Projection
 import Arkham.Token
+import TestImport.New
+
+default (Int)
 
 spec :: Spec
 spec = describe "First Aid" $ do
   it
     "uses a supply and heals 1 damage or horror from an investigator at your location"
-    $ gameTest
-    $ \investigator -> do
-      updateInvestigator investigator (tokensL %~ setTokens Damage 1)
+    . gameTest
+    $ \self -> do
+      withProp @"damage" 1 self
       investigator2 <- addInvestigator rolandBanks (tokensL %~ setTokens Horror 1)
       investigator3 <- addInvestigator daisyWalker (tokensL %~ setTokens Horror 1)
-      putCardIntoPlay investigator Assets.firstAid
+      self `putCardIntoPlay` Assets.firstAid
       firstAid <- selectJust $ assetIs Assets.firstAid
       (location1, location2) <- testConnectedLocations id id
-      pushAndRun $ moveTo investigator location1
-      pushAndRun $ moveTo investigator2 location1
-      pushAndRun $ moveTo investigator3 location2
-      [useFirstAid] <- field AssetAbilities firstAid
-      pushAndRun $ UseAbility (toId investigator) useFirstAid []
-      chooseOptionMatching "choose self" $ \case
-        TargetLabel (InvestigatorTarget iid) _ ->
-          iid == toId investigator
-        _ -> False
-      pushAndRun $ UseAbility (toId investigator) useFirstAid []
-      chooseOnlyOption "choose investigator at same location"
-      fieldAssert InvestigatorDamage (== 0) investigator
-      fieldAssert InvestigatorHorror (== 0) investigator2
-      fieldAssert InvestigatorHorror (== 1) investigator3
+      self `moveTo` location1
+      investigator2 `moveTo` location1
+      investigator3 `moveTo` location2
+      [useFirstAid] <- firstAid.abilities
+      self `useAbility` useFirstAid
+      chooseTarget self
+      self.damage `shouldReturn` 0
+      investigator2.horror `shouldReturn` 1
+      self `useAbility` useFirstAid
+      chooseTarget investigator2
+      investigator2.horror `shouldReturn` 0
+      investigator3.horror `shouldReturn` 1

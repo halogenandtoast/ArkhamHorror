@@ -24,6 +24,7 @@ import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types
+import Arkham.Investigator.Types qualified as Field
 import Arkham.Location.Types
 import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
@@ -178,6 +179,9 @@ instance HasField "horror" Investigator (TestAppT Int) where
 instance HasField "damage" Enemy (TestAppT Int) where
   getField = field Field.EnemyDamage . toEntityId
 
+instance HasField "damage" Investigator (TestAppT Int) where
+  getField = field Field.InvestigatorDamage . toEntityId
+
 addHorror :: Investigator -> Int -> TestAppT ()
 addHorror i n = do
   run $ InvestigatorDirectDamage (toId i) (TestSource mempty) 0 n
@@ -265,3 +269,9 @@ inWindow :: Investigator -> TestAppT () -> TestAppT ()
 inWindow self body = do
   run $ CheckWindow [toId self] (defaultWindows $ toId self)
   body
+
+chooseTarget :: Targetable target => target -> TestAppT ()
+chooseTarget (toTarget -> target) =
+  chooseOptionMatching "choose self" \case
+    TargetLabel target' _ -> target == target'
+    _ -> False

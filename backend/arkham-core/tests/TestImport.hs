@@ -310,6 +310,9 @@ instance UpdateField "clues" Location Int where
 instance UpdateField "shroud" Location Int where
   updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = shroud})
 
+instance UpdateField "damage" Investigator Int where
+  updateField damage = pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens #damage damage)
+
 testEnemy :: TestAppT Enemy
 testEnemy = testEnemyWithDef Cards.swarmOfRats id
 

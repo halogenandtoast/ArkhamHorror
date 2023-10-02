@@ -1,35 +1,22 @@
-module Arkham.Asset.Cards.FortyFiveAutomaticSpec (
-  spec,
-) where
-
-import TestImport hiding (EnemyDamage)
+module Arkham.Asset.Cards.FortyFiveAutomaticSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
-import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
-import Arkham.Matcher (assetIs)
-import Arkham.Projection
+import TestImport.New
 
 spec :: Spec
 spec = describe ".45 Automatic" $ do
-  it "gives +1 combat and +1 damage" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorCombat = 1}
-      putCardIntoPlay investigator Assets.fortyFiveAutomatic
-      fortyFiveAutomatic <- selectJust $ assetIs Assets.fortyFiveAutomatic
-      enemy <- testEnemyWith $
-        \attrs -> attrs {enemyFight = 2, enemyHealth = Static 3}
-      location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ placedLocation location
-      pushAndRun $ spawnAt enemy location
-      pushAndRun $ moveTo investigator location
-      [doFight] <- field AssetAbilities fortyFiveAutomatic
-      pushAndRun $ UseAbility (toId investigator) doFight []
-      chooseOnlyOption "choose enemy"
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-
-      fieldAssert EnemyDamage (== 2) enemy
+  it "gives +1 combat and +1 damage" . gameTest $ \self -> do
+    withProp @"combat" 1 self
+    fortyFiveAutomatic <- self `putAssetIntoPlay` Assets.fortyFiveAutomatic
+    enemy <- testEnemy & prop @"fight" 2 & prop @"health" 3
+    location <- testLocation
+    setChaosTokens [Zero]
+    run $ placedLocation location
+    enemy `spawnAt` location
+    self `moveTo` location
+    [doFight] <- fortyFiveAutomatic.abilities
+    self `useAbility` doFight
+    chooseOnlyOption "choose enemy"
+    chooseOnlyOption "start skill test"
+    chooseOnlyOption "apply results"
+    enemy.damage `shouldReturn` 2

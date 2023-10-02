@@ -16,8 +16,8 @@ spec = describe "Wendy's Amulet" $ do
     context "after you play an event" $ do
       it "places it on the bottom of you deck instead of in your discard" . gameTest $ \self -> do
         emergencyCache <- genCard Events.emergencyCache
-        withProp @"deck" [Assets.flashlight] self
-        withProp @"hand" [emergencyCache] self
+        self `withDeck` [Assets.flashlight]
+        self `addToHand` emergencyCache
         self `putCardIntoPlay` Assets.wendysAmulet
         self `playCard` emergencyCache
         -- useForcedAbility -- TODO: apparently after play should be before putting into discard
@@ -28,8 +28,8 @@ spec = describe "Wendy's Amulet" $ do
       it "places it on the bottom of you deck instead of in your discard" . gameTest $ \self -> do
         (location1, location2) <- testConnectedLocations id id
         barricade <- genCard Events.barricade
-        withProp @"deck" [Assets.flashlight] self
-        withProp @"hand" [barricade] self
+        self `withDeck` [Assets.flashlight]
+        self `addToHand` barricade
         self `moveTo` location1
         self `putCardIntoPlay` Assets.wendysAmulet
         self `playCard` barricade

@@ -1,20 +1,14 @@
-{-# OPTIONS_GHC -Wno-type-defaults #-}
-
 module Arkham.Treachery.Cards.HospitalDebtsSpec (spec) where
 
-import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Treacheries
 import TestImport.New
-
-default (Int)
 
 spec :: Spec
 spec = describe "Hospital Debts" $ do
   context "free ability" $ do
     it "can be used twice per round" . gameTest $ \self -> do
       self `gainResources` 3
-      self `putCardIntoPlay` Treacheries.hospitalDebts
-      hospitalDebts <- selectJust $ treacheryIs Treacheries.hospitalDebts
+      hospitalDebts <- self `putTreacheryIntoPlay` Treacheries.hospitalDebts
       duringRound $ do
         [ability1] <- self `getActionsFrom` hospitalDebts
         self `useAbility` ability1
@@ -26,8 +20,7 @@ spec = describe "Hospital Debts" $ do
 
     it "moves 1 resource to it" . gameTest $ \self -> do
       self `gainResources` 3
-      self `putCardIntoPlay` Treacheries.hospitalDebts
-      hospitalDebts <- selectJust $ treacheryIs Treacheries.hospitalDebts
+      hospitalDebts <- self `putTreacheryIntoPlay` Treacheries.hospitalDebts
       duringRound $ do
         [ability1] <- self `getActionsFrom` hospitalDebts
         self `useAbility` ability1
@@ -46,8 +39,7 @@ spec = describe "Hospital Debts" $ do
 
     context "with 6 or more resources on it" $ do
       it "does not cause you to earn 2 fewer experience" . gameTest $ \self -> do
-        self `putCardIntoPlay` Treacheries.hospitalDebts
-        hospitalDebts <- selectJust $ treacheryIs Treacheries.hospitalDebts
+        hospitalDebts <- self `putTreacheryIntoPlay` Treacheries.hospitalDebts
         run $ PlaceTokens GameSource (toTarget hospitalDebts) #resource 6
         run $ EndOfGame Nothing
         self `getActionsFrom` hospitalDebts `shouldReturn` []

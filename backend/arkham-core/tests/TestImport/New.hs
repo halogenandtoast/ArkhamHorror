@@ -5,6 +5,8 @@ module TestImport.New (module TestImport.New, module X) where
 import TestImport.Lifted as X hiding (
   addToHand,
   drawCards,
+  duringTurn,
+  evadedBy,
   fightEnemy,
   investigate,
   loadDeck,
@@ -15,6 +17,7 @@ import TestImport.Lifted as X hiding (
 
 import Arkham.Ability.Types
 import Arkham.Asset.Types
+import Arkham.Asset.Uses
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types
@@ -26,7 +29,6 @@ import Arkham.Investigate.Types
 import Arkham.Investigator.Types
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Location.Types
-import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillTest.Runner
@@ -35,11 +37,12 @@ import Arkham.Treachery.Types
 import Arkham.Window (defaultWindows)
 import GHC.Records
 import Helpers.Message qualified
+import TestImport.Lifted qualified as Old
 
 discard :: Targetable a => a -> TestAppT ()
 discard = run . Discard GameSource . toTarget
 
-click :: String -> TestAppT ()
+click :: HasCallStack => String -> TestAppT ()
 click = chooseOnlyOption
 
 loadDeck :: Investigator -> [CardDef] -> TestAppT ()
@@ -71,14 +74,10 @@ useReaction = chooseOptionMatching "use reaction ability" \case
   _ -> False
 
 -- N.B. This won't work for multiple assets for the same card type
-useFastActionOf :: (HasCallStack, HasCardDef a) => a -> Int -> TestAppT ()
-useFastActionOf (toCardDef -> def) idx = do
-  msource <- AssetSource <$$> selectOne (Matcher.assetIs def)
-  case msource of
-    Nothing -> error "could not find source, make sure it is in the query above"
-    Just source -> chooseOptionMatching "use fast action" \case
-      AbilityLabel {ability} -> abilityIndex ability == idx && abilitySource ability == source
-      _ -> False
+useFastActionOf :: (HasCallStack, Sourceable source) => source -> Int -> TestAppT ()
+useFastActionOf (toSource -> source) idx = chooseOptionMatching "use fast action" \case
+  AbilityLabel {ability} -> abilityIndex ability == idx && abilitySource ability == source
+  _ -> False
 
 useForcedAbility :: HasCallStack => TestAppT ()
 useForcedAbility = chooseOptionMatching "use forced ability" \case
@@ -169,6 +168,9 @@ instance HasField "abilities" TreacheryId (TestAppT [Ability]) where
 
 instance HasField "horror" AssetId (TestAppT Int) where
   getField = field AssetHorror
+
+instance HasField "uses" AssetId (TestAppT (Uses Int)) where
+  getField = field AssetUses
 
 instance HasField "skillValue" Investigator (TestAppT Int) where
   getField _ = getJustSkillTest >>= totalModifiedSkillValue
@@ -275,3 +277,18 @@ chooseTarget (toTarget -> target) =
   chooseOptionMatching "choose self" \case
     TargetLabel target' _ -> target == target'
     _ -> False
+
+evadedBy :: Enemy -> Investigator -> TestAppT Bool
+evadedBy enemy' _investigator = fieldP EnemyEngagedInvestigators null (toId enemy')
+
+takeResource :: Investigator -> TestAppT ()
+takeResource self = run $ TakeResources (toId self) 1 (toSource self) True
+
+duringTurn :: Investigator -> TestAppT () -> TestAppT ()
+duringTurn self body = do
+  run $ BeginTurn (toId self)
+  body
+  run $ ChooseEndTurn (toId self)
+
+duringTurnWindow :: Investigator -> Window
+duringTurnWindow = Old.duringTurn . toId

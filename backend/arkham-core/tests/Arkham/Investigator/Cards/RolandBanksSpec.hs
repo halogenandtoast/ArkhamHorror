@@ -1,13 +1,8 @@
-{-# OPTIONS_GHC -Wno-type-defaults #-}
-
 module Arkham.Investigator.Cards.RolandBanksSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards (rolandBanks)
-import Arkham.Matcher (assetIs)
 import TestImport.New
-
-default (Int)
 
 spec :: Spec
 spec = describe "Roland Banks" $ do
@@ -28,8 +23,7 @@ spec = describe "Roland Banks" $ do
       it "reaction discovers a clue at your location" . gameTestWith rolandBanks $ \self -> do
         enemy <- testEnemy & prop @"health" 1 & prop @"healthDamage" 1
         location <- testLocation & prop @"clues" 1
-        self `putCardIntoPlay` Assets.guardDog
-        guardDog <- selectJust $ assetIs Assets.guardDog
+        guardDog <- self `putAssetIntoPlay` Assets.guardDog
         enemy `spawnAt` location
         self `moveTo` location
         self `attackedBy` enemy

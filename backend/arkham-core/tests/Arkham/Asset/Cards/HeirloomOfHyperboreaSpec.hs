@@ -1,11 +1,7 @@
-{-# OPTIONS_GHC -Wno-type-defaults #-}
-
 module Arkham.Asset.Cards.HeirloomOfHyperboreaSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import TestImport.New
-
-default (Int)
 
 spec :: Spec
 spec = describe "Heirloom of Hyperborea" $ do
@@ -18,4 +14,4 @@ spec = describe "Heirloom of Hyperborea" $ do
       withProp @"hand" [shrivelling] self
       self `playCard` shrivelling
       useReaction
-      self.hand `shouldSatisfyM` ((== [Assets.flashlight]) . map toCardDef)
+      asDefs self.hand `shouldReturn` [Assets.flashlight]

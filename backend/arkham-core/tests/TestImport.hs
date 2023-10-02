@@ -43,7 +43,7 @@ import Control.Monad.Fail as X
 import Control.Monad.State as X (get)
 import Data.Maybe as X (fromJust)
 import Data.UUID.V4 as X
-import Helpers.Message as X
+import Helpers.Message as X hiding (playEvent)
 import Test.Hspec as X
 
 import Arkham.ActiveCost
@@ -79,6 +79,7 @@ import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 import Data.These
+import GHC.OverloadedLabels
 import GHC.TypeLits
 import System.Random (StdGen, mkStdGen)
 
@@ -249,7 +250,7 @@ instance TestHasHealth Enemy where
     this <- action
     updateThis this $ \attrs -> attrs {enemyHealth = Static health}
 
-class UpdateField (s :: Symbol) a b where
+class UpdateField (s :: Symbol) a b | s a -> b where
   updateField :: b -> a -> TestAppT a
 
 prop :: forall (s :: Symbol) b a. (TestUpdate a, UpdateField s a b) => b -> TestAppT a -> TestAppT a
@@ -266,19 +267,20 @@ withProp
   -> TestAppT ()
 withProp b a = void $ prop @s b (getInvestigator $ toId a)
 
+withProps :: Investigator -> (TestAppT Investigator -> TestAppT Investigator) -> TestAppT ()
+withProps self props = void $ pure self & props
+
+instance IsLabel "willpower" (Int -> Investigator -> TestAppT Investigator) where
+  fromLabel n s = pure s & prop @"willpower" n
+
 instance UpdateField "combat" Investigator Int where
   updateField combat = pure . overAttrs (\attrs -> attrs {investigatorCombat = combat})
 
 instance UpdateField "willpower" Investigator Int where
   updateField willpower = pure . overAttrs (\attrs -> attrs {investigatorWillpower = willpower})
 
-instance UpdateField "deck" Investigator [CardDef] where
-  updateField defs i = do
-    cards <- traverse genPlayerCard defs
-    pure $ overAttrs (\attrs -> attrs {investigatorDeck = Deck cards}) i
-
-instance UpdateField "deck" Investigator [PlayerCard] where
-  updateField cards = pure . overAttrs (\attrs -> attrs {investigatorDeck = Deck cards})
+instance UpdateField "deck" Investigator (Deck PlayerCard) where
+  updateField cards = pure . overAttrs (\attrs -> attrs {investigatorDeck = cards})
 
 instance UpdateField "hand" Investigator [Card] where
   updateField cards = pure . overAttrs (\attrs -> attrs {investigatorHand = cards})
@@ -301,6 +303,12 @@ instance UpdateField "health" Enemy Int where
 instance UpdateField "healthDamage" Enemy Int where
   updateField damage = pure . overAttrs (\attrs -> attrs {enemyHealthDamage = damage})
 
+instance UpdateField "exhausted" Enemy Bool where
+  updateField isExhausted = pure . overAttrs (\attrs -> attrs {enemyExhausted = isExhausted})
+
+exhausted :: forall a. (TestUpdate a, UpdateField "exhausted" a Bool) => TestAppT a -> TestAppT a
+exhausted = prop @"exhausted" True
+
 instance UpdateField "clues" Location Int where
   updateField clues =
     pure
@@ -312,6 +320,9 @@ instance UpdateField "shroud" Location Int where
 
 instance UpdateField "damage" Investigator Int where
   updateField damage = pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens #damage damage)
+
+instance UpdateField "horror" Investigator Int where
+  updateField horror = pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens #horror horror)
 
 testEnemy :: TestAppT Enemy
 testEnemy = testEnemyWithDef Cards.swarmOfRats id
@@ -392,28 +403,25 @@ testLocationWithDef def attrsF = do
   runReaderT (overGame (entitiesL . Entities.locationsL %~ insertEntity location')) env
   pure location'
 
+testInvestigator
+  :: MonadIO m
+  => CardDef
+  -> m Investigator
+testInvestigator cardDef =
+  pure $ lookupInvestigator (InvestigatorId $ toCardCode cardDef)
+
 {- | We use Jenny Barnes because here abilities are the least
 disruptive during tests since they won't add extra windows
 or abilities
 -}
-testInvestigator
-  :: MonadIO m
-  => CardDef
-  -> (InvestigatorAttrs -> InvestigatorAttrs)
-  -> m Investigator
-testInvestigator cardDef f =
-  pure $ overAttrs f $ lookupInvestigator (InvestigatorId $ toCardCode cardDef)
-
-testJenny
-  :: MonadIO m => (InvestigatorAttrs -> InvestigatorAttrs) -> m Investigator
+testJenny :: MonadIO m => m Investigator
 testJenny = testInvestigator Investigators.jennyBarnes
 
 addInvestigator
   :: CardDef
-  -> (InvestigatorAttrs -> InvestigatorAttrs)
   -> TestAppT Investigator
-addInvestigator defF attrsF = do
-  investigator' <- testInvestigator defF attrsF
+addInvestigator defF = do
+  investigator' <- testInvestigator defF
   env <- get
   runReaderT (overGame (entitiesL . Entities.investigatorsL %~ insertEntity investigator')) env
   pure investigator'
@@ -571,7 +579,7 @@ gameTest = gameTestWith Investigators.jennyBarnes
 
 gameTestWith :: CardDef -> (Investigator -> TestAppT ()) -> IO ()
 gameTestWith investigatorDef body = do
-  investigator <- testInvestigator investigatorDef id
+  investigator <- testInvestigator investigatorDef
   g <- newGame investigator
   gameRef <- newIORef g
   queueRef <- newQueue []
@@ -721,6 +729,29 @@ putCardIntoPlay i (toCardDef -> def) = do
       other -> other
   pushAndRun $ PutCardIntoPlay (toId i) card' Nothing []
 
+playEvent :: HasCardDef def => Investigator -> def -> TestAppT ()
+playEvent = putCardIntoPlay
+
+putAssetIntoPlay :: HasCardDef def => Investigator -> def -> TestAppT AssetId
+putAssetIntoPlay i (toCardDef -> def) = do
+  card <- genCard def
+  let
+    card' = case card of
+      PlayerCard pc -> PlayerCard $ pc {pcOwner = Just $ toId i}
+      other -> other
+  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing []
+  selectJust $ AssetWithCardId (toCardId card)
+
+putTreacheryIntoPlay :: HasCardDef def => Investigator -> def -> TestAppT TreacheryId
+putTreacheryIntoPlay i (toCardDef -> def) = do
+  card <- genCard def
+  let
+    card' = case card of
+      PlayerCard pc -> PlayerCard $ pc {pcOwner = Just $ toId i}
+      other -> other
+  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing []
+  selectJust $ TreacheryWithCardId (toCardId card)
+
 updateInvestigator :: Investigator -> (InvestigatorAttrs -> InvestigatorAttrs) -> TestAppT ()
 updateInvestigator i f = do
   env <- get
@@ -742,3 +773,13 @@ assignDamageTo _ (toSource -> source) = case source of
       _ -> False
     _ -> False
   _ -> error "unhandled source, consider adding it to assignDamageTo"
+
+withDeck :: HasCardDef a => Investigator -> [a] -> TestAppT ()
+withDeck self cs = do
+  deck <- Deck <$> traverse genPlayerCard cs
+  withProp @"deck" deck self
+
+withHand :: HasCardDef a => Investigator -> [a] -> TestAppT ()
+withHand self cs = do
+  hand <- traverse genCard cs
+  withProp @"hand" hand self

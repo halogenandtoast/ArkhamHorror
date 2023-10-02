@@ -1,56 +1,45 @@
-module Arkham.Event.Cards.DynamiteBlastSpec (
-  spec,
-) where
+module Arkham.Event.Cards.DynamiteBlastSpec (spec) where
 
-import TestImport hiding (EnemyDamage, InvestigatorDamage)
-
-import Arkham.Enemy.Types (Field (..), healthL)
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
+import TestImport.New
 
 spec :: Spec
 spec = describe "Dynamite Blast" $ do
-  it "does 3 damage to each enemy and investigator at your location" $ gameTest $ \investigator -> do
-    investigator2 <- addInvestigator Investigators.rolandBanks id
-    enemy1 <- testEnemyWith (healthL .~ Static 4)
-    enemy2 <- testEnemyWith (healthL .~ Static 4)
-    location <- testLocationWith id
-    pushAndRunAll
-      [ spawnAt enemy1 location
-      , spawnAt enemy2 location
-      , moveTo investigator location
-      , moveTo investigator2 location
-      ]
-    putCardIntoPlay investigator Events.dynamiteBlast
-    chooseOnlyOption "choose your location"
-    replicateM_ 3 $ chooseOnlyOption "assign Damage"
-    replicateM_ 3 $ chooseOnlyOption "assign Damage"
-    fieldAssert EnemyDamage (== 3) enemy1
-    fieldAssert EnemyDamage (== 3) enemy2
-    fieldAssert InvestigatorDamage (== 3) investigator
-    fieldAssert InvestigatorDamage (== 3) investigator2
+  it "does 3 damage to each enemy and investigator at your location" $ gameTest $ \self -> do
+    investigator2 <- addInvestigator Investigators.rolandBanks
+    enemy1 <- testEnemy & prop @"health" 4
+    enemy2 <- testEnemy & prop @"health" 4
+    location <- testLocation
+    enemy1 `spawnAt` location
+    enemy2 `spawnAt` location
+    self `moveTo` location
+    investigator2 `moveTo` location
+    self `putCardIntoPlay` Events.dynamiteBlast
+    click "choose your location"
+    replicateM_ 3 $ click "assign Damage"
+    replicateM_ 3 $ click "assign Damage"
+    enemy1.damage `shouldReturn` 3
+    enemy2.damage `shouldReturn` 3
+    self.damage `shouldReturn` 3
+    investigator2.damage `shouldReturn` 3
 
   it
     "does 3 damage to each enemy and investigator at a connected location"
     $ gameTest
-    $ \investigator -> do
-      investigator2 <- addInvestigator Investigators.rolandBanks id
-      enemy1 <- testEnemyWith (healthL .~ Static 4)
-      enemy2 <- testEnemyWith (healthL .~ Static 4)
+    $ \self -> do
+      investigator2 <- addInvestigator Investigators.rolandBanks
+      enemy1 <- testEnemy & prop @"health" 4
+      enemy2 <- testEnemy & prop @"health" 4
       (location1, location2) <- testConnectedLocations id id
-      pushAndRunAll
-        [ spawnAt enemy1 location1
-        , spawnAt enemy2 location2
-        , moveTo investigator location1
-        , moveTo investigator2 location2
-        ]
-      putCardIntoPlay investigator Events.dynamiteBlast
-      chooseOptionMatching "choose connected location" $ \case
-        TargetLabel (LocationTarget lid) _ -> lid == toId location2
-        _ -> False
-      replicateM_ 3 $ chooseOnlyOption "assign Damage"
-      fieldAssert EnemyDamage (== 0) enemy1
-      fieldAssert EnemyDamage (== 3) enemy2
-      fieldAssert InvestigatorDamage (== 0) investigator
-      fieldAssert InvestigatorDamage (== 3) investigator2
+      enemy1 `spawnAt` location1
+      enemy2 `spawnAt` location2
+      self `moveTo` location1
+      investigator2 `moveTo` location2
+      self `putCardIntoPlay` Events.dynamiteBlast
+      chooseTarget location2
+      replicateM_ 3 $ click "assign Damage"
+      enemy1.damage `shouldReturn` 0
+      enemy2.damage `shouldReturn` 3
+      self.damage `shouldReturn` 0
+      investigator2.damage `shouldReturn` 3

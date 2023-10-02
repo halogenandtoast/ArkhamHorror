@@ -1,29 +1,19 @@
-module Arkham.Event.Cards.ExtraAmmunition1Spec (
-  spec,
-) where
-
-import TestImport
+module Arkham.Event.Cards.ExtraAmmunition1Spec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Uses
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Matcher (assetIs)
+import TestImport.New
 
 spec :: Spec
 spec = describe "Extra Ammunition (1)" $ do
-  it
-    "places 3 ammunition on a firearm asset controlled by an investigator at your location"
-    $ gameTest
-    $ \investigator -> do
-      investigator2 <- addInvestigator Investigators.rolandBanks id
-      location <- testLocationWith id
-      pushAndRunAll
-        [ moveTo investigator location
-        , moveTo investigator2 location
-        ]
-      putCardIntoPlay investigator Assets.fortyFiveAutomatic
-      putCardIntoPlay investigator Events.extraAmmunition1
-      fortyFiveAutomatic <- selectJust $ assetIs Assets.fortyFiveAutomatic
-      fieldAssert AssetUses (== Uses Ammo 7) fortyFiveAutomatic
+  it "places 3 ammunition on a firearm asset controlled by an investigator at your location" . gameTest $ \self -> do
+    investigator2 <- addInvestigator Investigators.rolandBanks
+    location <- testLocationWith id
+    self `moveTo` location
+    investigator2 `moveTo` location
+    fortyFiveAutomatic <- self `putAssetIntoPlay` Assets.fortyFiveAutomatic
+    fortyFiveAutomatic.uses `shouldReturn` Uses Ammo 4
+    self `playEvent` Events.extraAmmunition1
+    fortyFiveAutomatic.uses `shouldReturn` Uses Ammo 7

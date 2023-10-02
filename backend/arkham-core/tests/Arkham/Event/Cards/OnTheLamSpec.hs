@@ -9,20 +9,21 @@ spec = describe "On The Lam" $ do
     ref <- createMessageChecker \case
       EnemyAttack {} -> True
       _ -> False
-    self `gainResources` 1
-    onTheLam <- genCard Events.onTheLam
+    withProp @"resources" 1 self
     location <- testLocation
-    self `addToHand` onTheLam
-    self `moveTo` location
-    run $ BeginTurn (toId self)
-    chooseFirstOption "Play on the lam"
     enemy <- testEnemy
     enemy `spawnAt` location
-    push $ TakeResources (toId self) 1 (toSource self) True
-    ref `refShouldBe` False
+    self `withHand` [Events.onTheLam]
+    self `moveTo` location
 
-    runAll [ChooseEndTurn (toId self), EnemiesAttack]
-    ref `refShouldBe` False
+    duringRound $ do
+      duringTurn self $ do
+        chooseFirstOption "Play on the lam"
+        takeResource self
+        ref `refShouldBe` False
 
-    runAll [EndRound, EnemiesAttack]
+      run EnemiesAttack
+      ref `refShouldBe` False
+
+    run EnemiesAttack
     ref `refShouldBe` True

@@ -1,114 +1,71 @@
-module Arkham.Asset.Cards.JimsTrumpetSpec (
-  spec,
-) where
-
-import TestImport
+module Arkham.Asset.Cards.JimsTrumpetSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Token
+import TestImport.New
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do
   context "allows you to heal one horror when skull is revealed" $ do
-    it "on yourself" $ gameTest $ \investigator -> do
-      updateInvestigator investigator (Investigator.tokensL %~ setTokens Horror 1)
-      putCardIntoPlay investigator Assets.jimsTrumpet
-      location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Skull]
-      pushAndRun $ moveTo investigator location
-      pushAndRun $ beginSkillTest investigator SkillIntellect 0
-      chooseOnlyOption "start skill test"
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "choose self"
-      fieldAssert InvestigatorHorror (== 0) investigator
+    it "on yourself" $ gameTest $ \self -> do
+      withProp @"horror" 1 self
+      self `putCardIntoPlay` Assets.jimsTrumpet
+      location <- testLocation
+      setChaosTokens [Skull]
+      self `moveTo` location
+      runSkillTest self #intellect 0
+      useReaction
+      click "choose self"
+      self.horror `shouldReturn` 0
 
-    it "on an investigator at your location" $ gameTest $ \investigator -> do
-      investigator2 <-
-        addInvestigator
-          Investigators.rolandBanks
-          (Investigator.tokensL %~ setTokens Horror 1)
-      putCardIntoPlay investigator Assets.jimsTrumpet
-      location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Skull]
-      pushAndRun $ moveAllTo location
-      pushAndRun $ beginSkillTest investigator SkillIntellect 0
-      chooseOnlyOption "start skill test"
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "choose investigator at same location"
-      fieldAssert InvestigatorHorror (== 0) investigator2
+    it "on an investigator at your location" $ gameTest $ \self -> do
+      investigator2 <- addInvestigator Investigators.rolandBanks & prop @"horror" 1
+      self `putCardIntoPlay` Assets.jimsTrumpet
+      location <- testLocation
+      setChaosTokens [Skull]
+      run $ moveAllTo location
+      runSkillTest self #intellect 0
+      useReaction
+      click "choose investigator at same location"
+      investigator2.horror `shouldReturn` 0
 
-    it "even when another player draws token" $ gameTest $ \investigator -> do
-      investigator2 <-
-        addInvestigator
-          Investigators.rolandBanks
-          (Investigator.tokensL %~ setTokens Horror 1)
-      putCardIntoPlay investigator Assets.jimsTrumpet
-      location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Skull]
-      pushAndRun $ moveAllTo location
-      pushAndRun $ beginSkillTest investigator2 SkillIntellect 0
-      chooseOnlyOption "start skill test"
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "choose investigator at same location"
-      fieldAssert InvestigatorHorror (== 0) investigator2
+    it "even when another player draws token" $ gameTest $ \self -> do
+      investigator2 <- addInvestigator Investigators.rolandBanks & prop @"horror" 1
+      self `putCardIntoPlay` Assets.jimsTrumpet
+      location <- testLocation
+      setChaosTokens [Skull]
+      run $ moveAllTo location
+      runSkillTest investigator2 SkillIntellect 0
+      useReaction
+      click "choose investigator at same location"
+      investigator2.horror `shouldReturn` 0
 
-    it "on an investigator at a connected location" $ gameTest $ \investigator -> do
-      investigator2 <-
-        addInvestigator
-          Investigators.rolandBanks
-          (Investigator.tokensL %~ setTokens Horror 1)
-      putCardIntoPlay investigator Assets.jimsTrumpet
+    it "on an investigator at a connected location" $ gameTest $ \self -> do
+      investigator2 <- addInvestigator Investigators.rolandBanks & prop @"horror" 1
+      self `putCardIntoPlay` Assets.jimsTrumpet
       rivertown <- testLocationWithDef Locations.rivertown id
       southside <- testLocationWithDef Locations.southsideHistoricalSociety id
-      pushAndRun $ SetChaosTokens [Skull]
-      pushAndRun $ placedLocation rivertown
-      pushAndRun $ placedLocation southside
-      pushAndRun $ moveTo investigator rivertown
-      pushAndRun $ moveTo investigator2 southside
-      pushAndRun $ beginSkillTest investigator SkillIntellect 0
-      chooseOnlyOption "start skill test"
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "choose investigator at connected location"
-      fieldAssert InvestigatorHorror (== 0) investigator2
+      setChaosTokens [Skull]
+      run $ placedLocation rivertown
+      run $ placedLocation southside
+      self `moveTo` rivertown
+      investigator2 `moveTo` southside
+      runSkillTest self #intellect 0
+      useReaction
+      click "choose investigator at connected location"
+      investigator2.horror `shouldReturn` 0
 
-    it "cannot target an investigator at an unconnected location" $ gameTest $ \investigator -> do
-      investigator2 <-
-        addInvestigator
-          Investigators.rolandBanks
-          ((Investigator.tokensL %~ setTokens Horror 1) . (Investigator.idL .~ "01001"))
-      putCardIntoPlay investigator Assets.jimsTrumpet
+    it "cannot target an investigator at an unconnected location" $ gameTest $ \self -> do
+      investigator2 <- addInvestigator Investigators.rolandBanks & prop @"horror" 1
+      self `putCardIntoPlay` Assets.jimsTrumpet
       rivertown <- testLocationWithDef Locations.rivertown id
       downtown <- testLocationWithDef Locations.downtownArkhamAsylum id
-      pushAndRun $ SetChaosTokens [Skull]
-      pushAndRun $ placedLocation rivertown
-      pushAndRun $ placedLocation downtown
-      pushAndRun $ moveTo investigator rivertown
-      pushAndRun $ moveTo investigator2 downtown
-      pushAndRun $ beginSkillTest investigator SkillIntellect 0
-      chooseOnlyOption "start skill test"
+      setChaosTokens [Skull]
+      run $ placedLocation rivertown
+      run $ placedLocation downtown
+      self `moveTo` rivertown
+      investigator2 `moveTo` downtown
+      runSkillTest self #intellect 0
       chooseOnlyOption "apply results"
-      fieldAssert InvestigatorHorror (== 1) investigator2
+      investigator2.horror `shouldReturn` 1

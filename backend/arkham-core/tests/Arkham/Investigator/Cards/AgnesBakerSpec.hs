@@ -1,11 +1,7 @@
-{-# OPTIONS_GHC -Wno-type-defaults #-}
-
 module Arkham.Investigator.Cards.AgnesBakerSpec (spec) where
 
 import Arkham.Investigator.Cards
 import TestImport.New
-
-default (Int)
 
 spec :: Spec
 spec = describe "Agnes Baker" $ do

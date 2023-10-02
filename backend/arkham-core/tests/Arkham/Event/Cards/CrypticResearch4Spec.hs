@@ -1,47 +1,29 @@
-module Arkham.Event.Cards.CrypticResearch4Spec (
-  spec,
-) where
-
-import TestImport.Lifted
+module Arkham.Event.Cards.CrypticResearch4Spec (spec) where
 
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
+import TestImport.New
 
 spec :: Spec
 spec = do
   describe "Cryptic Research 4" $ do
-    it "causes the selected investigator to draw 3 cards" $ gameTest $ \investigator -> do
+    it "causes the selected investigator to draw 3 cards" $ gameTest $ \self -> do
       cards <- testPlayerCards 3
-      location <- testLocationWith id
-      pushAndRunAll
-        [ loadDeck investigator cards
-        , moveTo investigator location
-        ]
-      putCardIntoPlay investigator Events.crypticResearch4
-      chooseOnlyOption "choose self"
+      location <- testLocation
+      withProp @"deck" (Deck cards) self
+      self `moveTo` location
+      self `putCardIntoPlay` Events.crypticResearch4
+      click "choose self"
+      assert $ Events.crypticResearch4 `isInDiscardOf` self
+      self.hand `shouldReturn` map PlayerCard cards
 
-      assert $ Events.crypticResearch4 `isInDiscardOf` investigator
-      field InvestigatorHand (toId investigator)
-        `shouldMatchListM` map PlayerCard cards
-
-    it "can select any investigator at the same location" $ gameTest $ \investigator -> do
-      investigator2 <- addInvestigator Investigators.rolandBanks id
+    it "can select any investigator at the same location" $ gameTest $ \self -> do
+      investigator2 <- addInvestigator Investigators.rolandBanks
       cards <- testPlayerCards 3
-      location <- testLocationWith id
-      pushAndRunAll
-        [ loadDeck investigator2 cards
-        , moveAllTo location
-        ]
-      putCardIntoPlay investigator Events.crypticResearch4
-      chooseOptionMatching
-        "choose other investigator"
-        ( \case
-            TargetLabel (InvestigatorTarget iid') _
-              | iid' == toId investigator2 -> True
-            _ -> False
-        )
-      assert $ Events.crypticResearch4 `isInDiscardOf` investigator
-      field InvestigatorHand (toId investigator2)
-        `shouldMatchListM` map PlayerCard cards
+      location <- testLocation
+      withProp @"deck" (Deck cards) investigator2
+      run $ moveAllTo location
+      self `putCardIntoPlay` Events.crypticResearch4
+      chooseTarget investigator2
+      assert $ Events.crypticResearch4 `isInDiscardOf` self
+      investigator2.hand `shouldReturn` map PlayerCard cards

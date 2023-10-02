@@ -2472,6 +2472,7 @@ test-suite spec
       Arkham.Asset.Cards.DaisysToteBagSpec
       Arkham.Asset.Cards.DigDeep2Spec
       Arkham.Asset.Cards.DigDeepSpec
+      Arkham.Asset.Cards.DrMilanChristopherSpec
       Arkham.Asset.Cards.DukeSpec
       Arkham.Asset.Cards.FireAxeSpec
       Arkham.Asset.Cards.FirstAidSpec
@@ -2488,10 +2489,12 @@ test-suite spec
       Arkham.Asset.Cards.KnifeSpec
       Arkham.Asset.Cards.MacheteSpec
       Arkham.Asset.Cards.MagnifyingGlassSpec
+      Arkham.Asset.Cards.OldBookOfLoreSpec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
       Arkham.Asset.Cards.PoliceBadge2Spec
+      Arkham.Asset.Cards.ResearchLibrarianSpec
       Arkham.Asset.Cards.Rolands38SpecialSpec
       Arkham.Asset.Cards.Shotgun4Spec
       Arkham.Asset.Cards.TheNecronomiconSpec

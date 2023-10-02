@@ -17,6 +17,7 @@ import TestImport.Lifted as X hiding (
 
 import Arkham.Ability.Types
 import Arkham.Asset.Types
+import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Deck qualified as Deck
@@ -29,6 +30,7 @@ import Arkham.Investigate.Types
 import Arkham.Investigator.Types
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Location.Types
+import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.SkillTest.Runner
@@ -36,6 +38,7 @@ import Arkham.SkillTestResult
 import Arkham.Treachery.Types
 import Arkham.Window (defaultWindows)
 import GHC.Records
+import GHC.TypeLits
 import Helpers.Message qualified
 import TestImport.Lifted qualified as Old
 
@@ -160,6 +163,9 @@ instance HasField "hand" Investigator (TestAppT [Card]) where
 instance HasField "abilities" Investigator (TestAppT [Ability]) where
   getField = field InvestigatorAbilities . toEntityId
 
+instance HasField "abilities" Enemy (TestAppT [Ability]) where
+  getField = field EnemyAbilities . toEntityId
+
 instance HasField "abilities" AssetId (TestAppT [Ability]) where
   getField = field AssetAbilities
 
@@ -171,6 +177,12 @@ instance HasField "horror" AssetId (TestAppT Int) where
 
 instance HasField "uses" AssetId (TestAppT (Uses Int)) where
   getField = field AssetUses
+
+instance HasField "damage" AssetId (TestAppT Int) where
+  getField = field Field.AssetDamage
+
+instance HasField "exhausted" AssetId (TestAppT Bool) where
+  getField = field AssetExhausted
 
 instance HasField "skillValue" Investigator (TestAppT Int) where
   getField _ = getJustSkillTest >>= totalModifiedSkillValue
@@ -292,3 +304,94 @@ duringTurn self body = do
 
 duringTurnWindow :: Investigator -> Window
 duringTurnWindow = Old.duringTurn . toId
+
+class Attacks a b where
+  attacks :: a -> b -> TestAppT ()
+
+instance Attacks Enemy Investigator where
+  attacks e i = run $ enemyAttack i e
+
+withRewind :: TestAppT () -> TestAppT ()
+withRewind action = do
+  original <- get
+  liftIO $ do
+    testApp <- cloneTestApp original
+    runTestApp testApp action
+
+skip :: TestAppT ()
+skip = chooseOptionMatching "skip" \case
+  Label _ [] -> True
+  _ -> False
+
+assertRunsMessage :: Message -> TestAppT () -> TestAppT ()
+assertRunsMessage msg body = do
+  didRunMessage <- createMessageMatcher msg
+  body
+  didRunMessage `refShouldBe` True
+
+assertDoesNotRunMessage :: Message -> TestAppT () -> TestAppT ()
+assertDoesNotRunMessage msg body = do
+  didRunMessage <- createMessageMatcher msg
+  body
+  didRunMessage `refShouldBe` False
+
+class Gives (s :: Symbol) where
+  gives :: KnownSymbol s => CardDef -> Int -> SpecWith ()
+
+instance Gives "willpower" where
+  gives = \def n -> it ("gives +" <> show n <> " willpower") . gameTest $ \self -> do
+    withProp @"willpower" 0 self
+    self `putCardIntoPlay` def
+    self.willpower `shouldReturn` n
+
+instance Gives "combat" where
+  gives = \def n -> it ("gives +" <> show n <> " combat") . gameTest $ \self -> do
+    withProp @"combat" 0 self
+    self `putCardIntoPlay` def
+    self.combat `shouldReturn` n
+
+class HasUses (s :: Symbol) where
+  hasUses :: KnownSymbol s => CardDef -> Int -> SpecWith ()
+
+instance HasUses "ammo" where
+  hasUses = \def n -> it ("starts with " <> show n <> " ammo") . gameTest $ \self -> do
+    this <- self `putAssetIntoPlay` def
+    field AssetUses this `shouldReturn` Uses Ammo n
+
+instance HasUses "supplies" where
+  hasUses = \def n -> it ("starts with " <> show n <> " supplies") . gameTest $ \self -> do
+    this <- self `putAssetIntoPlay` def
+    field AssetUses this `shouldReturn` Uses Supply n
+
+-- N.B. Use carefully as this deletes the entire question currently, but it is a useful way to make
+-- sure we've applied all damage
+applyAllDamage :: TestAppT ()
+applyAllDamage = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices = case mapToList questionMap of
+      [(_, question)] -> case question of
+        ChooseOne msgs -> msgs
+        _ -> []
+      _ -> []
+    isDamage = \case
+      ComponentLabel (InvestigatorComponent _ DamageToken) _ -> True
+      ComponentLabel (AssetComponent _ DamageToken) _ -> True
+      _ -> False
+  case find isDamage choices of
+    Nothing -> pure ()
+    Just msg -> do
+      overTest (questionL .~ mempty)
+      push (uiToRun msg) >> runMessages >> applyAllDamage
+
+discardedWhenNoUses :: CardDef -> SpecWith ()
+discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> do
+  this <- self `putAssetIntoPlay` def
+  uses <- field AssetUses this
+  case useType uses of
+    Nothing -> expectationFailure "asset has no uses"
+    Just useType' -> do
+      let useCount' = useCount uses
+      run $ SpendUses (toTarget this) useType' useCount'
+  assert $ selectNone $ Matcher.assetIs def
+  asDefs self.discard `shouldReturn` [def]

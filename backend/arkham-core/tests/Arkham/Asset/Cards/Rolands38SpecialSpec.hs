@@ -5,6 +5,8 @@ import TestImport.New
 
 spec :: Spec
 spec = describe "Roland's .39 Special" $ do
+  hasUses @"ammo" Assets.rolands38Special 4
+
   it "gives +1 combat and +1 damage" . gameTest $ \self -> do
     withProp @"combat" 1 self
     rolands38Special <- self `putAssetIntoPlay` Assets.rolands38Special

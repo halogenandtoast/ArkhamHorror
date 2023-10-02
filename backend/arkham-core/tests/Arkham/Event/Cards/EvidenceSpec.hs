@@ -1,37 +1,23 @@
-module Arkham.Event.Cards.EvidenceSpec (
-  spec,
-) where
+module Arkham.Event.Cards.EvidenceSpec (spec) where
 
-import TestImport.Lifted
-
-import Arkham.Enemy.Types (Field (..), fightL, healthL)
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types (Field (..), combatL, tokensL)
-import Arkham.Location.Types (Field (..), revealCluesL)
-import Arkham.Projection
-import Arkham.Token
+import TestImport.New
 
 spec :: Spec
-spec = describe
-  "Evidence!"
-  do
-    it "discovers a clue at your location after you defeat an enemy" $ gameTest $ \investigator -> do
-      updateInvestigator investigator ((combatL .~ 1) . (tokensL %~ setTokens Resource 1))
-      enemy <- testEnemyWith ((healthL .~ Static 1) . (fightL .~ 1))
-      location <- testLocationWith (revealCluesL .~ Static 1)
-      evidence <- genCard Events.evidence
-      pushAndRunAll
-        [ SetChaosTokens [Zero]
-        , addToHand (toId investigator) evidence
-        , spawnAt enemy location
-        , moveTo investigator location
-        ]
-      (fight : _) <- field EnemyAbilities (toId enemy)
-      pushAndRun $ UseAbility (toId investigator) fight []
-      chooseOnlyOption "Begin skill test"
-      chooseOnlyOption "Apply results"
-      chooseOptionMatching "Play evidence" $ \case
-        TargetLabel (CardIdTarget _) _ -> True
-        _ -> False
-      fieldAssert InvestigatorClues (== 1) investigator
-      fieldAssert LocationClues (== 0) location
+spec = describe "Evidence!" do
+  it "discovers a clue at your location after you defeat an enemy" . gameTest $ \self -> do
+    withProp @"combat" 1 self
+    withProp @"resources" 1 self
+    enemy <- testEnemy & prop @"health" 1 & prop @"fight" 1
+    location <- testLocation & prop @"clues" 1
+    evidence <- genCard Events.evidence
+    setChaosTokens [Zero]
+    self `addToHand` evidence
+    enemy `spawnAt` location
+    self `moveTo` location
+    self `fightEnemy` enemy
+    click "Begin skill test"
+    click "Apply results"
+    chooseTarget $ toCardId evidence
+    self.clues `shouldReturn` 1
+    location.clues `shouldReturn` 0

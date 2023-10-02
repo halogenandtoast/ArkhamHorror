@@ -2467,6 +2467,7 @@ test-suite spec
       Arkham.Asset.Cards.ArcaneStudies2Spec
       Arkham.Asset.Cards.ArcaneStudiesSpec
       Arkham.Asset.Cards.BandolierSpec
+      Arkham.Asset.Cards.BeatCop2Spec
       Arkham.Asset.Cards.BeatCopSpec
       Arkham.Asset.Cards.DaisysToteBagSpec
       Arkham.Asset.Cards.DigDeep2Spec
@@ -2489,7 +2490,9 @@ test-suite spec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
+      Arkham.Asset.Cards.PoliceBadge2Spec
       Arkham.Asset.Cards.Rolands38SpecialSpec
+      Arkham.Asset.Cards.Shotgun4Spec
       Arkham.Asset.Cards.TheNecronomiconSpec
       Arkham.Asset.Cards.WendysAmuletSpec
       Arkham.Asset.Cards.ZoeysCrossSpec

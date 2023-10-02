@@ -1,42 +1,24 @@
-module Arkham.Event.Cards.DodgeSpec (
-  spec,
-) where
-
-import TestImport
+module Arkham.Event.Cards.DodgeSpec (spec) where
 
 import Arkham.Attack qualified as Attack
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
-import Arkham.Token
+import TestImport.New
 
 spec :: Spec
 spec = do
   describe "Dodge" $ do
-    it "cancels the attack" $ gameTest $ \investigator -> do
-      updateInvestigator investigator $ \attrs -> attrs {investigatorTokens = setTokens Resource 1 mempty}
-      enemy <- testEnemyWith id
-      location <- testLocationWith id
+    it "cancels the attack" . gameTest $ \self -> do
+      withProp @"resources" 1 self
+      enemy <- testEnemy & prop @"healthDamage" 1
+      location <- testLocation
       dodge <- genCard Cards.dodge
 
-      didRunMessage <-
-        createMessageMatcher $
-          PerformEnemyAttack $
-            Attack.enemyAttack
-              (toId enemy)
-              enemy
-              investigator
+      self `addToHand` dodge
+      enemy `spawnAt` location
+      self `moveTo` location
+      enemy `attacks` self
 
-      pushAndRunAll
-        [ addToHand (toId investigator) dodge
-        , spawnAt enemy location
-        , moveTo investigator location
-        , enemyAttack investigator enemy
-        ]
+      let attackMessage = PerformEnemyAttack $ Attack.enemyAttack (toId enemy) enemy self
 
-      chooseOptionMatching
-        "Play Dodge"
-        ( \case
-            TargetLabel {} -> True
-            _ -> False
-        )
-      didRunMessage `refShouldBe` False
+      withRewind $ assertRunsMessage attackMessage skip
+      assertDoesNotRunMessage attackMessage $ chooseTarget (toCardId dodge)

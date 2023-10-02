@@ -9,7 +9,6 @@ spec = describe "Physical Training" $ do
     withProp @"willpower" 0 self
     withProp @"resources" 2 self
     physicalTraining <- self `putAssetIntoPlay` Assets.physicalTraining
-    setChaosTokens [Zero]
     run $ beginSkillTest self #willpower 3
     useFastActionOf physicalTraining 1
     useFastActionOf physicalTraining 1
@@ -19,7 +18,6 @@ spec = describe "Physical Training" $ do
     withProp @"combat" 0 self
     withProp @"resources" 2 self
     physicalTraining <- self `putAssetIntoPlay` Assets.physicalTraining
-    setChaosTokens [Zero]
     run $ beginSkillTest self #combat 3
     useFastActionOf physicalTraining 2
     useFastActionOf physicalTraining 2

@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -44,19 +45,14 @@ instance RunMessage Bauta where
       push $ TakeResources iid 2 (toAbilitySource attrs 1) False
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      replaceMessageMatching
-        ( \case
-            BeginSkillTestAfterFast {} -> True
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast {} : _) : _)) ->
-              True
-            _ -> False
-        )
-        ( \case
-            BeginSkillTestAfterFast skillTest ->
-              [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillCombat}]
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _)) ->
-              [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillCombat}]
-            _ -> error "invalid match"
-        )
+      skillTest <- getJustSkillTest
+      let
+        newBase =
+          case skillTestBaseValue skillTest of
+            SkillBaseValue _ -> SkillBaseValue #combat
+            AndSkillBaseValue _ -> SkillBaseValue #combat
+            HalfResourcesOf x -> HalfResourcesOf x
+            StaticBaseValue x -> StaticBaseValue x
+      push $ ChangeSkillTestType (SkillSkillTest #combat) newBase
       pure a
     _ -> Bauta <$> runMessage msg attrs

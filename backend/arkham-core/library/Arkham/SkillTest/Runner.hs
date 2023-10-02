@@ -131,6 +131,27 @@ getModifiedChaosTokenValue s t = do
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
+    BeginSkillTestAfterFast -> do
+      windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
+      pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
+      pure s
+    ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
+      let
+        stType = case skillTestType of
+          ResourceSkillTest -> ResourceSkillTest
+          SkillSkillTest currentType -> if currentType == fsType then SkillSkillTest tsType else SkillSkillTest currentType
+          AndSkillTest types -> AndSkillTest $ map (\t -> if t == fsType then tsType else t) types
+        stBaseValue = case skillTestBaseValue of
+          SkillBaseValue currentType -> SkillBaseValue $ if currentType == fsType then tsType else currentType
+          AndSkillBaseValue xs -> AndSkillBaseValue $ map (\t -> if t == fsType then tsType else t) xs
+          HalfResourcesOf x -> HalfResourcesOf x
+          StaticBaseValue x -> StaticBaseValue x
+
+      pure
+        $ s
+          { skillTestType = stType
+          , skillTestBaseValue = stBaseValue
+          }
     SetSkillTestTarget target -> do
       pure $ s {skillTestTarget = target}
     Discard _ target | target == skillTestTarget -> do

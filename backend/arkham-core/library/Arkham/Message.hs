@@ -258,6 +258,14 @@ data SearchType = Searching | Looking
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+newtype FromSkillType = FromSkillType SkillType
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype ToSkillType = ToSkillType SkillType
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, Set Arbiter of Fates
@@ -365,8 +373,9 @@ data Message
   | Begin Phase
   | PhaseStep PhaseStep [Message]
   | BeginRound
+  | ReplaceSkillTestSkill FromSkillType ToSkillType
   | BeginSkillTest SkillTest
-  | BeginSkillTestAfterFast SkillTest
+  | BeginSkillTestAfterFast
   | SetSkillTestTarget Target
   | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId

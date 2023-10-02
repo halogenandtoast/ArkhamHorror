@@ -2520,6 +2520,7 @@ test-suite spec
       Arkham.Event.Cards.ExtraAmmunition1Spec
       Arkham.Event.Cards.Lucky2Spec
       Arkham.Event.Cards.LuckySpec
+      Arkham.Event.Cards.MindOverMatterSpec
       Arkham.Event.Cards.OnTheLamSpec
       Arkham.Event.Cards.OopsSpec
       Arkham.Event.Cards.SearchForTheTruthSpec

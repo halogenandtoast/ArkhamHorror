@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (InvestigatorDamage)
 import Arkham.Damage
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.SkillTest
@@ -66,19 +67,14 @@ instance RunMessage MedicoDellaPeste where
            ]
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      replaceMessageMatching
-        ( \case
-            BeginSkillTestAfterFast {} -> True
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast {} : _) : _)) ->
-              True
-            _ -> False
-        )
-        ( \case
-            BeginSkillTestAfterFast skillTest ->
-              [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillWillpower}]
-            Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _)) ->
-              [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillWillpower}]
-            _ -> error "invalid match"
-        )
+      skillTest <- getJustSkillTest
+      let
+        newBase =
+          case skillTestBaseValue skillTest of
+            SkillBaseValue _ -> SkillBaseValue #willpower
+            AndSkillBaseValue _ -> SkillBaseValue #willpower
+            HalfResourcesOf x -> HalfResourcesOf x
+            StaticBaseValue x -> StaticBaseValue x
+      push $ ChangeSkillTestType (SkillSkillTest #willpower) newBase
       pure a
     _ -> MedicoDellaPeste <$> runMessage msg attrs

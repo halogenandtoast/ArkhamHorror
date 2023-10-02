@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -37,22 +38,15 @@ instance RunMessage GildedVolto where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ CreateEffect "82026" Nothing source (InvestigatorTarget iid)
       pure a
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          do
-            replaceMessageMatching
-              ( \case
-                  BeginSkillTestAfterFast {} -> True
-                  Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast {} : _) : _)) ->
-                    True
-                  _ -> False
-              )
-              ( \case
-                  BeginSkillTestAfterFast skillTest ->
-                    [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillAgility}]
-                  Ask _ (ChooseOne (SkillLabel _ (BeginSkillTestAfterFast skillTest : _) : _)) ->
-                    [BeginSkillTest $ skillTest {skillTestType = SkillSkillTest SkillAgility}]
-                  _ -> error "invalid match"
-              )
-            pure a
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      skillTest <- getJustSkillTest
+      let
+        newBase =
+          case skillTestBaseValue skillTest of
+            SkillBaseValue _ -> SkillBaseValue #agility
+            AndSkillBaseValue _ -> SkillBaseValue #agility
+            HalfResourcesOf x -> HalfResourcesOf x
+            StaticBaseValue x -> StaticBaseValue x
+      push $ ChangeSkillTestType (SkillSkillTest #agility) newBase
+      pure a
     _ -> GildedVolto <$> runMessage msg attrs

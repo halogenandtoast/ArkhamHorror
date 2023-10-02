@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module TestImport.New (module TestImport.New, module X) where
 
@@ -285,12 +285,17 @@ startSkillTest = chooseOptionMatching "start skill test" \case
   StartSkillTestButton {} -> True
   _ -> False
 
+applyResults :: TestAppT ()
+applyResults = chooseOptionMatching "apply skill test results" \case
+  SkillTestApplyResultsButton {} -> True
+  _ -> False
+
 inWindow :: Investigator -> TestAppT () -> TestAppT ()
 inWindow self body = do
   run $ CheckWindow [toId self] (defaultWindows $ toId self)
   body
 
-chooseTarget :: Targetable target => target -> TestAppT ()
+chooseTarget :: HasCallStack => Targetable target => target -> TestAppT ()
 chooseTarget (toTarget -> target) =
   chooseOptionMatching "choose self" \case
     TargetLabel target' _ -> target == target'
@@ -349,6 +354,12 @@ instance Gives "willpower" where
     withProp @"willpower" 0 self
     self `putCardIntoPlay` def
     self.willpower `shouldReturn` n
+
+instance Gives "intellect" where
+  gives = \def n -> it ("gives +" <> show n <> " intellect") . gameTest $ \self -> do
+    withProp @"intellect" 0 self
+    self `putCardIntoPlay` def
+    self.intellect `shouldReturn` n
 
 instance Gives "combat" where
   gives = \def n -> it ("gives +" <> show n <> " combat") . gameTest $ \self -> do

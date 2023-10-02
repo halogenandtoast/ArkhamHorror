@@ -415,3 +415,6 @@ discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> d
 
 isFastAsset :: CardDef -> SpecWith ()
 isFastAsset def = it "is fast" $ (cdFastWindow def `shouldBe` Just (Matcher.DuringTurn Matcher.You) :: IO ())
+
+withEach :: [a] -> (a -> TestAppT ()) -> TestAppT ()
+withEach xs f = for_ xs $ withRewind . f

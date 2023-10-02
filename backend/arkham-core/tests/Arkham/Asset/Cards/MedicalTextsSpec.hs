@@ -5,7 +5,7 @@ import Arkham.Investigator.Cards (rolandBanks)
 import TestImport.New
 
 spec :: Spec
-spec = fdescribe "Medical Texts" $ do
+spec = describe "Medical Texts" $ do
   context "choose an investigator and test 2 intellect" $ do
     let setup self roland = do
           withProp @"damage" 1 self

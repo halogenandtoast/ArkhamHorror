@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.SkillTest where
 
 import Arkham.Prelude
@@ -222,7 +224,7 @@ getCurrentSkillValue st = do
       stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
       pure $ statsSkillValue stats sType'
     AndSkillBaseValue types -> do
-      values <- for types $ \sType -> do
+      values <- for (traceShowId types) $ \sType -> do
         sType' <- getAlternateSkill st sType
         stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
         pure $ statsSkillValue stats sType'

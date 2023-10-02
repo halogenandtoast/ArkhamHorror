@@ -2487,6 +2487,7 @@ test-suite spec
       Arkham.Asset.Cards.JimsTrumpetSpec
       Arkham.Asset.Cards.KnifeSpec
       Arkham.Asset.Cards.MacheteSpec
+      Arkham.Asset.Cards.MagnifyingGlassSpec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec

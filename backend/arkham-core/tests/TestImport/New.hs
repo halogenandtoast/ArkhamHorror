@@ -124,6 +124,12 @@ instance HasField "deck" Investigator (TestAppT (Deck PlayerCard)) where
 instance HasField "willpower" Investigator (TestAppT Int) where
   getField i = willpower <$> Helpers.modifiedStatsOf Nothing (toId i)
 
+instance HasField "intellect" Investigator (TestAppT Int) where
+  getField i = intellect <$> Helpers.modifiedStatsOf Nothing (toId i)
+
+instance HasField "agility" Investigator (TestAppT Int) where
+  getField i = agility <$> Helpers.modifiedStatsOf Nothing (toId i)
+
 instance HasField "combat" Investigator (TestAppT Int) where
   getField i = combat <$> Helpers.modifiedStatsOf Nothing (toId i)
 
@@ -395,3 +401,6 @@ discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> d
       run $ SpendUses (toTarget this) useType' useCount'
   assert $ selectNone $ Matcher.assetIs def
   asDefs self.discard `shouldReturn` [def]
+
+isFastAsset :: CardDef -> SpecWith ()
+isFastAsset def = it "is fast" $ (cdFastWindow def `shouldBe` Just (Matcher.DuringTurn Matcher.You) :: IO ())

@@ -296,6 +296,12 @@ instance UpdateField "combat" Investigator Int where
 instance UpdateField "willpower" Investigator Int where
   updateField willpower = pure . overAttrs (\attrs -> attrs {investigatorWillpower = willpower})
 
+instance UpdateField "intellect" Investigator Int where
+  updateField intellect = pure . overAttrs (\attrs -> attrs {investigatorIntellect = intellect})
+
+instance UpdateField "agility" Investigator Int where
+  updateField agility = pure . overAttrs (\attrs -> attrs {investigatorAgility = agility})
+
 instance UpdateField "deck" Investigator (Deck PlayerCard) where
   updateField cards = pure . overAttrs (\attrs -> attrs {investigatorDeck = cards})
 

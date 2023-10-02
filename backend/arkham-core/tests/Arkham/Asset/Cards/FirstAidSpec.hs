@@ -6,6 +6,9 @@ import TestImport.New
 
 spec :: Spec
 spec = describe "First Aid" $ do
+  hasUses @"supplies" Assets.firstAid 3
+  discardedWhenNoUses Assets.firstAid
+
   it "uses a supply and heals 1 damage or horror from an investigator at your location" . gameTest $ \self -> do
     withProp @"damage" 1 self
     investigator2 <- addInvestigator rolandBanks & prop @"horror" 1

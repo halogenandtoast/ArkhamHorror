@@ -1,34 +1,21 @@
-module Arkham.Skill.Cards.ViciousBlowSpec (
-  spec,
-) where
+module Arkham.Skill.Cards.ViciousBlowSpec (spec) where
 
-import TestImport hiding (EnemyDamage)
-
-import Arkham.Enemy.Types (Field (..), fightL, healthL)
-import Arkham.Investigator.Types (combatL)
-import Arkham.Projection
 import Arkham.Skill.Cards qualified as Skills
+import TestImport.New
 
 spec :: Spec
 spec = describe "Vicious Blow" $ do
-  it "does 1 extra damage when attack is successful" $ gameTest $ \investigator -> do
-    updateInvestigator investigator (combatL .~ 1)
-    enemy <- testEnemyWith ((healthL .~ Static 3) . (fightL .~ 1))
-    location <- testLocationWith id
+  it "does 1 extra damage when attack is successful" $ gameTest $ \self -> do
+    withProp @"combat" 1 self
+    enemy <- testEnemy & prop @"health" 3 & prop @"fight" 1
+    location <- testLocation
     viciousBlow <- genCard Skills.viciousBlow
-    pushAndRunAll
-      [ SetChaosTokens [Zero]
-      , spawnAt enemy location
-      , moveTo investigator location
-      , addToHand (toId investigator) viciousBlow
-      ]
-    (fight : _) <- field EnemyAbilities (toId enemy)
-    pushAndRun $ UseAbility (toId investigator) fight []
-    chooseOptionMatching "commit vicious blow" $ \case
-      TargetLabel (CardIdTarget _) _ -> True
-      _ -> False
-    chooseOptionMatching "Begin skill test" $ \case
-      StartSkillTestButton {} -> True
-      _ -> False
-    chooseOnlyOption "Apply results"
-    fieldAssert EnemyDamage (== 2) enemy
+    setChaosTokens [Zero]
+    enemy `spawnAt` location
+    self `moveTo` location
+    self `addToHand` viciousBlow
+    self `fightEnemy` enemy
+    chooseTarget (toCardId viciousBlow)
+    startSkillTest
+    click "Apply results"
+    enemy.damage `shouldReturn` 2

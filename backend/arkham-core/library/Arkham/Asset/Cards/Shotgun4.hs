@@ -31,7 +31,7 @@ instance RunMessage Shotgun4 where
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       -- This has to be handled specially for cards like Oops!
-      let val = min 1 (max 5 n)
+      let val = max 1 (min 5 n)
       push
         $ CreateWindowModifierEffect
           EffectSkillTestWindow
@@ -40,6 +40,6 @@ instance RunMessage Shotgun4 where
           (toTarget iid)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      push $ skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt $ min 1 (max 5 n))
+      push $ skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt $ max 1 (min 5 n))
       pure a
     _ -> Shotgun4 <$> runMessage msg attrs

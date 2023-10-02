@@ -131,6 +131,20 @@ data TestApp = TestApp
   , testGameLogger :: ClientMessage -> IO ()
   }
 
+cloneTestApp :: TestApp -> IO TestApp
+cloneTestApp testApp = do
+  game <- newIORef =<< readIORef (game testApp)
+  messageQueueRef <- fmap Queue . newIORef =<< readIORef (queueToRef $ messageQueueRef testApp)
+  gen <- newIORef =<< readIORef (gen testApp)
+  pure
+    $ TestApp
+      { game = game
+      , messageQueueRef = messageQueueRef
+      , gen = gen
+      , testLogger = testLogger testApp
+      , testGameLogger = testGameLogger testApp
+      }
+
 newtype TestAppT a = TestAppT {unTestAppT :: StateT TestApp IO a}
   deriving newtype (MonadState TestApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)
 
@@ -272,6 +286,9 @@ withProps self props = void $ pure self & props
 
 instance IsLabel "willpower" (Int -> Investigator -> TestAppT Investigator) where
   fromLabel n s = pure s & prop @"willpower" n
+
+instance UpdateField "remainingActions" Investigator Int where
+  updateField remaining = pure . overAttrs (\attrs -> attrs {investigatorRemainingActions = remaining})
 
 instance UpdateField "combat" Investigator Int where
   updateField combat = pure . overAttrs (\attrs -> attrs {investigatorCombat = combat})

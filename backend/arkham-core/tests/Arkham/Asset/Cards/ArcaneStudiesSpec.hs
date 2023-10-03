@@ -1,72 +1,24 @@
-module Arkham.Asset.Cards.ArcaneStudiesSpec (
-  spec,
-) where
+module Arkham.Asset.Cards.ArcaneStudiesSpec (spec) where
 
-import TestImport
-
-import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
-import Arkham.Token
+import TestImport.New
 
 spec :: Spec
 spec = describe "Arcane Studies" $ do
-  it "Adds 1 to willpower check for each resource spent" $ do
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $ \attrs ->
-        attrs {investigatorWillpower = 1, investigatorTokens = setTokens Resource 2 mempty}
-      didPassTest <- didPassSkillTestBy investigator SkillWillpower 0
-      pushAndRun $ SetChaosTokens [Zero]
-      putCardIntoPlay investigator Assets.arcaneStudies
-      pushAndRun $ beginSkillTest investigator SkillWillpower 3
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {ability} -> abilityIndex ability == 1
-            _ -> False
-        )
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {ability} -> abilityIndex ability == 1
-            _ -> False
-        )
-      chooseOptionMatching
-        "start skill test"
-        ( \case
-            StartSkillTestButton {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "apply results"
-      didPassTest `refShouldBe` True
+  it "Adds 1 to willpower check for each resource spent" . gameTest $ \self -> do
+    withProp @"willpower" 0 self
+    withProp @"resources" 2 self
+    arcaneStudies <- self `putAssetIntoPlay` Assets.arcaneStudies
+    run $ beginSkillTest self #combat 3 -- skill test type is irrelevant
+    useFastActionOf arcaneStudies 1
+    useFastActionOf arcaneStudies 1
+    self.willpower `shouldReturn` 2
 
-  it "Adds 1 to intellect check for each resource spent" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $ \attrs ->
-        attrs {investigatorIntellect = 1, investigatorTokens = setTokens Resource 2 mempty}
-
-      didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
-
-      pushAndRun $ SetChaosTokens [Zero]
-      putCardIntoPlay investigator Assets.arcaneStudies
-      pushAndRun $ beginSkillTest investigator SkillIntellect 3
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {ability} -> abilityIndex ability == 2
-            _ -> False
-        )
-      chooseOptionMatching
-        "use ability"
-        ( \case
-            AbilityLabel {ability} -> abilityIndex ability == 2
-            _ -> False
-        )
-      chooseOptionMatching
-        "start skill test"
-        ( \case
-            StartSkillTestButton {} -> True
-            _ -> False
-        )
-      chooseOnlyOption "apply results"
-      didPassTest `refShouldBe` True
+  it "Adds 1 to intellect check for each resource spent" . gameTest $ \self -> do
+    withProp @"intellect" 0 self
+    withProp @"resources" 2 self
+    arcaneStudies <- self `putAssetIntoPlay` Assets.arcaneStudies
+    run $ beginSkillTest self #combat 3 -- skill test type is irrelevant
+    useFastActionOf arcaneStudies 2
+    useFastActionOf arcaneStudies 2
+    self.intellect `shouldReturn` 2

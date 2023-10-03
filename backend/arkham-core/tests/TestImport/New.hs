@@ -215,6 +215,9 @@ instance HasField "uses" AssetId (TestAppT (Uses Int)) where
 instance HasField "ammo" AssetId (TestAppT Int) where
   getField = fieldMap AssetUses useCount
 
+instance HasField "secrets" AssetId (TestAppT Int) where
+  getField = fieldMap AssetUses useCount
+
 instance HasField "damage" AssetId (TestAppT Int) where
   getField = field Field.AssetDamage
 
@@ -428,6 +431,11 @@ instance HasUses "ammo" where
     this <- self `putAssetIntoPlay` def
     field AssetUses this `shouldReturn` Uses Ammo n
 
+instance HasUses "secret" where
+  hasUses = \def n -> it ("starts with " <> show n <> " secrets") . gameTest $ \self -> do
+    this <- self `putAssetIntoPlay` def
+    field AssetUses this `shouldReturn` Uses Secret n
+
 instance HasUses "supplies" where
   hasUses = \def n -> it ("starts with " <> show n <> " supplies") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
@@ -453,6 +461,25 @@ applyAllDamage = do
     Just msg -> do
       overTest (questionL .~ mempty)
       push (uiToRun msg) >> runMessages >> applyAllDamage
+
+applyAllHorror :: TestAppT ()
+applyAllHorror = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices = case mapToList questionMap of
+      [(_, question)] -> case question of
+        ChooseOne msgs -> msgs
+        _ -> []
+      _ -> []
+    isHorror = \case
+      ComponentLabel (InvestigatorComponent _ HorrorToken) _ -> True
+      ComponentLabel (AssetComponent _ HorrorToken) _ -> True
+      _ -> False
+  case find isHorror choices of
+    Nothing -> pure ()
+    Just msg -> do
+      overTest (questionL .~ mempty)
+      push (uiToRun msg) >> runMessages >> applyAllHorror
 
 discardedWhenNoUses :: CardDef -> SpecWith ()
 discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> do

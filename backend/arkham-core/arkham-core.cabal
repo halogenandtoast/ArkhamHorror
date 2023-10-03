@@ -2469,6 +2469,7 @@ test-suite spec
       Arkham.Asset.Cards.BandolierSpec
       Arkham.Asset.Cards.BeatCop2Spec
       Arkham.Asset.Cards.BeatCopSpec
+      Arkham.Asset.Cards.BurglarySpec
       Arkham.Asset.Cards.DaisysToteBagSpec
       Arkham.Asset.Cards.DigDeep2Spec
       Arkham.Asset.Cards.DigDeepSpec
@@ -2497,6 +2498,7 @@ test-suite spec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
+      Arkham.Asset.Cards.PickpocketingSpec
       Arkham.Asset.Cards.PoliceBadge2Spec
       Arkham.Asset.Cards.ResearchLibrarianSpec
       Arkham.Asset.Cards.Rolands38SpecialSpec

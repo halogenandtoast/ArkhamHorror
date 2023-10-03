@@ -2481,6 +2481,7 @@ test-suite spec
       Arkham.Asset.Cards.Encyclopedia2Spec
       Arkham.Asset.Cards.FireAxeSpec
       Arkham.Asset.Cards.FirstAidSpec
+      Arkham.Asset.Cards.ForbiddenKnowledgeSpec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
       Arkham.Asset.Cards.FortyOneDerringerSpec
       Arkham.Asset.Cards.GrotesqueStatue4Spec

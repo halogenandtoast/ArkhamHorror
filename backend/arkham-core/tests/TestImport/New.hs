@@ -206,6 +206,9 @@ instance HasField "abilities" AssetId (TestAppT [Ability]) where
 instance HasField "abilities" TreacheryId (TestAppT [Ability]) where
   getField = field TreacheryAbilities
 
+instance HasField "doom" AssetId (TestAppT Int) where
+  getField = field AssetDoom
+
 instance HasField "horror" AssetId (TestAppT Int) where
   getField = field AssetHorror
 
@@ -213,6 +216,9 @@ instance HasField "uses" AssetId (TestAppT (Uses Int)) where
   getField = field AssetUses
 
 instance HasField "ammo" AssetId (TestAppT Int) where
+  getField = fieldMap AssetUses useCount
+
+instance HasField "charges" AssetId (TestAppT Int) where
   getField = fieldMap AssetUses useCount
 
 instance HasField "secrets" AssetId (TestAppT Int) where
@@ -425,6 +431,11 @@ instance Gives "combat" where
 
 class HasUses (s :: Symbol) where
   hasUses :: KnownSymbol s => CardDef -> Int -> SpecWith ()
+
+instance HasUses "charge" where
+  hasUses = \def n -> it ("starts with " <> show n <> " charges") . gameTest $ \self -> do
+    this <- self `putAssetIntoPlay` def
+    field AssetUses this `shouldReturn` Uses Charge n
 
 instance HasUses "ammo" where
   hasUses = \def n -> it ("starts with " <> show n <> " ammo") . gameTest $ \self -> do

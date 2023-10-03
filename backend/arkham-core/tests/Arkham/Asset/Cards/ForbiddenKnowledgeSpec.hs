@@ -16,4 +16,4 @@ spec = describe "Forbidden Knowledge" $ do
     self.horror `shouldReturn` 1
     self.resources `shouldReturn` 1
     forbiddenKnowledge.secrets `shouldReturn` 3
-    forbiddenKnowledge.exhausted `shouldReturn` True
+    assert forbiddenKnowledge.exhausted

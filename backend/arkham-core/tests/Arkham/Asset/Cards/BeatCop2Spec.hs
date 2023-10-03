@@ -19,5 +19,5 @@ spec = describe "Beat Cop (2)" $ do
       inWindow self $ useFastActionOf beatCop2 1
       enemy.damage `shouldReturn` 1
       beatCop2.damage `shouldReturn` 1
-      beatCop2.exhausted `shouldReturn` True
+      assert beatCop2.exhausted
       self.discard `shouldReturn` []

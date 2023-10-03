@@ -2489,6 +2489,7 @@ test-suite spec
       Arkham.Asset.Cards.HardKnocks2Spec
       Arkham.Asset.Cards.HardKnocksSpec
       Arkham.Asset.Cards.HeirloomOfHyperboreaSpec
+      Arkham.Asset.Cards.HolyRosarySpec
       Arkham.Asset.Cards.Hyperawareness2Spec
       Arkham.Asset.Cards.HyperawarenessSpec
       Arkham.Asset.Cards.JennysTwin45sSpec
@@ -2508,7 +2509,9 @@ test-suite spec
       Arkham.Asset.Cards.PoliceBadge2Spec
       Arkham.Asset.Cards.ResearchLibrarianSpec
       Arkham.Asset.Cards.Rolands38SpecialSpec
+      Arkham.Asset.Cards.ScryingSpec
       Arkham.Asset.Cards.Shotgun4Spec
+      Arkham.Asset.Cards.ShrivellingSpec
       Arkham.Asset.Cards.SwitchbladeSpec
       Arkham.Asset.Cards.TheBlackFan3Spec
       Arkham.Asset.Cards.TheNecronomiconSpec

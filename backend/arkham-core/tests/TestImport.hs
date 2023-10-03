@@ -612,12 +612,21 @@ chooseOptionMatching :: HasCallStack => String -> (UI Message -> Bool) -> TestAp
 chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
-    [(_, question)] -> case question of
+    [(iid, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
         Just msg -> push (uiToRun msg) <* runMessages
         Nothing -> liftIO $ expectationFailure "could not find a matching message"
-      ChooseN _ msgs -> case find f msgs of
-        Just msg -> push (uiToRun msg) <* runMessages
+      ChooseOneAtATime msgs -> case find f msgs of
+        Just msg -> do
+          pushIfAny (deleteFirst msg msgs) (Ask iid $ ChooseOneAtATime $ deleteFirst msg msgs)
+          push (uiToRun msg)
+          runMessages
+        Nothing -> liftIO $ expectationFailure "could not find a matching message"
+      ChooseN n msgs -> case find f msgs of
+        Just msg -> do
+          pushWhen (n > 1) (Ask iid $ ChooseN (n - 1) $ deleteFirst msg msgs)
+          push (uiToRun msg)
+          runMessages
         Nothing -> liftIO $ expectationFailure "could not find a matching message"
       _ -> error $ "unsupported questions type: " <> show question
     _ -> error "There must be only one question to use this function"

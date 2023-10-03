@@ -102,6 +102,9 @@ moveTo i l = run $ Move $ move (toSource i) (toId i) (toId l)
 fightEnemy :: Investigator -> Enemy -> TestAppT ()
 fightEnemy i e = run $ FightEnemy (toId i) (toId e) (toSource i) Nothing SkillCombat False
 
+evadeEnemy :: Investigator -> Enemy -> TestAppT ()
+evadeEnemy i e = run $ EvadeEnemy (toId i) (toId e) (toSource i) Nothing SkillAgility False
+
 investigate :: Investigator -> Location -> TestAppT ()
 investigate i l =
   run

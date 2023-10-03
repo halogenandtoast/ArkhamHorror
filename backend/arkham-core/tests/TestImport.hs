@@ -321,6 +321,9 @@ instance UpdateField "resources" Investigator Int where
 instance UpdateField "fight" Enemy Int where
   updateField fight = pure . overAttrs (\attrs -> attrs {enemyFight = fight})
 
+instance UpdateField "evade" Enemy Int where
+  updateField evade = pure . overAttrs (\attrs -> attrs {enemyEvade = Just evade})
+
 instance UpdateField "health" Enemy Int where
   updateField health = pure . overAttrs (\attrs -> attrs {enemyHealth = Static health})
 

@@ -510,6 +510,7 @@ allPlayerAssetCards =
       , tennesseeSourMashSurvivor3
       , tetsuoMori
       , theBlackBook
+      , theBlackFan3
       , theChthonianStone
       , theChthonianStone3
       , theCodexOfAges
@@ -3661,6 +3662,16 @@ livreDeibon =
     , cdUnique = True
     , cdSlots = [#hand]
     , cdDeckRestrictions = [Signature "08004"]
+    }
+
+theBlackFan3 :: CardDef
+theBlackFan3 =
+  (asset "08057" ("The Black Fan" <:> "Symbol of Power") 3 Rogue)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [#intellect, #agility, #wild]
+    , cdSlots = [#hand]
+    , cdUnique = True
+    , cdExceptional = True
     }
 
 runicAxe :: CardDef

@@ -221,7 +221,9 @@ instance RunMessage EchoesOfThePast where
               then
                 [ CreateWindowModifierEffect
                   EffectRoundWindow
-                  (EffectModifiers $ toModifiers attrs [AdditionalActions 1])
+                  ( EffectModifiers
+                      $ toModifiers attrs [AdditionalActions "Fleeing the dinner party" (toSource attrs) 1]
+                  )
                   (toSource attrs)
                   (InvestigatorTarget iid)
                 | iid <- investigatorIds

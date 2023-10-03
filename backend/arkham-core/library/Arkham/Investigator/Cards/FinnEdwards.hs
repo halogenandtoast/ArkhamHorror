@@ -5,7 +5,9 @@ module Arkham.Investigator.Cards.FinnEdwards (
 
 import Arkham.Prelude
 
+import Arkham.Action.Additional
 import Arkham.Discover
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Location.Types (Field (..))
@@ -13,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype FinnEdwards = FinnEdwards InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 finnEdwards :: InvestigatorCard FinnEdwards
@@ -26,6 +28,12 @@ instance HasChaosTokenValue FinnEdwards where
     n <- selectCount ExhaustedEnemy
     pure $ ChaosTokenValue ElderSign (PositiveModifier n)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
+
+instance HasModifiersFor FinnEdwards where
+  getModifiersFor target (FinnEdwards attrs) | attrs `is` target = do
+    pure
+      $ toModifiers attrs [GiveAdditionalAction $ AdditionalAction "Finn Edwards" (toSource attrs) #evade]
+  getModifiersFor _ _ = pure []
 
 instance RunMessage FinnEdwards where
   runMessage msg i@(FinnEdwards attrs) = case msg of
@@ -41,6 +49,4 @@ instance RunMessage FinnEdwards where
               , Label "Do not discover a clue" []
               ]
       pure i
-    Setup -> FinnEdwards <$> runMessage msg (attrs & additionalActionsL %~ (#evade :))
-    Do BeginRound -> FinnEdwards <$> runMessage msg (attrs & additionalActionsL %~ (#evade :))
     _ -> FinnEdwards <$> runMessage msg attrs

@@ -21,22 +21,29 @@ export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
   JsonDecoder.isExactly('Neutral'),
 ], 'ClassSymbol');
 
-type AdditionalAction
+type AdditionalActionType
   = { tag: "ActionRestrictedAdditionalAction" }
   | { tag: "EffectAction", contents: [string, string] }
   | { tag: "TraitRestrictedAdditionalAction" }
   | { tag: "AnyAdditionalAction" }
   | { tag: "BountyAction" }
 
+interface AdditionalAction {
+  kind: AdditionalActionType
+}
+
 export const additionalActionContentsDecoder = JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.string], 'AdditionalActionContents')
 
-export const additionalActionDecoder = JsonDecoder.oneOf<AdditionalAction>(
+export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionType>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly("EffectAction"), contents: additionalActionContentsDecoder}, 'EffectAction')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("ActionRestrictedAdditionalAction") }, "ActionRestrictedAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("TraitRestrictedAdditionalAction") }, "TraitRestrictedAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("AnyAdditionalAction") }, "AnyAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("BountyAction") }, "BountyAction")
-  ], "AdditionalAction")
+  ], "AdditionalActionType")
+
+export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
+  { kind: additionalActionTypeDecoder }, 'AdditionalAction')
 
 export interface Investigator {
   deckSize?: number;
@@ -68,7 +75,7 @@ export interface Investigator {
   treacheries: string[];
   defeated: boolean;
   resigned: boolean;
-  additionalActions: AdditionalAction[];
+  additionalActions: AdditionalActionType[];
   cardsUnderneath: Card[];
   foundCards: Record<string, Card[]>;
   xp: number;
@@ -152,7 +159,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   defeated: JsonDecoder.boolean,
   resigned: JsonDecoder.boolean,
-  additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction'),
+  additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction').map((arr) => arr.map((action) => action.kind)),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
   xp: JsonDecoder.number,

@@ -18,6 +18,7 @@ import TestImport.Lifted as X hiding (
 
 import Arkham.Ability.Type (AbilityType (..))
 import Arkham.Ability.Types
+import Arkham.Action.Additional
 import Arkham.Asset.Types
 import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses
@@ -67,6 +68,9 @@ addToHand i (toCard -> c) = run $ AddToHand (toId i) [c]
 
 gainResources :: Investigator -> Int -> TestAppT ()
 gainResources i n = run $ TakeResources (toId i) n (toSource i) False
+
+spendResources :: Investigator -> Int -> TestAppT ()
+spendResources i n = run $ SpendResources (toId i) n
 
 loseActions :: Investigator -> Int -> TestAppT ()
 loseActions i n = run $ LoseActions (toId i) (TestSource mempty) n
@@ -166,14 +170,29 @@ instance HasField "elderSignModifier" Investigator (TestAppT ChaosTokenModifier)
       . getChaosTokenValue (toId i) ElderSign
       =<< getInvestigator (toId i)
 
+instance HasField "location" Investigator (TestAppT (Maybe LocationId)) where
+  getField = field InvestigatorLocation . toEntityId
+
 instance HasField "remainingActions" Investigator (TestAppT Int) where
   getField = field InvestigatorRemainingActions . toEntityId
+
+instance HasField "additionalActions" Investigator (TestAppT [AdditionalAction]) where
+  getField = field InvestigatorAdditionalActions . toEntityId
+
+instance HasField "remainingSanity" Investigator (TestAppT Int) where
+  getField = field InvestigatorRemainingSanity . toEntityId
+
+instance HasField "remainingHealth" Investigator (TestAppT Int) where
+  getField = field InvestigatorRemainingHealth . toEntityId
 
 instance HasField "hand" Investigator (TestAppT [Card]) where
   getField = field InvestigatorHand . toEntityId
 
 instance HasField "abilities" Investigator (TestAppT [Ability]) where
   getField = field InvestigatorAbilities . toEntityId
+
+instance HasField "exhausted" Enemy (TestAppT Bool) where
+  getField = fmap (enemyExhausted . toAttrs) . getEnemy . toEntityId
 
 instance HasField "abilities" Enemy (TestAppT [Ability]) where
   getField = field EnemyAbilities . toEntityId

@@ -42,7 +42,10 @@ tonyMorgan =
 
 instance HasModifiersFor TonyMorgan where
   getModifiersFor target (TonyMorgan (a `With` meta)) | a `is` target = do
-    pure $ toModifiers a $ GiveAdditionalAction BountyAction : [BountiesOnly | active meta]
+    pure
+      $ toModifiers a
+      $ GiveAdditionalAction (AdditionalAction "Tony Morgan" (toSource a) BountyAction)
+      : [BountiesOnly | active meta]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TonyMorgan where
@@ -53,7 +56,7 @@ instance HasAbilities TonyMorgan where
         1
         (Self <> exists (EnemyWithBounty <> EnemyOneOf [CanFightEnemy (toSource attrs), CanEngageEnemy]))
       $ ActionAbility Nothing mempty
-    | BountyAction `elem` investigatorAdditionalActions attrs
+    | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
     ]
 
 instance HasChaosTokenValue TonyMorgan where
@@ -86,7 +89,11 @@ instance RunMessage TonyMorgan where
           , c <- playableCards
           ]
         <> map ((\f -> f windows' []) . AbilityLabel iid) actions
-      pure $ TonyMorgan . (`with` Meta True) $ attrs & additionalActionsL %~ deleteFirst BountyAction
+      pure
+        $ TonyMorgan
+        . (`with` Meta True)
+        $ attrs
+        & (usedAdditionalActionsL %~ (AdditionalAction "Tony Morgan" (toSource attrs) BountyAction :))
     ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == toId attrs -> do
       bountiesOnly <- hasModifier iid BountiesOnly
       let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id

@@ -147,7 +147,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorCardsUnderneath :: [Card]
   , investigatorFoundCards :: Map Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
-  , investigatorAdditionalActions :: [AdditionalAction]
+  , investigatorUsedAdditionalActions :: [AdditionalAction]
   , investigatorMulligansTaken :: Int
   , -- handling liquid courage
     investigatorHorrorHealed :: Int

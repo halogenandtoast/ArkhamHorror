@@ -54,7 +54,7 @@ data ModifierType
   | AddTrait Trait
   | AddSkillIcons [SkillIcon]
   | RemoveSkillIcons [SkillIcon]
-  | AdditionalActions Int
+  | AdditionalActions Text Source Int
   | FewerActions Int
   | GiveAdditionalAction AdditionalAction
   | AdditionalStartingUses Int

@@ -7,6 +7,7 @@ import Arkham.Action.Additional
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Prelude
 
@@ -15,8 +16,7 @@ newtype SwiftReflexes = SwiftReflexes EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swiftReflexes :: EventCard SwiftReflexes
-swiftReflexes =
-  event SwiftReflexes Cards.swiftReflexes
+swiftReflexes = event SwiftReflexes Cards.swiftReflexes
 
 -- This card may be a little wonky, we want to take an action but we can't make
 -- everything free as something that cost two actions would now be doable, but
@@ -27,7 +27,9 @@ instance RunMessage SwiftReflexes where
       iid' <- getActiveInvestigatorId
       pushAll
         $ [SetActiveInvestigator iid | iid /= iid']
-        <> [ GainAdditionalAction iid (toSource attrs) AnyAdditionalAction
+        <> [ turnModifier attrs iid
+              $ GiveAdditionalAction
+              $ AdditionalAction "Swift Reflexes" (toSource attrs) #any
            , PlayerWindow iid [] False
            ]
         <> [SetActiveInvestigator iid' | iid /= iid']

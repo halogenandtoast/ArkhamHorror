@@ -319,7 +319,7 @@ instance HasModifiersFor TarotCard where
             pure
               . toModifiers source
               $ case facing of
-                Upright -> [AdditionalActions 2 | firstTurn && affected]
+                Upright -> [AdditionalActions "THE SUN · XIX" source 2 | firstTurn && affected]
                 Reversed -> [FewerActions 2 | firstTurn && affected]
           _ -> pure []
       JudgementXX ->

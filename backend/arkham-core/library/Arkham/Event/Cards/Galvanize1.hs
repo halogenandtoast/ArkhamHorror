@@ -5,12 +5,12 @@ module Arkham.Event.Cards.Galvanize1 (
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype Galvanize1 = Galvanize1 EventAttrs
@@ -23,21 +23,13 @@ galvanize1 = event Galvanize1 Cards.galvanize1
 instance RunMessage Galvanize1 where
   runMessage msg e@(Galvanize1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <-
-        selectList
-          $ assetControlledBy iid
-          <> AssetExhausted
-          <> AssetWithClass Guardian
+      assets <- selectList $ assetControlledBy iid <> AssetExhausted <> AssetWithClass Guardian
       pushAll
-        $ [ chooseOrRunOne
-            iid
-            [targetLabel aid [Ready (AssetTarget aid)] | aid <- assets]
+        $ [ chooseOrRunOne iid
+            $ [targetLabel aid [Ready (AssetTarget aid)] | aid <- assets]
           | notNull assets
           ]
-        <> [ GainAdditionalAction
-              iid
-              (toSource attrs)
-              (ActionRestrictedAdditionalAction Action.Fight)
+        <> [ turnModifier attrs iid (GiveAdditionalAction $ AdditionalAction "Galvanize" (toSource attrs) #fight)
            ]
       pure e
     _ -> Galvanize1 <$> runMessage msg attrs

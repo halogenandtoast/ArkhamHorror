@@ -129,7 +129,6 @@ getAbilitiesForTurn attrs = do
   modifiers <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
  where
-  applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier (FewerActions m) n = max 0 (n - m)
   applyModifier _ n = n
 
@@ -322,7 +321,7 @@ investigator f cardDef Stats {..} =
                 , investigatorCardsUnderneath = []
                 , investigatorFoundCards = mempty
                 , investigatorUsedAbilities = mempty
-                , investigatorAdditionalActions = []
+                , investigatorUsedAdditionalActions = mempty
                 , investigatorMulligansTaken = 0
                 , investigatorHorrorHealed = 0
                 , investigatorSupplies = []
@@ -358,13 +357,26 @@ getSpendableClueCount a = do
 getCanSpendNClues :: HasGame m => InvestigatorId -> Int -> m Bool
 getCanSpendNClues iid n = iid <=~> InvestigatorCanSpendClues (Static n)
 
+getAdditionalActions :: HasGame m => InvestigatorAttrs -> m [AdditionalAction]
+getAdditionalActions attrs = do
+  mods <- getModifiers attrs
+  let
+    toAdditionalAction = \case
+      GiveAdditionalAction ac -> [ac]
+      AdditionalActions label source n -> replicate n $ AdditionalAction label source AnyAdditionalAction
+      _ -> []
+    additionalActions = concatMap toAdditionalAction mods
+
+  pure $ filter (`notElem` investigatorUsedAdditionalActions attrs) additionalActions
+
 getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
+  additionalActions <- getAdditionalActions a
   additionalActionCount <-
     countM
       (\aa -> anyM (\ac -> additionalActionCovers (toSource a) (Just ac) aa) as)
-      investigatorAdditionalActions
+      additionalActions
   pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 drawOpeningHand
@@ -491,7 +503,7 @@ getInvestigatorsWithHealHorror a n =
 
 additionalActionCovers
   :: HasGame m => Source -> Maybe Action -> AdditionalAction -> m Bool
-additionalActionCovers source maction = \case
+additionalActionCovers source maction (AdditionalAction _ _ aType) = case aType of
   TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
     NoRestriction -> member t <$> sourceTraits source
     AbilitiesOnly -> case source of
@@ -518,3 +530,17 @@ getCanShuffleDeck iid =
     [ withoutModifier iid CannotManipulateDeck
     , fieldMap InvestigatorDeck notNull iid
     ]
+
+getModifiedHealth :: HasGame m => InvestigatorAttrs -> m Int
+getModifiedHealth attrs@InvestigatorAttrs {..} = do
+  foldr applyModifier investigatorHealth <$> getModifiers attrs
+ where
+  applyModifier (HealthModifier m) n = max 0 (n + m)
+  applyModifier _ n = n
+
+getModifiedSanity :: HasGame m => InvestigatorAttrs -> m Int
+getModifiedSanity attrs@InvestigatorAttrs {..} = do
+  foldr applyModifier investigatorSanity <$> getModifiers attrs
+ where
+  applyModifier (SanityModifier m) n = max 0 (n + m)
+  applyModifier _ n = n

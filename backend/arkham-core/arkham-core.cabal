@@ -705,6 +705,7 @@ library
       Arkham.Asset.Cards.TennesseeSourMashSurvivor3
       Arkham.Asset.Cards.TetsuoMori
       Arkham.Asset.Cards.TheBlackBook
+      Arkham.Asset.Cards.TheBlackFan3
       Arkham.Asset.Cards.TheChthonianStone
       Arkham.Asset.Cards.TheChthonianStone3
       Arkham.Asset.Cards.TheCodexOfAges
@@ -2491,6 +2492,7 @@ test-suite spec
       Arkham.Asset.Cards.JennysTwin45sSpec
       Arkham.Asset.Cards.JimsTrumpetSpec
       Arkham.Asset.Cards.KnifeSpec
+      Arkham.Asset.Cards.LeoDeLucaSpec
       Arkham.Asset.Cards.MacheteSpec
       Arkham.Asset.Cards.MagnifyingGlass1Spec
       Arkham.Asset.Cards.MagnifyingGlassSpec
@@ -2505,6 +2507,7 @@ test-suite spec
       Arkham.Asset.Cards.Rolands38SpecialSpec
       Arkham.Asset.Cards.Shotgun4Spec
       Arkham.Asset.Cards.SwitchbladeSpec
+      Arkham.Asset.Cards.TheBlackFan3Spec
       Arkham.Asset.Cards.TheNecronomiconSpec
       Arkham.Asset.Cards.WendysAmuletSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
@@ -2522,6 +2525,7 @@ test-suite spec
       Arkham.Event.Cards.DodgeSpec
       Arkham.Event.Cards.DrawnToTheFlameSpec
       Arkham.Event.Cards.DynamiteBlastSpec
+      Arkham.Event.Cards.ElusiveSpec
       Arkham.Event.Cards.EmergencyCacheSpec
       Arkham.Event.Cards.EvidenceSpec
       Arkham.Event.Cards.ExtraAmmunition1Spec

@@ -526,8 +526,7 @@ data Message
   | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
   | FoundEnemyInVoid InvestigatorId Target EnemyId
   | GainActions InvestigatorId Source Int
-  | GainAdditionalAction InvestigatorId Source AdditionalAction
-  | LoseAdditionalAction InvestigatorId Source AdditionalAction
+  | LoseAdditionalAction InvestigatorId AdditionalAction
   | UseEffectAction InvestigatorId EffectId [Window]
   | GainClues InvestigatorId Source Int
   | GainXP InvestigatorId Source Int

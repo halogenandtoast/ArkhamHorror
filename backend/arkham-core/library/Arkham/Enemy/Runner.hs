@@ -39,7 +39,7 @@ import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Investigator hiding (getModifiedHealth)
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (

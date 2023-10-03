@@ -5,7 +5,6 @@ module Arkham.Asset.Cards.ExpeditionJournal (
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
@@ -22,16 +21,10 @@ instance HasModifiersFor ExpeditionJournal where
     pure
       $ toModifiers
         a
-        [ GiveAdditionalAction $ ActionRestrictedAdditionalAction Action.Explore
+        [ GiveAdditionalAction $ AdditionalAction "Expedition Journal" (toSource a) #explore
         | controlledBy a iid
         ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExpeditionJournal where
-  runMessage msg a@(ExpeditionJournal attrs) = case msg of
-    InvestigatorPlayAsset iid assetId | toId attrs == assetId -> do
-      push
-        $ GainAdditionalAction iid (toSource attrs)
-        $ ActionRestrictedAdditionalAction Action.Explore
-      pure a
-    _ -> ExpeditionJournal <$> runMessage msg attrs
+  runMessage msg (ExpeditionJournal attrs) = ExpeditionJournal <$> runMessage msg attrs

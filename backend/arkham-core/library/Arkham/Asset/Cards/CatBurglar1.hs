@@ -37,9 +37,6 @@ instance HasAbilities CatBurglar1 where
 
 instance RunMessage CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of
-    InvestigatorPlayAsset iid aid | aid == toId attrs -> do
-      push $ skillTestModifier attrs iid (SkillModifier #agility 1)
-      CatBurglar1 <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       engagedEnemyIds <- selectList $ enemyEngagedWith iid
       canDisengage <- iid <=~> InvestigatorCanDisengage

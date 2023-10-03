@@ -2471,6 +2471,7 @@ test-suite spec
       Arkham.Asset.Cards.BeatCop2Spec
       Arkham.Asset.Cards.BeatCopSpec
       Arkham.Asset.Cards.BurglarySpec
+      Arkham.Asset.Cards.CatBurglar1Spec
       Arkham.Asset.Cards.DaisysToteBagSpec
       Arkham.Asset.Cards.DigDeep2Spec
       Arkham.Asset.Cards.DigDeepSpec
@@ -2492,6 +2493,7 @@ test-suite spec
       Arkham.Asset.Cards.JennysTwin45sSpec
       Arkham.Asset.Cards.JimsTrumpetSpec
       Arkham.Asset.Cards.KnifeSpec
+      Arkham.Asset.Cards.LeoDeLuca1Spec
       Arkham.Asset.Cards.LeoDeLucaSpec
       Arkham.Asset.Cards.MacheteSpec
       Arkham.Asset.Cards.MagnifyingGlass1Spec
@@ -2529,6 +2531,7 @@ test-suite spec
       Arkham.Event.Cards.EmergencyCacheSpec
       Arkham.Event.Cards.EvidenceSpec
       Arkham.Event.Cards.ExtraAmmunition1Spec
+      Arkham.Event.Cards.HotStreak4Spec
       Arkham.Event.Cards.Lucky2Spec
       Arkham.Event.Cards.LuckySpec
       Arkham.Event.Cards.MindOverMatterSpec
@@ -2536,6 +2539,7 @@ test-suite spec
       Arkham.Event.Cards.OopsSpec
       Arkham.Event.Cards.SearchForTheTruthSpec
       Arkham.Event.Cards.SneakAttackSpec
+      Arkham.Event.Cards.SureGamble3Spec
       Arkham.Event.Cards.WillToSurvive3Spec
       Arkham.Event.Cards.WorkingAHunchSpec
       Arkham.GameSpec
@@ -2550,6 +2554,7 @@ test-suite spec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Skill.Cards.DeductionSpec
+      Arkham.Skill.Cards.OpportunistSpec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.CoverUpSpec

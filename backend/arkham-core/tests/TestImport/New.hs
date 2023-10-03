@@ -122,6 +122,9 @@ investigate i l =
       , investigateIsAction = False
       }
 
+instance HasField "engagedEnemies" Investigator (TestAppT [EnemyId]) where
+  getField self = selectList $ Matcher.enemyEngagedWith $ toId self
+
 instance HasField "playableCards" Investigator (TestAppT [Card]) where
   getField self = getPlayableCards (toAttrs self) UnpaidCost (defaultWindows $ toId self)
 
@@ -392,6 +395,12 @@ assertDoesNotRunMessage msg body = do
 
 class Gives (s :: Symbol) where
   gives :: KnownSymbol s => CardDef -> Int -> SpecWith ()
+
+instance Gives "agility" where
+  gives = \def n -> it ("gives +" <> show n <> " agility") . gameTest $ \self -> do
+    withProp @"agility" 0 self
+    self `putCardIntoPlay` def
+    self.agility `shouldReturn` n
 
 instance Gives "willpower" where
   gives = \def n -> it ("gives +" <> show n <> " willpower") . gameTest $ \self -> do

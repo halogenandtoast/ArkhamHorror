@@ -20,7 +20,7 @@ spec = do
     it "should be discarded if an investigator leaves the location" $ gameTest $ \self -> do
       location <- testLocation
       investigator2 <- addInvestigator Investigators.rolandBanks
-      run $ moveAllTo location
+      moveAllTo location
       self `putCardIntoPlay` Events.barricade3
       investigator2 `moveTo` location
       click "trigger barricade"

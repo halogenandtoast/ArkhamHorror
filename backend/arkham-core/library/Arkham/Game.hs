@@ -2688,7 +2688,14 @@ getEnemyField f e = do
     EnemyHealth -> getPlayerCountValue enemyHealth
     EnemyHealthDamage -> pure enemyHealthDamage
     EnemySanityDamage -> pure enemySanityDamage
-    EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
+    EnemyTraits -> do
+      modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
+      let
+        additionalTraits = foldl' applyModifier [] modifiers'
+        applyModifier ks = \case
+          AddTrait k -> k : ks
+          _ -> ks
+      pure $ cdCardTraits (toCardDef attrs) <> setFromList additionalTraits
     EnemyKeywords -> do
       modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let

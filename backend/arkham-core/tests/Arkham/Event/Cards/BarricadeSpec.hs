@@ -12,7 +12,7 @@ spec = do
     it "should make the current location unenterable by non elites" . gameTest $ \self -> do
       location <- testLocation
       self `moveTo` location
-      self `putCardIntoPlay` Events.barricade
+      self `playEvent` Events.barricade
       getModifiers location `shouldReturn` [CannotBeEnteredBy NonEliteEnemy]
       assert $ selectAny $ eventAt (toId location) <> eventIs Events.barricade
       self.discard `shouldReturn` []
@@ -20,8 +20,8 @@ spec = do
     it "should be discarded if an investigator leaves the location" $ gameTest $ \self -> do
       (location1, location2) <- testConnectedLocations id id
       investigator2 <- addInvestigator Investigators.rolandBanks
-      run $ moveAllTo location1
-      self `putCardIntoPlay` Events.barricade
+      moveAllTo location1
+      self `playEvent` Events.barricade
       investigator2 `moveTo` location2
       click "trigger barricade"
       getModifiers location1 `shouldReturn` []

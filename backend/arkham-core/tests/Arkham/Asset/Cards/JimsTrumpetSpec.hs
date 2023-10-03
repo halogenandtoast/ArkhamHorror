@@ -24,7 +24,7 @@ spec = describe "Jim's Trumpet" $ do
       self `putCardIntoPlay` Assets.jimsTrumpet
       location <- testLocation
       setChaosTokens [Skull]
-      run $ moveAllTo location
+      moveAllTo location
       runSkillTest self #intellect 0
       useReaction
       click "choose investigator at same location"
@@ -35,7 +35,7 @@ spec = describe "Jim's Trumpet" $ do
       self `putCardIntoPlay` Assets.jimsTrumpet
       location <- testLocation
       setChaosTokens [Skull]
-      run $ moveAllTo location
+      moveAllTo location
       runSkillTest investigator2 SkillIntellect 0
       useReaction
       click "choose investigator at same location"

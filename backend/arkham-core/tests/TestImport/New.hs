@@ -10,11 +10,13 @@ import TestImport.Lifted as X hiding (
   fightEnemy,
   investigate,
   loadDeck,
+  moveAllTo,
   moveTo,
   playCard,
   spawnAt,
  )
 
+import Arkham.Ability.Type (AbilityType (..))
 import Arkham.Ability.Types
 import Arkham.Asset.Types
 import Arkham.Asset.Types qualified as Field
@@ -32,6 +34,7 @@ import Arkham.Investigator.Types qualified as Field
 import Arkham.Location.Types
 import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
+import Arkham.Phase
 import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
@@ -91,7 +94,7 @@ setChaosTokens :: [ChaosTokenFace] -> TestAppT ()
 setChaosTokens = run . SetChaosTokens
 
 spawnAt :: Enemy -> Location -> TestAppT ()
-spawnAt e l = run $ EnemySpawn Nothing (toId l) (toId e)
+spawnAt e l = run $ EnemySpawnAtLocationMatching Nothing (Matcher.LocationWithId $ toId l) (toId e)
 
 moveTo :: Investigator -> Location -> TestAppT ()
 moveTo i l = run $ Move $ move (toSource i) (toId i) (toId l)
@@ -295,10 +298,20 @@ inWindow self body = do
   run $ CheckWindow [toId self] (defaultWindows $ toId self)
   body
 
-chooseTarget :: HasCallStack => Targetable target => target -> TestAppT ()
+chooseTarget :: (HasCallStack, Targetable target) => target -> TestAppT ()
 chooseTarget (toTarget -> target) =
-  chooseOptionMatching "choose self" \case
+  chooseOptionMatching "choose target" \case
     TargetLabel target' _ -> target == target'
+    FightLabel eid _ -> case target of
+      EnemyTarget eid' -> eid == eid'
+      _ -> False
+    _ -> False
+
+chooseSkill :: HasCallStack => SkillType -> TestAppT ()
+chooseSkill sType =
+  chooseOptionMatching "choose self" \case
+    SkillLabel sType' _ -> sType == sType'
+    Label lbl _ -> lookup lbl labeledSkills == Just sType
     _ -> False
 
 evadedBy :: Enemy -> Investigator -> TestAppT Bool
@@ -312,6 +325,12 @@ duringTurn self body = do
   run $ BeginTurn (toId self)
   body
   run $ ChooseEndTurn (toId self)
+
+duringPhase :: Phase -> TestAppT () -> TestAppT ()
+duringPhase phase body = do
+  run $ Begin phase
+  body
+  run EndPhase
 
 duringTurnWindow :: Investigator -> Window
 duringTurnWindow = Old.duringTurn . toId
@@ -418,3 +437,27 @@ isFastAsset def = it "is fast" $ (cdFastWindow def `shouldBe` Just (Matcher.Duri
 
 withEach :: [a] -> (a -> TestAppT ()) -> TestAppT ()
 withEach xs f = for_ xs $ withRewind . f
+
+commit :: Card -> TestAppT ()
+commit = chooseTarget . toCardId
+
+assertNoReaction :: TestAppT ()
+assertNoReaction = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices = case mapToList questionMap of
+      [(_, question)] -> case question of
+        ChooseOne msgs -> msgs
+        _ -> []
+      _ -> []
+    isReaction = \case
+      AbilityLabel {ability} -> case abilityType ability of
+        ReactionAbility {} -> True
+        _ -> False
+      _ -> False
+  case find isReaction choices of
+    Nothing -> pure ()
+    Just choice -> expectationFailure $ "expected no reaction, but found:\n\n" <> show choice
+
+moveAllTo :: Location -> TestAppT ()
+moveAllTo = run . Old.moveAllTo

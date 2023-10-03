@@ -21,9 +21,7 @@ instance HasModifiersFor MagnifyingGlass1 where
 
 instance HasAbilities MagnifyingGlass1 where
   getAbilities (MagnifyingGlass1 a) =
-    [ restrictedAbility a 1 (ControlsThis <> LocationExists (YourLocation <> LocationWithoutClues))
-        $ FastAbility Free
-    ]
+    [controlledAbility a 1 (exists $ YourLocation <> LocationWithoutClues) $ FastAbility Free]
 
 instance RunMessage MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs) = case msg of

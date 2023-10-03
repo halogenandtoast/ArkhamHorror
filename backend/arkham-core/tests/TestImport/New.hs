@@ -190,6 +190,9 @@ instance HasField "horror" AssetId (TestAppT Int) where
 instance HasField "uses" AssetId (TestAppT (Uses Int)) where
   getField = field AssetUses
 
+instance HasField "ammo" AssetId (TestAppT Int) where
+  getField = fieldMap AssetUses useCount
+
 instance HasField "damage" AssetId (TestAppT Int) where
   getField = field Field.AssetDamage
 

@@ -267,12 +267,13 @@ instance RunMessage LocationAttrs where
             if CannotPlaceClues `elem` modifiers'
               then pure 0
               else getPlayerCountValue locationRevealClues
+          let currentClues = countTokens Clue locationTokens
 
           pushAll
             [ PlaceClues (toSource a) (toTarget a) locationClueCount
             | locationClueCount > 0
             ]
-          pure $ a & withoutCluesL .~ (locationClueCount == 0)
+          pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
     RevealLocation miid lid | lid == locationId -> do
       modifiers' <- getModifiers (toTarget a)
@@ -288,10 +289,13 @@ instance RunMessage LocationAttrs where
       afterWindowMsg <-
         checkWindows
           [mkWindow Timing.After (Window.RevealLocation revealer lid)]
+
+      let currentClues = countTokens Clue locationTokens
+
       pushAll
         $ [whenWindowMsg, afterWindowMsg]
         <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
-      pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount == 0)
+      pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount + currentClues == 0)
     LookAtRevealed iid source target | isTarget a target -> do
       push
         $ chooseOne

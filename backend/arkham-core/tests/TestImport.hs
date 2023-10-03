@@ -75,6 +75,7 @@ import Arkham.Scenario.Types
 import Arkham.SkillTest.Type
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Trait (Trait (Elite))
 import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
@@ -329,14 +330,29 @@ instance UpdateField "healthDamage" Enemy Int where
 instance UpdateField "exhausted" Enemy Bool where
   updateField isExhausted = pure . overAttrs (\attrs -> attrs {enemyExhausted = isExhausted})
 
+instance UpdateField "elite" Enemy Bool where
+  updateField True this = do
+    run $ gameModifier (TestSource mempty) (toTarget this) (AddTrait Elite)
+    pure this
+  updateField False _ = error "Cannot set elite to false"
+
 exhausted :: forall a. (TestUpdate a, UpdateField "exhausted" a Bool) => TestAppT a -> TestAppT a
 exhausted = prop @"exhausted" True
+
+elite :: forall a. (TestUpdate a, UpdateField "elite" a Bool) => TestAppT a -> TestAppT a
+elite = prop @"elite" True
 
 instance UpdateField "clues" Location Int where
   updateField clues =
     pure
       . overAttrs
-        (\attrs -> attrs {locationTokens = setTokens Clue clues mempty, locationRevealClues = Static 0})
+        ( \attrs ->
+            attrs
+              { locationTokens = setTokens Clue clues mempty
+              , locationRevealClues = Static 0
+              , locationWithoutClues = clues == 0
+              }
+        )
 
 instance UpdateField "shroud" Location Int where
   updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = shroud})

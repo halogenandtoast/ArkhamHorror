@@ -2472,8 +2472,10 @@ test-suite spec
       Arkham.Asset.Cards.DaisysToteBagSpec
       Arkham.Asset.Cards.DigDeep2Spec
       Arkham.Asset.Cards.DigDeepSpec
+      Arkham.Asset.Cards.DiscOfItzamna2Spec
       Arkham.Asset.Cards.DrMilanChristopherSpec
       Arkham.Asset.Cards.DukeSpec
+      Arkham.Asset.Cards.Encyclopedia2Spec
       Arkham.Asset.Cards.FireAxeSpec
       Arkham.Asset.Cards.FirstAidSpec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
@@ -2488,6 +2490,7 @@ test-suite spec
       Arkham.Asset.Cards.JimsTrumpetSpec
       Arkham.Asset.Cards.KnifeSpec
       Arkham.Asset.Cards.MacheteSpec
+      Arkham.Asset.Cards.MagnifyingGlass1Spec
       Arkham.Asset.Cards.MagnifyingGlassSpec
       Arkham.Asset.Cards.MedicalTextsSpec
       Arkham.Asset.Cards.OldBookOfLoreSpec
@@ -2498,6 +2501,7 @@ test-suite spec
       Arkham.Asset.Cards.ResearchLibrarianSpec
       Arkham.Asset.Cards.Rolands38SpecialSpec
       Arkham.Asset.Cards.Shotgun4Spec
+      Arkham.Asset.Cards.SwitchbladeSpec
       Arkham.Asset.Cards.TheNecronomiconSpec
       Arkham.Asset.Cards.WendysAmuletSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
@@ -2525,6 +2529,7 @@ test-suite spec
       Arkham.Event.Cards.OopsSpec
       Arkham.Event.Cards.SearchForTheTruthSpec
       Arkham.Event.Cards.WillToSurvive3Spec
+      Arkham.Event.Cards.WorkingAHunchSpec
       Arkham.GameSpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec

@@ -22,7 +22,7 @@ spec = do
       cards <- testPlayerCards 3
       location <- testLocation
       withProp @"deck" (Deck cards) investigator2
-      run $ moveAllTo location
+      moveAllTo location
       self `putCardIntoPlay` Events.crypticResearch4
       chooseTarget investigator2
       assert $ Events.crypticResearch4 `isInDiscardOf` self

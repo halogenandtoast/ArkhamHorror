@@ -486,3 +486,47 @@ assertNoReaction = do
 
 moveAllTo :: Location -> TestAppT ()
 moveAllTo = run . Old.moveAllTo
+
+assertTarget :: (HasCallStack, Targetable target) => target -> TestAppT ()
+assertTarget (toTarget -> target) = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices =
+      case mapToList questionMap of
+        [(_, question)] -> case question of
+          ChooseOne msgs -> msgs
+          ChooseN _ msgs -> msgs
+          _ -> error $ "unsupported questions type: " <> show question
+        _ -> error "There must be only one question to use this function"
+    isMessageTarget = \case
+      TargetLabel target' _ -> target == target'
+      FightLabel eid _ -> case target of
+        EnemyTarget eid' -> eid == eid'
+        _ -> False
+      _ -> False
+
+  case find isMessageTarget choices of
+    Nothing -> expectationFailure $ "expected to find target " <> show target <> " but did not"
+    Just _ -> pure ()
+
+assertNotTarget :: (HasCallStack, Targetable target) => target -> TestAppT ()
+assertNotTarget (toTarget -> target) = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices =
+      case mapToList questionMap of
+        [(_, question)] -> case question of
+          ChooseOne msgs -> msgs
+          ChooseN _ msgs -> msgs
+          _ -> error $ "unsupported questions type: " <> show question
+        _ -> error "There must be only one question to use this function"
+    isMessageTarget = \case
+      TargetLabel target' _ -> target == target'
+      FightLabel eid _ -> case target of
+        EnemyTarget eid' -> eid == eid'
+        _ -> False
+      _ -> False
+
+  case find isMessageTarget choices of
+    Nothing -> pure ()
+    Just _ -> expectationFailure $ "expected not to find target " <> show target <> " but did"

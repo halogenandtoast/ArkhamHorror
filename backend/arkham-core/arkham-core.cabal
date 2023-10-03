@@ -2480,6 +2480,7 @@ test-suite spec
       Arkham.Asset.Cards.FireAxeSpec
       Arkham.Asset.Cards.FirstAidSpec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
+      Arkham.Asset.Cards.FortyOneDerringerSpec
       Arkham.Asset.Cards.GrotesqueStatue4Spec
       Arkham.Asset.Cards.GuardDogSpec
       Arkham.Asset.Cards.HardKnocks2Spec

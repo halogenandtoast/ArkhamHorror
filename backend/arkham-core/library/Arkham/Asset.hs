@@ -569,6 +569,8 @@ allAssets =
     , -- Edge of the Earth
       --- signature [eote]
       SomeAssetCard livreDeibon
+    , --- rogue [eote]
+      SomeAssetCard theBlackFan3
     , -- The Scarlet Keys
       --- guardian [tsk]
       -- , SomeAssetCard runicAxe

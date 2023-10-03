@@ -14,12 +14,9 @@ leoDeLuca = ally LeoDeLuca Cards.leoDeLuca (2, 2)
 
 instance HasModifiersFor LeoDeLuca where
   getModifiersFor (InvestigatorTarget iid) (LeoDeLuca a) = do
-    pure $ toModifiers a [AdditionalActions 1 | controlledBy a iid]
+    pure
+      $ toModifiers a [AdditionalActions "Leo De Luca" (toSource a) 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LeoDeLuca where
-  runMessage msg (LeoDeLuca attrs) = case msg of
-    InvestigatorPlayAsset iid aid | attrs `is` aid -> do
-      push $ GainActions iid (toSource aid) 1
-      LeoDeLuca <$> runMessage msg attrs
-    _ -> LeoDeLuca <$> runMessage msg attrs
+  runMessage msg (LeoDeLuca attrs) = LeoDeLuca <$> runMessage msg attrs

@@ -1,6 +1,5 @@
 module Arkham.Investigator.Cards.DaisyWalkerSpec (spec) where
 
-import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards (daisyWalker)
@@ -28,10 +27,11 @@ spec = describe "Daisy Walker" $ do
 
       it "is in the choices for additional actions to lose" . gameTestWith daisyWalker $ \self -> do
         run BeginRound
+        [additionalAction] <- self.additionalActions
         self `putCardIntoPlay` Cards.expeditionJournal
         self `loseActions` 4
         chooseOptionMatching "lose tome action" \case
-          Label _ [LoseAdditionalAction _ _ (TraitRestrictedAdditionalAction Tome AbilitiesOnly)] -> True
+          Label _ [LoseAdditionalAction _ additionalAction'] -> additionalAction == additionalAction'
           _ -> False
         assert $ not <$> canAffordTomeAbilityCost self
         assert

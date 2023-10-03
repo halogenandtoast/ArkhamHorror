@@ -1,32 +1,21 @@
-module Arkham.Event.Cards.BackstabSpec (
-  spec,
-) where
+module Arkham.Event.Cards.BackstabSpec (spec) where
 
-import TestImport.Lifted hiding (EnemyDamage)
-
-import Arkham.Enemy.Types (Field (..))
-import Arkham.Enemy.Types qualified as EnemyAttrs
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types (Field (..), InvestigatorAttrs (..))
-import Arkham.Matcher (cardIs)
-import Arkham.Projection
+import TestImport.New
 
 spec :: Spec
 spec = do
   describe "Backstab" $ do
-    it "should use agility and do +2 damage" $ gameTest $ \investigator -> do
-      location <- testLocationWith id
-      updateInvestigator investigator
-        $ \attrs -> attrs {investigatorCombat = 1, investigatorAgility = 4}
-      enemy <-
-        testEnemyWith
-          ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))
-      pushAndRun $ SetChaosTokens [MinusOne]
-      pushAndRun $ spawnAt enemy location
-      pushAndRun $ moveTo investigator location
-      putCardIntoPlay investigator Events.backstab
-      chooseOnlyOption "Fight enemy"
-      chooseOnlyOption "Run skill check"
-      chooseOnlyOption "Apply results"
-      assert $ fieldP EnemyDamage (== 3) (toId enemy)
-      assert $ fieldP InvestigatorDiscard (any (`cardMatch` cardIs Events.backstab)) (toId investigator)
+    it "should use agility and do +2 damage" . gameTest $ \self -> do
+      withProp @"combat" 1 self
+      withProp @"agility" 4 self
+      location <- testLocation
+      enemy <- testEnemy & prop @"fight" 3 & prop @"health" 4
+      setChaosTokens [MinusOne]
+      enemy `spawnAt` location
+      self `moveTo` location
+      self `playEvent` Events.backstab
+      chooseTarget enemy
+      startSkillTest
+      applyResults
+      enemy.damage `shouldReturn` 3

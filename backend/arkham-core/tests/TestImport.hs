@@ -303,6 +303,12 @@ instance UpdateField "intellect" Investigator Int where
 instance UpdateField "agility" Investigator Int where
   updateField agility = pure . overAttrs (\attrs -> attrs {investigatorAgility = agility})
 
+instance UpdateField "health" Investigator Int where
+  updateField health = pure . overAttrs (\attrs -> attrs {investigatorHealth = health})
+
+instance UpdateField "sanity" Investigator Int where
+  updateField sanity = pure . overAttrs (\attrs -> attrs {investigatorSanity = sanity})
+
 instance UpdateField "deck" Investigator (Deck PlayerCard) where
   updateField cards = pure . overAttrs (\attrs -> attrs {investigatorDeck = cards})
 
@@ -356,6 +362,9 @@ instance UpdateField "clues" Location Int where
               , locationWithoutClues = clues == 0
               }
         )
+
+instance UpdateField "revealed" Location Bool where
+  updateField revealed' = pure . overAttrs (\attrs -> attrs {locationRevealed = revealed'})
 
 instance UpdateField "shroud" Location Int where
   updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = shroud})
@@ -606,10 +615,10 @@ chooseOptionMatching _reason f = do
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
         Just msg -> push (uiToRun msg) <* runMessages
-        Nothing -> error "could not find a matching message"
+        Nothing -> liftIO $ expectationFailure "could not find a matching message"
       ChooseN _ msgs -> case find f msgs of
         Just msg -> push (uiToRun msg) <* runMessages
-        Nothing -> error "could not find a matching message"
+        Nothing -> liftIO $ expectationFailure "could not find a matching message"
       _ -> error $ "unsupported questions type: " <> show question
     _ -> error "There must be only one question to use this function"
 

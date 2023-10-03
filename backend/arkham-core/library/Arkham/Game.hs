@@ -445,18 +445,23 @@ withAssetMetadata a = do
 withInvestigatorConnectionData
   :: HasGame m
   => With WithDeckSize ModifierData
-  -> m (With (With WithDeckSize ModifierData) ConnectionData)
+  -> m (With (With (With WithDeckSize ModifierData) ConnectionData) Value)
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' -> do
+    additionalActions <- getAdditionalActions (toAttrs investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
     case mLocation of
-      Nothing -> pure $ inner `with` ConnectionData []
-      Just (LocationId uuid) | uuid == nil -> pure $ inner `with` ConnectionData []
+      Nothing -> pure $ inner `with` ConnectionData [] `with` object ["additionalActions" .= additionalActions]
+      Just (LocationId uuid) | uuid == nil -> do
+        pure $ inner `with` ConnectionData [] `with` object ["additionalActions" .= additionalActions]
       Just locationId -> do
         location <- getLocation locationId
         matcher <- getConnectedMatcher location
         connectedLocationIds <- selectList (AccessibleLocation <> matcher)
-        pure $ inner `with` ConnectionData connectedLocationIds
+        pure
+          $ inner
+          `with` ConnectionData connectedLocationIds
+          `with` object ["additionalActions" .= additionalActions]
 
 newtype WithDeckSize = WithDeckSize Investigator
   deriving newtype (Show, Targetable)
@@ -2724,12 +2729,14 @@ instance Projection Investigator where
       InvestigatorKeys -> pure investigatorKeys
       InvestigatorName -> pure investigatorName
       InvestigatorRemainingActions -> pure investigatorRemainingActions
-      InvestigatorAdditionalActions -> pure investigatorAdditionalActions
-      InvestigatorSanity -> pure investigatorSanity
-      InvestigatorRemainingSanity ->
-        pure (investigatorSanity - investigatorSanityDamage attrs)
-      InvestigatorRemainingHealth ->
-        pure (investigatorHealth - investigatorHealthDamage attrs)
+      InvestigatorAdditionalActions -> getAdditionalActions attrs
+      InvestigatorSanity -> getModifiedSanity attrs
+      InvestigatorRemainingSanity -> do
+        sanity <- getModifiedSanity attrs
+        pure (sanity - investigatorSanityDamage attrs)
+      InvestigatorRemainingHealth -> do
+        health <- getModifiedHealth attrs
+        pure (health - investigatorHealthDamage attrs)
       InvestigatorLocation -> do
         mods <- getModifiers iid
         let

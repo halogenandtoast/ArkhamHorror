@@ -79,7 +79,6 @@ import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, over)
-import Control.Monad.Extra (findM)
 import Data.Data.Lens (biplate)
 import Data.Map.Strict qualified as Map
 import Data.Monoid
@@ -701,7 +700,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
       _ -> push $ RefillSlots investigatorId
 
-    pure $ a & (assetsL %~ deleteSet aid) & (discardL %~ (card :)) & (slotsL %~ removeFromSlots aid)
+    pure
+      $ a
+      & (assetsL %~ deleteSet aid)
+      & (discardL %~ (card :))
+      & (slotsL %~ removeFromSlots aid)
   Discarded (AssetTarget aid) _ (EncounterCard _) | aid `elem` investigatorAssets -> do
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ | aid `elem` investigatorAssets -> do
@@ -1755,17 +1758,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
   Do BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
-    modifiers' <- getModifiers (toTarget a)
-    let
-      toAdditionalAction = \case
-        GiveAdditionalAction ac -> Just ac
-        _ -> Nothing
-      additionalActions = mapMaybe toAdditionalAction modifiers'
     pure
       $ a
       & (endedTurnL .~ False)
       & (remainingActionsL .~ actionsForTurn)
-      & (additionalActionsL %~ (additionalActions <>))
+      & (usedAdditionalActionsL .~ mempty)
       & (actionsTakenL .~ mempty)
       & (actionsPerformedL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
@@ -2248,49 +2245,75 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         playableCards <- getPlayableCards a UnpaidCost windows
         runWindow a windows actions playableCards
         pure a
+  SpendActions iid _ _ 0 | iid == investigatorId -> do
+    pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
     -- We want to try and spend the most restrictive action so we get any
     -- action that is not any additional action first, and if not that then the
     -- any additional action
-    mAdditionalAction <-
-      findM
+    additionalActions <- getAdditionalActions a
+    specificAdditionalActions <-
+      filterM
         ( andM
             . sequence
               [ additionalActionCovers source mAction
-              , pure . (/= AnyAdditionalAction)
+              , pure . ((/= AnyAdditionalAction) . additionalActionType)
               ]
         )
-        investigatorAdditionalActions
-    let mAnyAdditionalAction = find (== AnyAdditionalAction) investigatorAdditionalActions
-    case mAdditionalAction <|> mAnyAdditionalAction of
-      Nothing -> pure $ a & remainingActionsL %~ max 0 . subtract n
-      Just aa -> pure $ a & additionalActionsL %~ deleteFirst aa
+        additionalActions
+    let anyAdditionalActions = filter ((== AnyAdditionalAction) . additionalActionType) additionalActions
+
+    case specificAdditionalActions of
+      [] -> case anyAdditionalActions of
+        [] -> pure $ a & remainingActionsL %~ max 0 . subtract n
+        xs -> do
+          push
+            $ chooseOne iid
+            $ [ Label
+                ("Use action from " <> lbl)
+                [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
+              | ac@(AdditionalAction lbl _ _) <- xs
+              ]
+          pure a
+      xs -> do
+        push
+          $ chooseOne iid
+          $ [ Label
+              ("Use action from " <> lbl)
+              [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
+            | ac@(AdditionalAction lbl _ _) <- xs
+            ]
+        pure a
   UseEffectAction iid eid _ | iid == investigatorId -> do
+    additionalActions <- getAdditionalActions a
     let
-      isEffectAction = \case
+      isEffectAction aAction = case additionalActionType aAction of
         EffectAction _ eid' -> eid == eid'
         _ -> False
-    pure $ a & additionalActionsL %~ filter (not . isEffectAction)
+    case find isEffectAction additionalActions of
+      Nothing -> pure a
+      Just aAction -> pure $ a & usedAdditionalActionsL %~ (aAction :)
   LoseActions iid source n | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen $ Window.LostActions iid source n]
     afterWindowMsg <- checkWindows [mkAfter $ Window.LostActions iid source n]
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
-  Do (LoseActions iid source n) | iid == investigatorId -> do
+  Do (LoseActions iid _source n) | iid == investigatorId -> do
     -- TODO: after losing all remaining actions we can lose additional actions
+    additionalActions <- getAdditionalActions a
     let
       remaining = max 0 (n - a ^. remainingActionsL)
-      additional = min remaining (length $ a ^. additionalActionsL)
+      additional = min remaining (length additionalActions)
       a' = a & remainingActionsL %~ max 0 . subtract n
     if additional > 0
       then
-        if additional == length (a' ^. additionalActionsL)
-          then pure $ a' & additionalActionsL .~ []
+        if additional == length additionalActions
+          then pure $ a' & usedAdditionalActionsL <>~ additionalActions
           else do
             push
               $ chooseN iid additional
-              $ [ Label (additionalActionLabel ac) [LoseAdditionalAction iid source ac]
-                | ac <- a' ^. additionalActionsL
+              $ [ Label ("Lose action from " <> lbl) [LoseAdditionalAction iid ac]
+                | ac@(AdditionalAction lbl _ _) <- additionalActions
                 ]
             pure a'
       else pure a'
@@ -2299,10 +2322,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   GainActions iid _ n | iid == investigatorId -> do
     -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
     pure $ a & remainingActionsL +~ n
-  GainAdditionalAction iid _ n | iid == investigatorId -> do
-    pure $ a & additionalActionsL %~ (n :)
-  LoseAdditionalAction iid _ n | iid == investigatorId -> do
-    pure $ a & additionalActionsL %~ deleteFirst n
+  LoseAdditionalAction iid n | iid == investigatorId -> do
+    pure $ a & usedAdditionalActionsL %~ (n :)
   TakeAction iid mAction cost | iid == investigatorId -> do
     pushAll
       $ [PayForAbility (abilityEffect a cost) []]
@@ -2783,11 +2804,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         modifiers <- getModifiers (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a [#resource]
         canAffordDrawCards <- getCanAfford a [#draw]
+        additionalActions' <- getAdditionalActions a
         let
           usesAction = not isAdditional
           drawCardsF = if usesAction then drawCardsAction else drawCards
-          effectActions = flip mapMaybe investigatorAdditionalActions $ \case
-            EffectAction tooltip effectId ->
+          effectActions = flip mapMaybe additionalActions' $ \case
+            AdditionalAction _ _ (EffectAction tooltip effectId) ->
               Just
                 $ EffectActionButton
                   (Tooltip tooltip)
@@ -2892,7 +2914,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ( \UsedAbility {..} ->
             abilityLimitType (abilityLimit usedAbility) /= Just PerRound
         )
-      & additionalActionsL
+      & usedAdditionalActionsL
       .~ mempty
   EndTurn iid | iid == toId a -> do
     pure
@@ -2980,17 +3002,3 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
           , not canOnlyBeDefeatedByDamage
           ]
       ]
-
-getModifiedHealth :: HasGame m => InvestigatorAttrs -> m Int
-getModifiedHealth attrs@InvestigatorAttrs {..} = do
-  foldr applyModifier investigatorHealth <$> getModifiers attrs
- where
-  applyModifier (HealthModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
-
-getModifiedSanity :: HasGame m => InvestigatorAttrs -> m Int
-getModifiedSanity attrs@InvestigatorAttrs {..} = do
-  foldr applyModifier investigatorSanity <$> getModifiers attrs
- where
-  applyModifier (SanityModifier m) n = max 0 (n + m)
-  applyModifier _ n = n

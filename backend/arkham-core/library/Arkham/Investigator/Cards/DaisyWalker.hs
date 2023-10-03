@@ -27,7 +27,13 @@ instance HasChaosTokenValue DaisyWalker where
 
 instance HasModifiersFor DaisyWalker where
   getModifiersFor target (DaisyWalker a) | a `is` target = do
-    pure $ toModifiers a [GiveAdditionalAction $ TraitRestrictedAdditionalAction Tome AbilitiesOnly]
+    pure
+      $ toModifiers
+        a
+        [ GiveAdditionalAction
+            $ AdditionalAction "Daisy Walker" (toSource a)
+            $ TraitRestrictedAdditionalAction Tome AbilitiesOnly
+        ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DaisyWalker where

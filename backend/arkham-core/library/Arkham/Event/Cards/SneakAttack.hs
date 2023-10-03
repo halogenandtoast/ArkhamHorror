@@ -19,6 +19,6 @@ instance RunMessage SneakAttack where
   runMessage msg e@(SneakAttack attrs) = case msg of
     PlayThisEvent you eid | attrs `is` eid -> do
       enemies <- selectList $ ExhaustedEnemy <> enemiesColocatedWith you
-      pushAll $ map (nonAttackEnemyDamage attrs 2) enemies
+      push $ chooseOne you $ targetLabels enemies $ only . nonAttackEnemyDamage attrs 2
       pure e
     _ -> SneakAttack <$> runMessage msg attrs

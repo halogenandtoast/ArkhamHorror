@@ -2535,6 +2535,7 @@ test-suite spec
       Arkham.Event.Cards.OnTheLamSpec
       Arkham.Event.Cards.OopsSpec
       Arkham.Event.Cards.SearchForTheTruthSpec
+      Arkham.Event.Cards.SneakAttackSpec
       Arkham.Event.Cards.WillToSurvive3Spec
       Arkham.Event.Cards.WorkingAHunchSpec
       Arkham.GameSpec

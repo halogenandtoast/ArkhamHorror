@@ -46,7 +46,7 @@ const engagedEnemies = computed(() =>
 )
 
 const inHandEnemies = computed(() =>
-  game.enemies.filter((e) => e.placement.tag === "StillInHand" && e.placement.contents === props.investigatorId)
+  Object.values(props.game.enemies).filter((e) => e.placement.tag === "StillInHand" && e.placement.contents === props.investigatorId)
 )
 
 const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))

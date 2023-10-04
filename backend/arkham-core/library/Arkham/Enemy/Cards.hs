@@ -97,6 +97,7 @@ allPlayerEnemyCards =
       , serpentsOfYig
       , hoods
       , tonysQuarry
+      , watcherFromAnotherDimension
       , tommyMalloy
       ]
 
@@ -1534,6 +1535,14 @@ tonysQuarry =
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Aloof]
     }
+
+watcherFromAnotherDimension :: CardDef
+watcherFromAnotherDimension =
+  unique
+    $ (weakness "06017" "Watcher from Another Dimension")
+      { cdCardTraits = setFromList [Monster, Extradimensional]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul =

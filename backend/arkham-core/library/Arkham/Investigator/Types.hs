@@ -255,6 +255,9 @@ instance HasField "hand" InvestigatorAttrs [Card] where
 instance HasField "deck" InvestigatorAttrs (Deck PlayerCard) where
   getField = investigatorDeck
 
+instance HasField "discard" InvestigatorAttrs [PlayerCard] where
+  getField = investigatorDiscard
+
 data Investigator = forall a. IsInvestigator a => Investigator a
 
 instance HasField "id" Investigator InvestigatorId where

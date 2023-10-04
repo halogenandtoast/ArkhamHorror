@@ -540,6 +540,7 @@ allAssets =
     , SomeAssetCard bountyContracts
     , SomeAssetCard tonys38LongColt
     , SomeAssetCard gateBox
+    , SomeAssetCard patricesViolin
     , --- guardian [tde]
       SomeAssetCard solemnVow
     , -- The Search for Kadath

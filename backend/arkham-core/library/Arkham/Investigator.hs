@@ -113,6 +113,7 @@ allInvestigators =
       , SomeInvestigatorCard mandyThompson
       , SomeInvestigatorCard tonyMorgan
       , SomeInvestigatorCard lukeRobinson
+      , SomeInvestigatorCard patriceHathaway
       , SomeInvestigatorCard dexterDrake
       , SomeInvestigatorCard normanWithers
       , SomeInvestigatorCard nathanielCho

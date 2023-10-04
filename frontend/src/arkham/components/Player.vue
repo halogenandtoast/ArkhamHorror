@@ -552,7 +552,6 @@ function onLeave(el, done) {
 }
 
 .hand {
-  overflow-x: overlay;
   flex-grow: 1;
   display: flex;
   box-sizing: border-box;

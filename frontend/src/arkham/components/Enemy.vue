@@ -271,6 +271,7 @@ watch(abilities, (abilities) => {
 }
 
 .card-frame {
+  isolation: isolate;
   position: relative;
   display: flex;
   align-items: center;
@@ -286,6 +287,6 @@ watch(abilities, (abilities) => {
   gap: 5px;
   bottom:100%;
   left: 0;
-  z-index: 2000;
+  z-index: 20000000000;
 }
 </style>

@@ -49,6 +49,7 @@ import Arkham.Matcher (
   LocationMatcher (..),
   MovesVia (..),
   PreyMatcher (..),
+  investigatorAt,
   investigatorEngagedWith,
   locationWithInvestigator,
   preyWith,
@@ -172,55 +173,27 @@ instance RunMessage EnemyAttrs where
       if lid `notElem` locations'
         then push (Discard GameSource (EnemyTarget eid))
         else do
-          if Keyword.Aloof
-            `notElem` keywords
-            && Keyword.Massive
-            `notElem` keywords
-            && not enemyExhausted
+          if Keyword.Aloof `notElem` keywords && Keyword.Massive `notElem` keywords && not enemyExhausted
             then do
               prey <- getPreyMatcher a
-              preyIds <-
-                selectList $ preyWith prey $ InvestigatorAt $ LocationWithId lid
-              investigatorIds <-
-                if null preyIds
-                  then selectList $ InvestigatorAt $ LocationWithId lid
-                  else pure []
+              preyIds <- selectList $ preyWith prey $ investigatorAt lid
+              investigatorIds <- if null preyIds then selectList $ investigatorAt lid else pure []
               leadInvestigatorId <- getLeadInvestigatorId
-              let
-                validInvestigatorIds =
-                  maybe (preyIds <> investigatorIds) pure miid
+              let validInvestigatorIds = maybe (preyIds <> investigatorIds) pure miid
               case validInvestigatorIds of
                 [] -> push $ EnemyEntered eid lid
-                [iid] ->
-                  pushAll
-                    [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
+                [iid] -> pushAll [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                 iids ->
                   push
-                    $ chooseOne
-                      leadInvestigatorId
-                      [ targetLabel
-                        iid
-                        [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
-                      | iid <- iids
-                      ]
+                    $ chooseOne leadInvestigatorId
+                    $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- iids]
             else
-              when (Keyword.Massive `notElem` keywords)
-                $ push
-                $ EnemyEntered
-                  eid
-                  lid
-
-          when
-            (Keyword.Massive `elem` keywords)
-            do
-              investigatorIds <-
-                selectList
-                  $ InvestigatorAt
-                  $ LocationWithId
-                    lid
-              pushAll
+              pushWhen (Keyword.Massive `notElem` keywords)
                 $ EnemyEntered eid lid
-                : [EnemyEngageInvestigator eid iid | iid <- investigatorIds]
+
+          when (Keyword.Massive `elem` keywords) do
+            investigatorIds <- selectList $ investigatorAt lid
+            pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid | iid <- investigatorIds]
       pure a
     EnemySpawnedAt lid eid | eid == enemyId -> do
       a <$ push (EnemyEntered eid lid)
@@ -470,6 +443,14 @@ instance RunMessage EnemyAttrs where
               -- Lure (1)
               selectList $ locationMatcherModifier $ ClosestPathLocation loc forcedTargetLocationId
             (Nothing, BearerOf _) ->
+              selectList
+                $ locationMatcherModifier
+                $ locationWithInvestigator
+                $ fromJustNote
+                  "must have bearer"
+                  enemyBearer
+            (Nothing, RestrictedBearerOf _ _) -> do
+              -- this case should never happen, but just in case
               selectList
                 $ locationMatcherModifier
                 $ locationWithInvestigator
@@ -785,6 +766,12 @@ instance RunMessage EnemyAttrs where
             <> ignoreWindows
             <> [After (EnemyAttack details)]
         _ -> error "Unhandled"
+      pure a
+    After (EnemyAttack details) | attackEnemy details == toId a -> do
+      afterAttacksWindow <-
+        checkWindows
+          [mkWindow Timing.After (Window.EnemyAttacks details)]
+      push afterAttacksWindow
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       afterWindow <-

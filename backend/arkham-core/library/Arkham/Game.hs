@@ -2852,6 +2852,11 @@ instance Query PreyMatcher where
       case enemyBearer (toAttrs enemy) of
         Just iid -> select $ InvestigatorWithId iid
         Nothing -> error "Invalid bearer situation"
+    RestrictedBearerOf enemyId restriction -> do
+      enemy <- getEnemy enemyId
+      case enemyBearer (toAttrs enemy) of
+        Just iid -> select $ InvestigatorWithId iid <> restriction
+        Nothing -> error "Invalid bearer situation"
 
 instance Query ExtendedCardMatcher where
   select matcher = do

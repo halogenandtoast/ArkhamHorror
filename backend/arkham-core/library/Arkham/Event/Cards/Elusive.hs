@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Event.Cards.Elusive where
 
 import Arkham.Prelude
@@ -24,7 +22,7 @@ instance RunMessage Elusive where
       enemies <- selectList $ enemyEngagedWith iid
       targets <- selectList $ EmptyLocation <> RevealedLocation
       pushAll
-        $ map (DisengageEnemy iid) (traceShowId enemies)
+        $ map (DisengageEnemy iid) enemies
         <> [ chooseOrRunOne iid
             $ targetLabels targets (only . MoveTo . move (toSource attrs) iid)
            | notNull targets

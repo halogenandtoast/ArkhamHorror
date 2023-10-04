@@ -58,10 +58,15 @@ replaceInvestigatorMatcher iid n = transform go
 
 -- ** Prey Helpers **
 
+-- NOTE: OnlyPrey and Bearer of used to not combine, but we need to do this for
+-- correct engagement checking. Otherwise if an enemy with that prey was
+-- supposed to spawn at a different location, it could not since this matcher
+-- would always return that prey
 preyWith :: PreyMatcher -> InvestigatorMatcher -> PreyMatcher
 preyWith (Prey m1) m2 = Prey $ m1 <> m2
-preyWith (OnlyPrey m1) _ = OnlyPrey m1 -- I do not think we should combine here
-preyWith (BearerOf m1) _ = BearerOf m1 -- I do not think we should combine here
+preyWith (OnlyPrey m1) m2 = OnlyPrey $ m1 <> m2
+preyWith (BearerOf e) m = RestrictedBearerOf e m
+preyWith (RestrictedBearerOf e m1) m2 = RestrictedBearerOf e $ m1 <> m2
 
 -- ** Asset Helpers **
 

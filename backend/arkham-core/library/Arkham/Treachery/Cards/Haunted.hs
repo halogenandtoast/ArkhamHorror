@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability hiding (Haunted, haunted)
 import Arkham.Classes
 import Arkham.Modifier
+import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -23,7 +24,7 @@ instance HasModifiersFor Haunted where
   getModifiersFor (InvestigatorTarget iid) (Haunted attrs) =
     pure
       $ toModifiers attrs
-      $ [AnySkillValue (-1) | treacheryOnInvestigator iid attrs]
+      $ [SkillModifier skillType (-1) | treacheryOnInvestigator iid attrs, skillType <- allSkills]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Haunted where

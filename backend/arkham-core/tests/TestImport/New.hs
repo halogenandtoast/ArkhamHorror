@@ -20,13 +20,16 @@ import TestImport.Lifted as X hiding (
 import Arkham.Ability.Type (AbilityType (..))
 import Arkham.Ability.Types
 import Arkham.Action.Additional
+import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses
 import Arkham.Classes.HasChaosTokenValue
+import Arkham.CommitRestriction
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
+import Arkham.Entities qualified as Entities
 import Arkham.Game.Settings
 import Arkham.GameEnv
 import Arkham.Helpers.Investigator qualified as Helpers
@@ -34,6 +37,7 @@ import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types
 import Arkham.Investigator.Types qualified as Field
+import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types
 import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
@@ -220,8 +224,14 @@ instance HasField "abilities" TreacheryId (TestAppT [Ability]) where
 instance HasField "doom" AssetId (TestAppT Int) where
   getField = field AssetDoom
 
+instance HasField "doom" Agenda (TestAppT Int) where
+  getField = field AgendaDoom . toEntityId
+
 instance HasField "health" AssetId (TestAppT (Maybe Int)) where
   getField = field AssetRemainingHealth
+
+instance HasField "sanity" AssetId (TestAppT (Maybe Int)) where
+  getField = field AssetRemainingSanity
 
 instance HasField "horror" AssetId (TestAppT Int) where
   getField = field AssetHorror
@@ -456,6 +466,11 @@ instance HasUses "ammo" where
     this <- self `putAssetIntoPlay` def
     field AssetUses this `shouldReturn` Uses Ammo n
 
+instance HasUses "supply" where
+  hasUses = \def n -> it ("starts with " <> show n <> " supplies") . gameTest $ \self -> do
+    this <- self `putAssetIntoPlay` def
+    field AssetUses this `shouldReturn` Uses Supply n
+
 instance HasUses "secret" where
   hasUses = \def n -> it ("starts with " <> show n <> " secrets") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
@@ -520,6 +535,9 @@ discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> d
 
 isFastAsset :: CardDef -> SpecWith ()
 isFastAsset def = it "is fast" $ (cdFastWindow def `shouldBe` Just (Matcher.DuringTurn Matcher.You) :: IO ())
+
+isHunter :: CardDef -> SpecWith ()
+isHunter def = it "is hunter" $ (cdKeywords def `shouldSatisfy` (elem Keyword.Hunter) :: IO ())
 
 withEach :: [a] -> (a -> TestAppT ()) -> TestAppT ()
 withEach xs f = for_ xs $ withRewind . f
@@ -602,3 +620,54 @@ failSkillTest self = do
   setChaosTokens [AutoFail]
   runSkillTest self #combat 1
   applyResults
+
+maxCommittedPerSkillTest :: Int -> CardDef -> SpecWith ()
+maxCommittedPerSkillTest n def =
+  it ("Max " <> show n <> " committed per skill test")
+    $ (cdCommitRestrictions def `shouldSatisfy` (elem MaxOnePerTest) :: IO ())
+
+-- Note: at the moment we don't have a better way of knowing if damage is
+-- direct of not aside from checking for the asset filter
+assertDamageIsDirect :: TestAppT ()
+assertDamageIsDirect = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices = case mapToList questionMap of
+      [(_, question)] -> case question of
+        ChooseOne msgs -> msgs
+        _ -> []
+      _ -> []
+    isDirectDamage = \case
+      ComponentLabel (InvestigatorComponent _ DamageToken) msgs -> flip any msgs $ \case
+        InvestigatorDoAssignDamage _ _ _ (Matcher.AssetWithModifier CanBeAssignedDirectDamage) _ _ _ _ -> True
+        _ -> False
+      _ -> False
+  unless (any isDirectDamage choices) $ expectationFailure "expected damage to be direct"
+
+-- Note: at the moment we don't have a better way of knowing if damage is
+-- direct of not aside from checking for the asset filter
+assertHorrorIsDirect :: TestAppT ()
+assertHorrorIsDirect = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices = case mapToList questionMap of
+      [(_, question)] -> case question of
+        ChooseOne msgs -> msgs
+        _ -> []
+      _ -> []
+    isDirectHorror = \case
+      ComponentLabel (InvestigatorComponent _ HorrorToken) msgs -> flip any msgs $ \case
+        InvestigatorDoAssignDamage _ _ _ (Matcher.AssetWithModifier CanBeAssignedDirectDamage) _ _ _ _ -> True
+        _ -> False
+      _ -> False
+  unless (any isDirectHorror choices) $ expectationFailure "expected horror to be direct"
+
+createWeaknessEnemy :: Investigator -> CardDef -> TestAppT Enemy
+createWeaknessEnemy self def = do
+  card <- genCard def
+  enemyId <- getRandom
+  let enemy' =
+        overAttrs (\attrs -> attrs {enemyBearer = Just (toId self)})
+          $ lookupEnemy (toCardCode card) enemyId (toCardId card)
+  overTest $ entitiesL . Entities.enemiesL %~ insertEntity enemy'
+  pure enemy'

@@ -2473,6 +2473,7 @@ test-suite spec
       Arkham.Asset.Cards.BeatCop2Spec
       Arkham.Asset.Cards.BeatCopSpec
       Arkham.Asset.Cards.BookOfShadows3Spec
+      Arkham.Asset.Cards.BulletproofVest3Spec
       Arkham.Asset.Cards.BurglarySpec
       Arkham.Asset.Cards.CatBurglar1Spec
       Arkham.Asset.Cards.DaisysToteBagSpec
@@ -2481,9 +2482,11 @@ test-suite spec
       Arkham.Asset.Cards.DiscOfItzamna2Spec
       Arkham.Asset.Cards.DrMilanChristopherSpec
       Arkham.Asset.Cards.DukeSpec
+      Arkham.Asset.Cards.ElderSignAmulet3Spec
       Arkham.Asset.Cards.Encyclopedia2Spec
       Arkham.Asset.Cards.FireAxeSpec
       Arkham.Asset.Cards.FirstAidSpec
+      Arkham.Asset.Cards.FlashlightSpec
       Arkham.Asset.Cards.ForbiddenKnowledgeSpec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
       Arkham.Asset.Cards.FortyOneDerringerSpec
@@ -2524,6 +2527,9 @@ test-suite spec
       Arkham.Asset.Cards.TheNecronomiconSpec
       Arkham.Asset.Cards.WendysAmuletSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
+      Arkham.Enemy.Cards.MobEnforcerSpec
+      Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
+      Arkham.Enemy.Cards.StubbornDetectiveSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Event.Cards.BackstabSpec
       Arkham.Event.Cards.BaitAndSwitchSpec
@@ -2569,14 +2575,24 @@ test-suite spec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Skill.Cards.DeductionSpec
       Arkham.Skill.Cards.FearlessSpec
+      Arkham.Skill.Cards.GutsSpec
+      Arkham.Skill.Cards.ManualDexteritySpec
       Arkham.Skill.Cards.OpportunistSpec
+      Arkham.Skill.Cards.OverpowerSpec
+      Arkham.Skill.Cards.PerceptionSpec
       Arkham.Skill.Cards.SurvivalInstinctSpec
+      Arkham.Skill.Cards.UnexpectedCourageSpec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
+      Arkham.Treachery.Cards.AmnesiaSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
+      Arkham.Treachery.Cards.HauntedSpec
       Arkham.Treachery.Cards.HospitalDebtsSpec
+      Arkham.Treachery.Cards.HypochondriaSpec
       Arkham.Treachery.Cards.MysteriousChantingSpec
+      Arkham.Treachery.Cards.ParanoiaSpec
+      Arkham.Treachery.Cards.PsychosisSpec
       Arkham.Treachery.Cards.RexsCurseSpec
       Arkham.Treachery.Cards.SearchingForIzzieSpec
       Arkham.Treachery.Cards.SmiteTheWickedSpec

@@ -757,6 +757,9 @@ evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId
 class ConvertToEntityId a b | a -> b where
   toEntityId :: a -> b
 
+instance ConvertToEntityId Agenda AgendaId where
+  toEntityId = toId
+
 instance ConvertToEntityId Enemy EnemyId where
   toEntityId = toId
 

@@ -129,6 +129,7 @@ data PreyMatcher
   = Prey InvestigatorMatcher
   | OnlyPrey InvestigatorMatcher
   | BearerOf EnemyId
+  | RestrictedBearerOf EnemyId InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 data AssetMatcher

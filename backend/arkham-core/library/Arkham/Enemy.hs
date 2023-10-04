@@ -287,6 +287,7 @@ allEnemies =
     , -- The Dream-Eaters
       -- signature
       SomeEnemyCard tonysQuarry
+    , SomeEnemyCard watcherFromAnotherDimension
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

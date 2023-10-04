@@ -416,6 +416,7 @@ allPlayerAssetCards =
       , painkillers
       , pantalone
       , pathfinder1
+      , patricesViolin
       , pennyWhite
       , peterSylvestre
       , peterSylvestre2
@@ -3554,6 +3555,16 @@ gateBox =
     , cdDeckRestrictions = [Signature "06004"]
     , cdUses = uses Charge 3
     , cdUnique = True
+    }
+
+patricesViolin :: CardDef
+patricesViolin =
+  (asset "06016" ("Patrice's Violin" <:> "My Muse") 2 Neutral)
+    { cdCardTraits = setFromList [Item, Instrument]
+    , cdDeckRestrictions = [Signature "06005"]
+    , cdUnique = True
+    , cdSlots = [#hand]
+    , cdSkills = [#willpower, #agility, #wild]
     }
 
 solemnVow :: CardDef

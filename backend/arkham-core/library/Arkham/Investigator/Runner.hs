@@ -1975,20 +1975,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards) $ do
       pushM $ drawCards investigatorId ScenarioSource 1
-    mayChooseNotToTakeResources <-
-      elem MayChooseNotToTakeUpkeepResources
-        <$> getModifiers (InvestigatorTarget investigatorId)
-    if mayChooseNotToTakeResources
-      then do
-        push
-          $ chooseOne investigatorId
-          $ [ Label "Do not take resource(s)" []
-            , Label
-                "Take resource(s)"
-                [TakeResources investigatorId 1 (toSource a) False]
-            ]
-        pure a
-      else pure $ a & tokensL %~ incrementTokens Resource
+    takeUpkeepResources a
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
       card {pcOwner = Just iid}
@@ -3002,3 +2989,16 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
           , not canOnlyBeDefeatedByDamage
           ]
       ]
+
+takeUpkeepResources :: InvestigatorAttrs -> GameT InvestigatorAttrs
+takeUpkeepResources a = do
+  mayChooseNotToTakeResources <- hasModifier a MayChooseNotToTakeUpkeepResources
+  if mayChooseNotToTakeResources
+    then do
+      push
+        $ chooseOne (toId a)
+        $ [ Label "Do not take resource(s)" []
+          , Label "Take resource(s)" [TakeResources (toId a) 1 (toSource a) False]
+          ]
+      pure a
+    else pure $ a & tokensL %~ incrementTokens Resource

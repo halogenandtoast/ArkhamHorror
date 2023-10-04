@@ -607,6 +607,7 @@ library
       Arkham.Asset.Cards.Painkillers
       Arkham.Asset.Cards.Pantalone
       Arkham.Asset.Cards.Pathfinder1
+      Arkham.Asset.Cards.PatricesViolin
       Arkham.Asset.Cards.PennyWhite
       Arkham.Asset.Cards.PeterClover
       Arkham.Asset.Cards.PeterSylvestre
@@ -1077,6 +1078,7 @@ library
       Arkham.Enemy.Cards.ValentinoRivas
       Arkham.Enemy.Cards.VengefulWitch
       Arkham.Enemy.Cards.VictoriaDevereux
+      Arkham.Enemy.Cards.WatcherFromAnotherDimension
       Arkham.Enemy.Cards.Whippoorwill
       Arkham.Enemy.Cards.WhippoorwillUnionAndDisillusion
       Arkham.Enemy.Cards.WingedOne
@@ -1418,6 +1420,7 @@ library
       Arkham.Investigator.Cards.MinhThiPhan
       Arkham.Investigator.Cards.NathanielCho
       Arkham.Investigator.Cards.NormanWithers
+      Arkham.Investigator.Cards.PatriceHathaway
       Arkham.Investigator.Cards.PennyWhite
       Arkham.Investigator.Cards.PrestonFairmont
       Arkham.Investigator.Cards.RexMurphy

@@ -97,6 +97,7 @@ allInvestigatorCards =
       , mandyThompson
       , tonyMorgan
       , lukeRobinson
+      , patriceHathaway
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -365,6 +366,14 @@ lukeRobinson =
     ("Luke Robinson" <:> "The Dreamer")
     Mystic
     [Dreamer, Drifter, Wayfarer]
+
+patriceHathaway :: CardDef
+patriceHathaway =
+  investigator
+    "06005"
+    ("Patrice Hathaway" <:> "The Violinist")
+    Survivor
+    [Performer, Cursed]
 
 dexterDrake :: CardDef
 dexterDrake =

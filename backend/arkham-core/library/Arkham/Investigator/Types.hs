@@ -125,7 +125,6 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorActionsPerformed :: [Action]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
-  , investigatorEngagedEnemies :: Set EnemyId
   , investigatorAssets :: Set AssetId
   , investigatorEvents :: Set EventId
   , investigatorDeck :: Deck PlayerCard

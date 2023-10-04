@@ -41,6 +41,10 @@ const stories = computed(() =>
     filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId && s.otherSide === null)
 )
 
+const engagedEnemies = computed(() =>
+  props.player.engagedEnemies.map((e) => props.game.enemies[e]).filter((e) => e.placement.tag === "InThreatArea" && e.placement.contents === props.investigatorId)
+)
+
 const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
 
 const topOfDiscard = computed(() => discards.value[0])
@@ -310,11 +314,11 @@ function onLeave(el, done) {
         />
 
         <Enemy
-          v-for="enemyId in player.engagedEnemies"
-          :key="enemyId"
-          :enemy="game.enemies[enemyId]"
+          v-for="enemy in engagedEnemies"
+          :key="enemy.id"
+          :enemy="enemy"
           :game="game"
-          :data-index="game.enemies[enemyId].cardId"
+          :data-index="enemy.cardId"
           :investigatorId="investigatorId"
           @choose="$emit('choose', $event)"
         />

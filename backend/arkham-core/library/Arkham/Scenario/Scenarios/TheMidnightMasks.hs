@@ -7,6 +7,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.NightOfTheZealot.ChaosBag
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -73,6 +74,9 @@ allCultists =
 
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      pure s
     PreScenarioSetup -> do
       investigators <- allInvestigators
       litaForcedToFindOthersToHelpHerCause <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause

@@ -7,6 +7,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.NightOfTheZealot.ChaosBag
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -62,6 +63,9 @@ agendaDeck =
 
 instance RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      pure s
     PreScenarioSetup -> do
       investigators <- allInvestigators
       push $ story investigators intro

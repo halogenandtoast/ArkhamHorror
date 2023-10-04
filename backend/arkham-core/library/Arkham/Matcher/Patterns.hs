@@ -194,6 +194,16 @@ pattern ControlledAsset <- AssetControlledBy Anyone
 
 -- ** Enemy Patterns **
 
+pattern EnemyEngagedWithYou :: EnemyMatcher
+pattern EnemyEngagedWithYou <- EnemyIsEngagedWith You
+  where
+    EnemyEngagedWithYou = EnemyIsEngagedWith You
+
+pattern EnemyNotEngagedWithYou :: EnemyMatcher
+pattern EnemyNotEngagedWithYou <- NotEnemy (EnemyIsEngagedWith You)
+  where
+    EnemyNotEngagedWithYou = NotEnemy (EnemyIsEngagedWith You)
+
 pattern AloofEnemy :: EnemyMatcher
 pattern AloofEnemy <- EnemyWithKeyword Keyword.Aloof
   where

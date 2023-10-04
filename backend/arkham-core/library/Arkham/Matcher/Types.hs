@@ -78,6 +78,7 @@ data InvestigatorMatcher
   | DiscardWith CardListMatcher
   | InvestigatorWithTrait Trait
   | InvestigatorWithoutModifier ModifierType
+  | InvestigatorWithModifier ModifierType
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithActionsRemaining ValueMatcher
   | InvestigatorWithClues ValueMatcher
@@ -236,8 +237,6 @@ data EnemyMatcher
   | CanParleyEnemy InvestigatorId
   | EnemyMatchAll [EnemyMatcher]
   | EnemyOneOf [EnemyMatcher]
-  | EnemyEngagedWithYou
-  | EnemyNotEngagedWithYou
   | EnemyWithMostRemainingHealth EnemyMatcher
   | EnemyWithoutModifier ModifierType
   | EnemyWithModifier ModifierType

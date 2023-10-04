@@ -22,6 +22,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
@@ -204,3 +205,15 @@ defeatEnemy enemyId investigatorId (toSource -> source) = do
     checkWindows
       [mkWindow Timing.After (Window.EnemyWouldBeDefeated enemyId)]
   pure [whenMsg, afterMsg, DefeatEnemy enemyId investigatorId source]
+
+enemyEngagedInvestigators :: HasGame m => EnemyId -> m [InvestigatorId]
+enemyEngagedInvestigators eid = do
+  asIfEngaged <- selectList $ InvestigatorWithModifier (AsIfEngagedWith eid)
+  placement <- field EnemyPlacement eid
+  others <- case placement of
+    InThreatArea iid -> pure [iid]
+    AtLocation lid -> do
+      isMassive <- fieldMap EnemyKeywords (elem Keyword.Massive) eid
+      if isMassive then selectList (investigatorAt lid) else pure []
+    _ -> pure []
+  pure . nub $ asIfEngaged <> others

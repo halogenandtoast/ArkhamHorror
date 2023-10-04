@@ -13,6 +13,11 @@ import Arkham.Trait
 
 -- ** Investigator Patterns **
 
+pattern AtYourLocation :: InvestigatorMatcher
+pattern AtYourLocation <- InvestigatorAt YourLocation
+  where
+    AtYourLocation = InvestigatorAt YourLocation
+
 pattern InvestigatorWithNonEmptyHand :: InvestigatorMatcher
 pattern InvestigatorWithNonEmptyHand <- HandWith (LengthIs (GreaterThan (Static 0)))
   where

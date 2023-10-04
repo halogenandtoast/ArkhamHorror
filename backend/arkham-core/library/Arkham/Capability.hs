@@ -1,20 +1,34 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Capability where
 
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
-import Data.Kind
-import GHC.OverloadedLabels
+import Arkham.Modifier
 
-class Capability a where
-  data CapabilityInput a :: Type
-  can :: a -> CapabilityInput a -> InvestigatorMatcher
+can :: Capabilities
+can =
+  Capabilities
+    { search = SearchCapabilities {deck = InvestigatorCanSearchDeck}
+    , draw = DrawCapabilities {cards = InvestigatorWithoutModifier CannotDrawCards}
+    , gain = GainCapabilities {resources = InvestigatorWithoutModifier CannotGainResources}
+    }
 
-data SearchCapability = SearchCapability
+data Capabilities = Capabilities
+  { search :: SearchCapabilities
+  , draw :: DrawCapabilities
+  , gain :: GainCapabilities
+  }
 
-instance IsLabel "search" SearchCapability where
-  fromLabel = SearchCapability
+data SearchCapabilities = SearchCapabilities
+  { deck :: InvestigatorMatcher
+  }
 
-instance Capability SearchCapability where
-  data CapabilityInput SearchCapability = Deck
-  can _ = \case
-    Deck -> InvestigatorCanSearchDeck
+data DrawCapabilities = DrawCapabilities
+  { cards :: InvestigatorMatcher
+  }
+
+data GainCapabilities = GainCapabilities
+  { resources :: InvestigatorMatcher
+  }

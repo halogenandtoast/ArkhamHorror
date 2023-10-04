@@ -14,6 +14,12 @@ import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
 
+class OneOf a where
+  oneOf :: [a] -> a
+
+instance OneOf InvestigatorMatcher where
+  oneOf = AnyInvestigator
+
 class WithTrait a where
   withTrait :: Trait -> a
 

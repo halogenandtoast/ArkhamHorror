@@ -41,6 +41,6 @@ spec = describe "Pickpocketing" $ do
         startSkillTest
         applyResults
         useReaction
-        chooseTarget (toCardId closeCall2)
+        chooseTarget closeCall2
         assert $ selectNone AnyEnemy
         scenarioField ScenarioEncounterDeck `shouldReturn` Deck (onlyEncounterCards [toCard enemy])

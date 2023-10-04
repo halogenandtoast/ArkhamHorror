@@ -8,7 +8,7 @@ import TestImport.New
 spec :: Spec
 spec = do
   describe "Cunning Distraction" $ do
-    it "Evades enemies engaged with you" $ gameTest $ \self -> do
+    it "Evades enemies engaged with you" . gameTest $ \self -> do
       location <- testLocation
       enemy <- testEnemy
       enemy `spawnAt` location
@@ -17,7 +17,7 @@ spec = do
       assert $ Events.cunningDistraction `isInDiscardOf` self
       assert $ enemy `evadedBy` self
 
-    it "Evades enemies engaged with other investigators at your location" $ gameTest $ \self -> do
+    it "Evades enemies engaged with other investigators at your location" . gameTest $ \self -> do
       investigator2 <- addInvestigator Investigators.rolandBanks
       location <- testLocation
       enemy <- testEnemy
@@ -28,7 +28,7 @@ spec = do
       assert $ Events.cunningDistraction `isInDiscardOf` self
       assert $ enemy `evadedBy` investigator2
 
-    it "Evades aloof enemies at your location" $ gameTest $ \self -> do
+    it "Evades aloof enemies at your location" . gameTest $ \self -> do
       location <- testLocation
       enemy <- testEnemyWithDef Enemies.whippoorwill id
       enemy `spawnAt` location

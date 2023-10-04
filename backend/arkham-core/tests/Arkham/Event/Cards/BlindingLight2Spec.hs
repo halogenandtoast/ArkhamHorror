@@ -1,68 +1,55 @@
-module Arkham.Event.Cards.BlindingLight2Spec (
-  spec,
-) where
+module Arkham.Event.Cards.BlindingLight2Spec (spec) where
 
-import TestImport.Lifted hiding (EnemyDamage)
-
-import Arkham.Enemy.Types (Field (..))
-import Arkham.Enemy.Types qualified as EnemyAttrs
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types (Field (..), InvestigatorAttrs (..), willpowerL)
-import Arkham.Projection
+import TestImport.New
 
 spec :: Spec
 spec = do
-  describe "Blinding Light 2" $ do
-    it "Uses willpower to evade an enemy" $ gameTest $ \investigator -> do
-      updateInvestigator investigator $ \attrs ->
-        attrs {investigatorWillpower = 5, investigatorAgility = 3}
-      enemy <- testEnemyWith ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 3))
-      location <- testLocationWith id
-      pushAndRunAll
-        [ SetChaosTokens [MinusOne]
-        , spawnAt enemy location
-        , moveTo investigator location
-        ]
-      putCardIntoPlay investigator Events.blindingLight2
+  describe "Blinding Light (2)" $ do
+    it "Uses willpower to evade an enemy" . gameTest $ \self -> do
+      withProp @"willpower" 5 self
+      withProp @"agility" 3 self
+      enemy <- testEnemy & prop @"evade" 4 & prop @"health" 3
+      location <- testLocation
+      setChaosTokens [MinusOne]
+      enemy `spawnAt` location
+      self `moveTo` location
+      self `playEvent` Events.blindingLight2
       chooseOnlyOption "Evade enemy"
       chooseOnlyOption "Run skill check"
       chooseOnlyOption "Apply results"
-      assert $ Events.blindingLight2 `isInDiscardOf` investigator
-      assert $ fieldP EnemyEngagedInvestigators null (toId enemy)
+      assert $ Events.blindingLight2 `isInDiscardOf` self
+      self.engagedEnemies `shouldReturn` []
 
-    it "deals 2 damage to the evaded enemy" $ gameTest $ \investigator -> do
-      updateInvestigator investigator (willpowerL .~ 5)
-      enemy <- testEnemyWith ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 3))
-      location <- testLocationWith id
-      pushAndRunAll
-        [ SetChaosTokens [MinusOne]
-        , spawnAt enemy location
-        , moveTo investigator location
-        ]
-      putCardIntoPlay investigator Events.blindingLight2
+    it "deals 2 damage to the evaded enemy" . gameTest $ \self -> do
+      withProp @"willpower" 5 self
+      enemy <- testEnemy & prop @"evade" 4 & prop @"health" 3
+      location <- testLocation
+      setChaosTokens [MinusOne]
+      enemy `spawnAt` location
+      self `moveTo` location
+      self `playEvent` Events.blindingLight2
       chooseOnlyOption "Evade enemy"
       chooseOnlyOption "Run skill check"
       chooseOnlyOption "Apply results"
-      assert $ Events.blindingLight2 `isInDiscardOf` investigator
-      assert $ fieldP EnemyDamage (== 2) (toId enemy)
+      assert $ Events.blindingLight2 `isInDiscardOf` self
+      enemy.damage `shouldReturn` 2
 
     it
       "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
       $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
-      $ \token -> gameTest $ \investigator -> do
-        updateInvestigator investigator (willpowerL .~ 5)
-        enemy <- testEnemyWith ((EnemyAttrs.evadeL ?~ 4) . (EnemyAttrs.healthL .~ Static 3))
-        location <- testLocationWith id
-        pushAndRunAll
-          [ SetChaosTokens [token]
-          , spawnAt enemy location
-          , moveTo investigator location
-          ]
-        putCardIntoPlay investigator Events.blindingLight2
+      $ \token -> gameTest $ \self -> do
+        withProp @"willpower" 5 self
+        enemy <- testEnemy & prop @"evade" 4 & prop @"health" 3
+        location <- testLocation
+        setChaosTokens [token]
+        enemy `spawnAt` location
+        self `moveTo` location
+        self `playEvent` Events.blindingLight2
         chooseOnlyOption "Evade enemy"
         chooseOnlyOption "Run skill check"
         chooseOnlyOption "Apply results"
         chooseOnlyOption "take event damage"
-        assert $ Events.blindingLight2 `isInDiscardOf` investigator
-        fieldAssert InvestigatorRemainingActions (== 2) investigator
-        fieldAssert InvestigatorHorror (== 1) investigator
+        assert $ Events.blindingLight2 `isInDiscardOf` self
+        self.remainingActions `shouldReturn` 2
+        self.horror `shouldReturn` 1

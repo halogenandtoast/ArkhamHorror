@@ -1351,6 +1351,7 @@ library
       Arkham.Game.Diff
       Arkham.Game.Helpers
       Arkham.Game.Json
+      Arkham.Game.Settings
       Arkham.GameEnv
       Arkham.GameValue
       Arkham.Git
@@ -2468,8 +2469,10 @@ test-suite spec
       Arkham.Asset.Cards.ArcaneStudies2Spec
       Arkham.Asset.Cards.ArcaneStudiesSpec
       Arkham.Asset.Cards.BandolierSpec
+      Arkham.Asset.Cards.BaseballBatSpec
       Arkham.Asset.Cards.BeatCop2Spec
       Arkham.Asset.Cards.BeatCopSpec
+      Arkham.Asset.Cards.BookOfShadows3Spec
       Arkham.Asset.Cards.BurglarySpec
       Arkham.Asset.Cards.CatBurglar1Spec
       Arkham.Asset.Cards.DaisysToteBagSpec
@@ -2495,6 +2498,7 @@ test-suite spec
       Arkham.Asset.Cards.JennysTwin45sSpec
       Arkham.Asset.Cards.JimsTrumpetSpec
       Arkham.Asset.Cards.KnifeSpec
+      Arkham.Asset.Cards.LeatherCoatSpec
       Arkham.Asset.Cards.LeoDeLuca1Spec
       Arkham.Asset.Cards.LeoDeLucaSpec
       Arkham.Asset.Cards.MacheteSpec
@@ -2507,11 +2511,14 @@ test-suite spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
       Arkham.Asset.Cards.PickpocketingSpec
       Arkham.Asset.Cards.PoliceBadge2Spec
+      Arkham.Asset.Cards.RabbitsFootSpec
       Arkham.Asset.Cards.ResearchLibrarianSpec
       Arkham.Asset.Cards.Rolands38SpecialSpec
+      Arkham.Asset.Cards.ScavengingSpec
       Arkham.Asset.Cards.ScryingSpec
       Arkham.Asset.Cards.Shotgun4Spec
       Arkham.Asset.Cards.ShrivellingSpec
+      Arkham.Asset.Cards.StrayCatSpec
       Arkham.Asset.Cards.SwitchbladeSpec
       Arkham.Asset.Cards.TheBlackFan3Spec
       Arkham.Asset.Cards.TheNecronomiconSpec
@@ -2536,14 +2543,17 @@ test-suite spec
       Arkham.Event.Cards.EvidenceSpec
       Arkham.Event.Cards.ExtraAmmunition1Spec
       Arkham.Event.Cards.HotStreak4Spec
+      Arkham.Event.Cards.LookWhatIFoundSpec
       Arkham.Event.Cards.Lucky2Spec
       Arkham.Event.Cards.LuckySpec
       Arkham.Event.Cards.MindOverMatterSpec
+      Arkham.Event.Cards.MindWipe1Spec
       Arkham.Event.Cards.OnTheLamSpec
       Arkham.Event.Cards.OopsSpec
       Arkham.Event.Cards.SearchForTheTruthSpec
       Arkham.Event.Cards.SneakAttackSpec
       Arkham.Event.Cards.SureGamble3Spec
+      Arkham.Event.Cards.WardOfProtectionSpec
       Arkham.Event.Cards.WillToSurvive3Spec
       Arkham.Event.Cards.WorkingAHunchSpec
       Arkham.GameSpec
@@ -2558,7 +2568,9 @@ test-suite spec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Skill.Cards.DeductionSpec
+      Arkham.Skill.Cards.FearlessSpec
       Arkham.Skill.Cards.OpportunistSpec
+      Arkham.Skill.Cards.SurvivalInstinctSpec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.CoverUpSpec

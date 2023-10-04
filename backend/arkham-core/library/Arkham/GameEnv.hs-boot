@@ -9,6 +9,7 @@ import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game.Base
+import Arkham.Game.Settings
 import Arkham.History
 import Arkham.Id
 import Arkham.Message
@@ -52,6 +53,7 @@ class Monad m => HasGame m where
 
 getCard :: HasGame m => CardId -> m Card
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
+getSettings :: HasGame m => m Settings
 
 instance HasGame GameT
 

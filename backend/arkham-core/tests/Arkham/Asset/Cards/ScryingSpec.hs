@@ -19,9 +19,9 @@ spec = describe "Scrying" $ do
         [action] <- self `getActionsFrom` scrying
         self `useAbility` action
         chooseTarget self
-        chooseTarget (toCardId knife)
-        chooseTarget (toCardId flashlight)
-        chooseTarget (toCardId holyRosary)
+        chooseTarget knife
+        chooseTarget flashlight
+        chooseTarget holyRosary
         self.deck `shouldReturn` Deck [holyRosary, flashlight, knife]
         assert scrying.exhausted
         scrying.charges `shouldReturn` 2
@@ -35,9 +35,9 @@ spec = describe "Scrying" $ do
         [action] <- self `getActionsFrom` scrying
         self `useAbility` action
         chooseTarget EncounterDeckTarget
-        chooseTarget (toCardId ghoulMinion)
-        chooseTarget (toCardId icyGhoul)
-        chooseTarget (toCardId swarmOfRats)
+        chooseTarget ghoulMinion
+        chooseTarget icyGhoul
+        chooseTarget swarmOfRats
         scenarioField ScenarioEncounterDeck `shouldReturn` Deck [swarmOfRats, icyGhoul, ghoulMinion]
         assert scrying.exhausted
         scrying.charges `shouldReturn` 2

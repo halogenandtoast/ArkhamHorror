@@ -40,6 +40,7 @@ import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game
+import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
@@ -338,8 +339,12 @@ getCanAffordAbilityCost iid a@Ability {..} = do
 
 filterDepthSpecificAbilities :: HasGame m => [UsedAbility] -> m [UsedAbility]
 filterDepthSpecificAbilities usedAbilities = do
-  depth <- getWindowDepth
-  pure $ filter (valid depth) usedAbilities
+  settings <- getSettings
+  if settingsAbilitiesCannotReactToThemselves settings
+    then pure usedAbilities
+    else do
+      depth <- getWindowDepth
+      pure $ filter (valid depth) usedAbilities
  where
   valid depth ability =
     abilityLimitType (abilityLimit $ usedAbility ability)
@@ -362,6 +367,7 @@ getCanAffordUse :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Win
 getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 
 -- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
+-- EMAIL: Cards can't react to themselves, i.e. Grotesque Statue (4)
 getCanAffordUseWith
   :: (HasCallStack, HasGame m)
   => ([UsedAbility] -> [UsedAbility])

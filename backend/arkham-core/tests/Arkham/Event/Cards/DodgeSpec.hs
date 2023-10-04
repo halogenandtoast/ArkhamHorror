@@ -21,4 +21,4 @@ spec = do
       let attackMessage = PerformEnemyAttack $ Attack.enemyAttack (toId enemy) enemy self
 
       withRewind $ assertRunsMessage attackMessage skip
-      assertDoesNotRunMessage attackMessage $ chooseTarget (toCardId dodge)
+      assertDoesNotRunMessage attackMessage $ chooseTarget dodge

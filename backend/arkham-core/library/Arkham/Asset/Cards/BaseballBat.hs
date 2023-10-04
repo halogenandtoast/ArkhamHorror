@@ -55,7 +55,7 @@ instance RunMessage BaseballBatEffect where
   runMessage msg e@(BaseballBatEffect attrs@EffectAttrs {..}) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       case effectSource of
-        AssetSource assetId ->
+        AbilitySource (AssetSource assetId) 1 ->
           when (chaosTokenFace token `elem` [Skull, AutoFail])
             $ pushAll [Discard effectSource (toTarget assetId), disable attrs]
         _ -> error "wrong source"

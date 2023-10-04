@@ -11,6 +11,7 @@ import Arkham.Campaign.Types (Campaign)
 import {-# SOURCE #-} Arkham.Card
 import Arkham.ChaosToken
 import {-# SOURCE #-} Arkham.Entities
+import Arkham.Game.Settings
 import Arkham.Git (GitSha)
 import Arkham.History
 import Arkham.Id
@@ -35,6 +36,7 @@ data Game = Game
   , gameTurnHistory :: Map InvestigatorId History
   , gameRoundHistory :: Map InvestigatorId History
   , gameInitialSeed :: Int
+  , gameSettings :: Settings
   , gameSeed :: Int
   , gameWindowDepth :: Int
   , gameRunWindows :: Bool

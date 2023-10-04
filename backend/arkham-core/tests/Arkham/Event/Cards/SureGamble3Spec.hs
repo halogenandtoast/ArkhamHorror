@@ -13,5 +13,5 @@ spec = describe "Sure Gamble (3)" $ do
     setChaosTokens [MinusOne]
     run $ beginSkillTest self #intellect 1
     startSkillTest
-    chooseTarget (toCardId sureGamble3)
+    chooseTarget sureGamble3
     assertPassedSkillTest

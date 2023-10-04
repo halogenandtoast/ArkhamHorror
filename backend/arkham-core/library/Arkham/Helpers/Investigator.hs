@@ -114,8 +114,8 @@ getHandSize attrs = do
 
 getInHandCount :: HasGame m => InvestigatorAttrs -> m Int
 getInHandCount attrs = do
+  cards <- field InvestigatorHand (toId attrs)
   let
-    cards = investigatorHand attrs
     applyModifier n = \case
       HandSizeCardCount m -> m
       _ -> n
@@ -279,7 +279,6 @@ investigator f cardDef Stats {..} =
                 , investigatorActionsPerformed = mempty
                 , investigatorRemainingActions = 3
                 , investigatorEndedTurn = False
-                , investigatorEngagedEnemies = mempty
                 , investigatorAssets = mempty
                 , investigatorEvents = mempty
                 , investigatorDeck = mempty

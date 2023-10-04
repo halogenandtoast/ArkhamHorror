@@ -74,7 +74,7 @@ import Arkham.Git (gitHash)
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Enemy (spawnAt)
+import Arkham.Helpers.Enemy (enemyEngagedInvestigators, spawnAt)
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message hiding (
@@ -451,11 +451,19 @@ withInvestigatorConnectionData
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' -> do
     additionalActions <- getAdditionalActions (toAttrs investigator')
+    engagedEnemies <- selectList (enemyEngagedWith $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
     case mLocation of
-      Nothing -> pure $ inner `with` ConnectionData [] `with` object ["additionalActions" .= additionalActions]
+      Nothing ->
+        pure
+          $ inner
+          `with` ConnectionData []
+          `with` object ["additionalActions" .= additionalActions, "engagedEnemies" .= engagedEnemies]
       Just (LocationId uuid) | uuid == nil -> do
-        pure $ inner `with` ConnectionData [] `with` object ["additionalActions" .= additionalActions]
+        pure
+          $ inner
+          `with` ConnectionData []
+          `with` object ["additionalActions" .= additionalActions, "engagedEnemies" .= engagedEnemies]
       Just locationId -> do
         location <- getLocation locationId
         matcher <- getConnectedMatcher location
@@ -463,7 +471,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
         pure
           $ inner
           `with` ConnectionData connectedLocationIds
-          `with` object ["additionalActions" .= additionalActions]
+          `with` object ["additionalActions" .= additionalActions, "engagedEnemies" .= engagedEnemies]
 
 newtype WithDeckSize = WithDeckSize Investigator
   deriving newtype (Show, Targetable)
@@ -946,6 +954,9 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithoutModifier modifierType -> \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'
+    InvestigatorWithModifier modifierType -> \i -> do
+      modifiers' <- getModifiers (toTarget i)
+      pure $ modifierType `elem` modifiers'
     UneliminatedInvestigator ->
       pure
         . not
@@ -958,15 +969,15 @@ getInvestigatorsMatching matcher = do
         asIfEngagedWith = flip mapMaybe mods $ \case
           AsIfEngagedWith eid -> Just eid
           _ -> Nothing
-        engagedEnemies = investigatorEngagedEnemies (toAttrs i) <> setFromList asIfEngagedWith
 
-      enemyIds <- select enemyMatcher
-      pure $ any (`member` enemyIds) engagedEnemies
+      selectAny
+        ( enemyMatcher <> EnemyOneOf [enemyEngagedWith (toId i), EnemyOneOf $ map EnemyWithId asIfEngagedWith]
+        )
     TopCardOfDeckIs cardMatcher -> \i ->
       pure $ case unDeck . investigatorDeck $ toAttrs i of
         [] -> False
         x : _ -> cardMatch (PlayerCard x) cardMatcher
-    UnengagedInvestigator -> pure . null . attr investigatorEngagedEnemies
+    UnengagedInvestigator -> selectNone . enemyEngagedWith . toId
     NoDamageDealtThisTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ null (historyDealtDamageTo history)
@@ -2189,18 +2200,9 @@ enemyMatcherFilter = \case
   EnemyIs cardCode -> pure . (== cardCode) . toCardCode
   NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
-    iids <-
-      setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
-    notNull
-      . intersection iids
-      <$> select
-        (investigatorEngagedWith $ toId $ toAttrs enemy)
-  EnemyEngagedWithYou -> \enemy -> do
-    iid <- view activeInvestigatorIdL <$> getGame
-    member iid <$> select (investigatorEngagedWith $ toId $ toAttrs enemy)
-  EnemyNotEngagedWithYou -> \enemy -> do
-    iid <- view activeInvestigatorIdL <$> getGame
-    notMember iid <$> select (investigatorEngagedWith $ toId $ toAttrs enemy)
+    iids <- select investigatorMatcher
+    engagedInvestigators <- enemyEngagedInvestigators (toId enemy)
+    pure $ any (`elem` engagedInvestigators) iids
   EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
     matches' <- getEnemiesMatching enemyMatcher
     elem enemy . maxes <$> forToSnd matches' (field EnemyRemainingHealth . toId)
@@ -2768,7 +2770,12 @@ instance Projection Investigator where
           selectListMapM
             (fmap toCard . getTreachery)
             (TreacheryInHandOf (InvestigatorWithId iid))
-        pure $ investigatorHand <> ts
+        -- Include enemies still in hand
+        es <-
+          selectListMapM
+            (fmap toCard . getEnemy)
+            (EnemyWithPlacement (StillInHand iid))
+        pure $ investigatorHand <> ts <> es
       InvestigatorHandSize -> getHandSize (toAttrs i)
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
       InvestigatorDeck -> pure investigatorDeck

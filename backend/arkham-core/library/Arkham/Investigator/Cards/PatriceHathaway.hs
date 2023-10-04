@@ -8,11 +8,11 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Projection
 
 newtype PatriceHathaway = PatriceHathaway InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
@@ -37,7 +37,8 @@ instance RunMessage PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs) = case msg of
     AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
       attrs' <- takeUpkeepResources attrs
-      let nonWeaknessCards = filter (`cardMatch` NonWeakness) attrs.hand
+      hand <- field InvestigatorHand (toId attrs)
+      let nonWeaknessCards = filter (`cardMatch` NonWeakness) hand
       pushAll
         [ chooseOneAtATime
             (toId attrs)
@@ -49,11 +50,9 @@ instance RunMessage PatriceHathaway where
       pure $ PatriceHathaway attrs'
     DoStep 1 AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
       -- a StillInHand WatcherFromAnotherDimension affects this by 1
-      watcherInHand <-
-        selectAny
-          $ enemyIs Enemies.watcherFromAnotherDimension
-          <> EnemyWithPlacement (StillInHand $ toId attrs)
-      let numberToDraw = max 0 (5 - (length attrs.hand + if watcherInHand then 1 else 0))
+      cards <- field InvestigatorHand (toId attrs)
+
+      let numberToDraw = max 0 (5 - length cards)
       when (numberToDraw > 0) $ pushM $ drawCards (toId attrs) ScenarioSource numberToDraw
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do

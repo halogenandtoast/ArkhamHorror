@@ -535,20 +535,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ [PlaceTokens (toSource a) (toTarget lid) Clue (investigatorClues a) | lid <- toList mlid]
       <> [PlaceKey (toTarget lid) k | k <- toList investigatorKeys, lid <- toList mlid]
     pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
-  EnemyMove eid lid | lid /= investigatorLocation -> do
-    -- [AsIfAt]: Enemy engagement is currently based on real location
-    pure $ a & engagedEnemiesL %~ deleteSet eid
-  EnemyEngageInvestigator eid iid | iid == investigatorId -> do
-    pure $ a & engagedEnemiesL %~ insertSet eid
-  EnemyEngageInvestigator eid iid | iid /= investigatorId -> do
-    pure $ a & engagedEnemiesL %~ deleteSet eid
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
-  RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   RemovedFromPlay source@(AssetSource _) ->
     pure $ a & (slotsL . each %~ filter ((/= source) . slotSource))
-  RemovedFromPlay (EnemySource eid) ->
-    pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId -> do
     a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId -> do
@@ -687,11 +677,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (deckL .~ Deck deck')
   Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
   Discard _ (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-  Discarded (EnemyTarget eid) _ _ ->
-    pure $ a & engagedEnemiesL %~ deleteSet eid
-  PlaceEnemy eid (InThreatArea iid') | iid' == investigatorId -> do
-    pure $ a & engagedEnemiesL %~ insertSet eid
-  PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) _ (PlayerCard card) | aid `elem` investigatorAssets -> do
     -- if we are planning to discard another asset immediately, wait to refill slots
     mmsg <- peekMessage
@@ -753,10 +738,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
       <> [EngageEnemy iid eid False, afterWindowMsg, FinishAction]
     pure a
-  EngageEnemy iid eid False | iid == investigatorId -> do
-    pure $ a & engagedEnemiesL %~ insertSet eid
-  EngageEnemy iid eid False | iid /= investigatorId -> do
-    pure $ a & engagedEnemiesL %~ deleteSet eid
   FightEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #fight]
@@ -809,14 +790,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EnemyEvaded iid eid | iid == investigatorId -> do
     doNotDisengage <- hasModifier a DoNotDisengageEvaded
     push =<< checkWindows [mkAfter (Window.EnemyEvaded iid eid)]
-    let
-      updateEngagedEnemies =
-        if doNotDisengage then id else engagedEnemiesL %~ deleteSet eid
-    pure $ a & updateEngagedEnemies
-  AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+    pure a
   AddToVictory (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
-  DefeatedAddToVictory (EnemyTarget eid) ->
-    pure $ a & engagedEnemiesL %~ deleteSet eid
   ChooseEvadeEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
     let
@@ -2446,12 +2421,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PutAllFocusedIntoDiscard _ (InvestigatorTarget iid') | iid' == investigatorId -> do
     let cards = onlyPlayerCards $ findWithDefault [] Zone.FromDiscard investigatorFoundCards
     pure $ a & foundCardsL %~ deleteMap Zone.FromDiscard & discardL <>~ cards
-  DisengageEnemy iid eid | iid == investigatorId -> do
-    canDisengage <- iid <=~> InvestigatorCanDisengage
-    pure $ if canDisengage then a & engagedEnemiesL %~ deleteSet eid else a
-  DisengageEnemyFromAll eid -> do
-    canDisengage <- investigatorId <=~> InvestigatorCanDisengage
-    pure $ if canDisengage then a & engagedEnemiesL %~ deleteSet eid else a
   EndSearch iid _ (InvestigatorTarget iid') cardSources | iid == investigatorId -> do
     push (SearchEnded iid)
     let

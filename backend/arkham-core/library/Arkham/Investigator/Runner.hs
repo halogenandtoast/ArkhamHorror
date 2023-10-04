@@ -604,10 +604,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             $ replicate (discardAmount handDiscard)
             $ chooseOrRunOne investigatorId
             $ [ targetLabel (toCardId c) [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
-              | c <- cs
+              | c <- filter (`cardMatch` discardFilter handDiscard) cs
               ]
       DiscardRandom -> do
-        let filtered = filter (`cardMatch` (discardFilter handDiscard)) investigatorHand
+        let filtered = filter (`cardMatch` discardFilter handDiscard) investigatorHand
         for_ (nonEmpty filtered) $ \targets -> do
           cards <- sampleN (discardAmount handDiscard) targets
           pushAll $ map (DiscardCard investigatorId (discardSource handDiscard) . toCardId) cards

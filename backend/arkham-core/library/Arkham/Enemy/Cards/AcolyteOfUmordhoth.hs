@@ -21,8 +21,8 @@ acolyteOfUmordhoth =
 
 instance HasModifiersFor AcolyteOfUmordhoth where
   getModifiersFor target (AcolyteOfUmordhoth a) | a `is` target = do
-    enemyEngagedInvestigators <- selectList $ investigatorEngagedWith (toId a)
-    anyWithoutCards <- or <$> traverse (fieldMap InvestigatorHand null) enemyEngagedInvestigators
+    investigators <- selectList $ investigatorEngagedWith (toId a)
+    anyWithoutCards <- or <$> traverse (fieldMap InvestigatorHand null) investigators
     pure $ toModifiers a [CannotBeEvaded | anyWithoutCards]
   getModifiersFor _ _ = pure []
 

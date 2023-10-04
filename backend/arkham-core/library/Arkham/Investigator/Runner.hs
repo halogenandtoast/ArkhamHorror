@@ -63,7 +63,6 @@ import Arkham.Matcher (
   assetIs,
   colocatedWith,
   treacheryInHandOf,
-  pattern InvestigatorCanDisengage,
  )
 import Arkham.Message qualified as Msg
 import Arkham.Modifier qualified as Modifier
@@ -788,7 +787,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       push $ EnemyDamage eid $ attack source damage
     pure a
   EnemyEvaded iid eid | iid == investigatorId -> do
-    doNotDisengage <- hasModifier a DoNotDisengageEvaded
     push =<< checkWindows [mkAfter (Window.EnemyEvaded iid eid)]
     pure a
   AddToVictory (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid

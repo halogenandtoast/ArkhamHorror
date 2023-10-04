@@ -1542,6 +1542,7 @@ watcherFromAnotherDimension =
     $ (weakness "06017" "Watcher from Another Dimension")
       { cdCardTraits = setFromList [Monster, Extradimensional]
       , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdRevelation = IsRevelation
       }
 
 corpseHungryGhoul :: CardDef

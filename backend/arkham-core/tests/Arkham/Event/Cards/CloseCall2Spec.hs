@@ -1,63 +1,46 @@
-module Arkham.Event.Cards.CloseCall2Spec (
-  spec,
-) where
-
-import TestImport.Lifted
+module Arkham.Event.Cards.CloseCall2Spec (spec) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Matcher (EnemyMatcher (AnyEnemy))
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Token
+import TestImport.New
 
 spec :: Spec
 spec = describe "Close Call (2)" $ do
-  it "shuffles the enemy just evaded back into the encounter deck" $ gameTest $ \investigator -> do
-    updateInvestigator investigator (Investigator.tokensL %~ setTokens Resource 2)
+  it "shuffles the enemy just evaded back into the encounter deck" . gameTest $ \self -> do
+    withProp @"resources" 2 self
+    enemy <- testEnemy
+    location <- testLocation
     closeCall2 <- genCard Cards.closeCall2
-    enemy <- testEnemyWith id
-    location <- testLocationWith id
-    pushAndRunAll
-      [ addToHand (toId investigator) closeCall2
-      , placedLocation location
-      , spawnAt enemy location
-      , moveTo investigator location
-      , EnemyEvaded (toId investigator) (toId enemy)
-      ]
-    chooseOptionMatching
-      "Play card"
-      ( \case
-          TargetLabel {} -> True
-          _ -> False
-      )
+    self `addToHand` closeCall2
+    self `moveTo` location
+    enemy `spawnAt` location
+    self `evadedEnemy` enemy
+    chooseTarget closeCall2
     deckSize <- scenarioFieldMap ScenarioEncounterDeck length
     deckSize `shouldBe` (1 :: Int)
     selectCount AnyEnemy `shouldReturn` 0
 
-  it "does not work on Elite enemies" $ gameTest $ \investigator -> do
-    location <- testLocationWith id
+  it "does not work on Elite enemies" . gameTest $ \self -> do
+    withProp @"resources" 2 self
+    enemy <- testEnemy & elite
+    location <- testLocation
     closeCall2 <- genCard Cards.closeCall2
-    enemy <- testEnemyWithDef Cards.ghoulPriest id
-    pushAndRunAll
-      [ moveTo investigator location
-      , spawnAt enemy location
-      , addToHand (toId investigator) closeCall2
-      , EnemyEvaded (toId investigator) (toId enemy)
-      ]
-    queueRef <- queueToRef <$> messageQueue
-    queueRef `refShouldBe` []
+    self `addToHand` closeCall2
+    self `moveTo` location
+    enemy `spawnAt` location
+    self `evadedEnemy` enemy
+    assertNotTarget closeCall2
 
-  it "does not work on weakness enemies" $ gameTest $ \investigator -> do
-    location <- testLocationWith id
-    closeCall2 <- genCard Cards.closeCall2
+  it "does not work on weakness enemies" . gameTest $ \self -> do
+    withProp @"resources" 2 self
     enemy <- testEnemyWithDef Cards.mobEnforcer id
-    pushAndRunAll
-      [ SetBearer (toTarget enemy) (toId investigator)
-      , moveTo investigator location
-      , spawnAt enemy location
-      , addToHand (toId investigator) closeCall2
-      , EnemyEvaded (toId investigator) (toId enemy)
-      ]
-    queueRef <- queueToRef <$> messageQueue
-    queueRef `refShouldBe` []
+    run $ SetBearer (toTarget enemy) (toId self)
+    location <- testLocation
+    closeCall2 <- genCard Cards.closeCall2
+    self `addToHand` closeCall2
+    self `moveTo` location
+    enemy `spawnAt` location
+    self `evadedEnemy` enemy
+    assertNotTarget closeCall2

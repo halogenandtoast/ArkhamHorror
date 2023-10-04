@@ -59,6 +59,7 @@ import Arkham.Enemy.Types
 import Arkham.Entities qualified as Entities
 import Arkham.Event.Types
 import Arkham.Game qualified as Game
+import Arkham.Game.Settings
 import Arkham.GameEnv
 import Arkham.Git
 import Arkham.Investigator.Cards qualified as Investigators
@@ -282,6 +283,16 @@ withProp
   -> TestAppT ()
 withProp b a = void $ prop @s b (getInvestigator $ toId a)
 
+withPropM
+  :: forall (s :: Symbol) b
+   . UpdateField s Investigator b
+  => TestAppT b
+  -> Investigator
+  -> TestAppT ()
+withPropM action a = do
+  b <- action
+  void $ prop @s b (getInvestigator $ toId a)
+
 withProps :: Investigator -> (TestAppT Investigator -> TestAppT Investigator) -> TestAppT ()
 withProps self props = void $ pure self & props
 
@@ -315,10 +326,8 @@ instance UpdateField "deck" Investigator (Deck PlayerCard) where
 instance UpdateField "hand" Investigator [Card] where
   updateField cards = pure . overAttrs (\attrs -> attrs {investigatorHand = cards})
 
-instance UpdateField "discard" Investigator [CardDef] where
-  updateField defs i = do
-    cards <- traverse genPlayerCard defs
-    pure $ overAttrs (\attrs -> attrs {investigatorDiscard = cards}) i
+instance UpdateField "discard" Investigator [PlayerCard] where
+  updateField cards i = pure $ overAttrs (\attrs -> attrs {investigatorDiscard = cards}) i
 
 instance UpdateField "resources" Investigator Int where
   updateField resources =
@@ -335,6 +344,9 @@ instance UpdateField "health" Enemy Int where
 
 instance UpdateField "healthDamage" Enemy Int where
   updateField damage = pure . overAttrs (\attrs -> attrs {enemyHealthDamage = damage})
+
+instance UpdateField "sanityDamage" Enemy Int where
+  updateField damage = pure . overAttrs (\attrs -> attrs {enemySanityDamage = damage})
 
 instance UpdateField "exhausted" Enemy Bool where
   updateField isExhausted = pure . overAttrs (\attrs -> attrs {enemyExhausted = isExhausted})
@@ -663,6 +675,7 @@ newGame investigator = do
         , gameTurnHistory = mempty
         , gameTurnPlayerInvestigatorId = Just investigatorId
         , gameSeed = seed
+        , gameSettings = defaultSettings
         , gameInitialSeed = seed
         , gameMode = That scenario'
         , gamePlayerCount = 1

@@ -8,7 +8,7 @@ spec :: Spec
 spec = describe "Abandoned and Alone" $ do
   context "Revelation" $ do
     it "deals 2 direct horror and removes all discards from the game" . gameTest $ \self -> do
-      withProp @"discard" [Assets.flashlight, Assets.flashlight] self
+      withPropM @"discard" (genPlayerCards [Assets.flashlight, Assets.flashlight]) self
       self `putCardIntoPlay` Assets.elderSignAmulet3
       self `drawsCard` Treacheries.abandonedAndAlone
       click "apply horror" -- since direct, no other choice than to apply to self

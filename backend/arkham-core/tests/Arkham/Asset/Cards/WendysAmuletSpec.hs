@@ -9,7 +9,7 @@ spec = describe "Wendy's Amulet" $ do
   context "constant ability" $ do
     it "you may play the topmost event in your discard pile as if it were in your hand" . gameTest $ \self -> do
       self `putCardIntoPlay` Assets.wendysAmulet
-      withProp @"discard" [Assets.flashlight, Events.emergencyCache] self
+      withPropM @"discard" (genPlayerCards [Assets.flashlight, Events.emergencyCache]) self
       asDefs self.playableCards `shouldReturn` [Events.emergencyCache]
 
   context "forced ability" $ do

@@ -15,7 +15,7 @@ spec = describe "Vicious Blow" $ do
     self `moveTo` location
     self `addToHand` viciousBlow
     self `fightEnemy` enemy
-    chooseTarget (toCardId viciousBlow)
+    chooseTarget viciousBlow
     startSkillTest
     click "Apply results"
     enemy.damage `shouldReturn` 2

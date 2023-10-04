@@ -2,10 +2,13 @@ module Arkham.Card where
 
 import Arkham.Prelude
 
+import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.Card.CardDef
 import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
+import Arkham.Id
+import Arkham.Trait
 
 data Card
 
@@ -20,3 +23,12 @@ class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
+
+class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
+  toCard :: HasCallStack => a -> Card
+  toCardId :: a -> CardId
+  toCardOwner :: a -> Maybe InvestigatorId
+
+instance IsCard Card
+instance IsCard PlayerCard
+instance IsCard EncounterCard

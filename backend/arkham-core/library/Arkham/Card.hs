@@ -113,6 +113,9 @@ genFlippedCard a = flipCard <$> genCard a
 genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
 genCards = traverse genCard
 
+genPlayerCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t PlayerCard)
+genPlayerCards = traverse genPlayerCard
+
 isCard :: (HasCardCode a, HasCardCode b) => a -> b -> Bool
 isCard (toCardCode -> a) (toCardCode -> b) = a == b
 

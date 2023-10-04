@@ -1,39 +1,20 @@
-module Arkham.Event.Cards.WillToSurvive3Spec (
-  spec,
-) where
-
-import TestImport
+module Arkham.Event.Cards.WillToSurvive3Spec (spec) where
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
+import TestImport.New
 
 spec :: Spec
 spec = describe "Will to Survive (3)" $ do
-  it "cancels all tokens for the turn" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      \attrs -> attrs {investigatorIntellect = 3}
+  it "cancels all tokens for the turn" . gameTest $ \self -> do
+    withProp @"intellect" 3 self
+    setChaosTokens [AutoFail]
+    self `playEvent` Events.willToSurvive3
+    runSkillTest self #intellect 3
+    assertPassedSkillTest
 
-    didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
-
-    pushAndRun $ SetChaosTokens [AutoFail]
-    putCardIntoPlay investigator Events.willToSurvive3
-    pushAndRun $ beginSkillTest investigator SkillIntellect 3
-    chooseOnlyOption "start skill test"
-    chooseOnlyOption "apply results"
-    didPassTest `refShouldBe` True
-
-  it "it is cancelled at the end of the turn" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      \attrs -> attrs {investigatorIntellect = 3}
-
-    didFailTest <- didFailSkillTestBy investigator SkillIntellect 3
-
-    pushAndRun $ SetChaosTokens [AutoFail]
-    putCardIntoPlay investigator Events.willToSurvive3
-    pushAndRunAll
-      [ ChooseEndTurn (toId investigator)
-      , beginSkillTest investigator SkillIntellect 3
-      ]
-    chooseOnlyOption "start skill test"
-    chooseOnlyOption "apply results"
-    didFailTest `refShouldBe` True
+  it "it is cancelled at the end of the turn" . gameTest $ \self -> do
+    withProp @"intellect" 3 self
+    setChaosTokens [AutoFail]
+    duringTurn self $ self `playEvent` Events.willToSurvive3
+    runSkillTest self SkillIntellect 3
+    assertFailedSkillTest

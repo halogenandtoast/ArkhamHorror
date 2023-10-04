@@ -9,7 +9,9 @@ import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Ability.Types
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
+import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.Card.Id
+import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken
 import Arkham.Id
 import Arkham.Matcher
@@ -102,6 +104,15 @@ instance Targetable ActId where
 
 instance Targetable AgendaId where
   toTarget = AgendaTarget
+
+instance Targetable Card where
+  toTarget = CardIdTarget . toCardId
+
+instance Targetable PlayerCard where
+  toTarget = CardIdTarget . toCardId
+
+instance Targetable EncounterCard where
+  toTarget = CardIdTarget . toCardId
 
 instance Targetable CardId where
   toTarget = CardIdTarget

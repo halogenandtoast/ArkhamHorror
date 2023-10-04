@@ -13,6 +13,7 @@ import Arkham.Classes.HasDistance
 import Arkham.Classes.HasQueue
 import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game
+import Arkham.Game.Settings
 import Arkham.History
 import Arkham.Id
 import Arkham.Message
@@ -165,6 +166,9 @@ getDepthLock = gameDepthLock <$> getGame
 
 getAllAbilities :: HasGame m => m [Ability]
 getAllAbilities = getAbilities <$> getGame
+
+getSettings :: HasGame m => m Settings
+getSettings = gameSettings <$> getGame
 
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getAllModifiers = gameModifiers <$> getGame

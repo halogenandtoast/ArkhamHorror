@@ -7,6 +7,7 @@ import TestImport.Lifted as X hiding (
   drawCards,
   duringTurn,
   evadedBy,
+  evadedEnemy,
   fightEnemy,
   investigate,
   loadDeck,
@@ -26,6 +27,7 @@ import Arkham.Classes.HasChaosTokenValue
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
+import Arkham.Game.Settings
 import Arkham.GameEnv
 import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
@@ -109,6 +111,9 @@ fightEnemy i e = run $ FightEnemy (toId i) (toId e) (toSource i) Nothing SkillCo
 evadeEnemy :: Investigator -> Enemy -> TestAppT ()
 evadeEnemy i e = run $ EvadeEnemy (toId i) (toId e) (toSource i) Nothing SkillAgility False
 
+evadedEnemy :: Investigator -> Enemy -> TestAppT ()
+evadedEnemy i e = run $ EnemyEvaded (toId i) (toId e)
+
 investigate :: Investigator -> Location -> TestAppT ()
 investigate i l =
   run
@@ -127,6 +132,9 @@ instance HasField "engagedEnemies" Investigator (TestAppT [EnemyId]) where
 
 instance HasField "playableCards" Investigator (TestAppT [Card]) where
   getField self = getPlayableCards (toAttrs self) UnpaidCost (defaultWindows $ toId self)
+
+instance HasField "arcaneSlots" Investigator (TestAppT [Slot]) where
+  getField = fieldMap InvestigatorSlots (findWithDefault [] #arcane) . toId
 
 instance HasField "discard" Investigator (TestAppT [PlayerCard]) where
   getField = field InvestigatorDiscard . toEntityId
@@ -200,6 +208,9 @@ instance HasField "exhausted" Enemy (TestAppT Bool) where
 instance HasField "abilities" Enemy (TestAppT [Ability]) where
   getField = field EnemyAbilities . toEntityId
 
+instance HasField "location" Enemy (TestAppT (Maybe LocationId)) where
+  getField = field EnemyLocation . toEntityId
+
 instance HasField "abilities" AssetId (TestAppT [Ability]) where
   getField = field AssetAbilities
 
@@ -208,6 +219,9 @@ instance HasField "abilities" TreacheryId (TestAppT [Ability]) where
 
 instance HasField "doom" AssetId (TestAppT Int) where
   getField = field AssetDoom
+
+instance HasField "health" AssetId (TestAppT (Maybe Int)) where
+  getField = field AssetRemainingHealth
 
 instance HasField "horror" AssetId (TestAppT Int) where
   getField = field AssetHorror
@@ -320,7 +334,7 @@ drawsCard i cd = do
   drawing <- Helpers.drawCards (toId i) GameSource 1
   runAll [PutCardOnTopOfDeck (toId i) (Deck.InvestigatorDeck $ toId i) c, drawing]
 
-startSkillTest :: TestAppT ()
+startSkillTest :: HasCallStack => TestAppT ()
 startSkillTest = chooseOptionMatching "start skill test" \case
   StartSkillTestButton {} -> True
   _ -> False
@@ -385,7 +399,7 @@ withRewind action = do
     testApp <- cloneTestApp original
     runTestApp testApp action
 
-skip :: TestAppT ()
+skip :: HasCallStack => TestAppT ()
 skip = chooseOptionMatching "skip" \case
   Label _ [] -> True
   _ -> False
@@ -510,7 +524,7 @@ isFastAsset def = it "is fast" $ (cdFastWindow def `shouldBe` Just (Matcher.Duri
 withEach :: [a] -> (a -> TestAppT ()) -> TestAppT ()
 withEach xs f = for_ xs $ withRewind . f
 
-commit :: Card -> TestAppT ()
+commit :: (HasCallStack, IsCard card) => card -> TestAppT ()
 commit = chooseTarget . toCardId
 
 assertNoReaction :: TestAppT ()
@@ -566,7 +580,7 @@ assertNotTarget (toTarget -> target) = do
           ChooseOne msgs -> msgs
           ChooseN _ msgs -> msgs
           _ -> error $ "unsupported questions type: " <> show question
-        _ -> error "There must be only one question to use this function"
+        _ -> []
     isMessageTarget = \case
       TargetLabel target' _ -> target == target'
       FightLabel eid _ -> case target of
@@ -577,3 +591,14 @@ assertNotTarget (toTarget -> target) = do
   case find isMessageTarget choices of
     Nothing -> pure ()
     Just _ -> expectationFailure $ "expected not to find target " <> show target <> " but did"
+
+unlessSetting :: (Settings -> Bool) -> TestAppT () -> TestAppT ()
+unlessSetting f body = do
+  setting <- getSettings
+  unless (f setting) body
+
+failSkillTest :: Investigator -> TestAppT ()
+failSkillTest self = do
+  setChaosTokens [AutoFail]
+  runSkillTest self #combat 1
+  applyResults

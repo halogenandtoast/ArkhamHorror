@@ -598,7 +598,7 @@ closeCall2 =
     , cdCardTraits = setFromList [Fortune]
     , cdFastWindow =
         Just
-          $ EnemyEvaded #after Anyone (EnemyAt YourLocation <> NonWeaknessEnemy)
+          $ EnemyEvaded #after Anyone (EnemyAt YourLocation <> NonWeaknessEnemy <> NonEliteEnemy)
     , cdLevel = 2
     , cdAlternateCardCodes = ["01583"]
     }

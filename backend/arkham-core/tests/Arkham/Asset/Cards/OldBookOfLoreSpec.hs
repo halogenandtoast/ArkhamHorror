@@ -19,7 +19,7 @@ spec = describe "Old Book of Lore" $ do
         [doSearch] <- oldBookOrLore.abilities
         self `useAbility` doSearch
         chooseTarget self
-        chooseTarget (toCardId choice)
+        chooseTarget choice
         self.hand `shouldReturn` [toCard choice]
         (unDeck <$> self.deck) `shouldMatchListM` others
 
@@ -35,6 +35,6 @@ spec = describe "Old Book of Lore" $ do
         [doSearch] <- oldBookOrLore.abilities
         self `useAbility` doSearch
         chooseTarget roland
-        chooseTarget (toCardId choice)
+        chooseTarget choice
         roland.hand `shouldReturn` [toCard choice]
         (unDeck <$> roland.deck) `shouldMatchListM` others

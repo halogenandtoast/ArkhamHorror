@@ -68,6 +68,7 @@ import Arkham.Game.Helpers hiding (
   withModifiers,
  )
 import Arkham.Game.Json ()
+import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Git (gitHash)
 import Arkham.Helpers
@@ -259,6 +260,7 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty include
         , gameTurnHistory = mempty
         , gameInitialSeed = seed
         , gameSeed = seed
+        , gameSettings = defaultSettings
         , gameMode = mode
         , gamePlayerCount = playerCount
         , gameEntities = defaultEntities

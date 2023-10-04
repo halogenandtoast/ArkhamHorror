@@ -13,6 +13,6 @@ spec = describe "Research Librarian" $ do
       withProp @"deck" deck self
       self `putCardIntoPlay` Assets.researchLibrarian
       useReaction
-      chooseTarget (toCardId oldBookOfLore)
+      chooseTarget oldBookOfLore
       self.hand `shouldReturn` [toCard oldBookOfLore]
       (unDeck <$> self.deck) `shouldMatchListM` otherCards

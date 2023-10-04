@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -47,7 +48,12 @@ instance RunMessage PatriceHathaway where
         ]
       pure $ PatriceHathaway attrs'
     DoStep 1 AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
-      let numberToDraw = max 0 (5 - length attrs.hand)
+      -- a StillInHand WatcherFromAnotherDimension affects this by 1
+      watcherInHand <-
+        selectAny
+          $ enemyIs Enemies.watcherFromAnotherDimension
+          <> EnemyWithPlacement (StillInHand $ toId attrs)
+      let numberToDraw = max 0 (5 - (length attrs.hand + if watcherInHand then 1 else 0))
       when (numberToDraw > 0) $ pushM $ drawCards (toId attrs) ScenarioSource numberToDraw
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do

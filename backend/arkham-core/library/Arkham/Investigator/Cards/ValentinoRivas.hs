@@ -15,6 +15,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 
 newtype ValentinoRivas = ValentinoRivas (InvestigatorAttrs `With` PrologueMetadata)
@@ -84,7 +85,8 @@ instance RunMessage ValentinoRivas where
       push $ RemovedFromGame (PlayerCard pc)
       pure i
     DiscardCard iid _ cardId | iid == toId attrs -> do
-      let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) (investigatorHand attrs)
+      hand <- field InvestigatorHand iid
+      let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) hand
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> do

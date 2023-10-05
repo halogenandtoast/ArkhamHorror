@@ -282,14 +282,11 @@ investigator f cardDef Stats {..} =
                 , investigatorActionsPerformed = mempty
                 , investigatorRemainingActions = 3
                 , investigatorEndedTurn = False
-                , investigatorAssets = mempty
-                , investigatorEvents = mempty
                 , investigatorDeck = mempty
                 , investigatorDecks = mempty
                 , investigatorDiscard = mempty
                 , investigatorHand = mempty
                 , investigatorTraits = cdCardTraits cardDef
-                , investigatorTreacheries = mempty
                 , investigatorKilled = False
                 , investigatorDrivenInsane = False
                 , investigatorDefeated = False
@@ -547,7 +544,22 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
+check :: (EntityId a ~ InvestigatorId, Entity a, HasGame m) => a -> InvestigatorMatcher -> m Bool
+check (toId -> iid) capability = iid <=~> capability
+
+checkAll
+  :: (EntityId a ~ InvestigatorId, Entity a, HasGame m) => a -> [InvestigatorMatcher] -> m Bool
+checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
+
+-- TODO: Decide if we want to use or keep these instances, these let you do
+-- >       canModifyDeck <- can.manipulate.deck attrs
+
 instance Capable (InvestigatorId -> GameT Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (flip (<=~>)) can'
+
+instance Capable (InvestigatorAttrs -> GameT Bool) where
+  can =
+    let can' = can :: Capabilities InvestigatorMatcher
+     in fmap (\c -> (<=~> c) . toId) can'

@@ -8,6 +8,7 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Use
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
+import Arkham.Matcher
 import Arkham.Projection
 
 newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
@@ -34,7 +35,7 @@ instance HasChaosTokenValue AkachiOnyele where
 instance RunMessage AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      assets <- filterByField AssetUses (hasUsesFor Charge) (toList $ investigatorAssets attrs)
+      assets <- filterByField AssetUses (hasUsesFor Charge) =<< selectList (assetControlledBy iid)
       pushIfAny assets
         $ chooseOne iid
         $ Done "Do not use Elder Sign ability"

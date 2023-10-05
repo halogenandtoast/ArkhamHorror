@@ -5,13 +5,11 @@ module Arkham.Investigator.Cards.DaisyWalkerParallel (
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types (Field (..))
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass (IsInvestigator)
@@ -46,7 +44,7 @@ instance HasAbilities DaisyWalkerParallel where
 instance RunMessage DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
-      tomeAssets <- filterByField AssetTraits (member Tome) (setToList attrs.assets)
+      tomeAssets <- selectList $ assetControlledBy iid <> withTrait Tome
       allAbilities <- getAllAbilities
       let abilitiesForAsset aid = filter (isSource aid . abilitySource) allAbilities
       let pairs' = filter (notNull . snd) $ map (toSnd abilitiesForAsset) tomeAssets

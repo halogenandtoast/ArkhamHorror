@@ -13,6 +13,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 
 newtype JeromeDavids = JeromeDavids (InvestigatorAttrs `With` PrologueMetadata)
@@ -74,7 +75,8 @@ instance RunMessage JeromeDavids where
       push $ RemovedFromGame (PlayerCard pc)
       pure i
     DiscardCard iid _ cardId | attrs `is` iid -> do
-      let card = fromJustNote "must be in hand" $ find @[Card] ((== cardId) . toCardId) attrs.hand
+      hand <- field InvestigatorHand iid
+      let card = fromJustNote "must be in hand" $ find @[Card] ((== cardId) . toCardId) hand
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i

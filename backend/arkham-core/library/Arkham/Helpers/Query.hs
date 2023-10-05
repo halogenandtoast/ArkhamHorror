@@ -13,11 +13,15 @@ import Arkham.Matcher
 import Arkham.Name
 import Arkham.Scenario.Types (Field (..))
 
--- Anyone is bit of a hack, if all investigators are defeated there is not lead
--- investigator so we use the `Anyone` scope to bring in all eliminated
--- investigators as well, for which the last should be the lead.
-getLeadInvestigatorId :: HasGame m => m InvestigatorId
-getLeadInvestigatorId = selectJust $ Anyone <> LeadInvestigator
+-- TODO: IncludeEliminated is bit of a hack, if all investigators are defeated
+-- there is no lead investigator so we just get someone from the eliminated. It
+-- should just be the last person who was eliminated but we don't really track
+-- that
+getLeadInvestigatorId :: (HasCallStack, HasGame m) => m InvestigatorId
+getLeadInvestigatorId = do
+  mLead <- selectOne LeadInvestigator
+  mOthers <- selectOne (IncludeEliminated Anyone)
+  pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
 getLead :: HasGame m => m InvestigatorId
 getLead = getLeadInvestigatorId

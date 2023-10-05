@@ -104,13 +104,14 @@ getPlayableCards
   -> CostStatus
   -> [Window]
   -> m [Card]
-getPlayableCards a@InvestigatorAttrs {..} costStatus windows' = do
+getPlayableCards a costStatus windows' = do
   asIfInHandCards <- getAsIfInHandCards (toId a)
   playableDiscards <- getPlayableDiscards a costStatus windows'
+  hand <- field InvestigatorHand (toId a)
   playableHandCards <-
     filterM
       (getIsPlayable (toId a) (toSource a) costStatus windows')
-      (investigatorHand <> asIfInHandCards)
+      (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards

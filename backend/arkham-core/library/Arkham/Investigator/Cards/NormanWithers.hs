@@ -10,6 +10,7 @@ import Arkham.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard, RevealChaosToken)
+import Arkham.Projection
 
 newtype Metadata = Metadata {playedFromTopOfDeck :: Bool}
   deriving stock (Show, Generic, Eq)
@@ -62,12 +63,13 @@ instance RunMessage NormanWithers where
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) $ do
         drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 1
+        hand <- field InvestigatorHand iid
         push
           $ chooseOne iid
           $ Label "Do not swap" []
           : [ targetLabel (toCardId c)
               $ [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
-            | c <- onlyPlayerCards (investigatorHand a)
+            | c <- onlyPlayerCards hand
             ]
       pure nw
     Do BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a

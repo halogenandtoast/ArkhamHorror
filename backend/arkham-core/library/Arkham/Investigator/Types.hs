@@ -125,14 +125,11 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorActionsPerformed :: [Action]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
-  , investigatorAssets :: Set AssetId
-  , investigatorEvents :: Set EventId
   , investigatorDeck :: Deck PlayerCard
   , investigatorDecks :: Map InvestigatorDeckKey [Card]
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]
   , investigatorTraits :: Set Trait
-  , investigatorTreacheries :: Set TreacheryId
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorKilled :: Bool
@@ -233,9 +230,6 @@ instance Sourceable InvestigatorAttrs where
 instance HasField "id" InvestigatorAttrs InvestigatorId where
   getField = investigatorId
 
-instance HasField "assets" InvestigatorAttrs (Set AssetId) where
-  getField = investigatorAssets
-
 instance HasField "resources" InvestigatorAttrs Int where
   getField = investigatorResources
 
@@ -247,9 +241,6 @@ instance HasField "healthDamage" InvestigatorAttrs Int where
 
 instance HasField "cardsUnderneath" InvestigatorAttrs [Card] where
   getField = investigatorCardsUnderneath
-
-instance HasField "hand" InvestigatorAttrs [Card] where
-  getField = investigatorHand
 
 instance HasField "deck" InvestigatorAttrs (Deck PlayerCard) where
   getField = investigatorDeck

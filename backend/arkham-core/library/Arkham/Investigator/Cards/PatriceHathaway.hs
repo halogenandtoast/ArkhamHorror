@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers
@@ -40,18 +41,13 @@ instance RunMessage PatriceHathaway where
       hand <- field InvestigatorHand (toId attrs)
       let nonWeaknessCards = filter (`cardMatch` NonWeakness) hand
       pushAll
-        [ chooseOneAtATime
-            (toId attrs)
-            [ targetLabel card [DiscardCard (toId attrs) (toSource attrs) (toCardId card)]
-            | card <- nonWeaknessCards
-            ]
+        [ chooseOneAtATime (toId attrs)
+            $ targetLabels nonWeaknessCards (only . DiscardCard (toId attrs) (toSource attrs) . toCardId)
         , DoStep 1 msg
         ]
       pure $ PatriceHathaway attrs'
     DoStep 1 AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
-      -- a StillInHand WatcherFromAnotherDimension affects this by 1
       cards <- field InvestigatorHand (toId attrs)
-
       let numberToDraw = max 0 (5 - length cards)
       when (numberToDraw > 0) $ pushM $ drawCards (toId attrs) ScenarioSource numberToDraw
       pure i
@@ -59,8 +55,8 @@ instance RunMessage PatriceHathaway where
       insertAfterMatching [DoStep 1 msg] (== EndSkillTestWindow)
       pure i
     DoStep 1 msg'@(ResolveChaosToken _ ElderSign iid) | attrs `is` iid -> do
-      canModifyDeck <- withoutModifier attrs CannotManipulateDeck
-      canHaveCardsLeaveDiscard <- withoutModifier attrs CardsCannotLeaveYourDiscardPile
+      canModifyDeck <- check attrs can.manipulate.deck
+      canHaveCardsLeaveDiscard <- check attrs can.have.cards.leaveDiscard
       pushWhen (canModifyDeck && canHaveCardsLeaveDiscard && length attrs.discard > 1)
         $ chooseOrRunOne iid
         $ [ Label "Shuffle all but 1 card from your discard pile into your deck" [DoStep 2 msg']

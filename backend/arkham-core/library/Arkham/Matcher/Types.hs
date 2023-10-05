@@ -120,11 +120,16 @@ data InvestigatorMatcher
 instance Plated InvestigatorMatcher
 
 instance Semigroup InvestigatorMatcher where
+  Anyone <> x = x
+  x <> Anyone = x
   InvestigatorMatches xs <> InvestigatorMatches ys =
     InvestigatorMatches $ xs <> ys
   InvestigatorMatches xs <> x = InvestigatorMatches (x : xs)
   x <> InvestigatorMatches xs = InvestigatorMatches (x : xs)
   x <> y = InvestigatorMatches [x, y]
+
+instance Monoid InvestigatorMatcher where
+  mempty = Anyone
 
 data PreyMatcher
   = Prey InvestigatorMatcher

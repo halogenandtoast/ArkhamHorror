@@ -584,6 +584,9 @@ assert body = do
   result <- body
   liftIO $ result `shouldBe` True
 
+assertAny :: Query a => a -> TestAppT ()
+assertAny = assert . selectAny
+
 withGame :: (MonadReader env m, HasGame m) => ReaderT Game m b -> m b
 withGame b = do
   g <- getGame

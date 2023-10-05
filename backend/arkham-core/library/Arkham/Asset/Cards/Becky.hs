@@ -20,8 +20,7 @@ becky :: AssetCard Becky
 becky = asset Becky Cards.becky
 
 instance HasAbilities Becky where
-  getAbilities (Becky a) =
-    [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
+  getAbilities (Becky a) = [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage Becky where
   runMessage msg a@(Becky attrs) = case msg of

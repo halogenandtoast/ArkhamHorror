@@ -2475,6 +2475,7 @@ test-suite spec
       Arkham.Asset.Cards.BaseballBatSpec
       Arkham.Asset.Cards.BeatCop2Spec
       Arkham.Asset.Cards.BeatCopSpec
+      Arkham.Asset.Cards.BeckySpec
       Arkham.Asset.Cards.BookOfShadows3Spec
       Arkham.Asset.Cards.BulletproofVest3Spec
       Arkham.Asset.Cards.BurglarySpec
@@ -2598,6 +2599,7 @@ test-suite spec
       Arkham.Treachery.Cards.ParanoiaSpec
       Arkham.Treachery.Cards.PsychosisSpec
       Arkham.Treachery.Cards.RexsCurseSpec
+      Arkham.Treachery.Cards.RookieMistakeSpec
       Arkham.Treachery.Cards.SearchingForIzzieSpec
       Arkham.Treachery.Cards.SmiteTheWickedSpec
       Arkham.Treachery.Cards.WrackedByNightmaresSpec

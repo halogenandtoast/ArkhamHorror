@@ -35,13 +35,13 @@ instance RunMessage PatricesViolin where
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
       let source = toAbilitySource attrs 1
-      canGainResources <- iid' <=~> can.gain.resources
-      canDrawCards <- iid' <=~> can.draw.cards
+      canGainResources <- can.gain.resources iid'
+      canDrawCards <- can.draw.cards iid'
       drawing <- drawCards iid' source 1
 
       push
         $ chooseOne iid
-        $ [Label "Gain resource" [TakeResources iid' 1 source False] | canGainResources]
+        $ [Label "Gain resource" [takeResources iid' source 1] | canGainResources]
         <> [Label "Draw card" [drawing] | canDrawCards]
 
       pure a

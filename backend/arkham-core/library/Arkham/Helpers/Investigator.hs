@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Helpers.Investigator where
 
 import Arkham.Prelude
@@ -5,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types qualified as Field
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.Query
@@ -543,3 +546,8 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
  where
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
+
+instance Capable (InvestigatorId -> GameT Bool) where
+  can =
+    let can' = can :: Capabilities InvestigatorMatcher
+     in fmap (flip (<=~>)) can'

@@ -677,3 +677,40 @@ assertChanges action a b body = do
   action `shouldReturn` a
   body
   action `shouldReturn` b
+
+-- While this function primarily exists to resolve the amounts which you could
+-- call directly, it also does a bunch of verification on the test import to
+-- make sure it coincides with the actual amounts and limit
+resolveAmounts :: Targetable target => Investigator -> [(Text, Int)] -> target -> TestAppT ()
+resolveAmounts self choices (toTarget -> target) = do
+  questionMap <- gameQuestion <$> getGame
+  ChooseAmounts _ targetValue availableChoices _ <- case mapToList questionMap of
+    [(_, question)] -> case question of
+      ChooseAmounts {} -> pure question
+      _ -> error $ "expected ChooseAmounts, but got: " <> show question
+    _ -> error $ "expected one question"
+
+  for_ choices $ \(lbl, value) -> do
+    case find (\(AmountChoice lbl' _ _) -> lbl == lbl') availableChoices of
+      Nothing -> error $ "expected to find " <> show lbl <> " in " <> show availableChoices
+      Just (AmountChoice _ minVal maxVal) -> do
+        when (value < minVal)
+          $ error
+          $ "expected "
+          <> show value
+          <> " to be >= "
+          <> show minVal
+        when (value > maxVal)
+          $ error
+          $ "expected "
+          <> show value
+          <> " to be <= "
+          <> show maxVal
+
+  let total = sum $ map snd choices
+
+  case targetValue of
+    MaxAmountTarget n -> when (total > n) $ expectationFailure $ "expected " <> show total <> " to be <= " <> show n
+    TotalAmountTarget n -> when (total /= n) $ expectationFailure $ "expected " <> show total <> " to be == " <> show n
+
+  run $ ResolveAmounts (toId self) choices target

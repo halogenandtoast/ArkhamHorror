@@ -13,12 +13,11 @@ spec = describe ".45 Automatic" $ do
     enemy <- testEnemy & prop @"fight" 2 & prop @"health" 3
     location <- testLocation
     setChaosTokens [Zero]
-    run $ placedLocation location
     enemy `spawnAt` location
     self `moveTo` location
-    [doFight] <- fortyFiveAutomatic.abilities
+    [doFight] <- self `getActionsFrom` fortyFiveAutomatic
     self `useAbility` doFight
-    chooseOnlyOption "choose enemy"
-    chooseOnlyOption "start skill test"
-    chooseOnlyOption "apply results"
+    chooseTarget enemy
+    startSkillTest
+    applyResults
     enemy.damage `shouldReturn` 2

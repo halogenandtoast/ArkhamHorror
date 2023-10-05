@@ -452,18 +452,30 @@ withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' -> do
     additionalActions <- getAdditionalActions (toAttrs investigator')
     engagedEnemies <- selectList (enemyEngagedWith $ toId investigator')
+    assets <- selectList (assetControlledBy $ toId investigator')
+    events <- selectList (assetControlledBy $ toId investigator')
+    treacheries <- selectList (treacheryInThreatAreaOf $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
+    let
+      additionalData =
+        object
+          [ "additionalActions" .= additionalActions
+          , "engagedEnemies" .= engagedEnemies
+          , "assets" .= assets
+          , "events" .= events
+          , "treacheries" .= treacheries
+          ]
     case mLocation of
       Nothing ->
         pure
           $ inner
           `with` ConnectionData []
-          `with` object ["additionalActions" .= additionalActions, "engagedEnemies" .= engagedEnemies]
+          `with` additionalData
       Just (LocationId uuid) | uuid == nil -> do
         pure
           $ inner
           `with` ConnectionData []
-          `with` object ["additionalActions" .= additionalActions, "engagedEnemies" .= engagedEnemies]
+          `with` additionalData
       Just locationId -> do
         location <- getLocation locationId
         matcher <- getConnectedMatcher location
@@ -471,7 +483,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
         pure
           $ inner
           `with` ConnectionData connectedLocationIds
-          `with` object ["additionalActions" .= additionalActions, "engagedEnemies" .= engagedEnemies]
+          `with` additionalData
 
 newtype WithDeckSize = WithDeckSize Investigator
   deriving newtype (Show, Targetable)
@@ -939,7 +951,7 @@ getInvestigatorsMatching matcher = do
     InvestigatorMatches xs -> \i -> allM (`go` i) xs
     AnyInvestigator xs -> \i -> anyM (`go` i) xs
     HandWith cardListMatcher ->
-      (`cardListMatches` cardListMatcher) . attr investigatorHand
+      (`cardListMatches` cardListMatcher) <=< field InvestigatorHand . toId
     DiscardWith cardListMatcher ->
       (`cardListMatches` cardListMatcher)
         . map PlayerCard

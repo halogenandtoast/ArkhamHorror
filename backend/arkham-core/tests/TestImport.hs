@@ -63,7 +63,7 @@ import Arkham.Game.Settings
 import Arkham.GameEnv
 import Arkham.Git
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types hiding (assetsL)
+import Arkham.Investigator.Types
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Types
 import Arkham.LocationSymbol

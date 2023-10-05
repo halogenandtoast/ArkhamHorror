@@ -2383,6 +2383,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       foundCards = investigatorFoundCards & ix cardSource %~ filter (/= card)
     push $ addToHand iid' card
     pure $ a & foundCardsL .~ foundCards
+  CommitCard _ card -> do
+    pure $ a & foundCardsL . each %~ filter (/= card)
   AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId | iid' == toId a -> do
     let
       card =

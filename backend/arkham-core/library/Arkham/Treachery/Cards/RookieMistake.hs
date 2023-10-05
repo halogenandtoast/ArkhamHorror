@@ -22,7 +22,7 @@ rookieMistake = treachery RookieMistake Cards.rookieMistake
 instance RunMessage RookieMistake where
   runMessage msg t@(RookieMistake attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      assets <- selectList $ assetControlledBy iid <> AssetOneOf [AssetWithDamage, AssetWithHorror]
+      assets <- selectList $ assetControlledBy iid <> oneOf [AssetWithDamage, AssetWithHorror]
       if null assets
         then push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
         else pushAll $ map (Discard (toSource attrs) . toTarget) assets

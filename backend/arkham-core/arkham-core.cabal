@@ -2572,6 +2572,7 @@ test-suite spec
       Arkham.Investigator.Cards.DaisyWalkerSpec
       Arkham.Investigator.Cards.JennyBarnesSpec
       Arkham.Investigator.Cards.JimCulverSpec
+      Arkham.Investigator.Cards.MandyThompsonSpec
       Arkham.Investigator.Cards.RexMurphySpec
       Arkham.Investigator.Cards.RolandBanksSpec
       Arkham.Investigator.Cards.SkidsOTooleSpec

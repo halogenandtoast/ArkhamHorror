@@ -32,15 +32,13 @@ instance HasAbilities MandyThompson where
     [ playerLimit PerRound
         $ restrictedAbility attrs 1 Self
         $ freeReaction
-        $ WouldSearchDeck
-          #when
-          (InvestigatorAt YourLocation)
-          (DeckOneOf [EncounterDeck, DeckOf ThatInvestigator])
+        $ WouldSearchDeck #when (InvestigatorAt YourLocation)
+        $ DeckOneOf [EncounterDeck, DeckOf ThatInvestigator]
     ]
 
 instance HasChaosTokenValue MandyThompson where
   getChaosTokenValue iid ElderSign (MandyThompson attrs) | iid == toId attrs = do
-    pure $ ChaosTokenValue ElderSign ZeroModifier
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 0)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 getInvestigator :: [Window] -> InvestigatorId
@@ -62,13 +60,7 @@ instance RunMessage MandyThompson where
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       pushAll
-        [ search
-            iid
-            ElderSign
-            iid
-            [fromTopOfDeck 3]
-            AnyCard
-            (DrawOrCommitFound iid 1)
+        [ search iid ElderSign iid [fromTopOfDeck 3] AnyCard (DrawOrCommitFound iid 1)
         , ShuffleDeck (Deck.InvestigatorDeck iid)
         ]
       pure i

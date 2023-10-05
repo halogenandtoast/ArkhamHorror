@@ -1618,7 +1618,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       Window.WouldSearchDeck who deck -> do
         andM
           [ matchWho iid who whoMatcher
-          , deckMatch iid deck
+          , deckMatch who deck
               $ over biplate (Matcher.replaceInvestigatorMatcher who Matcher.ThatInvestigator) deckMatcher
           ]
       _ -> noMatch

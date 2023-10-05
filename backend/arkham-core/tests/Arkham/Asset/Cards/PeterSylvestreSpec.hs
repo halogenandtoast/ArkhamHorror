@@ -1,30 +1,15 @@
-module Arkham.Asset.Cards.PeterSylvestreSpec (
-  spec,
-) where
-
-import TestImport.Lifted
+module Arkham.Asset.Cards.PeterSylvestreSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types qualified as Asset
-import Arkham.Matcher (assetIs)
-import Arkham.Projection
+import TestImport.New
 
 spec :: Spec
 spec = describe "Peter Sylvestre" $ do
-  it "gives you +1 agility" $ gameTest $ \investigator -> do
-    putCardIntoPlay investigator Assets.peterSylvestre
-    getModifiers (toTarget investigator)
-      `shouldReturn` [SkillModifier SkillAgility 1]
+  gives @"agility" Assets.peterSylvestre 1
 
-  it "removes one horror at the end of your turn" $ gameTest $ \investigator -> do
-    putCardIntoPlay investigator Assets.peterSylvestre
-    peterSylvestre <- selectJust $ assetIs Assets.peterSylvestre
-    pushAndRun $ AssetDamage peterSylvestre (TestSource mempty) 0 2
-    pushAndRun $ ChooseEndTurn (toId investigator)
-    chooseOptionMatching
-      "use ability"
-      ( \case
-          AbilityLabel {} -> True
-          _ -> False
-      )
-    assert $ fieldP Asset.AssetHorror (== 1) peterSylvestre
+  it "removes one horror at the end of your turn" . gameTest $ \self -> do
+    peterSylvestre <- self `putAssetIntoPlay` Assets.peterSylvestre
+    duringTurn self $ do
+      run $ AssetDamage peterSylvestre (TestSource mempty) 0 1
+
+    assertChanges peterSylvestre.horror 1 0 useReaction

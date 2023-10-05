@@ -2574,6 +2574,7 @@ test-suite spec
       Arkham.Investigator.Cards.RexMurphySpec
       Arkham.Investigator.Cards.RolandBanksSpec
       Arkham.Investigator.Cards.SkidsOTooleSpec
+      Arkham.Investigator.Cards.TommyMuldoonSpec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Skill.Cards.DeductionSpec

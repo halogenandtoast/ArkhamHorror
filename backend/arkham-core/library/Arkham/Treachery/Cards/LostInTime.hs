@@ -30,16 +30,11 @@ instance RunMessage LostInTime where
       if notNull assetsWithDamageAndHorror
         then do
           push
-            $ chooseOne
-              iid
-              [ targetLabel aid
-                $ [ MovedDamage (toSource aid) (toTarget iid) dmg
-                  | dmg > 0
-                  ]
-                <> [ MovedHorror (toSource aid) (toTarget iid) hrr
-                   | hrr > 0
-                   ]
-                <> [shuffleIntoDeck iid aid, CheckDefeated (toSource attrs)]
+            $ chooseOne iid
+            $ [ targetLabel aid
+                $ [MovedDamage (toSource aid) (toTarget iid) dmg | dmg > 0]
+                <> [MovedHorror (toSource aid) (toTarget iid) hrr | hrr > 0]
+                <> [shuffleIntoDeck iid aid]
               | (aid, dmg, hrr) <- assetsWithDamageAndHorror
               ]
         else pushAll $ replicate 3 $ toMessage $ chooseAndDiscardCard iid attrs

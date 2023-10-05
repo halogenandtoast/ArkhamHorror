@@ -436,3 +436,6 @@ cancelDoom target n = do
          in
           [Would batchId msgs' | newAmount > 0]
       _ -> error "mismatched"
+
+checkDefeated :: (Sourceable source, Targetable target) => source -> target -> Message
+checkDefeated source target = CheckDefeated (toSource source) (toTarget target)

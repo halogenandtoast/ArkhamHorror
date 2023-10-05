@@ -465,7 +465,7 @@ instance RunMessage ActiveCost where
             push (InvestigatorAssignDamage iid source DamageAny 0 x)
             withPayment $ HorrorPayment x
           AssetTarget aid -> do
-            pushAll [AssetDamage aid source 0 x, CheckDefeated source]
+            push $ AssetDamage aid source 0 x
             withPayment $ HorrorPayment x
           _ -> error "can't target for horror cost"
         HorrorCostX source' -> do
@@ -497,7 +497,7 @@ instance RunMessage ActiveCost where
             push (InvestigatorAssignDamage iid source DamageAny x 0)
             withPayment $ DamagePayment x
           AssetTarget aid -> do
-            pushAll [AssetDamage aid source x 0, CheckDefeated source]
+            push $ AssetDamage aid source x 0
             withPayment $ DamagePayment x
           _ -> error "can't target for damage cost"
         DirectDamageCost _ investigatorMatcher x -> do

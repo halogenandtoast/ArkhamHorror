@@ -63,13 +63,13 @@ instance RunMessage SolemnVow where
 
       let
         damageChoices source =
-          targetLabel iid' [MovedDamage source (toTarget iid') 1, CheckDefeated (toSource iid')]
-            : [ targetLabel aid' [MovedDamage source (toTarget aid') 1, CheckDefeated (toSource aid')]
+          targetLabel iid' [MovedDamage source (toTarget iid') 1]
+            : [ targetLabel aid' [MovedDamage source (toTarget aid') 1]
               | aid' <- damageAssets'
               ]
         horrorChoices source =
-          targetLabel iid' [MovedHorror source (toTarget iid') 1, CheckDefeated (toSource iid')]
-            : [ targetLabel aid' [MovedHorror source (toTarget aid') 1, CheckDefeated (toSource aid')]
+          targetLabel iid' [MovedHorror source (toTarget iid') 1]
+            : [ targetLabel aid' [MovedHorror source (toTarget aid') 1]
               | aid' <- horrorAssets'
               ]
 

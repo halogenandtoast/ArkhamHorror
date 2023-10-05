@@ -388,7 +388,7 @@ data Message
   | CancelDamage InvestigatorId Int
   | CancelFailedByModifierEffects
   | CheckAttackOfOpportunity InvestigatorId Bool
-  | CheckDefeated Source
+  | CheckDefeated Source Target
   | AssignDamage Target
   | CancelAssignedDamage Target Int Int
   | CheckHandSize InvestigatorId

@@ -916,7 +916,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 horror
                 []
                 []
-             , CheckDefeated source
+             , checkDefeated source iid
              ]
         pure a
   InvestigatorAssignDamage iid source strategy damage horror
@@ -934,7 +934,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 | damage > 0 || horror > 0
                 ]
               <> [ InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror [] []
-                 , CheckDefeated source
+                 , checkDefeated source iid
                  ]
         pure a
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a -> do
@@ -1473,7 +1473,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId -> do
     pure $ a & mentalTraumaL .~ investigatorSanity
-  CheckDefeated source -> do
+  CheckDefeated source (isTarget a -> True) -> do
     facingDefeat <- getFacingDefeat a
     if facingDefeat
       then do
@@ -1552,20 +1552,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if cannotHealHorror
       then pure a
       else do
-        afterWindow <- checkWindows [mkAfter $ Window.Healed HorrorType (toTarget a) source amount]
+        afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source amount]
         push afterWindow
-        pure $ a & tokensL %~ subtractTokens Horror amount
-  MovedHorror _ (isTarget a -> True) amount -> do
-    pure $ a & tokensL %~ addTokens Horror amount
+        pure $ a & tokensL %~ subtractTokens #horror amount
+  MovedHorror source (isTarget a -> True) amount -> do
+    push $ checkDefeated source a
+    pure $ a & tokensL %~ addTokens #horror amount
   MovedHorror (isSource a -> True) _ amount -> do
-    pure $ a & tokensL %~ subtractTokens Horror amount
-  MovedDamage _ (isTarget a -> True) amount -> do
+    pure $ a & tokensL %~ subtractTokens #horror amount
+  MovedDamage source (isTarget a -> True) amount -> do
+    push $ checkDefeated source a
     pure $ a & tokensL %~ addTokens #damage amount
   MovedDamage (isSource a -> True) _ amount -> do
     pure $ a & tokensL %~ subtractTokens #damage amount
   HealHorrorDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
-    pure $ a & tokensL %~ subtractTokens Horror amount
+    pure $ a & tokensL %~ subtractTokens #horror amount
   HealDamageDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
     pure $ a & tokensL %~ subtractTokens Token.Damage amount

@@ -35,6 +35,6 @@ instance RunMessage Dendromorphosis where
       push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      pushAll [Msg.AssetDamage (toId a) (toAbilitySource attrs 1) 1 0, CheckDefeated (toSource attrs)]
+      push $ Msg.AssetDamage (toId a) (toAbilitySource attrs 1) 1 0
       pure a
     _ -> Dendromorphosis <$> runMessage msg attrs

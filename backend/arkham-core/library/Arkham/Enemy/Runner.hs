@@ -868,13 +868,13 @@ instance RunMessage EnemyAttrs where
                     <> show r
           unless (damageAssignmentDelayed damageAssignment')
             $ push
-            $ CheckDefeated source
+            $ checkDefeated source eid
           pure
             $ a
             & assignedDamageL
             %~ insertWith combine source damageAssignment'
         else pure a
-    CheckDefeated source -> do
+    CheckDefeated source (isTarget a -> True) -> do
       do
         let mDamageAssignment = lookup source enemyAssignedDamage
         case mDamageAssignment of
@@ -1176,7 +1176,7 @@ instance RunMessage EnemyAttrs where
       pure a
     AssignDamage target | isTarget a target -> do
       let sources = keys enemyAssignedDamage
-      pushAll $ map CheckDefeated sources
+      pushAll $ map (`checkDefeated` a) sources
       pure a
     Msg.Damage (isTarget a -> True) _ _ -> do
       error $ "Use EnemyDamage instead"

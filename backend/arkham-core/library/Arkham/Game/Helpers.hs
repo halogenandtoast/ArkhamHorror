@@ -2958,11 +2958,6 @@ sourceCanDamageEnemy eid source = do
     CannotBeDamaged -> pure True
     _ -> pure False
 
-getCanShuffleDeck :: HasGame m => InvestigatorId -> m Bool
-getCanShuffleDeck iid = do
-  modifiers <- getModifiers (InvestigatorTarget iid)
-  pure $ CannotManipulateDeck `notElem` modifiers
-
 getDoomCount :: HasGame m => m Int
 getDoomCount =
   getSum

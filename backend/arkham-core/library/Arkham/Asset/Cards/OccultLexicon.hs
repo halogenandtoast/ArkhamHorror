@@ -7,6 +7,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Events
+import Arkham.Helpers.Investigator (getCanShuffleDeck)
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

@@ -6,29 +6,37 @@ module Arkham.Capability where
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import Arkham.Prelude
 
-can :: Capabilities
-can =
-  Capabilities
-    { search = SearchCapabilities {deck = InvestigatorCanSearchDeck}
-    , draw = DrawCapabilities {cards = InvestigatorWithoutModifier CannotDrawCards}
-    , gain = GainCapabilities {resources = InvestigatorWithoutModifier CannotGainResources}
-    }
+class Capable a where
+  can :: Capabilities a
 
-data Capabilities = Capabilities
-  { search :: SearchCapabilities
-  , draw :: DrawCapabilities
-  , gain :: GainCapabilities
+instance Capable InvestigatorMatcher where
+  can =
+    Capabilities
+      { search = SearchCapabilities {deck = InvestigatorCanSearchDeck}
+      , draw = DrawCapabilities {cards = InvestigatorWithoutModifier CannotDrawCards}
+      , gain = GainCapabilities {resources = InvestigatorWithoutModifier CannotGainResources}
+      }
+
+data Capabilities a = Capabilities
+  { search :: SearchCapabilities a
+  , draw :: DrawCapabilities a
+  , gain :: GainCapabilities a
   }
+  deriving stock (Functor)
 
-data SearchCapabilities = SearchCapabilities
-  { deck :: InvestigatorMatcher
+data SearchCapabilities a = SearchCapabilities
+  { deck :: a
   }
+  deriving stock (Functor)
 
-data DrawCapabilities = DrawCapabilities
-  { cards :: InvestigatorMatcher
+data DrawCapabilities a = DrawCapabilities
+  { cards :: a
   }
+  deriving stock (Functor)
 
-data GainCapabilities = GainCapabilities
-  { resources :: InvestigatorMatcher
+data GainCapabilities a = GainCapabilities
+  { resources :: a
   }
+  deriving stock (Functor)

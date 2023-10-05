@@ -40,8 +40,9 @@ instance RunMessage StormOfSpirits3 where
           if eid == eid'
             then EnemyDamage eid' $ delayDamage $ attack attrs 3
             else EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 3
-      msgs <- selectListMap toMsg $ enemyAtLocationWith iid
-      pushAll $ msgs <> [CheckDefeated (toSource attrs)]
+
+      eids <- selectList $ enemyAtLocationWith iid
+      pushAll $ map toMsg eids <> map (checkDefeated attrs) eids
       pure e
     _ -> StormOfSpirits3 <$> runMessage msg attrs
 

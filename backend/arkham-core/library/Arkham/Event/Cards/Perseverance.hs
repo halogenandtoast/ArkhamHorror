@@ -11,8 +11,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Window
 import Arkham.Investigator.Types
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 
 newtype Perseverance = Perseverance EventAttrs
@@ -26,14 +25,12 @@ instance RunMessage Perseverance where
   runMessage msg e@(Perseverance attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       replaceMessageMatching
-        ( \case
-            InvestigatorWhenDefeated _ iid' -> iid == iid'
-            _ -> False
-        )
-        ( \case
-            InvestigatorWhenDefeated source' _ -> [CheckDefeated source']
-            _ -> error "invalid match"
-        )
+        \case
+          InvestigatorWhenDefeated _ iid' -> iid == iid'
+          _ -> False
+        \case
+          InvestigatorWhenDefeated source' _ -> [checkDefeated source' iid]
+          _ -> error "invalid match"
       assignedDamage <- field InvestigatorAssignedDamage iid
       assignedHorror <- field InvestigatorAssignedHorror iid
       pushAll
@@ -52,12 +49,9 @@ instance RunMessage Perseverance where
         damageAmount = getChoiceAmount "Damage" choices
         horrorAmount = getChoiceAmount "Horror" choices
       ignoreWindow <-
-        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll
-        $ CancelAssignedDamage
-          (InvestigatorTarget iid)
-          damageAmount
-          horrorAmount
+        $ CancelAssignedDamage (toTarget iid) damageAmount horrorAmount
         : [ignoreWindow | damageAmount + horrorAmount > 0]
       pure e
     _ -> Perseverance <$> runMessage msg attrs

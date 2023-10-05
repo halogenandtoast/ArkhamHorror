@@ -20,6 +20,12 @@ class OneOf a where
 instance OneOf InvestigatorMatcher where
   oneOf = AnyInvestigator
 
+instance OneOf EnemyMatcher where
+  oneOf = EnemyOneOf
+
+instance OneOf AssetMatcher where
+  oneOf = AssetOneOf
+
 class WithTrait a where
   withTrait :: Trait -> a
 

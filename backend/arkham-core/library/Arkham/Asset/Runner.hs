@@ -82,7 +82,7 @@ instance RunMessage AssetAttrs where
         =<< windows
           [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & tokensL %~ subtractTokens Clue n
-    CheckDefeated source -> do
+    CheckDefeated source (isTarget a -> True) -> do
       mDefeated <- defeated a source
       for_ mDefeated $ \defeatedBy -> do
         (before, _, after) <- frame (Window.AssetDefeated (toId a) defeatedBy)
@@ -93,14 +93,17 @@ instance RunMessage AssetAttrs where
       pushAll
         $ [PlaceDamage source (toTarget a) damage | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
+        <> [checkDefeated source aid]
       pure a
     PlaceDamage _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Token.Damage n
     PlaceHorror _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Horror n
     MovedHorror (isSource a -> True) _ n -> do
-      pure $ a & tokensL %~ subtractTokens Horror n
-    MovedHorror _ (isTarget a -> True) n -> do
-      pure $ a & tokensL %~ addTokens Horror n
-    MovedDamage _ (isTarget a -> True) amount -> do
+      pure $ a & tokensL %~ subtractTokens #horror n
+    MovedHorror source (isTarget a -> True) n -> do
+      push $ checkDefeated source a
+      pure $ a & tokensL %~ addTokens #horror n
+    MovedDamage source (isTarget a -> True) amount -> do
+      push $ checkDefeated source a
       pure $ a & tokensL %~ addTokens #damage amount
     MovedDamage (isSource a -> True) _ amount -> do
       pure $ a & tokensL %~ subtractTokens #damage amount

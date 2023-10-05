@@ -671,3 +671,9 @@ createWeaknessEnemy self def = do
           $ lookupEnemy (toCardCode card) enemyId (toCardId card)
   overTest $ entitiesL . Entities.enemiesL %~ insertEntity enemy'
   pure enemy'
+
+assertChanges :: (Eq a, Show a) => TestAppT a -> a -> a -> TestAppT () -> TestAppT ()
+assertChanges action a b body = do
+  action `shouldReturn` a
+  body
+  action `shouldReturn` b

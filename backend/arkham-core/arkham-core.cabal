@@ -2558,6 +2558,7 @@ test-suite spec
       Arkham.Event.Cards.LuckySpec
       Arkham.Event.Cards.MindOverMatterSpec
       Arkham.Event.Cards.MindWipe1Spec
+      Arkham.Event.Cards.OccultEvidenceSpec
       Arkham.Event.Cards.OnTheLamSpec
       Arkham.Event.Cards.OopsSpec
       Arkham.Event.Cards.SearchForTheTruthSpec

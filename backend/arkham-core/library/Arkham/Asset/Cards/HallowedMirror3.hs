@@ -8,6 +8,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Events
+import Arkham.Helpers.Investigator (getCanShuffleDeck)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Window (Window, windowType)

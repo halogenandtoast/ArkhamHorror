@@ -22,13 +22,12 @@ newtype BountyContracts = BountyContracts AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bountyContracts :: AssetCard BountyContracts
-bountyContracts =
-  asset BountyContracts Cards.bountyContracts
+bountyContracts = asset BountyContracts Cards.bountyContracts
 
 instance HasAbilities BountyContracts where
   getAbilities (BountyContracts a) =
     [ restrictedAbility a 1 (available <> ControlsThis) $ freeReaction $ EnemyEntersPlay #after AnyEnemy
-    , restrictedAbility a 2 ControlsThis $ freeReaction $ EnemyDefeated #after You ByAny EnemyWithBounty
+    , restrictedAbility a 2 ControlsThis $ ForcedAbility $ EnemyDefeated #after You ByAny EnemyWithBounty
     ]
    where
     available = if hasUses a then mempty else Never

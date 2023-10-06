@@ -13,7 +13,7 @@ spec = describe "Becky" $ do
     beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
     run $ AssetDamage beatCop2 (TestSource mempty) 3 1
     useReaction
-    resolveAmounts self [("Tommy Muldoon Resources", 2), ("Becky Resources", 2)] self
+    resolveAmounts self [("Tommy Muldoon Resources", 2), ("Becky Resources", 2)]
     self.resources `shouldReturn` 2
     -- 2 initial + 2 from tommy's ability
     becky.ammo `shouldReturn` 4

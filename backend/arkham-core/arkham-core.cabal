@@ -2477,6 +2477,7 @@ test-suite spec
       Arkham.Asset.Cards.BeatCopSpec
       Arkham.Asset.Cards.BeckySpec
       Arkham.Asset.Cards.BookOfShadows3Spec
+      Arkham.Asset.Cards.BountyContractsSpec
       Arkham.Asset.Cards.BulletproofVest3Spec
       Arkham.Asset.Cards.BurglarySpec
       Arkham.Asset.Cards.CatBurglar1Spec
@@ -2578,6 +2579,7 @@ test-suite spec
       Arkham.Investigator.Cards.RolandBanksSpec
       Arkham.Investigator.Cards.SkidsOTooleSpec
       Arkham.Investigator.Cards.TommyMuldoonSpec
+      Arkham.Investigator.Cards.TonyMorganSpec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Skill.Cards.DeductionSpec

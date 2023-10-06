@@ -28,17 +28,8 @@ newtype TonyMorgan = TonyMorgan (InvestigatorAttrs `With` Meta)
 
 tonyMorgan :: InvestigatorCard TonyMorgan
 tonyMorgan =
-  investigator
-    (TonyMorgan . (`with` Meta False))
-    Cards.tonyMorgan
-    Stats
-      { health = 9
-      , sanity = 5
-      , willpower = 2
-      , intellect = 3
-      , combat = 5
-      , agility = 2
-      }
+  investigator (TonyMorgan . (`with` Meta False)) Cards.tonyMorgan
+    $ Stats {health = 9, sanity = 5, willpower = 2, intellect = 3, combat = 5, agility = 2}
 
 instance HasModifiersFor TonyMorgan where
   getModifiersFor target (TonyMorgan (a `With` meta)) | a `is` target = do
@@ -54,7 +45,7 @@ instance HasAbilities TonyMorgan where
       $ restrictedAbility
         attrs
         1
-        (Self <> exists (EnemyWithBounty <> EnemyOneOf [CanFightEnemy (toSource attrs), CanEngageEnemy]))
+        (Self <> exists (EnemyWithBounty <> oneOf [CanFightEnemy (toSource attrs), CanEngageEnemy]))
       $ ActionAbility Nothing mempty
     | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
     ]

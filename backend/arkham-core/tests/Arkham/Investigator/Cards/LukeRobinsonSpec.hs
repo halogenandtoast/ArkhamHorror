@@ -30,7 +30,7 @@ spec = describe "Luke Robinson" do
         chooseTarget enemy1
         startSkillTest
         applyResults
-        enemy1.exhausted `shouldReturn` True
+        assert enemy1.exhausted
         self.playableCards `shouldReturn` []
 
   context "Elder Sign" do

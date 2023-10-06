@@ -28,10 +28,10 @@ newtype LukeRobinson = LukeRobinson (InvestigatorAttrs `With` Meta)
 
 instance HasModifiersFor LukeRobinson where
   getModifiersFor target (LukeRobinson (a `With` meta)) | a `is` target && active meta = do
-    connectingLocations <- selectList $ ConnectedLocation
+    connectingLocations <- selectList ConnectedLocation
     mods <- for connectingLocations $ \lid -> do
       enemies <- selectList $ enemyAt lid
-      pure $ (AsIfAt lid : map AsIfEngagedWith enemies)
+      pure (AsIfAt lid : map AsIfEngagedWith enemies)
     pure $ toModifiers a [PlayableModifierContexts $ map (CardWithType EventType,) mods]
   getModifiersFor _ _ = pure []
 
@@ -49,7 +49,7 @@ instance HasChaosTokenValue LukeRobinson where
 getLukePlayable :: HasGame m => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
 getLukePlayable attrs windows' = do
   let iid = toId attrs
-  connectingLocations <- selectList $ ConnectedLocation
+  connectingLocations <- selectList ConnectedLocation
   forToSnd connectingLocations $ \lid -> do
     enemies <- selectList $ enemyAt lid
     withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do
@@ -82,14 +82,14 @@ instance RunMessage LukeRobinson where
     RunWindow iid windows'
       | iid == toId attrs
       , active meta
-      , ( not (investigatorDefeated attrs || investigatorResigned attrs)
-            || Window.hasEliminatedWindow windows'
-        ) -> do
-          lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
-          actions <- nub . concat <$> traverse (getActions iid) windows'
-          playableCards <- getPlayableCards attrs UnpaidCost windows'
-          runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
-          pure i
+      , not (investigatorDefeated attrs || investigatorResigned attrs)
+          || Window.hasEliminatedWindow windows' ->
+          do
+            lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
+            actions <- nub . concat <$> traverse (getActions iid) windows'
+            playableCards <- getPlayableCards attrs UnpaidCost windows'
+            runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
+            pure i
     InitiatePlayCard iid card mtarget windows' asAction | iid == toId attrs && active meta -> do
       let a = attrs
       mods <- getModifiers (toTarget a)

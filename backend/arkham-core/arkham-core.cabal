@@ -2496,6 +2496,7 @@ test-suite spec
       Arkham.Asset.Cards.ForbiddenKnowledgeSpec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
       Arkham.Asset.Cards.FortyOneDerringerSpec
+      Arkham.Asset.Cards.GateBoxSpec
       Arkham.Asset.Cards.GrotesqueStatue4Spec
       Arkham.Asset.Cards.GuardDogSpec
       Arkham.Asset.Cards.HardKnocks2Spec

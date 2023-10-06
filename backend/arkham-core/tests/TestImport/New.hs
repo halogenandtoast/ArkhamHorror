@@ -734,7 +734,7 @@ chooseFight = do
       _ -> False
     _ -> False
 
-assertMaxAmountChoice :: Int -> TestAppT ()
+assertMaxAmountChoice :: HasCallStack => Int -> TestAppT ()
 assertMaxAmountChoice n = do
   questionMap <- gameQuestion <$> getGame
   ChooseAmounts _ targetValue _ _ <- case mapToList questionMap of
@@ -744,5 +744,5 @@ assertMaxAmountChoice n = do
     _ -> error $ "expected one question"
 
   case targetValue of
-    MaxAmountTarget n' -> n `shouldBe` n'
+    MaxAmountTarget n' -> n' `shouldBe` n
     TotalAmountTarget _ -> expectationFailure "expected MaxAmountTarget"

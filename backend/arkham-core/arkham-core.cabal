@@ -2530,6 +2530,7 @@ test-suite spec
       Arkham.Asset.Cards.SwitchbladeSpec
       Arkham.Asset.Cards.TheBlackFan3Spec
       Arkham.Asset.Cards.TheNecronomiconSpec
+      Arkham.Asset.Cards.Tonys38LongColtSpec
       Arkham.Asset.Cards.WendysAmuletSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
       Arkham.Enemy.Cards.MobEnforcerSpec

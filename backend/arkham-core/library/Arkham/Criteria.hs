@@ -202,6 +202,9 @@ instance Exists EnemyMatcher where
 instance Exists ExtendedCardMatcher where
   exists = ExtendedCardExists
 
+youExist :: InvestigatorMatcher -> Criterion
+youExist matcher = exists (You <> matcher)
+
 pattern CanPlaceDoomOnThis :: Criterion
 pattern CanPlaceDoomOnThis <- Negate (SelfHasModifier CannotPlaceDoomOnThis)
   where

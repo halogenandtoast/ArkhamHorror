@@ -68,6 +68,9 @@ replaceInvestigatorMatcher iid n = transform go
   go m | m == n = InvestigatorWithId iid
   go m = m
 
+handWith :: HasCardCode a => a -> InvestigatorMatcher
+handWith = HandWith . hasCard
+
 -- ** Prey Helpers **
 
 -- NOTE: OnlyPrey and Bearer of used to not combine, but we need to do this for
@@ -181,6 +184,19 @@ skillControlledBy = SkillControlledBy . InvestigatorWithId
 
 cardIs :: HasCardCode a => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
+
+-- ** Extended Card Helpers **
+
+inHandOf :: InvestigatorId -> ExtendedCardMatcher
+inHandOf = InHandOf . InvestigatorWithId
+
+basic :: CardMatcher -> ExtendedCardMatcher
+basic = BasicCardMatch
+
+-- ** Card List Helpers **
+
+hasCard :: HasCardCode a => a -> CardListMatcher
+hasCard = HasCard . cardIs
 
 -- ** Replacements
 

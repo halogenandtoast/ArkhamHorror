@@ -2600,6 +2600,7 @@ test-suite spec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
       Arkham.Treachery.Cards.CoverUpSpec
+      Arkham.Treachery.Cards.DetachedFromRealitySpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
       Arkham.Treachery.Cards.HauntedSpec
       Arkham.Treachery.Cards.HospitalDebtsSpec

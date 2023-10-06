@@ -557,13 +557,13 @@ discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> d
   asDefs self.discard `shouldReturn` [def]
 
 isFastAsset :: CardDef -> SpecWith ()
-isFastAsset def = it "is fast" $ (cdFastWindow def `shouldBe` Just (Matcher.DuringTurn Matcher.You) :: IO ())
+isFastAsset def = it "is fast" (cdFastWindow def `shouldBe` Just (Matcher.DuringTurn Matcher.You) :: IO ())
 
 isHunter :: CardDef -> SpecWith ()
-isHunter def = it "is hunter" $ (cdKeywords def `shouldSatisfy` (elem Keyword.Hunter) :: IO ())
+isHunter def = it "is hunter" (cdKeywords def `shouldSatisfy` elem Keyword.Hunter :: IO ())
 
 isAloof :: CardDef -> SpecWith ()
-isAloof def = it "is hunter" $ (cdKeywords def `shouldSatisfy` (elem Keyword.Aloof) :: IO ())
+isAloof def = it "is hunter" (cdKeywords def `shouldSatisfy` elem Keyword.Aloof :: IO ())
 
 withEach :: [a] -> (a -> TestAppT ()) -> TestAppT ()
 withEach xs f = for_ xs $ withRewind . f
@@ -649,8 +649,8 @@ failSkillTest self = do
 
 maxCommittedPerSkillTest :: Int -> CardDef -> SpecWith ()
 maxCommittedPerSkillTest n def =
-  it ("Max " <> show n <> " committed per skill test")
-    $ (cdCommitRestrictions def `shouldSatisfy` (elem MaxOnePerTest) :: IO ())
+  it ("Max " <> show n <> " committed per skill test") $ do
+    (cdCommitRestrictions def `shouldSatisfy` elem MaxOnePerTest :: IO ())
 
 -- Note: at the moment we don't have a better way of knowing if damage is
 -- direct of not aside from checking for the asset filter
@@ -714,7 +714,7 @@ resolveAmounts self choices = do
     [(_, question)] -> case question of
       ChooseAmounts {} -> pure question
       _ -> error $ "expected ChooseAmounts, but got: " <> show question
-    _ -> error $ "expected one question"
+    _ -> error "expected one question"
 
   for_ choices $ \(lbl, value) -> do
     case find (\(AmountChoice lbl' _ _) -> lbl == lbl') availableChoices of
@@ -756,7 +756,7 @@ assertMaxAmountChoice n = do
     [(_, question)] -> case question of
       ChooseAmounts {} -> pure question
       _ -> error $ "expected ChooseAmounts, but got: " <> show question
-    _ -> error $ "expected one question"
+    _ -> error "expected one question"
 
   case targetValue of
     MaxAmountTarget n' -> n' `shouldBe` n

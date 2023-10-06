@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module TestImport.New (module TestImport.New, module X) where
 
@@ -17,8 +17,10 @@ import TestImport.Lifted as X hiding (
   spawnAt,
  )
 
+import Arkham.Ability (abilityAction)
 import Arkham.Ability.Type (AbilityType (..))
 import Arkham.Ability.Types
+import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
@@ -86,7 +88,9 @@ useAbility i a = run $ UseAbility (toId i) a []
 
 useReaction :: HasCallStack => TestAppT ()
 useReaction = chooseOptionMatching "use reaction ability" \case
-  AbilityLabel {} -> True
+  AbilityLabel {ability} -> case abilityType ability of
+    ReactionAbility {} -> True
+    _ -> False
   _ -> False
 
 -- N.B. This won't work for multiple assets for the same card type
@@ -97,7 +101,9 @@ useFastActionOf (toSource -> source) idx = chooseOptionMatching "use fast action
 
 useForcedAbility :: HasCallStack => TestAppT ()
 useForcedAbility = chooseOptionMatching "use forced ability" \case
-  AbilityLabel {} -> True
+  AbilityLabel {ability} -> case abilityType ability of
+    ForcedAbility {} -> True
+    _ -> False
   _ -> False
 
 setChaosTokens :: [ChaosTokenFace] -> TestAppT ()
@@ -481,6 +487,11 @@ instance HasUses "supplies" where
     this <- self `putAssetIntoPlay` def
     field AssetUses this `shouldReturn` Uses Supply n
 
+instance HasUses "bounties" where
+  hasUses = \def n -> it ("starts with " <> show n <> " bounties") . gameTest $ \self -> do
+    this <- self `putAssetIntoPlay` def
+    field AssetUses this `shouldReturn` Uses Bounty n
+
 -- N.B. Use carefully as this deletes the entire question currently, but it is a useful way to make
 -- sure we've applied all damage
 applyAllDamage :: TestAppT ()
@@ -681,10 +692,10 @@ assertChanges action a b body = do
 -- While this function primarily exists to resolve the amounts which you could
 -- call directly, it also does a bunch of verification on the test import to
 -- make sure it coincides with the actual amounts and limit
-resolveAmounts :: Targetable target => Investigator -> [(Text, Int)] -> target -> TestAppT ()
-resolveAmounts self choices (toTarget -> target) = do
+resolveAmounts :: Investigator -> [(Text, Int)] -> TestAppT ()
+resolveAmounts self choices = do
   questionMap <- gameQuestion <$> getGame
-  ChooseAmounts _ targetValue availableChoices _ <- case mapToList questionMap of
+  ChooseAmounts _ targetValue availableChoices target <- case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseAmounts {} -> pure question
       _ -> error $ "expected ChooseAmounts, but got: " <> show question
@@ -714,3 +725,24 @@ resolveAmounts self choices (toTarget -> target) = do
     TotalAmountTarget n -> when (total /= n) $ expectationFailure $ "expected " <> show total <> " to be == " <> show n
 
   run $ ResolveAmounts (toId self) choices target
+
+chooseFight :: TestAppT ()
+chooseFight = do
+  chooseOptionMatching "choose fight" \case
+    AbilityLabel _ ability _ _ -> case abilityAction ability of
+      Just Action.Fight -> True
+      _ -> False
+    _ -> False
+
+assertMaxAmountChoice :: Int -> TestAppT ()
+assertMaxAmountChoice n = do
+  questionMap <- gameQuestion <$> getGame
+  ChooseAmounts _ targetValue _ _ <- case mapToList questionMap of
+    [(_, question)] -> case question of
+      ChooseAmounts {} -> pure question
+      _ -> error $ "expected ChooseAmounts, but got: " <> show question
+    _ -> error $ "expected one question"
+
+  case targetValue of
+    MaxAmountTarget n' -> n `shouldBe` n'
+    TotalAmountTarget _ -> expectationFailure "expected MaxAmountTarget"

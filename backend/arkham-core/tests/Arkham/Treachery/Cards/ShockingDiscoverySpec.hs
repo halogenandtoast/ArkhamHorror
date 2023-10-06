@@ -8,10 +8,6 @@ import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Treacheries
 import TestImport.New
 
-{-
-Forced - When you search your deck and this card is among the searched cards: Discard it. Cancel the search and all of its effects. Shuffle the searched deck. Draw the top card of the encounter deck.
--}
-
 spec :: Spec
 spec = describe "Shocking Discovery" do
   context "revelation" do

@@ -227,6 +227,12 @@ instance HasField "abilities" AssetId (TestAppT [Ability]) where
 instance HasField "abilities" TreacheryId (TestAppT [Ability]) where
   getField = field TreacheryAbilities
 
+instance HasField "location" EnemyId (TestAppT (Maybe LocationId)) where
+  getField = field EnemyLocation
+
+instance HasField "doom" EnemyId (TestAppT Int) where
+  getField = field EnemyDoom
+
 instance HasField "doom" AssetId (TestAppT Int) where
   getField = field AssetDoom
 
@@ -549,6 +555,9 @@ isFastAsset def = it "is fast" $ (cdFastWindow def `shouldBe` Just (Matcher.Duri
 
 isHunter :: CardDef -> SpecWith ()
 isHunter def = it "is hunter" $ (cdKeywords def `shouldSatisfy` (elem Keyword.Hunter) :: IO ())
+
+isAloof :: CardDef -> SpecWith ()
+isAloof def = it "is hunter" $ (cdKeywords def `shouldSatisfy` (elem Keyword.Aloof) :: IO ())
 
 withEach :: [a] -> (a -> TestAppT ()) -> TestAppT ()
 withEach xs f = for_ xs $ withRewind . f

@@ -381,6 +381,9 @@ chooseTarget (toTarget -> target) =
     FightLabel eid _ -> case target of
       EnemyTarget eid' -> eid == eid'
       _ -> False
+    EvadeLabel eid _ -> case target of
+      EnemyTarget eid' -> eid == eid'
+      _ -> False
     _ -> False
 
 chooseSkill :: HasCallStack => SkillType -> TestAppT ()

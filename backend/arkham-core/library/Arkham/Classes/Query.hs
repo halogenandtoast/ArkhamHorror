@@ -3,7 +3,7 @@ module Arkham.Classes.Query where
 import Arkham.Prelude
 
 import Arkham.Classes.Entity
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Target

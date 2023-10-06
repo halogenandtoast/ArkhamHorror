@@ -14,11 +14,11 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query

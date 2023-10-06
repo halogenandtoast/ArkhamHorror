@@ -3,8 +3,8 @@ module Arkham.Helpers.Use where
 import Arkham.Prelude
 
 import Arkham.Asset.Uses
+import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 
 toStartingUses :: HasGame m => Uses GameValue -> m (Uses Int)

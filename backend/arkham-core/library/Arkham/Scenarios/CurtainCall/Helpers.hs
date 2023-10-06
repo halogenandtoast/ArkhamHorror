@@ -3,15 +3,15 @@ module Arkham.Scenarios.CurtainCall.Helpers where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Source
 import Arkham.Target
 
-moveTheManInThePalidMaskToLobbyInsteadOfDiscarding :: GameT ()
+moveTheManInThePalidMaskToLobbyInsteadOfDiscarding :: (HasGame m, HasQueue Message m) => m ()
 moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
   theManInThePallidMask <- getTheManInThePallidMask
   lobbyId <-

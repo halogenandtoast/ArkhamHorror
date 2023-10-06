@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Card
 import Arkham.ClassSymbol
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query hiding (matches)
 import Arkham.CommitRestriction
 import Arkham.Enemy.Types (Field (..))

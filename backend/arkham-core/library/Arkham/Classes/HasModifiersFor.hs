@@ -2,7 +2,7 @@ module Arkham.Classes.HasModifiersFor where
 
 import Arkham.Prelude
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Modifier
 import Arkham.Target
 

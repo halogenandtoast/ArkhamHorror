@@ -30,6 +30,7 @@ import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Card.PlayerCard
+import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Cost qualified as Cost
 import Arkham.Damage
@@ -232,8 +233,7 @@ runWindow attrs windows actions playableCards = do
             actionsWithMatchingWindows
           <> [Label "Skip playing fast cards or using reactions" [] | skippable]
 
-runInvestigatorMessage
-  :: Message -> InvestigatorAttrs -> GameT InvestigatorAttrs
+runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EndCheckWindow -> do
     depth <- getWindowDepth
@@ -2939,7 +2939,7 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
           ]
       ]
 
-takeUpkeepResources :: InvestigatorAttrs -> GameT InvestigatorAttrs
+takeUpkeepResources :: InvestigatorAttrs -> Runnable InvestigatorAttrs
 takeUpkeepResources a = do
   mayChooseNotToTakeResources <- hasModifier a MayChooseNotToTakeUpkeepResources
   if mayChooseNotToTakeResources

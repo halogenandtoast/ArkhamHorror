@@ -4,8 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Card (Card)
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher
@@ -18,5 +18,4 @@ getBroodOfYogSothoth :: HasGame m => m [EnemyId]
 getBroodOfYogSothoth = selectList $ EnemyWithTitle broodTitle
 
 getSetAsideBroodOfYogSothoth :: HasGame m => m [Card]
-getSetAsideBroodOfYogSothoth =
-  getSetAsideCardsMatching $ CardWithTitle broodTitle
+getSetAsideBroodOfYogSothoth = getSetAsideCardsMatching $ CardWithTitle broodTitle

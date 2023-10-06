@@ -27,6 +27,7 @@ import Arkham.Asset.Types
 import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses
 import Arkham.Classes.HasChaosTokenValue
+import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types

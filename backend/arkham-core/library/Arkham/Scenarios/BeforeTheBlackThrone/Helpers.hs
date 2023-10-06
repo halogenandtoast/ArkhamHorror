@@ -3,13 +3,13 @@ module Arkham.Scenarios.BeforeTheBlackThrone.Helpers where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Deck qualified as Deck
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Scenario
 import Arkham.Id

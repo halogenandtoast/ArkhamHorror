@@ -33,6 +33,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect

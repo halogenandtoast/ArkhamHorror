@@ -17,7 +17,6 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Deck
@@ -117,7 +116,7 @@ instance HasChaosTokenValue HeartOfTheElders where
       ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
       otherFace -> getChaosTokenValue iid otherFace attrs
 
-runAMessage :: Message -> HeartOfTheElders -> GameT HeartOfTheElders
+runAMessage :: Runner HeartOfTheElders
 runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
   SetChaosTokensForScenario -> do
     whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
@@ -298,7 +297,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     _ -> pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> runMessage msg attrs
 
-runBMessage :: Message -> HeartOfTheElders -> GameT HeartOfTheElders
+runBMessage :: Runner HeartOfTheElders
 runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
   Setup -> do
     let

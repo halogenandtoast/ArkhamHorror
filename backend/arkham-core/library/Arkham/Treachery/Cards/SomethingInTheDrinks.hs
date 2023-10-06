@@ -6,8 +6,8 @@ module Arkham.Treachery.Cards.SomethingInTheDrinks (
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Name
 import Arkham.Scenario.Types (Field (..))

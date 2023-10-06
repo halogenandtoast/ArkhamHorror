@@ -3,10 +3,10 @@ module Arkham.Helpers.Query where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.EncounterSet (EncounterSet)
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Matcher

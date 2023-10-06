@@ -4,11 +4,11 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
@@ -55,7 +55,7 @@ emptyLocationMap = mempty
 isActionTarget :: EnemyAttrs -> Target -> Bool
 isActionTarget attrs = isTarget attrs . toProxyTarget
 
-spawnAt :: EnemyId -> SpawnAt -> GameT ()
+spawnAt :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> SpawnAt -> m ()
 spawnAt eid (SpawnAt locationMatcher) = do
   windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
   pushAll

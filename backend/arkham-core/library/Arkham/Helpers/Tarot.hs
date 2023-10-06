@@ -2,7 +2,7 @@ module Arkham.Helpers.Tarot where
 
 import Arkham.Prelude
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Scenario.Types

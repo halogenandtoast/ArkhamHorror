@@ -10,9 +10,9 @@ import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes hiding (Entity (..), select)
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Game
-import Arkham.GameEnv
 import Arkham.Message
 import Control.Lens hiding (from)
 import Control.Monad.Random (MonadRandom (..), StdGen, mkStdGen)
@@ -114,8 +114,10 @@ instance HasGameRef GameApp where
 instance HasQueue Message GameAppT where
   messageQueue = asks appQueue
 
-instance HasGameLogger GameApp where
-  gameLoggerL = lens appLogger $ \m x -> m {appLogger = x}
+instance HasGameLogger GameAppT where
+  getLogger = do
+    logger <- asks appLogger
+    pure $ \msg -> liftIO $ logger msg
 
 runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT

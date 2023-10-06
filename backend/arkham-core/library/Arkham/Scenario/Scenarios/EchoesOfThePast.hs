@@ -18,7 +18,6 @@ import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
@@ -72,7 +71,7 @@ gatherTheMidnightMasks =
     , Cards.huntingShadow
     ]
 
-placeAndLabelLocations :: Text -> [Card] -> GameT [(LocationId, [Message])]
+placeAndLabelLocations :: MonadRandom m => Text -> [Card] -> m [(LocationId, [Message])]
 placeAndLabelLocations prefix locations =
   for (withIndex1 locations) $ \(idx, location) -> do
     (locationId, placement) <- placeLocation location

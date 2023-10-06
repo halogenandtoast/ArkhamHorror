@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
@@ -22,10 +21,9 @@ newtype BaronSamedi = BaronSamedi AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baronSamedi :: AssetCard BaronSamedi
-baronSamedi =
-  assetWith BaronSamedi Cards.baronSamedi $ (canLeavePlayByNormalMeansL .~ False)
+baronSamedi = assetWith BaronSamedi Cards.baronSamedi (canLeavePlayByNormalMeansL .~ False)
 
-handleDoom :: Message -> AssetAttrs -> GameT BaronSamedi
+handleDoom :: Message -> AssetAttrs -> Runnable BaronSamedi
 handleDoom msg attrs = do
   attrs' <- runMessage msg attrs
   pure $ BaronSamedi $ attrs' {assetCanLeavePlayByNormalMeans = assetDoom attrs' >= 3}

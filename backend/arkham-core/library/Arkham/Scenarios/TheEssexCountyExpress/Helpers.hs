@@ -3,8 +3,8 @@ module Arkham.Scenarios.TheEssexCountyExpress.Helpers where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Direction
-import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 

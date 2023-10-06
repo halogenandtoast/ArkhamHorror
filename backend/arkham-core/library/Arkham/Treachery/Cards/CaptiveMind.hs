@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.CaptiveMind (
 import Arkham.Prelude
 
 import Arkham.Classes
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
@@ -22,7 +22,7 @@ newtype CaptiveMind = CaptiveMind TreacheryAttrs
 captiveMind :: TreacheryCard CaptiveMind
 captiveMind = treachery CaptiveMind Cards.captiveMind
 
-doDiscard :: InvestigatorId -> Source -> GameT ()
+doDiscard :: (HasGame m, HasQueue Message m) => InvestigatorId -> Source -> m ()
 doDiscard iid source = do
   n <- getSkillTestModifiedSkillValue
   handCount <- fieldMap InvestigatorHand length iid

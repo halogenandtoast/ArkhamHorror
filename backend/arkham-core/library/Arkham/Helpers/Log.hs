@@ -6,7 +6,7 @@ import Arkham.Campaign.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Message
 import Arkham.Projection

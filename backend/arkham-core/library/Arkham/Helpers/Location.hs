@@ -5,9 +5,9 @@ import Arkham.Prelude
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Enemy.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))

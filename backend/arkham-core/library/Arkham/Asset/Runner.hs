@@ -19,9 +19,9 @@ import Arkham.Target as X
 
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.DefeatedBy
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Use
 import Arkham.Matcher (AssetMatcher (AnyAsset))
 import Arkham.Message qualified as Msg

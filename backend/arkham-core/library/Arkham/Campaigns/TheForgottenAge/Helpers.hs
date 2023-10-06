@@ -4,10 +4,10 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Game.Helpers
-import Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
 import Arkham.History
@@ -90,7 +90,13 @@ data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock (Eq)
 
 explore
-  :: InvestigatorId -> Source -> CardMatcher -> ExploreRule -> Int -> GameT ()
+  :: (HasQueue Message m, HasGame m, MonadRandom m)
+  => InvestigatorId
+  -> Source
+  -> CardMatcher
+  -> ExploreRule
+  -> Int
+  -> m ()
 explore iid source cardMatcher exploreRule matchCount = do
   explorationDeck <- getExplorationDeck
   canMove <- iid <=~> InvestigatorCanMove

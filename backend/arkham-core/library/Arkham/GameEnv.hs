@@ -10,7 +10,9 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasDistance
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
@@ -22,6 +24,8 @@ import Arkham.Phase
 import Arkham.SkillTest.Base
 import Arkham.Target
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
+
+instance CanRun GameT
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
@@ -46,9 +50,6 @@ instance CardGen GameT where
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId card (gameCards g)}, ())
 
-class Monad m => HasGame m where
-  getGame :: m Game
-
 getCard :: HasGame m => CardId -> m Card
 getCard cardId = do
   g <- getGame
@@ -58,9 +59,6 @@ getCard cardId = do
 
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
 findCard cardPred = find cardPred . toList . gameCards <$> getGame
-
-instance Monad m => HasGame (ReaderT Game m) where
-  getGame = ask
 
 runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
 runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
@@ -84,14 +82,16 @@ instance HasGame GameT where
 instance HasQueue Message GameT where
   messageQueue = asks gameEnvQueue
 
-instance HasGameLogger GameEnv where
-  gameLoggerL = lens gameLogger $ \m x -> m {gameLogger = x}
+instance HasGameLogger GameT where
+  getLogger = do
+    logger <- asks gameLogger
+    pure $ \msg -> liftIO $ logger msg
 
 toGameEnv
   :: ( HasGameRef env
      , HasQueue Message m
      , HasStdGen env
-     , HasGameLogger env
+     , HasGameLogger m
      , MonadReader env m
      )
   => m GameEnv
@@ -99,14 +99,14 @@ toGameEnv = do
   game <- view gameRefL
   gen <- view genL
   queueRef <- messageQueue
-  logger <- view gameLoggerL
+  logger <- getLogger
   pure $ GameEnv game queueRef gen logger
 
 runWithEnv
   :: ( HasGameRef env
      , HasQueue Message m
      , HasStdGen env
-     , HasGameLogger env
+     , HasGameLogger m
      , MonadReader env m
      )
   => GameT a

@@ -824,6 +824,7 @@ library
       Arkham.Classes.HasAbilities
       Arkham.Classes.HasChaosTokenValue
       Arkham.Classes.HasDistance
+      Arkham.Classes.HasGame
       Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
       Arkham.Classes.HasSet

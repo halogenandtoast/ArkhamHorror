@@ -28,8 +28,8 @@ import Arkham.Target as X
 
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Tarot
 import Arkham.Timing qualified as Timing

@@ -9,8 +9,8 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
@@ -24,7 +24,7 @@ newtype WarmWelcome = WarmWelcome ActAttrs
 warmWelcome :: ActCard WarmWelcome
 warmWelcome = act (1, A) WarmWelcome Cards.warmWelcome (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
-spawnNathanWick :: LocationId -> GameT [Message]
+spawnNathanWick :: (HasGame m, MonadRandom m) => LocationId -> m [Message]
 spawnNathanWick library = do
   nathanWick <- getSetAsideCard Enemies.nathanWickMasterOfInitiation
   puzzleBox <- getSetAsideCard Assets.puzzleBox

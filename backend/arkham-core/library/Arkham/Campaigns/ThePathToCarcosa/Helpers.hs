@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Helpers.Log
 import Arkham.Message
 

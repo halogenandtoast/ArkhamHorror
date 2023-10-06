@@ -7,10 +7,10 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Enemy.Runner
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Keyword (Keyword (Aloof))
@@ -76,9 +76,7 @@ hereticRunner
      , HasCardCode storyCard
      )
   => storyCard
-  -> Message
-  -> b
-  -> GameT b
+  -> Runner b
 hereticRunner storyCard msg heretic = case msg of
   UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
     let card = lookupCard storyCard (toCardId attrs)

@@ -22,7 +22,6 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Message qualified as Msg
 import Arkham.Placement
@@ -37,7 +36,7 @@ instance RunMessage EventAttrs where
           _ -> result
         else result
 
-runEventMessage :: Message -> EventAttrs -> GameT EventAttrs
+runEventMessage :: Runner EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do

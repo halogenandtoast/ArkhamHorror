@@ -9,9 +9,9 @@ import Arkham.Prelude
 import Arkham.Action.Additional
 import Arkham.Action.Additional qualified as Additional
 import Arkham.Asset.Types (Field (..))
+import Arkham.Classes.HasGame
 import Arkham.Event.Types (Field (..))
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner

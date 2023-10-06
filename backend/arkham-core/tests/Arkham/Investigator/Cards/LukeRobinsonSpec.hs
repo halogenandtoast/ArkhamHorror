@@ -6,10 +6,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards (lukeRobinson)
 
-{-
-
--}
-
 spec :: Spec
 spec = describe "Luke Robinson" do
   beginsWithInPlay lukeRobinson Assets.gateBox
@@ -20,13 +16,22 @@ spec = describe "Luke Robinson" do
     $ \self -> do
       (location1, location2) <- testConnectedLocations id id
       etherealForm <- genCard Events.etherealForm
-      withProp @"hand" [etherealForm] self
-      withProp @"resources" 2 self
+      etherealForm2 <- genCard Events.etherealForm
+      withProp @"hand" [etherealForm, etherealForm2] self
+      withProp @"resources" 4 self
       self `moveTo` location1
-      enemy <- testEnemy
-      enemy `spawnAt` location2
+      enemy1 <- testEnemy & prop @"fight" 0
+      enemy2 <- testEnemy
+      enemy1 `spawnAt` location2
+      enemy2 `spawnAt` location2
       duringTurn self do
-        self.playableCards `shouldReturn` [etherealForm]
+        self.playableCards `shouldMatchListM` [etherealForm, etherealForm2]
+        self `playCard` etherealForm
+        chooseTarget enemy1
+        startSkillTest
+        applyResults
+        enemy1.exhausted `shouldReturn` True
+        self.playableCards `shouldReturn` []
 
   context "Elder Sign" do
     it "+1" . gameTestWith lukeRobinson $ \self -> do

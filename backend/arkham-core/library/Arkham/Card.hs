@@ -272,3 +272,13 @@ instance ToGameLoggerFormat Card where
       <> "\"}"
 
 $(deriveJSON defaultOptions ''Card)
+
+-- Not in Arkham.Matcher to avoid circular imports
+class IsThisCard a where
+  isThisCard :: IsCard b => b -> a
+
+instance IsThisCard CardMatcher where
+  isThisCard = CardWithId . toCardId
+
+instance IsThisCard ExtendedCardMatcher where
+  isThisCard = basic . isThisCard

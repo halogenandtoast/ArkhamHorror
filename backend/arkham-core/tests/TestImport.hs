@@ -231,7 +231,7 @@ testPlayerCards :: CardGen m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
 
 testPlayerCard :: CardGen m => (CardDef -> CardDef) -> m PlayerCard
-testPlayerCard f = genPlayerCard (f Cards.adaptable1) -- use adaptable because it has no in game effects
+testPlayerCard f = genPlayerCard (f Cards.leatherCoat)
 
 class TestUpdate a where
   updateLens :: a -> Traversal' Game a

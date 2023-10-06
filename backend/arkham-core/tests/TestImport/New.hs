@@ -44,12 +44,14 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types
 import Arkham.Matcher qualified as Matcher
 import Arkham.Movement
+import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
 import Arkham.Treachery.Types
 import Arkham.Window (defaultWindows)
+import Data.Text qualified as T
 import GHC.Records
 import GHC.TypeLits
 import Helpers.Message qualified
@@ -300,7 +302,7 @@ assertFailedSkillTest = do
     SucceededBy {} -> expectationFailure "Expected skill test to fail, but passed"
     Unrun {} -> expectationFailure "Expected skill test to pass, but is unrun"
 
-runSkillTest :: Investigator -> SkillType -> Int -> TestAppT ()
+runSkillTest :: HasCallStack => Investigator -> SkillType -> Int -> TestAppT ()
 runSkillTest i st n = do
   run $ Helpers.Message.beginSkillTest i st n
   click "start skill test"
@@ -756,3 +758,11 @@ assertMaxAmountChoice n = do
   case targetValue of
     MaxAmountTarget n' -> n' `shouldBe` n
     TotalAmountTarget _ -> expectationFailure "expected MaxAmountTarget"
+
+beginsWithInPlay :: CardDef -> CardDef -> SpecWith ()
+beginsWithInPlay investigator card = it ("begins with " <> T.unpack (toTitle card) <> " in play") . gameTestWith investigator $ \self -> do
+  cards <- testPlayerCards 20
+  assetCard <- genPlayerCard card
+  withProp @"deck" (Deck (assetCard : cards)) self
+  run $ SetupInvestigator (toId self)
+  assertAny $ Matcher.assetIs card

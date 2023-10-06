@@ -6,6 +6,7 @@ module Arkham.Modifier (
   ActionTarget (..),
   setActiveDuringSetup,
   _SearchDepth,
+  _PlayableModifierContexts,
   _AdditionalTargets,
 ) where
 
@@ -41,6 +42,8 @@ import GHC.OverloadedLabels
 
 data ModifierType
   = ActionCostOf ActionTarget Int
+  | PlayableModifierContexts [(CardMatcher, [ModifierType])]
+  | IgnorePlayableModifierContexts
   | BountiesOnly
   | CommitCost Cost
   | AbilityModifier Target Int ModifierType
@@ -265,6 +268,11 @@ data ModifierType
   | MayIgnoreLocationEffectsAndKeywords
   | Ethereal -- only for UI, from Ethereal Form
   deriving stock (Show, Eq, Ord, Data)
+
+_PlayableModifierContexts :: Prism' ModifierType [(CardMatcher, [ModifierType])]
+_PlayableModifierContexts = prism' PlayableModifierContexts $ \case
+  PlayableModifierContexts n -> Just n
+  _ -> Nothing
 
 _SearchDepth :: Prism' ModifierType Int
 _SearchDepth = prism' SearchDepth $ \case

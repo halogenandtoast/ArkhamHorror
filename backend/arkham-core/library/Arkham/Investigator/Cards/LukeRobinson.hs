@@ -23,8 +23,17 @@ newtype Meta = Meta {active :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype LukeRobinson = LukeRobinson (InvestigatorAttrs `With` Meta)
-  deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
+  deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor LukeRobinson where
+  getModifiersFor target (LukeRobinson (a `With` meta)) | a `is` target && active meta = do
+    connectingLocations <- selectList $ ConnectedLocation
+    mods <- for connectingLocations $ \lid -> do
+      enemies <- selectList $ enemyAt lid
+      pure $ (AsIfAt lid : map AsIfEngagedWith enemies)
+    pure $ toModifiers a [PlayableModifierContexts $ map (CardWithType EventType,) mods]
+  getModifiersFor _ _ = pure []
 
 lukeRobinson :: InvestigatorCard LukeRobinson
 lukeRobinson =
@@ -84,7 +93,8 @@ instance RunMessage LukeRobinson where
     InitiatePlayCard iid card mtarget windows' asAction | iid == toId attrs && active meta -> do
       let a = attrs
       mods <- getModifiers (toTarget a)
-      playable <- getIsPlayable (toId a) (toSource a) UnpaidCost windows' card
+      playable <- withModifiers iid (toModifiers attrs [IgnorePlayableModifierContexts]) $ do
+        getIsPlayable (toId a) (toSource a) UnpaidCost windows' card
       let
         shouldSkip = flip any mods $ \case
           AsIfInHand card' -> card == card'

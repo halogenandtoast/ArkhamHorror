@@ -912,7 +912,8 @@ withDepthGuard maxDepth defaultValue body = do
     if depth > maxDepth then pure defaultValue else local delve body
 
 getIsPlayableWithResources
-  :: (HasCallStack, HasGame m, Sourceable source)
+  :: forall m source
+   . (HasCallStack, HasGame m, Sourceable source)
   => InvestigatorId
   -> source
   -> Int
@@ -922,8 +923,40 @@ getIsPlayableWithResources
   -> m Bool
 getIsPlayableWithResources _ _ _ _ _ (VengeanceCard _) = pure False
 getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayableWithResources iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) =
-  withDepthGuard 3 False $ do
+getIsPlayableWithResources iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) = do
+  ignoreContexts <- hasModifier iid IgnorePlayableModifierContexts
+  contexts :: [(Matcher.CardMatcher, [ModifierType])] <-
+    concat . mapMaybe (preview _PlayableModifierContexts) <$> getModifiers iid
+  base <- go @m
+  others <-
+    traverse
+      (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
+      (if ignoreContexts then [] else contexts)
+  pure $ or (base : others)
+ where
+  pcDef = toCardDef c
+  prevents (CanOnlyUseCardsInRole role) =
+    null $ intersect (cdClassSymbols pcDef) (setFromList [Neutral, role])
+  prevents (CannotPlay matcher) = cardMatch c matcher
+  prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
+  prevents _ = False
+  passesLimit :: forall n. HasGame n => CardLimit -> n Bool
+  passesLimit (LimitPerInvestigator m) = case toCardType c of
+    AssetType -> do
+      n <-
+        selectCount
+          ( Matcher.AssetControlledBy (Matcher.InvestigatorWithId iid)
+              <> Matcher.AssetWithTitle (nameTitle $ toName c)
+          )
+      pure $ m > n
+    _ -> error $ "Not handling card type: " <> show (toCardType c)
+  passesLimit (LimitPerTrait t m) = case toCardType c of
+    AssetType -> do
+      n <- selectCount (Matcher.AssetWithTrait t)
+      pure $ m > n
+    _ -> error $ "Not handling card type: " <> show (toCardType c)
+  go :: forall n. HasGame n => n Bool
+  go = withDepthGuard 3 False $ do
     iids <- filter (/= iid) <$> getInvestigatorIds
     iidsWithModifiers <- for iids $ \iid' -> do
       modifiers <- getModifiers (InvestigatorTarget iid')
@@ -1034,27 +1067,6 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && passesUnique
       && passesSlots
       && canAffordAdditionalCosts
- where
-  pcDef = toCardDef c
-  prevents (CanOnlyUseCardsInRole role) =
-    null $ intersect (cdClassSymbols pcDef) (setFromList [Neutral, role])
-  prevents (CannotPlay matcher) = cardMatch c matcher
-  prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
-  prevents _ = False
-  passesLimit (LimitPerInvestigator m) = case toCardType c of
-    AssetType -> do
-      n <-
-        selectCount
-          ( Matcher.AssetControlledBy (Matcher.InvestigatorWithId iid)
-              <> Matcher.AssetWithTitle (nameTitle $ toName c)
-          )
-      pure $ m > n
-    _ -> error $ "Not handling card type: " <> show (toCardType c)
-  passesLimit (LimitPerTrait t m) = case toCardType c of
-    AssetType -> do
-      n <- selectCount (Matcher.AssetWithTrait t)
-      pure $ m > n
-    _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 onSameLocation :: HasGame m => InvestigatorId -> Placement -> m Bool
 onSameLocation iid = \case

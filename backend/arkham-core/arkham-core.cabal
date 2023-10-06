@@ -2537,6 +2537,7 @@ test-suite spec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
       Arkham.Enemy.Cards.StubbornDetectiveSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
+      Arkham.Enemy.Cards.TonysQuarrySpec
       Arkham.Event.Cards.BackstabSpec
       Arkham.Event.Cards.BaitAndSwitchSpec
       Arkham.Event.Cards.Barricade3Spec

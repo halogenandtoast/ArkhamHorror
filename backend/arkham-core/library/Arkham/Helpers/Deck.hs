@@ -3,8 +3,8 @@ module Arkham.Helpers.Deck where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))

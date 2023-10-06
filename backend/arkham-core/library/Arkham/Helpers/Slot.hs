@@ -6,7 +6,7 @@ module Arkham.Helpers.Slot (
 import Arkham.Prelude
 
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Slot as X

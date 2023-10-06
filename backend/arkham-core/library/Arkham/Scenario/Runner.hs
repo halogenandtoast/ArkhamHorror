@@ -32,7 +32,6 @@ import Arkham.Enemy.Creation
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
@@ -83,7 +82,7 @@ instance RunMessage ScenarioAttrs where
   runMessage msg a =
     runScenarioAttrs msg a >>= traverseOf chaosBagL (runMessage msg)
 
-runScenarioAttrs :: Message -> ScenarioAttrs -> GameT ScenarioAttrs
+runScenarioAttrs :: Runner ScenarioAttrs
 runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ResetGame -> do
     standalone <- getIsStandalone

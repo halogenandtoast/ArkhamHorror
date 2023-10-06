@@ -2,8 +2,8 @@ module Arkham.Classes.HasDistance where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasGame
 import Arkham.Distance
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 
 class HasDistance a where

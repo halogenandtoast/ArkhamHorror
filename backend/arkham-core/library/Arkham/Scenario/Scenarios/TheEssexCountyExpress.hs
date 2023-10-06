@@ -12,12 +12,12 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
 import Arkham.Helpers.Scenario

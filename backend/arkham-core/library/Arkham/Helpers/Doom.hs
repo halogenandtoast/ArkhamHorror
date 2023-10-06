@@ -2,13 +2,13 @@ module Arkham.Helpers.Doom where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Target
 
-targetsWithDoom :: GameT [Target]
+targetsWithDoom :: HasGame m => m [Target]
 targetsWithDoom = do
   locations <- selectListMap LocationTarget LocationWithAnyDoom
   investigators <- selectListMap InvestigatorTarget InvestigatorWithAnyDoom

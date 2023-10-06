@@ -5,31 +5,15 @@ import Arkham.Prelude
 import Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import {-# SOURCE #-} Arkham.Card
-import Arkham.Classes.GameLogger
-import Arkham.Classes.HasQueue
+import Arkham.Classes.HasGame
 import Arkham.Distance
-import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.Game.Settings
 import Arkham.History
 import Arkham.Id
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
 import Arkham.SkillTest.Base
 import Arkham.Target
-
-data GameEnv
-
-newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
-
-instance Functor GameT
-instance Applicative GameT
-instance Monad GameT
-instance MonadIO GameT
-instance MonadRandom GameT
-instance MonadReader GameEnv GameT
-
-instance HasQueue Message GameT
 
 withModifiers'
   :: (Targetable target, HasGame m) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
@@ -47,17 +31,6 @@ getGameInAction :: HasGame m => m Bool
 getIgnoreCanModifiers :: HasGame m => m Bool
 getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
 getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
-
-class Monad m => HasGame m where
-  getGame :: m Game
-
 getCard :: HasGame m => CardId -> m Card
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
 getSettings :: HasGame m => m Settings
-
-instance HasGame GameT
-
-instance Monad m => HasGame (ReaderT Game m)
-
-instance CardGen GameT
-instance HasGameLogger GameEnv

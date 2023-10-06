@@ -4,8 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Direction
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Message hiding (Label)
 import Arkham.Id
 import Arkham.Label
@@ -44,7 +44,8 @@ positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
     | n < 10 = "0" <> show n
     | otherwise = show n
 
-placeAtDirection :: Direction -> LocationAttrs -> GameT (Card -> GameT [Message])
+placeAtDirection
+  :: (MonadRandom m, HasGame m) => Direction -> LocationAttrs -> m (Card -> m [Message])
 placeAtDirection direction attrs = do
   -- we need to determine what we are connected to based on our pos, the only way to do this is to get locations with labels
   let placedPosition = newPos direction (posLabelToPosition . mkLabel $ locationLabel attrs)
@@ -82,14 +83,16 @@ placeAtDirection direction attrs = do
 directionEmpty :: HasGame m => LocationAttrs -> Direction -> m Bool
 directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId $ toId attrs)
 
-toMaybePlacement :: LocationAttrs -> Direction -> GameT (Maybe (Card -> GameT [Message]))
+toMaybePlacement
+  :: (MonadRandom m, HasGame m) => LocationAttrs -> Direction -> m (Maybe (Card -> m [Message]))
 toMaybePlacement attrs dir = do
   isEmpty <- directionEmpty attrs dir
   if isEmpty
     then Just <$> placeAtDirection dir attrs
     else pure Nothing
 
-placeDrawnLocations :: LocationAttrs -> [Card] -> [Direction] -> GameT ()
+placeDrawnLocations
+  :: (MonadRandom m, HasQueue Message m, HasGame m) => LocationAttrs -> [Card] -> [Direction] -> m ()
 placeDrawnLocations attrs cards directions = do
   placements <- mapMaybeM (toMaybePlacement attrs) directions
   msgs <- concat <$> zipWithM ($) placements cards

@@ -12,10 +12,10 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
@@ -43,7 +43,7 @@ instance HasAbilities InfiltratingTheLodge where
       attrs
       [mkAbility attrs 1 $ ReactionAbility (EnemyEvaded Timing.After You EnemyWithAnyDoom) Free]
 
-spawnNathanWick :: LocationId -> GameT [Message]
+spawnNathanWick :: (MonadRandom m, HasGame m) => LocationId -> m [Message]
 spawnNathanWick innerSanctum = do
   nathanWick <- getSetAsideCard Enemies.nathanWickMasterOfIndoctrination
   puzzleBox <- getSetAsideCard Assets.puzzleBox

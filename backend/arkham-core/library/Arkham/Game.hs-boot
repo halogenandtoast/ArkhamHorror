@@ -15,13 +15,13 @@ import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasDistance
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Effect.Types
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Game.Base as X
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
@@ -94,7 +94,7 @@ runMessages
      , HasStdGen env
      , HasQueue Message m
      , MonadReader env m
-     , HasGameLogger env
+     , HasGameLogger m
      )
   => Maybe (Message -> IO ())
   -> m ()

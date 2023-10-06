@@ -53,6 +53,7 @@ import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types
+import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types
@@ -60,7 +61,6 @@ import Arkham.Entities qualified as Entities
 import Arkham.Event.Types
 import Arkham.Game qualified as Game
 import Arkham.Game.Settings
-import Arkham.GameEnv
 import Arkham.Git
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types
@@ -190,8 +190,10 @@ instance HasQueue Message TestAppT where
 instance HasQueue Message (ReaderT TestApp TestAppT) where
   messageQueue = asks messageQueueRef
 
-instance HasGameLogger TestApp where
-  gameLoggerL = lens testGameLogger $ \m x -> m {testGameLogger = x}
+instance HasGameLogger TestAppT where
+  getLogger = do
+    logger <- gets testGameLogger
+    pure $ \msg -> liftIO $ logger msg
 
 testScenario
   :: MonadIO m

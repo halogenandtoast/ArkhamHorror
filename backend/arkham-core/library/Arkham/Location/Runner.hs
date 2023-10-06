@@ -28,10 +28,10 @@ import Arkham.Target as X
 
 import Arkham.Action qualified as Action
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Direction
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
@@ -367,11 +367,11 @@ instance RunMessage LocationAttrs where
       pure a
     _ -> pure a
 
-locationInvestigatorsWithClues :: LocationAttrs -> GameT [InvestigatorId]
+locationInvestigatorsWithClues :: HasGame m => LocationAttrs -> m [InvestigatorId]
 locationInvestigatorsWithClues attrs =
   filterM (fieldMap InvestigatorClues (> 0)) =<< selectList (investigatorAt $ toId attrs)
 
-getModifiedShroudValueFor :: LocationAttrs -> GameT Int
+getModifiedShroudValueFor :: HasGame m => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   pure $ foldr applyPostModifier (foldr applyModifier (locationShroud attrs) modifiers') modifiers'
@@ -381,7 +381,7 @@ getModifiedShroudValueFor attrs = do
   applyPostModifier (SetShroud m) _ = m
   applyPostModifier _ n = n
 
-getInvestigateAllowed :: InvestigatorId -> LocationAttrs -> GameT Bool
+getInvestigateAllowed :: HasGame m => InvestigatorId -> LocationAttrs -> m Bool
 getInvestigateAllowed _iid attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   pure $ none isCannotInvestigate modifiers'
@@ -390,7 +390,7 @@ getInvestigateAllowed _iid attrs = do
   isCannotInvestigate (CannotInvestigateLocation lid) = lid == toId attrs
   isCannotInvestigate _ = False
 
-canEnterLocation :: EnemyId -> LocationId -> GameT Bool
+canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   modifiers' <- getModifiers lid
   not <$> flip anyM modifiers' \case
@@ -443,7 +443,7 @@ instance HasAbilities LocationAttrs where
         then locationCostToEnterUnrevealed l
         else ActionCost 1
 
-getShouldSpawnNonEliteAtConnectingInstead :: LocationAttrs -> GameT Bool
+getShouldSpawnNonEliteAtConnectingInstead :: HasGame m => LocationAttrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   pure $ flip any modifiers' $ \case

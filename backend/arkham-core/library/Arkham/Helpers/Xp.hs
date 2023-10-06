@@ -2,8 +2,8 @@ module Arkham.Helpers.Xp where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query

@@ -4,9 +4,9 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (..))
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection

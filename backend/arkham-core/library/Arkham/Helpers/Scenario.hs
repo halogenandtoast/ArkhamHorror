@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-dodgy-imports #-}
-
 module Arkham.Helpers.Scenario where
 
 import Arkham.Prelude
@@ -7,10 +5,10 @@ import Arkham.Prelude
 import Arkham.Campaign.Types
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Id
@@ -21,7 +19,7 @@ import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Target
 import Control.Lens (non, _1, _2)
-import Control.Monad.Writer hiding (filterM)
+import Control.Monad.Writer
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
 

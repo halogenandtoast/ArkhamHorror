@@ -14,8 +14,8 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
@@ -119,12 +119,12 @@ replaceFirstChooseChoice source iid strategy replacement = \case
     replaceFirstChoice source iid strategy replacement (Decided step) : rest
 
 resolveFirstUnresolved
-  :: HasCallStack
+  :: (HasCallStack, HasGame m, MonadRandom m)
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
   -> ChaosBagStepState
-  -> StateT ChaosBag GameT (ChaosBagStepState, [Message])
+  -> StateT ChaosBag m (ChaosBagStepState, [Message])
 resolveFirstUnresolved source iid strategy = \case
   Undecided _ -> error "should not be ran with undecided"
   Deciding _ -> error "should not be ran with undecided"
@@ -292,12 +292,12 @@ resolveFirstUnresolved source iid strategy = \case
           pure (Decided $ ChooseMatchChoice steps' tokens' choices, msgs)
 
 resolveFirstChooseUnresolved
-  :: HasCallStack
+  :: (HasCallStack, HasGame m, MonadRandom m)
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
   -> [ChaosBagStepState]
-  -> StateT ChaosBag GameT ([ChaosBagStepState], [Message])
+  -> StateT ChaosBag m ([ChaosBagStepState], [Message])
 resolveFirstChooseUnresolved source iid strategy = \case
   [] -> pure ([], [])
   (Undecided s : _) -> error $ "should not be called with undecided: " <> show s

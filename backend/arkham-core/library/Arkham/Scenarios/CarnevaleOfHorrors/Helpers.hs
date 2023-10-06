@@ -3,8 +3,8 @@ module Arkham.Scenarios.CarnevaleOfHorrors.Helpers where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 

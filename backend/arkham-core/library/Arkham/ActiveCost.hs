@@ -20,6 +20,7 @@ import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
@@ -116,13 +117,14 @@ countAdditionalActionPayments (Payments ps) =
 countAdditionalActionPayments _ = 0
 
 startAbilityPayment
-  :: ActiveCost
+  :: (HasQueue Message m, HasGame m)
+  => ActiveCost
   -> InvestigatorId
   -> Window
   -> AbilityType
   -> Source
   -> Bool
-  -> GameT ()
+  -> m ()
 startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportunity =
   case abilityType of
     Objective aType ->

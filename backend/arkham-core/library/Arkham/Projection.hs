@@ -6,8 +6,8 @@ module Arkham.Projection (
 import Arkham.Prelude
 
 import Arkham.Classes.Entity
+import Arkham.Classes.HasGame
 import Arkham.Field as X
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 
 class Projection a where

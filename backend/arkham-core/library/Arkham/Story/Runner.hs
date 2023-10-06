@@ -13,7 +13,7 @@ import Arkham.Source as X
 import Arkham.Story.Types as X
 import Arkham.Target as X
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))

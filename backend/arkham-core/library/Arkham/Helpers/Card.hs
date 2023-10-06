@@ -11,6 +11,7 @@ import Arkham.Asset.Types
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.Entities

@@ -13,9 +13,9 @@ import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Campaign

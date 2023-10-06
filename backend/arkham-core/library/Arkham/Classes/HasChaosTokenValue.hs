@@ -3,7 +3,7 @@ module Arkham.Classes.HasChaosTokenValue where
 import Arkham.Prelude
 
 import Arkham.ChaosToken
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Id
 
 class HasChaosTokenValue a where

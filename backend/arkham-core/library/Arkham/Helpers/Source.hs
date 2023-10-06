@@ -2,9 +2,9 @@ module Arkham.Helpers.Source where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Field.Import
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher qualified as Matcher

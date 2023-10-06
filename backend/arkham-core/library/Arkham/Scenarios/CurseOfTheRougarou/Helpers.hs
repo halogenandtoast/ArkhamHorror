@@ -4,8 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Json
 import Arkham.Location.Cards qualified as Locations

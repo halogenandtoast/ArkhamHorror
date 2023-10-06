@@ -12,6 +12,7 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty

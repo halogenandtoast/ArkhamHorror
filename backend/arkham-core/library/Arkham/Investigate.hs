@@ -3,8 +3,8 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types (Field (..))

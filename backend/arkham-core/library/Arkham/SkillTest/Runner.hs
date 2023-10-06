@@ -15,8 +15,8 @@ import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes hiding (matches)
+import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)

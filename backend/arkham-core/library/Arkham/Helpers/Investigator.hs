@@ -10,9 +10,9 @@ import Arkham.Asset.Types qualified as Field
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Damage
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
@@ -554,12 +554,12 @@ checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
 -- TODO: Decide if we want to use or keep these instances, these let you do
 -- >       canModifyDeck <- can.manipulate.deck attrs
 
-instance Capable (InvestigatorId -> GameT Bool) where
+instance HasGame m => Capable (InvestigatorId -> m Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (flip (<=~>)) can'
 
-instance Capable (InvestigatorAttrs -> GameT Bool) where
+instance HasGame m => Capable (InvestigatorAttrs -> m Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (\c -> (<=~> c) . toId) can'

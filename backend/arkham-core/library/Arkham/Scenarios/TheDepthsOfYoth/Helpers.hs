@@ -2,9 +2,9 @@ module Arkham.Scenarios.TheDepthsOfYoth.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario

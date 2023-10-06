@@ -5,10 +5,10 @@ import Arkham.Prelude
 import Arkham.Asset.Types (Field (..))
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
-import Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))

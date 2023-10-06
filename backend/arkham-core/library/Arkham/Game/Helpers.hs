@@ -31,6 +31,7 @@ import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes hiding (isMatch)
+import Arkham.Classes.HasGame
 import Arkham.Cost.FieldCost
 import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect

@@ -40,6 +40,7 @@ import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Classes.HasDistance
+import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Cost qualified as Cost
 import Arkham.Damage
@@ -3479,7 +3480,7 @@ runMessages
      , HasStdGen env
      , HasQueue Message m
      , MonadReader env m
-     , HasGameLogger env
+     , HasGameLogger m
      )
   => Maybe (Message -> IO ())
   -> m ()
@@ -3578,7 +3579,7 @@ runMessages mLogger = do
               >>= putGame
             runMessages mLogger
 
-runPreGameMessage :: Message -> Game -> GameT Game
+runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
   CheckWindow {} -> do
     push EndCheckWindow
@@ -3711,7 +3712,7 @@ createActiveCostForAdditionalCardCosts iid card = do
             , activeCostSealedChaosTokens = []
             }
 
-runGameMessage :: Message -> Game -> GameT Game
+runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
   If wType _ -> do
@@ -5675,7 +5676,7 @@ runGameMessage msg g = case msg of
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy
-preloadEntities :: Game -> GameT Game
+preloadEntities :: HasGame m => Game -> m Game
 preloadEntities g = do
   let
     investigators = view (entitiesL . investigatorsL) g

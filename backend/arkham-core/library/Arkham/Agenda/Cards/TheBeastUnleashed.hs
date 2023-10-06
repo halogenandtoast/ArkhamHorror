@@ -10,8 +10,8 @@ import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards

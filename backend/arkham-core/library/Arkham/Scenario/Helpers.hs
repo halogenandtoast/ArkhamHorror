@@ -8,9 +8,9 @@ import Arkham.Prelude
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.EncounterSet
 import Arkham.Game.Helpers as X
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Campaign as X
 import Arkham.Matcher

@@ -7,6 +7,7 @@ import Arkham.Helpers.Message.Discard as X
 import Arkham.Message as X
 
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue qualified as Queue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
@@ -14,7 +15,6 @@ import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Creation
 import Arkham.Exception
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
@@ -69,7 +69,7 @@ resolveWithWindow msg window' = do
   afterWindow <- checkWindows [mkWindow Timing.After window']
   pure [When msg, whenWindow, atIfWindow, msg, After msg, afterWindow]
 
-dealAdditionalDamage :: InvestigatorId -> Int -> [Message] -> GameT ()
+dealAdditionalDamage :: HasQueue Message m => InvestigatorId -> Int -> [Message] -> m ()
 dealAdditionalDamage iid amount additionalMessages = do
   mMsg <- findFromQueue $ \case
     InvestigatorDamage iid' _ n _ | iid' == iid -> n > 0
@@ -95,7 +95,7 @@ dealAdditionalDamage iid amount additionalMessages = do
       replaceMessage damageMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No damage occured"
 
-dealAdditionalHorror :: InvestigatorId -> Int -> [Message] -> GameT ()
+dealAdditionalHorror :: HasQueue Message m => InvestigatorId -> Int -> [Message] -> m ()
 dealAdditionalHorror iid amount additionalMessages = do
   mMsg <- findFromQueue $ \case
     InvestigatorDamage iid' _ _ n | iid' == iid -> n > 0
@@ -179,19 +179,19 @@ placeLocation c = do
 placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
-placeSetAsideLocation :: CardDef -> GameT (LocationId, Message)
+placeSetAsideLocation :: (MonadRandom m, HasGame m) => CardDef -> m (LocationId, Message)
 placeSetAsideLocation = placeLocation <=< getSetAsideCard
 
-placeSetAsideLocation_ :: CardDef -> GameT Message
+placeSetAsideLocation_ :: (MonadRandom m, HasGame m) => CardDef -> m Message
 placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
 
-placeLocationCard :: CardDef -> GameT (LocationId, Message)
+placeLocationCard :: (CardGen m, HasGame m) => CardDef -> m (LocationId, Message)
 placeLocationCard = placeLocation <=< genCard
 
-placeLocationCard_ :: CardDef -> GameT Message
+placeLocationCard_ :: (HasGame m, CardGen m) => CardDef -> m Message
 placeLocationCard_ = placeLocation_ <=< genCard
 
-placeLocationCards_ :: [CardDef] -> GameT [Message]
+placeLocationCards_ :: (CardGen m, HasGame m) => [CardDef] -> m [Message]
 placeLocationCards_ = traverse placeLocationCard_
 
 scenarioResolution :: Int -> Message
@@ -275,7 +275,7 @@ findEncounterCard
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
   FindEncounterCard iid target zones cardMatcher
 
-placeLabeledLocations_ :: Text -> [CardDef] -> GameT [Message]
+placeLabeledLocations_ :: (HasGame m, CardGen m) => Text -> [CardDef] -> m [Message]
 placeLabeledLocations_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
@@ -286,7 +286,7 @@ placeLabeledLocations_ lbl cards = do
     alreadyTaken <- selectAny $ LocationWithLabel (mkLabel $ lbl <> tshow n)
     if alreadyTaken then getStartIndex (n + 1) else pure n
 
-placeLabeledLocations :: Text -> [CardDef] -> GameT ([LocationId], [Message])
+placeLabeledLocations :: (HasGame m, CardGen m) => Text -> [CardDef] -> m ([LocationId], [Message])
 placeLabeledLocations lbl cards = fmap fold
   . concatForM (withIndex1 cards)
   $ \(idx, card) -> do
@@ -296,7 +296,7 @@ placeLabeledLocations lbl cards = fmap fold
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
 putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing (defaultWindows iid)
 
-placeLabeledLocation :: Text -> Card -> GameT (LocationId, Message)
+placeLabeledLocation :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)
 placeLabeledLocation lbl card = do
   idx <- getStartIndex (1 :: Int)
   (location, placement) <- placeLocation card

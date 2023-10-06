@@ -4,9 +4,9 @@ where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Label ()
 import Arkham.Location.BreachStatus

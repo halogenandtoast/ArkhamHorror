@@ -2,32 +2,37 @@ module Arkham.Classes.GameLogger where
 
 import Arkham.Prelude
 
-class HasGameLogger a where
-  gameLoggerL :: Lens' a (ClientMessage -> IO ())
+class MonadIO m => HasGameLogger m where
+  getLogger :: m (ClientMessage -> IO ())
+
+instance HasGameLogger m => HasGameLogger (ReaderT e m) where
+  getLogger = do
+    logger <- lift getLogger
+    pure $ \msg -> liftIO $ logger msg
 
 class ToGameLoggerFormat a where
   format :: a -> Text
 
 data ClientMessage = ClientText Text | ClientCard Text Value | ClientTarot Value
 
-send :: (MonadIO m, MonadReader env m, HasGameLogger env) => Text -> m ()
+send :: HasGameLogger m => Text -> m ()
 send msg = do
-  f <- view gameLoggerL
+  f <- getLogger
   liftIO $ f (ClientText msg)
 
-sendRevelation :: (MonadIO m, MonadReader env m, HasGameLogger env) => Value -> m ()
+sendRevelation :: HasGameLogger m => Value -> m ()
 sendRevelation msg = do
-  f <- view gameLoggerL
+  f <- getLogger
   liftIO $ f (ClientCard "Revelation" msg)
 
-sendEnemy :: (MonadIO m, MonadReader env m, HasGameLogger env) => Text -> Value -> m ()
+sendEnemy :: HasGameLogger m => Text -> Value -> m ()
 sendEnemy title msg = do
-  f <- view gameLoggerL
+  f <- getLogger
   liftIO $ f (ClientCard title msg)
 
-sendTarot :: (MonadIO m, MonadReader env m, HasGameLogger env) => Value -> m ()
+sendTarot :: HasGameLogger m => Value -> m ()
 sendTarot msg = do
-  f <- view gameLoggerL
+  f <- getLogger
   liftIO $ f (ClientTarot msg)
 
 pluralize :: Int -> Text -> Text

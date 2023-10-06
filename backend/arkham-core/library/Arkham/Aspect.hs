@@ -3,7 +3,7 @@ module Arkham.Aspect (module Arkham.Aspect.Types, module Arkham.Aspect) where
 import Arkham.Prelude
 
 import Arkham.Aspect.Types
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Classes.HasGame
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigate.Types

@@ -1,10 +1,8 @@
-module Arkham.GameSpec (
-  spec,
-) where
+module Arkham.GameSpec (spec) where
 
 import TestImport
 
-import Arkham.GameEnv
+import Arkham.Classes.HasGame
 
 spec :: Spec
 spec = describe "ToJSON" $ do

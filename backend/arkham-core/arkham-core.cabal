@@ -2577,6 +2577,7 @@ test-suite spec
       Arkham.Investigator.Cards.DaisyWalkerSpec
       Arkham.Investigator.Cards.JennyBarnesSpec
       Arkham.Investigator.Cards.JimCulverSpec
+      Arkham.Investigator.Cards.LukeRobinsonSpec
       Arkham.Investigator.Cards.MandyThompsonSpec
       Arkham.Investigator.Cards.RexMurphySpec
       Arkham.Investigator.Cards.RolandBanksSpec
@@ -2653,6 +2654,7 @@ test-suite spec
     , lens
     , mtl
     , random
+    , text
     , these
     , uuid
   default-language: GHC2021

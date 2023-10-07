@@ -642,24 +642,27 @@ chooseOptionMatching :: HasCallStack => String -> (UI Message -> Bool) -> TestAp
 chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
-    [(iid, question)] -> case question of
-      ChooseOne msgs -> case find f msgs of
-        Just msg -> push (uiToRun msg) <* runMessages
-        Nothing -> liftIO $ expectationFailure "could not find a matching message"
-      ChooseOneAtATime msgs -> case find f msgs of
-        Just msg -> do
-          pushIfAny (deleteFirst msg msgs) (Ask iid $ ChooseOneAtATime $ deleteFirst msg msgs)
-          push (uiToRun msg)
-          runMessages
-        Nothing -> liftIO $ expectationFailure "could not find a matching message"
-      ChooseN n msgs -> case find f msgs of
-        Just msg -> do
-          pushWhen (n > 1) (Ask iid $ ChooseN (n - 1) $ deleteFirst msg msgs)
-          push (uiToRun msg)
-          runMessages
-        Nothing -> liftIO $ expectationFailure "could not find a matching message"
-      _ -> error $ "unsupported questions type: " <> show question
+    [(iid, question)] -> go iid question
     _ -> error "There must be only one question to use this function"
+ where
+  go iid question = case question of
+    QuestionLabel _ _ q -> go iid q
+    ChooseOne msgs -> case find f msgs of
+      Just msg -> push (uiToRun msg) <* runMessages
+      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+    ChooseOneAtATime msgs -> case find f msgs of
+      Just msg -> do
+        pushIfAny (deleteFirst msg msgs) (Ask iid $ ChooseOneAtATime $ deleteFirst msg msgs)
+        push (uiToRun msg)
+        runMessages
+      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+    ChooseN n msgs -> case find f msgs of
+      Just msg -> do
+        pushWhen (n > 1) (Ask iid $ ChooseN (n - 1) $ deleteFirst msg msgs)
+        push (uiToRun msg)
+        runMessages
+      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+    _ -> error $ "unsupported questions type: " <> show question
 
 {- | Run a test with a default investigator.
 We use jenny barnes because she has no direct interaction with the game state

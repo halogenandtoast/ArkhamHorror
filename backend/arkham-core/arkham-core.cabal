@@ -2580,6 +2580,7 @@ test-suite spec
       Arkham.Investigator.Cards.JimCulverSpec
       Arkham.Investigator.Cards.LukeRobinsonSpec
       Arkham.Investigator.Cards.MandyThompsonSpec
+      Arkham.Investigator.Cards.PatriceHathawaySpec
       Arkham.Investigator.Cards.RexMurphySpec
       Arkham.Investigator.Cards.RolandBanksSpec
       Arkham.Investigator.Cards.SkidsOTooleSpec

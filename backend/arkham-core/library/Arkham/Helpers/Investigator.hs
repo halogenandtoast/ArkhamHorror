@@ -563,6 +563,3 @@ instance HasGame m => Capable (InvestigatorAttrs -> m Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (\c -> (<=~> c) . toId) can'
-
-accessibleLocations :: HasGame m => InvestigatorId -> m [LocationId]
-accessibleLocations iid = selectList $ AccessibleFrom (locationWithInvestigator iid) <> canEnterLocation iid

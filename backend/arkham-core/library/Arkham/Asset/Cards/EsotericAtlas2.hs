@@ -26,7 +26,7 @@ instance HasAbilities EsotericAtlas2 where
         ( ControlsThis
             <> LocationExists
               ( LocationMatchAny
-                  [LocationWithDistanceFrom n RevealedLocation | n <- [1 .. 3]]
+                  [LocationWithDistanceFrom n (RevealedLocation <> CanEnterLocation You) | n <- [1 .. 3]]
               )
         )
         $ ActionAbility Nothing
@@ -40,7 +40,7 @@ instance RunMessage EsotericAtlas2 where
       locations <-
         selectList
           $ LocationMatchAny
-            [LocationWithDistanceFrom n RevealedLocation | n <- [1 .. 3]]
+            [LocationWithDistanceFrom n (RevealedLocation <> canEnterLocation iid) | n <- [1 .. 3]]
       push
         $ chooseOne
           iid

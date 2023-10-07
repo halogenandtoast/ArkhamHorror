@@ -11,6 +11,7 @@ import Arkham.DamageEffect
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Game.Helpers
+import Arkham.Helpers.Location
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -65,7 +66,7 @@ instance RunMessage RitaYoung where
           [ enemyId <=~> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
           , withoutModifier iid CannotDealDamage
           ]
-      connectingLocations <- selectList AccessibleLocation
+      connectingLocations <- accessibleLocations iid
       push
         $ chooseOrRunOne iid
         $ [ Label "Damage enemy" [EnemyDamage enemyId $ nonAttack (toAbilitySource attrs 1) 1]

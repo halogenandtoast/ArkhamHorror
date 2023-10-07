@@ -29,6 +29,7 @@ instance RunMessage CheatDeath5 where
           $ RevealedLocation
           <> LocationWithoutEnemies
           <> NotLocation (locationWithInvestigator iid)
+          <> canEnterLocation iid
       yourTurn <- member iid <$> select TurnInvestigator
 
       replaceMessageMatching

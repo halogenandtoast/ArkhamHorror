@@ -2516,6 +2516,7 @@ test-suite spec
       Arkham.Asset.Cards.MagnifyingGlassSpec
       Arkham.Asset.Cards.MedicalTextsSpec
       Arkham.Asset.Cards.OldBookOfLoreSpec
+      Arkham.Asset.Cards.PatricesViolinSpec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec

@@ -20,7 +20,7 @@ instance RunMessage Elusive where
     PlayThisEvent iid eid | attrs `is` eid -> do
       canMove <- iid <=~> InvestigatorCanMove
       enemies <- selectList $ enemyEngagedWith iid
-      targets <- selectList $ EmptyLocation <> RevealedLocation
+      targets <- selectList $ EmptyLocation <> RevealedLocation <> canEnterLocation iid
       pushAll
         $ map (DisengageEnemy iid) enemies
         <> [ chooseOrRunOne iid

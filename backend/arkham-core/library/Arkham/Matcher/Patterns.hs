@@ -272,9 +272,9 @@ pattern NotYourLocation <- NotLocation YourLocation
     NotYourLocation = NotLocation YourLocation
 
 pattern AccessibleLocation :: LocationMatcher
-pattern AccessibleLocation <- AccessibleFrom YourLocation
+pattern AccessibleLocation <- LocationMatchAll [AccessibleFrom YourLocation, CanEnterLocation You]
   where
-    AccessibleLocation = AccessibleFrom YourLocation
+    AccessibleLocation = LocationMatchAll [AccessibleFrom YourLocation, CanEnterLocation You]
 
 pattern ConnectedLocation :: LocationMatcher
 pattern ConnectedLocation <- ConnectedFrom YourLocation

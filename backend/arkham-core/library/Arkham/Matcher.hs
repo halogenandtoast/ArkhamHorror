@@ -113,6 +113,10 @@ enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId
 
 -- ** Location Helpers **
 
+canEnterLocation :: (AsId a, IdOf a ~ InvestigatorId) => a -> LocationMatcher
+canEnterLocation = CanEnterLocation . InvestigatorWithId . asId
+{-# INLINE canEnterLocation #-}
+
 locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}

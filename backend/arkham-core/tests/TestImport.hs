@@ -64,6 +64,7 @@ import Arkham.Game.Settings
 import Arkham.Git
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types
+import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Types
 import Arkham.LocationSymbol
@@ -359,11 +360,20 @@ instance UpdateField "elite" Enemy Bool where
     pure this
   updateField False _ = error "Cannot set elite to false"
 
+instance UpdateField "hunter" Enemy Bool where
+  updateField True this = do
+    run $ gameModifier (TestSource mempty) (toTarget this) (AddKeyword Keyword.Hunter)
+    pure this
+  updateField False _ = error "Cannot set hunter to false"
+
 exhausted :: forall a. (TestUpdate a, UpdateField "exhausted" a Bool) => TestAppT a -> TestAppT a
 exhausted = prop @"exhausted" True
 
 elite :: forall a. (TestUpdate a, UpdateField "elite" a Bool) => TestAppT a -> TestAppT a
 elite = prop @"elite" True
+
+hunter :: forall a. (TestUpdate a, UpdateField "hunter" a Bool) => TestAppT a -> TestAppT a
+hunter = prop @"hunter" True
 
 instance UpdateField "clues" Location Int where
   updateField clues =

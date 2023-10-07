@@ -37,6 +37,9 @@ instance IsString (Key ArkhamGame) where
 instance IsString EventId where
   fromString = EventId . fromString
 
+instance IsString LocationId where
+  fromString = LocationId . fromString
+
 lookupGame :: Key ArkhamGame -> IO Game
 lookupGame gameId = do
   ArkhamGame {..} <- dbGhci $ get404 gameId

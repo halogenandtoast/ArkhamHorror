@@ -51,9 +51,9 @@ instance RunMessage DreamGateWondrousJourney where
       here <- fieldMap InvestigatorLocation (== Just (toId attrs)) iid
       when here do
         revealedLocations <- selectList (RevealedLocation <> NotLocation (LocationWithId $ toId attrs))
-        when (notNull revealedLocations) $ do
-          push
-            $ chooseOne iid [targetLabel lid [Move $ move (toSource attrs) iid lid] | lid <- revealedLocations]
+        pushIfAny revealedLocations
+          $ chooseOne iid
+          $ targetLabels revealedLocations (only . Move . move (toSource attrs) iid)
 
       pure l
     _ -> DreamGateWondrousJourney <$> runMessage msg attrs

@@ -8,10 +8,9 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Movement
-import Arkham.Projection
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass (IsAsset)
@@ -40,8 +39,7 @@ instance RunMessage CatBurglar1 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       engagedEnemyIds <- selectList $ enemyEngagedWith iid
       canDisengage <- iid <=~> InvestigatorCanDisengage
-      locationId <- fieldJust InvestigatorLocation iid
-      accessibleLocationIds <- selectList $ accessibleFrom locationId
+      accessibleLocationIds <- accessibleLocations iid
       pushAll
         $ [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
         <> [ chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)

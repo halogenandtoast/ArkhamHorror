@@ -6,7 +6,7 @@ import Arkham.Location.Cards qualified as Locations
 import TestImport.New
 
 spec :: Spec
-spec = fdescribe "Dream Gate (Pointless Reality)" do
+spec = describe "Dream Gate (Pointless Reality)" do
   it "Enemies and investigators other than Luke Robinson cannot enter Dream-Gate."
     . gameTestWith lukeRobinson
     $ \self -> do

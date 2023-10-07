@@ -8,10 +8,9 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
-import Arkham.Projection
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -35,10 +34,9 @@ instance HasAbilities Pathfinder1 where
 instance RunMessage Pathfinder1 where
   runMessage msg a@(Pathfinder1 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      start <- fieldJust InvestigatorLocation iid
-      accessibleLocations <- selectList $ AccessibleFrom $ LocationWithId start
+      locations <- accessibleLocations iid
       push
         $ chooseOne iid
-        $ [targetLabel lid [Move $ move (toAbilitySource attrs 1) iid lid] | lid <- accessibleLocations]
+        $ [targetLabel lid [Move $ move (toAbilitySource attrs 1) iid lid] | lid <- locations]
       pure a
     _ -> Pathfinder1 <$> runMessage msg attrs

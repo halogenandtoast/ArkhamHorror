@@ -10,9 +10,9 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Projection
 
@@ -54,7 +54,7 @@ instance RunMessage Duke where
       let source = toAbilitySource attrs 2
       lid <- getJustLocation iid
       accessibleLocationIds <-
-        traverse (traverseToSnd (mkInvestigateLocation iid attrs)) =<< selectList (accessibleFrom lid)
+        traverse (traverseToSnd (mkInvestigateLocation iid attrs)) =<< accessibleLocations iid
       investigateAbilities <-
         filterM
           ( andM

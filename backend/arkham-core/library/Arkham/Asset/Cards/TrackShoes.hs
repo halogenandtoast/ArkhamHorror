@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.SkillType
@@ -42,7 +43,7 @@ instance RunMessage TrackShoes where
       pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
-          accessibleLocationIds <- selectList AccessibleLocation
+          accessibleLocationIds <- accessibleLocations iid
           push
             $ chooseOne
               iid

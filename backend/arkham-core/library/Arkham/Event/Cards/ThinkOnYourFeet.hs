@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Matcher
+import Arkham.Helpers.Location
 import Arkham.Movement
 
 newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs
@@ -21,7 +21,7 @@ thinkOnYourFeet = event ThinkOnYourFeet Cards.thinkOnYourFeet
 instance RunMessage ThinkOnYourFeet where
   runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      connectedLocations <- selectList AccessibleLocation
+      connectedLocations <- accessibleLocations iid
       pushWhen (notNull connectedLocations)
         $ chooseOrRunOne iid
         $ targetLabels connectedLocations (only . Move . move attrs iid)

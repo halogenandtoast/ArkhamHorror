@@ -26,7 +26,7 @@ astralTravel = event AstralTravel Cards.astralTravel
 instance RunMessage AstralTravel where
   runMessage msg e@(AstralTravel attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      locations <- selectList $ RevealedLocation <> Unblocked <> NotYourLocation
+      locations <- selectList $ RevealedLocation <> Unblocked <> NotYourLocation <> canEnterLocation iid
       pushAll
         [ chooseOne
             iid

@@ -2679,6 +2679,7 @@ locationMatches investigatorId source window locationId matcher' = do
   case matcher of
     -- special cases
     Matcher.NotLocation m -> not <$> locationMatches investigatorId source window locationId m
+    Matcher.CanEnterLocation _ -> locationId <=~> matcher
     Matcher.IncludeEmptySpace _ -> locationId <=~> matcher
     Matcher.LocationCanBeEnteredBy {} -> locationId <=~> matcher
     Matcher.MostBreaches _ -> locationId <=~> matcher

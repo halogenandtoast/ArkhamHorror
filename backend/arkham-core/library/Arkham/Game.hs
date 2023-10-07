@@ -1505,6 +1505,10 @@ getLocationsMatching lmatcher = do
         matchingLocationIds <- map toId <$> getLocationsMatching matcher
         matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
         pure $ filter ((`elem` matches') . toId) ls
+      CanEnterLocation investigatorMatcher -> do
+        iid <- selectJust investigatorMatcher
+        cannotEnter <- mapMaybe (preview _CannotEnter) <$> getModifiers iid
+        pure $ filter ((`notElem` cannotEnter) . toId) ls
       NearestLocationToLocation start matcher -> do
         matchingLocationIds <- map toId <$> getLocationsMatching matcher
         matches' <-
@@ -1598,7 +1602,7 @@ getLocationsMatching lmatcher = do
         let starts = filter ((`elem` startIds) . toId) ls
         matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
         getLocationsMatching $ getAnyLocationMatcher matcherSupreme
-      AccessibleFrom matcher ->
+      AccessibleFrom matcher -> do
         getLocationsMatching (Unblocked <> ConnectedFrom matcher)
       AccessibleTo matcher ->
         getLocationsMatching (ConnectedTo (Unblocked <> matcher))

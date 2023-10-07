@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -24,7 +25,7 @@ instance RunMessage SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs) = case msg of
     PassedSkillTest iid (Just Action.Evade) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
       engagedEnemies <- selectList $ enemyEngagedWith iid
-      unblockedConnectedLocations <- selectList AccessibleLocation
+      unblockedConnectedLocations <- accessibleLocations iid
       canMove <- iid <=~> InvestigatorCanMove
       canDisengage <- iid <=~> InvestigatorCanDisengage
       let

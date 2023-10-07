@@ -1,14 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Modifier (
-  Modifier (..),
-  ModifierType (..),
-  ActionTarget (..),
-  setActiveDuringSetup,
-  _SearchDepth,
-  _PlayableModifierContexts,
-  _AdditionalTargets,
-) where
+module Arkham.Modifier where
 
 import Arkham.Prelude
 
@@ -282,6 +274,11 @@ _SearchDepth = prism' SearchDepth $ \case
 _AdditionalTargets :: Prism' ModifierType Int
 _AdditionalTargets = prism' AdditionalTargets $ \case
   AdditionalTargets n -> Just n
+  _ -> Nothing
+
+_CannotEnter :: Prism' ModifierType LocationId
+_CannotEnter = prism' CannotEnter $ \case
+  CannotEnter n -> Just n
   _ -> Nothing
 
 data Modifier = Modifier

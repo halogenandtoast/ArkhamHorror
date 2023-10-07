@@ -115,8 +115,14 @@ setChaosTokens = run . SetChaosTokens
 spawnAt :: Enemy -> Location -> TestAppT ()
 spawnAt e l = run $ EnemySpawnAtLocationMatching Nothing (Matcher.LocationWithId $ toId l) (toId e)
 
-moveTo :: Investigator -> Location -> TestAppT ()
-moveTo i l = run $ Move $ move (toSource i) (toId i) (toId l)
+class CanMoveTo a where
+  moveTo :: Investigator -> a -> TestAppT ()
+
+instance CanMoveTo Location where
+  moveTo i l = moveTo i (toId l)
+
+instance CanMoveTo LocationId where
+  moveTo i l = run $ Move $ move (toSource i) (toId i) l
 
 fightEnemy :: Investigator -> Enemy -> TestAppT ()
 fightEnemy i e = run $ FightEnemy (toId i) (toId e) (toSource i) Nothing SkillCombat False
@@ -170,8 +176,25 @@ instance HasField "combat" Investigator (TestAppT Int) where
 instance HasField "clues" Investigator (TestAppT Int) where
   getField = field InvestigatorClues . toEntityId
 
+instance HasField "accessibleLocations" Investigator (TestAppT [LocationId]) where
+  getField self = do
+    run $ SetActiveInvestigator (toId self)
+    mlid <- self.location
+    case mlid of
+      Nothing -> pure []
+      Just lid ->
+        selectList
+          $ Matcher.canEnterLocation (toId self)
+          <> Matcher.AccessibleFrom (Matcher.LocationWithId lid)
+
 instance HasField "clues" Location (TestAppT Int) where
   getField = field LocationClues . toEntityId
+
+instance HasField "connectedLocations" LocationId (TestAppT [LocationId]) where
+  getField = selectList . Matcher.ConnectedTo . Matcher.LocationWithId
+
+instance HasField "connectedLocations" Location (TestAppT [LocationId]) where
+  getField = selectList . Matcher.ConnectedTo . Matcher.LocationWithId . toId
 
 instance HasField "clues" TreacheryId (TestAppT Int) where
   getField = field TreacheryClues
@@ -196,6 +219,9 @@ instance HasField "elderSignModifier" Investigator (TestAppT ChaosTokenModifier)
 
 instance HasField "location" Investigator (TestAppT (Maybe LocationId)) where
   getField = field InvestigatorLocation . toEntityId
+
+instance HasField "defeated" Investigator (TestAppT Bool) where
+  getField = (<=~> Matcher.DefeatedInvestigator) . toId
 
 instance HasField "remainingActions" Investigator (TestAppT Int) where
   getField = field InvestigatorRemainingActions . toEntityId
@@ -409,7 +435,9 @@ duringPhase :: Phase -> TestAppT () -> TestAppT ()
 duringPhase phase body = do
   run $ Begin phase
   body
-  run EndPhase
+  case phase of
+    InvestigationPhase -> run EndInvestigation
+    _ -> run EndPhase
 
 duringTurnWindow :: Investigator -> Window
 duringTurnWindow = Old.duringTurn . toId

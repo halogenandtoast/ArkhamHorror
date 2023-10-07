@@ -337,6 +337,7 @@ data LocationMatcher
   | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher
   | LocationWithInvestigator InvestigatorMatcher
+  | CanEnterLocation InvestigatorMatcher
   | RevealedLocation
   | UnrevealedLocation
   | InvestigatableLocation

@@ -2587,6 +2587,7 @@ test-suite spec
       Arkham.Investigator.Cards.TonyMorganSpec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
+      Arkham.Location.Cards.DreamGateWondrousJourneySpec
       Arkham.Skill.Cards.DeductionSpec
       Arkham.Skill.Cards.FearlessSpec
       Arkham.Skill.Cards.GutsSpec

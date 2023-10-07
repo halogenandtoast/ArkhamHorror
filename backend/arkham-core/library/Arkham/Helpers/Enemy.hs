@@ -23,7 +23,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher
+import Arkham.Matcher hiding (canEnterLocation)
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Projection

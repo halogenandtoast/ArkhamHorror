@@ -5,7 +5,7 @@ import Arkham.Investigator.Cards (patriceHathaway)
 import TestImport.New
 
 spec :: Spec
-spec = fdescribe "Patrice Hathaway" do
+spec = describe "Patrice Hathaway" do
   it "Your maximum hand size is reduced by 3." . gameTestWith patriceHathaway $ \self -> do
     assert $ self `hasModifier` HandSize (-3)
 

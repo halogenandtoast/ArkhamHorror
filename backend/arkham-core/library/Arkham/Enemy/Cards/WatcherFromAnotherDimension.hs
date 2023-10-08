@@ -6,7 +6,6 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Constants
@@ -57,25 +56,13 @@ instance RunMessage WatcherFromAnotherDimension where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
       pure e
-    Successful (Action.Fight, _) _ _ (isTarget attrs -> True) _ -> do
+    Successful (action, _) _ _ (isTarget attrs -> True) _ | action `elem` [#fight, #evade] -> do
       case enemyPlacement attrs of
         StillInHand _ -> do
           push $ Discard (toSource attrs) (toTarget attrs)
           pure e
         _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
-    Successful (Action.Evade, _) _ _ (isTarget attrs -> True) _ -> do
-      case enemyPlacement attrs of
-        StillInHand _ -> do
-          push $ Discard (toSource attrs) (toTarget attrs)
-          pure e
-        _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
-    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _ | isTarget attrs target -> do
-      case enemyPlacement attrs of
-        StillInHand _ -> do
-          push $ EnemySpawnAtLocationMatching (Just iid) (locationWithInvestigator iid) (toId attrs)
-          pure e
-        _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
-    FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _ | isTarget attrs target -> do
+    FailedSkillTest iid (Just action) _ (Initiator (isTarget attrs -> True)) _ _ | action `elem` [#fight, #evade] -> do
       case enemyPlacement attrs of
         StillInHand _ -> do
           push $ EnemySpawnAtLocationMatching (Just iid) (locationWithInvestigator iid) (toId attrs)

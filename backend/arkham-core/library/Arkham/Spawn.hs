@@ -13,6 +13,7 @@ data SpawnAt
   | SpawnPlaced Placement
   | SpawnAtRandomSetAsideLocation
   | SpawnAtFirst [SpawnAt]
+  | NoSpawn
   deriving stock (Show, Eq)
 
 instance IsString SpawnAt where

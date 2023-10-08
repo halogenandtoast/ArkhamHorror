@@ -415,6 +415,10 @@ getJustLocation
   :: (HasCallStack, HasGame m) => InvestigatorId -> m LocationId
 getJustLocation = fieldJust InvestigatorLocation
 
+getMaybeLocation
+  :: (HasCallStack, HasGame m) => InvestigatorId -> m (Maybe LocationId)
+getMaybeLocation = field InvestigatorLocation
+
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
 

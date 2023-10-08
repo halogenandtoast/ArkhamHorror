@@ -2541,6 +2541,7 @@ test-suite spec
       Arkham.Enemy.Cards.StubbornDetectiveSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Enemy.Cards.TonysQuarrySpec
+      Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec
       Arkham.Event.Cards.BackstabSpec
       Arkham.Event.Cards.BaitAndSwitchSpec
       Arkham.Event.Cards.Barricade3Spec

@@ -591,7 +591,7 @@ didFailSkillTestBy investigator skillType n =
         n
     )
 
-assert :: TestAppT Bool -> TestAppT ()
+assert :: HasCallStack => TestAppT Bool -> TestAppT ()
 assert body = do
   result <- body
   liftIO $ result `shouldBe` True

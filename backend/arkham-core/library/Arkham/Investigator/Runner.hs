@@ -1847,7 +1847,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                          ]
                   PlayerEnemyType -> do
                     guard $ not shuffleBackInEachWeakness
-                    [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
+                    if hasRevelation card
+                      then [Revelation iid $ PlayerCardSource card, ResolvedCard iid (PlayerCard card)]
+                      else [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
                   other | hasRevelation card && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> do
                     guard $ ShuffleBackInEachWeakness `notElem` cardDrawRules cardDraw
                     [Revelation iid (PlayerCardSource card), ResolvedCard iid (PlayerCard card)]

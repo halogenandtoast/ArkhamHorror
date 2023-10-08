@@ -134,6 +134,15 @@ getPreyMatcher a = do
   applyModifier _ (ForcePrey p) = p
   applyModifier p _ = p
 
+noSpawn :: HasQueue Message m => EnemyAttrs -> Maybe InvestigatorId -> m ()
+noSpawn attrs miid = do
+  pushAll
+    $ Discard GameSource (toTarget attrs)
+    : [ Surge iid (toSource attrs)
+      | enemySurgeIfUnableToSpawn attrs
+      , iid <- toList miid
+      ]
+
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
@@ -1063,7 +1072,6 @@ instance RunMessage EnemyAttrs where
             }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
-      lid <- getJustLocation iid
       modifiers' <- getModifiers enemyId
       let
         getModifiedSpawnAt [] = enemySpawnAt
@@ -1072,10 +1080,12 @@ instance RunMessage EnemyAttrs where
         spawnAtMatcher = getModifiedSpawnAt modifiers'
       case spawnAtMatcher of
         Nothing -> do
-          windows' <-
-            checkWindows
-              [mkWindow Timing.When (Window.EnemyWouldSpawnAt eid lid)]
-          pushAll $ windows' : resolve (EnemySpawn (Just iid) lid eid)
+          mlid <- getMaybeLocation iid
+          case mlid of
+            Just lid -> do
+              windows' <- checkWindows [mkWindow Timing.When (Window.EnemyWouldSpawnAt eid lid)]
+              pushAll $ windows' : resolve (EnemySpawn (Just iid) lid eid)
+            Nothing -> noSpawn a (Just iid)
         Just matcher -> do
           let
             applyMatcherExclusions ms (SpawnAtFirst sas) =
@@ -1091,13 +1101,7 @@ instance RunMessage EnemyAttrs where
       lids <- selectList $ replaceYourLocation activeInvestigatorId locationMatcher
       leadInvestigatorId <- getLeadInvestigatorId
       case lids of
-        [] ->
-          pushAll
-            $ Discard GameSource (EnemyTarget eid)
-            : [ Surge iid (toSource a)
-              | enemySurgeIfUnableToSpawn
-              , iid <- toList miid
-              ]
+        [] -> noSpawn a miid
         [lid] -> do
           windows' <-
             checkWindows

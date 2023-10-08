@@ -56,6 +56,7 @@ isActionTarget :: EnemyAttrs -> Target -> Bool
 isActionTarget attrs = isTarget attrs . toProxyTarget
 
 spawnAt :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> SpawnAt -> m ()
+spawnAt _ NoSpawn = pure ()
 spawnAt eid (SpawnAt locationMatcher) = do
   windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
   pushAll

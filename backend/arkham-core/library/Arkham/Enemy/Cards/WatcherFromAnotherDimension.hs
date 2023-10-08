@@ -21,7 +21,13 @@ newtype WatcherFromAnotherDimension = WatcherFromAnotherDimension EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 watcherFromAnotherDimension :: EnemyCard WatcherFromAnotherDimension
-watcherFromAnotherDimension = enemy WatcherFromAnotherDimension Cards.watcherFromAnotherDimension (5, Static 2, 5) (3, 0)
+watcherFromAnotherDimension =
+  enemyWith
+    WatcherFromAnotherDimension
+    Cards.watcherFromAnotherDimension
+    (5, Static 2, 5)
+    (3, 0)
+    (spawnAtL ?~ NoSpawn)
 
 instance HasAbilities WatcherFromAnotherDimension where
   getAbilities (WatcherFromAnotherDimension a) = case enemyPlacement a of
@@ -61,6 +67,18 @@ instance RunMessage WatcherFromAnotherDimension where
       case enemyPlacement attrs of
         StillInHand _ -> do
           push $ Discard (toSource attrs) (toTarget attrs)
+          pure e
+        _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
+    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _ | isTarget attrs target -> do
+      case enemyPlacement attrs of
+        StillInHand _ -> do
+          push $ EnemySpawnAtLocationMatching (Just iid) (locationWithInvestigator iid) (toId attrs)
+          pure e
+        _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
+    FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _ | isTarget attrs target -> do
+      case enemyPlacement attrs of
+        StillInHand _ -> do
+          push $ EnemySpawnAtLocationMatching (Just iid) (locationWithInvestigator iid) (toId attrs)
           pure e
         _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
     _ -> WatcherFromAnotherDimension <$> runMessage msg attrs

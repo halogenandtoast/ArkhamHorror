@@ -35,9 +35,10 @@ instance RunMessage DarkPact where
   runMessage msg e@(DarkPact attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <- selectList $ colocatedWith iid
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel
               iid'
               [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 2 0]

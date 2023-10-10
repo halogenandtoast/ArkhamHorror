@@ -61,11 +61,11 @@ instance HasChaosTokenValue TheWitchingHour where
 instance RunMessage TheWitchingHour where
   runMessage msg s@(TheWitchingHour attrs) = case msg of
     PreScenarioSetup -> do
-      iids <- getInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
 
       pushAll
-        [ story iids intro1
+        [ story players intro1
         , chooseOne
             lead
             [ Label
@@ -73,7 +73,7 @@ instance RunMessage TheWitchingHour where
                 [SetupStep (toTarget attrs) 2]
             , Label "“This is bullshit.”" [SetupStep (toTarget attrs) 3]
             ]
-        , story iids intro4
+        , story players intro4
         ]
       pure s
     Setup -> do
@@ -171,7 +171,7 @@ instance RunMessage TheWitchingHour where
               & (actStackL . at 1 ?~ acts)
           )
     SetupStep (isTarget attrs -> True) 2 -> do
-      iids <- getInvestigatorIds
+      players <- allPlayers
       lead <- getLead
       -- collection is infinite so we only care if the lead already has either card in their deck
       addCards <-
@@ -182,7 +182,7 @@ instance RunMessage TheWitchingHour where
           )
           lead
       pushAll
-        $ [ story iids intro2
+        $ [ story players intro2
           , Record YouHaveAcceptedYourFate
           , AddChaosToken Tablet
           , AddChaosToken Tablet
@@ -194,16 +194,16 @@ instance RunMessage TheWitchingHour where
            )
       pure s
     SetupStep (isTarget attrs -> True) 3 -> do
-      iids <- getInvestigatorIds
+      players <- allPlayers
       pushAll
-        [ story iids intro3
+        [ story players intro3
         , Record YouHaveRejectedYourFate
         , AddChaosToken ElderThing
         , AddChaosToken ElderThing
         ]
       pure s
     ScenarioResolution resolution -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       gainXp <- toGainXp attrs $ getXpWithBonus 1
       step <- actStep <$> selectJustField ActSequence AnyAct
       case resolution of
@@ -216,7 +216,7 @@ instance RunMessage TheWitchingHour where
               else 3
         Resolution 1 -> do
           pushAll
-            $ [ story iids resolution1
+            $ [ story players resolution1
               , Record TheWitches'SpellWasBroken
               , recordSetInsert
                   MementosDiscovered
@@ -226,7 +226,7 @@ instance RunMessage TheWitchingHour where
             <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
-            $ [ story iids resolution2
+            $ [ story players resolution2
               , Record TheWitches'SpellWasBroken
               , recordSetInsert
                   MementosDiscovered
@@ -237,7 +237,7 @@ instance RunMessage TheWitchingHour where
         Resolution 3 -> do
           gainXpNoBonus <- toGainXp attrs getXp
           pushAll
-            $ [story iids resolution3, Record TheWitches'SpellWasCast]
+            $ [story players resolution3, Record TheWitches'SpellWasCast]
             <> if step == ActStep 3
               then
                 recordSetInsert MementosDiscovered [MesmerizingFlute]
@@ -247,7 +247,7 @@ instance RunMessage TheWitchingHour where
                   <> [EndOfGame Nothing]
         Resolution 4 -> do
           pushAll
-            $ [ story iids resolution4
+            $ [ story players resolution4
               , Record TheWitches'SpellWasCast
               , recordSetInsert MementosDiscovered [MesmerizingFlute]
               ]

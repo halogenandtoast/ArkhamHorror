@@ -61,10 +61,11 @@ instance RunMessage Banish1Effect where
                     ]
 
           locations <- selectList (LocationCanBeEnteredBy eid)
+          player <- getPlayer iid
           let locationMsgs =
                 if null locations
                   then []
-                  else [chooseOrRunOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
+                  else [chooseOrRunOne player [targetLabel lid [EnemyMove eid lid] | lid <- locations]]
 
           pushAll $ locationMsgs <> modifierMsgs
         _ -> pure ()

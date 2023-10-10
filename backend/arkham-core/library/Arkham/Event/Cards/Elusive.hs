@@ -21,9 +21,10 @@ instance RunMessage Elusive where
       canMove <- iid <=~> InvestigatorCanMove
       enemies <- selectList $ enemyEngagedWith iid
       targets <- selectList $ EmptyLocation <> RevealedLocation <> canEnterLocation iid
+      player <- getPlayer iid
       pushAll
         $ map (DisengageEnemy iid) enemies
-        <> [ chooseOrRunOne iid
+        <> [ chooseOrRunOne player
             $ targetLabels targets (only . MoveTo . move (toSource attrs) iid)
            | notNull targets
            , canMove

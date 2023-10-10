@@ -17,7 +17,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
-import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations

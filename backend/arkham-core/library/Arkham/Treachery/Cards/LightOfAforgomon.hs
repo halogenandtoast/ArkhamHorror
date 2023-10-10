@@ -38,14 +38,12 @@ instance RunMessage LightOfAforgomon where
           $ NotAgenda
           $ AgendaWithTreachery
           $ treacheryIs Cards.lightOfAforgomon
-      when
-        (notNull $ targetActs <> targetAgendas)
-        ( push
-            $ chooseOne
-              iid
-              [ TargetLabel target [AttachTreachery treacheryId target]
-              | target <- targetActs <> targetAgendas
-              ]
-        )
+      player <- getPlayer iid
+      pushWhen (notNull $ targetActs <> targetAgendas)
+        $ chooseOne
+          player
+          [ TargetLabel target [AttachTreachery treacheryId target]
+          | target <- targetActs <> targetAgendas
+          ]
       LightOfAforgomon <$> runMessage msg attrs
     _ -> LightOfAforgomon <$> runMessage msg attrs

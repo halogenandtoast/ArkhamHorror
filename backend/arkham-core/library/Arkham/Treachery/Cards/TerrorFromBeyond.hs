@@ -46,9 +46,10 @@ instance RunMessage TerrorFromBeyond where
           $ fieldMap
             InvestigatorHand
             (map toCardId . filter (`cardMatch` SkillCard))
+      player <- getPlayer iid
       push
         $ chooseN
-          iid
+          player
           (if secondCopy then 2 else 1)
           [ Label
               "Assets"

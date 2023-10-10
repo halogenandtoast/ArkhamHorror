@@ -52,9 +52,10 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
           if difficulty `elem` [Easy, Standard]
             then "token is -4"
             else "automatically fail"
+      player <- getPlayer iid
       unless (null broodOfYogSothothWithClues) $ do
         push
-          $ chooseOne iid
+          $ chooseOne player
           $ Label
             ("Do not remove clues from Brood of Yog-Sothoth and " <> result)
             []

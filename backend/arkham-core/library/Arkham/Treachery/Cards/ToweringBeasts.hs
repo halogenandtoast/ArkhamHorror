@@ -35,16 +35,16 @@ instance RunMessage ToweringBeasts where
         locationId <- getJustLocation iid
         broodWithLocationIds <- for broodOfYogSothoth
           $ \x -> (x,) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
+        player <- getPlayer iid
         push
           $ chooseOne
-            iid
+            player
             [ targetLabel
               eid
-              ( [AttachTreachery (toId attrs) (EnemyTarget eid)]
-                  <> [ InvestigatorAssignDamage iid source DamageAny 1 0
-                     | lid == locationId
-                     ]
-              )
+              $ [AttachTreachery (toId attrs) (EnemyTarget eid)]
+              <> [ InvestigatorAssignDamage iid source DamageAny 1 0
+                 | lid == locationId
+                 ]
             | (eid, lid) <- broodWithLocationIds
             ]
       pure t

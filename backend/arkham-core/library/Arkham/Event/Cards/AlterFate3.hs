@@ -21,9 +21,10 @@ instance RunMessage AlterFate3 where
   runMessage msg e@(AlterFate3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       treacheries <- selectList $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel treachery [Discard (toSource attrs) (toTarget treachery)]
             | treachery <- treacheries
             ]

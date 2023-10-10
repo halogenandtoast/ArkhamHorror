@@ -117,7 +117,7 @@ instance RunMessage WhereDoomAwaits where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       lead <- getLead
       encounterDeck <-
         buildEncounterDeckExcluding
@@ -209,8 +209,8 @@ instance RunMessage WhereDoomAwaits where
           Expert -> MinusSeven
 
       pushAll
-        $ story investigatorIds intro
-        : [story investigatorIds introPart1 | naomiHasTheInvestigatorsBacks]
+        $ story players intro
+        : [story players introPart1 | naomiHasTheInvestigatorsBacks]
           <> [GainClues lead (toSource attrs) 1 | naomiHasTheInvestigatorsBacks]
           <> [ AddChaosToken token
              , SetEncounterDeck encounterDeck
@@ -270,9 +270,9 @@ instance RunMessage WhereDoomAwaits where
       s <$ push (ScenarioResolution $ Resolution 2)
     ScenarioResolution (Resolution 1) -> do
       xp <- getXp
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       pushAll
-        $ [ story investigatorIds resolution1
+        $ [ story players resolution1
           , Record TheInvestigatorsEnteredTheGate
           ]
         <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
@@ -280,8 +280,9 @@ instance RunMessage WhereDoomAwaits where
       pure s
     ScenarioResolution (Resolution 2) -> do
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       pushAll
-        $ [ story investigatorIds resolution2
+        $ [ story players resolution2
           , Record
               YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
           ]

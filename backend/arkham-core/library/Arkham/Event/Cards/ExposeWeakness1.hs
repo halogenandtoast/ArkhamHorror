@@ -26,9 +26,10 @@ instance RunMessage ExposeWeakness1 where
       enemies <-
         selectWithField EnemyFight
           $ EnemyAt (locationWithInvestigator iid)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             enemy
             [ beginSkillTest

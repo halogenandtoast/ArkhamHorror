@@ -32,7 +32,7 @@ nightOfTheZealot difficulty =
 instance RunMessage NightOfTheZealot where
   runMessage msg c = case msg of
     CampaignStep PrologueStep -> do
-      investigatorIds <- allInvestigatorIds
-      pushAll [story investigatorIds prologue, NextCampaignStep Nothing]
+      players <- allPlayers
+      pushAll [story players prologue, NextCampaignStep Nothing]
       pure c
     _ -> defaultCampaignRunner msg c

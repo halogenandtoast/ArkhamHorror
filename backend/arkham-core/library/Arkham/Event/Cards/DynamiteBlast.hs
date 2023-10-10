@@ -32,6 +32,7 @@ instance RunMessage DynamiteBlast where
               <> map (\iid' -> assignDamage iid' attrs 3) investigators
           )
       let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices
-      push $ chooseOne iid availableChoices
+      player <- getPlayer iid
+      push $ chooseOne player availableChoices
       pure e
     _ -> DynamiteBlast <$> runMessage msg attrs

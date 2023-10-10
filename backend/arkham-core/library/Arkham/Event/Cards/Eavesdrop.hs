@@ -29,9 +29,10 @@ instance RunMessage Eavesdrop where
           <> EnemyWithEvade
           <> EnemyAt
             (locationWithInvestigator iid)
+      player <- getPlayer iid
       pushAll
         [ chooseOrRunOne
-            iid
+            player
             [ TargetLabel target [HandleTargetChoice iid (toSource attrs) target]
             | target <- targets
             ]

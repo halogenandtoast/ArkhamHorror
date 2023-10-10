@@ -61,12 +61,12 @@ theDunwichLegacy difficulty =
 instance RunMessage TheDunwichLegacy where
   runMessage msg c = case msg of
     CampaignStep PrologueStep -> do
-      investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
       pushAll
         [ storyWithChooseOne
-            leadInvestigatorId
-            investigatorIds
+            lead
+            players
             prologue
             [ Label
                 "Professor Warren Rice was last seen working late at night in the humanities department of Miskatonic University. Let’s search for him there. Proceed with “Scenario I–A: Extracurricular Activity” if you wish to find Professor Warren Rice first."
@@ -82,21 +82,22 @@ instance RunMessage TheDunwichLegacy where
         getHasRecord
           InvestigatorsWereUnconsciousForSeveralHours
       investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
       if unconsciousForSeveralHours
         then
           pushAll
-            $ [ story investigatorIds armitagesFate1
+            $ [ story players armitagesFate1
               , Record DrHenryArmitageWasKidnapped
               ]
             <> [GainXP iid CampaignSource 2 | iid <- investigatorIds]
             <> [NextCampaignStep Nothing]
         else
           pushAll
-            [ story investigatorIds armitagesFate2
+            [ story players armitagesFate2
             , Record TheInvestigatorsRescuedDrHenryArmitage
             , addCampaignCardToDeckChoice
-                leadInvestigatorId
+                lead
                 investigatorIds
                 Assets.drHenryArmitage
             , NextCampaignStep Nothing
@@ -105,14 +106,15 @@ instance RunMessage TheDunwichLegacy where
     CampaignStep (InterludeStep 2 _) -> do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
       investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
       drHenryArmitageUnowned <- isNothing <$> findOwner "02040"
       professorWarrenRiceUnowned <- isNothing <$> findOwner "02061"
       drFrancisMorganUnowned <- isNothing <$> findOwner "02080"
       let
         addPowderOfIbnGhazi =
           addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             investigatorIds
             Assets.powderOfIbnGhazi
             <$ guard
@@ -125,7 +127,7 @@ instance RunMessage TheDunwichLegacy where
               )
         addDrHenryArmitage =
           addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             investigatorIds
             Assets.drHenryArmitage
             <$ guard
@@ -135,7 +137,7 @@ instance RunMessage TheDunwichLegacy where
               )
         addProfessorWarrenRice =
           addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             investigatorIds
             Assets.professorWarrenRice
             <$ guard
@@ -145,7 +147,7 @@ instance RunMessage TheDunwichLegacy where
               )
         addDrFrancisMorgan =
           addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             investigatorIds
             Assets.drFrancisMorgan
             <$ guard
@@ -155,7 +157,7 @@ instance RunMessage TheDunwichLegacy where
               )
         addZebulonWhateley =
           addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             investigatorIds
             Assets.zebulonWhateley
             <$ guard
@@ -164,7 +166,7 @@ instance RunMessage TheDunwichLegacy where
               )
         addEarlSawyer =
           addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             investigatorIds
             Assets.earlSawyer
             <$ guard
@@ -172,24 +174,24 @@ instance RunMessage TheDunwichLegacy where
                   `notElem` sacrificedToYogSothoth
               )
       pushAll
-        $ [story investigatorIds interlude2]
-        <> [ story investigatorIds interlude2DrHenryArmitage
+        $ [story players interlude2]
+        <> [ story players interlude2DrHenryArmitage
            | recorded @CardCode "02040" `notElem` sacrificedToYogSothoth
            ]
         <> addDrHenryArmitage
-        <> [ story investigatorIds interlude2ProfessorWarrenRice
+        <> [ story players interlude2ProfessorWarrenRice
            | recorded @CardCode "02061" `notElem` sacrificedToYogSothoth
            ]
         <> addProfessorWarrenRice
-        <> [ story investigatorIds interlude2DrFrancisMorgan
+        <> [ story players interlude2DrFrancisMorgan
            | recorded @CardCode "02080" `notElem` sacrificedToYogSothoth
            ]
         <> addDrFrancisMorgan
-        <> [ story investigatorIds interlude2ZebulonWhateley
+        <> [ story players interlude2ZebulonWhateley
            | recorded @CardCode "02217" `notElem` sacrificedToYogSothoth
            ]
         <> addZebulonWhateley
-        <> [ story investigatorIds interlude2EarlSawyer
+        <> [ story players interlude2EarlSawyer
            | recorded @CardCode "02218" `notElem` sacrificedToYogSothoth
            ]
         <> addEarlSawyer

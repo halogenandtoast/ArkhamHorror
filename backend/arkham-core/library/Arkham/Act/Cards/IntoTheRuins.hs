@@ -16,7 +16,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck

@@ -62,65 +62,59 @@ investigatorsNearestToEnemy eid = do
 moveOrganistAwayFromNearestInvestigator :: HasGame m => m Message
 moveOrganistAwayFromNearestInvestigator = do
   organist <- getTheOrganist
-  leadInvestigatorId <- getLeadInvestigatorId
+  lead <- getLeadPlayer
   (minDistance, iids) <- investigatorsNearestToTheOrganist
   everywhere <- selectList Anywhere
 
   lids <-
-    setFromList
-      . concat
-      <$> for
-        iids
-        ( \iid -> do
-            currentLocation <-
-              fieldMap
-                InvestigatorLocation
-                (fromJustNote "must be at a location")
-                iid
-            rs <-
-              forToSnd
-                everywhere
-                (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)
-            pure $ map fst $ filter ((> minDistance) . snd) rs
-        )
+    setFromList . concat <$> for iids \iid -> do
+      currentLocation <-
+        fieldMap
+          InvestigatorLocation
+          (fromJustNote "must be at a location")
+          iid
+      rs <-
+        forToSnd
+          everywhere
+          (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)
+      pure $ map fst $ filter ((> minDistance) . snd) rs
   withNoInvestigators <- select LocationWithoutInvestigators
   let
     forced = lids `intersect` withNoInvestigators
     targets = toList $ if null forced then lids else forced
   pure
     $ chooseOrRunOne
-      leadInvestigatorId
+      lead
       [targetLabel lid [EnemyMove organist lid] | lid <- targets]
 
 disengageEachEnemyAndMoveToConnectingLocation
   :: (HasGame m, Sourceable source) => source -> m [Message]
 disengageEachEnemyAndMoveToConnectingLocation source = do
-  leadInvestigatorId <- getLeadInvestigatorId
+  lead <- getLeadPlayer
   iids <- getInvestigatorIds
   enemyPairs <-
     forToSnd
       iids
       (selectList . EnemyIsEngagedWith . InvestigatorWithId)
-  locationPairs <-
-    forToSnd
-      iids
-      ( selectList . AccessibleFrom . LocationWithInvestigator . InvestigatorWithId
-      )
+  locationPairs <- for iids $ \iid -> do
+    locations <- selectList $ AccessibleFrom $ LocationWithInvestigator $ InvestigatorWithId iid
+    player <- getPlayer iid
+    pure (iid, player, locations)
   pure
     $ [ DisengageEnemy iid enemy
       | (iid, enemies) <- enemyPairs
       , enemy <- enemies
       ]
     <> [ chooseOneAtATime
-          leadInvestigatorId
+          lead
           [ targetLabel
             iid
             [ chooseOne
-                iid
+                player
                 [ targetLabel lid [Move $ move source iid lid]
                 | lid <- locations
                 ]
             ]
-          | (iid, locations) <- locationPairs
+          | (iid, player, locations) <- locationPairs
           ]
        ]

@@ -25,10 +25,11 @@ instance RunMessage AnatomicalDiagrams where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
         selectListMap EnemyTarget $ EnemyAt YourLocation <> NonEliteEnemy
+      player <- getPlayer iid
       e
         <$ pushAll
           [ chooseOrRunOne
-              iid
+              player
               [ TargetLabel
                 enemy
                 [ CreateWindowModifierEffect

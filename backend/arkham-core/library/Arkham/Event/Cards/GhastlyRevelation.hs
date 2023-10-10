@@ -33,16 +33,17 @@ instance RunMessage GhastlyRevelation where
         selectList
           $ NotInvestigator (InvestigatorWithId iid)
       locations <- selectList Anywhere
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Give any number of your clues to another investigator"
             [ chooseOrRunOne
-                iid
+                player
                 [ targetLabel
                   iid'
                   [ chooseAmounts
-                      iid
+                      player
                       "Clues to give"
                       (MaxAmountTarget clues)
                       [("Clues", (0, clues))]
@@ -59,11 +60,11 @@ instance RunMessage GhastlyRevelation where
         <> [ Label
               "Place any number of your clues on any location"
               [ chooseOrRunOne
-                  iid
+                  player
                   [ targetLabel
                     lid
                     [ chooseAmounts
-                        iid
+                        player
                         "Clues to give"
                         (MaxAmountTarget clues)
                         [("Clues", (0, clues))]

@@ -44,7 +44,7 @@ instance RunMessage ReturnToTheMidnightMasks where
     case msg of
       Setup -> do
         count' <- getPlayerCount
-        investigatorIds <- allInvestigatorIds
+        players <- allPlayers
         (acolytes, theDevourersCult) <-
           splitAt (count' - 1)
             <$> gatherEncounterSet EncounterSet.TheDevourersCult
@@ -134,8 +134,8 @@ instance RunMessage ReturnToTheMidnightMasks where
             , EncounterSet.LockedDoors
             ]
         pushAll
-          $ [ story investigatorIds (introPart1 intro1or2)
-            , story investigatorIds introPart2
+          $ [ story players (introPart1 intro1or2)
+            , story players introPart2
             , SetEncounterDeck encounterDeck
             , SetAgendaDeck
             , SetActDeck

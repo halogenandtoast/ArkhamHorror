@@ -93,11 +93,12 @@ instance RunMessage TheMiskatonicMuseum where
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
         xs -> do
           let cards = take n xs
+          player <- getPlayer iid
           pushAll
-            [FocusCards cards, chooseOne iid [Label "Continue" [UnfocusCards]]]
+            [FocusCards cards, chooseOne player [Label "Continue" [UnfocusCards]]]
       pure s
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
 
       armitageKidnapped <-
         getHasRecordOrStandalone
@@ -149,8 +150,8 @@ instance RunMessage TheMiskatonicMuseum where
             )
 
       pushAll
-        [ story investigatorIds intro1
-        , story investigatorIds (intro2 armitageKidnapped)
+        [ story players intro1
+        , story players (intro2 armitageKidnapped)
         , SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
@@ -223,31 +224,32 @@ instance RunMessage TheMiskatonicMuseum where
       lid <- getJustLocation iid
       s <$ push (EnemySpawnFromVoid Nothing lid eid)
     ScenarioResolution NoResolution -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids noResolution
+        $ [ story players noResolution
           , Record TheInvestigatorsFailedToRecoverTheNecronomicon
           ]
         <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids resolution1
+        $ [ story players resolution1
           , Record TheInvestigatorsDestroyedTheNecronomicon
           ]
         <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story investigatorIds resolution2
+        $ [ story players resolution2
           , Record TheInvestigatorsTookCustodyOfTheNecronomicon
           , chooseOne
               lead

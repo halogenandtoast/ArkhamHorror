@@ -36,8 +36,9 @@ instance RunMessage AstoundingRevelation where
       secretAssetIds <-
         selectList
           (AssetControlledBy You <> AssetWithUseType Secret)
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ ComponentLabel
           (InvestigatorComponent iid ResourceToken)
           [TakeResources iid 2 (toAbilitySource attrs 1) False]

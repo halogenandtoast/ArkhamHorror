@@ -28,8 +28,9 @@ defiance = skill Defiance Cards.defiance
 instance RunMessage Defiance where
   runMessage msg s@(Defiance attrs) = case msg of
     BeforeRevealChaosTokens -> do
+      player <- getPlayer (skillOwner attrs)
       push
-        $ chooseOne (skillOwner attrs)
+        $ chooseOne player
         $ [ Label
               "Choose {skull}"
               [createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Skull)]

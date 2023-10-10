@@ -78,13 +78,13 @@ instance RunMessage TheMidnightMasks where
       whenM getIsStandalone $ push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s
     PreScenarioSetup -> do
-      investigators <- allInvestigators
+      players <- allPlayers
       litaForcedToFindOthersToHelpHerCause <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause
       pushAll
-        [ story investigators
+        [ story players
             $ introPart1
             $ if litaForcedToFindOthersToHelpHerCause then TheMidnightMasksIntroOne else TheMidnightMasksIntroTwo
-        , story investigators introPart2
+        , story players introPart2
         ]
       pure s
     Setup -> do
@@ -163,12 +163,13 @@ instance RunMessage TheMidnightMasks where
           )
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+      player <- getPlayer iid
       case closestCultists of
         [] -> pure ()
         [x] -> push $ PlaceTokens (ChaosTokenEffectSource Cultist) (EnemyTarget x) Doom 1
         xs ->
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1] | x <- xs]
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
@@ -187,7 +188,7 @@ instance RunMessage TheMidnightMasks where
       push R1
       pure s
     ScenarioResolution (Resolution n) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       victoryDisplay <- mapSet toCardCode <$> select (VictoryDisplayCardMatch AnyCard)
       gainXp <- toGainXp attrs getXp
       let
@@ -196,7 +197,7 @@ instance RunMessage TheMidnightMasks where
         cultistsWhoGotAway = allCultists `difference` cultistsWeInterrogated
         ghoulPriestDefeated = toCardCode Enemies.ghoulPriest `elem` victoryDisplay
       pushAll
-        $ [ story iids resolution
+        $ [ story players resolution
           , recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
           , recordSetInsert CultistsWhoGotAway cultistsWhoGotAway
           ]
@@ -207,7 +208,7 @@ instance RunMessage TheMidnightMasks where
       pure s
     HandleOption option -> do
       whenM getIsStandalone $ do
-        lead <- getLead
+        lead <- getLeadPlayer
         investigators <- allInvestigators
         case option of
           AddLitaChantler -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.litaChantler

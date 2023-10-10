@@ -24,8 +24,9 @@ instance RunMessage Galvanize1 where
   runMessage msg e@(Galvanize1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetExhausted <> AssetWithClass Guardian
+      player <- getPlayer iid
       pushAll
-        $ [ chooseOrRunOne iid
+        $ [ chooseOrRunOne player
             $ [targetLabel aid [Ready (AssetTarget aid)] | aid <- assets]
           | notNull assets
           ]

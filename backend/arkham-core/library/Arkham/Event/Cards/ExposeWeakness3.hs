@@ -27,13 +27,12 @@ exposeWeakness3 = event ExposeWeakness3 Cards.exposeWeakness3
 instance RunMessage ExposeWeakness3 where
   runMessage msg e@(ExposeWeakness3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <-
-        selectWithField EnemyFight
-          $ EnemyAt (locationWithInvestigator iid)
+      enemies <- selectWithField EnemyFight $ EnemyAt (locationWithInvestigator iid)
       drawing <- drawCards iid attrs 1
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel
               enemy
               [ beginSkillTest

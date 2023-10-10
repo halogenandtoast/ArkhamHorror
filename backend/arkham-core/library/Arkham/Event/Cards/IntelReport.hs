@@ -72,9 +72,10 @@ instance RunMessage IntelReport where
               : [ LocationWithDistanceFrom n LocationWithAnyClues
                 | n <- [1 .. 2]
                 ]
+          player <- getPlayer iid
           push
             $ chooseOrRunOne
-              iid
+              player
               [ targetLabel
                 lid
                 [InvestigatorDiscoverClues iid lid (toSource attrs) clueCount Nothing]

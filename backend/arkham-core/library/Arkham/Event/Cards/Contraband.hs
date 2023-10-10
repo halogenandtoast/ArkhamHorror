@@ -57,10 +57,11 @@ instance RunMessage Contraband where
             supplyAssets
             (\aid -> (,aid) . useCount <$> field AssetUses aid)
 
+      player <- getPlayer iid
       e
         <$ pushAll
           [ chooseOne
-              iid
+              player
               [ targetLabel
                 assetId
                 [AddUses assetId useType' assetUseCount]

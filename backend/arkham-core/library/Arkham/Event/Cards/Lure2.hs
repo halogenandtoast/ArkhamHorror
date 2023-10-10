@@ -38,7 +38,9 @@ instance RunMessage Lure2 where
   runMessage msg e@(Lure2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lids <- selectList $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
-      push $ chooseOne iid [targetLabel lid [PlaceEvent iid eid $ AttachedToLocation lid] | lid <- lids]
+      player <- getPlayer iid
+      push
+        $ chooseOne player [targetLabel lid [PlaceEvent iid eid $ AttachedToLocation lid] | lid <- lids]
       pure e
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       e <$ push (Discard (toAbilitySource attrs 1) (toTarget attrs))

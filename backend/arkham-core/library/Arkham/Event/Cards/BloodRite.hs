@@ -56,8 +56,9 @@ instance RunMessage BloodRite where
         then push (UseCardAbility iid source 1 windows payment)
         else do
           cards <- fieldMap InvestigatorHand (filter isDiscardable) iid
+          player <- getPlayer iid
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ [ targetLabel
                 (toCardId card)
                 [ DiscardCard iid (toSource attrs) (toCardId card)
@@ -76,13 +77,16 @@ instance RunMessage BloodRite where
     UseCardAbility iid source 1 _ (DiscardCardPayment xs) | isSource attrs source -> do
       enemyIds <- selectList $ enemyAtLocationWith iid
       canDealDamage <- withoutModifier iid CannotDealDamage
+      player <- getPlayer iid
       pushAll
         $ replicate (length xs)
-        $ chooseOne iid
+        $ chooseOne player
         $ [Label "Gain Resource" [TakeResources iid 1 (toAbilitySource attrs 1) False]]
         <> [ Label "Spend Resource and Deal 1 Damage To Enemy At Your Location"
             $ [ SpendResources iid 1
-              , chooseOne iid [targetLabel enemyId [EnemyDamage enemyId $ nonAttack source 1] | enemyId <- enemyIds]
+              , chooseOne
+                  player
+                  [targetLabel enemyId [EnemyDamage enemyId $ nonAttack source 1] | enemyId <- enemyIds]
               ]
            | canDealDamage
            , notNull enemyIds

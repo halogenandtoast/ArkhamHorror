@@ -151,7 +151,7 @@ instance RunMessage ThePallidMask where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       didNotEscapeGazeOfThePhantom <-
         getHasRecord
           YouDidNotEscapeTheGazeOfThePhantom
@@ -215,8 +215,8 @@ instance RunMessage ThePallidMask where
       let catacombsDeck = rest <> bottom
 
       pushAll
-        $ [story investigatorIds intro]
-        <> [story investigatorIds harukosInformation | harukoInterviewed]
+        $ [story players intro]
+        <> [story players harukosInformation | harukoInterviewed]
         <> [Remember YouOpenedASecretPassageway | harukoInterviewed]
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
@@ -249,18 +249,18 @@ instance RunMessage ThePallidMask where
               & (agendaStackL . at 1 ?~ agendas)
           )
     SetupStep (isTarget attrs -> True) 1 -> do
-      lead <- getLead
+      lead <- getLeadPlayer
+      leadId <- getLeadInvestigatorId
       catacombs <- selectList UnrevealedLocation
       youOpenedASecretPassageway <- remembered YouOpenedASecretPassageway
       pushWhen youOpenedASecretPassageway
         $ chooseOne lead
-        $ [ targetLabel
-            catacomb
-            [RevealLocation (Just lead) catacomb]
+        $ [ targetLabel catacomb [RevealLocation (Just leadId) catacomb]
           | catacomb <- catacombs
           ]
       pure s
-    ResolveChaosToken t token iid ->
+    ResolveChaosToken t token iid -> do
+      player <- getPlayer iid
       s <$ case token of
         Cultist -> do
           mAction <- getSkillTestAction
@@ -289,7 +289,7 @@ instance RunMessage ThePallidMask where
               unless (null enemies)
                 $ push
                 $ chooseOne
-                  iid
+                  player
                   [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy attrs iid]
                   | enemy <- enemies
                   ]
@@ -300,7 +300,7 @@ instance RunMessage ThePallidMask where
               unless (null enemies)
                 $ push
                 $ chooseOne
-                  iid
+                  player
                   [ targetLabel
                     enemy
                     [ Ready (EnemyTarget enemy)
@@ -320,7 +320,8 @@ instance RunMessage ThePallidMask where
       _ -> pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
       harukoSlain <-
         selectOne
           (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko)
@@ -336,9 +337,9 @@ instance RunMessage ThePallidMask where
           Resolution 2 -> (Tablet, resolution2)
           _ -> error "Invalid resolution"
       pushAll
-        $ [story investigatorIds story', Record YouKnowTheSiteOfTheGate]
+        $ [story players story', Record YouKnowTheSiteOfTheGate]
         <> [ chooseSome
-              leadInvestigatorId
+              lead
               "Done having investigators read Act II"
               [ targetLabel
                 iid

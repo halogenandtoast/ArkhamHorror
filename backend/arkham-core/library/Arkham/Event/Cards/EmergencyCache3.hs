@@ -25,18 +25,19 @@ instance RunMessage EmergencyCache3 where
         selectList
           $ AssetControlledBy (InvestigatorWithId iid)
           <> AssetWithUses Supply
+      player <- getPlayer iid
       if null supplyAssets
         then pushAll [TakeResources iid 4 (toSource attrs) False]
         else do
           pushAll
             $ replicate 4
             $ chooseOne
-              iid
+              player
               [ Label "Take Resource" [TakeResources iid 1 (toSource attrs) False]
               , Label
                   "Add Supply"
                   [ chooseOrRunOne
-                      iid
+                      player
                       [ targetLabel asset [AddUses asset Supply 1]
                       | asset <- supplyAssets
                       ]

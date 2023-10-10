@@ -9,7 +9,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Name
 

@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
 import Arkham.Id
 
 newtype FirstWatchMetadata = FirstWatchMetadata {firstWatchPairings :: [(InvestigatorId, EncounterCard)]}
@@ -48,9 +47,10 @@ instance RunMessage FirstWatch where
                     . insertSet iid
                     $ investigatorIds
                     `difference` assignedInvestigatorIds
+              player <- getPlayer iid
               push
                 $ chooseOne
-                  iid
+                  player
                   [ targetLabel
                     iid'
                     [ UseCardAbilityChoice
@@ -81,9 +81,10 @@ instance RunMessage FirstWatch where
                 | (iid', card) <- firstWatchPairings
                 ]
       RequestedEncounterCards (EventTarget eid) cards | eid == eventId -> do
+        player <- getPlayer eventOwner
         pushAll
           [ chooseOneAtATime
-              eventOwner
+              player
               [ TargetLabel
                 (CardIdTarget $ toCardId card)
                 [ UseCardAbilityChoice

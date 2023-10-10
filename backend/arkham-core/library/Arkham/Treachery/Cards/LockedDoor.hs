@@ -37,16 +37,18 @@ instance RunMessage LockedDoor where
       case targets of
         [] -> pure ()
         [x] -> pushAll [AttachTreachery treacheryId (LocationTarget x)]
-        xs ->
+        xs -> do
+          player <- getPlayer iid
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ [ targetLabel x [AttachTreachery treacheryId (LocationTarget x)]
               | x <- xs
               ]
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (toAbilitySource attrs 1) attrs sType 4]
-      push $ chooseOne iid $ map chooseSkillTest [#combat, #agility]
+      player <- getPlayer iid
+      push $ chooseOne player $ map chooseSkillTest [#combat, #agility]
       pure t
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ Discard (toAbilitySource attrs 1) (toTarget attrs)

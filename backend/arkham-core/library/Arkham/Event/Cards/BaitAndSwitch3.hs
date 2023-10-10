@@ -49,8 +49,9 @@ instance RunMessage BaitAndSwitch3 where
       InvestigatorPlayEvent iid eid mTarget ws _ | eid == eventId -> do
         choice1Enemies <- selectList (baitAndSwitch3Matcher iid attrs 1)
         choice2Enemies <- selectList (baitAndSwitch3Matcher iid attrs 2)
+        player <- getPlayer iid
         push
-          $ chooseOrRunOne iid
+          $ chooseOrRunOne player
           $ [ Label
               "Evade. If you succeed and the enemy is non-Elite, evade the enemy and move it to a connecting location."
               [ResolveEventChoice iid eid 1 mTarget ws]
@@ -104,10 +105,11 @@ instance RunMessage BaitAndSwitch3 where
       WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _)
         | isTarget attrs target -> do
             choices <- selectList ConnectedLocation
+            player <- getPlayer iid
             let
               enemyMoveChoices =
                 chooseOne
-                  iid
+                  player
                   [ targetLabel choice [EnemyMove enemyId choice]
                   | choice <- choices
                   ]

@@ -52,10 +52,11 @@ instance RunMessage ImpromptuBarrier where
             $ EnemyAt (locationWithEnemy enemyId)
             <> NotEnemy (EnemyWithId enemyId)
         let enemies' = map fst $ filter (\(_, x) -> maybe False (<= n) x) enemies
+        player <- getPlayer iid
         pushAll
           $ EnemyEvaded iid enemyId
           : [ chooseOne
-              iid
+              player
               [ Label "Do not evade another enemy" []
               , Label
                   "Evade Another Enemy"

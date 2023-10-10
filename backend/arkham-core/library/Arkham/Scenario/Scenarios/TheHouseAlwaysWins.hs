@@ -53,7 +53,7 @@ instance HasChaosTokenValue TheHouseAlwaysWins where
 instance RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
 
       encounterDeck <-
         buildEncounterDeckExcluding
@@ -90,7 +90,7 @@ instance RunMessage TheHouseAlwaysWins where
         , RevealLocation Nothing laBellaLunaId
         , MoveAllTo (toSource attrs) laBellaLunaId
         , createCloverClubPitBoss
-        , story investigatorIds intro
+        , story players intro
         ]
 
       setAsideCards <-
@@ -125,11 +125,12 @@ instance RunMessage TheHouseAlwaysWins where
     ResolveChaosToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- getSpendableResources iid
+      player <- getPlayer iid
       if resourceCount >= requiredResources
         then
           push
             $ chooseOne
-              iid
+              player
               [ Label
                   ( "Spend "
                       <> tshow requiredResources
@@ -159,10 +160,10 @@ instance RunMessage TheHouseAlwaysWins where
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution 1) -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story investigatorIds resolution1
+        $ [ story players resolution1
           , Record OBannionGangHasABoneToPickWithTheInvestigators
           , Record DrFrancisMorganWasKidnapped
           ]
@@ -171,11 +172,12 @@ instance RunMessage TheHouseAlwaysWins where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      lead <- getLead
+      lead <- getLeadPlayer
+      players <- allPlayers
       investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
-        $ [ story investigatorIds resolution2
+        $ [ story players resolution2
           , Record OBannionGangHasABoneToPickWithTheInvestigators
           , Record TheInvestigatorsRescuedDrFrancisMorgan
           , chooseOne
@@ -198,10 +200,10 @@ instance RunMessage TheHouseAlwaysWins where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids resolution3
+        $ [ story players resolution3
           , Record NaomiHasTheInvestigatorsBacks
           , Record DrFrancisMorganWasKidnapped
           ]
@@ -210,10 +212,10 @@ instance RunMessage TheHouseAlwaysWins where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 4) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids resolution4
+        $ [ story players resolution4
           , Record OBannionGangHasABoneToPickWithTheInvestigators
           , Record DrFrancisMorganWasKidnapped
           , Record InvestigatorsWereUnconsciousForSeveralHours

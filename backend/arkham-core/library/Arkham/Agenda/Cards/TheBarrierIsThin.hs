@@ -48,17 +48,11 @@ instance RunMessage TheBarrierIsThin where
       pure a
     NextAdvanceAgendaStep aid 1 | aid == toId attrs && onSide B attrs -> do
       presentDayLocations <- selectList $ LocationWithTrait PresentDay
-      leadInvestigatorId <- getLeadInvestigatorId
+      (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       push
         $ chooseOneAtATime
-          leadInvestigatorId
-          [ targetLabel
-            lid
-            [ HandleTargetChoice
-                leadInvestigatorId
-                (toSource attrs)
-                (LocationTarget lid)
-            ]
+          lead
+          [ targetLabel lid [HandleTargetChoice leadInvestigatorId (toSource attrs) (LocationTarget lid)]
           | lid <- presentDayLocations
           ]
       pure a
@@ -67,12 +61,13 @@ instance RunMessage TheBarrierIsThin where
       replacements <-
         filter ((== Just locationSymbol) . cdLocationRevealedSymbol . toCardDef)
           <$> getExplorationDeck
+      player <- getPlayer iid
       pushAll
         [ FocusCards replacements
         , chooseOrRunOne
-            iid
-            [ TargetLabel
-              (CardIdTarget $ toCardId replacement)
+            player
+            [ targetLabel
+              (toCardId replacement)
               [ RemoveCardFromScenarioDeck ExplorationDeck replacement
               , ReplaceLocation lid replacement DefaultReplace
               ]

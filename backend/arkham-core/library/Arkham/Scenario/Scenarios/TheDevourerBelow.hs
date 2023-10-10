@@ -67,8 +67,8 @@ instance RunMessage TheDevourerBelow where
       whenM getIsStandalone $ push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s
     PreScenarioSetup -> do
-      investigators <- allInvestigators
-      push $ story investigators intro
+      players <- allPlayers
+      push $ story players intro
       pure s
     Setup -> do
       pastMidnight <- getHasRecord ItIsPastMidnight
@@ -152,12 +152,13 @@ instance RunMessage TheDevourerBelow where
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- selectList $ NearestEnemy AnyEnemy
+      player <- getPlayer iid
       case closestEnemyIds of
         [] -> pure ()
         [x] -> push $ PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom
         xs ->
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom] | x <- xs]
       pure s
     ResolveChaosToken _ Tablet iid -> do
@@ -181,12 +182,12 @@ instance RunMessage TheDevourerBelow where
           Resolution 3 ->
             (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
           _ -> error "Invalid resolution"
-      investigators <- allInvestigators
-      pushAll [story investigators resolution, Record record, EndOfGame Nothing]
+      players <- allPlayers
+      pushAll [story players resolution, Record record, EndOfGame Nothing]
       pure s
     HandleOption option -> do
       whenM getIsStandalone $ do
-        lead <- getLead
+        lead <- getLeadPlayer
         investigators <- allInvestigators
         case option of
           AddLitaChantler -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.litaChantler

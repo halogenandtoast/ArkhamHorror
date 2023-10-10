@@ -40,6 +40,9 @@ getInvestigatorPlayers = selectWithField InvestigatorPlayerId UneliminatedInvest
 getAllInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
 getAllInvestigatorPlayers = selectWithField InvestigatorPlayerId Anyone
 
+allInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
+allInvestigatorPlayers = getAllInvestigatorPlayers
+
 getInvestigators :: HasGame m => m [InvestigatorId]
 getInvestigators = getInvestigatorIds
 

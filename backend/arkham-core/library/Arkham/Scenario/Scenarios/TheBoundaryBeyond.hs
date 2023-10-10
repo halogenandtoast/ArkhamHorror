@@ -102,6 +102,7 @@ instance RunMessage TheBoundaryBeyond where
   runMessage msg s@(TheBoundaryBeyond attrs) = case msg of
     PreScenarioSetup -> do
       iids <- allInvestigatorIds
+      players <- allPlayers
       forgedABondWithIchtaca <-
         getHasRecord
           TheInvestigatorsForgedABondWithIchtaca
@@ -112,14 +113,14 @@ instance RunMessage TheBoundaryBeyond where
       isStandalone <- getIsStandalone
 
       if isStandalone
-        then pushAll [story iids introPart1, story iids introPart2]
+        then pushAll [story players introPart1, story players introPart2]
         else
           pushAll
-            $ [story iids introPart1]
+            $ [story players introPart1]
             <> ( if forgedABondWithIchtaca
-                  then [story iids ichtacasQuest]
+                  then [story players ichtacasQuest]
                   else
-                    story iids silentJourney
+                    story players silentJourney
                       : [ CreateWindowModifierEffect
                           EffectSetupWindow
                           ( EffectModifiers
@@ -132,18 +133,18 @@ instance RunMessage TheBoundaryBeyond where
                )
             <> ( if foundTheMissingRelic
                   then
-                    story iids arcaneThrumming
+                    story players arcaneThrumming
                       : RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
                       : [ AddCampaignCardToDeck
                           ownerId
                           Assets.relicOfAgesForestallingTheFuture
                         | ownerId <- maybeToList mRelicOwner
                         ]
-                  else [story iids growingConcern]
+                  else [story players growingConcern]
                )
             <> ( if rescuedAlejandro
                   then
-                    story iids alejandrosThoughts
+                    story players alejandrosThoughts
                       : [ CreateWindowModifierEffect
                           EffectSetupWindow
                           ( EffectModifiers
@@ -153,11 +154,11 @@ instance RunMessage TheBoundaryBeyond where
                           (InvestigatorTarget iid)
                         | iid <- iids
                         ]
-                  else [story iids anEmptySeat]
+                  else [story players anEmptySeat]
                )
             <> ( if isNothing withGasoline
                   then
-                    story iids outOfGas
+                    story players outOfGas
                       : [ CreateWindowModifierEffect
                           EffectSetupWindow
                           (EffectModifiers $ toModifiers attrs [CannotMulligan])
@@ -168,13 +169,12 @@ instance RunMessage TheBoundaryBeyond where
                   else []
                )
             <> [UseSupply iid Gasoline | iid <- maybeToList withGasoline]
-            <> [story iids introPart2]
+            <> [story players introPart2]
       pure s
     SetChaosTokensForScenario -> do
       whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     Setup -> do
-      iids <- allInvestigatorIds
       setAsidePoisonedCount <- getSetAsidePoisonedCount
 
       tokens <- getBagChaosTokens
@@ -247,6 +247,8 @@ instance RunMessage TheBoundaryBeyond where
           $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
           <> replicate setAsidePoisonedCount Treacheries.poisoned
 
+      investigatorPlayers <- allInvestigatorPlayers
+
       pushAll
         $ [ SetEncounterDeck encounterDeck
           , SetAgendaDeck
@@ -259,11 +261,11 @@ instance RunMessage TheBoundaryBeyond where
           , placeCoyoacan
           ]
         <> [ chooseOne
-            iid
+            player
             [ targetLabel lid [MoveTo $ move attrs iid lid]
             | lid <- [zocaloId, coyoacanId]
             ]
-           | iid <- iids
+           | (iid, player) <- investigatorPlayers
            ]
       agendas <- genCards [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
       acts <- genCards [Acts.crossingTheThreshold, Acts.pastAndPresent]
@@ -307,13 +309,15 @@ instance RunMessage TheBoundaryBeyond where
           $ NearestLocationToYou
           $ LocationWithTrait
             Trait.Ancient
+      player <- getPlayer iid
       unless (null targets)
         $ push
         $ chooseOrRunOne
-          iid
+          player
           [targetLabel target [PlaceTokens (toSource attrs) target Clue 1] | target <- targets]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      player <- getPlayer iid
       case chaosTokenFace token of
         Cultist -> do
           targets <- selectListMap EnemyTarget $ EnemyWithTrait Trait.Cultist
@@ -322,7 +326,7 @@ instance RunMessage TheBoundaryBeyond where
               then
                 push
                   $ chooseOne
-                    iid
+                    player
                     [targetLabel target [PlaceTokens (toSource attrs) target Doom 1] | target <- targets]
               else pushAll $ map (\t -> PlaceTokens (toSource attrs) t Doom 1) targets
         Tablet -> do
@@ -336,7 +340,7 @@ instance RunMessage TheBoundaryBeyond where
               then
                 push
                   $ chooseOne
-                    iid
+                    player
                     [ targetLabel serpent [EnemyAttack $ enemyAttack serpent attrs iid]
                     | serpent <- serpents
                     ]
@@ -351,14 +355,14 @@ instance RunMessage TheBoundaryBeyond where
           unless (null targets)
             $ push
             $ chooseOrRunOne
-              iid
+              player
               [ targetLabel target [PlaceTokens (ChaosTokenEffectSource ElderThing) target Clue 1]
               | target <- targets
               ]
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
       inVictory <-
@@ -390,7 +394,7 @@ instance RunMessage TheBoundaryBeyond where
             ]
 
       pushAll
-        $ [story iids storyPassage]
+        $ [story players storyPassage]
         <> (if addLocationsToVictory then map AddToVictory locations else [])
         <> [ScenarioResolutionStep 1 resolution]
         <> [RecordCount YigsFury (yigsFury + vengeance)]

@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -36,7 +35,7 @@ instance RunMessage ObtainingTheDevice where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       puzzleBox <- selectJust $ assetIs Assets.puzzleBox
       investigators <- getInvestigators
-      lead <- getLead
+      lead <- getLeadPlayer
       pushAll
         [ chooseOrRunOne
             lead

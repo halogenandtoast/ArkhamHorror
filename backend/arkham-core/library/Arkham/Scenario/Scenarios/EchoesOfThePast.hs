@@ -111,6 +111,7 @@ instance RunMessage EchoesOfThePast where
           else pure ()
     Setup -> do
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
 
       -- generate without seekerOfCarcosa as we add based on player count
       partialEncounterDeck <-
@@ -194,8 +195,8 @@ instance RunMessage EchoesOfThePast where
       fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty
 
       pushAll
-        $ [story investigatorIds intro]
-        <> [ story investigatorIds sebastiensInformation
+        $ [story players intro]
+        <> [ story players sebastiensInformation
            | sebastienInterviewed
            ]
         <> [ SetEncounterDeck encounterDeck
@@ -260,9 +261,10 @@ instance RunMessage EchoesOfThePast where
       case token of
         Cultist -> do
           matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
               ]
         Tablet ->
@@ -277,9 +279,10 @@ instance RunMessage EchoesOfThePast where
       case chaosTokenFace token of
         Cultist -> do
           matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
               ]
         Tablet ->
@@ -291,13 +294,13 @@ instance RunMessage EchoesOfThePast where
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
-      investigatorIds <- allInvestigatorIds
-      pushAll
-        [story investigatorIds noResolution, ScenarioResolution (Resolution 4)]
+      players <- allPlayers
+      pushAll [story players noResolution, R4]
       pure s
     ScenarioResolution (Resolution n) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       gainXp <- toGainXp attrs $ getXpWithBonus (if n == 4 then 1 else 0)
       sebastienSlain <-
         selectOne
@@ -319,11 +322,11 @@ instance RunMessage EchoesOfThePast where
       case n of
         1 ->
           pushAll
-            $ [ story investigatorIds resolution1
+            $ [ story players resolution1
               , Record YouTookTheOnyxClasp
               , RecordCount Conviction (conviction + 1)
               , chooseOne
-                  leadInvestigatorId
+                  lead
                   [ TargetLabel
                     (InvestigatorTarget iid)
                     [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
@@ -337,7 +340,7 @@ instance RunMessage EchoesOfThePast where
             <> [EndOfGame Nothing]
         2 ->
           pushAll
-            $ [ story investigatorIds resolution2
+            $ [ story players resolution2
               , Record YouLeftTheOnyxClaspBehind
               , RecordCount Doubt (doubt + 1)
               ]
@@ -348,10 +351,10 @@ instance RunMessage EchoesOfThePast where
             <> [EndOfGame Nothing]
         3 ->
           pushAll
-            $ [ story investigatorIds resolution3
+            $ [ story players resolution3
               , Record YouDestroyedTheOathspeaker
               , chooseOne
-                  leadInvestigatorId
+                  lead
                   [ TargetLabel
                     (InvestigatorTarget iid)
                     [AddCampaignCardToDeck iid Assets.theTatteredCloak]
@@ -365,7 +368,7 @@ instance RunMessage EchoesOfThePast where
             <> [EndOfGame Nothing]
         4 ->
           pushAll
-            $ [ story investigatorIds resolution4
+            $ [ story players resolution4
               , Record TheFollowersOfTheSignHaveFoundTheWayForward
               ]
             <> gainXp

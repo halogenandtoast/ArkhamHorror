@@ -32,7 +32,7 @@ instance RunMessage WhatHaveYouDone where
       push $ advanceVia #other attrs iid
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       push
         $ chooseOne lead
         $ [ Label "It was never much of a home. Burn it down! (→ _R1_)" [R1]

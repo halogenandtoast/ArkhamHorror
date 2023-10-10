@@ -40,9 +40,10 @@ instance RunMessage RiftSeeker where
   runMessage msg e@(RiftSeeker attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectListMap AgendaTarget AnyAgenda
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "take 1 additional damage and 1 additional horror"
               [ CreateWindowModifierEffect

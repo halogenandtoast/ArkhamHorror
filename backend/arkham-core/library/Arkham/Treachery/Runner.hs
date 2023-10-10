@@ -18,6 +18,7 @@ import Arkham.Helpers.Message as X hiding (
   RevealChaosToken,
   is,
  )
+import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Placement as X
 import Arkham.Source as X

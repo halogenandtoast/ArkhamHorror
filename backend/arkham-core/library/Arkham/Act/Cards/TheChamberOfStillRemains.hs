@@ -16,7 +16,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck
@@ -53,7 +52,7 @@ instance RunMessage TheChamberOfStillRemains where
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesRepossessThePast
       investigators <- selectList $ investigatorAt chamberOfTime
@@ -61,7 +60,7 @@ instance RunMessage TheChamberOfStillRemains where
       createYig <- createEnemyAt_ yig chamberOfTime Nothing
       pushAll
         $ [ chooseOrRunOne
-              leadInvestigatorId
+              lead
               [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
               | iid <- investigators
               ]

@@ -109,6 +109,7 @@ instance RunMessage DimCarcosa where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       pathOpened <- sample (YouOpenedThePathBelow :| [YouOpenedThePathAbove])
       let
         token =
@@ -116,7 +117,7 @@ instance RunMessage DimCarcosa where
 
       pushAll
         [ chooseOne
-            leadInvestigatorId
+            lead
             [ Label "Conviction" [RecordCount Conviction 8]
             , Label "Doubt" [RecordCount Doubt 8]
             , Label "Neither" []
@@ -130,7 +131,7 @@ instance RunMessage DimCarcosa where
     Setup -> do
       doubt <- getDoubt
       conviction <- getConviction
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
 
       push
         $ if doubt + conviction <= 5
@@ -140,7 +141,7 @@ instance RunMessage DimCarcosa where
             LT -> SetupStep (toTarget attrs) 3
             EQ ->
               chooseOne
-                leadInvestigatorId
+                lead
                 [ Label
                     "Use Search For the Stranger (v. II)"
                     [SetupStep (toTarget attrs) 2]
@@ -157,7 +158,7 @@ instance RunMessage DimCarcosa where
           3 -> Acts.searchForTheStrangerV3
           _ -> error $ "Invalid setup step, got: " <> show n
 
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       encounterDeck <-
         buildEncounterDeckExcluding
           [ Enemies.hasturTheKingInYellow
@@ -238,7 +239,7 @@ instance RunMessage DimCarcosa where
           ]
 
       pushAll
-        $ [ story investigatorIds intro
+        $ [ story players intro
           , SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
@@ -295,6 +296,7 @@ instance RunMessage DimCarcosa where
         _ -> pure ()
       pure s
     ScenarioResolution res -> do
+      players <- allPlayers
       investigatorIds <- allInvestigatorIds
       conviction <- getConviction
       doubt <- getDoubt
@@ -309,8 +311,7 @@ instance RunMessage DimCarcosa where
             , Treacheries.possessionTraitorous
             , Treacheries.possessionTorturous
             ]
-      let
-        recordPossessed = recordSetInsert Possessed (map unInvestigatorId possessed)
+      let recordPossessed = recordSetInsert Possessed (map unInvestigatorId possessed)
       case res of
         NoResolution -> case compare conviction doubt of
           GT -> push $ scenarioResolution 4
@@ -318,25 +319,25 @@ instance RunMessage DimCarcosa where
           LT -> push $ scenarioResolution 5
         Resolution 1 -> do
           pushAll
-            $ [story investigatorIds resolution1]
+            $ [story players resolution1]
             <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
             <> gainXp
             <> [recordPossessed, EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
-            $ [story investigatorIds resolution2]
+            $ [story players resolution2]
             <> [SufferTrauma iid 0 2 | iid <- investigatorIds]
             <> gainXp
             <> [recordPossessed, EndOfGame Nothing]
         Resolution 3 -> do
           pushAll
-            $ [story investigatorIds resolution3]
+            $ [story players resolution3]
             <> [SufferTrauma iid 2 0 | iid <- investigatorIds]
             <> gainXp
             <> [recordPossessed, EndOfGame Nothing]
         Resolution 4 -> do
           pushAll
-            $ [ story investigatorIds resolution4
+            $ [ story players resolution4
               , Record
                   TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
               ]
@@ -344,7 +345,7 @@ instance RunMessage DimCarcosa where
             <> [GameOver]
         Resolution 5 -> do
           pushAll
-            $ [story investigatorIds resolution5, Record HasturHasYouInHisGrasp]
+            $ [story players resolution5, Record HasturHasYouInHisGrasp]
             <> map DrivenInsane investigatorIds
             <> [GameOver]
         _ -> error "Unhandled resolution"

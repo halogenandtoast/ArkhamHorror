@@ -116,10 +116,10 @@ instance RunMessage ShatteredAeons where
       whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       push
         $ chooseOne
-          leadInvestigatorId
+          lead
           [ Label
               "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag."
               [ Record IchtacaIsSetAgainstYou
@@ -160,7 +160,7 @@ instance RunMessage ShatteredAeons where
         showIntro5 = not foundTheMissingRelic
 
       lead <- getLead
-      investigators <- allInvestigatorIds
+      players <- allPlayers
       tokens <- getBagChaosTokens
 
       leadDeck <- fieldMap InvestigatorDeck unDeck lead
@@ -240,11 +240,11 @@ instance RunMessage ShatteredAeons where
           ]
 
       pushAll
-        $ [story investigators intro1 | showIntro1]
-        <> [story investigators intro2 | showIntro2]
-        <> [story investigators intro3]
-        <> [story investigators intro4 | showIntro4]
-        <> [story investigators intro5 | showIntro5]
+        $ [story players intro1 | showIntro1]
+        <> [story players intro2 | showIntro2]
+        <> [story players intro3]
+        <> [story players intro4 | showIntro4]
+        <> [story players intro5 | showIntro5]
         <> [ SetEncounterDeck encounterDeck'
            , SetAgendaDeck
            , SetActDeck
@@ -282,11 +282,12 @@ instance RunMessage ShatteredAeons where
       when (chaosTokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
+            player <- getPlayer iid
             cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
             unless (null cultists)
               $ push
               $ chooseOne
-                iid
+                player
                 [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
                 | cultist <- cultists
                 ]
@@ -301,9 +302,10 @@ instance RunMessage ShatteredAeons where
           then do
             cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
             unless (null cultists) $ do
+              player <- getPlayer iid
               push
                 $ chooseOne
-                  iid
+                  player
                   [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
                   | cultist <- cultists
                   ]
@@ -350,6 +352,7 @@ instance RunMessage ShatteredAeons where
       explore iid source locationMatcher PlaceExplored 1
       pure s
     ScenarioResolution resolution -> do
+      players <- allPlayers
       iids <- allInvestigatorIds
       case resolution of
         NoResolution -> do
@@ -364,7 +367,7 @@ instance RunMessage ShatteredAeons where
           bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
           xp <- toGainXp attrs $ getXpWithBonus (5 + bonus)
           pushAll
-            $ story iids resolution1
+            $ story players resolution1
             : Record TheInvestigatorsMendedTheTearInTheFabricOfTime
             : [SufferTrauma iid 2 2 | iid <- iids]
               <> xp
@@ -372,21 +375,21 @@ instance RunMessage ShatteredAeons where
           pure . ShatteredAeons $ attrs & victoryDisplayL %~ (locations <>)
         Resolution 2 -> do
           pushAll
-            [ story iids resolution2
+            [ story players resolution2
             , Record TheInvestigatorsSavedTheCivilizationOfTheSerpents
             , EndOfGame Nothing
             ]
           pure s
         Resolution 3 -> do
           pushAll
-            [ story iids resolution3
+            [ story players resolution3
             , Record TheInvestigatorsSavedTheCivilizationOfTheYithians
             , EndOfGame Nothing
             ]
           pure s
         Resolution 4 -> do
           pushAll
-            $ story iids resolution4
+            $ story players resolution4
             : Record TheFabricOfTimeIsUnwoven
             : map DrivenInsane iids
               <> [GameOver]
@@ -400,7 +403,7 @@ instance RunMessage ShatteredAeons where
           bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
           xp <- toGainXp attrs $ getXpWithBonus bonus
           pushAll
-            $ story iids resolution5
+            $ story players resolution5
             : Record TheInvestigatorsTurnedBackTime
             : xp
               <> [EndOfGame $ Just EpilogueStep]

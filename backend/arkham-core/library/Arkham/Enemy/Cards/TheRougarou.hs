@@ -75,16 +75,12 @@ instance RunMessage TheRougarou where
     case msg of
       UseCardAbility _ source 1 _ _ | isSource attrs source -> do
         damageThreshold <- getPlayerCountValue (PerPlayer 1)
-        leadInvestigatorId <- getLeadInvestigatorId
+        lead <- getLeadPlayer
         farthestLocationIds <- selectList $ FarthestLocationFromAll Anywhere
         case farthestLocationIds of
           [] -> error "can't happen"
           [x] -> push (MoveUntil x (EnemyTarget enemyId))
-          xs ->
-            push
-              $ chooseOne
-                leadInvestigatorId
-                [targetLabel x [MoveUntil x (EnemyTarget enemyId)] | x <- xs]
+          xs -> push $ chooseOne lead [targetLabel x [MoveUntil x (EnemyTarget enemyId)] | x <- xs]
 
         TheRougarou
           . ( `with`
@@ -92,11 +88,10 @@ instance RunMessage TheRougarou where
                   (damagePerPhase metadata `mod` damageThreshold)
             )
           <$> runMessage msg attrs
-      EndPhase ->
+      EndPhase -> do
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-      Msg.EnemyDamage eid (damageAssignmentAmount -> n)
-        | eid == enemyId ->
-            TheRougarou
-              . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
-              <$> runMessage msg attrs
+      Msg.EnemyDamage eid (damageAssignmentAmount -> n) | eid == enemyId -> do
+        TheRougarou
+          . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
+          <$> runMessage msg attrs
       _ -> TheRougarou . (`with` metadata) <$> runMessage msg attrs

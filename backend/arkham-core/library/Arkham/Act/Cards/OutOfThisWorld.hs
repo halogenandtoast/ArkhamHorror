@@ -49,11 +49,12 @@ instance RunMessage OutOfThisWorld where
       pure a
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
+      player <- getPlayer iid
       unless (null locationCards)
         $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
-              iid
+              player
               [ targetLabel
                 (toCardId location)
                 [ InvestigatorDrewEncounterCard iid location

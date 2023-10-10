@@ -46,7 +46,7 @@ instance RunMessage TheJunglesHeart where
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      leadInvestigator <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       iids <- getInvestigatorIds
       withBinoculars <- getInvestigatorsWithSupply Binoculars
 
@@ -64,9 +64,7 @@ instance RunMessage TheJunglesHeart where
 
       pushAll
         [ ShuffleEncounterDiscardBackIn
-        , chooseOrRunOne
-            leadInvestigator
-            [targetLabel iid $ lookoutMessages iid | iid <- iids]
+        , chooseOrRunOne lead [targetLabel iid $ lookoutMessages iid | iid <- iids]
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
       pure a

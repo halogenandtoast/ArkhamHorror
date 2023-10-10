@@ -47,10 +47,11 @@ instance RunMessage MouthOfKnYanTheCavernsMaw where
       let
         (viewing, rest) = splitAt 3 explorationDeck
         cardPairs = map (toSnd (`deleteFirst` viewing)) viewing
+      player <- getPlayer iid
       pushAll
         [ FocusCards viewing
         , SetScenarioDeck ExplorationDeck rest
-        , questionLabel "Place one card on bottom of exploration deck" iid
+        , questionLabel "Place one card on bottom of exploration deck" player
             $ ChooseOne
               [ targetLabel
                 (toCardId c)
@@ -59,7 +60,7 @@ instance RunMessage MouthOfKnYanTheCavernsMaw where
                     (Deck.ScenarioDeckByKey ExplorationDeck)
                     c
                 , FocusCards remaining
-                , questionLabel "Place card on top of exploration deck" iid
+                , questionLabel "Place card on top of exploration deck" player
                     $ ChooseOneAtATime
                       [ targetLabel
                         (toCardId r)

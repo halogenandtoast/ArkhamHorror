@@ -42,11 +42,12 @@ instance RunMessage ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationsWithClues <- selectList LocationWithAnyClues
+      player <- getPlayer iid
       unless
         (null locationsWithClues)
         $ push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             lid
             [InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) 1 Nothing]

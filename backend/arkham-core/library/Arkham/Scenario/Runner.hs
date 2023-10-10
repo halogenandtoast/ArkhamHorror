@@ -102,7 +102,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   StartCampaign -> do
     standalone <- getIsStandalone
     when standalone $ do
-      lead <- getLead
+      lead <- getLeadPlayer
       pushAll [Ask lead PickScenarioSettings, StartScenario scenarioId]
     pure a
   InitDeck iid deck -> do
@@ -584,9 +584,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       else pure a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
-    a
-      <$ pushAll
-        [FocusCards cards, chooseOne iid [Label "Continue" [UnfocusCards]]]
+    player <- getPlayer iid
+    pushAll [FocusCards cards, chooseOne player [Label "Continue" [UnfocusCards]]]
+    pure a
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = draw n scenarioEncounterDeck
     pure $ a & encounterDeckL .~ withDeck (<> cards) deck
@@ -667,6 +667,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           (unDeck scenarioEncounterDeck)
       targetCards = concat $ toList foundCards
     pushBatch batchId $ EndSearch iid source EncounterDeckTarget cardSources
+    player <- getPlayer iid
 
     let
       applyMod (AdditionalTargets n) = over biplate (+ n)
@@ -686,8 +687,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             ]
         pushBatch batchId
           $ if null choices
-            then chooseOne iid [Label "No cards found" []]
-            else chooseN iid (min n (length choices)) choices
+            then chooseOne player [Label "No cards found" []]
+            else chooseN player (min n (length choices)) choices
       DrawFoundUpTo who n -> do
         let
           choices =
@@ -698,14 +699,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             ]
         pushBatch batchId
           $ if null choices
-            then chooseOne iid [Label "No cards found" []]
-            else chooseUpToN iid n "Do not draw more cards" choices
+            then chooseOne player [Label "No cards found" []]
+            else chooseUpToN player n "Do not draw more cards" choices
       DeferSearchedToTarget searchTarget -> do
         pushBatch batchId
           $ if null targetCards
             then
               chooseOne
-                iid
+                player
                 [Label "No cards found" [SearchNoneFound iid searchTarget]]
             else SearchFound iid searchTarget Deck.EncounterDeck targetCards
       PlayFound {} -> error "PlayFound is not a valid EncounterDeck strategy"
@@ -821,6 +822,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     voidEnemiesWithCards <-
       forToSnd matchingVoidEnemies (field (OutOfPlayEnemyField Zone.VoidZone EnemyCard))
 
+    player <- getPlayer iid
+
     when
       ( notNull matchingDiscards
           || notNull matchingDeckCards
@@ -828,7 +831,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           || notNull matchingVictoryDisplay
       )
       $ push
-      $ chooseOne iid
+      $ chooseOne player
       $ [ TargetLabel
           (CardIdTarget $ toCardId card)
           [FoundEncounterCardFrom iid target FromDiscard card]
@@ -865,8 +868,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       matchingDeckCards =
         filter (`cardMatch` matcher) (unDeck $ a ^. deckLens handler)
 
+    player <- getPlayer iid
+
     push
-      $ chooseOne iid
+      $ chooseOne player
       $ [ targetLabel
           (toCardId card)
           [FoundAndDrewEncounterCard iid FromDiscard card]
@@ -1079,7 +1084,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           %~ filter (`notElem` cards)
       _ -> error "impossible"
   PerformReading Choice -> do
-    lead <- getLead
+    lead <- getLeadPlayer
     cards <- map (TarotCard Upright) <$> sampleN 3 (NE.fromList scenarioTarotDeck)
     pushAll
       [ FocusTarotCards cards
@@ -1097,7 +1102,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       %~ filter (`notElem` (map toTarotArcana cards))
   DrawAndChooseTarot iid facing n -> do
     cards <- map (TarotCard facing) <$> sampleN n (NE.fromList scenarioTarotDeck)
-    push $ chooseOrRunOne iid [TarotLabel card [PlaceTarot iid card] | card <- cards]
+    player <- getPlayer iid
+    push $ chooseOrRunOne player [TarotLabel card [PlaceTarot iid card] | card <- cards]
     pure a
   PlaceTarot iid card -> do
     tarotDeck' <- shuffleM $ delete (toTarotArcana card) scenarioTarotDeck

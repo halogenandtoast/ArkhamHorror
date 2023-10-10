@@ -49,7 +49,7 @@ instance RunMessage ReturnToTheDevourerBelow where
   runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs)) =
     case msg of
       Setup -> do
-        investigatorIds <- allInvestigatorIds
+        players <- allPlayers
         pastMidnight <- getHasRecord ItIsPastMidnight
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
         cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
@@ -115,7 +115,7 @@ instance RunMessage ReturnToTheDevourerBelow where
             pure [placement, SetLocationLabel locationId label]
 
         pushAll
-          $ [ story investigatorIds intro
+          $ [ story players intro
             , SetEncounterDeck encounterDeck
             , AddChaosToken ElderThing
             , SetAgendaDeck

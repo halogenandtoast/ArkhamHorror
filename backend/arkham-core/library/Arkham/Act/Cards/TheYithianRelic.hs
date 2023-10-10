@@ -19,7 +19,6 @@ import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Log
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Projection
@@ -72,17 +71,11 @@ instance RunMessage TheYithianRelic where
   runMessage msg a@(TheYithianRelic attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mDiscard <-
-        selectOne
-          $ InDiscardOf (InvestigatorWithId iid)
-          <> BasicCardMatch
-            (CardWithTitle "Relic of Ages")
+        selectOne $ InDiscardOf (InvestigatorWithId iid) <> BasicCardMatch (CardWithTitle "Relic of Ages")
+      player <- getPlayer iid
       push $ case mDiscard of
-        Just relic ->
-          chooseOne
-            iid
-            [TargetLabel (CardIdTarget $ toCardId relic) [addToHand iid relic]]
-        Nothing ->
-          search iid attrs iid [fromDeck] (CardWithTitle "Relic of Ages") (DrawFound iid 1)
+        Just relic -> chooseOne player [targetLabel (toCardId relic) [addToHand iid relic]]
+        Nothing -> search iid attrs iid [fromDeck] (CardWithTitle "Relic of Ages") (DrawFound iid 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       relic <- selectJust $ AssetWithTitle "Relic of Ages"

@@ -121,6 +121,7 @@ investigatorDefeat attrs = do
     then pure []
     else do
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       yigsFury <- getRecordCount YigsFury
       if yigsFury >= 4
         then do
@@ -128,9 +129,9 @@ investigatorDefeat attrs = do
             then pure []
             else
               pure
-                $ story investigatorIds defeat
+                $ story players defeat
                 : story
-                  investigatorIds
+                  players
                   "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
                 : map
                   (InvestigatorKilled (toSource attrs))
@@ -145,7 +146,7 @@ investigatorDefeat attrs = do
         else do
           pure
             [ story
-                investigatorIds
+                players
                 "Suddenly, a distant voice hisses to the others, and the serpents tentatively retreat into the darkness. You run for your life, not taking any chances."
             , RecordCount YigsFury (yigsFury + 3)
             ]
@@ -163,11 +164,10 @@ instance RunMessage TheDoomOfEztli where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       -- \| Determine intro
       forcedToWaitForAdditionalSupplies <-
-        getHasRecord
-          TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+        getHasRecord TheInvestigatorsWereForcedToWaitForAdditionalSupplies
       let intro = if forcedToWaitForAdditionalSupplies then intro1 else intro2
       -- \| Setup
       -- -- | Gather cards
@@ -232,7 +232,7 @@ instance RunMessage TheDoomOfEztli where
           <> replicate setAsidePoisonedCount Treacheries.poisoned
 
       pushAll
-        $ [ story iids intro
+        $ [ story players intro
           , SetEncounterDeck encounterDeck'
           , SetAgendaDeck
           , SetActDeck
@@ -281,8 +281,8 @@ instance RunMessage TheDoomOfEztli where
       pure s
     ScenarioResolution n -> do
       vengeance <- getVengeanceInVictoryDisplay
-      investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
       yigsFury <- getRecordCount YigsFury
       defeatMessages <- investigatorDefeat attrs
       gainXp <- toGainXp attrs getXp
@@ -311,7 +311,7 @@ instance RunMessage TheDoomOfEztli where
         Resolution 1 -> do
           pushAll
             $ defeatMessages
-            <> [ story investigatorIds resolution1
+            <> [ story players resolution1
                , Record TheInvestigatorsRecoveredTheRelicOfAges
                ]
             <> harbingerMessages
@@ -322,7 +322,7 @@ instance RunMessage TheDoomOfEztli where
         Resolution 2 -> do
           pushAll
             $ defeatMessages
-            <> [ story investigatorIds resolution2
+            <> [ story players resolution2
                , Record AlejandroRecoveredTheRelicOfAges
                ]
             <> harbingerMessages
@@ -333,9 +333,9 @@ instance RunMessage TheDoomOfEztli where
         Resolution 3 -> do
           pushAll
             $ defeatMessages
-            <> [ story investigatorIds resolution3
+            <> [ story players resolution3
                , chooseOne
-                  leadInvestigatorId
+                  lead
                   [ Label
                       "“We can’t stop now—we have to go back inside!” - Proceed to Resolution 4."
                       [ScenarioResolution $ Resolution 4]
@@ -348,7 +348,7 @@ instance RunMessage TheDoomOfEztli where
         Resolution 4 -> do
           standalone <- getIsStandalone
           pushAll
-            $ [story investigatorIds resolution4, ResetGame]
+            $ [story players resolution4, ResetGame]
             <> [StandaloneSetup | standalone]
             <> [ ChooseLeadInvestigator
                , SetupInvestigators
@@ -365,7 +365,7 @@ instance RunMessage TheDoomOfEztli where
               (resolution4Count metadata + 1)
         Resolution 5 -> do
           pushAll
-            $ [ story investigatorIds resolution5
+            $ [ story players resolution5
               , Record TheInvestigatorsRecoveredTheRelicOfAges
               ]
             <> harbingerMessages

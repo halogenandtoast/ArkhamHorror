@@ -32,7 +32,7 @@ instance HasAbilities DianneDevine where
 instance RunMessage DianneDevine where
   runMessage msg e@(DianneDevine attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       locations <- selectList $ LocationWithAsset $ AssetWithFewestClues $ AssetWithTrait Bystander
       pushWhen (notNull locations)
         $ chooseOne lead

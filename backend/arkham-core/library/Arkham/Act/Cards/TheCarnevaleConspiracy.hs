@@ -59,18 +59,18 @@ instance RunMessage TheCarnevaleConspiracy where
           modifiers' <- getModifiers (AssetTarget aid)
           pure $ CannotBeRevealed `notElem` modifiers'
       case filteredMaskedCarnevaleGoers of
-        [] -> pure a
-        xs ->
-          a
-            <$ pushAll
-              [ chooseOne
-                  iid
-                  [targetLabel x [LookAtRevealed iid (toSource attrs) (AssetTarget x)] | x <- xs]
-              ]
+        [] -> pure ()
+        xs -> do
+          player <- getPlayer iid
+          push
+            $ chooseOne
+              player
+              [targetLabel x [LookAtRevealed iid (toSource attrs) (AssetTarget x)] | x <- xs]
+      pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       cnidathqua <- getSetAsideCard Enemies.cnidathqua
       maskedCarnevaleGoers <-
         selectList
@@ -80,16 +80,12 @@ instance RunMessage TheCarnevaleConspiracy where
           [] -> []
           xs ->
             [ chooseOne
-                leadInvestigatorId
-                [ targetLabel
-                  x
-                  [Flip leadInvestigatorId (toSource attrs) (AssetTarget x)]
+                lead
+                [ targetLabel x [Flip leadInvestigatorId (toSource attrs) (AssetTarget x)]
                 | x <- xs
                 ]
             ]
       createCnidathqua <- toMessage <$> createEnemy cnidathqua Global
-      pushAll
-        $ [createCnidathqua, advanceActDeck attrs]
-        <> flipMsg
+      pushAll $ [createCnidathqua, advanceActDeck attrs] <> flipMsg
       pure a
     _ -> TheCarnevaleConspiracy <$> runMessage msg attrs

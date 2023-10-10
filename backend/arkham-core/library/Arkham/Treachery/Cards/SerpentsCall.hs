@@ -28,15 +28,14 @@ instance RunMessage SerpentsCall where
         then pushAll drawEncounterCards
         else do
           poisoned <- getSetAsidePoisoned
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ Label
                   "Put a set-aside Poisoned weakness into play in your threat area"
                   [CreateWeaknessInThreatArea poisoned iid]
-              , Label
-                  "Draw the top 2 cards of the encounter deck"
-                  drawEncounterCards
+              , Label "Draw the top 2 cards of the encounter deck" drawEncounterCards
               ]
       pure t
     _ -> SerpentsCall <$> runMessage msg attrs

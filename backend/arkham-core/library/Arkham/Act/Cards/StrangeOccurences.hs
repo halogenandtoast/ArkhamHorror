@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.History
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
@@ -68,9 +67,8 @@ instance RunMessage StrangeOccurences where
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       deckCount <- getActDecksInPlayCount
-      leadInvestigatorId <- getLeadInvestigatorId
-      isTownHall <-
-        selectAny $ locationIs Locations.townHall <> IsIchtacasDestination
+      lead <- getLeadPlayer
+      isTownHall <- selectAny $ locationIs Locations.townHall <> IsIchtacasDestination
       ichtaca <- genCard Assets.ichtacaTheForgottenGuardian
       iids <-
         selectList
@@ -82,7 +80,7 @@ instance RunMessage StrangeOccurences where
       let
         takeControlMessage =
           chooseOrRunOne
-            leadInvestigatorId
+            lead
             [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca]
             | iid <- iids
             ]

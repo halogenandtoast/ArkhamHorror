@@ -94,12 +94,13 @@ standaloneChaosTokens =
 investigatorDefeat :: HasGame m => m [Message]
 investigatorDefeat = do
   investigatorIds <- allInvestigatorIds
+  players <- allPlayers
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
     else
       pure
-        $ story investigatorIds defeat
+        $ story players defeat
         : map DrivenInsane defeatedInvestigatorIds
           <> [ GameOver
              | null
@@ -205,19 +206,21 @@ instance RunMessage TheUnspeakableOath where
         placeLocationCard
           westernPatientWing
 
+      investigatorPlayers <- allInvestigatorPlayers
       let
+        players = map snd investigatorPlayers
         spawnMessages =
           map
-            ( \iid ->
+            ( \(iid, player) ->
                 chooseOne
-                  iid
+                  player
                   [ TargetLabel
                     (LocationTarget location)
                     [MoveTo $ move (toSource attrs) iid location]
                   | location <- [westernPatientWingId, easternPatientWingId]
                   ]
             )
-            investigatorIds
+            investigatorPlayers
         intro1Or2 =
           if theFollowersOfTheSignHaveFoundTheWayForward
             then intro1
@@ -229,8 +232,8 @@ instance RunMessage TheUnspeakableOath where
           Expert -> MinusFive
 
       pushAll
-        $ [story investigatorIds intro1Or2, story investigatorIds intro3]
-        <> [ story investigatorIds constancesInformation
+        $ [story players intro1Or2, story players intro3]
+        <> [ story players constancesInformation
            | constanceInterviewed
            ]
         <> courageMessages
@@ -281,6 +284,7 @@ instance RunMessage TheUnspeakableOath where
     ResolveChaosToken _ chaosTokenFace iid -> case chaosTokenFace of
       Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherChaosToken iid)
       ElderThing -> do
+        player <- getPlayer iid
         monsters <-
           getSetAsideCardsMatching
             (CardWithType EnemyType <> CardWithTrait Monster)
@@ -291,7 +295,7 @@ instance RunMessage TheUnspeakableOath where
             s
               <$ push
                 ( chooseOne
-                    iid
+                    player
                     [ Label
                         "Randomly choose an enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
                         [PlaceUnderneath ActDeckTarget [monster]]
@@ -322,8 +326,9 @@ instance RunMessage TheUnspeakableOath where
       pure . TheUnspeakableOath $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution n) -> do
       msgs <- investigatorDefeat
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       gainXp <- toGainXp attrs getXp
       constanceSlain <-
         selectOne
@@ -357,7 +362,7 @@ instance RunMessage TheUnspeakableOath where
                 pure
                   [ RemoveCampaignCard Assets.claspOfBlackOnyx
                   , chooseOne
-                      leadInvestigatorId
+                      lead
                       [ TargetLabel
                         (InvestigatorTarget iid)
                         [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
@@ -367,7 +372,7 @@ instance RunMessage TheUnspeakableOath where
               else pure []
           pushAll
             $ msgs
-            <> [ story investigatorIds resolution1
+            <> [ story players resolution1
                , Record TheKingClaimedItsVictims
                ]
             <> gainXp
@@ -379,7 +384,7 @@ instance RunMessage TheUnspeakableOath where
         2 ->
           pushAll
             $ msgs
-            <> [story investigatorIds resolution2]
+            <> [story players resolution2]
             <> [Record TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum]
             <> [SufferTrauma iid 1 0 | iid <- investigatorIds]
             <> gainXp
@@ -390,7 +395,7 @@ instance RunMessage TheUnspeakableOath where
         3 ->
           pushAll
             $ msgs
-            <> [story investigatorIds resolution3]
+            <> [story players resolution3]
             <> [Record TheInvestigatorsEscapedTheAsylum]
             <> gainXp
             <> updateSlain

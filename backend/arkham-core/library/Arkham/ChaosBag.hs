@@ -17,6 +17,7 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
 import Arkham.Helpers.Message
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
 import Arkham.RequestedChaosTokenStrategy
@@ -222,6 +223,7 @@ resolveFirstUnresolved source iid strategy = \case
                         groups' = if null matchedGroups then groups else matchedGroups
                         nFunc = if tokenStrategy == ResolveChoice then id else subtract 1
 
+                      player <- lift $ getPlayer iid
                       pure
                         $ if tokenStrategy /= ResolveChoice && null matchedGroups
                           then (Resolved $ concatMap toChaosTokens steps, [])
@@ -229,7 +231,7 @@ resolveFirstUnresolved source iid strategy = \case
                             ( Decided (ChooseMatch chooseSource n tokenStrategy steps tokens' matcher)
                             ,
                               [ chooseOne
-                                  iid
+                                  player
                                   [ ChaosTokenGroupChoice
                                     source
                                     iid
@@ -239,12 +241,7 @@ resolveFirstUnresolved source iid strategy = \case
                               ]
                             )
             else do
-              (steps', msgs) <-
-                resolveFirstChooseUnresolved
-                  source
-                  iid
-                  strategy
-                  steps
+              (steps', msgs) <- resolveFirstChooseUnresolved source iid strategy steps
               pure (Decided $ ChooseMatch chooseSource n tokenStrategy steps' tokens' matcher, msgs)
     ChooseMatchChoice steps tokens' choices -> do
       if all isResolved steps
@@ -274,11 +271,12 @@ resolveFirstUnresolved source iid strategy = \case
               ChooseMatch chooseSource n tokenStrategy _ _ matcher -> ChooseMatch chooseSource n tokenStrategy steps [] matcher
               ChooseMatchChoice _ _ matchers -> ChooseMatchChoice steps [] matchers
 
+          player <- lift $ getPlayer iid
           pure
             $ ( Decided $ ChooseMatchChoice steps tokens' choices
               ,
                 [ chooseOrRunOne
-                    iid
+                    player
                     [Label label [SetChaosBagChoice source iid (fixStep step')] | (label, step') <- choices']
                 ]
               )

@@ -29,9 +29,9 @@ instance RunMessage OminousPortents where
   runMessage msg t@(OminousPortents attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       mTopSpectralCard <- headMay . unDeck <$> getSpectralDeck
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne
-          iid
+        $ chooseOrRunOne player
         $ [ Label
             "Draw the top card of the spectral encounter deck. That card gains peril, and its effects cannot be canceled."
             [ cardResolutionModifiers attrs (toCardId topSpectralCard) [AddKeyword Peril, EffectsCannotBeCanceled]

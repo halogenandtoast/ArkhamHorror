@@ -51,8 +51,9 @@ instance RunMessage CreepingDarkness where
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasTorches <- getHasSupply iid Torches
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Test {willpower} (3)"
           [beginSkillTest iid attrs attrs SkillWillpower 3]

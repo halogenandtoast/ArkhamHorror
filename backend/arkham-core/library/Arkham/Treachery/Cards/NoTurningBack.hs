@@ -59,18 +59,20 @@ instance RunMessage NoTurningBack where
             , ConnectedFrom (locationWithInvestigator iid)
             ]
           <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
+      player <- getPlayer iid
       unless (null targets) $ do
         push
           $ chooseOrRunOne
-            iid
+            player
             [ targetLabel x [AttachTreachery (toId attrs) (LocationTarget x)]
             | x <- targets
             ]
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasPickaxe <- getHasSupply iid Pickaxe
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Test {combat} (3)"
           [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillCombat 3]

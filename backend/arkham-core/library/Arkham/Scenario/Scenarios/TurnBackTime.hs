@@ -81,11 +81,9 @@ instance RunMessage TurnBackTime where
         ]
       pure s
     Setup -> do
-      forcedToWaitForSupplies <-
-        getHasRecord
-          TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+      forcedToWaitForSupplies <- getHasRecord TheInvestigatorsWereForcedToWaitForAdditionalSupplies
       let intro = if forcedToWaitForSupplies then intro1 else intro2
-      iids <- allInvestigatorIds
+      players <- allPlayers
       crossOut <- drop 3 . campaignLogOrderedKeys <$> getCampaignLog
 
       encounterDeck <-
@@ -147,7 +145,7 @@ instance RunMessage TurnBackTime where
       (entrywayId, placeEntryway) <- placeLocationCard Locations.entryway
 
       pushAll
-        $ story iids intro
+        $ story players intro
         : map CrossOutRecord crossOut
           <> [ SetEncounterDeck encounterDeck'
              , SetAgendaDeck

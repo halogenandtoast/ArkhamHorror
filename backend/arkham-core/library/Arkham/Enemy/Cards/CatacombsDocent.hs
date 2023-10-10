@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype CatacombsDocent = CatacombsDocent EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -37,24 +36,16 @@ instance HasAbilities CatacombsDocent where
 instance RunMessage CatacombsDocent where
   runMessage msg e@(CatacombsDocent attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ parley
-          iid
-          (toSource attrs)
-          (toTarget attrs)
-          SkillIntellect
-          4
+      push $ parley iid attrs attrs #intellect 4
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        unrevealedLocations <- selectList UnrevealedLocation
-        push
-          $ chooseOne
-            iid
-            [ targetLabel
-              location
-              [LookAtRevealed iid (toSource attrs) (LocationTarget location)]
-            | location <- unrevealedLocations
-            ]
-        pure e
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      unrevealedLocations <- selectList UnrevealedLocation
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ targetLabel location [LookAtRevealed iid (toSource attrs) (LocationTarget location)]
+          | location <- unrevealedLocations
+          ]
+      pure e
     _ -> CatacombsDocent <$> runMessage msg attrs

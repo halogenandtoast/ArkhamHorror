@@ -74,16 +74,17 @@ readInvestigatorDefeat = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
-    else
+    else do
+      players <- traverse getPlayer defeatedInvestigatorIds
       pure
-        $ [story defeatedInvestigatorIds investigatorDefeat]
+        $ [story players investigatorDefeat]
         <> map DrivenInsane defeatedInvestigatorIds
 
 instance RunMessage BeforeTheBlackThrone where
   runMessage msg s@(BeforeTheBlackThrone attrs) = case msg of
     PreScenarioSetup -> do
-      investigators <- allInvestigators
-      pushAll [story investigators intro]
+      players <- allPlayers
+      pushAll [story players intro]
       pure s
     Setup -> do
       pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
@@ -250,13 +251,14 @@ instance RunMessage BeforeTheBlackThrone where
       pure s
     ScenarioResolution n -> do
       investigators <- getInvestigators
+      players <- allPlayers
       case n of
         NoResolution -> push R1
         Resolution x | x == 1 || x == 11 -> do
           msgs <- if x == 1 then readInvestigatorDefeat else pure []
           pushAll
             $ msgs
-            <> [story investigators resolution1, Record AzathothDevouredTheUniverse]
+            <> [story players resolution1, Record AzathothDevouredTheUniverse]
             <> map (InvestigatorKilled (toSource attrs)) investigators
             <> [GameOver]
         Resolution 2 -> do
@@ -265,7 +267,7 @@ instance RunMessage BeforeTheBlackThrone where
           gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
           pushAll
             $ msgs
-            <> [ story investigators resolution2
+            <> [ story players resolution2
                , Record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
                , Record AzathothSlumbersForNow
                , DrivenInsane lead
@@ -278,7 +280,7 @@ instance RunMessage BeforeTheBlackThrone where
           gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
           pushAll
             $ msgs
-            <> [ story investigators resolution3
+            <> [ story players resolution3
                , Record AzathothSlumbersForNow
                ]
             <> gainXp
@@ -286,19 +288,19 @@ instance RunMessage BeforeTheBlackThrone where
             <> [EndOfGame Nothing]
         Resolution 4 -> do
           msgs <- readInvestigatorDefeat
-          lead <- getLead
+          lead <- getLeadPlayer
           pushAll
             $ msgs
             <> [ storyWithChooseOne
                   lead
-                  investigators
+                  players
                   resolution4
                   [Label "It must be done." [R5], Label "I refuse" [ScenarioResolution (Resolution 11)]]
                ]
         Resolution 5 -> do
           gainXp <- toGainXp (toSource attrs) (getXpWithBonus 10)
           pushAll
-            $ [ story investigators resolution5
+            $ [ story players resolution5
               , Record AzathothSlumbersForNow
               , Record TheInvestigatorsSignedTheBlackBookOfAzathoth
               ]

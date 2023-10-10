@@ -37,30 +37,21 @@ instance HasModifiersFor TheReallyBadOnesV1 where
 instance RunMessage TheReallyBadOnesV1 where
   runMessage msg a@(TheReallyBadOnesV1 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigators <-
-        selectList
-          $ InvestigatorAt
-          $ locationIs
-            Locations.patientConfinementDanielsCell
-      danielChesterfield <-
-        PlayerCard
-          <$> genPlayerCard Assets.danielChesterfield
-      enemiesUnderAct <-
-        filter ((== EnemyType) . toCardType)
-          <$> scenarioField ScenarioCardsUnderActDeck
+      lead <- getLeadPlayer
+      investigators <- selectList $ InvestigatorAt $ locationIs Locations.patientConfinementDanielsCell
+      danielChesterfield <- genCard Assets.danielChesterfield
+      enemiesUnderAct <- filter ((== EnemyType) . toCardType) <$> scenarioField ScenarioCardsUnderActDeck
       pushAll
-        ( chooseOne
-            leadInvestigatorId
-            [ targetLabel
-              iid
-              [TakeControlOfSetAsideAsset iid danielChesterfield]
-            | iid <- investigators
-            ]
-            : [ ShuffleCardsIntoDeck Deck.EncounterDeck enemiesUnderAct
-              , ShuffleEncounterDiscardBackIn
-              , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-              ]
-        )
+        $ chooseOne
+          lead
+          [ targetLabel
+            iid
+            [TakeControlOfSetAsideAsset iid danielChesterfield]
+          | iid <- investigators
+          ]
+        : [ ShuffleCardsIntoDeck Deck.EncounterDeck enemiesUnderAct
+          , ShuffleEncounterDiscardBackIn
+          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+          ]
       pure a
     _ -> TheReallyBadOnesV1 <$> runMessage msg attrs

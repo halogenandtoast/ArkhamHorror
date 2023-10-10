@@ -37,7 +37,7 @@ instance HasAbilities KnightOfTheOuterVoid where
 instance RunMessage KnightOfTheOuterVoid where
   runMessage msg e@(KnightOfTheOuterVoid attrs) = case msg of
     Revelation _ (isSource attrs -> True) -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       canPlaceDoom <- toId attrs <=~> NotEnemy (EnemyWithModifier CannotPlaceDoomOnThis)
       when canPlaceDoom $ do
         push
@@ -48,9 +48,10 @@ instance RunMessage KnightOfTheOuterVoid where
             ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Use {willpower}" [parley iid (toAbilitySource attrs 1) attrs SkillWillpower 4]
           , Label "Use {intellect}" [parley iid (toAbilitySource attrs 1) attrs SkillIntellect 4]
           ]

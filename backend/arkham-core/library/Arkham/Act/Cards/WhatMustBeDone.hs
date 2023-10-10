@@ -57,10 +57,11 @@ instance RunMessage WhatMustBeDone where
       pure a
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
+      player <- getPlayer iid
       pushAll
         [ FocusCards $ map flipCard cards
         , chooseOrRunOne
-            iid
+            player
             [ targetLabel
               (toCardId card)
               [ UnfocusCards

@@ -108,24 +108,25 @@ instance RunMessage UndimensionedAndUnseen where
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
     Setup -> do
-      investigatorIds <- allInvestigatorIds
-      lead <- getLead
-      s
-        <$ pushAll
-          [ story investigatorIds intro
-          , chooseOne
-              lead
-              [ Label
-                  "You try to calm down the townsfolk in order to learn more."
-                  [SetupStep (toTarget attrs) 1]
-              , Label
-                  "You try to warn the townsfolk and convince them to evacuate."
-                  [SetupStep (toTarget attrs) 2]
-              ]
-          ]
+      players <- allPlayers
+      lead <- getLeadPlayer
+      pushAll
+        [ story players intro
+        , chooseOne
+            lead
+            [ Label
+                "You try to calm down the townsfolk in order to learn more."
+                [SetupStep (toTarget attrs) 1]
+            , Label
+                "You try to warn the townsfolk and convince them to evacuate."
+                [SetupStep (toTarget attrs) 2]
+            ]
+        ]
+      pure s
     SetupStep (isTarget attrs -> True) n -> do
       standalone <- getIsStandalone
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       encounterDeck <-
         buildEncounterDeckExcluding
           [Enemies.broodOfYogSothoth, Assets.esotericFormula]
@@ -174,15 +175,10 @@ instance RunMessage UndimensionedAndUnseen where
           else length <$> getRecordSet SacrificedToYogSothoth
 
       investigatorsWithPowderOfIbnGhazi <-
-        catMaybes
-          <$> for
-            investigatorIds
-            ( \iid -> do
-                powderOfIbnGhazi <-
-                  find ((== "02219") . toCardCode)
-                    <$> fieldMap InvestigatorDeck unDeck iid
-                pure $ (iid,) <$> powderOfIbnGhazi
-            )
+        catMaybes <$> for investigatorIds \iid -> do
+          powderOfIbnGhazi <- find ((== "02219") . toCardCode) <$> fieldMap InvestigatorDeck unDeck iid
+          player <- getPlayer iid
+          pure $ (iid,player,) <$> powderOfIbnGhazi
 
       broodOfYogSothoth <- genCard Enemies.broodOfYogSothoth
       createBroodOfYogSothoth <-
@@ -213,7 +209,7 @@ instance RunMessage UndimensionedAndUnseen where
       setAsideCards <- replicateM 4 (genCard Assets.esotericFormula)
 
       pushAll
-        $ [ story investigatorIds (if n == 1 then introPart1 else introPart2)
+        $ [ story players (if n == 1 then introPart1 else introPart2)
           , Record
               (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
           , SetEncounterDeck encounterDeck
@@ -230,7 +226,7 @@ instance RunMessage UndimensionedAndUnseen where
            , MoveAllTo (toSource attrs) dunwichVillageId
            ]
         <> [ chooseOne
-            iid
+            player
             [ Label
                 "Play Powder of Ibn-Ghazi"
                 [ PutCardIntoPlay
@@ -241,7 +237,7 @@ instance RunMessage UndimensionedAndUnseen where
                 ]
             , Label "Do no play Powder of Ibn-Ghazi" []
             ]
-           | (iid, card) <- investigatorsWithPowderOfIbnGhazi
+           | (iid, player, card) <- investigatorsWithPowderOfIbnGhazi
            ]
         <> [ SearchCollectionForRandom
             iid
@@ -315,14 +311,14 @@ instance RunMessage UndimensionedAndUnseen where
     ScenarioResolution NoResolution ->
       s <$ pushAll [ScenarioResolution $ Resolution 1]
     ScenarioResolution (Resolution 1) -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       broodEscapedIntoTheWild <-
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
           . length
           <$> getBroodOfYogSothoth
       pushAll
-        $ [ story investigatorIds resolution1
+        $ [ story players resolution1
           , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
           ]
         <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
@@ -330,10 +326,10 @@ instance RunMessage UndimensionedAndUnseen where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
+        $ [story players resolution2, Record NoBroodEscapedIntoTheWild]
         <> [RemoveCampaignCard Assets.powderOfIbnGhazi]
         <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
         <> [EndOfGame Nothing]

@@ -62,16 +62,16 @@ instance HasChaosTokenValue InTheClutchesOfChaos where
 instance RunMessage InTheClutchesOfChaos where
   runMessage msg s@(InTheClutchesOfChaos attrs) = case msg of
     PreScenarioSetup -> do
-      investigators <- allInvestigators
+      players <- allPlayers
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
       pushAll
-        $ [story investigators intro1]
-        <> [story investigators intro2 | neverSeenOrHeardFromAgain]
-        <> [story investigators intro3 | not neverSeenOrHeardFromAgain]
-        <> [story investigators intro4]
+        $ [story players intro1]
+        <> [story players intro2 | neverSeenOrHeardFromAgain]
+        <> [story players intro3 | not neverSeenOrHeardFromAgain]
+        <> [story players intro4]
       pure s
     StandaloneSetup -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       pushAll
         [ chooseOne
             lead
@@ -201,8 +201,8 @@ instance RunMessage InTheClutchesOfChaos where
         _ -> pure ()
       pure s
     ScenarioResolution n -> do
-      investigators <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       gainXp <- toGainXp (toSource attrs) getXp
       anyDetectivePoliceOrAgency <-
         selectAny
@@ -218,7 +218,7 @@ instance RunMessage InTheClutchesOfChaos where
               $ AnyInvestigator
               $ map InvestigatorWithTrait [Trait.Sorcerer, Trait.Miskatonic, Trait.Scholar]
           pushAll
-            $ [ story investigators resolution1
+            $ [ story players resolution1
               , chooseOne lead
                   $ [ Label
                         "“You’ve done enough harm. We’ll handle this from here.”"
@@ -240,7 +240,7 @@ instance RunMessage InTheClutchesOfChaos where
               $ AnyInvestigator
               $ map InvestigatorWithTrait [Trait.Sorcerer, Trait.SilverTwilight, Trait.Cultist]
           pushAll
-            $ [ story investigators resolution2
+            $ [ story players resolution2
               , chooseOne lead
                   $ [ Label
                         "“You’ve done enough harm. We’ll handle this from here.”"
@@ -260,12 +260,12 @@ instance RunMessage InTheClutchesOfChaos where
             <> [EndOfGame Nothing]
         Resolution 3 ->
           pushAll
-            $ [story investigators resolution3, Record DoomDrawsEverCloser]
+            $ [story players resolution3, Record DoomDrawsEverCloser]
             <> gainXp
             <> [EndOfGame Nothing]
         Resolution 4 ->
           pushAll
-            $ [story investigators resolution4, Record DoomDrawsEverCloser]
+            $ [story players resolution4, Record DoomDrawsEverCloser]
             <> gainXp
             <> [EndOfGame Nothing]
         _ -> error "no such resolution"

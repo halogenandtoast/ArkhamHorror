@@ -47,10 +47,11 @@ instance RunMessage CallOfTheUnknown where
           $ NotLocation
           $ locationWithInvestigator
             iid
+      player <- getPlayer iid
       when (notNull targets)
         $ push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             target
             [UseCardAbilityChoiceTarget iid source 1 target windows' payment]

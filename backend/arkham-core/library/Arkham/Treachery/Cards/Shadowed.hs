@@ -32,9 +32,10 @@ instance RunMessage Shadowed where
             , gainSurge attrs
             ]
         else do
+          player <- getPlayer iid
           push
             $ chooseOrRunOne
-              iid
+              player
               [ targetLabel
                 cultist
                 [ PlaceDoom (toSource attrs) (toTarget cultist) 1
@@ -43,8 +44,7 @@ instance RunMessage Shadowed where
               | (cultist, x) <- cultists
               ]
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          push $ InvestigatorAssignDamage iid source DamageAny 0 2
-          pure t
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      push $ InvestigatorAssignDamage iid source DamageAny 0 2
+      pure t
     _ -> Shadowed <$> runMessage msg attrs

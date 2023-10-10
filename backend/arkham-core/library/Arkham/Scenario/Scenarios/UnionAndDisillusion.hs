@@ -110,10 +110,10 @@ instance RunMessage UnionAndDisillusion where
       pushWhenM getIsStandalone (SetChaosTokens standaloneChaosTokens)
       pure s
     PreScenarioSetup -> do
-      investigators <- allInvestigators
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       pushAll
-        [ story investigators intro
+        [ story players intro
         , questionLabel
             "This is a point of no return—you will not get the chance to change your mind later. The investigators must decide (choose one):"
             lead
@@ -246,10 +246,11 @@ instance RunMessage UnionAndDisillusion where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       enemies <- selectList $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
+      player <- getPlayer iid
       unless (null enemies) $ do
         push
           $ chooseOrRunOne
-            iid
+            player
             [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy (ChaosTokenEffectSource Tablet) iid]
             | enemy <- enemies
             ]
@@ -260,24 +261,25 @@ instance RunMessage UnionAndDisillusion where
       pure s
     ScenarioResolution n -> do
       investigators <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       case n of
-        NoResolution -> pushAll [story investigators noResolution, R5]
+        NoResolution -> pushAll [story players noResolution, R5]
         Resolution 1 -> do
           inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
           deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
 
           push
-            $ storyWithChooseOne lead investigators resolution1
+            $ storyWithChooseOne lead players resolution1
             $ [Label "Yes" [R2] | inductedIntoTheInnerCircle && not deceivingTheLodge]
             <> [Label "No" [R3]]
         Resolution 2 ->
           pushAll
-            [story investigators resolution2, Record TheTrueWorkOfTheSilverTwilightLodgeHasBegun, GameOver]
+            [story players resolution2, Record TheTrueWorkOfTheSilverTwilightLodgeHasBegun, GameOver]
         Resolution 3 ->
-          pushAll [story investigators resolution3, Record CarlSanfordPossessesTheSecretsOfTheUniverse, R8]
+          pushAll [story players resolution3, Record CarlSanfordPossessesTheSecretsOfTheUniverse, R8]
         Resolution 4 ->
-          pushAll [story investigators resolution4, Record AnetteMasonIsPossessedByEvil, R8]
+          pushAll [story players resolution4, Record AnetteMasonIsPossessedByEvil, R8]
         Resolution 5 -> do
           -- Right column is easier to check so we use that one
           spellBroken <- getHasRecord TheWitches'SpellWasCast
@@ -286,8 +288,8 @@ instance RunMessage UnionAndDisillusion where
           let total = count id [spellBroken, josefDisappearedIntoTheMist, hereticsUnleashed >= 2]
           push $ if total >= 2 then R7 else R6
         Resolution 6 ->
-          pushAll [story investigators resolution6, Record CarlSanfordPossessesTheSecretsOfTheUniverse, R8]
-        Resolution 7 -> pushAll [story investigators resolution7, Record AnetteMasonIsPossessedByEvil, R8]
+          pushAll [story players resolution6, Record CarlSanfordPossessesTheSecretsOfTheUniverse, R8]
+        Resolution 7 -> pushAll [story players resolution7, Record AnetteMasonIsPossessedByEvil, R8]
         Resolution 8 -> do
           gainXp <- toGainXp (toSource attrs) getXp
           gavriellaIsAlive <- getHasRecord GavriellaIsAlive
@@ -295,7 +297,7 @@ instance RunMessage UnionAndDisillusion where
           pennyIsAlive <- getHasRecord PennyIsAlive
           valentinoIsAlive <- getHasRecord ValentinoIsAlive
           pushAll
-            $ [story investigators resolution8, RemoveCampaignCard Assets.puzzleBox]
+            $ [story players resolution8, RemoveCampaignCard Assets.puzzleBox]
             <> [addCampaignCardToDeckChoice lead investigators Assets.gavriellaMizrah | gavriellaIsAlive]
             <> [Record GavriellaIsDead | not gavriellaIsAlive]
             <> [addCampaignCardToDeckChoice lead investigators Assets.jeromeDavids | jeromeIsAlive]

@@ -26,13 +26,14 @@ instance RunMessage Abduction where
       allies <- selectTargets $ assetControlledBy iid <> #ally <> DiscardableAsset
       case allies of
         [] -> push $ LoseAllResources iid
-        targets ->
+        targets -> do
+          player <- getPlayer iid
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ [ Label "Lose all resources" [LoseAllResources iid]
               , Label
                   "Discard an Ally asset you control"
-                  [chooseOne iid $ targetLabels targets (only . Discard (toSource attrs))]
+                  [chooseOne player $ targetLabels targets (only . Discard (toSource attrs))]
               ]
       pure t
     _ -> Abduction <$> runMessage msg attrs

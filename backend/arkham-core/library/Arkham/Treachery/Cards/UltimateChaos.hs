@@ -31,10 +31,11 @@ instance RunMessage UltimateChaos where
       when (length instances >= 3) $ do
         azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
         investigators <- getInvestigators
+        player <- getPlayer iid
         pushAll
           $ map (Discard (toSource attrs) . toTarget) instances
           <> [ chooseOne
-                iid
+                player
                 [ Label "Place 1 Doom on Azathoth" [PlaceDoom (toSource attrs) (toTarget azathoth) 1]
                 , Label
                     "Azathoth attacks each investigator in player order"

@@ -35,9 +35,10 @@ instance RunMessage Interrogate where
               $ enemyAt location
               <> EnemyWithTrait Humanoid
               <> CanParleyEnemy iid
+          player <- getPlayer iid
           pushAll
             [ chooseOne
-                iid
+                player
                 [ targetLabel
                   enemy
                   [ parley
@@ -59,10 +60,11 @@ instance RunMessage Interrogate where
           Nothing -> LocationWithAnyClues
           Just lid -> LocationWithAnyClues <> NotLocation (LocationWithId lid)
       locations <- selectList matcher
+      player <- getPlayer iid
       pushAll
         $ [InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 1 Nothing]
         <> [ chooseOrRunOne
-              iid
+              player
               [ targetLabel
                 location
                 [InvestigatorDiscoverClues iid location (toSource attrs) 1 Nothing]

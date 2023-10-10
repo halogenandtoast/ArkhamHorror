@@ -33,10 +33,11 @@ instance RunMessage AlteredBeast where
   runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       abominations <- selectTargets $ EnemyWithTrait Abomination
+      player <- getPlayer iid
       push $ case abominations of
         [] -> gainSurge attrs
         xs ->
-          chooseOrRunOne iid
+          chooseOrRunOne player
             $ [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x (toSource attrs)]
               | x <- xs
               ]

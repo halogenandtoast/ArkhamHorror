@@ -27,8 +27,9 @@ instance RunMessage WindowToAnotherTime where
       ancientLocations <-
         selectWithField LocationCard
           $ LocationWithTrait Ancient
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Place Doom on the Current Agenda"
           [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]

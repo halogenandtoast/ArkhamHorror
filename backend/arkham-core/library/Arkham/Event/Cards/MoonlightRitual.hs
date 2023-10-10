@@ -29,8 +29,9 @@ instance RunMessage MoonlightRitual where
       events <-
         selectWithField EventDoom $ eventControlledBy iid <> EventWithAnyDoom
       investigatorDoomCount <- field InvestigatorDoom iid
+      player <- getPlayer iid
       pushAll
-        [ chooseOne iid
+        [ chooseOne player
             $ [ targetLabel
                 iid
                 [RemoveDoom (toSource attrs) (toTarget iid) investigatorDoomCount]

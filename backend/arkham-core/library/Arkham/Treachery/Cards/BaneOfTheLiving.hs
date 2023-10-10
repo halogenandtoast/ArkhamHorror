@@ -29,9 +29,9 @@ instance RunMessage BaneOfTheLiving where
   runMessage msg t@(BaneOfTheLiving attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       hasUnfinishedBusiness <- selectAny $ StoryWithTitle "Unfinished Business"
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne
-          iid
+        $ chooseOrRunOne player
         $ [ Label
             "Choose an Unfinished Business card in play, flip it to its Heretic side, and place damage on it equal to half its health."
             [RevelationChoice iid (toSource attrs) 1]
@@ -47,9 +47,10 @@ instance RunMessage BaneOfTheLiving where
       storiesWithCardId <- for stories $ \story' -> do
         storyCard <- field StoryCard story'
         pure (story', toCardId storyCard)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             story'
             [ Flip iid (toSource attrs) (toTarget story')

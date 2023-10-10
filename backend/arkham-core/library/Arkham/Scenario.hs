@@ -369,9 +369,10 @@ instance RunMessage Scenario where
                 [duringTurnWindow investigator]
             )
             results
+        player <- getPlayer investigator
         pure
           $ Just
-          $ chooseOne investigator
+          $ chooseOne player
           $ Label "Do not play asset" []
           : [ targetLabel
               (toCardId c)
@@ -396,32 +397,33 @@ instance RunMessage Scenario where
           mInvestigator <- tarotInvestigator card
           lead <- getLead
           let investigator = fromMaybe lead mInvestigator
+          player <- getPlayer investigator
 
           agendas <- selectList Matcher.AnyAgenda
           push
             $ chooseOrRunOne
-              investigator
+              player
               [targetLabel agenda [PlaceDoom source (toTarget agenda) 1] | agenda <- agendas]
       -- cancelDoom 1
       pure x
     UseThisAbility _ source@(TarotSource card@(TarotCard facing TheDevilXV)) 1 -> do
-      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
+      investigatorPlayers <- filterM ((`affectedByTarot` card) . fst) =<< getInvestigatorPlayers
       case facing of
         Upright -> do
           pushAll
             [ chooseOne
-              investigator
+              player
               [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
               | slotType <- allSlotTypes
               ]
-            | investigator <- investigators
+            | (investigator, player) <- investigatorPlayers
             ]
         Reversed -> do
-          for_ investigators $ \investigator -> do
+          for_ investigatorPlayers $ \(investigator, player) -> do
             slotTypes <- keys . filterMap notNull <$> field Field.InvestigatorSlots investigator
             pushWhen (notNull slotTypes)
               $ chooseN
-                investigator
+                player
                 (min 3 $ length slotTypes)
                 [ Label ("Remove " <> slotName slotType <> " Slot") [RemoveSlot investigator slotType]
                 | slotType <- slotTypes
@@ -451,18 +453,19 @@ instance RunMessage Scenario where
       push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard c]
       pure x
     UseThisAbility iid source@(TarotSource (TarotCard facing TheStarXVII)) 1 -> do
+      player <- getPlayer iid
       case facing of
         Upright -> do
           canHealDamage <- Helpers.canHaveDamageHealed source iid
           mHealHorror <- Helpers.getHealHorrorMessage source 1 iid
           push
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
             <> [HorrorLabel iid [healHorror] | healHorror <- toList mHealHorror]
-        Reversed ->
+        Reversed -> do
           push
             $ chooseOne
-              iid
+              player
               [ Label "Take 1 damage" [assignDamage iid source 1]
               , Label "Take 1 horror" [assignHorror iid source 1]
               ]
@@ -480,9 +483,10 @@ instance RunMessage Scenario where
           getDraw (_ : rest) = getDraw rest
         drawing <- fromQueue getDraw
         cards <- map toCard . take 10 . reverse <$> field Field.InvestigatorDiscard iid
+        player <- getPlayer iid
         push
           $ chooseOne
-            iid
+            player
             [ Label
                 "Shuffle the bottom 10 cards of your discard back into your Deck"
                 [IgnoreBatch batchId, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards, drawing]
@@ -525,27 +529,29 @@ instance RunMessage Scenario where
               \iid -> do
                 hasPhysicalTrauma <- fieldP Field.InvestigatorPhysicalTrauma (> 0) iid
                 hasMentalTrauma <- fieldP Field.InvestigatorMentalTrauma (> 0) iid
+                player <- getPlayer iid
                 if (hasPhysicalTrauma || hasMentalTrauma)
-                  then pure $ Just (iid, hasPhysicalTrauma, hasMentalTrauma)
+                  then pure $ Just (iid, player, hasPhysicalTrauma, hasMentalTrauma)
                   else pure Nothing
 
           pushAll
-            $ [ chooseOne iid
+            $ [ chooseOne player
                 $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
                 <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
                 <> [Label "Do not remove trauma" []]
-              | (iid, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
+              | (iid, player, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
               ]
         Reversed -> do
           defeatedInvestigators <-
             filterM (`affectedByTarot` card) =<< selectList Matcher.DefeatedInvestigator
+          defeatedInvestigatorPlayers <- traverse (traverseToSnd getPlayer) defeatedInvestigators
           pushAll
             $ [ chooseOne
-                iid
+                player
                 [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
                 , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
                 ]
-              | iid <- defeatedInvestigators
+              | (iid, player) <- defeatedInvestigatorPlayers
               ]
       pure x
     ResolveChaosToken _ chaosTokenFace _ -> do
@@ -571,8 +577,9 @@ instance RunMessage Scenario where
         mInvestigator <- tarotInvestigator card
         let investigator = fromMaybe lead mInvestigator
         let abilities = getAbilities card
+        player <- getPlayer investigator
         for_ abilities $ \ability -> do
-          push $ chooseOne investigator [AbilityLabel investigator ability [] []]
+          push $ chooseOne player [AbilityLabel investigator ability [] []]
       pure result
     PreScenarioSetup -> do
       result <- go

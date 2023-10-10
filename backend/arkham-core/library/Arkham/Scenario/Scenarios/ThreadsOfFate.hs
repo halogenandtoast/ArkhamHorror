@@ -88,10 +88,10 @@ instance RunMessage ThreadsOfFate where
       whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       push
         $ chooseOne
-          leadInvestigatorId
+          lead
           [ Label
               "The investigators gave custody of the relic to Alejandro."
               [Record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro]
@@ -101,17 +101,17 @@ instance RunMessage ThreadsOfFate where
           ]
       pure s
     Setup -> do
-      iids <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
       gaveCustodyToHarlan <-
         getHasRecord
           TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       let intro2or3 = if gaveCustodyToHarlan then intro3 else intro2
       pushAll
-        [ story iids intro1
-        , story iids intro2or3
+        [ story players intro1
+        , story players intro2or3
         , chooseOne
-            leadInvestigatorId
+            lead
             [ Label
                 "“You’re not going anywhere until you tell me what is going on.” - Skip to Intro 4."
                 [SetupStep (toTarget attrs) 4]
@@ -231,7 +231,7 @@ instance RunMessage ThreadsOfFate where
               , Acts.strangeOccurences
               , Acts.theBrotherhoodIsRevealed
               ]
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       setAsideCards <-
         genCards
           [ Locations.townHall
@@ -246,7 +246,7 @@ instance RunMessage ThreadsOfFate where
           , RemoveCampaignCard Assets.alejandroVela
           , SetEncounterDeck encounterDeck
           , chooseOne
-              leadInvestigatorId
+              lead
               [ Label
                   "Go to the police to inform them of Alejandro's disappearance"
                   [SetActDeckCards 2 act2Deck1]
@@ -282,7 +282,7 @@ instance RunMessage ThreadsOfFate where
         getHasRecord
           TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       standalone <- getIsStandalone
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       (msgs, nextStep) <- case n of
         4 ->
           pure
@@ -299,7 +299,7 @@ instance RunMessage ThreadsOfFate where
           pure
             (
               [ chooseOne
-                  leadInvestigatorId
+                  lead
                   [ Label
                       "“We should be wary of them.”"
                       ( if standalone
@@ -329,10 +329,11 @@ instance RunMessage ThreadsOfFate where
           targets <-
             selectListMap EnemyTarget
               $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          player <- getPlayer iid
           unless (null targets) $ do
             push
               $ chooseOrRunOne
-                iid
+                player
                 [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs && n < 2 -> do
           targets <-
@@ -352,9 +353,10 @@ instance RunMessage ThreadsOfFate where
             selectListMap EnemyTarget
               $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           unless (null targets) $ do
+            player <- getPlayer iid
             push
               $ chooseOrRunOne
-                iid
+                player
                 [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs -> do
           targets <-
@@ -397,20 +399,22 @@ instance RunMessage ThreadsOfFate where
         act1sCompleted = length $ keys (scenarioCompletedActStack attrs)
 
       iids <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
+      leadId <- getLeadInvestigatorId
       gainXp <- toGainXp attrs $ getXpWithBonus act1sCompleted
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
 
       pushAll
-        $ [story iids resolution1]
+        $ [story players resolution1]
         <> [ Record
               if act3bCompleted
                 then TheInvestigatorsFoundTheMissingRelic
                 else TheRelicIsMissing
            ]
         <> [ addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             iids
             Assets.relicOfAgesADeviceOfSomeSort
            | act3bCompleted && not relicOwned
@@ -424,7 +428,7 @@ instance RunMessage ThreadsOfFate where
                 else AlejandroIsMissing
            ]
         <> [ addCampaignCardToDeckChoice
-            leadInvestigatorId
+            lead
             iids
             Assets.alejandroVela
            | act3dCompleted && not alejandroOwned
@@ -435,20 +439,12 @@ instance RunMessage ThreadsOfFate where
                 then TheInvestigatorsForgedABondWithIchtaca
                 else IchtacaIsInTheDark
            ]
-        <> [ addCampaignCardToDeckChoice
-            leadInvestigatorId
-            iids
-            Assets.ichtacaTheForgottenGuardian
-           | act3fCompleted
-           ]
+        <> [addCampaignCardToDeckChoice lead iids Assets.ichtacaTheForgottenGuardian | act3fCompleted]
         <> [ chooseOne
-              leadInvestigatorId
+              lead
               [ Label
                   "Add Expedition Journal to your deck"
-                  [ AddCampaignCardToDeck
-                      leadInvestigatorId
-                      Assets.expeditionJournal
-                  ]
+                  [AddCampaignCardToDeck leadId Assets.expeditionJournal]
               , Label "Do not add Expedition Journal to your deck" []
               ]
            ]

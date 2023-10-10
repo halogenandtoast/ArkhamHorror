@@ -25,45 +25,46 @@ instance RunMessage EndlessCaverns where
   runMessage msg a@(EndlessCaverns attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       enemyMsgs <- getPlacePursuitEnemyMessages
-      lead <- getLeadInvestigatorId
+      lead <- getLeadPlayer
+      leadId <- getLeadInvestigatorId
       iids <- getInvestigatorIds
       pushAll
         $ enemyMsgs
         <> [ questionLabel "Choose a scout" lead
               $ ChooseOne
-                [ targetLabel iid [HandleTargetChoice lead (toSource attrs) (InvestigatorTarget iid)]
+                [ targetLabel iid [HandleTargetChoice leadId (toSource attrs) (InvestigatorTarget iid)]
                 | iid <- iids
                 ]
            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
            ]
       pure a
-    HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) ->
-      do
-        hasRope <- getHasSupply iid Rope
-        unless hasRope
-          $ push
-          $ chooseOne
-            iid
-            [ SkillLabel
-                SkillCombat
-                [ beginSkillTest
-                    iid
-                    (toSource attrs)
-                    (toTarget attrs)
-                    SkillCombat
-                    5
-                ]
-            , SkillLabel
-                SkillAgility
-                [ beginSkillTest
-                    iid
-                    (toSource attrs)
-                    (toTarget attrs)
-                    SkillAgility
-                    5
-                ]
-            ]
-        pure a
+    HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
+      player <- getPlayer iid
+      hasRope <- getHasSupply iid Rope
+      unless hasRope
+        $ push
+        $ chooseOne
+          player
+          [ SkillLabel
+              SkillCombat
+              [ beginSkillTest
+                  iid
+                  (toSource attrs)
+                  (toTarget attrs)
+                  SkillCombat
+                  5
+              ]
+          , SkillLabel
+              SkillAgility
+              [ beginSkillTest
+                  iid
+                  (toSource attrs)
+                  (toTarget attrs)
+                  SkillAgility
+                  5
+              ]
+          ]
+      pure a
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           push $ SufferTrauma iid 1 0

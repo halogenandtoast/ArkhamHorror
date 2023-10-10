@@ -24,6 +24,7 @@ instance RunMessage HuntedDown where
   runMessage msg t@(HuntedDown attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemiesToMove <- select $ UnengagedEnemy <> EnemyWithTrait Criminal
+      player <- getPlayer iid
       if null enemiesToMove
         then push $ gainSurge attrs
         else do
@@ -53,13 +54,13 @@ instance RunMessage HuntedDown where
                         $ targetLabel
                           eid
                           [ chooseOne
-                              iid
+                              player
                               [targetLabel x [EnemyMove eid x] | x <- xs, x /= locationId]
                           , EnemyAttackIfEngaged eid (Just iid)
                           ]
 
             unless
               (null enemiesToMove || null (catMaybes messages))
-              (push $ chooseOneAtATime iid (catMaybes messages))
+              (push $ chooseOneAtATime player (catMaybes messages))
       pure t
     _ -> HuntedDown <$> runMessage msg attrs

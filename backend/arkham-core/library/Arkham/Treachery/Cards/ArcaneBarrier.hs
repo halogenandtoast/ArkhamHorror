@@ -64,10 +64,11 @@ instance RunMessage ArcaneBarrierEffect where
         moveMessages = case effectMetadata attrs of
           Just (EffectMessages msgs) -> msgs
           _ -> error "messages must be supplied"
+      player <- getPlayer iid
       pushAll
         [ disable attrs
         , chooseOne
-            iid
+            player
             [ Label "Cancel Move" []
             , Label
                 "Discard top 5 cards of your deck"

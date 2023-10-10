@@ -21,8 +21,9 @@ instance RunMessage AncestralFear where
   runMessage msg t@(AncestralFear attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       mLocation <- selectOne $ locationWithInvestigator iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display)."
             [PlaceDoom (toSource attrs) (toTarget lid) 1]

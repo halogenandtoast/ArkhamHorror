@@ -19,10 +19,11 @@ instance RunMessage MindWipe3 where
   runMessage msg e@(MindWipe3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
+      player <- getPlayer iid
       unless (null enemyIds)
         $ pushAll
           [ chooseOne
-              iid
+              player
               [ TargetLabel
                 (EnemyTarget eid')
                 [CreateEffect "" Nothing (toSource attrs) (EnemyTarget eid')]

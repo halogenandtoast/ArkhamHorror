@@ -29,6 +29,7 @@ instance RunMessage InspiringPresence where
           $ AssetAt
             (LocationWithInvestigator $ InvestigatorWithId $ skillOwner attrs)
           <> AllyAsset
+      player <- getPlayer (skillOwner attrs)
       choices <- flip mapMaybeM assets $ \a -> do
         let
           target = AssetTarget a
@@ -41,7 +42,7 @@ instance RunMessage InspiringPresence where
           andChoices =
             if canHealDamage || canHealHorror
               then
-                [ chooseOrRunOne (skillOwner attrs)
+                [ chooseOrRunOne player
                     $ [Label "Heal 1 damage" [healDamage] | canHealDamage]
                     <> [Label "Heal 1 horror" [healHorror] | canHealHorror]
                 ]
@@ -50,6 +51,6 @@ instance RunMessage InspiringPresence where
 
         pure $ if null msgs then Nothing else Just $ TargetLabel target msgs
 
-      unless (null choices) $ push $ chooseOne (skillOwner attrs) choices
+      unless (null choices) $ push $ chooseOne player choices
       pure s
     _ -> InspiringPresence <$> runMessage msg attrs

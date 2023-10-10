@@ -21,7 +21,7 @@ import Arkham.Cost as X hiding (PaidCost)
 import Arkham.Enemy as X
 import Arkham.Entities as X
 import Arkham.Event as X
-import Arkham.Game as X hiding (addInvestigator, getAsset, newGame, runMessages, withModifiers)
+import Arkham.Game as X hiding (getAsset, newGame, runMessages, withModifiers)
 import Arkham.Game.Helpers as X hiding (getCanAffordCost)
 import Arkham.GameValue as X
 import Arkham.Helpers as X
@@ -482,8 +482,9 @@ testInvestigator
   :: MonadIO m
   => CardDef
   -> m Investigator
-testInvestigator cardDef =
-  pure $ lookupInvestigator (InvestigatorId $ toCardCode cardDef)
+testInvestigator cardDef = do
+  playerId <- liftIO getRandom
+  pure $ lookupInvestigator (InvestigatorId $ toCardCode cardDef) playerId
 
 {- | We use Jenny Barnes because here abilities are the least
 disruptive during tests since they won't add extra windows
@@ -702,6 +703,7 @@ newGame investigator = do
         , gamePlayerCount = 1
         , gameActiveInvestigatorId = investigatorId
         , gameLeadInvestigatorId = investigatorId
+        , gamePlayers = [attr investigatorPlayerId investigator]
         , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
         , gamePhaseStep = Nothing
         , gameSkillTest = Nothing

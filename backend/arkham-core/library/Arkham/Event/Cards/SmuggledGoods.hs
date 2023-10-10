@@ -29,9 +29,10 @@ instance RunMessage SmuggledGoods where
           InvestigatorDiscard
           (any (member Illicit . toTraits))
           iid
+      player <- getPlayer iid
       pushAll
         [ chooseOrRunOne
-            iid
+            player
             ( Label
                 "Search deck"
                 [ search

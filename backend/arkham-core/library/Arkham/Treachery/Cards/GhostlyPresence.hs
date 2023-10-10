@@ -34,7 +34,7 @@ instance RunMessage GhostlyPresence where
       -- unlikely but perhaps nahab died from the hunter move
       mNahab <- selectOne $ enemyIs Enemies.nahab
       for_ mNahab $ \nahab -> do
-        lead <- getLead
+        lead <- getLeadPlayer
         iids <- selectList $ InvestigatorAt $ locationWithEnemy nahab
         atSiteOfTheSacrifice <-
           selectAny $ locationIs Locations.siteOfTheSacrifice <> locationWithEnemy nahab

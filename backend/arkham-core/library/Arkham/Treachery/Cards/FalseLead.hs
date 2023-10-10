@@ -20,9 +20,10 @@ instance RunMessage FalseLead where
   runMessage msg t@(FalseLead attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       playerClueCount <- field InvestigatorClues iid
+      player <- getPlayer iid
       push
         $ if playerClueCount == 0
-          then chooseOne iid [Label "Surge" [gainSurge attrs]]
+          then chooseOne player [Label "Surge" [gainSurge attrs]]
           else revelationSkillTest iid attrs #intellect 4
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do

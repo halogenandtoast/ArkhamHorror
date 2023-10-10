@@ -26,9 +26,10 @@ instance RunMessage StandTogether3 where
         [] -> error "should not have happened"
         xs -> do
           investigators <- forToSnd xs $ \x -> drawCards x attrs 2
+          player <- getPlayer iid
           pushAll
             [ chooseOrRunOne
-                iid
+                player
                 [ TargetLabel
                   (InvestigatorTarget x)
                   [ TakeResources iid 2 (toSource attrs) False

@@ -73,8 +73,9 @@ instance RunMessage OneTwoPunch5Effect where
           case (skillTestResult skillTest, skillTestTarget skillTest) of
             (SucceededBy {}, EnemyTarget eid) -> do
               isStillAlive <- selectAny $ EnemyWithId eid
+              player <- getPlayer iid
               push
-                $ chooseOrRunOne iid
+                $ chooseOrRunOne player
                 $ [ Label
                     "Fight that enemy again"
                     [ skillTestModifiers

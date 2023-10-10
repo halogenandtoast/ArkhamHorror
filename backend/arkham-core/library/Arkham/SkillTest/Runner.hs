@@ -197,6 +197,7 @@ instance RunMessage SkillTest where
                 ]
       pure s
     DrawAnotherChaosToken iid -> do
+      player <- getPlayer skillTestInvestigator
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
@@ -206,8 +207,8 @@ instance RunMessage SkillTest where
           False
         RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] -> False
         RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] -> False
-        Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResultsButton])
-          | skillTestInvestigator == skillTestInvestigator' -> False
+        Ask player' (ChooseOne [SkillTestApplyResultsButton])
+          | player == player' -> False
         _ -> True
       pushAll
         [ RequestChaosTokens (toSource s) (Just iid) (Reveal 1) SetAside
@@ -262,8 +263,9 @@ instance RunMessage SkillTest where
       let
         modifiedSkillValue' =
           max 0 (currentSkillValue + skillTestValueModifier + iconCount)
+      player <- getPlayer skillTestInvestigator
       pushAll
-        [ chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
+        [ chooseOne player [SkillTestApplyResultsButton]
         , SkillTestEnds skillTestInvestigator skillTestSource
         , Do (SkillTestEnds skillTestInvestigator skillTestSource)
         ]
@@ -271,6 +273,7 @@ instance RunMessage SkillTest where
     FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
+      player <- getPlayer skillTestInvestigator
       pushAll
         $ SkillTestResults resultsData
         : [ Will
@@ -293,7 +296,7 @@ instance RunMessage SkillTest where
                     skillTestType
                     difficulty
                 )
-             , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
+             , chooseOne player [SkillTestApplyResultsButton]
              , SkillTestEnds skillTestInvestigator skillTestSource
              , Do (SkillTestEnds skillTestInvestigator skillTestSource)
              ]
@@ -397,8 +400,8 @@ instance RunMessage SkillTest where
         Will (FailedSkillTest {}) -> True
         Ask _ (ChooseOne [SkillTestApplyResultsButton]) -> True
         _ -> False
-
-      push (chooseOne skillTestInvestigator [SkillTestApplyResultsButton])
+      player <- getPlayer skillTestInvestigator
+      push (chooseOne player [SkillTestApplyResultsButton])
       let
         modifiedSkillTestResult =
           foldl' modifySkillTestResult skillTestResult modifiers'
@@ -586,6 +589,7 @@ instance RunMessage SkillTest where
           hauntedAbilities <- case (skillTestTarget, skillTestAction) of
             (LocationTarget lid, Just Action.Investigate) -> selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
             _ -> pure []
+          player <- getPlayer skillTestInvestigator
           pushAll
             $ [ When
                   ( FailedSkillTest
@@ -626,7 +630,7 @@ instance RunMessage SkillTest where
                   n
                ]
             <> [ chooseOneAtATime
-                skillTestInvestigator
+                player
                 [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities]
                | notNull hauntedAbilities
                ]
@@ -635,6 +639,7 @@ instance RunMessage SkillTest where
     RerunSkillTest -> case skillTestResult of
       FailedBy Automatic _ -> pure s
       _ -> do
+        player <- getPlayer skillTestInvestigator
         withQueue_ $ filter $ \case
           Will FailedSkillTest {} -> False
           Will PassedSkillTest {} -> False
@@ -646,8 +651,8 @@ instance RunMessage SkillTest where
             False
           RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] ->
             False
-          Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResultsButton])
-            | skillTestInvestigator == skillTestInvestigator' -> False
+          Ask player' (ChooseOne [SkillTestApplyResultsButton])
+            | player == player' -> False
           _ -> True
         push $ RunSkillTest skillTestInvestigator
         -- We need to subtract the current token values to prevent them from

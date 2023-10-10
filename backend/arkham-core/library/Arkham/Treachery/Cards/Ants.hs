@@ -31,8 +31,9 @@ instance RunMessage Ants where
       pure t
     RevelationChoice iid (isSource attrs -> True) n | n > 0 -> do
       hasDiscardableAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label "Discard hand card" [toMessage $ chooseAndDiscardCard iid attrs]
         : [ Label
             "Discard a card from your play area"

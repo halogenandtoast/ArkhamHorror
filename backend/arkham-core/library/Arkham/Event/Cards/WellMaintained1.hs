@@ -34,9 +34,10 @@ instance RunMessage WellMaintained1 where
   runMessage msg e@(WellMaintained1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetWithTrait Item
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
           | asset <- assets
           ]

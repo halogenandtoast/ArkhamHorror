@@ -26,18 +26,17 @@ instance RunMessage FineDining where
       clueCount <- field InvestigatorClues iid
       bystanders <- selectListMap AssetTarget $ AssetWithTrait Bystander
       let damageMsg = InvestigatorAssignDamage iid source DamageAny 1 1
+      player <- getPlayer iid
       push
         $ if clueCount > 0 && notNull bystanders
           then
             chooseOne
-              iid
+              player
               [ Label
                   "Place 1 of your clues on a Bystander asset in play"
                   [ chooseOne
-                      iid
-                      [ TargetLabel
-                        target
-                        [InvestigatorSpendClues iid 1, PlaceClues (toSource attrs) target 1]
+                      player
+                      [ TargetLabel target [InvestigatorSpendClues iid 1, PlaceClues (toSource attrs) target 1]
                       | target <- bystanders
                       ]
                   ]

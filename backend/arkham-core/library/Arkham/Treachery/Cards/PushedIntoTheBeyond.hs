@@ -26,10 +26,11 @@ instance RunMessage PushedIntoTheBeyond where
     Revelation iid source | isSource attrs source -> do
       targets <-
         selectWithField AssetCardCode $ AssetControlledBy You <> AssetNonStory
+      player <- getPlayer iid
       when (notNull targets)
         $ push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             aid
             [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)

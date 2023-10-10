@@ -30,8 +30,9 @@ instance RunMessage YigsMercy where
     ResolveStory iid _ story' | story' == toId attrs -> do
       ichtaca <- selectJust $ enemyIs Enemies.ichtacaScionOfYig
       yigsFury <- getRecordCount YigsFury
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ if yigsFury >= 16
           then [Label "Ichtaca refuses your plea" []]
           else

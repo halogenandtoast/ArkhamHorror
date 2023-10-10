@@ -90,6 +90,7 @@ instance RunMessage SoothingMelody where
       let choices =
             investigatorDamageChoices <> investigatorHorrorChoices <> damageAssetChoices <> horrorAssetChoices
 
-      unless (null choices) $ push $ chooseOne iid choices
+      player <- getPlayer iid
+      unless (null choices) $ push $ chooseOne player choices
       pure e
     _ -> SoothingMelody <$> runMessage msg attrs

@@ -27,24 +27,21 @@ instance RunMessage MassHysteria where
       anyMaskedCarnevaleGoers <-
         selectAny
           (AssetWithTitle "Masked Carnevale-Goer")
+      player <- getPlayer iid
       let take2damage = InvestigatorAssignDamage iid source DamageAny 2 0
       if hasLocation && anyMaskedCarnevaleGoers
         then
           push
             $ chooseOne
-              iid
+              player
               [ Label "Take 2 damage" [take2damage]
-              , Label
-                  "Shuffle Masked Carnevale-Goers"
-                  [RevelationChoice iid source 2]
+              , Label "Shuffle Masked Carnevale-Goers" [RevelationChoice iid source 2]
               ]
         else push take2damage
       pure t
     RevelationChoice iid source 2 | isSource attrs source -> do
       locationId <- fromJustNote "impossible" <$> field InvestigatorLocation iid
-      maskedCarnevaleGoers <-
-        selectList
-          (AssetWithTitle "Masked Carnevale-Goer")
+      maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
       clockwiseLocations <- getClockwiseLocations locationId
       shuffled <- shuffleM maskedCarnevaleGoers
       pushAll

@@ -98,7 +98,7 @@ instance RunMessage TheDepthsOfYoth where
       whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     StandaloneSetup -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       push
         $ questionLabel
           "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."
@@ -115,7 +115,7 @@ instance RunMessage TheDepthsOfYoth where
         .~ standaloneCampaignLog
     Setup -> do
       isStandalone <- getIsStandalone
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
 
       yigsFury <- getRecordCount YigsFury
 
@@ -179,19 +179,19 @@ instance RunMessage TheDepthsOfYoth where
       createYig <- createEnemyWithPlacement_ yig (OutOfPlay PursuitZone)
 
       pushAll
-        $ story investigatorIds intro1
-        : [story investigatorIds intro2 | isIntro2]
+        $ story players intro1
+        : [story players intro2 | isIntro2]
           <> [AddChaosToken ElderThing | isIntro2 && not isStandalone]
-          <> [ story investigatorIds intro3
+          <> [ story players intro3
              | not forgingYourOwnPath && ichtacasFaithIsRestored
              ]
-          <> [story investigatorIds intro4 | isIntro2]
+          <> [story players intro4 | isIntro2]
           <> [Record IchtacaIsSetAgainstYou | isIntro2 || isIntro4]
           <> [RemoveCampaignCard Assets.ichtacaTheForgottenGuardian | isIntro4]
-          <> [story investigatorIds intro5 | isIntro4 && theRelicIsMissing]
-          <> [story investigatorIds intro6 | isIntro6]
-          <> [story investigatorIds intro7 | isIntro6 && hasPocketknife]
-          <> [story investigatorIds intro8 | isIntro8]
+          <> [story players intro5 | isIntro4 && theRelicIsMissing]
+          <> [story players intro6 | isIntro6]
+          <> [story players intro7 | isIntro6 && hasPocketknife]
+          <> [story players intro8 | isIntro8]
           <> [CrossOutRecord TheInvestigatorsFoundTheMissingRelic | isIntro8]
           <> [Record TheRelicIsMissing | isIntro8]
           <> [RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort | isIntro4]
@@ -258,6 +258,7 @@ instance RunMessage TheDepthsOfYoth where
       pure s
     ScenarioResolution r -> do
       iids <- allInvestigatorIds
+      players <- allPlayers
       depth <- getCurrentDepth
       gainXp <- toGainXp attrs $ getXpWithBonus depth
       vengeance <- getVengeanceInVictoryDisplay
@@ -301,7 +302,7 @@ instance RunMessage TheDepthsOfYoth where
                       <> [ScenarioResolutionStep 1 (Resolution 1)]
                   _ -> []
           pushAll
-            $ [story iids resolution, Record recordEntry]
+            $ [story players resolution, Record recordEntry]
             <> depthMessages
             <> [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
             <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]

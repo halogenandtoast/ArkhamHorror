@@ -62,7 +62,8 @@ instance RunMessage UnfinishedBusiness_J where
 
       pure s
     ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
-      push $ chooseOne iid [AbilityLabel iid (mkAbility attrs 1 $ ForcedAbility AnyWindow) [] []]
+      player <- getPlayer iid
+      push $ chooseOne player [AbilityLabel iid (mkAbility attrs 1 $ ForcedAbility AnyWindow) [] []]
       pure s
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ ResolveStory iid ResolveIt (toId attrs)

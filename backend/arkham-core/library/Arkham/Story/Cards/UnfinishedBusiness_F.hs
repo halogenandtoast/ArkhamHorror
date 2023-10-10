@@ -46,17 +46,18 @@ instance RunMessage UnfinishedBusiness_F where
       pure . UnfinishedBusiness_F $ attrs & placementL .~ InThreatArea iid
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasEnoughResources <- fieldMap InvestigatorResources (>= 2) iid
+      player <- getPlayer iid
       push
-        $ chooseOne
-          iid
+        $ chooseOne player
         $ [Label "Lose 2 resources" [LoseResources iid (toSource attrs) 2] | hasEnoughResources]
         <> [ Label "Flip this back over" [Flip iid (toAbilitySource attrs 1) (toTarget attrs)]
            ]
       pure s
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel sType [beginSkillTest iid attrs attrs sType 4] | sType <- [SkillIntellect, SkillAgility]
           ]
       pure s

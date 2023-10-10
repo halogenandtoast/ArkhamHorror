@@ -52,8 +52,9 @@ instance RunMessage UnvisitedIsleHauntedSpring where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label "Discard an asset you control" [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
           | hasAssets
           ]

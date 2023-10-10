@@ -28,10 +28,11 @@ instance RunMessage Mesmerize where
             InvestigatorTarget iid -> do
               locationTargets <-
                 selectListMap LocationTarget $ FarthestLocationFromYou LocationWithoutInvestigators
+              player <- getPlayer iid
               e
                 <$ pushAll
                   [ chooseOne
-                      iid
+                      player
                       [ TargetLabel locationTarget [AttachAsset aid locationTarget]
                       | locationTarget <- locationTargets
                       ]

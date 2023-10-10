@@ -29,9 +29,10 @@ instance RunMessage BurdensOfThePast where
             selectList
               $ AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
               <> AbilityIsForcedAbility
+          player <- getPlayer iid
           when (notNull abilities)
             $ push
-            $ chooseOneAtATime iid [AbilityLabel iid ability [] [] | ability <- abilities]
+            $ chooseOneAtATime player [AbilityLabel iid ability [] [] | ability <- abilities]
         else push $ GainSurge (toSource attrs) (toTarget attrs)
       pure t
     _ -> BurdensOfThePast <$> runMessage msg attrs

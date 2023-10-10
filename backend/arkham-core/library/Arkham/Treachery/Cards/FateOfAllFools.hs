@@ -24,9 +24,10 @@ instance RunMessage FateOfAllFools where
       case mAlreadyInPlay of
         Just tid -> do
           iid' <- selectJust $ HasMatchingTreachery $ TreacheryWithId tid
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ Label
                   "An investigator with another copy of Fate of All Fools in his or her threat area takes 2 direct damage."
                   [directDamage iid' attrs 2]

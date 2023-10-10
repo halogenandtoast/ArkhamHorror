@@ -52,17 +52,18 @@ instance RunMessage UnfinishedBusiness_H where
           InvestigatorHand
           ((>= 2) . length . filter (`cardMatch` NonWeakness))
           iid
+      player <- getPlayer iid
       push
-        $ chooseOne
-          iid
+        $ chooseOne player
         $ [Label "Lose 2 resources" [toMessage $ discardFromHand iid attrs DiscardChoose 2] | hasCards]
         <> [ Label "Flip this back over" [Flip iid (toAbilitySource attrs 1) (toTarget attrs)]
            ]
       pure s
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel sType [beginSkillTest iid attrs attrs sType 4] | sType <- [SkillWillpower, SkillCombat]
           ]
       pure s

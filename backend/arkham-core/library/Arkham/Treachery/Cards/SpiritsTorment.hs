@@ -44,11 +44,12 @@ instance RunMessage SpiritsTorment where
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasActions <- member iid <$> select InvestigatorWithAnyActionsRemaining
+      player <- getPlayer iid
       push
         $ if hasActions
           then
             chooseOne
-              iid
+              player
               [ Label
                   "Take 1 horror"
                   [InvestigatorAssignDamage iid source DamageAny 0 1]

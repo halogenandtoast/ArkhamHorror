@@ -34,9 +34,10 @@ instance HasAbilities Kidnapped where
 instance RunMessage Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Test {willpower} (4)"
               [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillWillpower 4]
@@ -45,26 +46,24 @@ instance RunMessage Kidnapped where
               [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillAgility 4]
           ]
       pure t
-    FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _
-      | isTarget attrs target -> do
-          allies <- selectList (AssetControlledBy You <> AllyAsset)
-          if null allies
-            then
-              push
-                $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
-            else do
-              agendaId <- selectJust AnyAgenda
-              pushAll
-                [ chooseOne
-                    iid
-                    [ TargetLabel
-                      (AssetTarget aid)
-                      [AddToScenarioDeck PotentialSacrifices (AssetTarget aid)]
-                    | aid <- allies
-                    ]
-                , AttachTreachery treacheryId (AgendaTarget agendaId)
+    FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _ | isTarget attrs target -> do
+      allies <- selectList (AssetControlledBy You <> AllyAsset)
+      if null allies
+        then push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
+        else do
+          agendaId <- selectJust AnyAgenda
+          player <- getPlayer iid
+          pushAll
+            [ chooseOne
+                player
+                [ TargetLabel
+                  (AssetTarget aid)
+                  [AddToScenarioDeck PotentialSacrifices (AssetTarget aid)]
+                | aid <- allies
                 ]
-          pure t
+            , AttachTreachery treacheryId (AgendaTarget agendaId)
+            ]
+      pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
         $ DrawRandomFromScenarioDeck

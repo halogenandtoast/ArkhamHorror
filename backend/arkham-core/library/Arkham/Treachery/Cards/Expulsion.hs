@@ -32,9 +32,10 @@ instance RunMessage Expulsion where
           mYourLocation <- selectOne $ locationWithInvestigator iid
           ks <- fieldMap InvestigatorKeys toList iid
           for_ mYourLocation $ \yourLocation -> do
+            player <- getPlayer iid
             push
               $ chooseOrRunOne
-                iid
+                player
                 [ targetLabel
                   cultist
                   $ [ MoveUntil yourLocation (toTarget cultist)

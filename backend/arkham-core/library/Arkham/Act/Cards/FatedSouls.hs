@@ -13,7 +13,6 @@ import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (EncounterDeck)
 import Arkham.Placement

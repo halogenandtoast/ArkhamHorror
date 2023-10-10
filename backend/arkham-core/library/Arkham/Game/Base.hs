@@ -79,7 +79,7 @@ data Game = Game
   , gameEnemyMoving :: Maybe EnemyId
   , gameEnemyEvading :: Maybe EnemyId
   , -- Active questions
-    gameQuestion :: Map InvestigatorId (Question Message)
+    gameQuestion :: Map PlayerId (Question Message)
   , -- handling time warp
     gameActionCanBeUndone :: Bool
   , gameActionDiff :: [Diff.Patch]

@@ -37,6 +37,7 @@ instance RunMessage HuntedByByakhee where
               , ShuffleDeck Deck.EncounterDeck
               ]
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
+      player <- getPlayer iid
       let
         isByakhee = member Byakhee . cdCardTraits . toCardDef
         isOmen = member Omen . cdCardTraits . toCardDef
@@ -48,7 +49,7 @@ instance RunMessage HuntedByByakhee where
             else
               [ FocusCards $ map EncounterCard cards
               , chooseOne
-                  iid
+                  player
                   [ targetLabel
                     (toCardId enemy)
                     [InvestigatorDrewEncounterCard iid enemy]

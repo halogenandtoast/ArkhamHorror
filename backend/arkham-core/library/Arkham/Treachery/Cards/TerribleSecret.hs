@@ -28,11 +28,12 @@ instance RunMessage TerribleSecret where
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
       if null cardsUnderneath
         then push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-        else
+        else do
+          player <- getPlayer iid
           pushAll
             [ FocusCards cardsUnderneath
             , chooseUpToN
-                iid
+                player
                 (length cardsUnderneath)
                 "Keep Remaining Cards"
                 [ targetLabel (toCardId c) [AddToDiscard iid c]

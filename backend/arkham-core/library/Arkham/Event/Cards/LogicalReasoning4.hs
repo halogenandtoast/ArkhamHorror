@@ -32,11 +32,13 @@ instance RunMessage LogicalReasoning4 where
       options <- for iids $ \iid' -> do
         mHealHorror <- getHealHorrorMessage attrs 2 iid'
         terrors <- selectList $ TreacheryWithTrait Terror <> treacheryInThreatAreaOf iid'
+        player <- getPlayer iid'
         pure
           ( iid'
+          , player
           , [Label "Heal 2 Horror" [healHorror] | healHorror <- toList mHealHorror]
               <> [ Label "Discard a Terror"
-                  $ [ chooseOne iid'
+                  $ [ chooseOne player
                         $ [ targetLabel terror [Discard (toSource attrs) $ toTarget terror]
                           | terror <- terrors
                           ]
@@ -45,10 +47,11 @@ instance RunMessage LogicalReasoning4 where
                  ]
           )
       let
-        choices = flip mapMaybe options $ \(iid', choices') ->
+        choices = flip mapMaybe options $ \(iid', player, choices') ->
           case choices' of
             [] -> Nothing
-            _ -> Just $ targetLabel iid' [chooseOrRunOne iid' choices']
-      pushWhen (notNull choices) $ chooseOrRunOne iid choices
+            _ -> Just $ targetLabel iid' [chooseOrRunOne player choices']
+      player <- getPlayer iid
+      pushWhen (notNull choices) $ chooseOrRunOne player choices
       pure e
     _ -> LogicalReasoning4 <$> runMessage msg attrs

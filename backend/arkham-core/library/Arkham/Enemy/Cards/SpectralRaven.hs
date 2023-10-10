@@ -40,8 +40,9 @@ instance RunMessage SpectralRaven where
   runMessage msg e@(SpectralRaven attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasHauntedAbilities <- selectAny $ locationWithInvestigator iid <> HauntedLocation
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Resolve each haunted ability on your location"
             [HandleTargetChoice iid (toSource attrs) (toTarget attrs)]

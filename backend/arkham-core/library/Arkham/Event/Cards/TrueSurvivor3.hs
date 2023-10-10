@@ -30,10 +30,11 @@ instance RunMessage TrueSurvivor3 where
       when
         (null targets)
         (error "ScroungeForSupplies expected level 0 card in discard")
+      player <- getPlayer iid
       e
         <$ pushAll
           [ chooseN
-              iid
+              player
               3
               [ TargetLabel (CardIdTarget $ toCardId target) [addToHand iid target]
               | target <- targets

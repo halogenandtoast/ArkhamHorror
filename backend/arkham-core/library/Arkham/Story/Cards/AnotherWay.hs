@@ -27,8 +27,9 @@ instance RunMessage AnotherWay where
   runMessage msg s@(AnotherWay attrs) = case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       alejandro <- selectJust $ enemyIs Enemies.alejandroVela
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label
               "I could never turn my back on humanity"
               [ Exhaust (toTarget alejandro)

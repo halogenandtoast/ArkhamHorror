@@ -44,9 +44,10 @@ instance RunMessage PrimordialGateway where
         ]
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel sType [beginSkillTest iid (toSource attrs) (toTarget attrs) sType 4]
           | sType <- [#intellect, #willpower]
           ]

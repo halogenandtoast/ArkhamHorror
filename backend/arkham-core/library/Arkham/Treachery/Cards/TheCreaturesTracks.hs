@@ -24,10 +24,11 @@ instance RunMessage TheCreaturesTracks where
       anyBroodOfYogSothoth <- selectAny $ SetAsideCardMatch $ CardWithTitle broodTitle
       if anyBroodOfYogSothoth
         then push $ InvestigatorAssignDamage iid source DamageAny 0 2
-        else
+        else do
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ Label
                   "Take 2 horror"
                   [InvestigatorAssignDamage iid source DamageAny 0 2]

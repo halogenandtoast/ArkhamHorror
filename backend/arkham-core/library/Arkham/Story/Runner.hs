@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Arkham.Classes as X
 import Arkham.Helpers.Message as X hiding (story)
+import Arkham.Helpers.Query as X
 import Arkham.Source as X
 import Arkham.Story.Types as X
 import Arkham.Target as X
@@ -40,6 +41,7 @@ instance RunMessage StoryAttrs where
         $ toId attrs
       pure attrs
     ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
-      push $ chooseOne iid [targetLabel (toTarget attrs) []]
+      player <- getPlayer iid
+      push $ chooseOne player [targetLabel (toTarget attrs) []]
       pure attrs
     _ -> pure attrs

@@ -93,8 +93,8 @@ standaloneChaosTokens =
 instance RunMessage TheWagesOfSin where
   runMessage msg s@(TheWagesOfSin attrs) = case msg of
     PreScenarioSetup -> do
-      iids <- allInvestigatorIds
-      push $ story iids intro
+      players <- allPlayers
+      push $ story players intro
       pure s
     SetChaosTokensForScenario -> do
       whenM getIsStandalone $ push (SetChaosTokens standaloneChaosTokens)
@@ -199,7 +199,8 @@ instance RunMessage TheWagesOfSin where
               $ AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
               <> AbilityIsForcedAbility
           unless (null abilities) $ do
-            push $ chooseOne iid [AbilityLabel iid ability [] [] | ability <- abilities]
+            player <- getPlayer iid
+            push $ chooseOne player [AbilityLabel iid ability [] [] | ability <- abilities]
         ElderThing | isEasyStandard attrs -> do
           mAction <- getSkillTestAction
           when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do
@@ -212,12 +213,12 @@ instance RunMessage TheWagesOfSin where
           anyResigned <- selectAny ResignedInvestigator
           push $ if anyResigned then R1 else R2
         Resolution res | res `elem` [1, 2] -> do
-          iids <- allInvestigatorIds
+          players <- allPlayers
           step <- getCurrentActStep
           n <- if step == 1 then pure 4 else selectCount $ EnemyWithTitle "Heretic"
           xp <- toGainXp attrs getXp
           pushAll
-            $ story iids (if res == 1 then resolution1 else resolution2)
+            $ story players (if res == 1 then resolution1 else resolution2)
             : [Record TheInvestigatorsSurvivedTheWatchersEmbrace | res == 2]
               <> [RecordCount HereticsWereUnleashedUntoArkham n]
               <> [recordSetInsert MementosDiscovered [WispOfSpectralMist] | n <= 3]

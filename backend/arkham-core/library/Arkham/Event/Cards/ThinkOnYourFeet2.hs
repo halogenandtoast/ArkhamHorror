@@ -22,8 +22,9 @@ instance RunMessage ThinkOnYourFeet2 where
   runMessage msg e@(ThinkOnYourFeet2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       connectedLocations <- accessibleLocations iid
+      player <- getPlayer iid
       pushWhen (notNull connectedLocations)
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ targetLabels connectedLocations (only . Move . move attrs iid)
       pure e
     _ -> ThinkOnYourFeet2 <$> runMessage msg attrs

@@ -29,10 +29,11 @@ instance RunMessage UmordhothsWrath where
     HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
     HandlePointOfFailure iid target n | isTarget attrs target -> do
       hasCards <- fieldMap InvestigatorHand notNull iid
+      player <- getPlayer iid
       pushAll
         $ if hasCards
           then
-            [ chooseOne iid
+            [ chooseOne player
                 $ [ Label "Discard a card from your hand"
                       $ [toMessage $ chooseAndDiscardCard iid attrs]
                   , Label "Take 1 damage and 1 horror"

@@ -18,8 +18,9 @@ instance RunMessage HuntingShadow where
   runMessage msg t@(HuntingShadow attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       canSpendClues <- getCanSpendNClues iid 1
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [Label "Spend 1 clue" [SpendClues 1 [iid]] | canSpendClues]
         <> [Label "Take 2 damage" [assignDamage iid attrs 2]]
       pure t

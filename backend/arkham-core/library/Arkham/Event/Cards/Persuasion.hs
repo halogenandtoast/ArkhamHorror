@@ -34,9 +34,10 @@ instance RunMessage Persuasion where
               <> EnemyWithTrait Humanoid
               <> NonWeaknessEnemy
               <> CanParleyEnemy iid
+          player <- getPlayer iid
           pushAll
             [ chooseOne
-                iid
+                player
                 [ targetLabel
                   enemy
                   [ parley

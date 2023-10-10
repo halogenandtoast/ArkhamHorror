@@ -21,10 +21,11 @@ instance RunMessage Taunt where
   runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ enemiesColocatedWith iid
+      player <- getPlayer iid
       e
         <$ push
           ( chooseSome
-              iid
+              player
               "Done engaging enemies"
               [ targetLabel enemyId [EngageEnemy iid enemyId False]
               | enemyId <- enemyIds

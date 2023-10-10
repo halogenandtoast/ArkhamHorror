@@ -42,28 +42,28 @@ instance RunMessage ParallelFates where
         , UnfocusCards
         ]
       pure $ ParallelFates (attrs `With` Metadata cards)
-    RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) ->
-      do
-        push $ ResetChaosTokens (toSource attrs)
-        push
-          $ if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
-            then
-              chooseOne
-                iid
-                [ Label
-                    "Shuffle back in"
-                    [ ShuffleCardsIntoDeck
-                        EncounterDeck
-                        (map EncounterCard $ drawnCards meta)
-                    ]
-                ]
-            else
-              chooseOneAtATime
-                iid
-                [ targetLabel
-                  (toCardId c)
-                  [PutCardOnTopOfDeck iid EncounterDeck (EncounterCard c)]
-                | c <- drawnCards meta
-                ]
-        pure e
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) -> do
+      player <- getPlayer iid
+      push $ ResetChaosTokens (toSource attrs)
+      push
+        $ if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
+          then
+            chooseOne
+              player
+              [ Label
+                  "Shuffle back in"
+                  [ ShuffleCardsIntoDeck
+                      EncounterDeck
+                      (map EncounterCard $ drawnCards meta)
+                  ]
+              ]
+          else
+            chooseOneAtATime
+              player
+              [ targetLabel
+                (toCardId c)
+                [PutCardOnTopOfDeck iid EncounterDeck (EncounterCard c)]
+              | c <- drawnCards meta
+              ]
+      pure e
     _ -> ParallelFates . (`with` meta) <$> runMessage msg attrs

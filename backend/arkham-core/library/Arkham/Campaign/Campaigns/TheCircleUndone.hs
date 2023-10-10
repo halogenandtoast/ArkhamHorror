@@ -73,12 +73,13 @@ instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone (attrs `With` metadata)) = case msg of
     CampaignStep PrologueStep -> do
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       pushAll
-        $ story investigatorIds prologue
+        $ story players prologue
         : [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
           | iid <- investigatorIds
           ]
-          <> [ story investigatorIds intro
+          <> [ story players intro
              , CampaignStep (PrologueStepPart 2)
              , NextCampaignStep Nothing
              ]
@@ -89,10 +90,11 @@ instance RunMessage TheCircleUndone where
           filter
             (`notElem` toList (prologueInvestigators metadata))
             allPrologueInvestigators
+      player <- getPlayer iid
       push
         $ questionLabel
           "Choose one of the following neutral investigators to control for the duration of this prologue"
-          iid
+          player
         $ ChooseOne
           [ CardLabel
             (unInvestigatorId pId)
@@ -125,15 +127,16 @@ instance RunMessage TheCircleUndone where
           "05049" -> pennyIntro
           _ -> error "Invalid prologue investigator"
         readings = map readingFor $ toList (prologueInvestigators metadata)
-      investigatorIds <- getInvestigatorIds
+      players <- allPlayers
       pushAll
         $ crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
-        : map (story investigatorIds) readings
+        : map (story players) readings
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
       iids <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       let
         showThePriceOfProgress4 = mInterludeKey == Just ThePriceOfProgress4
         showThePriceOfProgress5 = mInterludeKey == Just ThePriceOfProgress5
@@ -145,11 +148,11 @@ instance RunMessage TheCircleUndone where
           , Label "\"I agree\" (You are lying)" [CampaignStep (InterludeStepPart 2 mInterludeKey 9)]
           ]
       pushAll
-        $ [ story iids (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2)
-          , story iids thePriceOfProgress3
+        $ [ story players (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2)
+          , story players thePriceOfProgress3
           ]
         <> ( guard showThePriceOfProgress4
-              *> [ story iids thePriceOfProgress4
+              *> [ story players thePriceOfProgress4
                  , Record JosefDisappearedIntoTheMist
                  , Record TheInvestigatorsAreEnemiesOfTheLodge
                  , NextCampaignStep Nothing
@@ -157,12 +160,12 @@ instance RunMessage TheCircleUndone where
            )
         <> ( guard showThePriceOfProgress5
               *> [ Record TheInvestigatorsRescuedJosef
-                 , storyWithChooseOne lead iids thePriceOfProgress5 lodgeChoices
+                 , storyWithChooseOne lead players thePriceOfProgress5 lodgeChoices
                  ]
               <> gainXp
            )
         <> ( guard showThePriceOfProgress6
-              *> [Record JosefIsAliveAndWell, storyWithChooseOne lead iids thePriceOfProgress6 lodgeChoices]
+              *> [Record JosefIsAliveAndWell, storyWithChooseOne lead players thePriceOfProgress6 lodgeChoices]
            )
       pure c
     CampaignStep (InterludeStepPart 2 _ 7) -> do
@@ -181,10 +184,10 @@ instance RunMessage TheCircleUndone where
         ]
       pure c
     CampaignStep (InterludeStep 3 mInterludeKey) -> do
-      iids <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       pushAll
-        [ story iids theInnerCircle1
+        [ story players theInnerCircle1
         , chooseOne
             lead
             [ Label "" [CampaignStep (InterludeStepPart 3 mInterludeKey 2)]
@@ -193,56 +196,58 @@ instance RunMessage TheCircleUndone where
         ]
       pure c
     CampaignStep (InterludeStepPart 3 mInterludeKey 2) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       rescuedJosef <- getHasRecord TheInvestigatorsRescuedJosef
       toldLodgeAboutCoven <- getHasRecord TheInvestigatorsToldTheLodgeAboutTheCoven
       someMementos <- getRecordSet MementosDiscovered
       let mementos = mapMaybe (unrecorded @Memento) someMementos
       pushAll
-        [ story iids theInnerCircle2
+        [ story players theInnerCircle2
         , crossOutRecordSetEntries MementosDiscovered (toList mementos)
         , CampaignStep
             (InterludeStepPart 3 mInterludeKey $ if rescuedJosef && toldLodgeAboutCoven then 4 else 5)
         ]
       pure c
     CampaignStep (InterludeStepPart 3 _ 3) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       pushAll
-        [ story iids theInnerCircle3
+        [ story players theInnerCircle3
         , Record TheInvestigatorsKeptsTheirMementosHidden
         , NextCampaignStep Nothing
         ]
       pure c
     CampaignStep (InterludeStepPart 3 mInterludeKey 4) -> do
-      iids <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       pushAll
-        [ story iids theInnerCircle4
+        [ story players theInnerCircle4
         , chooseUpToN
             lead
             3
             "Done asking question"
-            [ Label "What is the creature?" [story iids whatIsTheCreature]
-            , Label "What do you want with the creature?" [story iids whatDoYouWantWithTheCreature]
-            , Label "What do the witches want with the creature?" [story iids whatDoTheWitchesWantWithTheCreature]
+            [ Label "What is the creature?" [story players whatIsTheCreature]
+            , Label "What do you want with the creature?" [story players whatDoYouWantWithTheCreature]
+            , Label
+                "What do the witches want with the creature?"
+                [story players whatDoTheWitchesWantWithTheCreature]
             , Label
                 "Did you know about the creature before the charity gala?"
-                [story iids didYouKnowAboutTheCreatureBeforeTheCharityGala]
+                [story players didYouKnowAboutTheCreatureBeforeTheCharityGala]
             , Label
                 "Where are the four missing people from the charity gala?"
-                [story iids whereAreTheFourMissingPeopleFromTheCharityGala]
+                [story players whereAreTheFourMissingPeopleFromTheCharityGala]
             ]
         , CampaignStep (InterludeStepPart 3 mInterludeKey 6)
         ]
       pure c
     CampaignStep (InterludeStepPart 3 _ 5) -> do
-      iids <- allInvestigatorIds
-      pushAll [story iids theInnerCircle5, NextCampaignStep Nothing]
+      players <- allPlayers
+      pushAll [story players theInnerCircle5, NextCampaignStep Nothing]
       pure c
     CampaignStep (InterludeStepPart 3 _ 6) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       pushAll
-        [ story iids theInnerCircle6
+        [ story players theInnerCircle6
         , Record TheInvestigatorsWereInductedIntoTheInnerCircle
         , NextCampaignStep Nothing
         ]
@@ -254,7 +259,7 @@ instance RunMessage TheCircleUndone where
       mementosDiscovered <- getMementosDiscoveredCount
       doomDrawsEverCloser <- getHasRecord DoomDrawsEverCloser
       hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
-      investigators <- allInvestigators
+      players <- allPlayers
       let
         total =
           getSum
@@ -269,13 +274,13 @@ instance RunMessage TheCircleUndone where
               , mwhen doomDrawsEverCloser (Sum 2)
               ]
       pushAll
-        $ [ story investigators twistOfFate1
+        $ [ story players twistOfFate1
           , RecordCount ThePathWindsBeforeYou total
           ]
         <> [ AddChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix (campaignDifficulty attrs)
            | askedAnetteForAssistance || askedSanfordForAssistance
            ]
-        <> [ story investigators twistOfFate2
+        <> [ story players twistOfFate2
            , NextCampaignStep Nothing
            ]
       pure c
@@ -284,12 +289,12 @@ instance RunMessage TheCircleUndone where
       assumedControlOfTheLodge <- getHasRecord TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
       survivedTheWatchersEmbrace <- getHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace
       signedTheBlackBook <- getHasRecord TheInvestigatorsSignedTheBlackBookOfAzathoth
-      investigators <- allInvestigators
+      players <- allPlayers
       pushAll
-        $ [story investigators epilogueArrestedAnette | arrestedAnette]
-        <> [story investigators epilogueAssumedControlOfTheLodge | assumedControlOfTheLodge]
-        <> [story investigators epilogueSurvivedTheWatchersEmbrace | survivedTheWatchersEmbrace]
-        <> [story investigators epilogueSignedTheBlackBook | signedTheBlackBook]
+        $ [story players epilogueArrestedAnette | arrestedAnette]
+        <> [story players epilogueAssumedControlOfTheLodge | assumedControlOfTheLodge]
+        <> [story players epilogueSurvivedTheWatchersEmbrace | survivedTheWatchersEmbrace]
+        <> [story players epilogueSignedTheBlackBook | signedTheBlackBook]
         <> [GameOver]
 
       pure c
@@ -312,7 +317,7 @@ instance RunMessage TheCircleUndone where
           for_ xs $ \(iid, _) -> push $ LoadDeck iid $ Deck []
           pure c
     HandleOption option -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       investigators <- allInvestigators
       case option of
         TakeBlackBook -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.theBlackBook

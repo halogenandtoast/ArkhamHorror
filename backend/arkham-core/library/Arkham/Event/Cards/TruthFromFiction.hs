@@ -22,6 +22,7 @@ instance RunMessage TruthFromFiction where
   runMessage msg e@(TruthFromFiction attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetWithUseType Uses.Secret
-      push $ chooseOne iid [targetLabel aid [AddUses aid Uses.Secret 2] | aid <- assets]
+      player <- getPlayer iid
+      push $ chooseOne player [targetLabel aid [AddUses aid Uses.Secret 2] | aid <- assets]
       pure e
     _ -> TruthFromFiction <$> runMessage msg attrs

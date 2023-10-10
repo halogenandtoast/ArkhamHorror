@@ -29,9 +29,10 @@ instance RunMessage ATearInTime where
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
       let source = toSource attrs
+      player <- getPlayer iid
       pushAll
         [ chooseOrRunOne
-            iid
+            player
             $ [Label "Lose 1 Action" [LoseActions iid source 1] | hasRemainingActions]
             <> [Label "Take 1 Horror" [assignHorror iid source 1]]
         , DoStep (n - 1) msg'

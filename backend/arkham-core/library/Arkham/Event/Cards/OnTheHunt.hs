@@ -35,8 +35,9 @@ instance RunMessage OnTheHunt where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
+      player <- getPlayer iid
       push
-        $ chooseN iid (min (length enemyCards) (1 + additionalTargets))
+        $ chooseN player (min (length enemyCards) (1 + additionalTargets))
         $ [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard iid card]
           | card <- enemyCards
           ]

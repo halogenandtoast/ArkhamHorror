@@ -40,11 +40,12 @@ instance RunMessage Copycat3 where
           $ if null committableCards
             then Nothing
             else Just (iid', committableCards)
+      player <- getPlayer iid
       unless (null iidsWithCommittableCards)
         $ pushAll
           [ FocusCards (concatMap snd iidsWithCommittableCards)
           , chooseOne
-              iid
+              player
               [ targetLabel
                 (toCardId card)
                 [ CommitCard iid card

@@ -33,10 +33,11 @@ instance RunMessage MysteriesOfTheLodge where
           <> EnemyWithoutModifier CannotPlaceDoomOnThis
       case enemies of
         [] -> push $ gainSurge attrs
-        xs ->
+        xs -> do
+          player <- getPlayer iid
           pushAll
             [ chooseOne
-                iid
+                player
                 [ targetLabel
                   eid
                   [ PlaceDoom (toSource attrs) (EnemyTarget eid) 1

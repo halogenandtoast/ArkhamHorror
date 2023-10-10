@@ -32,9 +32,10 @@ instance RunMessage WatchersGazeUnionAndDisillusion where
       yourLocationIsHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation
       watchersLocationIsHaunted <-
         selectAny $ LocationWithEnemy (enemyIs Enemies.theSpectralWatcher) <> HauntedLocation
+      player <- getPlayer iid
       when (yourLocationIsHaunted || watchersLocationIsHaunted)
         $ push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Resolve the Haunted ability on your location"
             [HandleTargetChoice iid (toSource attrs) (toTarget iid)]

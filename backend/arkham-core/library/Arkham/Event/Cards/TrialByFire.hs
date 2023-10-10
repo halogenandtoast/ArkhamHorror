@@ -21,7 +21,10 @@ trialByFire = event TrialByFire Cards.trialByFire
 instance RunMessage TrialByFire where
   runMessage msg e@(TrialByFire attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      player <- getPlayer iid
       push
-        $ chooseOne iid [SkillLabel skill [turnModifier attrs iid (BaseSkillOf skill 5)] | skill <- allSkills]
+        $ chooseOne
+          player
+          [SkillLabel skill [turnModifier attrs iid (BaseSkillOf skill 5)] | skill <- allSkills]
       pure e
     _ -> TrialByFire <$> runMessage msg attrs

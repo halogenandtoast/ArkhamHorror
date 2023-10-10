@@ -35,6 +35,7 @@ instance RunMessage CallToOrder where
           choices <- for locations $ \location -> do
             creations <- traverse (\cultist -> createEnemy cultist (SpawnAtLocation location)) cultists
             pure $ targetLabel location $ map toMessage creations
-          push $ chooseOrRunOne iid choices
+          player <- getPlayer iid
+          push $ chooseOrRunOne player choices
       pure t
     _ -> CallToOrder <$> runMessage msg attrs

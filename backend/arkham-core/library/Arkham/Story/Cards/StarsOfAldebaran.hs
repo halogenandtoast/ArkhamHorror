@@ -38,9 +38,10 @@ instance RunMessage StarsOfAldebaran where
       otherBleakPlain <- case setAsideBleakPlains of
         [] -> error "missing"
         (x : xs) -> sample (x :| xs)
+      player <- getPlayer iid
       pushAll
         $ healMessages
-        <> [chooseOrRunOne iid $ map damageEnemy enemies | notNull enemies]
+        <> [chooseOrRunOne player $ map damageEnemy enemies | notNull enemies]
         <> [ReplaceLocation bleakPlains otherBleakPlain DefaultReplace]
       pure s
     _ -> StarsOfAldebaran <$> runMessage msg attrs

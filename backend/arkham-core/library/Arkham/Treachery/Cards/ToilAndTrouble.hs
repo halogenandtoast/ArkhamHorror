@@ -29,8 +29,9 @@ instance RunMessage ToilAndTrouble where
       discard <- scenarioField ScenarioDiscard
       let mPowerTreachery = find (`cardMatch` CardWithTrait Power) discard
       location <- getJustLocation iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Resolve the revelation ability on the topmost Power treachery in the encounter discard pile"
             [InvestigatorDrewEncounterCard iid powerTreachery]

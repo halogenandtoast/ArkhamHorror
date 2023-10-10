@@ -33,17 +33,19 @@ instance HasAbilities ForbiddingShore where
 instance RunMessage ForbiddingShore where
   runMessage msg l@(ForbiddingShore attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel skillType [beginSkillTest iid attrs attrs skillType 3]
           | skillType <- [#willpower, #intellect]
           ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasResources <- fieldMap InvestigatorResources (> 0) iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label "Lose 1 action" [LoseActions iid (toSource attrs) 1]
         : [Label "Lose 2 resources" [LoseResources iid (toSource attrs) 2] | hasResources]
       pure l

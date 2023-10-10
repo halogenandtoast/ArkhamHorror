@@ -202,10 +202,10 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       clues <- selectSum ActClues AnyAct
       pushAll
-        [ story iids noResolution
+        [ story players noResolution
         , RecordCount PiecesOfEvidenceWereLeftBehind clues
         , EndOfGame Nothing
         ]

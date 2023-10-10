@@ -49,10 +49,11 @@ instance RunMessage CanalSaintMartin where
           $ LocationWithId
           $ toId
             attrs
-      push $ chooseOrRunOne iid $ do
+      player <- getPlayer iid
+      push $ chooseOrRunOne player $ do
         e <- enemies
         pure $ TargetLabel e $ do
           l <- connectingLocations
-          pure $ chooseOrRunOne iid [targetLabel l [MoveUntil l e]]
+          pure $ chooseOrRunOne player [targetLabel l [MoveUntil l e]]
       pure a
     _ -> CanalSaintMartin <$> runMessage msg attrs

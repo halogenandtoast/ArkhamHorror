@@ -64,7 +64,7 @@ instance RunMessage HuntingTheRougarou where
       push $ AdvanceAct (toId attrs) source AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       investigatorIds <- getInvestigatorIds
       rougarou <- fromJustNote "must be" <$> getTheRougarou
 
@@ -93,11 +93,11 @@ instance RunMessage HuntingTheRougarou where
         , protectedOurselves
         , calmedItDown
         ]
-        then push $ chooseOne leadInvestigatorId [Label "Resolution 3" [R3]]
+        then push $ chooseOne lead [Label "Resolution 3" [R3]]
         else
           push
             $ chooseOne
-              leadInvestigatorId
+              lead
               [Label "Flip back to a side" [RevertAct $ toId attrs]]
       pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 B)
     RevertAct aid | aid == toId attrs && onSide B attrs -> do

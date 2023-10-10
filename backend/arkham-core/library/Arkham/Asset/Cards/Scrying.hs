@@ -27,8 +27,9 @@ instance RunMessage Scrying where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       targets <- map InvestigatorTarget <$> getInvestigators
       let source = toAbilitySource attrs 1
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels (EncounterDeckTarget : targets)
         $ \target -> only $ lookAt iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] AnyCard ReturnCards
       pure a

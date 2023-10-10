@@ -41,8 +41,9 @@ instance RunMessage RexMurphy where
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 3
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Automatically fail to draw 3" [FailSkillTest, drawing]
           , Label "Resolve normally" []
           ]

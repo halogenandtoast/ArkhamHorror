@@ -38,7 +38,7 @@ instance RunMessage CityOfTheGreatRace where
       custodianMessages <-
         if shouldMoveCustodian
           then do
-            lead <- getLeadInvestigatorId
+            lead <- getLeadPlayer
             custodian <- selectJust $ assetIs Assets.theCustodian
             locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
             pure

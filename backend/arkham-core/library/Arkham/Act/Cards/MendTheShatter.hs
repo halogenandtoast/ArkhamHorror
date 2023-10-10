@@ -56,18 +56,11 @@ instance HasAbilities MendTheShatter where
 instance RunMessage MendTheShatter where
   runMessage msg a@(MendTheShatter attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
-          [ SkillLabel
-            skillType
-            [ beginSkillTest
-                iid
-                (toSource attrs)
-                (toTarget attrs)
-                skillType
-                3
-            ]
+          player
+          [ SkillLabel skillType [beginSkillTest iid attrs attrs skillType 3]
           | skillType <- [SkillWillpower, SkillIntellect]
           ]
       pure a

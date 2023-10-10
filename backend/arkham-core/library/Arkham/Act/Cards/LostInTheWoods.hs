@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (EncounterDeck)
 import Arkham.Movement
@@ -90,13 +89,12 @@ instance RunMessage LostInTheWoods where
           Nothing -> pure []
           Just (lid, _) -> do
             (enemyId, enemyCreation) <- createEnemyAt enemyCard lid Nothing
+            player <- getPlayer iid
             pure
               [ enemyCreation
               , chooseOne
-                  iid
-                  [ SkillLabel
-                    skillType
-                    [beginSkillTest iid attrs enemyId skillType 3]
+                  player
+                  [ SkillLabel skillType [beginSkillTest iid attrs enemyId skillType 3]
                   | skillType <- [SkillWillpower, SkillAgility]
                   ]
               ]

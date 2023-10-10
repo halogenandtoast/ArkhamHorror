@@ -40,9 +40,10 @@ instance RunMessage CatBurglar1 where
       engagedEnemyIds <- selectList $ enemyEngagedWith iid
       canDisengage <- iid <=~> InvestigatorCanDisengage
       accessibleLocationIds <- accessibleLocations iid
+      player <- getPlayer iid
       pushAll
         $ [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
-        <> [ chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
+        <> [ chooseOne player $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
            | notNull accessibleLocationIds
            ]
       pure $ CatBurglar1 $ attrs & exhaustedL .~ True

@@ -21,27 +21,23 @@ firstAid3 = assetWith FirstAid3 Cards.firstAid3 (whenNoUsesL ?~ DiscardWhenNoUse
 
 instance HasAbilities FirstAid3 where
   getAbilities (FirstAid3 x) =
-    [ restrictedAbility
+    [ controlledAbility
         x
         1
-        ( ControlsThis
-            <> AnyCriterion
-              [ InvestigatorExists
-                  $ AnyInvestigator
-                    [ HealableInvestigator (toSource x) HorrorType
-                        $ InvestigatorAt YourLocation
-                    , HealableInvestigator (toSource x) DamageType
-                        $ InvestigatorAt YourLocation
-                    ]
-              , AssetExists
-                  $ AssetOneOf
-                    [ HealableAsset (toSource x) HorrorType $ AssetAt YourLocation
-                    , HealableAsset (toSource x) DamageType $ AssetAt YourLocation
-                    ]
-              ]
+        ( AnyCriterion
+            [ exists
+                $ oneOf
+                  [ HealableInvestigator (toSource x) HorrorType $ InvestigatorAt YourLocation
+                  , HealableInvestigator (toSource x) DamageType $ InvestigatorAt YourLocation
+                  ]
+            , exists
+                $ oneOf
+                  [ HealableAsset (toSource x) HorrorType $ AssetAt YourLocation
+                  , HealableAsset (toSource x) DamageType $ AssetAt YourLocation
+                  ]
+            ]
         )
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
+        $ actionAbilityWithCost (assetUseCost x Supply 1)
     ]
 
 instance RunMessage FirstAid3 where
@@ -53,6 +49,8 @@ instance RunMessage FirstAid3 where
             ComponentLabel (InvestigatorComponent iid' component)
           AssetTarget aid -> ComponentLabel (AssetComponent aid component)
           _ -> error "unhandled target"
+
+      player <- getPlayer iid
 
       assetChoices <- do
         horrorAssets <-
@@ -70,7 +68,7 @@ instance RunMessage FirstAid3 where
           let target = AssetTarget asset'
            in targetLabel
                 asset'
-                [ chooseOneAtATime iid
+                [ chooseOneAtATime player
                     $ [ componentLabel
                         DamageToken
                         target
@@ -106,7 +104,7 @@ instance RunMessage FirstAid3 where
           pure
             $ targetLabel
               i
-              [ chooseOneAtATime iid
+              [ chooseOneAtATime player
                   $ [ componentLabel
                       DamageToken
                       target
@@ -118,6 +116,6 @@ instance RunMessage FirstAid3 where
                      ]
               ]
 
-      push $ chooseOne iid $ assetChoices <> investigatorChoices
+      push $ chooseOne player $ assetChoices <> investigatorChoices
       pure a
     _ -> FirstAid3 <$> runMessage msg attrs

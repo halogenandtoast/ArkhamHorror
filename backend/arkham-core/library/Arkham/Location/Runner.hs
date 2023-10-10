@@ -20,6 +20,7 @@ import Arkham.Helpers.Message as X hiding (
   MoveAction,
   RevealLocation,
  )
+import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Location.Types as X
 import Arkham.LocationSymbol as X
@@ -200,11 +201,7 @@ instance RunMessage LocationAttrs where
         traits' <- field EnemyTraits eid
         when (Elite `notElem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
-          connectedLocationIds <-
-            selectList
-              $ AccessibleFrom
-              $ LocationWithId
-                lid
+          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
@@ -217,10 +214,11 @@ instance RunMessage LocationAttrs where
           withQueue_ $ filter (/= next)
           if null availableLocationIds
             then push (Discard GameSource (EnemyTarget eid))
-            else
+            else do
+              player <- getPlayer activeInvestigatorId
               push
                 $ chooseOne
-                  activeInvestigatorId
+                  player
                   [ targetLabel
                     lid'
                     [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
@@ -297,14 +295,11 @@ instance RunMessage LocationAttrs where
         <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
       pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount + currentClues == 0)
     LookAtRevealed iid source target | isTarget a target -> do
-      push
-        $ chooseOne
-          iid
-          [Label "Continue" [After (LookAtRevealed iid source $ toTarget a)]]
+      player <- getPlayer iid
+      push $ chooseOne player [Label "Continue" [After (LookAtRevealed iid source $ toTarget a)]]
       pure $ a & revealedL .~ True
-    After (LookAtRevealed _ _ target)
-      | isTarget a target ->
-          pure $ a & revealedL .~ False
+    After (LookAtRevealed _ _ target) | isTarget a target -> do
+      pure $ a & revealedL .~ False
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
@@ -328,7 +323,7 @@ instance RunMessage LocationAttrs where
       -- Æ Finally, place 1 breach on each connecting location. This can chain‐react and cause additional incursions to occur, so beware!
       -- Æ Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.
       targets <- selectTargets $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
-      lead <- getLead
+      lead <- getLeadPlayer
       pushAll
         [ PlaceDoom (toSource a) (toTarget a) 1
         , chooseOrRunOneAtATime lead [targetLabel target [PlaceBreaches target 1] | target <- targets]

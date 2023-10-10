@@ -26,12 +26,14 @@ instance RunMessage SentinelPeak where
   runMessage msg l@(SentinelPeak attrs) = case msg of
     InvestigatorDrewEncounterCard iid card -> do
       here <- iid `isAt` attrs
+      player <- getPlayer iid
       pushWhen (here && Hex `member` toTraits card)
-        $ chooseOne iid [targetLabel attrs [assignDamage iid attrs 1]]
+        $ chooseOne player [targetLabel attrs [assignDamage iid attrs 1]]
       pure l
     InvestigatorDrewPlayerCard iid card -> do
       here <- iid `isAt` attrs
+      player <- getPlayer iid
       pushWhen (here && Hex `member` toTraits card)
-        $ chooseOne iid [targetLabel attrs [assignDamage iid attrs 1]]
+        $ chooseOne player [targetLabel attrs [assignDamage iid attrs 1]]
       pure l
     _ -> SentinelPeak <$> runMessage msg attrs

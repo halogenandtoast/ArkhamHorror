@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Trait (Trait (Item))
 
 newtype LonnieRitter = LonnieRitter AssetAttrs
@@ -22,26 +21,23 @@ lonnieRitter :: AssetCard LonnieRitter
 lonnieRitter = ally LonnieRitter Cards.lonnieRitter (2, 3)
 
 instance HasModifiersFor LonnieRitter where
-  getModifiersFor (InvestigatorTarget iid) (LonnieRitter a)
-    | controlledBy a iid =
-        pure $ toModifiers a [SkillModifier SkillCombat 1]
+  getModifiersFor (InvestigatorTarget iid) (LonnieRitter a) | controlledBy a iid = do
+    pure $ toModifiers a [SkillModifier #combat 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LonnieRitter where
   getAbilities (LonnieRitter a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> AssetExists
-              ( HealableAsset
-                  (toSource a)
-                  DamageType
-                  (AssetWithTrait Item <> AssetControlledBy (InvestigatorAt YourLocation))
-              )
+        ( exists
+            $ HealableAsset
+              (toSource a)
+              DamageType
+              (AssetWithTrait Item <> AssetControlledBy (InvestigatorAt YourLocation))
         )
         $ FastAbility
-        $ ExhaustCost (toTarget a)
+        $ exhaust a
         <> ResourceCost 1
     ]
 
@@ -54,9 +50,10 @@ instance RunMessage LonnieRitter where
           $ AssetWithTrait Item
           <> AssetControlledBy (InvestigatorAt $ locationWithInvestigator iid)
       canHealHorror <- selectAny $ HealableAsset (toSource attrs) HorrorType (AssetWithId $ toId attrs)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel item
             $ HealDamage (AssetTarget item) (toSource attrs) 1
             : [HealHorror (toTarget attrs) (toSource attrs) 1 | canHealHorror]

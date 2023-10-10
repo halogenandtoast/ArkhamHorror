@@ -62,14 +62,14 @@ instance RunMessage FlightIntoOblivion where
 
           if null aboveChoice && null topmostPositions
             then cosmosFail attrs
-            else
+            else do
+              player <- getPlayer iid
               push
-                $ chooseOne
-                  iid
+                $ chooseOne player
                 $ [ Label
                     "Connect Above"
                     [ chooseOrRunOne
-                        iid
+                        player
                         [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
                         | pos'@(Pos x y) <- aboveChoice
                         ]
@@ -80,7 +80,7 @@ instance RunMessage FlightIntoOblivion where
                     "Take 2 horror and connect to the topmost revealed location in a direction of your choice"
                     [ assignHorror iid (toAbilitySource attrs 1) 2
                     , chooseOrRunOne
-                        iid
+                        player
                         [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
                         | pos'@(Pos x y) <- emptyPositions
                         ]

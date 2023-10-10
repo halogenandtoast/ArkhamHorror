@@ -65,14 +65,15 @@ instance RunMessage DancersMist where
 
           if null emptyPositions && null rightChoice
             then cosmosFail attrs
-            else
+            else do
+              player <- getPlayer iid
               push
                 $ chooseOne
-                  iid
+                  player
                 $ [ Label
                     "Connect to the Right"
                     [ chooseOrRunOne
-                        iid
+                        player
                         [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
                         | pos'@(Pos x y) <- rightChoice
                         ]
@@ -83,7 +84,7 @@ instance RunMessage DancersMist where
                     "Lose 2 resources and connect to an adjacent location in a direction of your choice"
                     [ LoseResources iid (toAbilitySource attrs 1) 2
                     , chooseOrRunOne
-                        iid
+                        player
                         [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
                         | pos'@(Pos x y) <- emptyPositions
                         ]
@@ -94,9 +95,10 @@ instance RunMessage DancersMist where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       startId <- fieldJust InvestigatorLocation iid
       accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId startId
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel lid [Move $ move attrs iid lid]
           | lid <- accessibleLocationIds
           ]

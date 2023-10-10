@@ -46,7 +46,7 @@ instance RunMessage TheChariotVII where
       UseCardAbility _ (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
         playerCount <- getPlayerCount
         locations <- sampleLocations (playerCount + 1)
-        lead <- getLead
+        lead <- getLeadPlayer
         pushAll
           [ IgnoreBatch batchId
           , chooseOneAtATime lead

@@ -44,7 +44,7 @@ instance RunMessage AlejandrosPlight where
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       deckCount <- getActDecksInPlayCount
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela
       iids <-
@@ -56,7 +56,7 @@ instance RunMessage AlejandrosPlight where
       let
         takeControlMessage =
           chooseOrRunOne
-            leadInvestigatorId
+            lead
             [ targetLabel iid [TakeControlOfAsset iid alejandroVela]
             | iid <- iids
             ]

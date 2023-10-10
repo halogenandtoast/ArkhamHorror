@@ -17,7 +17,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message (Message (EnemyDamage))
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype MomentOfDoom = MomentOfDoom ActAttrs
@@ -50,35 +49,34 @@ instance HasAbilities MomentOfDoom where
 instance RunMessage MomentOfDoom where
   runMessage msg a@(MomentOfDoom attrs) = case msg of
     UseCardAbility iid (ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
-          [ SkillLabel
-            skill
-            [beginSkillTest iid attrs attrs skill 4]
-          | skill <- [SkillWillpower, SkillIntellect]
+          player
+          [ SkillLabel skill [beginSkillTest iid attrs attrs skill 4]
+          | skill <- [#willpower, #intellect]
           ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        mlid <- field InvestigatorLocation iid
-        for_ mlid $ \lid -> do
-          yig <- selectJust $ enemyIs Enemies.yig
-          iids <- selectList $ colocatedWith iid <> InvestigatorWithAnyClues
-          unless (null iids)
-            $ push
-            $ chooseOrRunOne
-              iid
-              [ targetLabel
-                iid'
-                [ FlipClues (InvestigatorTarget iid') 1
-                , RemoveDoom (toAbilitySource attrs 1) (InvestigatorTarget iid') 1
-                , PlaceDoom (toAbilitySource attrs 1) (LocationTarget lid) 1
-                , EnemyDamage yig $ nonAttack attrs 3
-                ]
-              | iid' <- iids
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      mlid <- field InvestigatorLocation iid
+      for_ mlid $ \lid -> do
+        yig <- selectJust $ enemyIs Enemies.yig
+        iids <- selectList $ colocatedWith iid <> InvestigatorWithAnyClues
+        player <- getPlayer iid
+        unless (null iids)
+          $ push
+          $ chooseOrRunOne
+            player
+            [ targetLabel
+              iid'
+              [ FlipClues (InvestigatorTarget iid') 1
+              , RemoveDoom (toAbilitySource attrs 1) (InvestigatorTarget iid') 1
+              , PlaceDoom (toAbilitySource attrs 1) (LocationTarget lid) 1
+              , EnemyDamage yig $ nonAttack attrs 3
               ]
-        pure a
+            | iid' <- iids
+            ]
+      pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do

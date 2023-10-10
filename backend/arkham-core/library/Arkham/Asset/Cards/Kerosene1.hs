@@ -62,9 +62,10 @@ instance RunMessage Kerosene1 where
 
       let maxHorror = min 2 (totalInvestigatorHorror + totalAssetHorror)
 
+      player <- getPlayer iid
       push
         $ chooseAmounts
-          iid
+          player
           "Choose amount of horror to heal"
           (MaxAmountTarget maxHorror)
           [("Horror", (0, maxHorror))]
@@ -93,8 +94,9 @@ instance RunMessage Kerosene1 where
           $ AssetAt
             (locationWithInvestigator iid)
 
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ TargetLabel target [HealHorror target (toSource attrs) 1]
           | target <- assets
           ]

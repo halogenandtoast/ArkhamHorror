@@ -38,9 +38,9 @@ instance RunMessage Sharpshooter3 where
   runMessage msg a@(Sharpshooter3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       anyFightableWithEvade <- selectAny $ CanFightEnemy (toAbilitySource attrs 1) <> EnemyWithEvade
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne
-          iid
+        $ chooseOrRunOne player
         $ Label
           "This attack uses {agility} instead of {combat}. All modifiers to your {combat} for this attack modify your instead."
           [ skillTestModifiers

@@ -30,14 +30,14 @@ instance RunMessage MrPeabody where
   runMessage msg a@(MrPeabody attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locations <- selectListMap LocationTarget Anywhere
-      a
-        <$ push
-          ( chooseOne
-              iid
-              [ TargetLabel
-                target
-                [CreateEffect (toCardCode attrs) Nothing source target]
-              | target <- locations
-              ]
-          )
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ TargetLabel
+            target
+            [CreateEffect (toCardCode attrs) Nothing source target]
+          | target <- locations
+          ]
+      pure a
     _ -> MrPeabody <$> runMessage msg attrs

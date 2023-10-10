@@ -46,9 +46,10 @@ instance RunMessage HallowedMirror3 where
         : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
       HallowedMirror3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Change each \"2\" to a \"3\""
               [eventModifier (toAbilitySource attrs 1) (toCardId card) (MetaModifier $ object ["use3" .= True])]

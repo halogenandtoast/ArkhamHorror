@@ -29,32 +29,26 @@ instance HasModifiersFor Montmartre209 where
 
 instance RunMessage Montmartre209 where
   runMessage msg e@(Montmartre209 attrs) = case msg of
-    CreatedEffect eid _ source (InvestigatorTarget iid)
-      | eid == effectId attrs -> do
-          cards <-
-            filterM
-              ( getIsPlayable
-                  iid
-                  source
-                  UnpaidCost
-                  [mkWindow Timing.When (Window.DuringTurn iid)]
-              )
-              =<< selectList (TopOfDeckOf UneliminatedInvestigator)
-          pushAll
-            [ chooseOne iid
-                $ Label "Play no cards" []
-                : [ TargetLabel
-                    (CardIdTarget $ toCardId card)
-                    [ InitiatePlayCard
-                        iid
-                        card
-                        Nothing
-                        (Window.defaultWindows iid)
-                        False
-                    ]
-                  | card <- cards
-                  ]
-            , DisableEffect eid
-            ]
-          pure e
+    CreatedEffect eid _ source (InvestigatorTarget iid) | eid == effectId attrs -> do
+      cards <-
+        filterM
+          ( getIsPlayable
+              iid
+              source
+              UnpaidCost
+              [mkWindow Timing.When (Window.DuringTurn iid)]
+          )
+          =<< selectList (TopOfDeckOf UneliminatedInvestigator)
+      player <- getPlayer iid
+      pushAll
+        [ chooseOne player
+            $ Label "Play no cards" []
+            : [ targetLabel
+                (toCardId card)
+                [InitiatePlayCard iid card Nothing (Window.defaultWindows iid) False]
+              | card <- cards
+              ]
+        , DisableEffect eid
+        ]
+      pure e
     _ -> Montmartre209 <$> runMessage msg attrs

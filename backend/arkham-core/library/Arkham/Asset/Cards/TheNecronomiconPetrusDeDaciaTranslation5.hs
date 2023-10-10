@@ -50,18 +50,20 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
         pure a
       UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
         lids <- selectList $ LocationWithDiscoverableCluesBy $ InvestigatorWithId iid
+        player <- getPlayer iid
         pushWhen (notNull lids)
           $ chooseOrRunOne
-            iid
+            player
             [ targetLabel lid [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 2 Nothing]
             | lid <- lids
             ]
         pure a
       UseCardAbility iid (isSource attrs -> True) 4 _ _ -> do
         eids <- selectList $ enemyEngagedWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
+        player <- getPlayer iid
         push
           $ chooseOrRunOne
-            iid
+            player
             [ targetLabel eid [EnemyDamage eid $ nonAttack attrs 3]
             | eid <- eids
             ]

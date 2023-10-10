@@ -59,12 +59,13 @@ instance RunMessage ColdSpringGlen_244 where
       when
         (null investigatorWithCluePairs || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
+      player <- getPlayer iid
       let
         totalClues = sum $ map snd investigatorWithCluePairs
         investigators = map fst investigatorWithCluePairs
         placeClueOnAbomination =
           chooseOne
-            iid
+            player
             [ targetLabel target [SpendClues 1 investigators, PlaceClues (toAbilitySource attrs 1) target 1]
             | target <- abominations
             ]
@@ -72,7 +73,7 @@ instance RunMessage ColdSpringGlen_244 where
       pushAll
         $ placeClueOnAbomination
         : [ chooseOne
-            iid
+            player
             [ Label "Spend a second clue" [placeClueOnAbomination]
             , Label "Do not spend a second clue" []
             ]

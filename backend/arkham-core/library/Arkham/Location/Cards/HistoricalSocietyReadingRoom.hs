@@ -45,8 +45,9 @@ instance RunMessage HistoricalSocietyReadingRoom where
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
       enemies <- selectListMap EnemyTarget $ EnemyWithDoom $ atLeast 1
+      player <- getPlayer iid
       pushIfAny enemies
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ targetLabel
             target
             [ RemoveDoom (toAbilitySource attrs 1) target 1

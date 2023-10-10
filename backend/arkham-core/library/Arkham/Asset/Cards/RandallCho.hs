@@ -34,8 +34,9 @@ instance RunMessage RandallCho where
   runMessage msg a@(RandallCho attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       damage <- canHaveDamageHealed attrs iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ catMaybes
           [ Label
               "Heal 3 damage"

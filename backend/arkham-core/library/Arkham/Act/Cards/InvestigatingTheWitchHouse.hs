@@ -12,7 +12,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
 
@@ -42,7 +41,7 @@ instance HasAbilities InvestigatingTheWitchHouse where
 instance RunMessage InvestigatingTheWitchHouse where
   runMessage msg a@(InvestigatingTheWitchHouse attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       iids <- getInvestigatorIds
       lid <- selectJust $ locationIs Locations.walterGilmansRoom
       keziahsRoom <- getSetAsideCard Locations.keziahsRoom

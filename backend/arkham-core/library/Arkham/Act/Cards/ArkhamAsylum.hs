@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Type
@@ -41,25 +40,19 @@ instance RunMessage ArkhamAsylum where
         skills =
           setFromList [SkillCombat, SkillAgility, SkillIntellect]
             `difference` chosenSkills metadata
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       investigatorIds <- getInvestigatorIds
       push
-        $ chooseOne leadInvestigatorId
+        $ chooseOne lead
         $ map
           ( \sk ->
               Label
                 ("Any investigator tests " <> tshow sk)
                 [ chooseOrRunOne
-                    leadInvestigatorId
+                    lead
                     [ targetLabel
                       iid
-                      [ beginSkillTest
-                          iid
-                          (toSource attrs)
-                          (toTarget attrs)
-                          sk
-                          4
-                      ]
+                      [beginSkillTest iid attrs attrs sk 4]
                     | iid <- investigatorIds
                     ]
                 ]

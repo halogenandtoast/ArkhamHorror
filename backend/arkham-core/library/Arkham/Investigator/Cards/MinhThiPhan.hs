@@ -43,8 +43,9 @@ instance RunMessage MinhThiPhan where
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       skills <- selectList AnySkill
+      player <- getPlayer iid
       pushWhen (notNull skills)
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels skills (only . CreateEffect "03002" Nothing (toSource ElderSign) . toTarget)
       pure i
     _ -> MinhThiPhan <$> runMessage msg attrs

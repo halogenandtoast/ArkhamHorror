@@ -68,11 +68,12 @@ instance RunMessage KeziahsRoom where
               (\n -> "unknownPlaces" <> tshow n)
               ([1 .. 7] :: [Int])
       (lid, placement) <- placeLocation card
+      player <- getPlayer iid
       pushAll
         [ placement
         , SetLocationLabel lid nextLabel
         , chooseOne
-            iid
+            player
             [ Label "Do not move" []
             , Label
                 "Move to location"

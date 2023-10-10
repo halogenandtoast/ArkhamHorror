@@ -59,8 +59,9 @@ instance RunMessage FatherMateoElderSignEffect where
       for_ (attrs.target ^? #investigator) $ \iid -> do
         isTurn <- iid <=~> TurnInvestigator
         drawing <- drawCards iid ElderSign 1
+        player <- getPlayer iid
         push
-          $ chooseOrRunOne iid
+          $ chooseOrRunOne player
           $ Label "Draw 1 card and gain 1 resource" [drawing, TakeResources iid 1 (toSource ElderSign) False]
           : [Label "Take an additional action this turn" [GainActions iid (toSource attrs) 1] | isTurn]
       pure e

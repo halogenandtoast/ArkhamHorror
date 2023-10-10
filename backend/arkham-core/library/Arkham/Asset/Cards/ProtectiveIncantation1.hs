@@ -33,8 +33,9 @@ instance RunMessage ProtectiveIncantation1 where
   runMessage msg a@(ProtectiveIncantation1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasResources <- (> 0) <$> getSpendableResources iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label "Discard Protective Incantation" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
         : [Label "Spend 1 resource" [SpendResources iid 1] | hasResources]
       pure a

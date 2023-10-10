@@ -35,9 +35,10 @@ instance RunMessage PorteDeLAvancee where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       agendas <- selectList AgendaWithAnyDoom
       agendasWithOtherAgendas <- forToSnd agendas (selectJust . NotAgenda . AgendaWithId)
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel
             target
             [ RemoveDoom (toAbilitySource attrs 1) (AgendaTarget target) 1

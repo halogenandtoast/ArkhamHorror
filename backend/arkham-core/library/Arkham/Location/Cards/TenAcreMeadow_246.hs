@@ -27,15 +27,12 @@ instance HasAbilities TenAcreMeadow_246 where
   getAbilities (TenAcreMeadow_246 attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility
-        attrs
-        1
-        ( Here
-            <> EnemyCriteria
-              (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination)
-        )
-        (FastAbility Free)
-        & (abilityLimitL .~ GroupLimit PerGame 1)
+      [ groupLimit PerGame
+        $ restrictedAbility
+          attrs
+          1
+          (Here <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination))
+          (FastAbility Free)
       | locationRevealed attrs
       ]
 
@@ -46,9 +43,10 @@ instance RunMessage TenAcreMeadow_246 where
       when
         (null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel
               eid
               [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1

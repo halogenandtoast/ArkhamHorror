@@ -38,21 +38,21 @@ instance RunMessage Chainsaw4 where
         , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
       pure a
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          mTarget <- getSkillTestTarget
-          case mTarget of
-            Just (EnemyTarget eid) ->
-              push
-                $ chooseOne
-                  iid
-                  [ Label
-                      "Place 1 supply on Chainsaw"
-                      [AddUses (toId attrs) Supply 1]
-                  , Label
-                      "Deal 1 damage to the attacked enemy"
-                      [EnemyDamage eid $ nonAttack source 1]
-                  ]
-            _ -> error "invalid call"
-          pure a
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      mTarget <- getSkillTestTarget
+      case mTarget of
+        Just (EnemyTarget eid) -> do
+          player <- getPlayer iid
+          push
+            $ chooseOne
+              player
+              [ Label
+                  "Place 1 supply on Chainsaw"
+                  [AddUses (toId attrs) Supply 1]
+              , Label
+                  "Deal 1 damage to the attacked enemy"
+                  [EnemyDamage eid $ nonAttack source 1]
+              ]
+        _ -> error "invalid call"
+      pure a
     _ -> Chainsaw4 <$> runMessage msg attrs

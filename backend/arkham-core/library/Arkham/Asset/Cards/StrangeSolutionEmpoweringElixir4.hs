@@ -41,8 +41,9 @@ instance RunMessage StrangeSolutionEmpoweringElixir4 where
         mDrawCards <- drawCardsIfCan i source 1
         pure $ (i,) <$> ((:) <$> mGainResources <*> ((:) <$> mDrawCards <*> pure []))
 
+      player <- getPlayer iid
       if null choices
         then error "invalid call"
-        else push $ chooseOrRunOne iid $ map (uncurry targetLabel) choices
+        else push $ chooseOrRunOne player $ map (uncurry targetLabel) choices
       pure a
     _ -> StrangeSolutionEmpoweringElixir4 <$> runMessage msg attrs

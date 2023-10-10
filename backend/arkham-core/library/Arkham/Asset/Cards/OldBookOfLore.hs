@@ -29,8 +29,9 @@ instance RunMessage OldBookOfLore where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       investigators <- selectList $ colocatedWith iid
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels investigators
         $ \iid' -> only $ search iid' source iid' [fromTopOfDeck 3] AnyCard (DrawFound iid' 1)
       pure a

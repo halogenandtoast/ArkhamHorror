@@ -34,10 +34,8 @@ instance HasModifiersFor EverVigilant1 where
 instance RunMessage EverVigilant1 where
   runMessage msg e@(EverVigilant1 attrs) = case msg of
     InvestigatorPlayEvent iid eid mtarget windows' _ | eid == toId attrs -> do
-      e
-        <$ pushAll
-          ( replicate 3 (ResolveEvent iid eid mtarget windows')
-          )
+      pushAll $ replicate 3 (ResolveEvent iid eid mtarget windows')
+      pure e
     ResolveEvent iid eid _mtarget windows' | eid == toId attrs -> do
       let
         windows'' =
@@ -53,10 +51,11 @@ instance RunMessage EverVigilant1 where
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost windows'')
           cards
+      player <- getPlayer iid
       when (notNull playableCards)
         $ push
         $ chooseUpToN
-          iid
+          player
           1
           "Do not play asset"
           [ TargetLabel (CardIdTarget $ toCardId c) [PayCardCost iid c windows'']

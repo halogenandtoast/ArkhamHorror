@@ -41,7 +41,7 @@ instance RunMessage WitchesCircle where
       pushM $ createEnemyAt_ anetteMason (toId attrs) Nothing
       pure l
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       enemiesToMove <- selectList $ enemyMatcher (toId attrs)
 
       pushWhen (notNull enemiesToMove)

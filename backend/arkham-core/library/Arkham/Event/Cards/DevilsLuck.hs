@@ -24,16 +24,16 @@ instance RunMessage DevilsLuck where
   runMessage msg e@(DevilsLuck attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [(windowType -> Window.WouldTakeDamageOrHorror _ _ damage horror)] _
       | eid == toId attrs -> do
-          pushAll
-            [ chooseAmounts
-                iid
-                "Amount of Damage/Horror to cancel"
-                (MaxAmountTarget 10)
-                ( [("Damage", (0, damage)) | damage > 0]
-                    <> [("Horror", (0, horror)) | horror > 0]
-                )
-                (toTarget attrs)
-            ]
+          player <- getPlayer iid
+          push
+            $ chooseAmounts
+              player
+              "Amount of Damage/Horror to cancel"
+              (MaxAmountTarget 10)
+              ( [("Damage", (0, damage)) | damage > 0]
+                  <> [("Horror", (0, horror)) | horror > 0]
+              )
+              (toTarget attrs)
           pure e
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let

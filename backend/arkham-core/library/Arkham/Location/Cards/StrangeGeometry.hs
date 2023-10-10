@@ -50,7 +50,7 @@ instance RunMessage StrangeGeometry where
         selectList $ LocationWithMostClues $ NotLocation $ LocationWithId $ toId attrs
       investigators <- selectList $ investigatorAt $ toId attrs
       enemies <- selectList $ UnengagedEnemy <> enemyAt (toId attrs)
-      lead <- getLead
+      lead <- getLeadPlayer
       let source = toAbilitySource attrs 1
       pushAll
         $ [ chooseOrRunOne lead

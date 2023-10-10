@@ -36,12 +36,13 @@ instance RunMessage Southside_294 where
     DiscardedTopOfEncounterDeck iid cards (isSource attrs -> True) (isTarget attrs -> True) -> do
       let powerTreacheries = filter ((`cardMatch` CardWithTrait Power) . toCard) cards
       act <- selectJust AnyAct
+      player <- getPlayer iid
       pushAll
         $ [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
         <> ( guard (notNull powerTreacheries)
               *> [ FocusCards (toCard <$> cards)
                  , chooseOrRunOne
-                    iid
+                    player
                     [targetLabel (toCardId card) [UnfocusCards, InvestigatorDrewEncounterCard iid card] | card <- cards]
                  ]
            )

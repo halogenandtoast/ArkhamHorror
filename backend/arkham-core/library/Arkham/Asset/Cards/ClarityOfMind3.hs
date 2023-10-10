@@ -34,6 +34,7 @@ instance RunMessage ClarityOfMind3 where
   runMessage msg a@(ClarityOfMind3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
-      pushAll $ replicate 2 $ chooseOrRunOne iid $ map (uncurry targetLabel . second only) iidsWithHeal
+      player <- getPlayer iid
+      pushAll $ replicate 2 $ chooseOrRunOne player $ map (uncurry targetLabel . second only) iidsWithHeal
       pure a
     _ -> ClarityOfMind3 <$> runMessage msg attrs

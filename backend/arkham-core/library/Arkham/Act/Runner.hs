@@ -22,6 +22,7 @@ import Arkham.Helpers.Message as X hiding (
   PaidCost,
   RevealChaosToken,
  )
+import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Source as X
 import Arkham.Target as X
@@ -42,13 +43,11 @@ advanceActDeck attrs = AdvanceActDeck (actDeckId attrs) (toSource attrs)
 advanceActSideA
   :: HasGame m => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do
-  leadInvestigatorId <- getLeadInvestigatorId
+  (iid, lead) <- getLeadInvestigatorPlayer
   pure
-    [ CheckWindow
-        [leadInvestigatorId]
-        [mkWindow Timing.When (ActAdvance $ toId attrs)]
+    [ CheckWindow [iid] [mkWhen (ActAdvance $ toId attrs)]
     , chooseOne
-        leadInvestigatorId
+        lead
         [TargetLabel (ActTarget $ toId attrs) [AdvanceAct (toId attrs) (toSource attrs) advanceMode]]
     ]
 

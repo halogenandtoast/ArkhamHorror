@@ -65,7 +65,7 @@ instance RunMessage FindingLadyEsprit where
         <> [NextAdvanceActStep aid 2]
       pure a
     NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
-      lead <- getLead
+      (leadId, lead) <- getLeadInvestigatorPlayer
       curseOfTheRougarouSet <-
         map EncounterCard
           <$> gatherEncounterSet EncounterSet.CurseOfTheRougarou
@@ -80,8 +80,8 @@ instance RunMessage FindingLadyEsprit where
         $ [chooseOne lead choices]
         <> [ ShuffleEncounterDiscardBackIn
            , ShuffleCardsIntoDeck Deck.EncounterDeck curseOfTheRougarouSet
-           , AddCampaignCardToDeck lead Treacheries.curseOfTheRougarou
-           , CreateWeaknessInThreatArea curseOfTheRougarou lead
+           , AddCampaignCardToDeck leadId Treacheries.curseOfTheRougarou
+           , CreateWeaknessInThreatArea curseOfTheRougarou leadId
            , AdvanceActDeck actDeckId (toSource attrs)
            ]
       pure a

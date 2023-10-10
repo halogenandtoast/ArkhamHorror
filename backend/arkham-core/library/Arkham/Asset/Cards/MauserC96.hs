@@ -44,9 +44,10 @@ instance RunMessage MauserC96 where
           , iid <=~> InvestigatorWithoutModifier ControlledAssetsCannotReady
           ]
       canGainResources <- iid <=~> InvestigatorWithoutModifier CannotGainResources
+      player <- getPlayer iid
       when (canReady || canGainResources)
         $ push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [Label "Ready Mauser C96" [Ready (toTarget attrs)] | canReady]
         <> [Label "Take 1 resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
       pure a

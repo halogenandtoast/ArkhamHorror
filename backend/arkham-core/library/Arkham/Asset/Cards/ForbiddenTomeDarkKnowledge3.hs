@@ -30,50 +30,37 @@ instance HasModifiersFor ForbiddenTomeDarkKnowledge3 where
 
 instance HasAbilities ForbiddenTomeDarkKnowledge3 where
   getAbilities (ForbiddenTomeDarkKnowledge3 a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation)
+        ( exists (EnemyAt YourLocation)
             <> AnyCriterion
-              [ InvestigatorExists
-                  ( HealableInvestigator (toSource a) DamageType
-                      $ InvestigatorAt YourLocation
-                  )
-              , AssetExists
-                  ( HealableAsset (toSource a) DamageType $ AssetAt YourLocation
-                  )
+              [ exists $ HealableInvestigator (toSource a) DamageType $ InvestigatorAt YourLocation
+              , exists $ HealableAsset (toSource a) DamageType $ AssetAt YourLocation
               ]
         )
         $ ActionAbility Nothing
         $ ActionCost 4
-        <> ExhaustCost (toTarget a)
+        <> exhaust a
     ]
 
 instance RunMessage ForbiddenTomeDarkKnowledge3 where
   runMessage msg a@(ForbiddenTomeDarkKnowledge3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       investigators <-
-        selectListMap InvestigatorTarget
-          $ HealableInvestigator (toSource attrs) DamageType
-          $ colocatedWith iid
+        selectTargets $ HealableInvestigator (toSource attrs) DamageType $ colocatedWith iid
       assets <-
-        selectListMap AssetTarget
-          $ HealableAsset (toSource attrs) DamageType
-          $ AssetAt (locationWithInvestigator iid)
-      enemies <-
-        selectListMap EnemyTarget
-          $ EnemyAt
-          $ locationWithInvestigator
-            iid
+        selectTargets $ HealableAsset (toSource attrs) DamageType $ AssetAt (locationWithInvestigator iid)
+      enemies <- selectTargets $ EnemyAt $ locationWithInvestigator iid
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             target
             [ HealDamage target (toSource attrs) 1
             , chooseOne
-                iid
+                player
                 [ TargetLabel enemy [Damage enemy (toSource attrs) 1]
                 | enemy <- enemies
                 ]

@@ -63,10 +63,11 @@ instance RunMessage CosmicGate where
 
       if null allEmpty
         then cosmosFail attrs
-        else
+        else do
+          player <- getPlayer iid
           push
             $ chooseOrRunOne
-              iid
+              player
               [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
               | pos'@(Pos x y) <- allEmpty
               ]
@@ -74,8 +75,9 @@ instance RunMessage CosmicGate where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       n <- getSpendableClueCount [iid]
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [Label "Spend 1 Clue" [SpendClues 1 [iid]] | n >= 1]
         <> [Label "Take 1 Horror" [assignHorror iid (toAbilitySource attrs 2) 1]]
 
@@ -84,14 +86,15 @@ instance RunMessage CosmicGate where
       investigators <- selectList $ investigatorAt (toId attrs)
       otherLocations <-
         selectList $ LocationWithTrait Trait.Void <> NotLocation (LocationWithId $ toId attrs)
+      player <- getPlayer iid
       push
         $ chooseSome1
-          iid
+          player
           "Done moving investigators"
           [ targetLabel
             investigator
             [ chooseOne
-                iid
+                player
                 [ targetLabel other [Move $ move (toAbilitySource attrs 3) investigator other]
                 | other <- otherLocations
                 ]

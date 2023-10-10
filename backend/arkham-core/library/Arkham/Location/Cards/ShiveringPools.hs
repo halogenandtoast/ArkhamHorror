@@ -63,8 +63,9 @@ instance RunMessage ShiveringPools where
   runMessage msg l@(ShiveringPools attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Take 1 direct damage"
           [InvestigatorDirectDamage iid (toSource attrs) 1 0]
@@ -84,8 +85,9 @@ instance RunMessage ShiveringPools where
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
+          player <- getPlayer iid
           push
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ [Label "Place Below" placeBelow | belowEmpty]
             <> [Label "Place to the Right" placeRight | rightEmpty]
         [] -> pure ()

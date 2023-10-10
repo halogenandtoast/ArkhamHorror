@@ -34,8 +34,9 @@ instance RunMessage ArchaicGlyphsMarkingsOfIsis3 where
         flip (fieldMap InvestigatorHand) iid
           $ filterBy [(`cardMatch` AssetType), isJust . cdCost . toCardDef, (<= n) . getCost]
 
+      player <- getPlayer iid
       pushAll
-        [ chooseUpToN iid 1 "Do not play an asset"
+        [ chooseUpToN player 1 "Do not play an asset"
             $ [targetLabel (toCardId card) [PutCardIntoPlay iid card Nothing []] | card <- assets]
         , Successful (#investigate, toTarget lid) iid source (toTarget lid) n
         ]

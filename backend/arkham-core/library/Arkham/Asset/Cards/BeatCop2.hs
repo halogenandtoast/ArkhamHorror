@@ -33,8 +33,9 @@ instance RunMessage BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- selectList $ enemyAtLocationWith iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ targetLabels enemies (only . nonAttackEnemyDamage (toAbilitySource attrs 1) 1)
       pure a
     _ -> BeatCop2 <$> runMessage msg attrs

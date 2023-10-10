@@ -24,11 +24,7 @@ spectralWeb =
 
 instance HasAbilities SpectralWeb where
   getAbilities (SpectralWeb attrs) =
-    [ restrictedAbility
-        attrs
-        1
-        ( ControlsThis <> EnemyCriteria (EnemyExists $ CanFightEnemy (toSource attrs) <> EnemyWithTrait Geist)
-        )
+    [ controlledAbility attrs 1 (exists $ CanFightEnemy (toSource attrs) <> EnemyWithTrait Geist)
         $ ActionAbility (Just Action.Fight)
         $ ActionCost 1
         <> GroupClueCostRange (1, 3) YourLocation
@@ -42,9 +38,10 @@ toSpentClues _ = 0
 instance RunMessage SpectralWeb where
   runMessage msg a@(SpectralWeb attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (toSpentClues -> x) -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel
             sType
             [ skillTestModifiers attrs iid [AnySkillValue x, DamageDealt x]

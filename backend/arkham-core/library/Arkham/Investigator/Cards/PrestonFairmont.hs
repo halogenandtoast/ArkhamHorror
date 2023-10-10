@@ -46,8 +46,9 @@ instance RunMessage PrestonFairmont where
           pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       hasResources <- (> 0) <$> getSpendableResources iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label "Resolve normally" []
         : [Label "Automatically succeed" [SpendResources iid 2, PassSkillTest] | hasResources]
       pure i
@@ -57,9 +58,10 @@ instance RunMessage PrestonFairmont where
       if familyInheritanceResources > 0
         then do
           if attrs.resources > 0
-            then
+            then do
+              player <- getPlayer iid
               push
-                $ chooseOrRunN iid n
+                $ chooseOrRunN player n
                 $ replicate
                   familyInheritanceResources
                   (targetLabel familyInheritance [RemoveResources (toSource attrs) (toTarget familyInheritance) 1])

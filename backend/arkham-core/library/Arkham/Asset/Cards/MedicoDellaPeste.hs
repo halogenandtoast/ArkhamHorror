@@ -55,8 +55,9 @@ instance RunMessage MedicoDellaPeste where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasDamage <- canHaveDamageHealed attrs iid
       mHealHorror <- getHealHorrorMessage attrs 1 iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Heal 1 damage"
             [HealDamage (InvestigatorTarget iid) (toSource attrs) 1]

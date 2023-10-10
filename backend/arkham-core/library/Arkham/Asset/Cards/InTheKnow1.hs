@@ -29,8 +29,9 @@ instance RunMessage InTheKnow1 where
         investigateActions <-
           selectList $ AbilityOnLocation (LocationWithId lid) <> AbilityIsAction #investigate
         pure $ map (lid,) investigateActions
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel location
             $ [ abilityModifier (toAbilitySource attrs 1) iid (AsIfAt location)
               , UseAbility iid ability windows'

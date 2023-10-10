@@ -50,13 +50,10 @@ instance RunMessage TimeWrackedWoods where
                 <> NotCard
                   (CardWithTrait Elite)
             )
+      player <- getPlayer iid
       pushAll
         [ FocusCards $ map EncounterCard targets
-        , chooseOrRunOne
-            iid
-            [ TargetLabel (CardIdTarget $ toCardId c) [AddToEncounterDiscard c]
-            | c <- targets
-            ]
+        , chooseOrRunOne player [targetLabel (toCardId c) [AddToEncounterDiscard c] | c <- targets]
         , UnfocusCards
         ]
       pure l

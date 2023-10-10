@@ -29,9 +29,10 @@ instance RunMessage SecretsOfTheBeyond where
       case nonEmpty enemies of
         Just ((enemyId, _) :| _) -> do
           maxDoom <- field EnemyDoom enemyId
+          player <- getPlayer iid
           push
             $ chooseOrRunOne
-              iid
+              player
               [targetLabel enemy [PlaceBreaches (toTarget location) maxDoom] | (enemy, Just location) <- enemies]
         Nothing -> push $ gainSurge attrs
       pure t

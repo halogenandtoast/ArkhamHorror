@@ -34,32 +34,21 @@ instance RunMessage SolemnVow where
   runMessage msg a@(SolemnVow attrs) = case msg of
     InvestigatorPlayAsset iid aid | aid == toId attrs -> do
       owner <- field AssetOwner aid
+      player <- getPlayer iid
       when (Just iid == owner) $ do
         iids <- selectList $ colocatedWith iid <> NotInvestigator (InvestigatorWithId iid)
-        push $ chooseOrRunOne iid $ targetLabels iids $ only . (`TakeControlOfAsset` aid)
+        push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` aid)
       SolemnVow <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasDamage <- iid <=~> InvestigatorHasCardWithDamage
       hasHorror <- iid <=~> InvestigatorHasCardWithHorror
 
-      damageAssets <-
-        selectList
-          $ AssetControlledBy (InvestigatorWithId iid)
-          <> AssetWithHealth
-      horrorAssets <-
-        selectList
-          $ AssetControlledBy (InvestigatorWithId iid)
-          <> AssetWithSanity
+      damageAssets <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AssetWithHealth
+      horrorAssets <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AssetWithSanity
 
       iid' <- selectJust $ OwnsAsset (AssetWithId $ toId attrs)
-      damageAssets' <-
-        selectList
-          $ AssetControlledBy (InvestigatorWithId iid')
-          <> AssetWithHealth
-      horrorAssets' <-
-        selectList
-          $ AssetControlledBy (InvestigatorWithId iid')
-          <> AssetWithSanity
+      damageAssets' <- selectList $ AssetControlledBy (InvestigatorWithId iid') <> AssetWithHealth
+      horrorAssets' <- selectList $ AssetControlledBy (InvestigatorWithId iid') <> AssetWithSanity
 
       let
         damageChoices source =
@@ -73,12 +62,13 @@ instance RunMessage SolemnVow where
               | aid' <- horrorAssets'
               ]
 
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
-        $ [DamageLabel iid [chooseOrRunOne iid $ damageChoices (toSource iid)] | hasDamage]
-        <> [HorrorLabel iid [chooseOrRunOne iid $ horrorChoices (toSource iid)] | hasHorror]
-        <> [AssetDamageLabel aid [chooseOrRunOne iid $ damageChoices (toSource aid)] | aid <- damageAssets]
-        <> [AssetHorrorLabel aid [chooseOrRunOne iid $ horrorChoices (toSource aid)] | aid <- horrorAssets]
+        $ chooseOrRunOne player
+        $ [DamageLabel iid [chooseOrRunOne player $ damageChoices (toSource iid)] | hasDamage]
+        <> [HorrorLabel iid [chooseOrRunOne player $ horrorChoices (toSource iid)] | hasHorror]
+        <> [AssetDamageLabel aid [chooseOrRunOne player $ damageChoices (toSource aid)] | aid <- damageAssets]
+        <> [AssetHorrorLabel aid [chooseOrRunOne player $ horrorChoices (toSource aid)] | aid <- horrorAssets]
 
       pure a
     _ -> SolemnVow <$> runMessage msg attrs

@@ -38,7 +38,7 @@ instance RunMessage TheyreGettingOut where
       push $ ScenarioResolution resolution
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       enemiesToMove <- selectList $ UnengagedEnemy <> withTrait Ghoul <> NotEnemy (EnemyAt "Parlor")
 
       pushIfAny enemiesToMove

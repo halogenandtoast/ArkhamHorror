@@ -51,24 +51,24 @@ instance HasAbilities DetectivesColt1911s where
 
 instance RunMessage DetectivesColt1911s where
   runMessage msg a@(DetectivesColt1911s attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ pushAll
-              [ skillTestModifiers
-                  attrs
-                  (InvestigatorTarget iid)
-                  [DamageDealt 1, SkillModifier SkillCombat 1]
-              , ChooseFightEnemy iid (AbilitySource source 1) Nothing SkillCombat mempty False
-              ]
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      pushAll
+        [ skillTestModifiers
+            attrs
+            (InvestigatorTarget iid)
+            [DamageDealt 1, SkillModifier SkillCombat 1]
+        , ChooseFightEnemy iid (AbilitySource source 1) Nothing SkillCombat mempty False
+        ]
+      pure a
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ (assetController attrs) $ \iid -> do
         insights <-
           filter (`cardMatch` (CardWithTrait Insight <> CardWithType EventType))
             <$> field InvestigatorDiscard iid
+        player <- getPlayer iid
         unless (null insights) $ do
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ Label "Do not move an insight" []
             : [ TargetLabel
                 (CardIdTarget $ toCardId insight)

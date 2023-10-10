@@ -58,9 +58,10 @@ instance RunMessage GuardDog2 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <-
         selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel
             enemy
             [ EngageEnemy iid enemy False

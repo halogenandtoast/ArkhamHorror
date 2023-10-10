@@ -26,22 +26,16 @@ blastedHeath_248 =
 
 instance HasAbilities BlastedHeath_248 where
   getAbilities (BlastedHeath_248 attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility
-            attrs
-            1
-            ( Here
-                <> InvestigatorExists
-                  (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-                <> EnemyCriteria
-                  ( EnemyExists
-                      $ EnemyAt YourLocation
-                      <> EnemyWithTrait Abomination
-                  )
-            )
-            (FastAbility Free)
-        | locationRevealed attrs
+    withRevealedAbilities attrs
+      $ [ groupLimit PerGame
+            $ restrictedAbility
+              attrs
+              1
+              ( Here
+                  <> exists (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+                  <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination)
+              )
+              (FastAbility Free)
         ]
 
 instance RunMessage BlastedHeath_248 where
@@ -55,12 +49,13 @@ instance RunMessage BlastedHeath_248 where
       when
         (null investigatorWithCluePairs || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
+      player <- getPlayer iid
       let
         totalClues = sum $ map snd investigatorWithCluePairs
         investigators = map fst investigatorWithCluePairs
         placeClueOnAbomination =
           chooseOne
-            iid
+            player
             [ targetLabel target [SpendClues 1 investigators, PlaceClues (toAbilitySource attrs 1) target 1]
             | target <- abominations
             ]
@@ -68,7 +63,7 @@ instance RunMessage BlastedHeath_248 where
       pushAll
         $ placeClueOnAbomination
         : [ chooseOne
-            iid
+            player
             [ Label "Spend a second clue" [placeClueOnAbomination]
             , Label "Do not spend a second clue" []
             ]

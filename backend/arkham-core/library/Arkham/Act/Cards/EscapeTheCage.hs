@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Card
-import Arkham.Helpers.Query
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (SilverTwilight))
@@ -51,7 +50,7 @@ instance RunMessage EscapeTheCage where
           <> NotEnemy
             (enemyAt entryHall)
       enemyCards <- traverse convertToCard entryHallSilverTwilight
-      lead <- getLead
+      lead <- getLeadPlayer
       pushAll
         $ map RemoveEnemy entryHallSilverTwilight
         <> [PlaceUnderneath (LocationTarget entryHall) enemyCards]

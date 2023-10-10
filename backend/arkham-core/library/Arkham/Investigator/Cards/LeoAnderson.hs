@@ -53,7 +53,8 @@ instance RunMessage LeoAnderson where
           (getIsPlayableWithResources iid source (resources + 1) UnpaidCost [duringTurnWindow iid])
           results
       let choose c = UseCardAbilityChoiceTarget iid source 1 (CardTarget c) windows' payment
-      push $ chooseOne iid [targetLabel (toCardId c) [choose c] | c <- cards]
+      player <- getPlayer iid
+      push $ chooseOne player [targetLabel (toCardId c) [choose c] | c <- cards]
       pure i
     UseCardAbilityChoiceTarget iid (isSource attrs -> True) 1 (CardTarget card) _ _ -> do
       pushAll [PayCardCost iid card [duringTurnWindow iid], ResetMetadata (toTarget attrs)]

@@ -47,16 +47,18 @@ instance RunMessage HypnoticTherapy where
         iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
         for iidsWithHeal $ \(i, healHorror) -> do
           draw <- drawCards i (toAbilitySource attrs 1) 1
-          pure (i, draw, healHorror)
+          targetPlayer <- getPlayer i
+          pure ((i, targetPlayer), draw, healHorror)
+      player <- getPlayer iid
       pushWhen (notNull targetsWithCardDrawAndHeal)
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ targetLabel target
             $ [ heal
               , chooseOne
-                  target
+                  targetPlayer
                   [Label "Do Not Draw" [], ComponentLabel (InvestigatorDeckComponent target) [drawing]]
               ]
-          | (target, drawing, heal) <- targetsWithCardDrawAndHeal
+          | ((target, targetPlayer), drawing, heal) <- targetsWithCardDrawAndHeal
           ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws' _ -> do

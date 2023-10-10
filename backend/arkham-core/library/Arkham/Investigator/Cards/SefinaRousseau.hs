@@ -25,32 +25,34 @@ instance HasChaosTokenValue SefinaRousseau where
 
 instance HasAbilities SefinaRousseau where
   getAbilities (SefinaRousseau attrs) =
-    [ doesNotProvokeAttacksOfOpportunity
-      $ restrictedAbility attrs 1 Self (ActionAbility Nothing $ ActionCost 1)
+    [ doesNotProvokeAttacksOfOpportunity $ restrictedAbility attrs 1 Self actionAbility
     | notNull attrs.cardsUnderneath
     ]
 
 instance RunMessage SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [targetLabel (toCardId card) [addToHand (toId i) card] | card <- attrs.cardsUnderneath]
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
+      player <- getPlayer iid
       pushWhen (notNull $ investigatorCardsUnderneath attrs)
-        $ chooseOne iid
+        $ chooseOne player
         $ Done "Do not use elder sign ability"
         : [targetLabel (toCardId card) [addToHand (toId i) card] | card <- attrs.cardsUnderneath]
       pure i
     DrawStartingHand iid | iid == toId attrs -> do
+      player <- getPlayer iid
       (discard', hand, deck) <- drawOpeningHand attrs 13
       let
         events =
           filter (and . sequence [(== EventType) . toCardType, (/= Events.thePaintedWorld) . toCardDef]) hand
       pushAll [ShuffleDiscardBackIn iid, CheckHandSize $ toId attrs]
       pushWhen (notNull events)
-        $ chooseUpToN iid 5 "Done Choosing Events"
+        $ chooseUpToN player 5 "Done Choosing Events"
         $ [ targetLabel (toCardId event)
             $ [RemoveCardFromHand iid (toCardId event), PlaceUnderneath (toTarget iid) [event]]
           | event <- events

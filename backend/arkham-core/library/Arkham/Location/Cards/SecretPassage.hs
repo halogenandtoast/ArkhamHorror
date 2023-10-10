@@ -48,9 +48,10 @@ instance HasAbilities SecretPassage where
 instance RunMessage SecretPassage where
   runMessage msg l@(SecretPassage attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Take 1 horror and 1 damage"
               [InvestigatorAssignDamage iid source DamageAny 1 1]

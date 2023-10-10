@@ -40,8 +40,9 @@ instance RunMessage PatriceHathaway where
       attrs' <- takeUpkeepResources attrs
       hand <- field InvestigatorHand (toId attrs)
       let nonWeaknessCards = filter (`cardMatch` NonWeakness) hand
+      player <- getPlayer (toId attrs)
       pushAll
-        [ chooseOneAtATime (toId attrs)
+        [ chooseOneAtATime player
             $ targetLabels nonWeaknessCards (only . DiscardCard (toId attrs) (toSource attrs) . toCardId)
         , DoStep 1 msg
         ]
@@ -57,17 +58,19 @@ instance RunMessage PatriceHathaway where
     DoStep 1 msg'@(ResolveChaosToken _ ElderSign iid) | attrs `is` iid -> do
       canModifyDeck <- check attrs can.manipulate.deck
       canHaveCardsLeaveDiscard <- check attrs can.have.cards.leaveDiscard
+      player <- getPlayer iid
       pushWhen (canModifyDeck && canHaveCardsLeaveDiscard && length attrs.discard > 1)
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label "Shuffle all but 1 card from your discard pile into your deck" [DoStep 2 msg']
           , Label "Skip" []
           ]
       pure i
     DoStep 2 (ResolveChaosToken _ ElderSign iid) | attrs `is` iid -> do
       let discards = map toCard attrs.discard
+      player <- getPlayer (toId attrs)
       pushAll
         [ FocusCards discards
-        , questionLabel "Choose 1 card to leave in discard" (toId attrs)
+        , questionLabel "Choose 1 card to leave in discard" player
             $ ChooseOne
               [ targetLabel card [UnfocusCards, ShuffleCardsIntoDeck (Deck.InvestigatorDeck (toId attrs)) rest]
               | (card, rest) <- eachWithRest discards

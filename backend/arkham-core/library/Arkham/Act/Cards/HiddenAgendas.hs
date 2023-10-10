@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
@@ -91,11 +90,12 @@ instance RunMessage HiddenAgendas where
         iids <- getInvestigatorIds
         let iid = fromJustNote "error" $ iids !!? (n - 1)
         mLocation <- field InvestigatorLocation iid
+        player <- getPlayer iid
         for_ mLocation $ \lid -> do
           pushAll
             [ FocusCards monsters
             , chooseOne
-                iid
+                player
                 [ targetLabel (toCardId monster) [SpawnEnemyAt monster lid]
                 | monster <- monsters
                 ]

@@ -54,7 +54,7 @@ class
   ) =>
   IsInvestigator a
 
-type InvestigatorCard a = CardBuilder () a
+type InvestigatorCard a = CardBuilder PlayerId a
 
 newtype PrologueMetadata = PrologueMetadata {original :: Value}
   deriving stock (Show, Eq, Generic)
@@ -100,6 +100,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorXp :: Field Investigator Int
   InvestigatorCardCode :: Field Investigator CardCode
   InvestigatorKeys :: Field Investigator (Set ArkhamKey)
+  InvestigatorPlayerId :: Field Investigator PlayerId
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
@@ -107,6 +108,7 @@ deriving stock instance Show (Field Investigator val)
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
+  , investigatorPlayerId :: PlayerId
   , investigatorName :: Name
   , investigatorCardCode :: CardCode
   , investigatorArt :: CardCode
@@ -319,7 +321,7 @@ someInvestigatorCardCodes = liftInvestigatorCard $ \c -> case lookup (cbCardCode
   Just def -> cbCardCode c : cdAlternateCardCodes def
   Nothing -> error $ "no such investigator" <> show (cbCardCode c)
 
-toInvestigator :: SomeInvestigatorCard -> Investigator
-toInvestigator (SomeInvestigatorCard f) = Investigator $ cbCardBuilder f nullCardId ()
+toInvestigator :: SomeInvestigatorCard -> PlayerId -> Investigator
+toInvestigator (SomeInvestigatorCard f) = Investigator . cbCardBuilder f nullCardId
 
 makeLensesWith suffixedFields ''InvestigatorAttrs

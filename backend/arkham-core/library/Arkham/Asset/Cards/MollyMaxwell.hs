@@ -35,8 +35,9 @@ instance RunMessage MollyMaxwell where
         filter (`cardMatch` Matcher.AssetCard)
           <$> getKnownRemainingOriginalDeckCards iid
       let deckTraits = toList . unions $ map toTraits cards
+      player <- getPlayer iid
       push
-        $ chooseOneDropDown iid
+        $ chooseOneDropDown player
         $ ( "Trait that won't match"
           , RevealUntilFirst
               iid
@@ -55,11 +56,12 @@ instance RunMessage MollyMaxwell where
           ]
       pure a
     RevealedCards iid (isSource attrs -> True) _ mcard rest -> do
+      player <- getPlayer iid
       pushAll $ case mcard of
         Nothing ->
           [ FocusCards rest
           , chooseOne
-              iid
+              player
               [ Label
                   "No cards found"
                   [UnfocusCards, ShuffleCardsIntoDeck (InvestigatorDeck iid) rest]
@@ -68,7 +70,7 @@ instance RunMessage MollyMaxwell where
         Just c ->
           [ FocusCards (rest <> [c])
           , chooseOne
-              iid
+              player
               [ targetLabel
                   (toCardId c)
                   [ UnfocusCards

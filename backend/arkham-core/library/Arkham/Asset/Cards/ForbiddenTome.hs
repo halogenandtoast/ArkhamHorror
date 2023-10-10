@@ -38,8 +38,9 @@ instance RunMessage ForbiddenTome where
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
       n <- fieldMap InvestigatorHand length iid
       noUses <- fieldMap AssetUses ((== 0) . useCount) (toId attrs)
+      player <- getPlayer iid
       pushWhen (n >= 10 && noUses)
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Discard Forbidden Tome"
               $ [Discard (toAbilitySource attrs 1) (toTarget attrs), Record YouHaveTranslatedTheTome]
           , Label "Do not discard Forbidden Tome" []

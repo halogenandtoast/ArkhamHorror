@@ -60,10 +60,10 @@ instance HasAbilities DescentToYoth where
 instance RunMessage DescentToYoth where
   runMessage msg l@(DescentToYoth (attrs `With` metadata)) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <- getInvestigatorIds
+      investigators <- getInvestigatorPlayers
       pushAll
         [ chooseOne
-          iid
+          player
           [ Label
               "Place 1 doom on Descent to Yoth"
               [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
@@ -73,7 +73,7 @@ instance RunMessage DescentToYoth where
               , InvestigatorDrawEncounterCard iid
               ]
           ]
-        | iid <- iids
+        | (iid, player) <- investigators
         ]
       pure l
     UseCardAbility _iid (isSource attrs -> True) 2 _ _ ->

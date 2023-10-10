@@ -14,7 +14,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
 import Arkham.Helpers.Ability
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
@@ -63,10 +62,11 @@ instance RunMessage InAzathothsDomain where
       pure a
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
+      player <- getPlayer iid
       pushAll
         [ FocusCards $ map flipCard cards
         , chooseOrRunOne
-            iid
+            player
             [ targetLabel
               (toCardId card)
               [ UnfocusCards

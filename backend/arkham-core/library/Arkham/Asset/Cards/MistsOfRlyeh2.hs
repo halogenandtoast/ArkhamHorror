@@ -77,9 +77,10 @@ instance RunMessage MistsOfRlyeh2Effect where
           case mSkillTestResult of
             Just (SucceededBy _ _) -> do
               unblockedConnectedLocationIds <- accessibleLocations iid
+              player <- getPlayer iid
               let
                 moveOptions =
-                  chooseOrRunOne iid
+                  chooseOrRunOne player
                     $ [Label "Do not move to a connecting location" []]
                     <> [ targetLabel lid [Move $ move attrs iid lid]
                        | lid <- unblockedConnectedLocationIds

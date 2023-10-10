@@ -44,9 +44,10 @@ instance HasAbilities GrannyOrne3 where
 instance RunMessage GrannyOrne3 where
   runMessage msg a@(GrannyOrne3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Get +1 skill value"
               [ skillTestModifier

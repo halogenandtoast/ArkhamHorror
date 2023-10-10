@@ -71,6 +71,7 @@ instance RunMessage SignMagick3 where
             )
       abilities' <-
         filterM (\ab -> anyM (\w -> getCanPerformAbility iid w ab) (defaultWindows iid)) abilities
-      push $ chooseOne iid [AbilityLabel iid ab [] [] | ab <- abilities']
+      player <- getPlayer iid
+      push $ chooseOne player [AbilityLabel iid ab [] [] | ab <- abilities']
       pure a
     _ -> SignMagick3 <$> runMessage msg attrs

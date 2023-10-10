@@ -33,9 +33,10 @@ instance HasAbilities TearThroughSpace where
 instance RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Place 1 doom on Tear through Space"
               [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]

@@ -65,8 +65,9 @@ instance RunMessage CarolynFern where
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       investigatorsWithHealHorror <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
       assetsWithHorror <- selectTargets $ HealableAsset (toSource attrs) #horror (assetAtLocationWith iid)
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label "Do not heal anything" []
         : targetLabels assetsWithHorror (\target -> only $ HealHorror target (toSource ElderSign) 1)
           <> map (uncurry targetLabel . second only) investigatorsWithHealHorror

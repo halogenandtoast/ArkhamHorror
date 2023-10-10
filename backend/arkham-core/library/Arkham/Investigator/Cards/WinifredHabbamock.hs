@@ -69,8 +69,9 @@ instance RunMessage WinifredHabbamockEffect where
           SucceededBy _ n -> case effectSource of
             InvestigatorSource iid -> do
               cards <- field InvestigatorCommittedCards iid
+              player <- getPlayer iid
               pushWhen (notNull cards)
-                $ chooseN iid (min (n `div` 2) (length cards))
+                $ chooseN player (min (n `div` 2) (length cards))
                 $ [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- cards]
             _ -> error "invalid source"
           _ -> pure ()

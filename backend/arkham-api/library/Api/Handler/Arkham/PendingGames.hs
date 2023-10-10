@@ -45,10 +45,10 @@ putApiV1ArkhamPendingGameR gameId = do
   when (iid `Map.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
 
-  runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)
+  pid <- runDB $ insert $ ArkhamPlayer userId gameId (coerce iid)
 
   runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
-    addInvestigator (lookupInvestigator iid) decklist
+    addPlayer (PlayerId $ coerce pid)
     runMessages Nothing
 
   updatedGame <- readIORef gameRef
@@ -59,11 +59,7 @@ putApiV1ArkhamPendingGameR gameId = do
     $ writeTChan writeChannel
     $ encode
     $ GameUpdate
-    $ PublicGame
-      gameId
-      arkhamGameName
-      []
-      updatedGame
+    $ PublicGame gameId arkhamGameName [] updatedGame
 
   now <- liftIO getCurrentTime
 

@@ -42,19 +42,19 @@ instance RunMessage NotreDame where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ beginSkillTest iid source attrs SkillWillpower 6
       pure l
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          agenda <- selectJust AnyAgenda
-          hasDoom <- agendaMatches agenda AgendaWithAnyDoom
-          push
-            $ chooseOrRunOne iid
-            $ Label
-              "Place 1 doom on current agenda"
-              [PlaceDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
-            : [ Label
-                "Remove 1 doom on current agenda"
-                [RemoveDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
-              | hasDoom
-              ]
-          pure l
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      agenda <- selectJust AnyAgenda
+      hasDoom <- agendaMatches agenda AgendaWithAnyDoom
+      player <- getPlayer iid
+      push
+        $ chooseOrRunOne player
+        $ Label
+          "Place 1 doom on current agenda"
+          [PlaceDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
+        : [ Label
+            "Remove 1 doom on current agenda"
+            [RemoveDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
+          | hasDoom
+          ]
+      pure l
     _ -> NotreDame <$> runMessage msg attrs

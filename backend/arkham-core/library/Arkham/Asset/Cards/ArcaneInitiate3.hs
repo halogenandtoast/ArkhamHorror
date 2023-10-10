@@ -36,17 +36,19 @@ instance HasAbilities ArcaneInitiate3 where
 instance RunMessage ArcaneInitiate3 where
   runMessage msg a@(ArcaneInitiate3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Place 1 doom" [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
           , Label "Place 2 horror" [PlaceHorror (toAbilitySource attrs 1) (toTarget attrs) 2]
           ]
       pure a
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel iid [search iid source iid [fromTopOfDeck 3] (CardWithTrait Spell) $ DrawFound iid 1]
           ]
       pure a

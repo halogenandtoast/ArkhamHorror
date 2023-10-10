@@ -14,7 +14,6 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenario.Deck
@@ -66,7 +65,7 @@ instance RunMessage HuntressOfTheEztli where
       ruins <- getSetAsideCardsMatching $ CardWithTrait Ruins
       if ichtacaDefeated
         then do
-          leadInvestigatorId <- getLeadInvestigatorId
+          lead <- getLeadPlayer
           investigatorIds <- getInvestigatorIds
           alejandroVela <-
             fromJustNote "Alejandro Vela was not set aside"
@@ -75,7 +74,7 @@ instance RunMessage HuntressOfTheEztli where
           pushAll
             [ Remember YouFoughtWithIchtaca
             , chooseOne
-                leadInvestigatorId
+                lead
                 [ targetLabel iid [TakeControlOfSetAsideAsset iid alejandroVela]
                 | iid <- investigatorIds
                 ]

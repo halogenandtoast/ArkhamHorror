@@ -59,13 +59,14 @@ instance RunMessage WheelOfFortuneX where
       ForInvestigator iid (NextAdvanceAgendaStep aid _) | aid == toId attrs -> do
         location <- getJustLocation iid
         mpos <- findLocationInCosmos location
+        player <- getPlayer iid
         for_ mpos $ \pos -> do
           mLeftLocation <- getLocationInDirection pos GridLeft
           canMoveLocationLeft <-
             (&&) (location `notElem` locationsMoved meta) <$> getCanMoveLocationLeft location
 
           pushWhen (isJust mLeftLocation || canMoveLocationLeft)
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ [ Label "Move to the location to your left" [Move $ move attrs iid leftLocation]
               | leftLocation <- maybeToList mLeftLocation
               ]

@@ -16,7 +16,6 @@ import Arkham.Direction
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
@@ -66,7 +65,7 @@ instance RunMessage MagicAndScience where
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       investigators <- selectList $ investigatorAt chamberOfTime
@@ -94,7 +93,7 @@ instance RunMessage MagicAndScience where
         handleCandidateGroup cs =
           [ FocusCards $ map locationCandidateCard cs
           , chooseOneAtATime
-              leadInvestigatorId
+              lead
               [ TargetLabel
                 (CardIdTarget $ toCardId $ locationCandidateCard c)
                 [ HandleTargetChoice
@@ -108,7 +107,7 @@ instance RunMessage MagicAndScience where
           ]
       pushAll
         $ [ chooseOrRunOne
-              leadInvestigatorId
+              lead
               [ targetLabel iid [TakeControlOfAsset iid relicOfAges]
               | iid <- investigators
               ]

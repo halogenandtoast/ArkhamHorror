@@ -37,16 +37,16 @@ instance RunMessage EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       push $ LoseResources iid (toSource attrs) 2
-      let
-        labels = [nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2]]
+      let labels = [nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2]]
       availableLabel <- findM (selectNone . LocationWithLabel . mkLabel) labels
       case availableLabel of
         Just label -> pure . EndlessBridge $ attrs & labelL .~ label
         Nothing -> error "could not find label"
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Place 1 doom on Endless Bridge" [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
           , Label "Discard Endless Bridge" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
           ]

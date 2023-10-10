@@ -32,7 +32,7 @@ instance RunMessage UndergroundMuscle where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       laBellaLunaId <- getJustLocationByName "La Bella Luna"
       cloverClubLoungeId <- getJustLocationByName "Clover Club Lounge"
-      lead <- getLead
+      lead <- getLeadPlayer
       result <- shuffleM =<< gatherEncounterSet HideousAbominations
       let
         enemy = fromJust . headMay $ result

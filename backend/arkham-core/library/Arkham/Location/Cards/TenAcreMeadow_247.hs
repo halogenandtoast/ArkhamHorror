@@ -32,11 +32,8 @@ instance HasAbilities TenAcreMeadow_247 where
           attrs
           1
           ( Here
-              <> InvestigatorExists
-                (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-              <> EnemyCriteria
-                ( EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination
-                )
+              <> exists (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+              <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination)
           )
           (FastAbility Free)
       | locationRevealed attrs
@@ -46,17 +43,18 @@ instance RunMessage TenAcreMeadow_247 where
   runMessage msg l@(TenAcreMeadow_247 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorsWithClues <- locationInvestigatorsWithClues attrs
+      investigatorPlayersWithClues <- traverse (traverseToSnd getPlayer) investigatorsWithClues
       abominations <- locationEnemiesWithTrait attrs Abomination
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
       pushAll
         [ chooseOne
-          iid
+          player
           [ Label
               "Place clue on Abomination"
               [ chooseOne
-                  iid
+                  player
                   [ targetLabel
                     eid
                     [ PlaceClues (toAbilitySource attrs 1) (EnemyTarget eid) 1
@@ -67,7 +65,7 @@ instance RunMessage TenAcreMeadow_247 where
               ]
           , Label "Do not place clue on Abomination" []
           ]
-        | iid <- investigatorsWithClues
+        | (iid, player) <- investigatorPlayersWithClues
         ]
       pure l
     _ -> TenAcreMeadow_247 <$> runMessage msg attrs

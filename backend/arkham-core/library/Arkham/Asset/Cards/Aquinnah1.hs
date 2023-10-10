@@ -48,8 +48,9 @@ instance RunMessage Aquinnah1 where
 
       when (null enemies) (error "other enemies had to be present")
 
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels enemies
         $ \eid -> [nonAttackEnemyDamage source healthDamage' eid, assignHorror iid enemyId sanityDamage']
       pure a

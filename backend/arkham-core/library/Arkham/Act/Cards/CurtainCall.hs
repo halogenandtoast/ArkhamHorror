@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Resolution
@@ -70,10 +69,10 @@ instance RunMessage CurtainCall where
       push $ AdvanceAct (toId attrs) source AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       push
         $ chooseOne
-          leadInvestigatorId
+          lead
           [ Label
               "We have to warn the police about what's going on! (-> R1)"
               [ScenarioResolution $ Resolution 1]

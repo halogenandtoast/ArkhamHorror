@@ -49,13 +49,15 @@ instance RunMessage DaisyWalkerParallel where
       let abilitiesForAsset aid = filter (isSource aid . abilitySource) allAbilities
       let pairs' = filter (notNull . snd) $ map (toSnd abilitiesForAsset) tomeAssets
       let toLabel a = AbilityLabel iid a windows' []
+      player <- getPlayer iid
       pushIfAny pairs'
-        $ chooseOneAtATime iid
-        $ map (\(tome, actions) -> targetLabel tome [chooseOne iid $ map toLabel actions]) pairs'
+        $ chooseOneAtATime player
+        $ map (\(tome, actions) -> targetLabel tome [chooseOne player $ map toLabel actions]) pairs'
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel iid [search iid attrs attrs [fromDiscard] (#asset <> withTrait Tome) $ DrawFound iid 1]
           , Label "Do not use Daisy's ability" []
           ]

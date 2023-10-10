@@ -34,6 +34,7 @@ instance RunMessage BeatCop where
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
       let source = toAbilitySource attrs 1
       enemies <- selectList $ enemyAtLocationWith iid
-      push $ chooseOrRunOne iid $ targetLabels enemies (only . assignEnemyDamage (nonAttack source 1))
+      player <- getPlayer iid
+      push $ chooseOrRunOne player $ targetLabels enemies (only . assignEnemyDamage (nonAttack source 1))
       pure a
     _ -> BeatCop <$> runMessage msg attrs

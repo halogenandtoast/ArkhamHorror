@@ -50,9 +50,10 @@ instance RunMessage Backpack where
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
+      player <- getPlayer iid
       pushAll
         [ chooseUpToN
-            iid
+            player
             (3 + additionalTargets)
             "Done choosing cards"
             [ TargetLabel
@@ -63,7 +64,8 @@ instance RunMessage Backpack where
         ]
       pure a
     SearchNoneFound iid target | isTarget attrs target -> do
-      push $ chooseOne iid [Label "No Cards Found" []]
+      player <- getPlayer iid
+      push $ chooseOne player [Label "No Cards Found" []]
       pure a
     InitiatePlayCard iid card _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs ->
       do

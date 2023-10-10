@@ -49,8 +49,9 @@ instance RunMessage WilliamYorick where
               then [InitiatePlayCard iid c Nothing windows'' False]
               else [PayCardCost iid c windows'']
       playableTargets <- filterM (getIsPlayable iid source UnpaidCost windows'' . PlayerCard) targets
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [targetLabel (toCardId card) (playCardMsgs $ PlayerCard card) | card <- playableTargets]
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do

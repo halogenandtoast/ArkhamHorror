@@ -21,54 +21,37 @@ theCouncilsCoffer2 = asset TheCouncilsCoffer2 Cards.theCouncilsCoffer2
 instance HasAbilities TheCouncilsCoffer2 where
   getAbilities (TheCouncilsCoffer2 a) =
     [ limitedAbility (PerCopyLimit Cards.theCouncilsCoffer2 PerCampaign 1)
-        $ restrictedAbility
-          a
-          0
-          (if useCount (assetUses a) == 0 then NoRestriction else Never)
+        $ restrictedAbility a 0 (if useCount (assetUses a) == 0 then NoRestriction else Never)
         $ SilentForcedAbility AnyWindow
     , restrictedAbility a 1 OnSameLocation
         $ ActionAbility Nothing
-        $ ActionCost
-          2
+        $ ActionCost 2
     ]
 
 instance RunMessage TheCouncilsCoffer2 where
   runMessage msg a@(TheCouncilsCoffer2 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 0 _ _ -> do
-      iids <- getInvestigatorIds
+      investigators <- getInvestigatorPlayers
       pushAll
         $ [ chooseOne
-            iid
+            player
             [ Label
                 "Search Deck"
-                [ search
-                    iid
-                    (toSource attrs)
-                    (toTarget iid)
-                    [(FromDeck, ShuffleBackIn)]
-                    AnyCard
-                    (PlayFoundNoCost iid 1)
-                ]
+                [search iid attrs iid [(FromDeck, ShuffleBackIn)] AnyCard (PlayFoundNoCost iid 1)]
             , Label
                 "Search Discard"
-                [ search
-                    iid
-                    (toSource attrs)
-                    (toTarget iid)
-                    [(FromDiscard, PutBack)]
-                    AnyCard
-                    (PlayFoundNoCost iid 1)
-                ]
+                [search iid attrs iid [(FromDiscard, PutBack)] AnyCard (PlayFoundNoCost iid 1)]
             ]
-          | iid <- iids
+          | (iid, player) <- investigators
           ]
         <> [Exile (toTarget attrs)]
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let chooseSkillTest skillType = beginSkillTest iid attrs iid skillType 5
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [SkillLabel sType [chooseSkillTest sType] | sType <- allSkills]
       pure a
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->

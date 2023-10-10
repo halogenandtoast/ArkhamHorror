@@ -47,7 +47,7 @@ instance RunMessage SomethingStirs where
       maxDoom <- fieldMax LocationDoom Anywhere
       targets <- selectList $ LocationWithDoom $ EqualTo (Static maxDoom)
       harbingerOfValusia <- getSetAsideCard Enemies.harbingerOfValusia
-      lead <- getLead
+      lead <- getLeadPlayer
       choices <- for targets $ \target -> do
         choice <- createEnemyAt_ harbingerOfValusia target Nothing
         pure $ targetLabel target [choice]

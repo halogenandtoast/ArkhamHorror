@@ -31,12 +31,11 @@ instance HasAbilities ScrollOfSecrets where
 instance RunMessage ScrollOfSecrets where
   runMessage msg a@(ScrollOfSecrets attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <-
-        selectTargets
-          $ InvestigatorWithoutModifier CannotManipulateDeck
+      targets <- selectTargets $ InvestigatorWithoutModifier CannotManipulateDeck
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             target
             [ lookAt
@@ -51,14 +50,15 @@ instance RunMessage ScrollOfSecrets where
           ]
       pure a
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
         , chooseOrRunOne
-            iid
+            player
             [ targetLabel
               (toCardId card)
               [ chooseOne
-                  iid
+                  player
                   [ Label "Discard" [AddToEncounterDiscard card]
                   , Label
                       "Place on bottom of encounter deck"
@@ -81,29 +81,29 @@ instance RunMessage ScrollOfSecrets where
         , UnfocusCards
         ]
       pure a
-    SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards ->
-      do
-        pushAll
-          [ FocusCards cards
-          , chooseOrRunOne
-              iid
-              [ targetLabel
-                (toCardId card)
-                [ chooseOne
-                    iid
-                    [ Label "Discard" [AddToDiscard iid' card]
-                    , Label "Add to Hand" [addToHand iid' (PlayerCard card)]
-                    , Label
-                        "Place on bottom of deck"
-                        [PutCardOnBottomOfDeck iid deck (PlayerCard card)]
-                    , Label
-                        "Place on top of deck"
-                        [PutCardOnTopOfDeck iid deck (PlayerCard card)]
-                    ]
-                ]
-              | card <- mapMaybe (preview _PlayerCard) cards
+    SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards -> do
+      player <- getPlayer iid
+      pushAll
+        [ FocusCards cards
+        , chooseOrRunOne
+            player
+            [ targetLabel
+              (toCardId card)
+              [ chooseOne
+                  player
+                  [ Label "Discard" [AddToDiscard iid' card]
+                  , Label "Add to Hand" [addToHand iid' (PlayerCard card)]
+                  , Label
+                      "Place on bottom of deck"
+                      [PutCardOnBottomOfDeck iid deck (PlayerCard card)]
+                  , Label
+                      "Place on top of deck"
+                      [PutCardOnTopOfDeck iid deck (PlayerCard card)]
+                  ]
               ]
-          , UnfocusCards
-          ]
-        pure a
+            | card <- mapMaybe (preview _PlayerCard) cards
+            ]
+        , UnfocusCards
+        ]
+      pure a
     _ -> ScrollOfSecrets <$> runMessage msg attrs

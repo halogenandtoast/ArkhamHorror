@@ -48,63 +48,46 @@ instance RunMessage JudgementXX where
   runMessage msg a@(JudgementXX attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <- getInvestigatorIds
+      investigators <- getInvestigatorPlayers
       n <- getDoomCount
       let damage = if n >= 5 then 2 else 1
       pushAll
         $ [ chooseOne
-            iid
-            [ Label
-                "Take damage"
-                [ InvestigatorAssignDamage
-                    iid
-                    (toSource attrs)
-                    DamageAny
-                    damage
-                    0
-                ]
-            , Label
-                "Take horror"
-                [ InvestigatorAssignDamage
-                    iid
-                    (toSource attrs)
-                    DamageAny
-                    0
-                    damage
-                ]
+            player
+            [ Label "Take damage" [assignDamage investigator attrs damage]
+            , Label "Take horror" [assignHorror investigator attrs damage]
             ]
-          | iid <- iids
+          | (investigator, player) <- investigators
           ]
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _ ->
-      do
-        push $ RevertAgenda $ toId attrs
-        cardCode <- field InvestigatorCardCode iid
-        let
-          handleOther = do
-            n <- getDoomCount
-            let
-              key =
-                if n >= 5 && isSource attrs source
-                  then DisappearedIntoTheMist
-                  else WasPulledIntoTheSpectralRealm
-            push $ RecordSetInsert key [recorded cardCode]
-        case source of
-          (EnemyAttackSource eid) -> do
-            isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
-            isMonster <- eid <=~> EnemyWithTrait Monster
-            when isTheSpectralWatcher
-              $ push
-              $ RecordSetInsert
-                WasTakenByTheWatcher
-                [recorded cardCode]
-            when isMonster
-              $ push
-              $ RecordSetInsert
-                WasClaimedBySpecters
-                [recorded cardCode]
-            when (not isMonster && not isTheSpectralWatcher) handleOther
-          _ -> handleOther
-        push $ AdvanceAgenda $ toId attrs
-        pure a
+    UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _ -> do
+      push $ RevertAgenda $ toId attrs
+      cardCode <- field InvestigatorCardCode iid
+      let
+        handleOther = do
+          n <- getDoomCount
+          let
+            key =
+              if n >= 5 && isSource attrs source
+                then DisappearedIntoTheMist
+                else WasPulledIntoTheSpectralRealm
+          push $ RecordSetInsert key [recorded cardCode]
+      case source of
+        (EnemyAttackSource eid) -> do
+          isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
+          isMonster <- eid <=~> EnemyWithTrait Monster
+          when isTheSpectralWatcher
+            $ push
+            $ RecordSetInsert
+              WasTakenByTheWatcher
+              [recorded cardCode]
+          when isMonster
+            $ push
+            $ RecordSetInsert
+              WasClaimedBySpecters
+              [recorded cardCode]
+          when (not isMonster && not isTheSpectralWatcher) handleOther
+        _ -> handleOther
+      push $ AdvanceAgenda $ toId attrs
+      pure a
     _ -> JudgementXX <$> runMessage msg attrs

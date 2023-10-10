@@ -51,9 +51,10 @@ instance RunMessage FloodedSquare where
       mCounterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       for_ mCounterClockwiseLocation $ \counterClockwiseLocation -> do
         nonEliteEnemies <- selectList $ NonEliteEnemy <> enemyAt counterClockwiseLocation
+        player <- getPlayer iid
         push
           $ chooseOne
-            iid
+            player
             [targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- nonEliteEnemies]
       pure l
     _ -> FloodedSquare <$> runMessage msg attrs

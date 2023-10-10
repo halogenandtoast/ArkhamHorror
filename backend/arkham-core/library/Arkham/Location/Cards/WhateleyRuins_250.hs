@@ -52,41 +52,44 @@ instance RunMessage WhateleyRuins_250 where
         selectWithField InvestigatorClues
           $ investigatorAt (toId attrs)
           <> InvestigatorWithAnyClues
+      investigatorPlayersWithCluePairs <-
+        traverse (traverseToSnd $ getPlayer . fst) investigatorWithCluePairs
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination
       when
         (null investigatorWithCluePairs || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
       let
-        placeClueOnAbomination iid' =
+        placeClueOnAbomination iid' player' =
           chooseOne
-            iid'
+            player'
             [ targetLabel
               target
               [PlaceClues (toAbilitySource attrs 1) target 1, InvestigatorSpendClues iid' 1]
             | target <- abominations
             ]
 
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel iid'
-            $ placeClueOnAbomination iid'
+            $ placeClueOnAbomination iid' player'
             : [ chooseOne
-                iid'
-                [ Label "Spend a second clue" [placeClueOnAbomination iid']
+                player'
+                [ Label "Spend a second clue" [placeClueOnAbomination iid' player']
                 , Label "Do not spend a second clue" []
                 ]
               | clueCount > 1
               ]
               <> [ chooseOne
-                  iid'
-                  [ Label "Spend a third clue" [placeClueOnAbomination iid']
+                  player'
+                  [ Label "Spend a third clue" [placeClueOnAbomination iid' player']
                   , Label "Do not spend a third clue" []
                   ]
                  | clueCount > 2
                  ]
-          | (iid', clueCount) <- investigatorWithCluePairs
+          | ((iid', clueCount), player') <- investigatorPlayersWithCluePairs
           ]
       pure l
     _ -> WhateleyRuins_250 <$> runMessage msg attrs

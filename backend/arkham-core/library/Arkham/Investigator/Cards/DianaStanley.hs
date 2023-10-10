@@ -58,10 +58,11 @@ instance RunMessage DianaStanley where
   runMessage msg i@(DianaStanley attrs) = case msg of
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
+      player <- getPlayer iid
       when (notNull cardsUnderneath) $ do
         pushAll
           [ FocusCards cardsUnderneath
-          , chooseOrRunOne iid
+          , chooseOrRunOne player
               $ Label "Do not add any cards to your Hand" [UnfocusCards]
               : [targetLabel (toCardId c) [UnfocusCards, addToHand iid c] | c <- cardsUnderneath]
           ]

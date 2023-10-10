@@ -67,13 +67,14 @@ instance RunMessage RitaYoung where
           , withoutModifier iid CannotDealDamage
           ]
       connectingLocations <- accessibleLocations iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label "Damage enemy" [EnemyDamage enemyId $ nonAttack (toAbilitySource attrs 1) 1]
           | canDamage
           ]
         <> [ Label "Move to a connecting location"
-            $ [chooseOne iid $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)]
+            $ [chooseOne player $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)]
            | notNull connectingLocations
            ]
       pure i

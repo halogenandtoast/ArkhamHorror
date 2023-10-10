@@ -36,8 +36,9 @@ instance RunMessage BookOfShadows3 where
       BookOfShadows3 <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       spellAssets <- selectList $ assetControlledBy iid <> withTrait Spell
+      player <- getPlayer iid
       pushIfAny spellAssets
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels spellAssets (\spellAsset -> only $ AddUses spellAsset Charge 1)
       pure a
     _ -> BookOfShadows3 <$> runMessage msg attrs

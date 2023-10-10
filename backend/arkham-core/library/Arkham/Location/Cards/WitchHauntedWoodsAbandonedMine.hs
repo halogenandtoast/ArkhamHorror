@@ -75,16 +75,17 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
           $ InvestigatorAt
             (NotLocation $ locationWithInvestigator iid)
 
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             iid'
-            [ chooseOrRunOne iid
+            [ chooseOrRunOne player
                 $ [ Label
                     "Move to their pool"
                     [ chooseAmounts
-                        iid
+                        player
                         "Choose amount of resources to move"
                         (MaxAmountTarget 3)
                         [("Resources", (0, resources))]
@@ -101,7 +102,7 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
                 <> [ Label
                     "Move to your pool"
                     [ chooseAmounts
-                        iid
+                        player
                         "Choose amount of resources to move"
                         (MaxAmountTarget 3)
                         [("Resources", (0, otherResources))]

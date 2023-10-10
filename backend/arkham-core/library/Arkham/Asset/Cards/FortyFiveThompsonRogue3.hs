@@ -17,12 +17,10 @@ newtype FortyFiveThompsonRogue3 = FortyFiveThompsonRogue3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyFiveThompsonRogue3 :: AssetCard FortyFiveThompsonRogue3
-fortyFiveThompsonRogue3 =
-  asset FortyFiveThompsonRogue3 Cards.fortyFiveThompsonRogue3
+fortyFiveThompsonRogue3 = asset FortyFiveThompsonRogue3 Cards.fortyFiveThompsonRogue3
 
 instance HasAbilities FortyFiveThompsonRogue3 where
-  getAbilities (FortyFiveThompsonRogue3 a) =
-    [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
+  getAbilities (FortyFiveThompsonRogue3 a) = [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
 
 instance RunMessage FortyFiveThompsonRogue3 where
   runMessage msg a@(FortyFiveThompsonRogue3 attrs) = case msg of
@@ -40,8 +38,9 @@ instance RunMessage FortyFiveThompsonRogue3 where
           when (n >= fightValue) $ do
             enemies <- selectList $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid)
             canDealDamage <- withoutModifier iid CannotDealDamage
+            player <- getPlayer iid
             push
-              $ chooseOrRunOne iid
+              $ chooseOrRunOne player
               $ Label "Do not damage any enemies" []
               : [ targetLabel eid'
                   $ [ SpendUses (toTarget attrs) Ammo 1

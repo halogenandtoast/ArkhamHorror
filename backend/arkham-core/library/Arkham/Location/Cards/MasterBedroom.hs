@@ -30,12 +30,8 @@ instance HasAbilities MasterBedroom where
       [ restrictedAbility
           a
           1
-          ( InvestigatorExists (investigatorAt $ toId a)
-              <> EnemyCriteria
-                ( EnemyExists
-                    $ EnemyWithTrait SilverTwilight
-                    <> EnemyWithoutModifier CannotPlaceDoomOnThis
-                )
+          ( exists (investigatorAt $ toId a)
+              <> exists (EnemyWithTrait SilverTwilight <> EnemyWithoutModifier CannotPlaceDoomOnThis)
           )
           $ ForcedAbility
           $ RoundEnds Timing.When
@@ -52,7 +48,7 @@ instance RunMessage MasterBedroom where
                 <> EnemyWithoutModifier CannotPlaceDoomOnThis
             )
       unless (null enemies) $ do
-        lead <- getLead
+        lead <- getLeadPlayer
         push
           $ chooseOrRunOne
             lead

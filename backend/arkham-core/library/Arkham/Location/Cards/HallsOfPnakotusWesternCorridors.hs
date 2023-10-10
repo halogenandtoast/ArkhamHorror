@@ -44,9 +44,10 @@ instance RunMessage HallsOfPnakotusWesternCorridors where
           $ LocationWithTitle "Halls of Pnakotus"
           <> NotLocation
             (LocationWithId $ toId attrs)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
           | lid <- otherHalls
           ]

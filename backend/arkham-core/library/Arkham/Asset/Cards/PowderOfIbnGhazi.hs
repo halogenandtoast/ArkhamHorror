@@ -51,6 +51,7 @@ instance RunMessage PowderOfIbnGhazi where
           ]
       PowderOfIbnGhazi <$> runMessage msg (attrs & tokensL %~ setTokens Clue survivedCount)
     UseCardAbility you source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer you
       targets <-
         selectListMap EnemyTarget
           $ EnemyWithTitle "Brood of Yog-Sothoth"
@@ -59,6 +60,6 @@ instance RunMessage PowderOfIbnGhazi where
       case targets of
         [] -> throwIO $ InvalidState "missing brood of yog sothoth"
         [x] -> push (PlaceClues (toAbilitySource attrs 1) x 1)
-        xs -> push (chooseOne you [TargetLabel x [PlaceClues (toAbilitySource attrs 1) x 1] | x <- xs])
+        xs -> push (chooseOne player [TargetLabel x [PlaceClues (toAbilitySource attrs 1) x 1] | x <- xs])
       pure . PowderOfIbnGhazi $ attrs & tokensL %~ decrementTokens Clue
     _ -> PowderOfIbnGhazi <$> runMessage msg attrs

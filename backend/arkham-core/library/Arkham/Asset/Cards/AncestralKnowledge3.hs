@@ -50,10 +50,11 @@ instance RunMessage AncestralKnowledge3 where
 
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      player <- getPlayer iid
       pushAll
         [ FocusCards (assetCardsUnderneath attrs)
         , chooseOne
-            iid
+            player
             [ targetLabel (toCardId c) [addToHand iid c]
             | c <- assetCardsUnderneath attrs
             ]

@@ -241,27 +241,34 @@ investigatorWith
   -> CardDef
   -> Stats
   -> (InvestigatorAttrs -> InvestigatorAttrs)
-  -> CardBuilder () a
+  -> CardBuilder PlayerId a
 investigatorWith f cardDef stats g = investigator (f . g) cardDef stats
 
 startsWith
-  :: (Entity a, EntityAttrs a ~ InvestigatorAttrs) => [CardDef] -> CardBuilder () a -> CardBuilder () a
+  :: (Entity a, EntityAttrs a ~ InvestigatorAttrs)
+  => [CardDef]
+  -> CardBuilder PlayerId a
+  -> CardBuilder PlayerId a
 startsWith cards = fmap (overAttrs (startsWithL <>~ cards))
 
 startsWithInHand
-  :: (Entity a, EntityAttrs a ~ InvestigatorAttrs) => [CardDef] -> CardBuilder () a -> CardBuilder () a
+  :: (Entity a, EntityAttrs a ~ InvestigatorAttrs)
+  => [CardDef]
+  -> CardBuilder PlayerId a
+  -> CardBuilder PlayerId a
 startsWithInHand cards = fmap (overAttrs (startsWithInHandL <>~ cards))
 
 investigator
-  :: (InvestigatorAttrs -> a) -> CardDef -> Stats -> CardBuilder () a
+  :: (InvestigatorAttrs -> a) -> CardDef -> Stats -> CardBuilder PlayerId a
 investigator f cardDef Stats {..} =
   let iid = InvestigatorId (cdCardCode cardDef)
    in CardBuilder
         { cbCardCode = cdCardCode cardDef
-        , cbCardBuilder = \_ _ ->
+        , cbCardBuilder = \_ pid ->
             f
               $ InvestigatorAttrs
                 { investigatorId = iid
+                , investigatorPlayerId = pid
                 , investigatorName = cdName cardDef
                 , investigatorCardCode = cdCardCode cardDef
                 , investigatorArt = cdCardCode cardDef

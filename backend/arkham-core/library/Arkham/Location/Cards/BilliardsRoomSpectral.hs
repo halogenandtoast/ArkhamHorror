@@ -34,8 +34,9 @@ instance RunMessage BilliardsRoomSpectral where
   runMessage msg l@(BilliardsRoomSpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       assets <- selectList $ assetControlledBy iid <> DiscardableAsset
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Take 1 damage"
           [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]

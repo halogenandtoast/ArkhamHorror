@@ -56,12 +56,13 @@ instance RunMessage TommyMuldoon where
       horror <- field Field.AssetHorror asset
 
       hasBecky <- selectAny (assetIs Assets.becky)
+      player <- getPlayer iid
 
       pushAll
         $ if hasBecky
           then
             [ chooseAmounts
-                iid
+                player
                 ("Distribute " <> tshow (damage + horror) <> " Resources")
                 (TotalAmountTarget $ damage + horror)
                 [("Tommy Muldoon Resources", (0, damage + horror)), ("Becky Resources", (0, damage + horror))]
@@ -78,9 +79,10 @@ instance RunMessage TommyMuldoon where
       assetsWithHorror <- selectAny (AssetWithHorror <> assetControlledBy iid)
       assetsWithHealth <- selectAny (AssetWithHealth <> assetControlledBy iid)
       assetsWithSanity <- selectAny (AssetWithSanity <> assetControlledBy iid)
+      player <- getPlayer iid
 
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control"
             [HandleAbilityOption iid (toSource ElderSign) 1]
@@ -100,10 +102,11 @@ instance RunMessage TommyMuldoon where
           hasHorror <- fieldSome InvestigatorHorror iid
           assetsWithHealth <- selectList (AssetWithHealth <> assetControlledBy iid)
           assetsWithSanity <- selectList (AssetWithSanity <> assetControlledBy iid)
+          player <- getPlayer iid
 
           when ((hasDamage && notNull assetsWithHealth) || (hasHorror && notNull assetsWithSanity)) $ do
             push
-              $ chooseOrRunOne iid
+              $ chooseOrRunOne player
               $ [Label "Done moving damage/horror" [] | n == 11]
               <> [ AssetHorrorLabel asset
                   $ MovedHorror (toSource iid) (toTarget asset) 1
@@ -122,8 +125,9 @@ instance RunMessage TommyMuldoon where
       , n `elem` [2, 22] -> do
           assetsWithDamage <- selectList (AssetWithDamage <> assetControlledBy iid)
           assetsWithHorror <- selectList (AssetWithHorror <> assetControlledBy iid)
+          player <- getPlayer iid
           pushWhen (notNull assetsWithDamage || notNull assetsWithHorror)
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ [Label "Done moving damage/horror" [] | n == 22]
             <> [ AssetHorrorLabel asset
                 $ MovedHorror (toSource asset) (toTarget iid) 1

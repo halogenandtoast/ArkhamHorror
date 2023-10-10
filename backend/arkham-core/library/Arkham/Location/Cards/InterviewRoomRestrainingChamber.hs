@@ -38,19 +38,18 @@ instance HasAbilities InterviewRoomRestrainingChamber where
 instance RunMessage InterviewRoomRestrainingChamber where
   runMessage msg l@(InterviewRoomRestrainingChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel SkillIntellect [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4]
           , SkillLabel SkillCombat [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4]
           ]
       pure l
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Remember InterviewedASubject
-        pure l
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-        pure l
+    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      push $ Remember InterviewedASubject
+      pure l
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+      pure l
     _ -> InterviewRoomRestrainingChamber <$> runMessage msg attrs

@@ -19,16 +19,14 @@ venturer = ally Venturer Cards.venturer (2, 2)
 
 instance HasAbilities Venturer where
   getAbilities (Venturer a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> AssetExists
-              ( AssetControlledBy (InvestigatorAt YourLocation)
-                  <> AssetOneOf [AssetWithUseType Supply, AssetWithUseType Ammo]
-                  <> AssetNotAtUseLimit
-                  <> NotAsset (AssetWithId $ toId a)
-              )
+        ( exists
+            $ AssetControlledBy (InvestigatorAt YourLocation)
+            <> AssetOneOf [AssetWithUseType Supply, AssetWithUseType Ammo]
+            <> AssetNotAtUseLimit
+            <> NotAsset (AssetWithId $ toId a)
         )
         $ FastAbility
         $ ExhaustCost (toTarget a)
@@ -48,8 +46,9 @@ instance RunMessage Venturer where
           $ AssetWithUseType Ammo
           <> AssetControlledBy
             (colocatedWith iid)
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel aid [AddUses aid Supply 1]
           | aid <- supplyAssets
           ]

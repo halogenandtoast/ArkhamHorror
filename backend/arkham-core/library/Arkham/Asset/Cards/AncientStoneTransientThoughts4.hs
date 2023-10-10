@@ -46,8 +46,9 @@ instance RunMessage AncientStoneTransientThoughts4 where
       pure a
     UseCardAbilityStep iid (isSource attrs -> True) 1 _ _ 1 -> do
       targets <- selectList $ AccessibleFrom $ locationWithInvestigator iid
+      player <- getPlayer iid
       pushWhen (notNull targets)
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels targets (only . Move . move (toAbilitySource attrs 1) iid)
       pure a
     _ -> AncientStoneTransientThoughts4 <$> runMessage msg attrs

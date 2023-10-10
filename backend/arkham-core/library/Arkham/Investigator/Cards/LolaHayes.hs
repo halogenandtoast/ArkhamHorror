@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.LolaHayes where
 
 import Arkham.Prelude
 
+import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -32,10 +33,11 @@ instance HasAbilities LolaHayes where
     , playerLimit PerRound $ restrictedAbility attrs 2 Self (FastAbility Free)
     ]
 
-switchRole :: HasQueue Message m => InvestigatorAttrs -> m ()
-switchRole attrs =
+switchRole :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> m ()
+switchRole attrs = do
   let roles = filter (/= Mythos) [minBound .. maxBound]
-   in push $ chooseOne attrs.id [Label (tshow role) [SetRole attrs.id role] | role <- roles]
+  player <- getPlayer (toId attrs)
+  push $ chooseOne player [Label (tshow role) [SetRole attrs.id role] | role <- roles]
 
 instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = case msg of

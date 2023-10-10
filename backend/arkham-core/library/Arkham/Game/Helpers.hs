@@ -2937,6 +2937,7 @@ damageEffectMatches a = \case
 spawnAtOneOf :: (HasGame m, HasQueue Message m) => InvestigatorId -> EnemyId -> [LocationId] -> m ()
 spawnAtOneOf iid eid targetLids = do
   locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
+  player <- getPlayer iid
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> push (Discard GameSource (EnemyTarget eid))
     [lid] -> do
@@ -2949,7 +2950,7 @@ spawnAtOneOf iid eid targetLids = do
 
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel lid $ windows' : resolve (EnemySpawn Nothing lid eid)
           | (windows', lid) <- windowPairs
           ]

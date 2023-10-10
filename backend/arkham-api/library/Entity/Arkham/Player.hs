@@ -6,6 +6,7 @@ module Entity.Arkham.Player (
   module Entity.Arkham.Player,
 ) where
 
+import Data.UUID (UUID)
 import Database.Persist.TH
 import Entity.Arkham.Game
 import Entity.User
@@ -17,6 +18,7 @@ mkPersist
   sqlSettings
   [persistLowerCase|
 ArkhamPlayer sql=arkham_players
+  Id UUID default=uuid_generate_v4()
   userId UserId OnDeleteCascade
   arkhamGameId ArkhamGameId OnDeleteCascade
   investigatorId Text

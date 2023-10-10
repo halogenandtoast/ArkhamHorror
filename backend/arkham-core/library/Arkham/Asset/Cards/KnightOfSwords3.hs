@@ -35,9 +35,10 @@ instance HasAbilities KnightOfSwords3 where
 instance RunMessage KnightOfSwords3 where
   runMessage msg a@(KnightOfSwords3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Discard Knight of Swords to get +3 instead"
               [skillTestModifier attrs iid (AnySkillValue 3), RecalculateSkillTestResults]

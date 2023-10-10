@@ -38,8 +38,9 @@ instance RunMessage OldBookOfLore3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- selectList $ colocatedWith iid
       let source = toAbilitySource attrs 1
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ targetLabels investigators \iid' -> do
           only $ search iid' source iid' [fromTopOfDeck 3] AnyCard (DeferSearchedToTarget $ toTarget attrs)
       pure a
@@ -48,9 +49,10 @@ instance RunMessage OldBookOfLore3 where
       push (DoStep 1 msg)
       let source = toAbilitySource attrs 1
       additionalTargets <- getAdditionalSearchTargets iid'
+      player <- getPlayer iid'
       push
         $ chooseN
-          iid'
+          player
           (min (length targetCards) (1 + additionalTargets))
           [ targetLabel (toCardId card) [HandleTargetChoice iid' source (CardIdTarget $ toCardId card)]
           | card <- targetCards
@@ -83,7 +85,9 @@ instance RunMessage OldBookOfLore3 where
                 , DoStep 1 (SearchFound iid target deck (deleteFirst card targetCards))
                 ]
 
-          pushIfAny choices $ chooseOne iid (Label "Do not spend any secrets to play any cards" [] : choices)
+          player <- getPlayer iid
+          pushIfAny choices
+            $ chooseOne player (Label "Do not spend any secrets to play any cards" [] : choices)
 
         pure a
     _ -> OldBookOfLore3 <$> runMessage msg attrs

@@ -49,10 +49,11 @@ instance RunMessage RivertownAbandonedWarehouse where
     UseCardAbility iid source 1 _ payments | isSource attrs source -> do
       let doomToRemove = willpowerCount payments
       cultists <- selectList $ EnemyWithTrait Cultist
+      player <- getPlayer iid
       unless (null cultists)
         $ push
         $ chooseOne
-          iid
+          player
           [ targetLabel eid [RemoveDoom (toAbilitySource attrs 1) (EnemyTarget eid) doomToRemove]
           | eid <- cultists
           ]

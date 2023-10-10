@@ -90,15 +90,16 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
 
       drawing <- newCardDraw iid attrs 1
 
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
             [ toMessage
                 $ (chooseAndDiscardCard iid attrs)
                   { discardThen =
                       guard (notNull chooseOtherDraw)
-                        $> chooseOrRunOne iid chooseOtherDraw
+                        $> chooseOrRunOne player chooseOtherDraw
                   }
             ]
           | handLength > 0
@@ -106,7 +107,7 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
         <> [ Label
             "vice versa"
             [ chooseOrRunOne
-                iid
+                player
                 [ targetLabel
                   other
                   [ toMessage

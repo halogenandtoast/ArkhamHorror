@@ -37,19 +37,21 @@ getDamageAndHorror (_ : xs) = getDamageAndHorror xs
 
 instance RunMessage DelayTheInevitable where
   runMessage msg e@(DelayTheInevitable attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       iids <- selectList $ colocatedWith iid
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel iid [PlaceEvent iid eid $ InPlayArea investigator]
           | investigator <- iids
           ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 (getDamageAndHorror -> (damage, horror)) _ -> do
+      player <- getPlayer iid
       pushAll
         [ Discard (toAbilitySource attrs 1) (toTarget attrs)
-        , chooseOrRunOne iid
+        , chooseOrRunOne player
             $ [Label "Cancel Damage" [CancelDamage iid damage] | damage > 0]
             <> [Label "Cancel Horror" [CancelHorror iid horror] | horror > 0]
             <> [ Label
@@ -61,8 +63,9 @@ instance RunMessage DelayTheInevitable where
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       canAfford <- fieldMap InvestigatorResources (> 2) iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [Label "Spend 2 Resources" [SpendResources iid 2] | canAfford]
         <> [ Label
               "Discard Delay the Invevitabe"

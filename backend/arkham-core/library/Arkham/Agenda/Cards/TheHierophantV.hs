@@ -29,21 +29,22 @@ instance HasAbilities TheHierophantV where
     ]
 
 -- given a list of investigators and a list of cultists have each investigator choose a cultist to draw
-buildDrawCultists :: [Card] -> NonEmpty InvestigatorId -> NonEmpty EncounterCard -> Message
-buildDrawCultists focused (investigator :| []) cards =
+buildDrawCultists
+  :: [Card] -> NonEmpty (InvestigatorId, PlayerId) -> NonEmpty EncounterCard -> Message
+buildDrawCultists focused ((investigator, player) :| []) cards =
   Run
     [ FocusCards focused
     , chooseOne
-        investigator
+        player
         [ targetLabel (toCardId card) [UnfocusCards, InvestigatorDrewEncounterCard investigator card]
         | card <- toList cards
         ]
     ]
-buildDrawCultists focused (investigator :| (nextInvestigator : remainingInvestigators)) cards =
+buildDrawCultists focused ((investigator, player) :| (nextInvestigator : remainingInvestigators)) cards =
   Run
     [ FocusCards focused
     , chooseOne
-        investigator
+        player
         [ targetLabel
           (toCardId card)
           ( UnfocusCards
@@ -69,7 +70,7 @@ instance RunMessage TheHierophantV where
     DiscardedTopOfEncounterDeck _ cards _ (isTarget attrs -> True) -> do
       let mCultists = nonEmpty $ filter (`cardMatch` (CardWithTrait Cultist <> CardWithType EnemyType)) cards
       for_ mCultists $ \cultists -> do
-        mInvestigators <- nonEmpty <$> getInvestigators
+        mInvestigators <- nonEmpty <$> getInvestigatorPlayers
         case mInvestigators of
           Just investigators -> do
             push $ buildDrawCultists (map toCard cards) investigators cultists

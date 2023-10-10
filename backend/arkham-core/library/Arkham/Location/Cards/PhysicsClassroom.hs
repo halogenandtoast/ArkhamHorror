@@ -52,9 +52,10 @@ instance RunMessage PhysicsClassroom where
           <> RevealedLocation
           <> LocationWithAnyClues
           <> NotLocation (LocationWithId $ toId attrs)
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel lid [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 1 Nothing]
           | lid <- locations
           ]

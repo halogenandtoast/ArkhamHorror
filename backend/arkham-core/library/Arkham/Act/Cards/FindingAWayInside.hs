@@ -28,39 +28,33 @@ findingAWayInside =
 
 instance RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid source@(LocationSource _) advanceMode
-      | aid == actId && onSide A attrs -> do
-          -- When advanced from Museum Halls we don't spend clues
-          leadInvestigatorId <- getLeadInvestigatorId
-          push
-            $ chooseOne
-              leadInvestigatorId
-              [targetLabel aid [AdvanceAct aid source advanceMode]]
-          pure $ FindingAWayInside $ attrs & sequenceL .~ Sequence 1 B
-    AdvanceAct aid _ _
-      | aid == actId && onSide A attrs ->
-          -- otherwise we do the default
-          FindingAWayInside <$> runMessage msg attrs
-    AdvanceAct aid source _
-      | aid == actId && onSide B attrs && isSource attrs source -> do
-          leadInvestigatorId <- getLeadInvestigatorId
-          investigatorIds <- getInvestigatorIds
-          adamLynch <- genCard Assets.adamLynch
-          museumHallsId <-
-            fromJustNote "missing museum halls"
-              <$> selectOne (LocationWithTitle "Museum Halls")
-          pushAll
-            [ chooseOne
-                leadInvestigatorId
-                [ targetLabel
-                  iid
-                  [TakeControlOfSetAsideAsset iid adamLynch]
-                | iid <- investigatorIds
-                ]
-            , RevealLocation Nothing museumHallsId
-            , AdvanceToAct actDeckId Acts.nightAtTheMuseum A (toSource attrs)
+    AdvanceAct aid source@(LocationSource _) advanceMode | aid == actId && onSide A attrs -> do
+      -- When advanced from Museum Halls we don't spend clues
+      lead <- getLeadPlayer
+      push $ chooseOne lead [targetLabel aid [AdvanceAct aid source advanceMode]]
+      pure $ FindingAWayInside $ attrs & sequenceL .~ Sequence 1 B
+    AdvanceAct aid _ _ | aid == actId && onSide A attrs -> do
+      -- otherwise we do the default
+      FindingAWayInside <$> runMessage msg attrs
+    AdvanceAct aid source _ | aid == actId && onSide B attrs && isSource attrs source -> do
+      lead <- getLeadPlayer
+      investigatorIds <- getInvestigatorIds
+      adamLynch <- genCard Assets.adamLynch
+      museumHallsId <-
+        fromJustNote "missing museum halls"
+          <$> selectOne (LocationWithTitle "Museum Halls")
+      pushAll
+        [ chooseOne
+            lead
+            [ targetLabel
+              iid
+              [TakeControlOfSetAsideAsset iid adamLynch]
+            | iid <- investigatorIds
             ]
-          pure a
+        , RevealLocation Nothing museumHallsId
+        , AdvanceToAct actDeckId Acts.nightAtTheMuseum A (toSource attrs)
+        ]
+      pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       museumHallsId <-
         fromJustNote "missing museum halls"

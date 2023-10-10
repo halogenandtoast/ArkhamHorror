@@ -22,11 +22,7 @@ maskedCarnevaleGoer_21 =
 
 instance HasAbilities MaskedCarnevaleGoer_21 where
   getAbilities (MaskedCarnevaleGoer_21 x) =
-    [ restrictedAbility
-        x
-        1
-        OnSameLocation
-        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost (Static 1)])
+    [ restrictedAbility x 1 OnSameLocation (actionAbilityWithCost $ ClueCost (Static 1))
     ]
 
 instance RunMessage MaskedCarnevaleGoer_21 where
@@ -49,10 +45,10 @@ instance RunMessage MaskedCarnevaleGoer_21 where
       let
         innocentReveler =
           PlayerCard $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       pushAll
         [ FocusCards [innocentReveler]
-        , chooseOne leadInvestigatorId [Label "Continue" [UnfocusCards]]
+        , chooseOne lead [Label "Continue" [UnfocusCards]]
         ]
       pure a
     _ -> MaskedCarnevaleGoer_21 <$> runMessage msg attrs

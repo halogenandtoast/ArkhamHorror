@@ -21,30 +21,21 @@ liquidCourage = asset LiquidCourage Cards.liquidCourage
 
 instance HasAbilities LiquidCourage where
   getAbilities (LiquidCourage x) =
-    [ restrictedAbility
+    [ controlledAbility
         x
         1
-        ( ControlsThis
-            <> InvestigatorExists
-              ( HealableInvestigator (toSource x) HorrorType
-                  $ InvestigatorAt YourLocation
-              )
-        )
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
+        (exists (HealableInvestigator (toSource x) HorrorType $ InvestigatorAt YourLocation))
+        $ actionAbilityWithCost (assetUseCost x Supply 1)
     ]
 
 instance RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      iids <-
-        selectList
-          $ HealableInvestigator (toSource attrs) HorrorType
-          $ colocatedWith iid
-      when (notNull iids)
-        $ push
+      iids <- selectList $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
+      player <- getPlayer iid
+      pushIfAny iids
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel
             iid'
             [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
@@ -53,15 +44,13 @@ instance RunMessage LiquidCourage where
           | iid' <- iids
           ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
-        pure a
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        pushAll
-          [ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
-          , toMessage $ randomDiscard iid (toSource attrs)
-          ]
-        pure a
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
+      pure a
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      pushAll
+        [ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
+        , toMessage $ randomDiscard iid (toSource attrs)
+        ]
+      pure a
     _ -> LiquidCourage <$> runMessage msg attrs

@@ -37,7 +37,8 @@ instance RunMessage DenyExistence5 where
           WouldTakeDamage {} -> Just $ go "take damage" w
           WouldTakeHorror {} -> Just $ go "take horror" w
           _ -> Nothing
-      push $ chooseOrRunOne iid choices
+      player <- getPlayer iid
+      push $ chooseOrRunOne player choices
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       case windowType w of

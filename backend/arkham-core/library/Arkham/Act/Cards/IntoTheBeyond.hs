@@ -43,19 +43,18 @@ instance RunMessage IntoTheBeyond where
           (toSource attrs)
           (Just $ toTarget attrs)
       pure a
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
-    AdvanceAct aid _ _
-      | aid == actId && onSide B attrs ->
-          a <$ push (AdvanceActDeck actDeckId (toSource attrs))
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
+      a <$ push (AdvanceActDeck actDeckId (toSource attrs))
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
+      player <- getPlayer iid
       unless (null locationCards)
         $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
-              iid
+              player
               [ targetLabel
                 (toCardId location)
                 [ InvestigatorDrewEncounterCard iid location

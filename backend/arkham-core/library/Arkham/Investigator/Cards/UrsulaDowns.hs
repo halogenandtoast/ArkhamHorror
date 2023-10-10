@@ -51,9 +51,10 @@ instance RunMessage UrsulaDowns where
       handCards <- field InvestigatorHand iid
       let investigateCards = filter (elem Action.Investigate . cdActions . toCardDef) handCards
       playableCards <- filterM (getIsPlayable iid (toSource attrs) UnpaidCost windows') investigateCards
+      player <- getPlayer iid
       push
         $ AskPlayer
-        $ chooseOne iid
+        $ chooseOne player
         $ map ((\f -> f windows' []) . AbilityLabel iid) (filter (`abilityIs` Action.Investigate) actions)
         <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
       pure i
@@ -62,11 +63,12 @@ instance RunMessage UrsulaDowns where
     SkillTestEnds _ _ | moveAfterTest metadata -> do
       lid <- getJustLocation (toId attrs)
       targets <- selectList $ accessibleFrom lid
+      player <- getPlayer (toId attrs)
       pushWhen (notNull targets)
-        $ chooseOne attrs.id
+        $ chooseOne player
         $ [ Label "Do not move to a connecting location" []
           , Label "Move to a connecting location"
-              $ [chooseOne attrs.id $ targetLabels targets (only . Move . move (toSource attrs) (toId attrs))]
+              $ [chooseOne player $ targetLabels targets (only . Move . move (toSource attrs) (toId attrs))]
           ]
       pure $ UrsulaDowns $ attrs `with` Metadata False
     _ -> UrsulaDowns . (`with` metadata) <$> runMessage msg attrs

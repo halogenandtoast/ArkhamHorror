@@ -30,9 +30,10 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) _ -> do
       enemies <- selectList $ enemyEngagedWith iid
+      player <- getPlayer iid
       pushAll
         $ toMessage (viaInvestigate $ discover iid lid (toAbilitySource attrs 1) 1)
-        : [ chooseOne iid $ Label "No evasion" [] : targetLabels enemies (only . EnemyEvaded iid)
+        : [ chooseOne player $ Label "No evasion" [] : targetLabels enemies (only . EnemyEvaded iid)
           | notNull enemies
           ]
       pure a

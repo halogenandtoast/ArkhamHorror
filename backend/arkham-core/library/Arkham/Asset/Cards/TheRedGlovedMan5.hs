@@ -44,8 +44,9 @@ skillTypes =
 instance RunMessage TheRedGlovedMan5 where
   runMessage msg a@(TheRedGlovedMan5 (attrs `With` metadata)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' p -> do
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label label [UseCardAbilityChoice iid (toSource attrs) 1 (SkillChoiceMetadata s) windows' p]
           | (label, s) <- skillTypes
           ]
@@ -54,8 +55,9 @@ instance RunMessage TheRedGlovedMan5 where
       let source = toAbilitySource attrs 1
       case metadata of
         Metadata [] -> do
+          player <- getPlayer iid
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ [ Label label [UseCardAbilityChoice iid source 1 (SkillChoiceMetadata s) windows' p]
               | (label, s) <- filter ((/= c) . snd) skillTypes
               ]

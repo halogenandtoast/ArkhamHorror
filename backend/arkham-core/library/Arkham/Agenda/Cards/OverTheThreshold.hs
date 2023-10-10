@@ -65,7 +65,7 @@ instance RunMessage OverTheThreshold where
           \(enemy, damage) -> do
             humanoids <- selectList $ EnemyWithTrait Humanoid <> EnemyAt (locationWithEnemy enemy)
             pure $ guard (notNull humanoids) $> (enemy, damage, humanoids)
-      lead <- getLead
+      lead <- getLeadPlayer
       pushWhen (notNull enemyPairs)
         $ chooseOrRunOneAtATime lead
         $ [ targetLabel enemy

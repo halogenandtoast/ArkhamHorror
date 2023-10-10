@@ -71,10 +71,11 @@ instance RunMessage TonyMorgan where
           <$> getPlayableCards attrs UnpaidCost windows'
 
       canPlay <- canDo (toId attrs) #play
+      player <- getPlayer iid
 
       push
         $ AskPlayer
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing windows' False]
           | canPlay
           , c <- playableCards

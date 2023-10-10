@@ -50,29 +50,29 @@ instance HasAbilities BeginnersLuck where
 
 instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
-    UseCardAbility iid source 1 (Window.revealedChaosTokens -> [token]) _
-      | isSource attrs source -> do
-          chaosTokensInBag <- getOnlyChaosTokensInBag
-          pushAll
-            [ FocusChaosTokens chaosTokensInBag
-            , chooseOne
-                iid
-                [ TargetLabel
-                  (ChaosTokenFaceTarget $ chaosTokenFace token')
-                  [ CreateChaosTokenEffect
-                      ( EffectModifiers
-                          $ toModifiers attrs [ChaosTokenFaceModifier [chaosTokenFace token']]
-                      )
-                      source
-                      token
-                  , UnfocusChaosTokens
-                  , FocusChaosTokens [token']
-                  ]
-                | token' <- chaosTokensInBag
-                ]
-            , Remember Cheated
+    UseCardAbility iid source 1 (Window.revealedChaosTokens -> [token]) _ | isSource attrs source -> do
+      player <- getPlayer iid
+      chaosTokensInBag <- getOnlyChaosTokensInBag
+      pushAll
+        [ FocusChaosTokens chaosTokensInBag
+        , chooseOne
+            player
+            [ TargetLabel
+              (ChaosTokenFaceTarget $ chaosTokenFace token')
+              [ CreateChaosTokenEffect
+                  ( EffectModifiers
+                      $ toModifiers attrs [ChaosTokenFaceModifier [chaosTokenFace token']]
+                  )
+                  source
+                  token
+              , UnfocusChaosTokens
+              , FocusChaosTokens [token']
+              ]
+            | token' <- chaosTokensInBag
             ]
-          pure a
+        , Remember Cheated
+        ]
+      pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId a) source AdvancedWithClues
       pure a

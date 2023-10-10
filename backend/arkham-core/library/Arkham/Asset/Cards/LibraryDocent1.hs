@@ -57,33 +57,33 @@ getAssetPayment _ = Nothing
 
 instance RunMessage LibraryDocent1 where
   runMessage msg a@(LibraryDocent1 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 windows' (getAssetPayment -> Just assetPayment) ->
-      do
-        handCards <- field InvestigatorHand iid
-        let
-          windows'' =
-            nub
-              $ windows'
-              <> [ mkWindow Timing.When (DuringTurn iid)
-                 , mkWindow Timing.When FastPlayerWindow
-                 ]
-          targetCards =
-            filterBy
-              [ (`cardMatch` (CardWithType AssetType <> CardWithTrait Tome))
-              , (/= (toName assetPayment)) . toName
-              ]
-              handCards
-        push
-          $ chooseOne
-            iid
-            [ targetLabel
-              (toCardId tome)
-              [ createCardEffect Cards.libraryDocent1 Nothing attrs (toCardId tome)
-              , PayCardCost iid tome windows''
-              ]
-            | tome <- targetCards
+    UseCardAbility iid (isSource attrs -> True) 1 windows' (getAssetPayment -> Just assetPayment) -> do
+      handCards <- field InvestigatorHand iid
+      let
+        windows'' =
+          nub
+            $ windows'
+            <> [ mkWindow Timing.When (DuringTurn iid)
+               , mkWindow Timing.When FastPlayerWindow
+               ]
+        targetCards =
+          filterBy
+            [ (`cardMatch` (CardWithType AssetType <> CardWithTrait Tome))
+            , (/= (toName assetPayment)) . toName
             ]
-        pure a
+            handCards
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ targetLabel
+            (toCardId tome)
+            [ createCardEffect Cards.libraryDocent1 Nothing attrs (toCardId tome)
+            , PayCardCost iid tome windows''
+            ]
+          | tome <- targetCards
+          ]
+      pure a
     _ -> LibraryDocent1 <$> runMessage msg attrs
 
 newtype LibraryDocent1Effect = LibraryDocent1Effect EffectAttrs

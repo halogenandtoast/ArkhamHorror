@@ -74,9 +74,10 @@ instance RunMessage DayanaEsperence3 where
           <> BasicCardMatch
             (NonWeakness <> CardWithTrait Spell <> CardWithType EventType)
 
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             (toCardId c)
             [ RemoveCardFromHand iid (toCardId c)

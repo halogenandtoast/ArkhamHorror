@@ -35,7 +35,7 @@ instance RunMessage ACreatureOfTheBayou where
               , PlaceDoomOnAgenda
               ]
         Just eid -> do
-          leadInvestigatorId <- getLeadInvestigatorId
+          lead <- getLeadPlayer
           targets <- setToList <$> nonBayouLocations
           nonBayouLocationsWithClueCounts <-
             sortOn snd
@@ -52,7 +52,7 @@ instance RunMessage ACreatureOfTheBayou where
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
                     xs ->
                       chooseOne
-                        leadInvestigatorId
+                        lead
                         [ targetLabel x [MoveUntil x (EnemyTarget eid)]
                         | (x, _) <- xs
                         ]

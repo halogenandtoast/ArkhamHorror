@@ -10,7 +10,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype TwilightAbyss = TwilightAbyss LocationAttrs
@@ -32,7 +31,8 @@ instance RunMessage TwilightAbyss where
       TwilightAbyss <$> runMessage msg (attrs & labelL .~ "twilightAbyss")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let skillTest sType = beginSkillTest iid attrs iid sType 3
-      push $ chooseOne iid [SkillLabel sType [skillTest sType] | sType <- [SkillCombat, SkillAgility]]
+      player <- getPlayer iid
+      push $ chooseOne player [SkillLabel sType [skillTest sType] | sType <- [#combat, #agility]]
       pure l
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
       push $ InvestigatorAssignDamage iid (toAbilitySource attrs 1) DamageAny n 0

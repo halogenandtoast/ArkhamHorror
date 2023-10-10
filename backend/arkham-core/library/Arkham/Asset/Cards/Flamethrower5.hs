@@ -44,12 +44,13 @@ instance RunMessage Flamethrower5 where
       damage <- damageValueFor 4 iid
       engaged <- selectList $ enemyEngagedWith iid
       let toMsg eid' = EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 1
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Do standard damage" [EnemyDamage eid $ attack attrs 1]
           , Label "Assign up to 4 damage among enemies engaged with you"
               $ replicate damage
-              $ chooseOne iid [targetLabel eid' [toMsg eid'] | eid' <- engaged]
+              $ chooseOne player [targetLabel eid' [toMsg eid'] | eid' <- engaged]
           ]
       pure a
     _ -> Flamethrower5 <$> runMessage msg attrs

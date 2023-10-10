@@ -37,7 +37,7 @@ instance HasAbilities InfinityOfDarkness where
     withRevealedAbilities
       attrs
       [ cosmos attrs 1
-      , limitedAbility (GroupLimit PerGame 1)
+      , groupLimit PerGame
           $ restrictedAbility attrs 2 (Here <> CanMoveThis GridDown)
           $ ActionAbility Nothing (ActionCost 1 <> ScenarioResourceCost 1)
       ]
@@ -64,14 +64,14 @@ instance RunMessage InfinityOfDarkness where
 
           if null belowChoice && null bottommostPositions
             then cosmosFail attrs
-            else
+            else do
+              player <- getPlayer iid
               push
-                $ chooseOne
-                  iid
+                $ chooseOne player
                 $ [ Label
                     "Connect Below"
                     [ chooseOrRunOne
-                        iid
+                        player
                         [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
                         | pos'@(Pos x y) <- belowChoice
                         ]
@@ -82,7 +82,7 @@ instance RunMessage InfinityOfDarkness where
                     "Take 2 horror and connect to the bottommost revealed location in a direction of your choice"
                     [ assignDamage iid (toAbilitySource attrs 1) 2
                     , chooseOrRunOne
-                        iid
+                        player
                         [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
                         | pos'@(Pos x y) <- emptyPositions
                         ]

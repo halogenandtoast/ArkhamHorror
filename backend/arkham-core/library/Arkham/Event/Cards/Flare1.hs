@@ -21,12 +21,13 @@ instance RunMessage Flare1 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       investigators <- getInvestigators
       fightableEnemies <- getFightableEnemyIds iid attrs
+      player <- getPlayer iid
 
       let doSearch iid' = targetLabel iid' [search iid' e iid' [fromTopOfDeck 9] #ally (defer $ toTarget e)]
-      let searchForAlly = [CheckAttackOfOpportunity iid False, chooseOne iid $ map doSearch investigators]
+      let searchForAlly = [CheckAttackOfOpportunity iid False, chooseOne player $ map doSearch investigators]
 
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label "Fight"
             $ [ skillTestModifiers attrs iid [SkillModifier #combat 3, DamageDealt 2]
               , chooseFightEnemy iid e #combat
@@ -39,7 +40,8 @@ instance RunMessage Flare1 where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let choices = [targetLabel (toCardId card) [putCardIntoPlay iid card] | card <- cards]
       targetCount <- getTotalSearchTargets iid choices 1
-      pushAll [chooseN iid targetCount choices, Exile (toTarget attrs)]
+      player <- getPlayer iid
+      pushAll [chooseN player targetCount choices, Exile (toTarget attrs)]
       pure e
     SearchNoneFound _ (isTarget attrs -> True) -> do
       push $ Discard (toSource attrs) (toTarget attrs)

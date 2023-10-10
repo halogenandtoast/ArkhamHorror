@@ -34,10 +34,11 @@ instance RunMessage JewelOfAureolus3 where
   runMessage msg a@(JewelOfAureolus3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
       drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      player <- getPlayer iid
       push
         $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
         $ [ chooseOne
-              iid
+              player
               [ Label "Draw 1 Card" [drawing]
               , Label "Take 2 Resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
               ]

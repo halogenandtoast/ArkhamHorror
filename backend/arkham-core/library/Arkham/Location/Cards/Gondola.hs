@@ -12,7 +12,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype Gondola = Gondola LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -38,15 +37,15 @@ instance RunMessage Gondola where
         : [RemoveLocation lid | lid <- locationIds]
       pure l
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
-          [ Label "Test {combat} (2)" [beginSkillTest iid attrs attrs SkillCombat 2]
-          , Label "Test {agility} (2)" [beginSkillTest iid attrs attrs SkillAgility 2]
+          player
+          [ Label "Test {combat} (2)" [beginSkillTest iid attrs attrs #combat 2]
+          , Label "Test {agility} (2)" [beginSkillTest iid attrs attrs #agility 2]
           ]
       pure l
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          push (PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1)
-          pure l
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      push (PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1)
+      pure l
     _ -> Gondola <$> runMessage msg attrs

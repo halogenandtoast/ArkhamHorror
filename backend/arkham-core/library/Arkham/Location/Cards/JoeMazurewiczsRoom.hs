@@ -49,8 +49,9 @@ instance RunMessage JoeMazurewiczsRoom where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Take 1 horror"
           [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]

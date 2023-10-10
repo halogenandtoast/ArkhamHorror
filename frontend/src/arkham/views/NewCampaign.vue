@@ -111,10 +111,11 @@ const validStandalone = computed(() => {
 })
 
 const disabled = computed(() => {
-  if (multiplayerVariant.value == 'WithFriends') {
-    return !deckIds.value[0] || !validStandalone.value
+  if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
+    return !(scenario.value && currentCampaignName.value)
   } else {
-    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n]) || !validStandalone.value
+    const mcampaign = campaigns.value.find((campaign) => campaign.id === selectedCampaign.value);
+    return !(mcampaign && currentCampaignName.value)
   }
 })
 
@@ -216,26 +217,6 @@ async function start() {
             </div>
           </transition>
 
-
-          <div v-if="playerCount == 1 || multiplayerVariant == 'WithFriends'">
-            <p>Deck</p>
-            <select v-model="deckIds[0]">
-              <option disabled :value="null">-- Select a Deck--</option>
-              <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-            </select>
-          </div>
-          <div v-else>
-
-            <transition-group name="slide">
-              <template v-for="idx in playerCount" :key="idx">
-                <p>Deck {{idx}}</p>
-                <select v-model="deckIds[idx - 1]">
-                  <option disabled :value="null">-- Select a Deck--</option>
-                  <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-                </select>
-              </template>
-            </transition-group>
-          </div>
           <div class="options">
             <input type="radio" v-model="gameMode" :value="'Campaign'" id="campaign"> <label for="campaign">Campaign</label>
             <input type="radio" v-model="gameMode" :value="'Standalone'" id="standalone"> <label for="standalone">Standalone</label>
@@ -269,7 +250,7 @@ async function start() {
             <input type="radio" v-model="fullCampaign" :value="false" id="partial"> <label for="partial">Partial Campaign</label>
           </div>
 
-          <div v-if="(gameMode === 'Standalone' || !fullCampaign) && selectedCampaign">
+          <div v-if="(gameMode === 'Standalone' || (gameMode !== 'SideStory' && !fullCampaign)) && selectedCampaign">
             <div class="scenarios">
               <div v-for="scenario in campaignScenarios" :key="scenario.id">
                 <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">

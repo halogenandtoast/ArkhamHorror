@@ -4,6 +4,10 @@ import Arkham.Prelude
 
 import Arkham.Card.CardCode
 
+newtype PlayerId = PlayerId {unPlayerId :: UUID}
+  deriving stock (Data)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
+
 newtype ActId = ActId {unActId :: CardCode}
   deriving stock (Data)
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)

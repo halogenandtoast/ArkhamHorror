@@ -216,7 +216,6 @@ newCampaign
   -> Maybe ScenarioId
   -> Int
   -> Int
-  -> NonEmpty ArkhamDBDecklist
   -> Difficulty
   -> Bool
   -> m (Queue Message, Game)
@@ -227,7 +226,6 @@ newScenario
   => ScenarioId
   -> Int
   -> Int
-  -> NonEmpty ArkhamDBDecklist
   -> Difficulty
   -> Bool
   -> m (Queue Message, Game)
@@ -238,18 +236,12 @@ newGame
   => These CampaignId ScenarioId
   -> Int
   -> Int
-  -> NonEmpty ArkhamDBDecklist
   -> Difficulty
   -> Bool
   -> m (Queue Message, Game)
-newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty includeTarotReadings = do
+newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = do
   let
-    initialInvestigatorId = toId $ lookupInvestigator (decklistInvestigatorId deck)
-    state =
-      if length (deck : decks) /= playerCount
-        then IsPending []
-        else IsActive
-
+    state = IsPending []
     game =
       Game
         { gameCards = mempty
@@ -271,9 +263,9 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty include
         , gameInDiscardEntities = mempty
         , gameInSearchEntities = defaultEntities
         , gameOutOfPlayEntities = mempty
-        , gameActiveInvestigatorId = initialInvestigatorId
+        , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
-        , gameLeadInvestigatorId = initialInvestigatorId
+        , gameLeadInvestigatorId = InvestigatorId "00000"
         , gamePhase = CampaignPhase
         , gamePhaseStep = Nothing
         , gameSkillTest = Nothing
@@ -306,27 +298,27 @@ newGame scenarioOrCampaignId seed playerCount (deck :| decks) difficulty include
   queueRef <- newQueue []
   genRef <- newIORef (mkStdGen seed)
 
-  runGameEnvT (GameEnv gameRef queueRef genRef (\_ -> pure ())) $ do
-    investigatorsList <-
-      traverse (fmap (first lookupInvestigator) . loadDecklist) (deck : decks)
+  -- runGameEnvT (GameEnv gameRef queueRef genRef (\_ -> pure ())) $ do
+  --   investigatorsList <-
+  --     traverse (fmap (first lookupInvestigator) . loadDecklist) (deck : decks)
 
-    let
-      playersMap = map (toId . fst) investigatorsList
-      investigatorsMap = mapFromList $ map (toFst toId . fst) investigatorsList
-      gameCards' =
-        mapFromList
-          $ flip concatMap investigatorsList
-          $ \(toId -> iid, cards) -> map (bimap toCardId (toCard . setPlayerCardOwner iid) . dupe) cards
+  --   let
+  --     playersMap = map (toId . fst) investigatorsList
+  --     investigatorsMap = mapFromList $ map (toFst toId . fst) investigatorsList
+  --     gameCards' =
+  --       mapFromList
+  --         $ flip concatMap investigatorsList
+  --         $ \(toId -> iid, cards) -> map (bimap toCardId (toCard . setPlayerCardOwner iid) . dupe) cards
 
-    when (state == IsActive) $ do
-      pushAll $ map (uncurry InitDeck . bimap toId Deck) investigatorsList <> [StartCampaign]
+  --   when (state == IsActive) $ do
+  --     pushAll $ map (uncurry InitDeck . bimap toId Deck) investigatorsList <> [StartCampaign]
 
-    overGame $ \g ->
-      g
-        { gameCards = gameCards'
-        , gamePlayerOrder = playersMap
-        , gameEntities = defaultEntities {entitiesInvestigators = investigatorsMap}
-        }
+  --   overGame $ \g ->
+  --     g
+  --       { gameCards = gameCards'
+  --       , gamePlayerOrder = playersMap
+  --       , gameEntities = defaultEntities {entitiesInvestigators = investigatorsMap}
+  --       }
 
   game' <- atomicModifyIORef gameRef \x -> (x, x)
 

@@ -150,13 +150,13 @@ postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-  decks' <- for (catMaybes deckIds) $ \deckId -> do
-    deck <- runDB $ get404 deckId
-    when (arkhamDeckUserId deck /= userId) notFound
-    pure $ arkhamDeckList deck
-  decks <- maybe (invalidArgs ["must have one deck"]) pure $ nonEmpty decks'
-  let
-    investigatorId = toId . lookupInvestigator . decklistInvestigatorId $ NonEmpty.head decks
+  -- decks' <- for (catMaybes deckIds) $ \deckId -> do
+  --   deck <- runDB $ get404 deckId
+  --   when (arkhamDeckUserId deck /= userId) notFound
+  --   pure $ arkhamDeckList deck
+  -- decks <- maybe (invalidArgs ["must have one deck"]) pure $ nonEmpty decks'
+  -- let
+  --   investigatorId = toId . lookupInvestigator . decklistInvestigatorId $ NonEmpty.head decks
 
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
@@ -165,7 +165,7 @@ postApiV1ArkhamGamesR = do
     Just cid -> do
       (queueRef, game) <-
         liftIO
-          $ newCampaign cid scenarioId newGameSeed playerCount decks difficulty includeTarotReadings
+          $ newCampaign cid scenarioId newGameSeed playerCount difficulty includeTarotReadings
       gameRef <- newIORef game
       runGameApp
         (GameApp gameRef queueRef genRef $ pure . const ())
@@ -174,7 +174,7 @@ postApiV1ArkhamGamesR = do
       updatedQueue <- readIORef (queueToRef queueRef)
       key <- runDB $ do
         gameId <- insert $ ArkhamGame campaignName ge 0 multiplayerVariant now now
-        insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
+        insert_ $ ArkhamPlayer userId gameId "00000"
         insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
         pure gameId
       pure
@@ -185,7 +185,7 @@ postApiV1ArkhamGamesR = do
       Just sid -> do
         (queueRef, game) <-
           liftIO
-            $ newScenario sid newGameSeed playerCount decks difficulty includeTarotReadings
+            $ newScenario sid newGameSeed playerCount difficulty includeTarotReadings
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
@@ -195,7 +195,7 @@ postApiV1ArkhamGamesR = do
         updatedQueue <- readIORef (queueToRef queueRef)
         key <- runDB $ do
           gameId <- insert $ ArkhamGame campaignName ge 0 multiplayerVariant now now
-          insert_ $ ArkhamPlayer userId gameId (coerce investigatorId)
+          insert_ $ ArkhamPlayer userId gameId "00000"
           insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0 (ActionDiff [])
           pure gameId
         pure

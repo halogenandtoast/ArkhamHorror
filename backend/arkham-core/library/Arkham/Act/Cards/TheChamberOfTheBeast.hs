@@ -47,23 +47,22 @@ instance HasAbilities TheChamberOfTheBeast where
 instance RunMessage TheChamberOfTheBeast where
   runMessage msg a@(TheChamberOfTheBeast attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       resolution <-
         maybe 3 (const 2)
           <$> selectOne (assetIs Cards.theNecronomiconOlausWormiusTranslation)
-      a
-        <$ push
-          ( chooseOne
-              leadInvestigatorId
-              [ Label
-                  ("Resolution " <> tshow resolution)
-                  [ScenarioResolution $ Resolution resolution]
-              ]
-          )
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          a <$ push (ScenarioResolution $ Resolution 1)
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+      push
+        $ chooseOne
+          lead
+          [ Label
+              ("Resolution " <> tshow resolution)
+              [ScenarioResolution $ Resolution resolution]
+          ]
+      pure a
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push R1
+      pure a
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      push (AdvanceAct (toId attrs) source AdvancedWithOther)
+      pure a
     _ -> TheChamberOfTheBeast <$> runMessage msg attrs

@@ -114,13 +114,14 @@ explore iid source cardMatcher exploreRule matchCount = do
         ([], explorationDeck)
         [1 .. matchCount]
     (matched, notMatched) = partition (`cardMatch` cardMatcher') drawn
+  player <- getPlayer iid
   case matched of
     [] -> do
       deck' <- shuffleM (drawn <> rest)
       pushAll
         [ FocusCards drawn
         , chooseOne
-            iid
+            player
             [ Label
                 "No Matches Found"
                 [UnfocusCards, SetScenarioDeck ExplorationDeck deck']
@@ -175,7 +176,7 @@ explore iid source cardMatcher exploreRule matchCount = do
       pushAll
         [ FocusCards (notMatched <> [x])
         , chooseOne
-            iid
+            player
             [ targetLabel
                 (toCardId x)
                 (UnfocusCards : SetScenarioDeck ExplorationDeck deck' : msgs)
@@ -204,7 +205,7 @@ explore iid source cardMatcher exploreRule matchCount = do
         pure
           $ map snd placements
           <> [ chooseOne
-              iid
+              player
               [ targetLabel lid [Move $ move source iid lid]
               | lid <- locationIds
               ]
@@ -221,7 +222,7 @@ explore iid source cardMatcher exploreRule matchCount = do
       pushAll
         $ [ FocusCards drawn
           , chooseN
-              iid
+              player
               (min matchCount $ length xs)
               [targetLabel (toCardId x) [] | x <- xs]
           , UnfocusCards

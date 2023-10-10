@@ -78,34 +78,34 @@ When an enemy is defeated we need to remove related messages from choices
 and if not more choices exist, remove the message entirely
 -}
 filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
-filterOutEnemyMessages eid (Ask iid q) = case q of
+filterOutEnemyMessages eid (Ask pid q) = case q of
   QuestionLabel {} -> error "currently unhandled"
   Read {} -> error "currently unhandled"
   DropDown {} -> error "currently unhandled"
   PickSupplies {} -> error "currently unhandled"
   ChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
-    x -> Just (Ask iid $ ChooseOne x)
+    x -> Just (Ask pid $ ChooseOne x)
   ChooseN n msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
-    x -> Just (Ask iid $ ChooseN n x)
+    x -> Just (Ask pid $ ChooseN n x)
   ChooseSome msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
-    x -> Just (Ask iid $ ChooseSome x)
+    x -> Just (Ask pid $ ChooseSome x)
   ChooseSome1 doneMsg msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
-    x -> Just (Ask iid $ ChooseSome1 doneMsg x)
+    x -> Just (Ask pid $ ChooseSome1 doneMsg x)
   ChooseUpToN n msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
-    x -> Just (Ask iid $ ChooseUpToN n x)
+    x -> Just (Ask pid $ ChooseUpToN n x)
   ChooseOneAtATime msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
-    x -> Just (Ask iid $ ChooseOneAtATime x)
-  ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
-  choose@ChoosePaymentAmounts {} -> Just (Ask iid choose)
-  choose@ChooseAmounts {} -> Just (Ask iid choose)
-  PickScenarioSettings -> Just (Ask iid PickScenarioSettings)
-  PickCampaignSettings -> Just (Ask iid PickCampaignSettings)
+    x -> Just (Ask pid $ ChooseOneAtATime x)
+  ChooseUpgradeDeck -> Just (Ask pid ChooseUpgradeDeck)
+  choose@ChoosePaymentAmounts {} -> Just (Ask pid choose)
+  choose@ChooseAmounts {} -> Just (Ask pid choose)
+  PickScenarioSettings -> Just (Ask pid PickScenarioSettings)
+  PickCampaignSettings -> Just (Ask pid PickCampaignSettings)
 filterOutEnemyMessages eid msg = case msg of
   InitiateEnemyAttack details | eid == attackEnemy details -> Nothing
   EnemyAttack details | eid == attackEnemy details -> Nothing
@@ -159,11 +159,11 @@ instance RunMessage EnemyAttrs where
         forToSnd
           preyIds
           (selectJust . locationWithInvestigator)
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       for_ (nonEmpty preyIdsWithLocation) $ \iids ->
         push
           $ chooseOrRunOne
-            leadInvestigatorId
+            lead
             [ targetLabel
               lid
               [ Will (EnemySpawn (Just iid) lid eid)
@@ -188,14 +188,14 @@ instance RunMessage EnemyAttrs where
               prey <- getPreyMatcher a
               preyIds <- selectList $ preyWith prey $ investigatorAt lid
               investigatorIds <- if null preyIds then selectList $ investigatorAt lid else pure []
-              leadInvestigatorId <- getLeadInvestigatorId
+              lead <- getLeadPlayer
               let validInvestigatorIds = maybe (preyIds <> investigatorIds) pure miid
               case validInvestigatorIds of
                 [] -> push $ EnemyEntered eid lid
                 [iid] -> pushAll [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                 iids ->
                   push
-                    $ chooseOne leadInvestigatorId
+                    $ chooseOne lead
                     $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- iids]
             else
               pushWhen (Keyword.Massive `notElem` keywords)
@@ -220,7 +220,7 @@ instance RunMessage EnemyAttrs where
         || (DoesNotReadyDuringUpkeep `elem` modifiers' && phase == UpkeepPhase)
         then pure a
         else do
-          leadInvestigatorId <- getLeadInvestigatorId
+          lead <- getLeadPlayer
           enemyLocation <- field EnemyLocation enemyId
           iids <-
             fromMaybe []
@@ -237,7 +237,7 @@ instance RunMessage EnemyAttrs where
               )
               $ push
               $ chooseOne
-                leadInvestigatorId
+                lead
                 [ TargetLabel
                   (InvestigatorTarget iid)
                   [EnemyEngageInvestigator enemyId iid]
@@ -271,7 +271,7 @@ instance RunMessage EnemyAttrs where
           if lid == loc
             then pure a
             else do
-              leadInvestigatorId <- getLeadInvestigatorId
+              lead <- getLeadPlayer
               adjacentLocationIds <-
                 selectList $ AccessibleFrom $ LocationWithId loc
               closestLocationIds <- selectList $ ClosestPathLocation loc lid
@@ -279,12 +279,12 @@ instance RunMessage EnemyAttrs where
                 then
                   push
                     $ chooseOne
-                      leadInvestigatorId
+                      lead
                       [targetLabel lid [EnemyMove enemyId lid]]
                 else
                   pushAll
                     [ chooseOne
-                        leadInvestigatorId
+                        lead
                         [ targetLabel lid' [EnemyMove enemyId lid']
                         | lid' <- closestLocationIds
                         ]
@@ -298,7 +298,7 @@ instance RunMessage EnemyAttrs where
           if lid == loc
             then pure a
             else do
-              leadInvestigatorId <- getLeadInvestigatorId
+              lead <- getLeadPlayer
               adjacentLocationIds <-
                 selectList
                   $ AccessibleFrom
@@ -310,14 +310,14 @@ instance RunMessage EnemyAttrs where
                   a
                     <$ push
                       ( chooseOne
-                          leadInvestigatorId
+                          lead
                           [targetLabel lid [EnemyMove enemyId lid]]
                       )
                 else
                   a
                     <$ pushAll
                       [ chooseOne
-                          leadInvestigatorId
+                          lead
                           [ targetLabel lid' [EnemyMove enemyId lid']
                           | lid' <- closestLocationIds
                           ]
@@ -363,7 +363,7 @@ instance RunMessage EnemyAttrs where
 
       let investigatorIds = if null preyIds then investigatorIds' else preyIds
 
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       unengaged <- selectNone $ investigatorEngagedWith enemyId
       when (CannotBeEngaged `elem` modifiers') $ case enemyPlacement of
         InThreatArea iid -> push $ DisengageEnemy iid enemyId
@@ -388,7 +388,7 @@ instance RunMessage EnemyAttrs where
             xs ->
               push
                 $ chooseOne
-                  leadInvestigatorId
+                  lead
                   [ targetLabel
                     investigatorId
                     [EnemyEngageInvestigator eid investigatorId]
@@ -515,7 +515,7 @@ instance RunMessage EnemyAttrs where
                 then matchingClosestLocationIds
                 else filteredClosestLocationIds
 
-          leadInvestigatorId <- getLeadInvestigatorId
+          (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
           pathIds <-
             concat
               <$> traverse
@@ -537,7 +537,7 @@ instance RunMessage EnemyAttrs where
             ls -> do
               push
                 $ chooseOrRunOne
-                  leadInvestigatorId
+                  lead
                   [ targetLabel
                     l
                     [ EnemyMove enemyId l

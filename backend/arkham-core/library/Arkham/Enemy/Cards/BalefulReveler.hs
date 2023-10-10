@@ -72,6 +72,7 @@ instance RunMessage BalefulReveler where
               (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
               chaosTokenFaces
           ]
-      pushAll $ chooseOne iid [Label "Continue" []] : moveMsg
+      player <- getPlayer iid
+      pushAll $ chooseOne player [Label "Continue" []] : moveMsg
       pure e
     _ -> BalefulReveler <$> runMessage msg attrs

@@ -13,7 +13,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Helpers.Ability
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck
@@ -55,7 +54,7 @@ instance RunMessage WorldsBeyond where
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       explorationDeck <- getExplorationDeck
-      lead <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       let
         (nonMatched, remaining) =
           break (`cardMatch` CardWithType LocationType) explorationDeck

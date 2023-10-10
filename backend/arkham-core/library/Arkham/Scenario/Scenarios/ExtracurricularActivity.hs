@@ -55,7 +55,7 @@ instance HasChaosTokenValue ExtracurricularActivity where
 instance RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       encounterDeck <-
         buildEncounterDeckExcluding
@@ -73,9 +73,7 @@ instance RunMessage ExtracurricularActivity where
           , EncounterSet.AgentsOfYogSothoth
           ]
 
-      (miskatonicQuadId, placeMiskatonicQuad) <-
-        placeLocationCard
-          Locations.miskatonicQuad
+      (miskatonicQuadId, placeMiskatonicQuad) <- placeLocationCard Locations.miskatonicQuad
       placeOtherLocations <-
         traverse
           placeLocationCard_
@@ -95,7 +93,7 @@ instance RunMessage ExtracurricularActivity where
         <> placeOtherLocations
         <> [ RevealLocation Nothing miskatonicQuadId
            , MoveAllTo (toSource attrs) miskatonicQuadId
-           , story investigatorIds intro
+           , story players intro
            ]
 
       setAsideCards <-
@@ -142,21 +140,15 @@ instance RunMessage ExtracurricularActivity where
           (ChaosTokenEffectSource Skull)
           Nothing
       pure s
-    DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) ->
-      do
-        let
-          n =
-            sum
-              $ map
-                (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef)
-                cards
-        push $ CreateChaosTokenValueEffect (-n) (toSource attrs) target
-        pure s
+    DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) -> do
+      let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards
+      push $ CreateChaosTokenValueEffect (-n) (toSource attrs) target
+      pure s
     ScenarioResolution NoResolution -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids noResolution
+        $ [ story players noResolution
           , Record ProfessorWarrenRiceWasKidnapped
           , Record TheInvestigatorsFailedToSaveTheStudents
           , AddChaosToken Tablet
@@ -165,21 +157,19 @@ instance RunMessage ExtracurricularActivity where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
+      lead <- getLeadPlayer
       leadInvestigatorId <- getLeadInvestigatorId
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids resolution1
+        $ [ story players resolution1
           , Record TheInvestigatorsRescuedProfessorWarrenRice
           , AddChaosToken Tablet
           , chooseOne
-              leadInvestigatorId
+              lead
               [ Label
                   "Add Professor Warren Rice to your deck"
-                  [ AddCampaignCardToDeck
-                      leadInvestigatorId
-                      Assets.professorWarrenRice
-                  ]
+                  [AddCampaignCardToDeck leadInvestigatorId Assets.professorWarrenRice]
               , Label "Do not add Professor Warren Rice to your deck" []
               ]
           ]
@@ -187,10 +177,10 @@ instance RunMessage ExtracurricularActivity where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids resolution2
+        $ [ story players resolution2
           , Record ProfessorWarrenRiceWasKidnapped
           , Record TheStudentsWereRescued
           ]
@@ -198,10 +188,10 @@ instance RunMessage ExtracurricularActivity where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids resolution3
+        $ [ story players resolution3
           , Record ProfessorWarrenRiceWasKidnapped
           , Record TheExperimentWasDefeated
           ]
@@ -209,10 +199,10 @@ instance RunMessage ExtracurricularActivity where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 4) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [ story iids resolution4
+        $ [ story players resolution4
           , Record InvestigatorsWereUnconsciousForSeveralHours
           , Record ProfessorWarrenRiceWasKidnapped
           , Record TheInvestigatorsFailedToSaveTheStudents

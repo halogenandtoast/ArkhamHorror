@@ -55,9 +55,10 @@ instance HasAbilities Timelock where
 instance RunMessage Timelock where
   runMessage msg a@(Timelock attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel
             skillType
             [ beginSkillTest

@@ -48,7 +48,7 @@ instance HasAbilities TheWayOut where
 instance RunMessage TheWayOut where
   runMessage msg a@(TheWayOut attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       theGateToHell <- selectJust $ locationIs $ Locations.theGateToHell
       locations <-
         selectList
@@ -65,14 +65,14 @@ instance RunMessage TheWayOut where
           pure (location, investigators, enemies, connectedLocations)
       push
         $ chooseOrRunOne
-          leadInvestigatorId
+          lead
           [ targetLabel
             location
             [ chooseOrRunOne
-                leadInvestigatorId
+                lead
                 [ targetLabel
                   connected
-                  [ chooseOneAtATime leadInvestigatorId
+                  [ chooseOneAtATime lead
                       $ [ targetLabel
                           investigator
                           [MoveTo $ move (toSource attrs) investigator connected]

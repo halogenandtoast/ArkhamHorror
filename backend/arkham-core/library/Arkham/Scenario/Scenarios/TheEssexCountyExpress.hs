@@ -88,9 +88,10 @@ readInvestigatorDefeat = do
   mDrFrancisMorganOwner <- getOwner Assets.drFrancisMorgan
   if null defeatedInvestigatorIds
     then pure []
-    else
+    else do
+      defeatedPlayers <- traverse getPlayer defeatedInvestigatorIds
       pure
-        $ [story defeatedInvestigatorIds investigatorDefeat]
+        $ [story defeatedPlayers investigatorDefeat]
         <> [Record TheNecronomiconWasStolen | isJust mNecronomiconOwner]
         <> [RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation]
         <> [Record DrHenryArmitageWasKidnapped | isJust mDrHenryArmitageOwner]
@@ -112,7 +113,7 @@ instance RunMessage TheEssexCountyExpress where
         standalone <- getIsStandalone
         s <$ if standalone then push (SetChaosTokens standaloneChaosTokens) else pure ()
       Setup -> do
-        investigatorIds <- allInvestigatorIds
+        players <- allPlayers
 
         engineCar <-
           sample
@@ -168,7 +169,7 @@ instance RunMessage TheEssexCountyExpress where
             Expert -> MinusFive
 
         pushAll
-          $ [ story investigatorIds intro
+          $ [ story players intro
             , AddChaosToken token
             , SetEncounterDeck encounterDeck
             , SetAgendaDeck
@@ -220,13 +221,14 @@ instance RunMessage TheEssexCountyExpress where
             $ NearestEnemyTo iid
             $ EnemyWithTrait
               Trait.Cultist
+        player <- getPlayer iid
         s <$ case closestCultists of
           [] -> pure ()
           [x] -> push $ PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1
           xs ->
             push
               $ chooseOne
-                iid
+                player
                 [targetLabel x [PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1] | x <- xs]
       ResolveChaosToken _ Tablet _ | isHardExpert attrs -> do
         cultists <- selectList $ EnemyWithTrait Trait.Cultist
@@ -234,32 +236,23 @@ instance RunMessage TheEssexCountyExpress where
         pure s
       FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
         case chaosTokenFace token of
-          Cultist ->
-            pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+          Cultist -> pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
           ElderThing | isEasyStandard attrs -> do
-            push
-              $ toMessage
-              $ chooseAndDiscardCard
-                iid
-                (ChaosTokenEffectSource ElderThing)
+            push $ toMessage $ chooseAndDiscardCard iid (ChaosTokenEffectSource ElderThing)
           ElderThing | isHardExpert attrs -> do
-            pushAll
-              $ replicate n
-              $ toMessage
-              $ chooseAndDiscardCard iid
-              $ ChaosTokenEffectSource ElderThing
+            pushAll $ replicate n $ toMessage $ chooseAndDiscardCard iid $ ChaosTokenEffectSource ElderThing
           _ -> pure ()
         pure s
       ScenarioResolution NoResolution ->
         s <$ pushAll [ScenarioResolution $ Resolution 2]
       ScenarioResolution (Resolution 1) -> do
         msgs <- readInvestigatorDefeat
-        iids <- allInvestigatorIds
+        players <- allPlayers
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
         pushAll
           $ msgs
-          <> [story iids resolution1]
+          <> [story players resolution1]
           <> [ GainXP
               iid
               (toSource attrs)
@@ -270,12 +263,12 @@ instance RunMessage TheEssexCountyExpress where
         pure s
       ScenarioResolution (Resolution 2) -> do
         msgs <- readInvestigatorDefeat
-        iids <- allInvestigatorIds
+        players <- allPlayers
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
         pushAll
           $ msgs
-          <> [ story iids resolution2
+          <> [ story players resolution2
              , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
              ]
           <> [ GainXP

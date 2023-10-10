@@ -44,11 +44,11 @@ instance HasAbilities Entryway where
       | locationRevealed attrs
       ]
 
-handleTreacheries :: InvestigatorId -> [EncounterCard] -> Message
-handleTreacheries iid [] = chooseOne iid [Label "No Treacheries Found" []]
-handleTreacheries iid treacheries =
+handleTreacheries :: PlayerId -> [EncounterCard] -> Message
+handleTreacheries pid [] = chooseOne pid [Label "No Treacheries Found" []]
+handleTreacheries pid treacheries =
   chooseOneAtATime
-    iid
+    pid
     [ TargetLabel (CardIdTarget $ toCardId c) [AddToEncounterDiscard c]
     | c <- treacheries
     ]
@@ -60,14 +60,12 @@ instance RunMessage Entryway where
       let
         deckKey = Deck.ScenarioDeckByKey ExplorationDeck
         (viewing, rest) = splitAt 2 explorationDeck
-        (treacheries, other) =
-          partition (`cardMatch` CardWithType TreacheryType) viewing
+        (treacheries, other) = partition (`cardMatch` CardWithType TreacheryType) viewing
+      player <- getPlayer iid
       pushAll
         $ [ FocusCards viewing
           , SetScenarioDeck ExplorationDeck $ other <> rest
-          , handleTreacheries
-              iid
-              (mapMaybe (preview _EncounterCard) treacheries)
+          , handleTreacheries player (mapMaybe (preview _EncounterCard) treacheries)
           ]
         <> [PutCardOnBottomOfDeck iid deckKey c | c <- other]
         <> [UnfocusCards, ShuffleDeck deckKey]

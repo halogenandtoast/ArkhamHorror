@@ -54,9 +54,10 @@ instance RunMessage CellKeeper where
         : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ Label ("Take control of " <> keyName k <> " key") [PlaceKey (toTarget iid) k]
           | k <- setToList (enemyKeys attrs)
           ]

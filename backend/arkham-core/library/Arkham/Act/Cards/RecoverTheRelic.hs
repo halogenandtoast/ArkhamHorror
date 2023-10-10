@@ -46,19 +46,14 @@ instance RunMessage RecoverTheRelic where
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       deckCount <- getActDecksInPlayCount
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
-      iids <-
-        selectList
-          $ NearestToEnemy
-          $ EnemyWithAsset
-          $ assetIs
-            Assets.relicOfAgesADeviceOfSomeSort
+      iids <- selectList $ NearestToEnemy $ EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       let
         takeControlMessage =
           chooseOrRunOne
-            leadInvestigatorId
+            lead
             [targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids]
         nextMessage =
           if deckCount <= 1

@@ -53,10 +53,10 @@ instance RunMessage LodgeJailor where
       let
         hasKey = notNull $ enemyKeys attrs
         hasDoom = enemyDoom attrs > 0
+      player <- getPlayer iid
       when (hasKey || hasDoom) $ do
         push
-          $ chooseOrRunOne
-            iid
+          $ chooseOrRunOne player
           $ [Label "Remove 1 Doom" [RemoveDoom (toAbilitySource attrs 2) (toTarget attrs) 1] | hasDoom]
           <> [ Label ("Take control of the " <> keyName k <> " key") [PlaceKey (toTarget iid) k]
              | k <- setToList $ enemyKeys attrs

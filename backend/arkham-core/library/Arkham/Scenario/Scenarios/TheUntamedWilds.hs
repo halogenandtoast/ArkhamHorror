@@ -79,7 +79,7 @@ instance HasChaosTokenValue TheUntamedWilds where
 instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = case msg of
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       (expeditionCampId, placeExpeditionCamp) <-
         placeLocationCard
           Locations.expeditionCamp
@@ -145,7 +145,7 @@ instance RunMessage TheUntamedWilds where
             , Treacheries.arrowsFromTheTrees
             ]
       pushAll
-        $ [ story investigatorIds intro
+        $ [ story players intro
           , SetEncounterDeck encounterDeck'
           , SetAgendaDeck
           , SetActDeck
@@ -192,13 +192,14 @@ instance RunMessage TheUntamedWilds where
           =<< selectJust AnyAct
       xp <- getXp
       vengeance <- getVengeanceInVictoryDisplay
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
+      players <- allPlayers
       case res of
         NoResolution -> do
           foughtWithIchtaca <- remembered YouFoughtWithIchtaca
           leadingTheWay <- remembered IchtachaIsLeadingTheWay
           pushAll
-            $ [ story investigatorIds noResolution
+            $ [ story players noResolution
               , Record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
               ]
             <> [ Record IchtacaObservedYourProgressWithKeenInterest
@@ -209,7 +210,7 @@ instance RunMessage TheUntamedWilds where
                | actStep < 3 || foughtWithIchtaca
                ]
             <> [ addCampaignCardToDeckChoice
-                  leadInvestigatorId
+                  lead
                   investigatorIds
                   Assets.alejandroVela
                ]
@@ -222,7 +223,7 @@ instance RunMessage TheUntamedWilds where
             <> [EndOfGame Nothing]
         Resolution 1 -> do
           pushAll
-            $ [ story investigatorIds resolution1
+            $ [ story players resolution1
               , Record TheInvestigatorsClearedAPathToTheEztliRuins
               , Record AlejandroChoseToRemainAtCamp
               , Record TheInvestigatorsHaveEarnedIchtacasTrust
@@ -232,12 +233,12 @@ instance RunMessage TheUntamedWilds where
             <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
-            $ [ story investigatorIds resolution2
+            $ [ story players resolution2
               , Record TheInvestigatorsClearedAPathToTheEztliRuins
               , Record AlejandroFollowedTheInvestigatorsIntoTheRuins
               ]
             <> [ addCampaignCardToDeckChoice
-                  leadInvestigatorId
+                  lead
                   investigatorIds
                   Assets.alejandroVela
                ]

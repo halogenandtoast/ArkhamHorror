@@ -61,7 +61,7 @@ instance RunMessage TheBrotherhoodIsRevealed where
         push $ advanceVia #other attrs attrs
         pure a
       AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
-        lead <- getLead
+        lead <- getLeadPlayer
         deckCount <- getActDecksInPlayCount
         ichtaca <- getSetAsideCard Assets.ichtacaTheForgottenGuardian
         lid <- maybe (selectJust $ locationIs Locations.blackCave) pure (mariaDeSilvasLocation metadata)

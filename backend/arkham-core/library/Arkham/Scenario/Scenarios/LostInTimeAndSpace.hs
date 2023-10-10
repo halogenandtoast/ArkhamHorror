@@ -106,9 +106,10 @@ readInvestigatorDefeat a = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
-    else
+    else do
+      defeatedPlayers <- traverse getPlayer defeatedInvestigatorIds
       pure
-        $ [story defeatedInvestigatorIds investigatorDefeat]
+        $ [story defeatedPlayers investigatorDefeat]
         <> [ InvestigatorKilled (toSource a) iid
            | iid <- defeatedInvestigatorIds
            ]
@@ -119,7 +120,7 @@ instance RunMessage LostInTimeAndSpace where
       whenStandalone $ push (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       encounterDeck <-
         buildEncounterDeckExcluding
           [Enemies.yogSothoth]
@@ -135,7 +136,7 @@ instance RunMessage LostInTimeAndSpace where
           Locations.anotherDimension
 
       pushAll
-        [ story investigatorIds intro
+        [ story players intro
         , SetEncounterDeck encounterDeck
         , SetAgendaDeck
         , SetActDeck
@@ -215,10 +216,11 @@ instance RunMessage LostInTimeAndSpace where
     ScenarioResolution (Resolution 1) -> do
       msgs <- readInvestigatorDefeat attrs
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
         $ msgs
-        <> [ story investigatorIds resolution1
+        <> [ story players resolution1
            , Record TheInvestigatorsClosedTheTearInReality
            ]
         <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
@@ -227,16 +229,17 @@ instance RunMessage LostInTimeAndSpace where
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 2) -> do
       msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- allInvestigatorIds
-      pushAll $ msgs <> [story investigatorIds resolution2, EndOfGame Nothing]
+      players <- allPlayers
+      pushAll $ msgs <> [story players resolution2, EndOfGame Nothing]
 
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 3) -> do
       msgs <- readInvestigatorDefeat attrs
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       pushAll
         $ msgs
-        <> [ story investigatorIds resolution3
+        <> [ story players resolution3
            , Record YogSothothHasFledToAnotherDimension
            ]
         <> [InvestigatorKilled (toSource attrs) iid | iid <- investigatorIds]
@@ -245,9 +248,10 @@ instance RunMessage LostInTimeAndSpace where
     ScenarioResolution (Resolution 4) -> do
       msgs <- readInvestigatorDefeat attrs
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       pushAll
         $ msgs
-        <> [ story investigatorIds resolution4
+        <> [ story players resolution4
            , Record
               YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
            ]

@@ -35,11 +35,11 @@ instance HasAbilities PossessedOathspeaker where
 instance RunMessage PossessedOathspeaker where
   runMessage msg e@(PossessedOathspeaker attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      leadInvestigatorIdL <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       if enemyExhausted attrs
         then
           push
-            $ chooseOne leadInvestigatorIdL
+            $ chooseOne lead
             $ [ Label "Ready Possessed Oathspeaker" [ready attrs]
               , Label "Place 1 doom on Possessed Oathspeaker" [placeDoom (toAbilitySource attrs 1) attrs 1]
               ]

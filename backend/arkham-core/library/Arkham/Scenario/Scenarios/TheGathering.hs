@@ -47,8 +47,8 @@ theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of
     PreScenarioSetup -> do
-      investigators <- allInvestigators
-      push $ story investigators theGatheringIntro
+      players <- allPlayers
+      push $ story players theGatheringIntro
       pure s
     Setup -> do
       encounterDeck <-
@@ -107,14 +107,15 @@ instance RunMessage TheGathering where
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
-      lead <- getLead
-      investigators <- allInvestigators
+      lead <- getLeadPlayer
+      leadId <- getLeadInvestigatorId
+      players <- allPlayers
       gainXp <- toGainXp attrs $ getXpWithBonus 2
-      let chooseToAddLita = addCampaignCardToDeckChoice lead [lead] Assets.litaChantler
+      let chooseToAddLita = addCampaignCardToDeckChoice lead [leadId] Assets.litaChantler
       case resolution of
         NoResolution ->
           pushAll
-            $ [ story investigators noResolution
+            $ [ story players noResolution
               , Record YourHouseIsStillStanding
               , Record GhoulPriestIsStillAlive
               , chooseToAddLita
@@ -123,19 +124,19 @@ instance RunMessage TheGathering where
             <> [EndOfGame Nothing]
         Resolution 1 ->
           pushAll
-            $ [ story investigators resolution1
+            $ [ story players resolution1
               , Record YourHouseHasBurnedToTheGround
               , chooseToAddLita
-              , SufferTrauma lead 0 1
+              , SufferTrauma leadId 0 1
               ]
             <> gainXp
             <> [EndOfGame Nothing]
         Resolution 2 ->
           -- TODO: Combine gainXP and bonus so modifiers work
           pushAll
-            $ [ story investigators resolution2
+            $ [ story players resolution2
               , Record YourHouseIsStillStanding
-              , GainXP lead (toSource attrs) 1
+              , GainXP leadId (toSource attrs) 1
               ]
             <> gainXp
             <> [EndOfGame Nothing]
@@ -146,7 +147,7 @@ instance RunMessage TheGathering where
             -- \* end campaign if none left
             -- \* handle new investigators
             -- \* handle lead being killed
-            [ story investigators resolution3
+            [ story players resolution3
             , Record LitaWasForcedToFindOthersToHelpHerCause
             , Record YourHouseIsStillStanding
             , Record GhoulPriestIsStillAlive

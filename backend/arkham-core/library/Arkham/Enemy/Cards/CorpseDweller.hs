@@ -36,9 +36,10 @@ instance RunMessage CorpseDweller where
           $ EnemyWithTrait Humanoid
           <> EnemyAt
             (LocationWithId lid)
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel humanoid [Discard (toSource attrs) (EnemyTarget humanoid)]
           | humanoid <- humanoids
           ]

@@ -80,6 +80,7 @@ instance RunMessage CurtainCall where
           placeLocationCard_
           [Locations.lobby, Locations.balcony]
 
+      players <- allPlayers
       investigatorIds <- allInvestigatorIds
       mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
       let
@@ -93,7 +94,7 @@ instance RunMessage CurtainCall where
           ]
 
       pushAll
-        $ [ story investigatorIds intro
+        $ [ story players intro
           , SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
@@ -135,7 +136,7 @@ instance RunMessage CurtainCall where
           )
     ScenarioResolution resolution -> do
       lead <- getLead
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       gainXP <- toGainXp attrs getXp
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt
@@ -150,13 +151,13 @@ instance RunMessage CurtainCall where
       s <$ case resolution of
         NoResolution ->
           pushAll
-            $ story investigatorIds noResolution
+            $ story players noResolution
             : theStrangerIsOnToYou
               <> gainXP
               <> [EndOfGame Nothing]
         Resolution 1 ->
           pushAll
-            ( [ story investigatorIds resolution1
+            ( [ story players resolution1
               , Record YouTriedToWarnThePolice
               , RecordCount Conviction (conviction + 1)
               ]
@@ -167,7 +168,7 @@ instance RunMessage CurtainCall where
             )
         Resolution 2 ->
           pushAll
-            ( [ story investigatorIds resolution2
+            ( [ story players resolution2
               , Record YouChoseNotToGoToThePolice
               , RecordCount Doubt (doubt + 1)
               ]

@@ -68,6 +68,7 @@ instance RunMessage SwiftByakhee where
             Just lid -> do
               distance <- fromMaybe (Distance 1000) <$> getDistance loc lid
               pure $ Just (preyId, lid, distance)
-        push $ chooseOrRunOne iid $ map (choosePrey attrs) preyWithLocationsAndDistances
+        player <- getPlayer iid
+        push $ chooseOrRunOne player $ map (choosePrey attrs) preyWithLocationsAndDistances
       pure e
     _ -> SwiftByakhee <$> runMessage msg attrs

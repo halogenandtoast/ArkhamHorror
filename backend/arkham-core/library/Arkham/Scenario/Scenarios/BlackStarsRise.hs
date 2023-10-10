@@ -126,6 +126,7 @@ instance RunMessage BlackStarsRise where
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       ashleighInterviewed <- interviewed Assets.ashleighClarke
       version <- sample versions
 
@@ -204,8 +205,8 @@ instance RunMessage BlackStarsRise where
           [northTower, outerWall, brokenSteps, grandRue, abbeyChurch]
 
       pushAll
-        $ [story investigatorIds intro]
-        <> [story investigatorIds ashleighsInformation | ashleighInterviewed]
+        $ [story players intro]
+        <> [story players ashleighsInformation | ashleighInterviewed]
         <> [ SearchCollectionForRandom
             iid
             (toSource attrs)
@@ -243,7 +244,7 @@ instance RunMessage BlackStarsRise where
           )
     PlaceDoomOnAgenda -> do
       agendaIds <- selectList AnyAgenda
-      lead <- getLead
+      lead <- getLeadPlayer
       push
         $ chooseOne
           lead
@@ -270,6 +271,7 @@ instance RunMessage BlackStarsRise where
       ashleighSlain <- selectOne $ VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke
       gainXp <- toGainXp attrs $ getXp
       iids <- allInvestigatorIds
+      players <- allPlayers
       let
         updateSlain =
           [ recordSetInsert VIPsSlain [toCardCode ashleigh]
@@ -279,7 +281,7 @@ instance RunMessage BlackStarsRise where
         NoResolution -> push $ ScenarioResolution $ Resolution 3
         Resolution 1 -> do
           pushAll
-            $ [ story iids resolution1
+            $ [ story players resolution1
               , Record YouOpenedThePathBelow
               , RemoveAllChaosTokens Cultist
               , RemoveAllChaosTokens Tablet
@@ -294,7 +296,7 @@ instance RunMessage BlackStarsRise where
             <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
-            $ [ story iids resolution2
+            $ [ story players resolution2
               , Record YouOpenedThePathAbove
               , RemoveAllChaosTokens Cultist
               , RemoveAllChaosTokens Tablet
@@ -309,7 +311,7 @@ instance RunMessage BlackStarsRise where
             <> [EndOfGame Nothing]
         Resolution 3 -> do
           pushAll
-            $ story iids resolution3
+            $ story players resolution3
             : Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
             : map DrivenInsane iids
               <> [GameOver]

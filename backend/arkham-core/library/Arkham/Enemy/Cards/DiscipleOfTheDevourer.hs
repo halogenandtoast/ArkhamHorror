@@ -47,10 +47,11 @@ instance RunMessage DiscipleOfTheDevourer where
       mLocationId <- field EnemyLocation (toId attrs)
       hasClues <- fieldP InvestigatorClues (> 0) iid
       step <- fieldMap AgendaSequence agendaStep agendaId
+      player <- getPlayer iid
       if step == AgendaStep 1
         then
           push
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ Label
               "Place 1 doom on Disciple of the Devourer"
               [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]

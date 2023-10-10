@@ -88,7 +88,7 @@ instance RunMessage PlanningTheEscape where
         <> [AdvanceActDeck (actDeckId attrs) $ toSource attrs]
       pure a
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       for_ mcard $ \card -> do
         investigators <- selectList (InvestigatorWithLowestSkill SkillWillpower)
         case investigators of
@@ -96,7 +96,7 @@ instance RunMessage PlanningTheEscape where
           xs ->
             push
               $ chooseOrRunOne
-                leadInvestigatorId
+                lead
                 [ targetLabel i [InvestigatorDrewEncounterCard i card]
                 | i <- xs
                 ]

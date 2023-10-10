@@ -62,7 +62,7 @@ instance HasChaosTokenValue CurseOfTheRougarou where
 instance RunMessage CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou attrs) = case msg of
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
       result <- shuffleM $ keys locationsByTrait
       let
@@ -97,7 +97,7 @@ instance RunMessage CurseOfTheRougarou where
         <> concat otherPlacements
         <> [ RevealLocation Nothing bayouId
            , MoveAllTo (toSource attrs) bayouId
-           , story investigatorIds intro
+           , story players intro
            ]
       agendas <-
         genCards
@@ -209,26 +209,24 @@ instance RunMessage CurseOfTheRougarou where
     ScenarioResolution NoResolution ->
       runMessage (ScenarioResolution $ Resolution 1) s
     ScenarioResolution (Resolution 1) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       pushAll
-        $ [story iids resolution1, Record TheRougarouContinuesToHauntTheBayou]
+        $ [story players resolution1, Record TheRougarouContinuesToHauntTheBayou]
         <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      iids <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      (leadId, lead) <- getLeadInvestigatorPlayer
       xp <- getXp
       pushAll
-        $ [ story iids resolution2
+        $ [ story players resolution2
           , Record TheRougarouIsDestroyed
           , RemoveCampaignCard Treacheries.curseOfTheRougarou
           , chooseOne
               lead
-              [ Label
-                  "Add Lady Esprit to your deck"
-                  [AddCampaignCardToDeck lead Assets.ladyEsprit]
+              [ Label "Add Lady Esprit to your deck" [AddCampaignCardToDeck leadId Assets.ladyEsprit]
               , Label "Do not add Lady Esprit to your deck" []
               ]
           ]
@@ -236,11 +234,11 @@ instance RunMessage CurseOfTheRougarou where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 3) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       lead <- getLead
       xp <- getXp
       pushAll
-        $ [ story iids resolution3
+        $ [ story players resolution3
           , Record TheRougarouEscapedAndYouEmbracedTheCurse
           , AddCampaignCardToDeck lead Assets.monstrousTransformation
           ]

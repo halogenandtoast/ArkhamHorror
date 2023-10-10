@@ -117,21 +117,22 @@ instance RunMessage TheCityOfArchives where
         <> map (RemoveFromGame . AssetTarget) uniqueItemAssets
       pure . TheCityOfArchives $ attrs & setAsideUpdate
     Setup -> do
-      iids <- allInvestigatorIds
-      leadInvestigator <- getLeadInvestigatorId
+      players <- allPlayers
+      iids <- getInvestigatorIds
+      lead <- getLeadPlayer
       pushAll
         $ map BecomeYithian iids
-        <> [ story iids intro1
+        <> [ story players intro1
            , chooseOne
-              leadInvestigator
+              lead
               [ Label
                   "Cooperate and tell the creatures everything you know."
-                  [ story iids intro2
+                  [ story players intro2
                   , Record TheInvestigatorsCooperatedWithTheYithians
                   ]
               , Label
                   "Refuse and resist captivity."
-                  [story iids intro3, Record TheInvestigatorsResistedCaptivity]
+                  [story players intro3, Record TheInvestigatorsResistedCaptivity]
               ]
            , SetupStep (toTarget attrs) 1
            ]
@@ -236,10 +237,9 @@ instance RunMessage TheCityOfArchives where
         & (setAsideCardsL %~ (<> setAsideCards))
         & (agendaStackL . at 1 ?~ agendas)
         & (actStackL . at 1 ?~ acts)
-    ResolveChaosToken _ chaosTokenFace iid
-      | isHardExpert attrs && chaosTokenFace `elem` [Cultist, ElderThing] -> do
-          push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource chaosTokenFace) 1
-          pure s
+    ResolveChaosToken _ chaosTokenFace iid | isHardExpert attrs && chaosTokenFace `elem` [Cultist, ElderThing] -> do
+      push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource chaosTokenFace) 1
+      pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case chaosTokenFace token of
         face | face `elem` [Cultist, ElderThing] -> do
@@ -256,10 +256,11 @@ instance RunMessage TheCityOfArchives where
       pure s
     ScenarioResolution r -> do
       iids <- allInvestigatorIds
+      players <- allPlayers
       case r of
         NoResolution ->
           pushAll
-            $ [ story iids noResolution
+            $ [ story players noResolution
               , Record TheInvestigatorsHadTheirMemoriesExpunged
               ]
             <> map DrivenInsane iids
@@ -300,7 +301,7 @@ instance RunMessage TheCityOfArchives where
                 else Nothing
 
           pushAll
-            $ story iids resolution1
+            $ story players resolution1
             : Record logEntry
             : gainXp
               <> [EndOfGame (Just $ InterludeStep 4 interludeResult)]

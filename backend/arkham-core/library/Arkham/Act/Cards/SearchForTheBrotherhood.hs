@@ -15,7 +15,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Helpers.Log
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -76,6 +75,7 @@ instance RunMessage SearchForTheBrotherhood where
       let miid = iids !!? idx
       for_ miid $ \iid -> do
         discard <- scenarioField ScenarioDiscard
+        player <- getPlayer iid
         let (nonMatch, rest) = break (`cardMatch` CardWithTrait Hex) discard
         case rest of
           [] -> pure ()
@@ -83,9 +83,9 @@ instance RunMessage SearchForTheBrotherhood where
             pushAll
               [ FocusCards (map EncounterCard $ nonMatch <> [x])
               , chooseOne
-                  iid
-                  [ TargetLabel
-                      (CardIdTarget $ toCardId x)
+                  player
+                  [ targetLabel
+                      (toCardId x)
                       [ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [EncounterCard x]]
                   ]
               , UnfocusCards

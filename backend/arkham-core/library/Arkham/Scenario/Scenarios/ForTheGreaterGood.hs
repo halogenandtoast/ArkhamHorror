@@ -86,7 +86,7 @@ standaloneChaosTokens =
 instance RunMessage ForTheGreaterGood where
   runMessage msg s@(ForTheGreaterGood attrs) = case msg of
     PreScenarioSetup -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge
       enemiesOfTheLodge <- getHasRecord TheInvestigatorsAreEnemiesOfTheLodge
       showSidebar <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
@@ -96,11 +96,11 @@ instance RunMessage ForTheGreaterGood where
       let intro2Sidebar = if showSidebar then decievingTheLodge else mempty
 
       pushAll
-        $ story iids intro1
-        : [story iids (intro2 <> intro2Sidebar) | membersOfTheLodge]
-          <> [story iids intro3 | not membersOfTheLodge, enemiesOfTheLodge]
-          <> [story iids intro4 | not membersOfTheLodge, not enemiesOfTheLodge, learnedNothing]
-          <> [ story iids intro5
+        $ story players intro1
+        : [story players (intro2 <> intro2Sidebar) | membersOfTheLodge]
+          <> [story players intro3 | not membersOfTheLodge, enemiesOfTheLodge]
+          <> [story players intro4 | not membersOfTheLodge, not enemiesOfTheLodge, learnedNothing]
+          <> [ story players intro5
              | not membersOfTheLodge
              , not enemiesOfTheLodge
              , not learnedNothing
@@ -108,7 +108,7 @@ instance RunMessage ForTheGreaterGood where
              ]
       pure s
     StandaloneSetup -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       push
         $ chooseOne
           lead
@@ -212,11 +212,12 @@ instance RunMessage ForTheGreaterGood where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       if isEasyStandard attrs
         then do
+          player <- getPlayer iid
           closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
           unless (null closestCultists)
             $ push
             $ chooseOrRunOne
-              iid
+              player
               [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
               | cultist <- closestCultists
               ]
@@ -228,11 +229,12 @@ instance RunMessage ForTheGreaterGood where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       if isEasyStandard attrs
         then do
+          player <- getPlayer iid
           closestCultists <- selectList $ NearestEnemy (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
           unless (null closestCultists)
             $ push
             $ chooseOne
-              iid
+              player
               [ targetLabel
                 cultist
                 [RemoveDoom (ChaosTokenEffectSource ElderThing) (toTarget cultist) 1, PlaceDoomOnAgenda]
@@ -244,9 +246,10 @@ instance RunMessage ForTheGreaterGood where
             then do
               agenda <- getCurrentAgenda
               maxDoom <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
+              player <- getPlayer iid
               push
                 $ chooseOrRunOne
-                  iid
+                  player
                   [ targetLabel
                     cultist
                     [ RemoveAllDoom (toSource attrs) (toTarget cultist)
@@ -258,36 +261,34 @@ instance RunMessage ForTheGreaterGood where
       pure s
     ScenarioResolution n -> do
       iids <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       xp <- toGainXp attrs getXp
       case n of
         NoResolution ->
-          pushAll $ [story iids noResolution, Record TheGuardianOfTheTrapEmerged] <> xp <> [EndOfGame Nothing]
+          pushAll
+            $ [story players noResolution, Record TheGuardianOfTheTrapEmerged]
+            <> xp
+            <> [EndOfGame Nothing]
         Resolution 1 ->
           pushAll
-            $ [ story iids resolution1
+            $ [ story players resolution1
               , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
-              , addCampaignCardToDeckChoice
-                  lead
-                  iids
-                  Assets.puzzleBox
+              , addCampaignCardToDeckChoice lead iids Assets.puzzleBox
               ]
             <> xp
             <> [EndOfGame (Just $ UpgradeDeckStep $ InterludeStep 3 Nothing)]
         Resolution 2 ->
           pushAll
-            $ [ story iids resolution2
+            $ [ story players resolution2
               , Record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
-              , addCampaignCardToDeckChoice
-                  lead
-                  iids
-                  Assets.puzzleBox
+              , addCampaignCardToDeckChoice lead iids Assets.puzzleBox
               ]
             <> xp
             <> [EndOfGame Nothing]
         Resolution 3 ->
           pushAll
-            $ [ story iids resolution3
+            $ [ story players resolution3
               , Record TheGuardianOfTheTrapEmergedAndWasDefeated
               ]
             <> xp

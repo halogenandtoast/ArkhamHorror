@@ -48,7 +48,7 @@ instance RunMessage CorpseTaker where
               pushAll $ replicate (enemyDoom attrs) PlaceDoomOnAgenda
               pure $ CorpseTaker $ attrs & tokensL %~ removeAllTokens Doom
             else do
-              lead <- getLead
+              lead <- getLeadPlayer
               locations <- selectList $ ClosestPathLocation loc location
               pushWhen (notNull locations)
                 $ chooseOrRunOne lead

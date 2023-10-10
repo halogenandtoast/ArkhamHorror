@@ -14,7 +14,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -65,10 +64,10 @@ instance RunMessage PastAndPresent where
       pure a
     NextAdvanceActStep aid 1 | aid == toId attrs && onSide B attrs -> do
       presentDayLocations <- selectList $ LocationWithTrait PresentDay
-      leadInvestigatorId <- getLeadInvestigatorId
+      (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       push
         $ chooseOneAtATime
-          leadInvestigatorId
+          lead
           [ targetLabel
             lid
             [ HandleTargetChoice
@@ -84,12 +83,13 @@ instance RunMessage PastAndPresent where
       replacements <-
         filter ((== Just locationSymbol) . cdLocationRevealedSymbol . toCardDef)
           <$> getExplorationDeck
+      player <- getPlayer iid
       pushAll
         [ FocusCards replacements
         , chooseOrRunOne
-            iid
-            [ TargetLabel
-              (CardIdTarget $ toCardId replacement)
+            player
+            [ targetLabel
+              (toCardId replacement)
               [ RemoveCardFromScenarioDeck ExplorationDeck replacement
               , ReplaceLocation lid replacement DefaultReplace
               ]

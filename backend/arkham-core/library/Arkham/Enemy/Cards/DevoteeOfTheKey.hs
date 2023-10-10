@@ -37,7 +37,7 @@ instance RunMessage DevoteeOfTheKey where
             pushAll
               [Discard (toAbilitySource attrs 1) (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
           else do
-            lead <- getLead
+            lead <- getLeadPlayer
             choices <- selectList $ ClosestPathLocation loc sentinelPeak
             case choices of
               [] -> error "should not happen"

@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Matcher
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
@@ -48,7 +47,7 @@ instance RunMessage TheParisianConspiracyV1 where
         _ -> do
           investigatorIds <- getInvestigatorIds
           locationIds <- selectList $ FarthestLocationFromAll Anywhere
-          lead <- getLead
+          lead <- getLeadPlayer
 
           choices <- for locationIds $ \lid -> do
             createTheOrganist <- createEnemyAt_ theOrganist lid Nothing

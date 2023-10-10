@@ -11,7 +11,6 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -31,15 +30,7 @@ mouthOfKnYanTheDepthsBelow =
 
 instance HasAbilities MouthOfKnYanTheDepthsBelow where
   getAbilities (MouthOfKnYanTheDepthsBelow attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-        attrs
-        1
-        (Here <> HasSupply Compass)
-        (ActionAbility Nothing $ ActionCost 1)
-      | locationRevealed attrs
-      ]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 (Here <> HasSupply Compass) actionAbility]
 
 instance RunMessage MouthOfKnYanTheDepthsBelow where
   runMessage msg l@(MouthOfKnYanTheDepthsBelow attrs) = case msg of
@@ -48,13 +39,13 @@ instance RunMessage MouthOfKnYanTheDepthsBelow where
       let
         deckKey = Deck.ScenarioDeckByKey ExplorationDeck
         (viewing, rest) = splitAt 2 explorationDeck
-        (treacheries, other) =
-          partition (`cardMatch` CardWithType TreacheryType) viewing
+        (treacheries, other) = partition (`cardMatch` CardWithType TreacheryType) viewing
+      player <- getPlayer iid
       pushAll
         [ FocusCards viewing
         , SetScenarioDeck ExplorationDeck $ other <> rest
         , chooseOne
-            iid
+            player
             [ Label
                 "Continue"
                 [ AddToEncounterDiscard c

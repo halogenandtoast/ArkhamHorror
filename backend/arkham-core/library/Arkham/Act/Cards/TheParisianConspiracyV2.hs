@@ -42,7 +42,7 @@ instance RunMessage TheParisianConspiracyV2 where
       case advanceMode of
         AdvancedWithClues -> do
           locationIds <- selectList $ FarthestLocationFromAll Anywhere
-          lead <- getLead
+          lead <- getLeadPlayer
           choices <- for locationIds $ \lid -> do
             createTheOrganist <- createEnemyAt_ theOrganist lid Nothing
             pure $ targetLabel lid [createTheOrganist]

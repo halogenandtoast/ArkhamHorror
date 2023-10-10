@@ -74,9 +74,9 @@ masks :: [CardDef]
 masks =
   [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
 
-sacrificesMade :: [InvestigatorId] -> ScenarioAttrs -> [Message]
-sacrificesMade investigatorIds s =
-  story investigatorIds Flavor.sacrificesMade
+sacrificesMade :: [(InvestigatorId, PlayerId)] -> ScenarioAttrs -> [Message]
+sacrificesMade (unzip -> (investigatorIds, players)) s =
+  story players Flavor.sacrificesMade
     : [ SearchCollectionForRandom
         iid
         (toSource s)
@@ -86,9 +86,9 @@ sacrificesMade investigatorIds s =
       | iid <- investigatorIds
       ]
 
-abbessSatisfied :: InvestigatorId -> [InvestigatorId] -> [Message]
-abbessSatisfied lead investigatorIds =
-  story investigatorIds Flavor.abbessSatisfied
+abbessSatisfied :: PlayerId -> [(InvestigatorId, PlayerId)] -> [Message]
+abbessSatisfied lead (unzip -> (investigatorIds, players)) =
+  story players Flavor.abbessSatisfied
     : [ addCampaignCardToDeckChoice
           lead
           investigatorIds
@@ -97,29 +97,29 @@ abbessSatisfied lead investigatorIds =
 
 additionalRewards :: HasGame m => ScenarioAttrs -> m [Message]
 additionalRewards s = do
-  lead <- getLead
-  investigatorIds <- allInvestigatorIds
+  lead <- getLeadPlayer
+  investigatorPlayers <- allInvestigatorPlayers
   let
     proceedToSacrificesMade =
       if null (scenarioCardsUnderActDeck s)
         && notNull (scenarioCardsUnderAgendaDeck s)
-        then sacrificesMade investigatorIds s
+        then sacrificesMade investigatorPlayers s
         else []
     proceedToAbbessSatisfied =
       if null (scenarioCardsUnderAgendaDeck s)
         && length (scenarioCardsUnderAgendaDeck s)
         == 3
-        then abbessSatisfied lead investigatorIds
+        then abbessSatisfied lead investigatorPlayers
         else []
   pure
-    $ [ChooseOneRewardByEachPlayer masks investigatorIds]
+    $ [ChooseOneRewardByEachPlayer masks $ map fst investigatorPlayers]
     <> proceedToSacrificesMade
     <> proceedToAbbessSatisfied
 
 instance RunMessage CarnevaleOfHorrors where
   runMessage msg s@(CarnevaleOfHorrors attrs) = case msg of
     Setup -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
 
       -- Encounter Deck
       encounterDeck <-
@@ -201,7 +201,7 @@ instance RunMessage CarnevaleOfHorrors where
         <> [ CreateAssetAt abbessId abbess (AtLocation sanMarcoBasilicaId)
            , RevealLocation Nothing sanMarcoBasilicaId
            , MoveAllTo (toSource attrs) sanMarcoBasilicaId
-           , story investigatorIds Flavor.intro
+           , story players Flavor.intro
            ]
 
       setAsideCards <-
@@ -286,12 +286,13 @@ instance RunMessage CarnevaleOfHorrors where
           $ ClosestAsset lid
           $ assetIs
             Assets.innocentReveler
+      player <- getPlayer iid
       case closestInnocentRevelers of
         [] -> pure ()
         [x] ->
           push
             $ chooseOne
-              iid
+              player
               [ ComponentLabel
                   (AssetComponent x DamageToken)
                   [AssetDamage x (ChaosTokenSource token) 1 0]
@@ -302,11 +303,11 @@ instance RunMessage CarnevaleOfHorrors where
         xs ->
           push
             $ chooseOne
-              iid
+              player
               [ targetLabel
                 x
                 [ chooseOne
-                    iid
+                    player
                     [ ComponentLabel
                         (AssetComponent x DamageToken)
                         [AssetDamage x (ChaosTokenSource token) 1 0]
@@ -322,6 +323,7 @@ instance RunMessage CarnevaleOfHorrors where
       case chaosTokenFace token of
         Cultist -> push $ InvestigatorDrawEncounterCard iid
         Tablet -> do
+          player <- getPlayer iid
           lid <- getJustLocation iid
           closestInnocentRevelers <-
             selectList
@@ -333,7 +335,7 @@ instance RunMessage CarnevaleOfHorrors where
             [x] ->
               push
                 $ chooseOne
-                  iid
+                  player
                   [ ComponentLabel
                       (AssetComponent x DamageToken)
                       [AssetDamage x (ChaosTokenSource token) 1 0]
@@ -344,11 +346,11 @@ instance RunMessage CarnevaleOfHorrors where
             xs ->
               push
                 $ chooseOne
-                  iid
+                  player
                   [ targetLabel
                     x
                     [ chooseOne
-                        iid
+                        player
                         [ ComponentLabel
                             (AssetComponent x DamageToken)
                             [AssetDamage x (ChaosTokenSource token) 1 0]
@@ -372,7 +374,7 @@ instance RunMessage CarnevaleOfHorrors where
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       additionalRewardsMsg <-
         additionalRewards
@@ -381,7 +383,7 @@ instance RunMessage CarnevaleOfHorrors where
               & (cardsUnderAgendaDeckL <>~ take 1 (scenarioCardsUnderActDeck attrs))
           )
       pushAll
-        $ [ story iids Flavor.noResolution
+        $ [ story players Flavor.noResolution
           , Record ManyWereSacrificedToCnidathquaDuringTheCarnivale
           ]
         <> additionalRewardsMsg
@@ -389,11 +391,11 @@ instance RunMessage CarnevaleOfHorrors where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 1) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
       pushAll
-        $ [ story iids Flavor.resolution1
+        $ [ story players Flavor.resolution1
           , Record TheSunBanishedCnidathquaIntoTheDepths
           ]
         <> additionalRewardsMsg
@@ -401,30 +403,30 @@ instance RunMessage CarnevaleOfHorrors where
         <> [EndOfGame Nothing]
       pure s
     ScenarioResolution (Resolution 2) -> do
-      iids <- allInvestigatorIds
+      players <- allPlayers
       xp <- getXp
       additionalRewardsMsg <- additionalRewards attrs
       pushAll
-        $ [ story iids Flavor.resolution2
+        $ [ story players Flavor.resolution2
           , Record CnidathquaRetreatedToNurseItsWounds
           ]
         <> additionalRewardsMsg
         <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
         <> [EndOfGame Nothing]
       pure s
-    ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest) ->
-      do
-        push
-          $ chooseOne currentInvestigatorId
-          $ Label "Do not add a mask" [ChooseOneRewardByEachPlayer rewards rest]
-          : [ CardLabel
-              (toCardCode reward)
-              [ AddCampaignCardToDeck currentInvestigatorId reward
-              , ChooseOneRewardByEachPlayer (delete reward rewards) rest
-              ]
-            | reward <- rewards
+    ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest) -> do
+      player <- getPlayer currentInvestigatorId
+      push
+        $ chooseOne player
+        $ Label "Do not add a mask" [ChooseOneRewardByEachPlayer rewards rest]
+        : [ CardLabel
+            (toCardCode reward)
+            [ AddCampaignCardToDeck currentInvestigatorId reward
+            , ChooseOneRewardByEachPlayer (delete reward rewards) rest
             ]
-        pure s
+          | reward <- rewards
+          ]
+      pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ push . AddCardToDeckForCampaign iid
       pure s

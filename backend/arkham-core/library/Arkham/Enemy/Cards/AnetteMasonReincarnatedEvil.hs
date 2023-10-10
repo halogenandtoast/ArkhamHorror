@@ -41,13 +41,13 @@ instance HasAbilities AnetteMasonReincarnatedEvil where
 instance RunMessage AnetteMasonReincarnatedEvil where
   runMessage msg e@(AnetteMasonReincarnatedEvil attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      investigators <- getInvestigators
+      investigators <- getInvestigatorPlayers
       pushAll
-        [ chooseOne investigator
+        [ chooseOne player
           $ [ assignDamageLabel investigator (toAbilitySource attrs 1) 1
             , assignHorrorLabel investigator (toAbilitySource attrs 1) 1
             ]
-        | investigator <- investigators
+        | (investigator, player) <- investigators
         ]
       pure e
     _ -> AnetteMasonReincarnatedEvil <$> runMessage msg attrs

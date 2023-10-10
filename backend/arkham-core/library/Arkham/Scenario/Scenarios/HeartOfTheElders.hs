@@ -107,8 +107,7 @@ instance HasChaosTokenValue HeartOfTheElders where
   getChaosTokenValue iid chaosTokenFace (HeartOfTheElders (attrs `With` _)) =
     case chaosTokenFace of
       Skull -> do
-        inCave <-
-          selectAny $ locationWithInvestigator iid <> LocationWithTrait Cave
+        inCave <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Cave
         let caveModifier = if inCave then 2 else 0
         pure $ toChaosTokenValue attrs Skull (1 + caveModifier) (2 + caveModifier)
       Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
@@ -122,17 +121,16 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
     pure s
   StandaloneSetup -> do
-    lead <- getLead
+    lead <- getLeadPlayer
     push
       $ questionLabel
         "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
         lead
-      $ ChooseOne
-        [Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5]]
+      $ ChooseOne [Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5]]
     pure s
   Setup -> do
-    iids <- allInvestigatorIds
-    leadInvestigatorId <- getLeadInvestigatorId
+    players <- allPlayers
+    lead <- getLeadPlayer
 
     mIchtacaInvestigator <- getOwner Assets.ichtacaTheForgottenGuardian
     mAlejandroInvestigator <- getOwner Assets.alejandroVela
@@ -140,25 +138,25 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
     let
       introMessages =
-        [ story iids intro1
-        , chooseOrRunOne leadInvestigatorId
+        [ story players intro1
+        , chooseOrRunOne lead
             $ [ Label
                 "Let’s consult with Ichtaca."
-                [ story iids intro2
+                [ story players intro2
                 , PutCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
                 ]
               | iid <- maybeToList mIchtacaInvestigator
               ]
             <> [ Label
                 "Let’s consult with Alejandro."
-                [ story iids intro3
+                [ story players intro3
                 , PutCampaignCardIntoPlay iid Assets.alejandroVela
                 ]
                | iid <- maybeToList mAlejandroInvestigator
                ]
             <> [ Label
                 "Let’s consult the expedition journal."
-                [ story iids intro4
+                [ story players intro4
                 , PutCampaignCardIntoPlay iid Assets.expeditionJournal
                 ]
                | iid <- maybeToList mExpeditionJournalInvestigator
@@ -379,7 +377,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             & (actStackL . at 1 ?~ acts)
         )
   ScenarioResolution r -> do
-    iids <- allInvestigatorIds
+    players <- allPlayers
     vengeance <- getVengeanceInVictoryDisplay
     yigsFury <- getRecordCount YigsFury
     inVictory <-
@@ -395,7 +393,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       NoResolution -> do
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
         let n = if rescuedAlejandro then 1 else 2
-        pushAll [story iids noResolutionB, ScenarioResolution (Resolution n)]
+        pushAll [story players noResolutionB, ScenarioResolution (Resolution n)]
       Resolution n -> do
         let
           resolutionStory = case n of
@@ -404,7 +402,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             _ -> error "invalid resolution"
         gainXp <- toGainXp attrs getXp
         pushAll
-          $ story iids resolutionStory
+          $ story players resolutionStory
           : RecordCount YigsFury (yigsFury + vengeance)
           : [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
             <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]

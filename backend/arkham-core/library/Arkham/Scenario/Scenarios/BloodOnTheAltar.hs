@@ -104,7 +104,7 @@ instance RunMessage BloodOnTheAltar where
         whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
         pure s
       Setup -> do
-        investigatorIds <- allInvestigatorIds
+        players <- allPlayers
         bishopsBrook <-
           genCard
             =<< sample
@@ -221,7 +221,7 @@ instance RunMessage BloodOnTheAltar where
             pure [placement, PlaceUnderneath (LocationTarget locationId) [card]]
 
         pushAll
-          $ [ story investigatorIds intro
+          $ [ story players intro
             , SetEncounterDeck encounterDeck
             , SetAgendaDeck
             ]
@@ -278,7 +278,7 @@ instance RunMessage BloodOnTheAltar where
             push $ PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1
           _ -> pure ()
       ScenarioResolution NoResolution -> do
-        iids <- allInvestigatorIds
+        players <- allPlayers
         agendaId <- selectJust AnyAgenda
         xp <- getXp
         let
@@ -289,7 +289,7 @@ instance RunMessage BloodOnTheAltar where
           sacrificedToYogSothoth = potentialSacrifices <> sacrificed
         removeNecronomicon <- getRemoveNecronomicon
         pushAll
-          $ [ story iids noResolution
+          $ [ story players noResolution
             , Record TheRitualWasCompleted
             , PlaceUnderneath (toTarget agendaId) potentialSacrifices
             ]
@@ -299,11 +299,11 @@ instance RunMessage BloodOnTheAltar where
           <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 1) -> do
-        iids <- allInvestigatorIds
+        players <- allPlayers
         xp <- getXp
         removeNecronomicon <- getRemoveNecronomicon
         pushAll
-          $ [ story iids resolution1
+          $ [ story players resolution1
             , Record TheInvestigatorsPutSilasBishopOutOfHisMisery
             ]
           <> map (RemoveCampaignCard . toCardDef) sacrificed
@@ -312,20 +312,20 @@ instance RunMessage BloodOnTheAltar where
           <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 2) -> do
-        iids <- allInvestigatorIds
+        players <- allPlayers
         xp <- getXp
         pushAll
-          $ [story iids resolution2, Record TheInvestigatorsRestoredSilasBishop]
+          $ [story players resolution2, Record TheInvestigatorsRestoredSilasBishop]
           <> map (RemoveCampaignCard . toCardDef) sacrificed
           <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
           <> [EndOfGame Nothing]
         pure s
       ScenarioResolution (Resolution 3) -> do
-        iids <- allInvestigatorIds
+        players <- allPlayers
         xp <- getXp
         removeNecronomicon <- getRemoveNecronomicon
         pushAll
-          $ [story iids resolution3, Record TheInvestigatorsBanishedSilasBishop]
+          $ [story players resolution3, Record TheInvestigatorsBanishedSilasBishop]
           <> map (RemoveCampaignCard . toCardDef) sacrificed
           <> [recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed]
           <> removeNecronomicon

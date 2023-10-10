@@ -27,10 +27,11 @@ instance RunMessage LostInTime where
         damage <- field AssetDamage asset
         horror <- field AssetHorror asset
         pure (asset, damage, horror)
+      player <- getPlayer iid
       if notNull assetsWithDamageAndHorror
         then do
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ [ targetLabel aid
                 $ [MovedDamage (toSource aid) (toTarget iid) dmg | dmg > 0]
                 <> [MovedHorror (toSource aid) (toTarget iid) hrr | hrr > 0]

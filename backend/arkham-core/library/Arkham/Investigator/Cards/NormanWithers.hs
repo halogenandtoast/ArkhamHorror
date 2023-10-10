@@ -64,8 +64,9 @@ instance RunMessage NormanWithers where
       when (ElderSign `elem` faces) $ do
         drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 1
         hand <- field InvestigatorHand iid
+        player <- getPlayer iid
         push
-          $ chooseOne iid
+          $ chooseOne player
           $ Label "Do not swap" []
           : [ targetLabel (toCardId c)
               $ [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]

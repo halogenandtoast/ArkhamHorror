@@ -25,7 +25,7 @@ instance HasAbilities Lantern2 where
   getAbilities (Lantern2 x) =
     [ investigateAbility x 1 mempty ControlsThis
     , doesNotProvokeAttacksOfOpportunity
-        $ restrictedAbility x 2 (ControlsThis <> enemyExists (EnemyAt YourLocation))
+        $ controlledAbility x 2 (exists $ EnemyAt YourLocation)
         $ actionAbilityWithCost (OrCost [discardCost x, removeCost x])
     ]
 
@@ -43,11 +43,14 @@ instance RunMessage Lantern2 where
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       let source = toAbilitySource attrs 2
       targets <- selectTargets $ enemyAtLocationWith iid
-      push $ chooseOne iid [TargetLabel target [Damage target source 1] | target <- targets]
+      player <- getPlayer iid
+      push $ chooseOne player [TargetLabel target [Damage target source 1] | target <- targets]
       pure a
     InOutOfPlay (UseThisAbility iid (isSource attrs -> True) 2) -> do
       let source = toAbilitySource attrs 2
       enemies <- selectList $ enemyAtLocationWith iid
-      push $ chooseOne iid [targetLabel enemy [EnemyDamage enemy $ nonAttack source 2] | enemy <- enemies]
+      player <- getPlayer iid
+      push
+        $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack source 2] | enemy <- enemies]
       pure a
     _ -> Lantern2 <$> runMessage msg attrs

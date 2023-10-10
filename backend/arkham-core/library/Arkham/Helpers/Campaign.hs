@@ -70,38 +70,34 @@ matchingCardsAlreadyInDeck matcher = do
       decks
 
 addCampaignCardToDeckChoice
-  :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
-addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
+  :: PlayerId -> [InvestigatorId] -> CardDef -> Message
+addCampaignCardToDeckChoice leadPlayer investigators cardDef =
   questionLabelWithCard
     ("Add " <> display name <> " to a deck")
     (toCardCode cardDef)
-    leadInvestigatorId
+    leadPlayer
     $ ChooseOne
-    $ [ PortraitLabel
-        iid
-        [AddCampaignCardToDeck iid cardDef]
-      | iid <- investigatorIds
+    $ [ PortraitLabel investigator [AddCampaignCardToDeck investigator cardDef]
+      | investigator <- investigators
       ]
     <> [Label ("Do not add " <> display name <> " to any deck") []]
  where
   name = cdName cardDef
 
 forceAddCampaignCardToDeckChoice
-  :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
+  :: PlayerId -> [InvestigatorId] -> CardDef -> Message
 forceAddCampaignCardToDeckChoice _ [onlyId] cardDef =
   AddCampaignCardToDeck
     onlyId
     cardDef
-forceAddCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
+forceAddCampaignCardToDeckChoice leadPlayer investigators cardDef =
   questionLabelWithCard
     ("Add " <> display name <> " to a deck")
     (toCardCode cardDef)
-    leadInvestigatorId
+    leadPlayer
     $ ChooseOne
-    $ [ PortraitLabel
-        iid
-        [AddCampaignCardToDeck iid cardDef]
-      | iid <- investigatorIds
+      [ PortraitLabel investigator [AddCampaignCardToDeck investigator cardDef]
+      | investigator <- investigators
       ]
  where
   name = cdName cardDef

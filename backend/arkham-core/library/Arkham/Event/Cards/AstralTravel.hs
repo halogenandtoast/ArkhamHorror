@@ -25,12 +25,11 @@ astralTravel = event AstralTravel Cards.astralTravel
 
 instance RunMessage AstralTravel where
   runMessage msg e@(AstralTravel attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       locations <- selectList $ RevealedLocation <> Unblocked <> NotYourLocation <> canEnterLocation iid
+      player <- getPlayer iid
       pushAll
-        [ chooseOne
-            iid
-            [targetLabel lid [MoveAction iid lid Free False] | lid <- locations]
+        [ chooseOne player [targetLabel lid [MoveAction iid lid Free False] | lid <- locations]
         , RequestChaosTokens (toSource attrs) Nothing (Reveal 1) SetAside
         ]
       pure e
@@ -38,21 +37,18 @@ instance RunMessage AstralTravel where
       push $ ResetChaosTokens (toSource attrs)
       let faces = [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when (any ((`elem` faces) . chaosTokenFace) tokens) $ do
-        targets <-
-          selectList
-            $ AssetOneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
+        targets <- selectList $ oneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
+        player <- getPlayer (eventOwner attrs)
         push
-          $ If
-            (Window.RevealChaosTokenEventEffect (eventOwner attrs) tokens (toId attrs))
-            [ case targets of
-                [] ->
-                  InvestigatorAssignDamage (eventOwner attrs) source DamageAny 1 0
-                xs ->
-                  chooseOne
-                    (eventOwner attrs)
-                    [ targetLabel x [Discard (toSource attrs) $ AssetTarget x]
-                    | x <- xs
-                    ]
-            ]
+          $ If (Window.RevealChaosTokenEventEffect (eventOwner attrs) tokens (toId attrs))
+          $ case targets of
+            [] -> [assignDamage (eventOwner attrs) source 1]
+            xs ->
+              [ chooseOne
+                  player
+                  [ targetLabel x [Discard (toSource attrs) $ AssetTarget x]
+                  | x <- xs
+                  ]
+              ]
       pure e
     _ -> AstralTravel <$> runMessage msg attrs

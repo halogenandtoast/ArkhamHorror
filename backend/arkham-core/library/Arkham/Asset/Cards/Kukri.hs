@@ -28,29 +28,27 @@ instance HasAbilities Kukri where
 
 instance RunMessage Kukri where
   runMessage msg a@(Kukri attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ pushAll
-              [ skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillCombat 1)
-              , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      pushAll
+        [ skillTestModifier
+            attrs
+            (InvestigatorTarget iid)
+            (SkillModifier SkillCombat 1)
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
+        ]
+      pure a
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      actionRemainingCount <- field InvestigatorRemainingActions iid
+      player <- getPlayer iid
+      pushWhen (actionRemainingCount > 0)
+        $ chooseOne
+          player
+          [ Label
+              "Spend 1 action to deal +1 damage"
+              [ LoseActions iid source 1
+              , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
               ]
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          actionRemainingCount <- field InvestigatorRemainingActions iid
-          when (actionRemainingCount > 0)
-            $ push
-            $ chooseOne
-              iid
-              [ Label
-                  "Spend 1 action to deal +1 damage"
-                  [ LoseActions iid source 1
-                  , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-                  ]
-              , Label "Skip additional Kukri damage" []
-              ]
-          pure a
+          , Label "Skip additional Kukri damage" []
+          ]
+      pure a
     _ -> Kukri <$> runMessage msg attrs

@@ -23,16 +23,11 @@ stickToThePlan3 :: AssetCard StickToThePlan3
 stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3
 
 instance HasModifiersFor StickToThePlan3 where
-  getModifiersFor (InvestigatorTarget iid) (StickToThePlan3 attrs)
-    | controlledBy attrs iid =
-        pure
-          $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+  getModifiersFor (InvestigatorTarget iid) (StickToThePlan3 attrs) | controlledBy attrs iid = do
+    pure $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
   getModifiersFor (CardIdTarget cardId) (StickToThePlan3 attrs)
-    | cardId `elem` map toCardId (assetCardsUnderneath attrs) =
-        pure
-          $ toModifiers
-            attrs
-            [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
+    | cardId `elem` map toCardId (assetCardsUnderneath attrs) = do
+        pure $ toModifiers attrs [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StickToThePlan3 where
@@ -65,9 +60,10 @@ instance RunMessage StickToThePlan3 where
             )
             cards
       additionalTargets <- getAdditionalSearchTargets iid
+      player <- getPlayer iid
       push
         $ chooseUpToN
-          iid
+          player
           (3 + additionalTargets)
           "Choose no more events"
           [ targetLabel

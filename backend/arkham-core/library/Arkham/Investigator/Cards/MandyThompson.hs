@@ -51,9 +51,10 @@ instance RunMessage MandyThompson where
   runMessage msg i@(MandyThompson attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getInvestigator -> iid') _ -> do
       let source = toAbilitySource attrs 1
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Search 3 additional cards" [searchModifier source iid' $ SearchDepth 3]
           , Label "Resolve 1 additional target of the search" [searchModifier source iid' $ AdditionalTargets 1]
           ]

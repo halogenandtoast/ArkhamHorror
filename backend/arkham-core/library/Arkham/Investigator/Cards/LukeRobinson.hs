@@ -119,13 +119,14 @@ instance RunMessage LukeRobinson where
               $ [cardResolutionModifiers attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies]
               <> playCard
 
+          player <- getPlayer iid
           push
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ [Label "Play at current location" playCard | playable]
             <> [ Label
                 "Play at connecting location"
                 [ HandleTargetChoice iid (toSource attrs) (toTarget attrs)
-                , chooseOrRunOne iid [targetLabel lid msgs | (lid, msgs) <- locationOptions]
+                , chooseOrRunOne player [targetLabel lid msgs | (lid, msgs) <- locationOptions]
                 ]
                | notNull locationOptions
                ]

@@ -41,10 +41,11 @@ instance RunMessage TryAndTryAgain1 where
       committedSkillCards <-
         selectListMapM (field SkillCard)
           $ skillControlledBy iid
+      player <- getPlayer iid
       pushAll
         [ FocusCards committedSkillCards
         , chooseOne
-            iid
+            player
             [ targetLabel
               (toCardId skillCard)
               [ReturnToHand iid (toTarget $ toCardId skillCard)]

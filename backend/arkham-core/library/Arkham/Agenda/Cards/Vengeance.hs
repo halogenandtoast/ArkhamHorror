@@ -46,19 +46,16 @@ instance RunMessage Vengeance where
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       doom <- getDoomCount
-      iids <- getInvestigatorIds
+      investigators <- getInvestigatorPlayers
       pushAll
         $ zipWith
           ($)
-          ( replicate
-              doom
-              ( \i ->
-                  chooseOne
-                    i
-                    [TargetLabel EncounterDeckTarget [InvestigatorDrawEncounterCard i]]
-              )
+          ( replicate doom \(investigator, player) ->
+              chooseOne
+                player
+                [TargetLabel EncounterDeckTarget [InvestigatorDrawEncounterCard investigator]]
           )
-          (cycle iids)
+          (cycle investigators)
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ AdvanceAgenda (toId attrs)

@@ -95,8 +95,9 @@ instance RunMessage NarrowShaft where
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
+          player <- getPlayer iid
           push
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ [Label "Place Above" placeAbove | aboveEmpty]
             <> [Label "Place to the Right" placeRight | rightEmpty]
         [] -> pure ()

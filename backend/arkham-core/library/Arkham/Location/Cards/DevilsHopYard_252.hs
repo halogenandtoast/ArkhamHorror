@@ -47,36 +47,37 @@ instance RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       investigatorWithCluePairs <-
-        selectWithField InvestigatorClues
-          $ investigatorAt (toId attrs)
-          <> InvestigatorWithAnyClues
+        selectWithField InvestigatorClues $ investigatorAt (toId attrs) <> InvestigatorWithAnyClues
+      investigatorPlayersWithCluePairs <-
+        traverse (traverseToSnd $ getPlayer . fst) investigatorWithCluePairs
       abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
       when
         (null investigatorWithCluePairs || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
       let
-        placeClueOnAbomination iid' =
+        placeClueOnAbomination iid' player' =
           chooseOne
-            iid'
+            player'
             [ targetLabel
               target
               [PlaceClues (toAbilitySource attrs 1) target 1, InvestigatorSpendClues iid' 1]
             | target <- abominations
             ]
 
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel iid'
-            $ placeClueOnAbomination iid'
+            $ placeClueOnAbomination iid' player'
             : [ chooseOne
-                iid'
-                [ Label "Spend a second clue" [placeClueOnAbomination iid']
+                player'
+                [ Label "Spend a second clue" [placeClueOnAbomination iid' player']
                 , Label "Do not spend a second clue" []
                 ]
               | clueCount > 1
               ]
-          | (iid', clueCount) <- investigatorWithCluePairs
+          | ((iid', clueCount), player') <- investigatorPlayersWithCluePairs
           ]
       pure l
     _ -> DevilsHopYard_252 <$> runMessage msg attrs

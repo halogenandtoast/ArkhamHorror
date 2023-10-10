@@ -27,7 +27,7 @@ instance RunMessage TemperanceXIV where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       encounterDeck <- scenarioFieldMap ScenarioEncounterDeck unDeck
       let discardAmount = max (length encounterDeck) (length encounterDeck - 5)
-      lead <- getLeadInvestigatorId
+      lead <- getLead
       pushAll
         [ DiscardTopOfEncounterDeck
             lead
@@ -40,7 +40,7 @@ instance RunMessage TemperanceXIV where
     DiscardedTopOfEncounterDeck _ _ _ (isTarget attrs -> True) -> do
       discard <- scenarioField ScenarioDiscard
       let mWitch = find (`cardMatch` CardWithTrait Witch) discard
-      lead <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       for_ mWitch $ \witch -> do
         investigators <- selectList InvestigatorWithMostCardsInPlayArea
         push

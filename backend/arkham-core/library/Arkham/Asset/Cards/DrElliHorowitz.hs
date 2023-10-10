@@ -72,14 +72,15 @@ instance RunMessage DrElliHorowitz where
             (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens)
             sealChaosTokenMatchers
       validCardsAfterSeal <- filterM validAfterSeal validCards
+      player <- getPlayer iid
       if null validCardsAfterSeal
-        then push $ chooseOne iid [Label "No Cards Found" []]
+        then push $ chooseOne player [Label "No Cards Found" []]
         else do
           assetId <- getRandom
           additionalTargets <- getAdditionalSearchTargets iid
           push
             $ chooseN
-              iid
+              player
               (min (length validCardsAfterSeal) (1 + additionalTargets))
               [ targetLabel
                 (toCardId c)
@@ -90,6 +91,7 @@ instance RunMessage DrElliHorowitz where
               ]
       pure a
     SearchNoneFound iid target | isTarget attrs target -> do
-      push $ chooseOne iid [Label "No Cards Found" []]
+      player <- getPlayer iid
+      push $ chooseOne player [Label "No Cards Found" []]
       pure a
     _ -> DrElliHorowitz <$> runMessage msg attrs

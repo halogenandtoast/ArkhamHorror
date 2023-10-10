@@ -56,10 +56,11 @@ instance RunMessage CursedShores where
       case skillCards of
         [] -> pure ()
         [x] -> push (DiscardCard iid (toAbilitySource attrs 2) x)
-        xs ->
+        xs -> do
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [TargetLabel (CardIdTarget x) [DiscardCard iid (toAbilitySource attrs 2) x] | x <- xs]
       pure l
     _ -> CursedShores <$> runMessage msg attrs

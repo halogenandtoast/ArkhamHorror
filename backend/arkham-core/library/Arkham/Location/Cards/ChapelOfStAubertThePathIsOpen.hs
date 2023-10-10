@@ -42,7 +42,8 @@ instance HasAbilities ChapelOfStAubertThePathIsOpen where
 instance RunMessage ChapelOfStAubertThePathIsOpen where
   runMessage msg l@(ChapelOfStAubertThePathIsOpen attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseAmounts iid "Take up to 3 horror" (MaxAmountTarget 3) [("Horror", (0, 3))] attrs
+      player <- getPlayer iid
+      push $ chooseAmounts player "Take up to 3 horror" (MaxAmountTarget 3) [("Horror", (0, 3))] attrs
       pure l
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let horrorAmount = getChoiceAmount "Horror" choices

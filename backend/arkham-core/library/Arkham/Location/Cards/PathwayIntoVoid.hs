@@ -58,18 +58,20 @@ instance RunMessage PathwayIntoVoid where
         maybe (pure []) (`getEmptyPositionsInDirections` [GridUp, GridDown, GridLeft, GridRight]) mpos
       if null valids
         then cosmosFail attrs
-        else
+        else do
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
               | pos'@(Pos x y) <- valids
               ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Discard 1 card from your hand"
             [toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 2)]
@@ -98,8 +100,9 @@ instance RunMessage PathwayIntoVoid where
                   GridRight -> "Move Right"
 
               (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
+              player <- getPlayer iid
               push
-                $ chooseOrRunOne iid
+                $ chooseOrRunOne player
                 $ [ Label
                     (toGridLabel dir)
                     [ ObtainCard card

@@ -59,8 +59,9 @@ instance RunMessage AncientStoneMindsInHarmony4 where
           $ HealableAsset (toSource attrs) HorrorType
           $ AssetAt (locationWithInvestigator iid)
 
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ TargetLabel target [HealHorror target (toSource attrs) amount]
           | target <- assets
           ]

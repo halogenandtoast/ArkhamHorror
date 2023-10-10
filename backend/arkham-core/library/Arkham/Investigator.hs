@@ -11,7 +11,7 @@ import Arkham.Classes.Entity.TH
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Runner hiding (allInvestigators)
 import Arkham.Investigator.Types qualified as Attrs
 import Data.Aeson (Result (..))
 import Data.Map.Strict qualified as Map
@@ -23,10 +23,10 @@ instance RunMessage Investigator where
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Investigator <$> runMessage msg' a
 
-lookupInvestigator :: InvestigatorId -> Investigator
-lookupInvestigator iid = case lookup (toCardCode iid) allInvestigators of
-  Nothing -> lookupPromoInvestigator iid
-  Just c -> toInvestigator c
+lookupInvestigator :: InvestigatorId -> PlayerId -> Investigator
+lookupInvestigator iid pid = case lookup (toCardCode iid) allInvestigators of
+  Nothing -> lookupPromoInvestigator iid pid
+  Just c -> toInvestigator c pid
 
 normalizeInvestigatorId :: InvestigatorId -> InvestigatorId
 normalizeInvestigatorId iid
@@ -52,10 +52,10 @@ promoInvestigators =
     , ("99001", "05006") -- Marie Lambeau
     ]
 
-lookupPromoInvestigator :: InvestigatorId -> Investigator
-lookupPromoInvestigator iid = case lookup iid promoInvestigators of
+lookupPromoInvestigator :: InvestigatorId -> PlayerId -> Investigator
+lookupPromoInvestigator iid pid = case lookup iid promoInvestigators of
   Nothing -> error $ "Unknown promo investigator: " <> show iid
-  Just iid' -> overAttrs (artL .~ toCardCode iid) $ lookupInvestigator iid'
+  Just iid' -> overAttrs (artL .~ toCardCode iid) $ lookupInvestigator iid' pid
 
 instance FromJSON Investigator where
   parseJSON = withObject "Investigator" $ \o -> do
@@ -175,11 +175,22 @@ returnToBody i =
 becomePrologueInvestigator :: Investigator -> InvestigatorId -> Investigator
 becomePrologueInvestigator (Investigator a) = \case
   "05046" ->
-    setId $ Investigator $ cbCardBuilder (gavriellaMizrah (PrologueMetadata $ toJSON a)) nullCardId ()
-  "05047" -> setId $ Investigator $ cbCardBuilder (jeromeDavids (PrologueMetadata $ toJSON a)) nullCardId ()
+    setId
+      $ Investigator
+      $ cbCardBuilder (gavriellaMizrah (PrologueMetadata $ toJSON a)) nullCardId playerId
+  "05047" ->
+    setId
+      $ Investigator
+      $ cbCardBuilder (jeromeDavids (PrologueMetadata $ toJSON a)) nullCardId playerId
   "05048" ->
-    setId $ Investigator $ cbCardBuilder (valentinoRivas (PrologueMetadata $ toJSON a)) nullCardId ()
-  "05049" -> setId $ Investigator $ cbCardBuilder (pennyWhite (PrologueMetadata $ toJSON a)) nullCardId ()
+    setId
+      $ Investigator
+      $ cbCardBuilder (valentinoRivas (PrologueMetadata $ toJSON a)) nullCardId playerId
+  "05049" ->
+    setId
+      $ Investigator
+      $ cbCardBuilder (pennyWhite (PrologueMetadata $ toJSON a)) nullCardId playerId
   _ -> error "Not a prologue investigator"
  where
   setId = overAttrs (\attrs -> attrs {Attrs.investigatorId = toId a})
+  playerId = attr investigatorPlayerId a

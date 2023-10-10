@@ -37,10 +37,8 @@ instance RunMessage UncageTheSoul where
       availableResources <- getSpendableResources iid
       results <-
         selectList
-          ( InHandOf You
-              <> BasicCardMatch
-                (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
-          )
+          $ InHandOf You
+          <> BasicCardMatch (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
       cards <-
         filterM
           ( getIsPlayableWithResources
@@ -51,11 +49,12 @@ instance RunMessage UncageTheSoul where
               windows''
           )
           results
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
-            [ TargetLabel
-              (CardIdTarget $ toCardId c)
+            player
+            [ targetLabel
+              (toCardId c)
               [ CreateEffect
                   (toCardCode attrs)
                   Nothing

@@ -42,9 +42,10 @@ instance RunMessage RecallTheFuture2 where
         scenarioFieldMap
           ScenarioChaosBag
           (nub . map chaosTokenFace . allChaosBagChaosTokens)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
             (tshow t)
             [HandleTargetChoice iid (toSource attrs) (ChaosTokenFaceTarget t)]

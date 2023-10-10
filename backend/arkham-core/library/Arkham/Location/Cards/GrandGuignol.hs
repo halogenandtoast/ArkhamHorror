@@ -35,8 +35,9 @@ instance RunMessage GrandGuignol where
       nonWeaknessCards <-
         selectListMap toCardId (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))
       drawing <- drawCards iid (toAbilitySource attrs 1) (length nonWeaknessCards)
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label "Take 2 Horror" [assignHorror iid (toAbilitySource attrs 1) 2]
         : [ Label
             "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"

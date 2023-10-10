@@ -60,9 +60,10 @@ instance RunMessage DreamGatePointlessReality where
       when here do
         revealedLocations <- selectList (RevealedLocation <> NotLocation (LocationWithId $ toId attrs))
         when (notNull revealedLocations) $ do
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ targetLabel lid [Move $ move (toSource attrs) iid lid, assignHorror iid (toAbilitySource attrs 2) 2]
               | lid <- revealedLocations
               ]

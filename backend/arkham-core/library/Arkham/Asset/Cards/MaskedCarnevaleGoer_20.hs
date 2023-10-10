@@ -46,7 +46,7 @@ instance RunMessage MaskedCarnevaleGoer_20 where
         lid = locationOf attrs
         savioCorvi = lookupCard Enemies.savioCorvi (toCardId attrs)
       investigators <- selectList $ investigatorAt $ locationOf attrs
-      lead <- getLead
+      lead <- getLeadPlayer
       (enemyId, createSavioCorvi) <- createEnemyAt savioCorvi lid Nothing
       pushAll
         $ [ createSavioCorvi
@@ -65,7 +65,7 @@ instance RunMessage MaskedCarnevaleGoer_20 where
       pure a
     LookAtRevealed _ _ (isTarget a -> True) -> do
       let savioCorvi = lookupCard Enemies.savioCorvi (toCardId attrs)
-      lead <- getLead
+      lead <- getLeadPlayer
       pushAll
         [ FocusCards [savioCorvi]
         , chooseOne lead [Label "Continue" [UnfocusCards]]

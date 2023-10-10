@@ -20,13 +20,12 @@ findingANewWay :: ActCard FindingANewWay
 findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 
 instance HasAbilities FindingANewWay where
-  getAbilities (FindingANewWay x)
-    | onSide A x =
-        [ mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1
-        , restrictedAbility x 2 AllUndefeatedInvestigatorsResigned
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
+  getAbilities (FindingANewWay x) | onSide A x = do
+    [ mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1
+      , restrictedAbility x 2 AllUndefeatedInvestigatorsResigned
+          $ Objective
+          $ ForcedAbility AnyWindow
+      ]
   getAbilities _ = []
 
 instance RunMessage FindingANewWay where
@@ -39,20 +38,20 @@ instance RunMessage FindingANewWay where
           (toSource attrs)
           (Just $ toTarget attrs)
       pure a
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       a <$ push (scenarioResolution 1)
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
+      player <- getPlayer iid
       unless (null locationCards)
         $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
-              iid
-              [ TargetLabel
-                (CardIdTarget $ toCardId location)
+              player
+              [ targetLabel
+                (toCardId location)
                 [InvestigatorDrewEncounterCard iid location]
               | location <- locationCards
               ]

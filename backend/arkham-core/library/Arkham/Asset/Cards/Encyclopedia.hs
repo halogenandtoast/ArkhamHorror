@@ -28,12 +28,13 @@ instance RunMessage Encyclopedia where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       targets <- selectTargets $ colocatedWith iid
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels targets
         $ \target ->
           only
-            $ chooseOne iid
+            $ chooseOne player
             $ [ Label label [phaseModifier source target (SkillModifier skill 2)]
               | (label, skill) <- labeledSkills
               ]

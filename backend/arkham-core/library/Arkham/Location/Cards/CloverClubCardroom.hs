@@ -60,8 +60,9 @@ instance RunMessage CloverClubCardroom where
                 AutoFail -> []
             )
             chaosTokenFaces
+      player <- getPlayer iid
       pushAll
-        $ [chooseOne iid [Label "Apply results" msgs]]
+        $ [chooseOne player [Label "Apply results" msgs]]
         <> [ResetChaosTokens source]
       pure l
     _ -> CloverClubCardroom <$> runMessage msg attrs

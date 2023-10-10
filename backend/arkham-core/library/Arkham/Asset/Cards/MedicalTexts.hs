@@ -26,8 +26,9 @@ instance RunMessage MedicalTexts where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let controllerId = getController attrs
       investigators <- selectList $ colocatedWith controllerId
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels investigators
         $ \iid' -> only $ beginSkillTest iid (toAbilitySource attrs 1) iid' #intellect 2
       pure a

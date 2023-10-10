@@ -28,8 +28,9 @@ instance HasAbilities TreasureHunter1 where
 instance RunMessage TreasureHunter1 where
   runMessage msg a@(TreasureHunter1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Pay 1 Resource to Treasure Hunter" [SpendResources iid 1]
           , Label "Discard Treasure Hunter" [Discard (toAbilitySource attrs 1) $ toTarget attrs]
           ]

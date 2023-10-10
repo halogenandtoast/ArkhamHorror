@@ -57,9 +57,10 @@ instance RunMessage JoeyTheRatVigil where
               windows''
           )
           items
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item windows'']
           | item <- playableItems
           ]

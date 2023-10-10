@@ -15,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype CandlelitTunnels = CandlelitTunnels LocationAttrs
@@ -64,25 +63,19 @@ instance HasAbilities CandlelitTunnels where
 instance RunMessage CandlelitTunnels where
   runMessage msg l@(CandlelitTunnels attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ beginSkillTest
-          iid
-          (toSource attrs)
-          (toTarget attrs)
-          SkillIntellect
-          3
+      push $ beginSkillTest iid attrs attrs #intellect 3
       pure l
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          locations <- selectList UnrevealedLocation
-          unless (null locations)
-            $ push
-            $ chooseOne
-              iid
-              [ targetLabel lid [LookAtRevealed iid source (LocationTarget lid)]
-              | lid <- locations
-              ]
-          pure l
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      player <- getPlayer iid
+      locations <- selectList UnrevealedLocation
+      unless (null locations)
+        $ push
+        $ chooseOne
+          player
+          [ targetLabel lid [LookAtRevealed iid source (LocationTarget lid)]
+          | lid <- locations
+          ]
+      pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       n <- countM (directionEmpty attrs) [LeftOf, RightOf]
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)

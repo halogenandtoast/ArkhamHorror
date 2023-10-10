@@ -45,8 +45,9 @@ instance RunMessage LivreDeibon where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       handCards <- field InvestigatorHand iid
       drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel (toCardId c) [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
           | c <- onlyPlayerCards handCards
           ]

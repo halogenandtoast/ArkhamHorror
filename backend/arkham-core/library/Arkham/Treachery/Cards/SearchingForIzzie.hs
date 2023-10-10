@@ -29,8 +29,9 @@ instance RunMessage SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       targets <- selectTargets $ FarthestLocationFromYou Anywhere
+      player <- getPlayer iid
       pushIfAny targets
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ targetLabels targets (only . AttachTreachery (toId attrs))
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

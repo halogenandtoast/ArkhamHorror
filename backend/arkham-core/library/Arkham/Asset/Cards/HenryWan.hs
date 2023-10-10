@@ -37,16 +37,17 @@ instance RunMessage HenryWan where
       push $ RequestChaosTokens (toAbilitySource attrs 1) (Just iid) (Reveal 1) SetAside
       pure a
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
+      player <- getPlayer iid
       if any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace) tokens
         then
           push
             $ chooseOne
-              iid
+              player
               [Label "Do nothing" [HandleTargetChoice iid (toAbilitySource attrs 1) (toTarget attrs)]]
         else
           push
             $ chooseOne
-              iid
+              player
               [ Label "Stop" [HandleTargetChoice iid (toAbilitySource attrs 1) (toTarget attrs)]
               , Label "Draw Another" [RequestChaosTokens (toAbilitySource attrs 1) (Just iid) (Reveal 1) SetAside]
               ]
@@ -62,10 +63,11 @@ instance RunMessage HenryWan where
           canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
           canGainResources <- iid <=~> InvestigatorCanGainResources
           when (canDraw || canGainResources) $ do
+            player <- getPlayer iid
             msgs <- for (revealedChaosTokens meta) $ \_ -> do
               drawing <- drawCards iid (toAbilitySource attrs 1) 1
               pure
-                $ chooseOrRunOne iid
+                $ chooseOrRunOne player
                 $ [Label "Draw 1 card" [drawing] | canDraw]
                 <> [Label "Gain 1 resources" [TakeResources iid 1 (toAbilitySource attrs 1) False] | canGainResources]
             pushAll msgs

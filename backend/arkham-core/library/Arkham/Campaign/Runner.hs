@@ -29,20 +29,19 @@ import Data.Map.Strict qualified as Map
 defaultCampaignRunner :: IsCampaign a => Runner a
 defaultCampaignRunner msg a = case msg of
   StartCampaign -> do
-    lead <- getLead
+    players <- allPlayers
+    lead <- getLeadPlayer
     pushAll
-      $ [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep]
+      $ map chooseDeck players
+      <> [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep]
       <> [CampaignStep $ campaignStep $ toAttrs a]
     pure a
   CampaignStep (ScenarioStep sid) -> do
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]
     pure a
   CampaignStep (UpgradeDeckStep _) -> do
-    investigatorIds <- allInvestigatorIds
-    pushAll
-      $ ResetGame
-      : map chooseUpgradeDeck investigatorIds
-        <> [FinishedUpgradingDecks]
+    players <- allPlayers
+    pushAll $ ResetGame : map chooseUpgradeDeck players <> [FinishedUpgradingDecks]
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   AddCampaignCardToDeck iid cardDef -> do

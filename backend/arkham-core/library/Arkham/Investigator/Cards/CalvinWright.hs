@@ -39,8 +39,9 @@ instance RunMessage CalvinWright where
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       mHealHorror <- getHealHorrorMessage attrs 1 iid
       canHealDamage <- canHaveDamageHealed attrs iid
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [Label "Heal 1 Damage" [HealDamage (toTarget attrs) (toSource attrs) 1] | canHealDamage]
         <> [Label "Heal 1 Horror" [healHorror] | healHorror <- toList mHealHorror]
         <> [ Label "Take 1 Direct Damage" [directDamage iid attrs 1]

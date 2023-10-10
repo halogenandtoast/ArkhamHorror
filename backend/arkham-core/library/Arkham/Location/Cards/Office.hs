@@ -60,9 +60,10 @@ instance RunMessage Office where
                 <> EnemyWithoutModifier CannotPlaceDoomOnThis
             )
       unless (null enemies) $ do
+        player <- getPlayer iid
         push
           $ chooseOrRunOne
-            iid
+            player
             [ targetLabel enemy [PlaceDoom (toAbilitySource attrs 1) (toTarget enemy) 1]
             | enemy <- enemies
             ]

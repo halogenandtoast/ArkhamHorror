@@ -41,14 +41,14 @@ instance RunMessage TrackShoes where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ beginSkillTest iid source (InvestigatorTarget iid) SkillAgility 3
       pure a
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          accessibleLocationIds <- accessibleLocations iid
-          push
-            $ chooseOne
-              iid
-              [ TargetLabel (LocationTarget lid) [Move $ move attrs iid lid]
-              | lid <- accessibleLocationIds
-              ]
-          pure a
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      accessibleLocationIds <- accessibleLocations iid
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ TargetLabel (LocationTarget lid) [Move $ move attrs iid lid]
+          | lid <- accessibleLocationIds
+          ]
+      pure a
     _ -> TrackShoes <$> runMessage msg attrs

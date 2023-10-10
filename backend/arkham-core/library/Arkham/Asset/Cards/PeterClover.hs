@@ -39,6 +39,7 @@ instance RunMessage PeterClover where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt YourLocation
-      push $ chooseOne iid $ targetLabels criminals (only . EnemyEvaded iid)
+      player <- getPlayer iid
+      push $ chooseOne player $ targetLabels criminals (only . EnemyEvaded iid)
       pure a
     _ -> PeterClover <$> runMessage msg attrs

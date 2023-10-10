@@ -21,15 +21,10 @@ wellPrepared2 = asset WellPrepared2 Cards.wellPrepared2
 
 instance HasAbilities WellPrepared2 where
   getAbilities (WellPrepared2 a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> AssetExists
-              ( NotAsset (AssetWithId $ toId a)
-                  <> AssetControlledBy You
-                  <> AssetWithMatchingSkillTestIcon
-              )
+        ( exists $ NotAsset (AssetWithId $ toId a) <> AssetControlledBy You <> AssetWithMatchingSkillTestIcon
         )
         $ FastAbility
         $ ExhaustCost
@@ -57,9 +52,10 @@ instance RunMessage WellPrepared2 where
             )
             aid
         pure (aid, x)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             aid
             [ skillTestModifier (toSource attrs) (InvestigatorTarget iid) (AnySkillValue x)

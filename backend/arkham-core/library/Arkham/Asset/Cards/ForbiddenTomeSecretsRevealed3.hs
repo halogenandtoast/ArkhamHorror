@@ -34,7 +34,7 @@ instance HasAbilities ForbiddenTomeSecretsRevealed3 where
     [ controlledAbility
         a
         1
-        (exists $ LocationMatchAny [AccessibleLocation, YourLocation <> LocationWithAnyClues])
+        (exists $ oneOf [AccessibleLocation, YourLocation <> LocationWithAnyClues])
         $ ActionAbility Nothing (ActionCost 4 <> exhaust a)
     ]
 
@@ -42,8 +42,9 @@ instance RunMessage ForbiddenTomeSecretsRevealed3 where
   runMessage msg a@(ForbiddenTomeSecretsRevealed3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       lids <- accessibleLocations iid
+      player <- getPlayer iid
       pushAll
-        [ chooseOrRunOne iid
+        [ chooseOrRunOne player
             $ Label "Do not move" []
             : [targetLabel lid [MoveTo $ move (toSource attrs) iid lid] | lid <- lids]
         , toMessage $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1

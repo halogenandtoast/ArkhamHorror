@@ -37,8 +37,9 @@ instance RunMessage AbbessAllegriaDiBiase where
       if location == abbessLocation
         then do
           connectedLocations <- selectList $ accessibleFrom location
+          player <- getPlayer iid
           push
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ targetLabels connectedLocations (only . Move . move attrs iid)
         else push $ Move $ move attrs iid abbessLocation
       pure a

@@ -31,12 +31,14 @@ instance RunMessage MrRook where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       let goSearch n = search iid source iid [fromTopOfDeck n] AnyCard (DeferSearchedToTarget $ toTarget attrs)
-      push $ chooseOne iid [Label ("Top " <> tshow x) [goSearch x] | x <- [3, 6, 9]]
+      player <- getPlayer iid
+      push $ chooseOne player [Label ("Top " <> tshow x) [goSearch x] | x <- [3, 6, 9]]
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
-        , chooseOne iid
+        , chooseOne player
             $ [ targetLabel (toCardId card)
                 $ [ UnfocusCards
                   , HandleTargetChoice iid (toSource attrs) (CardTarget card)
@@ -59,10 +61,11 @@ instance RunMessage MrRook where
       -- if we need to draw weakness, or we need to draw more, repeat step 1
       -- else we go to step 2
       if canChooseMore || needsToChooseWeakness
-        then
+        then do
+          player <- getPlayer iid
           pushAll
             [ FocusCards cards
-            , chooseOne iid
+            , chooseOne player
                 $ [ targetLabel
                     (toCardId card)
                     [ UnfocusCards

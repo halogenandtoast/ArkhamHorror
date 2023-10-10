@@ -63,10 +63,12 @@ instance RunMessage PassengerCar_167 where
           Nothing
           [mkWindow Timing.When NonFast]
           cost
+      player <- getPlayer iid
+
       if hasSkills
         then
           push
-            . chooseOne iid
+            . chooseOne player
             $ [ Label
                   "Take 2 damage"
                   [InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0]

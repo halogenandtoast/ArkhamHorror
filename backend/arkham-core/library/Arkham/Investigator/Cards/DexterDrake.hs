@@ -72,8 +72,9 @@ instance RunMessage DexterDrake where
                 )
             , InHandOf (InvestigatorWithId iid) <> BasicCardMatch (cardIs Assets.occultScraps)
             ]
+      player <- getPlayer iid
       pushAll
-        [ chooseOrRunOne iid
+        [ chooseOrRunOne player
             $ [ targetLabel (toCardId c)
                 $ [ createCardEffect Cards.dexterDrake Nothing attrs (toCardId c)
                   , PayCardCost iid c $ defaultWindows iid

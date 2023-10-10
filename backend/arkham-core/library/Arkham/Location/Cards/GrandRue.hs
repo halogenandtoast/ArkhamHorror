@@ -43,9 +43,10 @@ instance RunMessage GrandRue where
           $ EqualTo
           $ Static
             maxDoom
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [targetLabel target [PlaceDoom (toAbilitySource attrs 1) target 1] | target <- agendas]
       pure l
     _ -> GrandRue <$> runMessage msg attrs

@@ -29,9 +29,10 @@ instance RunMessage PhysicalTraining4 where
   runMessage msg a@(PhysicalTraining4 attrs) = case msg of
     Do BeginRound -> pure . PhysicalTraining4 $ attrs & usesL .~ Uses Resource 2
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Choose Willpower"
               [ skillTestModifier

@@ -29,17 +29,11 @@ instance RunMessage ScrollOfSecretsSeeker3 where
   runMessage msg a@(ScrollOfSecretsSeeker3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <- selectTargets $ InvestigatorWithoutModifier CannotManipulateDeck
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel target
-            $ [ lookAt
-                  iid
-                  attrs
-                  target
-                  [fromBottomOfDeck 3]
-                  AnyCard
-                  (DeferSearchedToTarget $ toTarget attrs)
-              ]
+            $ [lookAt iid attrs target [fromBottomOfDeck 3] AnyCard (DeferSearchedToTarget $ toTarget attrs)]
           | target <- EncounterDeckTarget : targets
           ]
       pure a
@@ -56,9 +50,10 @@ instance RunMessage ScrollOfSecretsSeeker3 where
           _ -> error "Deck mismatch"
         discardMsg _ = error "Card mismatch"
 
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
-        , questionLabel "Discard 1 card?" iid
+        , questionLabel "Discard 1 card?" player
             $ ChooseOne
             $ Label "Do not discard" [UnfocusCards, DoStep 2 msg']
             : [ targetLabel
@@ -83,10 +78,11 @@ instance RunMessage ScrollOfSecretsSeeker3 where
       let playerCards = mapMaybe (preview _PlayerCard) cards
       if null playerCards
         then push $ DoStep 3 msg'
-        else
+        else do
+          player <- getPlayer iid
           pushAll
             [ FocusCards cards
-            , questionLabel "Add 1 card to hand?" iid
+            , questionLabel "Add 1 card to hand?" player
                 $ ChooseOne
                 $ Label "Do not add to hand" [UnfocusCards, DoStep 3 msg']
                 : [ targetLabel
@@ -100,14 +96,15 @@ instance RunMessage ScrollOfSecretsSeeker3 where
             ]
       pure a
     DoStep 3 (SearchFound iid (isTarget attrs -> True) deck cards) | notNull cards -> do
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
         , chooseOrRunOne
-            iid
+            player
             [ targetLabel
               (toCardId card)
               [ chooseOne
-                  iid
+                  player
                   [ Label
                       "Place on bottom of deck"
                       [ UnfocusCards

@@ -29,13 +29,14 @@ toEnemyId = \case
 instance RunMessage Oops2 where
   runMessage msg e@(Oops2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ (toEnemyId -> enemy) _ | eid == toId attrs -> do
+      player <- getPlayer iid
       enemies <- filter (/= enemy) <$> selectList (enemyAtLocationWith iid)
       let
         damageMsg = case enemies of
           [] -> error "event should not have been playable"
           [x] -> InvestigatorDamageEnemy iid x (toSource enemy)
           xs ->
-            chooseOne iid
+            chooseOne player
               $ [ targetLabel x [InvestigatorDamageEnemy iid x (toSource enemy)]
                 | x <- xs
                 ]

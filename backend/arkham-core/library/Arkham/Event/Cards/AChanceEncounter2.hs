@@ -55,10 +55,11 @@ instance RunMessage AChanceEncounter2 where
       -- update the game state if invalid due to erroring
       when (null filteredDiscards) (error "Invalid choice")
 
+      player <- getPlayer iid
       pushAll
         [ FocusCards filteredDiscards
         , chooseOne
-            iid
+            player
             [ targetLabel
               (toCardId card')
               [ PutCardIntoPlay iid card Nothing (defaultWindows iid)

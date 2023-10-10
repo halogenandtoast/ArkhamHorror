@@ -36,8 +36,9 @@ instance RunMessage VaultOfKnowledge where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ colocatedWith iid
       investigators <- forToSnd iids $ \iid' -> drawCards iid' (toAbilitySource attrs 1) 1
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [targetLabel iid' [drawing] | (iid', drawing) <- investigators]
       pure a
     _ -> VaultOfKnowledge <$> runMessage msg attrs

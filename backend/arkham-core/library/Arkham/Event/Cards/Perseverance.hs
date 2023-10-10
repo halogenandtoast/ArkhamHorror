@@ -33,9 +33,10 @@ instance RunMessage Perseverance where
           _ -> error "invalid match"
       assignedDamage <- field InvestigatorAssignedDamage iid
       assignedHorror <- field InvestigatorAssignedHorror iid
+      player <- getPlayer iid
       pushAll
         [ chooseAmounts
-            iid
+            player
             "Cancel up to 4 damage and or horror"
             (MaxAmountTarget 4)
             ( [("Damage", (0, assignedDamage)) | assignedDamage > 0]

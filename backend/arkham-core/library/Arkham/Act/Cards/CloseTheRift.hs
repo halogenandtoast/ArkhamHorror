@@ -37,17 +37,10 @@ instance HasAbilities CloseTheRift where
 instance RunMessage CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ DiscardTopOfEncounterDeck
-          iid
-          3
-          (toSource attrs)
-          (Just $ toTarget attrs)
+      push $ DiscardTopOfEncounterDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
       pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      theEdgeOfTheUniverseId <-
-        getJustLocationByName
-          "The Edge of the Universe"
+      theEdgeOfTheUniverseId <- getJustLocationByName "The Edge of the Universe"
       tearThroughTime <- getSetAsideCard Locations.tearThroughTime
       locationPlacement <- placeLocation_ tearThroughTime
       pushAll
@@ -56,11 +49,12 @@ instance RunMessage CloseTheRift where
       pure a
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = filterLocations cards
+      player <- getPlayer iid
       unless (null locationCards)
         $ pushAll
           [ FocusCards (map EncounterCard locationCards)
           , chooseOne
-              iid
+              player
               [ TargetLabel
                 (CardIdTarget $ toCardId location)
                 [InvestigatorDrewEncounterCard iid location]

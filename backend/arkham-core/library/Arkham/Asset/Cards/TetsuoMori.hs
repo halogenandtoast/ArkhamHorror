@@ -41,7 +41,7 @@ instance HasAbilities TetsuoMori where
         1
         ( exists
             $ InvestigatorAt YourLocation
-            <> AnyInvestigator
+            <> oneOf
               [ InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
                   <> DiscardWith (HasCard $ CardWithTrait Item)
               , InvestigatorWithoutModifier CannotManipulateDeck
@@ -61,8 +61,9 @@ instance RunMessage TetsuoMori where
                 <> DiscardWith (HasCard $ CardWithTrait Item)
             , InvestigatorWithoutModifier CannotManipulateDeck
             ]
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ targetLabels iids
         $ only
         . HandleTargetChoice iid (toAbilitySource attrs 1)
@@ -70,8 +71,9 @@ instance RunMessage TetsuoMori where
       pure a
     HandleTargetChoice _ source@(isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
       discardWithItem <- fieldP InvestigatorDiscard (any (`cardMatch` CardWithTrait Item)) iid'
+      player <- getPlayer iid'
       push
-        $ chooseOrRunOne iid'
+        $ chooseOrRunOne player
         $ [ Label
             "Search Discard"
             [search iid' source iid' [fromDiscard] (CardWithTrait Item) (DrawFound iid' 1)]

@@ -60,9 +60,10 @@ instance RunMessage ChuckFergus5 where
       -- can something else reduce the cost enough?
       let n = if canAffordCost then 2 else 1
           n' = if canAffordActionCost then n else n - 1
+      player <- getPlayer iid
       when (n' > 0) $ do
         push
-          $ chooseN iid n'
+          $ chooseN player n'
           $ [ Label
               "That event gains fast"
               [ CreateWindowModifierEffect

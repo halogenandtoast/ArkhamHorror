@@ -20,6 +20,9 @@ class OneOf a where
 instance OneOf InvestigatorMatcher where
   oneOf = AnyInvestigator
 
+instance OneOf LocationMatcher where
+  oneOf = LocationMatchAny
+
 instance OneOf EnemyMatcher where
   oneOf = EnemyOneOf
 

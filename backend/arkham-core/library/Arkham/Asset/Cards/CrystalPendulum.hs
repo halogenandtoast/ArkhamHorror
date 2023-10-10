@@ -39,7 +39,8 @@ instance HasAbilities CrystalPendulum where
 instance RunMessage CrystalPendulum where
   runMessage msg a@(CrystalPendulum attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ chooseAmounts iid "Name a number" (MaxAmountTarget 1000) [("Number", (0, 1000))] attrs
+      player <- getPlayer iid
+      push $ chooseAmounts player "Name a number" (MaxAmountTarget 1000) [("Number", (0, 1000))] attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Number" -> n) (isTarget attrs -> True) -> do
       push $ createCardEffect Cards.crystalPendulum (Just $ EffectInt n) (toAbilitySource attrs 1) iid

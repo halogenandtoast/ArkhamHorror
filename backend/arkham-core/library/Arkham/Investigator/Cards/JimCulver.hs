@@ -34,8 +34,9 @@ instance RunMessage JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of
     When (RevealChaosToken _ iid token) | iid == investigatorId -> do
       faces <- getModifiedChaosTokenFace token
+      player <- getPlayer iid
       pushWhen (ElderSign `elem` faces)
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Resolve as Elder Sign" []
           , Label "Resolve as Skull" [chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]]
           ]

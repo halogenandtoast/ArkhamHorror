@@ -42,9 +42,10 @@ instance RunMessage WhateleyRuins_251 where
       abominationsWithLocationAndAccessibleLocations <- for abominationsWithLocation $ \(abomination, locationId) ->
         (abomination,locationId,) <$> getEnemyAccessibleLocations abomination
 
+      player <- getPlayer iid
       push
-        $ chooseOne iid
-        $ [ targetLabel eid [chooseOne iid $ targetLabels destinations (only . EnemyMove eid)]
+        $ chooseOne player
+        $ [ targetLabel eid [chooseOne player $ targetLabels destinations (only . EnemyMove eid)]
           | (eid, _, destinations) <- abominationsWithLocationAndAccessibleLocations
           ]
       pure l

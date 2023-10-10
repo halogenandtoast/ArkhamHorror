@@ -31,9 +31,10 @@ instance RunMessage Waylay where
       let
         enemiesWithEvade =
           flip mapMaybe enemies $ \(enemy, mEvade) -> (enemy,) <$> mEvade
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel
               enemy
               [ beginSkillTest

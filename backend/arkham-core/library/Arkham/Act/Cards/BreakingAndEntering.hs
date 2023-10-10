@@ -31,8 +31,7 @@ instance HasAbilities BreakingAndEntering where
     [ mkAbility x 1
         $ ForcedAbility
         $ Enters Timing.When You
-        $ locationIs
-          Cards.exhibitHallRestrictedHall
+        $ locationIs Cards.exhibitHallRestrictedHall
     ]
 
 instance RunMessage BreakingAndEntering where
@@ -41,7 +40,7 @@ instance RunMessage BreakingAndEntering where
       push $ AdvanceAct (toId attrs) source AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       investigatorIds <- getInvestigatorIds
       mHuntingHorror <- getHuntingHorror
       haroldWalsted <- getSetAsideCard Assets.haroldWalsted
@@ -50,7 +49,7 @@ instance RunMessage BreakingAndEntering where
           lid <- getRestrictedHall
           pushAll
             [ chooseOne
-                leadInvestigatorId
+                lead
                 [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
                 | iid <- investigatorIds
                 ]
@@ -61,7 +60,7 @@ instance RunMessage BreakingAndEntering where
         Nothing ->
           pushAll
             [ chooseOne
-                leadInvestigatorId
+                lead
                 [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
                 | iid <- investigatorIds
                 ]

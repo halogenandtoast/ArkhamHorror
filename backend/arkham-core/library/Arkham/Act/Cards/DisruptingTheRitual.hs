@@ -28,9 +28,10 @@ instance HasAbilities DisruptingTheRitual where
 instance RunMessage DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ SkillLabel #willpower [beginSkillTest iid source attrs #willpower 3]
           , SkillLabel #agility [beginSkillTest iid source attrs #agility 3]
           ]

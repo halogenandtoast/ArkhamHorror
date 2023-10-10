@@ -47,19 +47,15 @@ getInvestigator (_ : xs) = getInvestigator xs
 
 instance RunMessage PnakoticManuscripts5 where
   runMessage msg a@(PnakoticManuscripts5 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (getInvestigator -> iid) _ ->
-      do
-        push
-          $ skillTestModifier
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            DoNotDrawChaosTokensForSkillChecks
-        pure a
+    UseCardAbility _ (isSource attrs -> True) 1 (getInvestigator -> iid) _ -> do
+      push $ skillTestModifier (toAbilitySource attrs 1) iid DoNotDrawChaosTokensForSkillChecks
+      pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       iids <- selectList $ colocatedWith iid
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel
             iid'
             [ createCardEffect

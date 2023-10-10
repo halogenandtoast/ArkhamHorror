@@ -37,12 +37,12 @@ instance RunMessage NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationIds <- selectList $ LocationWithTrait Arkham
-      l
-        <$ push
-          ( chooseOne
-              iid
-              [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
-              | lid <- locationIds
-              ]
-          )
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
+          | lid <- locationIds
+          ]
+      pure l
     _ -> NorthsideTrainStation <$> runMessage msg attrs

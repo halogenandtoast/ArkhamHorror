@@ -56,9 +56,10 @@ instance RunMessage Farsight4 where
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost windows'')
           events
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             (CardIdTarget $ toCardId event)
             [PayCardCost iid event windows'']

@@ -9,8 +9,10 @@ import Arkham.EncounterSet (EncounterSet)
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Scenario
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 
 -- TODO: IncludeEliminated is bit of a hack, if all investigators are defeated
@@ -26,8 +28,17 @@ getLeadInvestigatorId = do
 getLead :: HasGame m => m InvestigatorId
 getLead = getLeadInvestigatorId
 
+getPlayer :: HasGame m => InvestigatorId -> m PlayerId
+getPlayer = field InvestigatorPlayerId
+
 getActiveInvestigatorId :: HasGame m => m InvestigatorId
 getActiveInvestigatorId = selectJust ActiveInvestigator
+
+getInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
+getInvestigatorPlayers = selectWithField InvestigatorPlayerId UneliminatedInvestigator
+
+getAllInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
+getAllInvestigatorPlayers = selectWithField InvestigatorPlayerId Anyone
 
 getInvestigators :: HasGame m => m [InvestigatorId]
 getInvestigators = getInvestigatorIds
@@ -40,6 +51,15 @@ allInvestigatorIds = selectList Anyone
 
 allInvestigators :: HasGame m => m [InvestigatorId]
 allInvestigators = allInvestigatorIds
+
+allPlayers :: HasGame m => m [PlayerId]
+allPlayers = selectFields InvestigatorPlayerId Anyone
+
+getLeadPlayer :: HasGame m => m PlayerId
+getLeadPlayer = field InvestigatorPlayerId =<< getLead
+
+getLeadInvestigatorPlayer :: HasGame m => m (InvestigatorId, PlayerId)
+getLeadInvestigatorPlayer = traverseToSnd (field InvestigatorPlayerId) =<< getLead
 
 selectAssetController
   :: HasGame m => AssetId -> m (Maybe InvestigatorId)

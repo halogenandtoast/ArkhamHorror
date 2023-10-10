@@ -53,21 +53,15 @@ instance RunMessage AgendaAttrs where
       | aid == agendaId ->
           pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push
-        $ chooseOne
-          leadInvestigatorId
-          [targetLabel agendaId [AdvanceAgenda agendaId]]
+      lead <- getLeadPlayer
+      push $ chooseOne lead [targetLabel agendaId [AdvanceAgenda agendaId]]
       pure
         $ a
         & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) B)
         & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == C -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push
-        $ chooseOne
-          leadInvestigatorId
-          [targetLabel agendaId [AdvanceAgenda agendaId]]
+      lead <- getLeadPlayer
+      push $ chooseOne lead [targetLabel agendaId [AdvanceAgenda agendaId]]
       pure
         $ a
         & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) D)

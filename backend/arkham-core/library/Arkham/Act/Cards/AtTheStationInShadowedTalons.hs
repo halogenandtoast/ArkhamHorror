@@ -12,7 +12,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers
@@ -47,7 +46,7 @@ instance RunMessage AtTheStationInShadowedTalons where
         ]
       pure a
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       huntingNightgaunts <- selectList $ enemyIs Enemies.huntingNightgaunt
       farthestHuntingNightGaunts <-
         selectList
@@ -62,7 +61,7 @@ instance RunMessage AtTheStationInShadowedTalons where
           ((`HealAllDamage` toSource attrs) . EnemyTarget)
           huntingNightgaunts
         <> [ chooseOrRunOne
-              leadInvestigatorId
+              lead
               [ targetLabel huntingNightgaunt
                 $ CreateAssetAt
                   assetId
@@ -77,10 +76,10 @@ instance RunMessage AtTheStationInShadowedTalons where
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       locations <- selectList $ FarthestLocationFromAll Anywhere
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       push
         $ chooseOrRunOne
-          leadInvestigatorId
+          lead
           [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
           | location <- locations
           ]

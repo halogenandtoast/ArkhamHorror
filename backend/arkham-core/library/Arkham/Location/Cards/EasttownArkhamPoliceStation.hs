@@ -19,21 +19,15 @@ newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttownArkhamPoliceStation :: LocationCard EasttownArkhamPoliceStation
-easttownArkhamPoliceStation =
-  location
-    EasttownArkhamPoliceStation
-    Cards.easttownArkhamPoliceStation
-    4
-    (PerPlayer 2)
+easttownArkhamPoliceStation = location EasttownArkhamPoliceStation Cards.easttownArkhamPoliceStation 4 (PerPlayer 2)
 
 instance HasAbilities EasttownArkhamPoliceStation where
   getAbilities (EasttownArkhamPoliceStation attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-          $ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
-          $ ActionCost 1
-        | locationRevealed attrs
+    withRevealedAbilities attrs
+      $ [ playerLimit PerGame
+            $ restrictedAbility attrs 1 Here
+            $ ActionAbility Nothing
+            $ ActionCost 1
         ]
 
 instance RunMessage EasttownArkhamPoliceStation where
@@ -45,9 +39,10 @@ instance RunMessage EasttownArkhamPoliceStation where
       supplyAssets <-
         map (Supply,)
           <$> selectList (AssetControlledBy You <> AssetWithUseType Supply)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel assetId [AddUses assetId useType' 2]
           | (useType', assetId) <- ammoAssets <> supplyAssets
           ]

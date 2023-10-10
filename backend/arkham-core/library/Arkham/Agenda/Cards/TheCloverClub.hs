@@ -44,11 +44,11 @@ instance HasAbilities TheCloverClub where
 
 instance RunMessage TheCloverClub where
   runMessage msg a@(TheCloverClub attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAgenda $ toId attrs)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push (AdvanceAgenda $ toId attrs)
+      pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       completedExtracurricularActivity <-
         elem "02041" <$> getCompletedScenarios
       enemyIds <- selectList $ EnemyWithTrait Criminal
@@ -60,9 +60,8 @@ instance RunMessage TheCloverClub where
           ]
             <> [AdvanceCurrentAgenda | completedExtracurricularActivity]
 
-      a
-        <$ pushAll
-          ( map EnemyCheckEngagement enemyIds
-              <> [chooseOne leadInvestigatorId [Label "Continue" continueMessages]]
-          )
+      pushAll
+        $ map EnemyCheckEngagement enemyIds
+        <> [chooseOne lead [Label "Continue" continueMessages]]
+      pure a
     _ -> TheCloverClub <$> runMessage msg attrs

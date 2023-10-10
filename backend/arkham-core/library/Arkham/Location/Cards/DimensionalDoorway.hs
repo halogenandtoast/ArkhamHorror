@@ -44,11 +44,12 @@ instance RunMessage DimensionalDoorway where
       DimensionalDoorway <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       resourceCount <- getSpendableResources iid
+      player <- getPlayer iid
       push
         $ if resourceCount >= 2
           then
             chooseOne
-              iid
+              player
               [ Label "Spend 2 resource" [SpendResources iid 2]
               , Label
                   "Shuffle Dimensional Doorway back into the encounter deck"

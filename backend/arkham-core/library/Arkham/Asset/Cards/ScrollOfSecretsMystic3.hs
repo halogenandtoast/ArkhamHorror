@@ -44,13 +44,14 @@ instance RunMessage ScrollOfSecretsMystic3 where
             [x 1]
             AnyCard
             (DeferSearchedToTarget $ toTarget attrs)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             target
             [ chooseOne
-                iid
+                player
                 [ Label "Look at top" [doSearch target fromTopOfDeck]
                 , Label "Look at bottom" [doSearch target fromBottomOfDeck]
                 ]
@@ -59,14 +60,15 @@ instance RunMessage ScrollOfSecretsMystic3 where
           ]
       pure a
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
         , chooseOrRunOne
-            iid
+            player
             [ targetLabel
               (toCardId card)
               [ chooseOne
-                  iid
+                  player
                   [ Label "Discard" [AddToEncounterDiscard card]
                   , Label
                       "Place on bottom of encounter deck"
@@ -89,29 +91,29 @@ instance RunMessage ScrollOfSecretsMystic3 where
         , UnfocusCards
         ]
       pure a
-    SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards ->
-      do
-        pushAll
-          [ FocusCards cards
-          , chooseOrRunOne
-              iid
-              [ targetLabel
-                (toCardId card)
-                [ chooseOne
-                    iid
-                    [ Label "Discard" [AddToDiscard iid' card]
-                    , Label "Add to Hand" [addToHand iid' (PlayerCard card)]
-                    , Label
-                        "Place on bottom of deck"
-                        [PutCardOnBottomOfDeck iid deck (PlayerCard card)]
-                    , Label
-                        "Place on top of deck"
-                        [PutCardOnTopOfDeck iid deck (PlayerCard card)]
-                    ]
-                ]
-              | card <- mapMaybe (preview _PlayerCard) cards
+    SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards -> do
+      player <- getPlayer iid
+      pushAll
+        [ FocusCards cards
+        , chooseOrRunOne
+            player
+            [ targetLabel
+              (toCardId card)
+              [ chooseOne
+                  player
+                  [ Label "Discard" [AddToDiscard iid' card]
+                  , Label "Add to Hand" [addToHand iid' (PlayerCard card)]
+                  , Label
+                      "Place on bottom of deck"
+                      [PutCardOnBottomOfDeck iid deck (PlayerCard card)]
+                  , Label
+                      "Place on top of deck"
+                      [PutCardOnTopOfDeck iid deck (PlayerCard card)]
+                  ]
               ]
-          , UnfocusCards
-          ]
-        pure a
+            | card <- mapMaybe (preview _PlayerCard) cards
+            ]
+        , UnfocusCards
+        ]
+      pure a
     _ -> ScrollOfSecretsMystic3 <$> runMessage msg attrs

@@ -16,7 +16,6 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
 newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs
@@ -62,14 +61,11 @@ instance RunMessage TheBeastUnleashed where
       a <$ push (AdvanceAgenda $ toId attrs)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       pushAll
         $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
           | iid <- investigatorIds
           ]
-        <> [ chooseOne
-              leadInvestigatorId
-              [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
-           ]
+        <> [chooseOne lead [Label "Resolution 4" [R4]]]
       pure a
     _ -> TheBeastUnleashed <$> runMessage msg attrs

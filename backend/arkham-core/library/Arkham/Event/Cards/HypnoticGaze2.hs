@@ -17,8 +17,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
@@ -43,11 +42,7 @@ instance RunMessage HypnoticGaze2 where
         PerformEnemyAttack details : _ -> attackEnemy details
         _ -> error "unhandled"
       ignoreWindow <-
-        checkWindows
-          [ mkWindow
-              Timing.After
-              (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)
-          ]
+        checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll
         [ CancelNext (toSource attrs) AttackMessage
         , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
@@ -65,11 +60,11 @@ instance RunMessage HypnoticGaze2 where
       when shouldDamageEnemy $ do
         healthDamage' <- field EnemyHealthDamage enemyId
         sanityDamage' <- field EnemySanityDamage enemyId
-        when (healthDamage' > 0 || sanityDamage' > 0)
-          $ push
+        player <- getPlayer iid
+        pushWhen (healthDamage' > 0 || sanityDamage' > 0)
           $ If
             (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
-            [ chooseOrRunOne iid
+            [ chooseOrRunOne player
                 $ [ Label
                     "Deal health damage"
                     [EnemyDamage enemyId $ nonAttack attrs healthDamage']

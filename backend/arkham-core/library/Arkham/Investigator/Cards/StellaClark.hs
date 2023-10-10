@@ -40,8 +40,9 @@ instance RunMessage StellaClark where
       when (ElderSign `elem` faces) $ do
         healDamage <- canHaveDamageHealed attrs iid
         mHealHorror <- getHealHorrorMessage attrs 1 iid
+        player <- getPlayer iid
         push
-          $ chooseOne iid
+          $ chooseOne player
           $ [ Label "Resolve as Elder Sign" []
             , Label
                 "Automatically fail this skill test to heal 1 damage and 1 horror"

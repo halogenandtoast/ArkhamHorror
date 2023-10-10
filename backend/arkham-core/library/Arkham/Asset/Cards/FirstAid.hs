@@ -41,15 +41,16 @@ instance RunMessage FirstAid where
       horrorInvestigators <- select $ HealableInvestigator source #horror $ colocatedWith iid
       damageInvestigators <- select $ HealableInvestigator source #damage $ colocatedWith iid
       let allInvestigators = toList $ horrorInvestigators <> damageInvestigators
+      player <- getPlayer iid
       choices <- for allInvestigators $ \i -> do
         mHealHorror <-
           if i `member` horrorInvestigators then getHealHorrorMessage source 1 i else pure Nothing
         pure
           $ targetLabel i
           . only
-          $ chooseOrRunOne iid
+          $ chooseOrRunOne player
           $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `member` damageInvestigators]
           <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
-      push $ chooseOne iid choices
+      push $ chooseOne player choices
       pure a
     _ -> FirstAid <$> runMessage msg attrs

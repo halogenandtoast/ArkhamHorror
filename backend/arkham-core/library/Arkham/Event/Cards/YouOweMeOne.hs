@@ -25,9 +25,10 @@ instance RunMessage YouOweMeOne where
   runMessage msg e@(YouOweMeOne attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       others <- selectList $ NotInvestigator (InvestigatorWithId iid)
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel
             other
             [HandleTargetChoice iid (toSource attrs) (InvestigatorTarget other)]
@@ -40,9 +41,10 @@ instance RunMessage YouOweMeOne where
         let relevantCards = filter (`cardMatch` (NonWeakness <> NonSignature)) cards
         drawing1 <- drawCards iid attrs 1
         drawing2 <- drawCards iid' attrs 1
+        player <- getPlayer iid
         pushAll
           [ FocusCards cards
-          , chooseOne iid
+          , chooseOne player
               $ Label "Do not play a card" []
               : [ targetLabel
                   (toCardId card)

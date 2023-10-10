@@ -51,6 +51,7 @@ instance RunMessage BrokenSteps_290 where
                 [findAndDrawEncounterCard iid (CardWithId $ toCardId c)]
                | c <- maybeToList mCultistCard
                ]
-      unless (null choices) $ push $ chooseOne iid choices
+      player <- getPlayer iid
+      unless (null choices) $ push $ chooseOne player choices
       pure l
     _ -> BrokenSteps_290 <$> runMessage msg attrs

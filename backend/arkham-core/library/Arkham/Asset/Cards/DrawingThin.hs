@@ -29,10 +29,11 @@ instance RunMessage DrawingThin where
   runMessage msg a@(DrawingThin attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      player <- getPlayer iid
       pushAll
         [ skillTestModifier (toAbilitySource attrs 1) SkillTestTarget (Difficulty 2)
         , chooseOne
-            iid
+            player
             [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
             , Label "Draw 1 card" [drawing]
             ]

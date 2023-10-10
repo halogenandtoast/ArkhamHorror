@@ -32,8 +32,9 @@ instance RunMessage LiquidCourage1 where
   runMessage msg a@(LiquidCourage1 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       iids <- selectList $ HealableInvestigator (toAbilitySource attrs 1) HorrorType $ colocatedWith iid
+      player <- getPlayer iid
       pushWhen (notNull iids)
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ targetLabel iid'
             $ [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
               , beginSkillTest iid' (toAbilitySource attrs 1) iid' #willpower 2

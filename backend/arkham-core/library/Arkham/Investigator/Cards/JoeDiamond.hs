@@ -84,10 +84,11 @@ instance RunMessage JoeDiamond where
               fromJustNote "Deck missing unsolved case"
                 $ find (`cardMatch` (cardIs Events.unsolvedCase)) insights
             remainingInsights = filter (/= unsolvedCase) insights
+          player <- getPlayer (toId attrs)
           pushAll
             [ FocusCards $ map toCard remainingInsights
             , ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
-            , questionLabel "Choose 10 more cards for hunch deck" (toId attrs)
+            , questionLabel "Choose 10 more cards for hunch deck" player
                 $ ChooseN 10
                 $ [ targetLabel (toCardId insight)
                     $ [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
@@ -125,8 +126,9 @@ instance RunMessage JoeDiamond where
       pure $ JoeDiamond . (`with` Metadata Nothing) $ attrs & decksL . at HunchDeck ?~ hunchDeck'
     ResolveChaosToken _drawnToken ElderSign iid | attrs `is` iid -> do
       insights <- filter (`cardMatch` (CardWithTrait Insight <> #event)) <$> field InvestigatorDiscard iid
+      player <- getPlayer iid
       pushIfAny insights
-        $ chooseOne iid
+        $ chooseOne player
         $ Label "Do not move an insight" []
         : [ targetLabel (toCardId insight)
             $ [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]

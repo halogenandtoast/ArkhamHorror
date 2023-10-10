@@ -51,9 +51,10 @@ instance RunMessage AliceLuxley where
         selectList
           $ EnemyAt (locationWithInvestigator iid)
           <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 1]
           | enemy <- enemies
           ]

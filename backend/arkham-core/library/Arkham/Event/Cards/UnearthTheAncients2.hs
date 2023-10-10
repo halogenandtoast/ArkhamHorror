@@ -35,8 +35,9 @@ instance RunMessage UnearthTheAncients2 where
   runMessage msg e@(UnearthTheAncients2 (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <- selectList $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (#seeker <> #asset)
+      player <- getPlayer iid
       pushAll
-        [ chooseUpToN iid 2 "Do not choose any more assets"
+        [ chooseUpToN player 2 "Do not choose any more assets"
             $ [ targetLabel (toCardId asset) [HandleTargetChoice iid (toSource attrs) (CardTarget asset)]
               | asset <- assets
               ]

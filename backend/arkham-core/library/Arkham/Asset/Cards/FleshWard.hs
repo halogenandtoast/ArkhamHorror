@@ -45,8 +45,9 @@ instance RunMessage FleshWard where
       ignoreWindow <-
         checkWindows
           [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label "Cancel 1 damage" [CancelDamage iid 1, ignoreWindow]
           | dealtDamage windows'
           ]

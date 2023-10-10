@@ -25,12 +25,8 @@ instance HasAbilities LadyEsprit where
         x
         1
         ( OnSameLocation
-            <> InvestigatorExists
-              ( AnyInvestigator
-                  [ HealableInvestigator (toSource x) DamageType You
-                  , You <> InvestigatorCanGainResources
-                  ]
-              )
+            <> exists
+              (oneOf [HealableInvestigator (toSource x) DamageType You, You <> InvestigatorCanGainResources])
         )
         ( ActionAbility Nothing
             $ Costs
@@ -46,8 +42,9 @@ instance RunMessage LadyEsprit where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       canHeal <- canHaveDamageHealed attrs iid
       canGainResources <- withoutModifier (InvestigatorTarget iid) CannotGainResources
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ ComponentLabel
             (InvestigatorComponent iid DamageToken)
             [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]

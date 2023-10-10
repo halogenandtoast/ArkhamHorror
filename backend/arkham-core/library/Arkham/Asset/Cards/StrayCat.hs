@@ -28,6 +28,7 @@ instance RunMessage StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
       enemies <- selectList $ enemyAtLocationWith iid <> NonEliteEnemy
-      push $ chooseOne iid $ targetLabels enemies (only . EnemyEvaded iid)
+      player <- getPlayer iid
+      push $ chooseOne player $ targetLabels enemies (only . EnemyEvaded iid)
       pure a
     _ -> StrayCat <$> runMessage msg attrs

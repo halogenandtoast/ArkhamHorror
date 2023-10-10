@@ -45,9 +45,10 @@ instance RunMessage AbbeyTowerThePathIsOpen where
   runMessage msg l@(AbbeyTowerThePathIsOpen attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maxDiscardAmount <- selectCount $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch NonWeakness
+      player <- getPlayer iid
       push
         $ chooseAmounts
-          iid
+          player
           "Discard up to 3 cards from your hand"
           (MaxAmountTarget 3)
           [("Cards", (0, maxDiscardAmount))]

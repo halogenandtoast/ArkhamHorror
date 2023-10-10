@@ -30,8 +30,9 @@ instance RunMessage ScrollOfProphecies where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       investigatorIds <- selectList $ colocatedWith iid
       investigators <- forToSnd investigatorIds $ \i -> drawCards i (toAbilitySource attrs 1) 3
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel iid'
             $ [drawing, toMessage $ chooseAndDiscardCard iid' (toAbilitySource attrs 1)]
           | (iid', drawing) <- investigators

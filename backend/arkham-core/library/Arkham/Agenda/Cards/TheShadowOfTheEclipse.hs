@@ -26,20 +26,15 @@ instance RunMessage TheShadowOfTheEclipse where
       maskedCarnevaleGoers <-
         selectList
           (AssetWithTitle "Masked Carnevale-Goer")
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
+      leadInvestigator <- getLead
       case maskedCarnevaleGoers of
         [] -> push $ AdvanceAgendaDeck agendaDeckId (toSource attrs)
         xs ->
           pushAll
             [ chooseOne
-                leadInvestigatorId
-                [ targetLabel
-                  x
-                  [ Flip
-                      leadInvestigatorId
-                      (InvestigatorSource leadInvestigatorId)
-                      (AssetTarget x)
-                  ]
+                lead
+                [ targetLabel x [Flip leadInvestigator (toSource leadInvestigator) (toTarget x)]
                 | x <- xs
                 ]
             , RevertAgenda aid

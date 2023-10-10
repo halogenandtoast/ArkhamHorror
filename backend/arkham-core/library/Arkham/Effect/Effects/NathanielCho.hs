@@ -39,24 +39,22 @@ isTakeDamage attrs window = case effectTarget attrs of
 
 instance RunMessage NathanielCho where
   runMessage msg e@(NathanielCho attrs) = case msg of
-    PassedSkillTest iid _ _ _ _ _
-      | effectTarget attrs == InvestigatorTarget iid -> do
-          discardedCards <- field InvestigatorDiscard iid
-          let events = filter ((== EventType) . toCardType) discardedCards
-          if null events
-            then push (DisableEffect $ toId attrs)
-            else
-              pushAll
-                [ chooseOne
-                    iid
-                    [ TargetLabel
-                      (CardIdTarget $ toCardId event)
-                      [ReturnToHand iid (CardTarget $ PlayerCard event)]
-                    | event <- events
-                    ]
-                , DisableEffect $ toId attrs
+    PassedSkillTest iid _ _ _ _ _ | effectTarget attrs == InvestigatorTarget iid -> do
+      discardedCards <- field InvestigatorDiscard iid
+      let events = filter ((== EventType) . toCardType) discardedCards
+      if null events
+        then push (DisableEffect $ toId attrs)
+        else do
+          player <- getPlayer iid
+          pushAll
+            [ chooseOne
+                player
+                [ targetLabel (toCardId event) [ReturnToHand iid (CardTarget $ PlayerCard event)]
+                | event <- events
                 ]
-          pure e
+            , DisableEffect $ toId attrs
+            ]
+      pure e
     CheckWindow _ windows'
       | any (isTakeDamage attrs) windows' ->
           e <$ push (DisableEffect $ toId attrs)

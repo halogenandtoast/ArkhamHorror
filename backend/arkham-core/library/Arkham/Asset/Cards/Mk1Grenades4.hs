@@ -41,8 +41,9 @@ instance RunMessage Mk1Grenades4 where
               else [EnemyDamage eid' $ delayDamage $ isDirect $ attack source 2]
       iids <- selectList $ colocatedWith iid <> NotInvestigator (InvestigatorWithId iid)
       eids <- selectList $ enemyAtLocationWith iid
+      player <- getPlayer iid
       pushAll
-        $ [ chooseOneAtATime iid
+        $ [ chooseOneAtATime player
               $ map toMsg eids
               <> [targetLabel iid' [assignDamage iid' source 2] | iid' <- iids]
           ]

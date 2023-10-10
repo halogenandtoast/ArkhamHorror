@@ -50,8 +50,9 @@ instance RunMessage GrislyTotemSeeker3 where
   runMessage msg a@(GrislyTotemSeeker3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
+      player <- getPlayer iid
       pushAll
-        [ chooseOrRunOne iid
+        [ chooseOrRunOne player
             $ [ Label (toSkillLabel icon)
                 $ [skillTestModifier (toAbilitySource attrs 1) (toCardId card) (AddSkillIcons [icon])]
               | icon <- setToList icons

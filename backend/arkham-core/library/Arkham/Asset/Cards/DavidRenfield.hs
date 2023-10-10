@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.SkillType
 
 newtype DavidRenfield = DavidRenfield AssetAttrs
   deriving anyclass (IsAsset)
@@ -18,22 +17,12 @@ davidRenfield :: AssetCard DavidRenfield
 davidRenfield = ally DavidRenfield Cards.davidRenfield (2, 1)
 
 instance HasModifiersFor DavidRenfield where
-  getModifiersFor (InvestigatorTarget iid) (DavidRenfield attrs)
-    | attrs `controlledBy` iid =
-        pure
-          $ toModifiers
-            attrs
-            [SkillModifier SkillWillpower 1 | assetDoom attrs > 0]
+  getModifiersFor (InvestigatorTarget iid) (DavidRenfield attrs) | attrs `controlledBy` iid = do
+    pure $ toModifiers attrs [SkillModifier #willpower 1 | assetDoom attrs > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DavidRenfield where
-  getAbilities (DavidRenfield a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ FastAbility
-        $ ExhaustCost
-        $ toTarget
-          a
-    ]
+  getAbilities (DavidRenfield a) = [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
 
 instance RunMessage DavidRenfield where
   runMessage msg a@(DavidRenfield attrs) = case msg of
@@ -41,9 +30,10 @@ instance RunMessage DavidRenfield where
       let
         resolveAbility =
           UseCardAbilityChoice iid source 1 NoAbilityMetadata windows' p
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Place doom on David Renfield"
               [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, resolveAbility]

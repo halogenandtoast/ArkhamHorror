@@ -79,8 +79,9 @@ instance RunMessage Duke where
                 . (`applyAbilityModifiers` [ActionCostModifier (-1)])
             )
             investigateAbilities
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ investigateActions
         <> [ targetLabel
             lid'

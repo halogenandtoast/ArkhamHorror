@@ -56,9 +56,10 @@ instance RunMessage SiteOfTheSacrifice where
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
       nahab <- getUniqueEnemy Enemies.nahab
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Place 1 doom on Nahab" [PlaceDoom (toAbilitySource attrs 3) (toTarget nahab) 1]
           , Label "Nahab attacks you" [InitiateEnemyAttack $ enemyAttack nahab attrs iid]
           ]

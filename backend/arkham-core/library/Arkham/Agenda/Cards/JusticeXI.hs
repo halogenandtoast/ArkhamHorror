@@ -78,11 +78,8 @@ instance RunMessage JusticeXI where
         if n < targetAmount
           then pure $ map (RemoveAllClues (toSource attrs) . toTarget) iids
           else do
-            lead <- getLead
-            lids <-
-              selectList
-                $ FarthestLocationFromAll
-                  (NotLocation $ LocationWithTitle "Entry Hall")
+            lead <- getLeadPlayer
+            lids <- selectList $ FarthestLocationFromAll (NotLocation "Entry Hall")
             josefMeiger <- getSetAsideCard Enemies.josefMeiger
             pure
               [ SpendClues targetAmount iids
@@ -91,23 +88,25 @@ instance RunMessage JusticeXI where
                   [targetLabel lid [SpawnEnemyAt josefMeiger lid] | lid <- lids]
               ]
 
+      players <- allPlayers
+
       pushAll
         $ msgs
         <> map (RemoveAllClues (toSource attrs) . toTarget) allLocations
         <> ( if toCardCode Investigators.gavriellaMizrah `elem` missingPersons && noCluesOnEntryHall
-              then [story iids interlude1Gavriella, Record TheInvestigatorsAreOnGavriella'sTrail]
+              then [story players interlude1Gavriella, Record TheInvestigatorsAreOnGavriella'sTrail]
               else []
            )
         <> ( if toCardCode Investigators.jeromeDavids `elem` missingPersons && noCluesOnOffice
-              then [story iids interlude1Jerome, Record TheInvestigatorsAreOnJerome'sTrail]
+              then [story players interlude1Jerome, Record TheInvestigatorsAreOnJerome'sTrail]
               else []
            )
         <> ( if toCardCode Investigators.pennyWhite `elem` missingPersons && noCluesOnBalcony
-              then [story iids interlude1Penny, Record TheInvestigatorsAreOnPenny'sTrail]
+              then [story players interlude1Penny, Record TheInvestigatorsAreOnPenny'sTrail]
               else []
            )
         <> ( if toCardCode Investigators.valentinoRivas `elem` missingPersons && noCluesOnBilliardsRoom
-              then [story iids interlude1Valentino, Record TheInvestigatorsAreOnValentino'sTrail]
+              then [story players interlude1Valentino, Record TheInvestigatorsAreOnValentino'sTrail]
               else []
            )
         <> [ AdvanceAct actId (toSource attrs) AdvancedWithOther

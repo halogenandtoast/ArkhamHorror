@@ -32,28 +32,25 @@ instance RunMessage SpiritSpeaker where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       assetIds <- selectList $ AssetControlledBy You <> AssetWithUseType Charge
       discardableAssetIds <-
-        selectList
-          $ AssetControlledBy You
-          <> AssetWithUseType Charge
-          <> DiscardableAsset
+        selectList $ AssetControlledBy You <> AssetWithUseType Charge <> DiscardableAsset
       assetIdsWithChargeCounts <- forToSnd assetIds $ fmap useCount . field AssetUses
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             target
             [ chooseOne
-                iid
-                ( Label "Return to hand" [ReturnToHand iid target]
-                    : [ Label
-                        "Move all charges to your resource pool"
-                        [ SpendUses target Charge n
-                        , TakeResources iid n (toAbilitySource attrs 1) False
-                        , Discard (toAbilitySource attrs 1) target
-                        ]
-                      | aid `elem` discardableAssetIds
-                      ]
-                )
+                player
+                $ Label "Return to hand" [ReturnToHand iid target]
+                : [ Label
+                    "Move all charges to your resource pool"
+                    [ SpendUses target Charge n
+                    , TakeResources iid n (toAbilitySource attrs 1) False
+                    , Discard (toAbilitySource attrs 1) target
+                    ]
+                  | aid `elem` discardableAssetIds
+                  ]
             ]
           | (aid, n) <- assetIdsWithChargeCounts
           , let target = AssetTarget aid

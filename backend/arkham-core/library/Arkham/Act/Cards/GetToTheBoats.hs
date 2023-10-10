@@ -47,7 +47,8 @@ instance RunMessage GetToTheBoats where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       targets <- selectTargets $ AssetWithTitle "Masked Carnevale-Goer"
-      unless (null targets) $ pushAll [chooseOne iid $ targetLabels targets (only . Flip iid source)]
+      player <- getPlayer iid
+      unless (null targets) $ pushAll [chooseOne player $ targetLabels targets (only . Flip iid source)]
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2

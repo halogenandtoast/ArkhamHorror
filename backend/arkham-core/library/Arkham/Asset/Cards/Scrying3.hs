@@ -30,9 +30,10 @@ instance RunMessage Scrying3 where
   runMessage msg a@(Scrying3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             target
             [ lookAt

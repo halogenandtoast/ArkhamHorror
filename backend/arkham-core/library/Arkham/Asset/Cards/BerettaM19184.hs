@@ -37,10 +37,11 @@ instance RunMessage BerettaM19184 where
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       if n >= 4
         then pushAll [ready attrs, skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt 1)]
-        else
+        else do
+          player <- getPlayer iid
           push
             $ chooseOne
-              iid
+              player
               [ Label "Ready Beretta M1918" [ready attrs]
               , Label
                   "Deal an additional +1 damage"

@@ -51,62 +51,35 @@ instance HasAbilities MadnessCoils where
 instance RunMessage MadnessCoils where
   runMessage msg a@(MadnessCoils (attrs `With` metadata)) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      let
-        skills =
-          setFromList [SkillWillpower, SkillIntellect]
-            `difference` chosenSkills metadata
-      leadInvestigatorId <- getLeadInvestigatorId
+      let skills = setFromList [#willpower, #intellect] `difference` chosenSkills metadata
+      lead <- getLeadPlayer
       investigatorIds <- getInvestigatorIds
       push
-        ( chooseOne leadInvestigatorId
-            $ map
-              ( \sk ->
-                  Label
-                    ("Any investigator tests " <> tshow sk)
-                    [ chooseOrRunOne
-                        leadInvestigatorId
-                        [ targetLabel
-                          iid
-                          [ beginSkillTest
-                              iid
-                              (toSource attrs)
-                              (toTarget attrs)
-                              sk
-                              4
-                          ]
-                        | iid <- investigatorIds
-                        ]
-                    ]
-              )
-              (setToList skills)
-            <> [ Label
-                  "This can't be real. This can't be real. This can't be real. Each investigator takes 2 horror. Advance to agenda 2a."
-                  ( [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-                    | iid <- investigatorIds
-                    ]
-                      <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-                  )
-               , Label
-                  "The investigators faint and awaken some time later. Advance to agenda 2a and place 1 doom on it."
-                  [ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-                  , PlaceDoomOnAgenda
-                  ]
-               ]
-        )
+        $ chooseOne lead
+        $ map
+          ( \sk ->
+              Label
+                ("Any investigator tests " <> tshow sk)
+                [ chooseOrRunOne lead [targetLabel iid [beginSkillTest iid attrs attrs sk 4] | iid <- investigatorIds]
+                ]
+          )
+          (setToList skills)
+        <> [ Label
+              "This can't be real. This can't be real. This can't be real. Each investigator takes 2 horror. Advance to agenda 2a."
+              $ [assignHorror iid attrs 2 | iid <- investigatorIds]
+              <> [advanceAgendaDeck attrs]
+           , Label
+              "The investigators faint and awaken some time later. Advance to agenda 2a and place 1 doom on it."
+              [advanceAgendaDeck attrs, PlaceDoomOnAgenda]
+           ]
       pure a
-    FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _
-      | isSource attrs source -> do
-          pushAfter (== SkillTestApplyResultsAfter) $ AdvanceAgenda (toId attrs)
-          pure
-            $ MadnessCoils
-            $ attrs
-            `with` Metadata
-              (insertSet st $ chosenSkills metadata)
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          pushAfter (== SkillTestApplyResultsAfter)
-            $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-          pure a
+    FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _ | isSource attrs source -> do
+      pushAfter (== SkillTestApplyResultsAfter) $ AdvanceAgenda (toId attrs)
+      pure $ MadnessCoils $ attrs `with` Metadata (insertSet st $ chosenSkills metadata)
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      pushAfter (== SkillTestApplyResultsAfter)
+        $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+      pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ AdvanceAgenda (toId attrs)
       pure a

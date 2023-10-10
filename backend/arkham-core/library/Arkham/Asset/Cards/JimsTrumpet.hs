@@ -58,9 +58,10 @@ instance RunMessage JimsTrumpet where
                 , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
                 ]
 
+          player <- getPlayer controllerId
           push
             $ chooseOne
-              controllerId
+              player
               [ targetLabel iid [healHorror]
               | (iid, healHorror) <- investigatorIdsWithHeal
               ]

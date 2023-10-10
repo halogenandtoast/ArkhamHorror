@@ -32,7 +32,7 @@ instance HasAbilities BidingItsTime where
 instance RunMessage BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       broodOfYogSothoth <- selectTargets $ EnemyWithTitle "Brood of Yog-Sothoth"
       pushWhen (notNull broodOfYogSothoth)
         $ chooseOneAtATime lead

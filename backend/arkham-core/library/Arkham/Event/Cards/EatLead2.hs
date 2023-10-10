@@ -33,22 +33,20 @@ eatLead2 = event (EatLead2 . (`With` Metadata Nothing)) Cards.eatLead2
 
 instance RunMessage EatLead2 where
   runMessage msg e@(EatLead2 (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ ability)] _
-      | eid == toId attrs ->
-          do
-            case abilitySource ability of
-              AssetSource aid -> do
-                uses <- fieldMap AssetUses useCount aid
-                pushAll
-                  [ chooseAmounts
-                      iid
-                      "Additional ammo to spend"
-                      (MaxAmountTarget uses)
-                      [("Ammo", (0, uses))]
-                      (toTarget attrs)
-                  ]
-                pure . EatLead2 $ attrs `with` Metadata (Just aid)
-              _ -> error "Invalid source"
+    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ ability)] _ | eid == toId attrs -> do
+      case abilitySource ability of
+        AssetSource aid -> do
+          uses <- fieldMap AssetUses useCount aid
+          player <- getPlayer iid
+          push
+            $ chooseAmounts
+              player
+              "Additional ammo to spend"
+              (MaxAmountTarget uses)
+              [("Ammo", (0, uses))]
+              (toTarget attrs)
+          pure . EatLead2 $ attrs `with` Metadata (Just aid)
+        _ -> error "Invalid source"
     ResolveAmounts iid (getChoiceAmount "Ammo" -> ammo) target | isTarget attrs target -> do
       let
         aid = fromJustNote "asset must be set" (asset metadata)

@@ -46,8 +46,9 @@ instance RunMessage Montmartre210 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       ammoAssets <- selectList $ AssetControlledBy You <> AssetWithUses Ammo
       supplyAssets <- selectList $ AssetControlledBy You <> AssetWithUses Supply
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [targetLabel asset [AddUses asset Ammo 1] | asset <- ammoAssets]
         <> [ targetLabel asset [AddUses asset Supply 1]
            | asset <- supplyAssets

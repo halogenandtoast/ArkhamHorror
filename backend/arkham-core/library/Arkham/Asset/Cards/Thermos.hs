@@ -25,29 +25,19 @@ instance HasAbilities Thermos where
   getAbilities (Thermos a) =
     [ withTooltip
         "Heal 1 damage from an investigator at your location (2 damage instead if he or she has 2 or more physical trauma)."
-        $ restrictedAbility
+        $ controlledAbility
           a
           1
-          ( ControlsThis
-              <> InvestigatorExists
-                ( HealableInvestigator (toSource a) DamageType
-                    $ InvestigatorAt YourLocation
-                )
-          )
+          (exists $ HealableInvestigator (toSource a) DamageType $ InvestigatorAt YourLocation)
         $ ActionAbility Nothing
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
     , withTooltip
         "Heal 1 horror from an investigator at your location (2 horror instead if he or she has 2 or more mental trauma)."
-        $ restrictedAbility
+        $ controlledAbility
           a
           2
-          ( ControlsThis
-              <> InvestigatorExists
-                ( HealableInvestigator (toSource a) HorrorType
-                    $ InvestigatorAt YourLocation
-                )
-          )
+          (exists $ HealableInvestigator (toSource a) HorrorType $ InvestigatorAt YourLocation)
         $ ActionAbility Nothing
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
@@ -56,23 +46,12 @@ instance HasAbilities Thermos where
 instance RunMessage Thermos where
   runMessage msg a@(Thermos attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
-      targets <-
-        selectListMap InvestigatorTarget
-          $ HealableInvestigator (toSource attrs) DamageType
-          $ colocatedWith iid
+      targets <- selectTargets $ HealableInvestigator (toSource attrs) DamageType $ colocatedWith iid
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
-          [ TargetLabel
-            target
-            [ UseCardAbilityChoiceTarget
-                iid
-                (toSource attrs)
-                1
-                target
-                windows'
-                payment
-            ]
+          player
+          [ TargetLabel target [UseCardAbilityChoiceTarget iid (toSource attrs) 1 target windows' payment]
           | target <- targets
           ]
       pure a
@@ -86,23 +65,12 @@ instance RunMessage Thermos where
             (if trauma >= 2 then 2 else 1)
         pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' payment -> do
-      targets <-
-        selectListMap InvestigatorTarget
-          $ HealableInvestigator (toSource attrs) HorrorType
-          $ colocatedWith iid
+      targets <- selectTargets $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
-          [ TargetLabel
-            target
-            [ UseCardAbilityChoiceTarget
-                iid
-                (toSource attrs)
-                2
-                target
-                windows'
-                payment
-            ]
+          player
+          [ TargetLabel target [UseCardAbilityChoiceTarget iid (toSource attrs) 2 target windows' payment]
           | target <- targets
           ]
       pure a

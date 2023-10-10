@@ -43,6 +43,8 @@ instance RunMessage Lantern where
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       let source = toAbilitySource attrs 2
       enemies <- selectList $ enemyAtLocationWith iid
-      push $ chooseOne iid [targetLabel enemy [EnemyDamage enemy $ nonAttack source 1] | enemy <- enemies]
+      player <- getPlayer iid
+      push
+        $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack source 1] | enemy <- enemies]
       pure a
     _ -> Lantern <$> runMessage msg attrs

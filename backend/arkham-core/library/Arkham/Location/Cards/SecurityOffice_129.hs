@@ -35,8 +35,9 @@ instance RunMessage SecurityOffice_129 where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       unrevealedExhibitHalls <-
         selectList $ UnrevealedLocation <> LocationWithTitle "ExhibitHall"
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ TargetLabel
           ScenarioDeckTarget
           [LookAtTopOfDeck iid ScenarioDeckTarget 1]

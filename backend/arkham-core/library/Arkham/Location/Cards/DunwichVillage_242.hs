@@ -42,17 +42,18 @@ instance RunMessage DunwichVillage_242 where
   runMessage msg l@(DunwichVillage_242 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorsWithClues <- locationInvestigatorsWithClues attrs
+      investigatorPlayersWithClues <- traverse (traverseToSnd getPlayer) investigatorsWithClues
       abominations <- locationEnemiesWithTrait attrs Abomination
       when
         (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
       pushAll
         [ chooseOne
-          iid
+          player
           [ Label
               "Place clue on Abomination"
               [ chooseOne
-                  iid
+                  player
                   [ targetLabel
                     eid
                     [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1
@@ -63,7 +64,7 @@ instance RunMessage DunwichVillage_242 where
               ]
           , Label "Do not place clue on Abomination" []
           ]
-        | iid <- investigatorsWithClues
+        | (iid, player) <- investigatorPlayersWithClues
         ]
       pure l
     _ -> DunwichVillage_242 <$> runMessage msg attrs

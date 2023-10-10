@@ -87,7 +87,7 @@ data GetGameJson = GetGameJson
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON)
 
-getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
+getApiV1ArkhamGameR :: HasCallStack => ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   webSockets $ gameStream (Just userId) gameId
@@ -146,6 +146,7 @@ data CreateGamePost = CreateGamePost
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
+-- | New Game
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
@@ -161,48 +162,36 @@ postApiV1ArkhamGamesR = do
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
   now <- liftIO getCurrentTime
-  case campaignId of
-    Just cid -> do
-      (queueRef, game) <-
-        liftIO
-          $ newCampaign cid scenarioId newGameSeed playerCount difficulty includeTarotReadings
-      gameRef <- newIORef game
-      runGameApp
-        (GameApp gameRef queueRef genRef $ pure . const ())
-        (runMessages Nothing)
-      ge <- readIORef gameRef
-      updatedQueue <- readIORef (queueToRef queueRef)
-      key <- runDB $ do
-        gameId <- insert $ ArkhamGame campaignName ge 0 multiplayerVariant now now
-        insert_ $ ArkhamPlayer userId gameId "00000"
-        insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
-        pure gameId
-      pure
-        $ toPublicGame
-          (Entity key $ ArkhamGame campaignName ge 0 multiplayerVariant now now)
-          mempty
+
+  (queueRef, game) <- liftIO $ case campaignId of
+    Just cid -> newCampaign cid scenarioId newGameSeed playerCount difficulty includeTarotReadings
     Nothing -> case scenarioId of
-      Just sid -> do
-        (queueRef, game) <-
-          liftIO
-            $ newScenario sid newGameSeed playerCount difficulty includeTarotReadings
-        gameRef <- newIORef game
-        runGameApp
-          (GameApp gameRef queueRef genRef $ pure . const ())
-          (runMessages Nothing)
-        ge <- readIORef gameRef
-        let diffDown = diff ge game
-        updatedQueue <- readIORef (queueToRef queueRef)
-        key <- runDB $ do
-          gameId <- insert $ ArkhamGame campaignName ge 0 multiplayerVariant now now
-          insert_ $ ArkhamPlayer userId gameId "00000"
-          insert_ $ ArkhamStep gameId (Choice diffDown updatedQueue) 0 (ActionDiff [])
-          pure gameId
-        pure
-          $ toPublicGame
-            (Entity key $ ArkhamGame campaignName ge 0 multiplayerVariant now now)
-            mempty
-      Nothing -> error "missing either campaign id or scenario id"
+      Just sid -> newScenario sid newGameSeed playerCount difficulty includeTarotReadings
+      Nothing -> error "missing either a campign id or a scenario id"
+
+  let ag = ArkhamGame campaignName game 0 multiplayerVariant now now
+  (key, pid) <- runDB $ do
+    gameId <- insert ag
+    pid <- insert $ ArkhamPlayer userId gameId "00000"
+    pure (gameId, pid)
+
+  gameRef <- newIORef game
+  ge <- readIORef gameRef
+  let diffDown = diff ge game
+
+  runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
+    addPlayer (PlayerId $ coerce pid)
+    runMessages Nothing
+
+  updatedQueue <- readIORef (queueToRef queueRef)
+  updatedGame <- readIORef gameRef
+
+  let ag' = ag {arkhamGameCurrentData = updatedGame}
+
+  runDB $ do
+    replace key ag'
+    insert_ $ ArkhamStep key (Choice mempty updatedQueue) 0 (ActionDiff [])
+  pure $ toPublicGame (Entity key ag') mempty
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do

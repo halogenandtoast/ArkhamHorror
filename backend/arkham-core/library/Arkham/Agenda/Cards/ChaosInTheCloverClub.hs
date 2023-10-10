@@ -32,7 +32,7 @@ instance RunMessage ChaosInTheCloverClub where
       pushAll $ map (Discard (toSource attrs) . toTarget) criminals
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       push $ chooseOne lead [Label "Continue" [R4]]
       pure a
     _ -> ChaosInTheCloverClub <$> runMessage msg attrs

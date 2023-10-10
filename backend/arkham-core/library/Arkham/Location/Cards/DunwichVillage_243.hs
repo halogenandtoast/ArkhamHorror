@@ -45,14 +45,12 @@ instance RunMessage DunwichVillage_243 where
       when
         (null broodOfYogSothoth)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      l
-        <$ pushAll
-          [ chooseOne
-            iid
-            [ TargetLabel
-                (EnemyTarget eid)
-                [MoveToward (EnemyTarget eid) (LocationWithId $ toId attrs)]
-            ]
-          | eid <- broodOfYogSothoth
-          ]
+      player <- getPlayer iid
+      pushAll
+        [ chooseOne
+          player
+          [targetLabel eid [MoveToward (EnemyTarget eid) (LocationWithId $ toId attrs)]]
+        | eid <- broodOfYogSothoth
+        ]
+      pure l
     _ -> DunwichVillage_243 <$> runMessage msg attrs

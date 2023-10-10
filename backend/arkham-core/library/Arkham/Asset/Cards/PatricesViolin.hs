@@ -29,8 +29,9 @@ instance RunMessage PatricesViolin where
   runMessage msg a@(PatricesViolin attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- selectList $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ targetLabels investigators (only . HandleTargetChoice iid (toAbilitySource attrs 1) . toTarget)
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
@@ -38,9 +39,10 @@ instance RunMessage PatricesViolin where
       canGainResources <- can.gain.resources iid'
       canDrawCards <- can.draw.cards iid'
       drawing <- drawCards iid' source 1
+      player <- getPlayer iid
 
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [Label "Gain resource" [takeResources iid' source 1] | canGainResources]
         <> [Label "Draw card" [drawing] | canDrawCards]
 

@@ -15,7 +15,6 @@ import Arkham.Game.Settings
 import Arkham.Git (GitSha)
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator.Types (Investigator)
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
@@ -26,9 +25,10 @@ import Arkham.Tarot
 import Arkham.Zone
 import Data.Aeson.Diff qualified as Diff
 import Data.These
+import GHC.Records
 
 type GameMode = These Campaign Scenario
-data GameState = IsPending [(Investigator, [PlayerCard])] | IsActive | IsOver
+data GameState = IsPending [PlayerId] | IsActive | IsOver
   deriving stock (Eq, Show)
 
 data Game = Game
@@ -46,6 +46,7 @@ data Game = Game
     gameMode :: GameMode
   , -- Entities
     gameEntities :: Entities
+  , gamePlayers :: [PlayerId]
   , gameOutOfPlayEntities :: Map OutOfPlayZone Entities
   , gameModifiers :: Map Target [Modifier]
   , gameEncounterDiscardEntities :: Entities
@@ -96,3 +97,15 @@ data Game = Game
   deriving stock (Eq, Show)
 
 makeLensesWith suffixedFields ''Game
+
+instance HasField "state" Game GameState where
+  getField = gameGameState
+
+instance HasField "players" Game [PlayerId] where
+  getField = gamePlayers
+
+instance HasField "playerCount" Game Int where
+  getField = gamePlayerCount
+
+instance HasField "seed" Game Int where
+  getField = gameSeed

@@ -100,15 +100,15 @@ isBlanked _ = False
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
-story :: [InvestigatorId] -> FlavorText -> Message
-story iids flavor =
+story :: [PlayerId] -> FlavorText -> Message
+story pids flavor =
   AskMap
-    (mapFromList [(iid, Read flavor [Label "Continue" []]) | iid <- iids])
+    (mapFromList [(pid, Read flavor [Label "Continue" []]) | pid <- pids])
 
-storyWithChooseOne :: InvestigatorId -> [InvestigatorId] -> FlavorText -> [UI Message] -> Message
-storyWithChooseOne lead iids flavor choices =
+storyWithChooseOne :: PlayerId -> [PlayerId] -> FlavorText -> [UI Message] -> Message
+storyWithChooseOne lead pids flavor choices =
   AskMap
-    (mapFromList [(iid, Read flavor $ if iid == lead then choices else []) | iid <- iids])
+    (mapFromList [(pid, Read flavor $ if pid == lead then choices else []) | pid <- pids])
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
@@ -349,8 +349,8 @@ data Message
     AddUses AssetId UseType Int
   | -- Asks
     AskPlayer Message
-  | Ask InvestigatorId (Question Message)
-  | AskMap (Map InvestigatorId (Question Message))
+  | Ask PlayerId (Question Message)
+  | AskMap (Map PlayerId (Question Message))
   | After Message -- TODO: REMOVE
   | AfterEvadeEnemy InvestigatorId EnemyId
   | AfterRevelation InvestigatorId TreacheryId
@@ -920,70 +920,73 @@ uiToRun = \case
   EffectActionButton _ _ msgs -> Run msgs
   Done _ -> Run []
 
-chooseOrRunOne :: InvestigatorId -> [UI Message] -> Message
+chooseOrRunOne :: PlayerId -> [UI Message] -> Message
 chooseOrRunOne _ [x] = uiToRun x
-chooseOrRunOne iid msgs = chooseOne iid msgs
+chooseOrRunOne pid msgs = chooseOne pid msgs
 
-questionLabel :: Text -> InvestigatorId -> Question Message -> Message
-questionLabel lbl iid q = Ask iid (QuestionLabel lbl Nothing q)
+questionLabel :: Text -> PlayerId -> Question Message -> Message
+questionLabel lbl pid q = Ask pid (QuestionLabel lbl Nothing q)
 
-questionLabelWithCard :: Text -> CardCode -> InvestigatorId -> Question Message -> Message
-questionLabelWithCard lbl cCode iid q = Ask iid (QuestionLabel lbl (Just cCode) q)
+questionLabelWithCard :: Text -> CardCode -> PlayerId -> Question Message -> Message
+questionLabelWithCard lbl cCode pid q = Ask pid (QuestionLabel lbl (Just cCode) q)
 
-chooseOne :: InvestigatorId -> [UI Message] -> Message
+chooseOne :: PlayerId -> [UI Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"
-chooseOne iid msgs = Ask iid (ChooseOne msgs)
+chooseOne pid msgs = Ask pid (ChooseOne msgs)
 
-chooseOneDropDown :: InvestigatorId -> [(Text, Message)] -> Message
+chooseOneDropDown :: PlayerId -> [(Text, Message)] -> Message
 chooseOneDropDown _ [] = throw $ InvalidState "No messages for chooseOne"
-chooseOneDropDown iid msgs = Ask iid (DropDown msgs)
+chooseOneDropDown pid msgs = Ask pid (DropDown msgs)
 
-chooseOneAtATime :: InvestigatorId -> [UI Message] -> Message
+chooseOneAtATime :: PlayerId -> [UI Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
-chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
+chooseOneAtATime pid msgs = Ask pid (ChooseOneAtATime msgs)
 
-chooseOrRunOneAtATime :: InvestigatorId -> [UI Message] -> Message
+chooseOrRunOneAtATime :: PlayerId -> [UI Message] -> Message
 chooseOrRunOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOrRunOneAtATime _ [x] = uiToRun x
-chooseOrRunOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
+chooseOrRunOneAtATime pid msgs = Ask pid (ChooseOneAtATime msgs)
 
-chooseSome :: InvestigatorId -> Text -> [UI Message] -> Message
+chooseSome :: PlayerId -> Text -> [UI Message] -> Message
 chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"
-chooseSome iid doneText msgs = Ask iid (ChooseSome $ Done doneText : msgs)
+chooseSome pid doneText msgs = Ask pid (ChooseSome $ Done doneText : msgs)
 
-chooseSome1 :: InvestigatorId -> Text -> [UI Message] -> Message
+chooseSome1 :: PlayerId -> Text -> [UI Message] -> Message
 chooseSome1 _ _ [] = throw $ InvalidState "No messages for chooseSome"
-chooseSome1 iid doneText msgs = Ask iid (ChooseSome1 doneText msgs)
+chooseSome1 pid doneText msgs = Ask pid (ChooseSome1 doneText msgs)
 
-chooseUpToN :: InvestigatorId -> Int -> Text -> [UI Message] -> Message
+chooseUpToN :: PlayerId -> Int -> Text -> [UI Message] -> Message
 chooseUpToN _ _ _ [] = throw $ InvalidState "No messages for chooseSome"
-chooseUpToN iid n doneText msgs =
-  Ask iid (ChooseUpToN n $ Label doneText [] : msgs)
+chooseUpToN pid n doneText msgs =
+  Ask pid (ChooseUpToN n $ Label doneText [] : msgs)
 
-chooseN :: InvestigatorId -> Int -> [UI Message] -> Message
+chooseN :: PlayerId -> Int -> [UI Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
-chooseN iid n msgs = Ask iid (ChooseN n msgs)
+chooseN pid n msgs = Ask pid (ChooseN n msgs)
 
-chooseOrRunN :: InvestigatorId -> Int -> [UI Message] -> Message
+chooseOrRunN :: PlayerId -> Int -> [UI Message] -> Message
 chooseOrRunN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseOrRunN _ n msgs | length msgs == n = Run $ map uiToRun msgs
-chooseOrRunN iid n msgs = Ask iid (ChooseN n msgs)
+chooseOrRunN pid n msgs = Ask pid (ChooseN n msgs)
 
 chooseAmounts
   :: Targetable target
-  => InvestigatorId
+  => PlayerId
   -> Text
   -> AmountTarget
   -> [(Text, (Int, Int))]
   -> target
   -> Message
-chooseAmounts iid label total choiceMap (toTarget -> target) =
+chooseAmounts pid label total choiceMap (toTarget -> target) =
   Ask
-    iid
+    pid
     (ChooseAmounts label total amountChoices target)
  where
   amountChoices = map toAmountChoice choiceMap
   toAmountChoice (l, (m, n)) = AmountChoice l m n
 
-chooseUpgradeDeck :: InvestigatorId -> Message
-chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck
+chooseUpgradeDeck :: PlayerId -> Message
+chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
+
+chooseDeck :: PlayerId -> Message
+chooseDeck pid = Ask pid ChooseDeck

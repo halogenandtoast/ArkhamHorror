@@ -49,15 +49,18 @@ instance RunMessage PuzzleBox where
   runMessage msg a@(PuzzleBox attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       others <- selectList $ NotInvestigator (InvestigatorWithId iid)
-      push $ chooseOne iid [targetLabel other [TakeControlOfAsset other (toId attrs)] | other <- others]
+      player <- getPlayer iid
+      push
+        $ chooseOne player [targetLabel other [TakeControlOfAsset other (toId attrs)] | other <- others]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       exhaustedSpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ExhaustedEnemy
       readySpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ReadyEnemy
       locationLit <- selectOne $ LocationWithBrazier Lit <> locationWithInvestigator iid
       canDealDamage <- withoutModifier iid CannotDealDamage
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Unlight a brazier at your location"
             [UpdateLocation location (LocationBrazier ?=. Unlit)]

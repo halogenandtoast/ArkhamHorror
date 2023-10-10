@@ -81,9 +81,10 @@ instance RunMessage TelescopicSight3 where
   runMessage msg e@(TelescopicSight3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AssetInTwoHandSlots
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
           | asset <- assets
           ]

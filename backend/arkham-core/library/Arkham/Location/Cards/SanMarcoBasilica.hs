@@ -37,10 +37,7 @@ instance HasAbilities SanMarcoBasilica where
       $ [ restrictedAbility
           attrs
           1
-          ( Here
-              <> AssetExists
-                (AssetControlledBy You <> assetIs Assets.innocentReveler)
-          )
+          (Here <> exists (AssetControlledBy You <> assetIs Assets.innocentReveler))
           $ ActionAbility Nothing
           $ ActionCost 1
         | locationRevealed attrs
@@ -53,9 +50,10 @@ instance RunMessage SanMarcoBasilica where
         selectWithField AssetCardId
           $ AssetControlledBy You
           <> assetIs Assets.innocentReveler
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             innocentReveler
             [ PlaceUnderneath

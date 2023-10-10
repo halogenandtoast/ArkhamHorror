@@ -59,23 +59,24 @@ instance RunMessage MoldyHallsEarlierTonight where
       iidsWithDetails <- for iids $ \iid -> do
         name <- field InvestigatorName iid
         discards <- fieldMap InvestigatorDiscard (map toCard) iid
-        pure (iid, discards, name)
+        player <- getPlayer iid
+        pure (iid, player, discards, name)
 
       pushAll
         [ chooseOne
-          iid
+          player
           [ Label "Do not request aid from your past self" []
           , Label
               "Request aid from your past self"
               [ FocusCards discards
               , chooseOne
-                  iid
+                  player
                   [targetLabel (toCardId card) [ReturnToHand iid (CardTarget card)] | card <- discards]
               , UnfocusCards
               , Remember $ MeddledWithThePast $ labeled name iid
               ]
           ]
-        | (iid, discards, name) <- iidsWithDetails
+        | (iid, player, discards, name) <- iidsWithDetails
         ]
       pure l
     _ -> MoldyHallsEarlierTonight <$> runMessage msg attrs

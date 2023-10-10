@@ -37,13 +37,14 @@ getSpentClues _ = []
 instance RunMessage AugustLindquist where
   runMessage msg a@(AugustLindquist attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getSpentClues -> spentClues) -> do
+      spentCluesWithPlayer <- traverse (traverseToSnd getPlayer) spentClues
       pushAll
         $ [ chooseOne
-            iid'
+            player
             [ Label "Take 1 damage" [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 0]
             , Label "Take 1 horror" [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 0 1]
             ]
-          | iid' <- spentClues
+          | (iid', player) <- spentCluesWithPlayer
           ]
         <> [RemoveFromGame (toTarget attrs)]
         <> [PlaceKey (toTarget iid) k | k <- toList (assetKeys attrs)]

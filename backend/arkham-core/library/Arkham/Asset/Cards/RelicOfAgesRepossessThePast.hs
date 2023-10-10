@@ -27,11 +27,7 @@ relicOfAgesRepossessThePast =
 
 instance HasAbilities RelicOfAgesRepossessThePast where
   getAbilities (RelicOfAgesRepossessThePast (a `With` _)) =
-    [ restrictedAbility a 1 ControlsThis
-        $ FastAbility
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-    ]
+    [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
 
 instance RunMessage RelicOfAgesRepossessThePast where
   runMessage msg a@(RelicOfAgesRepossessThePast (attrs `With` metadata)) =
@@ -39,21 +35,21 @@ instance RunMessage RelicOfAgesRepossessThePast where
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         let
           chooseSkillTest skillType = beginSkillTest iid attrs iid skillType 4
+        player <- getPlayer iid
         push
           $ chooseOne
-            iid
+            player
             [ SkillLabel skillType [chooseSkillTest skillType]
             | skillType <- [SkillWillpower, SkillIntellect]
             ]
         pure a
-      PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _
-        | not (successTriggered metadata) ->
-            do
-              targets <- targetsWithDoom
-              push
-                $ chooseOne
-                  iid
-                  [targetLabel target [RemoveDoom (toAbilitySource attrs 1) target 1] | target <- targets]
-              pure . RelicOfAgesRepossessThePast $ attrs `with` Metadata True
+      PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ | not (successTriggered metadata) -> do
+        targets <- targetsWithDoom
+        player <- getPlayer iid
+        push
+          $ chooseOne
+            player
+            [targetLabel target [RemoveDoom (toAbilitySource attrs 1) target 1] | target <- targets]
+        pure . RelicOfAgesRepossessThePast $ attrs `with` Metadata True
       _ ->
         RelicOfAgesRepossessThePast . (`with` metadata) <$> runMessage msg attrs

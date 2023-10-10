@@ -42,11 +42,12 @@ getEnemy = \case
 instance RunMessage BountyContracts where
   runMessage msg a@(BountyContracts attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
+      player <- getPlayer iid
       health <- field EnemyHealth enemy
       let maxAmount = min health (min 3 (useCount (assetUses attrs)))
       push
         $ chooseAmounts
-          iid
+          player
           "Number of bounties to place"
           (MaxAmountTarget maxAmount)
           [("Bounties", (1, maxAmount))]

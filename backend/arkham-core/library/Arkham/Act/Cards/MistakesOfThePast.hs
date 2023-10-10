@@ -34,7 +34,7 @@ instance RunMessage MistakesOfThePast where
           <> LocationWithTitle
             "Historical Society"
       mrPeabody <- getSetAsideCard Assets.mrPeabody
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadPlayer
       investigatorIds <- getInvestigatorIds
       playerCount <- getPlayerCount
       placeHiddenLibrary <- placeSetAsideLocation_ Locations.hiddenLibrary
@@ -43,10 +43,8 @@ instance RunMessage MistakesOfThePast where
           | location <- locations
           ]
         <> [ chooseOne
-              leadInvestigatorId
-              [ TargetLabel
-                (InvestigatorTarget iid)
-                [TakeControlOfSetAsideAsset iid mrPeabody]
+              lead
+              [ targetLabel iid [TakeControlOfSetAsideAsset iid mrPeabody]
               | iid <- investigatorIds
               ]
            , placeHiddenLibrary

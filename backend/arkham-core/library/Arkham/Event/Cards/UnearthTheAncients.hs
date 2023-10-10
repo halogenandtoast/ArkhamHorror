@@ -35,8 +35,9 @@ instance RunMessage UnearthTheAncients where
   runMessage msg e@(UnearthTheAncients (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <- selectList $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (#seeker <> #asset)
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel (toCardId asset) [ResolveEvent iid eid (Just $ CardTarget asset) windows']
           | asset <- assets
           ]

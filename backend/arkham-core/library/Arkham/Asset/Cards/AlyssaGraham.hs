@@ -19,12 +19,7 @@ alyssaGraham :: AssetCard AlyssaGraham
 alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
 instance HasAbilities AlyssaGraham where
-  getAbilities (AlyssaGraham a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ FastAbility
-        $ Costs
-          [ExhaustCost (toTarget a)]
-    ]
+  getAbilities (AlyssaGraham a) = [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
 
 instance HasModifiersFor AlyssaGraham where
   getModifiersFor (InvestigatorTarget iid) (AlyssaGraham a) =
@@ -39,21 +34,16 @@ instance RunMessage AlyssaGraham where
         goSearch target =
           TargetLabel
             target
-            [ lookAt
-                iid
-                source
-                target
-                [fromTopOfDeck 1]
-                AnyCard
-                (DeferSearchedToTarget $ toTarget attrs)
-            ]
-      push $ chooseOne iid $ goSearch EncounterDeckTarget : map goSearch targets
+            [lookAt iid source target [fromTopOfDeck 1] AnyCard (DeferSearchedToTarget $ toTarget attrs)]
+      player <- getPlayer iid
+      push $ chooseOne player $ goSearch EncounterDeckTarget : map goSearch targets
       pure a
     SearchFound iid target deck cards | isTarget attrs target -> do
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
         , chooseOne
-            iid
+            player
             [ Label
                 "Add 1 Doom to Alyssa to move card to bottom"
                 [ UnfocusCards

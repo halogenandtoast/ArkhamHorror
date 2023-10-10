@@ -34,13 +34,10 @@ instance RunMessage VantagePoint where
     InvestigatorPlayEvent iid eid _ (vantagePointLocation -> lid) _ | eid == toId attrs -> do
       otherLocationsWithClues <-
         selectList $ LocationWithAnyClues <> NotLocation (LocationWithId lid)
+      player <- getPlayer iid
       pushAll
-        $ createCardEffect
-          Cards.vantagePoint
-          Nothing
-          attrs
-          lid
-        : [ chooseOne iid
+        $ createCardEffect Cards.vantagePoint Nothing attrs lid
+        : [ chooseOne player
             $ Label "Do not move a clue" []
             : [ targetLabel
                 lid'

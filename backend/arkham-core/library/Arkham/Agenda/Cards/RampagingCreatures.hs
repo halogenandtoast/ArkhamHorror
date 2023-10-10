@@ -26,7 +26,7 @@ instance HasAbilities RampagingCreatures where
 instance RunMessage RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       broodOfYogSothoth <- selectTargets $ EnemyWithTitle "Brood of Yog-Sothoth"
       pushWhen (notNull broodOfYogSothoth)
         $ chooseOneAtATime lead

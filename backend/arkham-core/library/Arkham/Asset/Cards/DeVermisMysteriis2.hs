@@ -39,8 +39,9 @@ instance RunMessage DeVermisMysteriis2 where
       let windows'' = nub $ windows' <> [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
       cards <- selectList $ cardMatcher (InvestigatorWithId iid)
 
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ targetLabel
             (toCardId card)
             [ costModifier attrs (toCardId card) (ReduceCostOf (CardWithId $ toCardId card) 1)

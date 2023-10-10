@@ -28,8 +28,9 @@ instance HasModifiersFor HiredMuscle1 where
 instance RunMessage HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Pay 1 Resource to Hired Muscle" [SpendResources iid 1]
           , Label "Discard Hired Muscle" [Discard (toAbilitySource attrs 1) $ toTarget attrs]
           ]

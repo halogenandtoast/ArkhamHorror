@@ -37,8 +37,9 @@ instance RunMessage BlackCave where
   runMessage msg l@(BlackCave attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       cardsInHand <- fieldMap InvestigatorHand length iid
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Take 1 horror"
           [InvestigatorAssignDamage iid source DamageAny 0 1]

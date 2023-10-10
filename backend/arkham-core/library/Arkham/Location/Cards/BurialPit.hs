@@ -42,10 +42,11 @@ instance HasAbilities BurialPit where
 instance RunMessage BurialPit where
   runMessage msg l@(BurialPit attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       let
         choose =
           chooseOne
-            iid
+            player
             [ Label
                 "Draw a card from the top of the encounter deck"
                 [InvestigatorDrawEncounterCard iid]

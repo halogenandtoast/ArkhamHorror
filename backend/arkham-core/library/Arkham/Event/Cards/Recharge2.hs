@@ -36,9 +36,10 @@ instance RunMessage Recharge2 where
           $ AssetControlledBy
             (InvestigatorAt $ LocationWithInvestigator $ InvestigatorWithId iid)
           <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel target [ResolveEvent iid eid (Just target) windows']
           | target <- assets
           ]

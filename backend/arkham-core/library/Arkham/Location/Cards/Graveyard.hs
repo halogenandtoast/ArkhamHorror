@@ -34,8 +34,9 @@ instance RunMessage Graveyard where
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       rivertown <- getJustLocationByName "Rivertown"
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Take 2 horror" [assignHorror iid (toAbilitySource attrs 1) 2]
           , Label "Move to Rivertown" [MoveTo $ move (toAbilitySource attrs 1) iid rivertown]
           ]

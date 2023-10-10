@@ -43,6 +43,7 @@ instance RunMessage AshcanPete where
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       targets <- selectList $ assetControlledBy iid <> AssetExhausted
-      push $ chooseOne iid $ targetLabels targets (only . ready)
+      player <- getPlayer iid
+      push $ chooseOne player $ targetLabels targets (only . ready)
       pure i
     _ -> AshcanPete <$> runMessage msg attrs

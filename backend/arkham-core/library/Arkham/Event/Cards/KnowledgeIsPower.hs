@@ -55,12 +55,11 @@ instance RunMessage KnowledgeIsPower where
 
       canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
       drawing <- drawCards iid attrs 1
+      player <- getPlayer iid
 
       push
-        $ chooseOne iid
-        $ [ targetLabel
-            asset
-            [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)]
+        $ chooseOne player
+        $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)]
           | asset <- assets
           ]
         <> [ targetLabel (toCardId card)
@@ -72,7 +71,7 @@ instance RunMessage KnowledgeIsPower where
               , RemoveCardEntity card
               ]
             <> [ chooseOne
-                iid
+                player
                 [ Label
                     "Discard to draw 1 card"
                     [ DiscardCard iid (toSource attrs) (toCardId card)
@@ -103,6 +102,7 @@ instance RunMessage KnowledgeIsPower where
                 (Window.defaultWindows iid)
           )
           abilities
-      push $ chooseOne iid [AbilityLabel iid ab [] [] | ab <- abilities']
+      player <- getPlayer iid
+      push $ chooseOne player [AbilityLabel iid ab [] [] | ab <- abilities']
       pure e
     _ -> KnowledgeIsPower <$> runMessage msg attrs

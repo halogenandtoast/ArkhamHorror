@@ -32,9 +32,10 @@ instance RunMessage GareDOrsay where
   runMessage msg l@(GareDOrsay attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       rails <- filter (/= toId attrs) <$> selectList (LocationWithTrait Rail)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel lid [Move $ move attrs iid lid]
           | lid <- rails
           ]

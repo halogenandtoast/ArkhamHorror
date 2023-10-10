@@ -52,9 +52,10 @@ instance RunMessage Aquinnah3 where
 
       when (null enemyIds) (error "enemies have to be present")
 
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             eid
             [ EnemyDamage eid $ nonAttack source healthDamage'

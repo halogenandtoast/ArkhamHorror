@@ -48,9 +48,10 @@ instance RunMessage TheBlackThrone where
   runMessage msg l@(TheBlackThrone attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Place 1 doom on Azathoth" [PlaceDoom (toAbilitySource attrs 1) (toTarget azathoth) 1]
           , Label "Azathoth attacks you" [toMessage $ enemyAttack azathoth (toAbilitySource attrs 1) iid]
           ]

@@ -64,11 +64,13 @@ instance RunMessage MarieLambeau where
       let place target = PlaceTokens (toSource attrs) target Doom 1
       let remove target = RemoveTokens (toSource attrs) target Doom 1
 
+      player <- getPlayer iid
+
       push
-        $ chooseOne iid
-        $ Label "Add 1 doom" [chooseOrRunOne iid $ targetLabels adds (only . place)]
+        $ chooseOne player
+        $ Label "Add 1 doom" [chooseOrRunOne player $ targetLabels adds (only . place)]
         : ( mwhen (notNull removes)
-              $ [Label "Remove 1 doom" [chooseOrRunOne iid $ targetLabels removes (only . remove)]]
+              $ [Label "Remove 1 doom" [chooseOrRunOne player $ targetLabels removes (only . remove)]]
           )
           <> [Label "Do Nothing" []]
       pure i

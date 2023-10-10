@@ -56,6 +56,7 @@ instance RunMessage ChuckFergus2 where
   runMessage msg a@(ChuckFergus2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 ws@(getWindowCard -> card@(PlayerCard pc)) _ -> do
       cost <- getModifiedCardCost iid card
+      player <- getPlayer iid
       canAffordCost <-
         getCanAffordCost iid (PlayerCardSource pc) (Just Action.Play) ws (ResourceCost cost)
       canAffordActionCost <-
@@ -63,7 +64,7 @@ instance RunMessage ChuckFergus2 where
       -- can something else reduce the cost enough?
       when (canAffordCost && canAffordActionCost) $ do
         push
-          $ chooseOne iid
+          $ chooseOne player
           $ [ Label
                 "That event gains fast"
                 [ CreateWindowModifierEffect

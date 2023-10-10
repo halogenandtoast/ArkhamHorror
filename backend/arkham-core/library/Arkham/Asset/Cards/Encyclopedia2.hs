@@ -25,12 +25,13 @@ instance RunMessage Encyclopedia2 where
   runMessage msg a@(Encyclopedia2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <- selectTargets $ colocatedWith iid
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels targets
         $ \target ->
           only
-            $ chooseOne iid
+            $ chooseOne player
             $ [ Label label [phaseModifier (toAbilitySource attrs 1) target $ SkillModifier skill 2]
               | (label, skill) <- labeledSkills
               ]

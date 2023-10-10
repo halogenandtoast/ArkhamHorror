@@ -31,8 +31,9 @@ instance RunMessage ArcaneInitiate where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [targetLabel iid [search iid source iid [fromTopOfDeck 3] (CardWithTrait Spell) $ DrawFound iid 1]]
       pure a
     _ -> ArcaneInitiate <$> runMessage msg attrs

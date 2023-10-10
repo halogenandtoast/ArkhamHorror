@@ -262,6 +262,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
         , gameInHandEntities = mempty
         , gameInDiscardEntities = mempty
         , gameInSearchEntities = defaultEntities
+        , gamePlayers = mempty
         , gameOutOfPlayEntities = mempty
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
@@ -332,42 +333,26 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
     That sid -> That $ lookupScenario sid difficulty
     These cid sid -> This $ overAttrs (stepL .~ ScenarioStep sid) $ lookupCampaign cid difficulty
 
-addInvestigator
-  :: (MonadReader env m, HasQueue Message m, HasGameRef env, HasGame m)
-  => Investigator
-  -> [PlayerCard]
-  -> m ()
-addInvestigator i d = do
+{- | Add a player and start game if player count matches.
+We keep the seed because adding a player can split the random number generator and we want
+to be able to replay a seed without changes
+-}
+addPlayer :: (MonadReader env m, HasQueue Message m, HasGameRef env, HasGame m) => PlayerId -> m ()
+addPlayer pid = do
   game <- getGame
   queueRef <- messageQueue
-
   let
-    iid = toId i
-    pendingPlayers = case game ^. gameStateL of
+    seed = game.seed
+    playerCount = game.playerCount
+    state = game.state
+    players = game.players
+    pendingPlayers = case state of
       IsPending xs -> xs
       _ -> []
-    g' =
-      game
-        & (entitiesL . investigatorsL %~ insertEntity i)
-        & (playerOrderL <>~ [iid])
-    gameState =
-      if size (g' ^. entitiesL . investigatorsL) < g' ^. playerCountL
-        then IsPending $ pendingPlayers <> [(i, d)]
-        else IsActive
-
-  when (gameState == IsActive)
-    $ atomicWriteIORef
-      (queueToRef queueRef)
-      ( map (uncurry InitDeck . bimap toId Deck) pendingPlayers
-          <> [StartCampaign]
-      )
-
-  putGame
-    $ g'
-    & (gameStateL .~ gameState)
-    -- Adding players causes RNG split so we reset the initial seed on each player
-    -- being added so that choices can replay correctly
-    & (initialSeedL .~ gameSeed game)
+    state' = if length players + 1 < playerCount then IsPending (pendingPlayers <> [pid]) else IsActive
+    game' = game & playersL <>~ [pid] & gameStateL .~ state' & initialSeedL .~ seed
+  when (state' == IsActive) $ atomicWriteIORef (queueToRef queueRef) [StartCampaign]
+  putGame game'
 
 -- TODO: Rename this
 toExternalGame
@@ -2740,6 +2725,7 @@ instance Projection Investigator where
     case f of
       InvestigatorCardCode -> pure investigatorCardCode
       InvestigatorKeys -> pure investigatorKeys
+      InvestigatorPlayerId -> pure investigatorPlayerId
       InvestigatorName -> pure investigatorName
       InvestigatorRemainingActions -> pure investigatorRemainingActions
       InvestigatorAdditionalActions -> getAdditionalActions attrs

@@ -31,15 +31,16 @@ instance RunMessage LedAstray where
           TargetLabel
             target
             [InvestigatorSpendClues iid 1, PlaceClues (toSource attrs) target 1]
+      player <- getPlayer iid
       pushAll
         $ if null cultists || hasNoClues
           then advanceAgenda
           else
             [ chooseOne
-                iid
+                player
                 [ Label
                     "Place 1 of your clues on a Cultist enemy"
-                    [chooseOne iid $ map placeDoomOnCultist cultists]
+                    [chooseOne player $ map placeDoomOnCultist cultists]
                 , Label
                     "Place 1 doom on the current agenda (this effect may cause the current agenda to advance)"
                     advanceAgenda

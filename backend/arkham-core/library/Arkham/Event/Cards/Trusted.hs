@@ -30,9 +30,10 @@ instance RunMessage Trusted where
   runMessage msg e@(Trusted attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- selectList $ assetControlledBy iid <> AllyAsset
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
           | asset <- assets
           ]

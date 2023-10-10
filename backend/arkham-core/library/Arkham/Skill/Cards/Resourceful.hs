@@ -29,12 +29,13 @@ instance RunMessage Resourceful where
               <> BasicCardMatch
                 (CardWithClass Survivor <> NotCard (CardWithTitle "Resourceful"))
           )
+      player <- getPlayer (skillOwner attrs)
       s
         <$ when
           (notNull targets)
           ( push
               $ chooseOne
-                (skillOwner attrs)
+                player
                 [ TargetLabel
                   (CardIdTarget $ toCardId card)
                   [ RemoveFromDiscard (skillOwner attrs) (toCardId card)

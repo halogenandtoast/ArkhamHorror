@@ -26,9 +26,10 @@ instance RunMessage NoStoneUnturned5 where
           $ colocatedWith iid
           <> InvestigatorWithoutModifier CannotManipulateDeck
 
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel
               iid'
               [ search

@@ -57,9 +57,9 @@ instance RunMessage UnvisitedIsleForsakenWoods where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       whippoorwills <- selectList $ NearestEnemy $ enemyIs Enemies.whippoorwill
-
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label
           "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location"
           [ FindEncounterCard
@@ -71,7 +71,7 @@ instance RunMessage UnvisitedIsleForsakenWoods where
         : [ Label
             "The nearest Whippoorwill attacks you"
             [ chooseOrRunOne
-                iid
+                player
                 [ targetLabel whippoorwill [EnemyAttack $ enemyAttack whippoorwill attrs iid]
                 | whippoorwill <- whippoorwills
                 ]

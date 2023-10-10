@@ -27,9 +27,10 @@ instance RunMessage LookWhatIFound2 where
         selectList
           $ LocationMatchAny [YourLocation, ConnectedLocation]
           <> LocationWithAnyClues
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             lid
             [InvestigatorDiscoverClues iid lid (toSource attrs) 1 Nothing]

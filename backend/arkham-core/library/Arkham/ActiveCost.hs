@@ -273,6 +273,7 @@ instance RunMessage ActiveCost where
         actions = case activeCostActions c of
           [] -> error "action expected"
           as -> as
+      player <- getPlayer iid
       case cost of
         ResolveEachHauntedAbility lid -> do
           hauntedAbilities <-
@@ -283,13 +284,13 @@ instance RunMessage ActiveCost where
           when (notNull hauntedAbilities)
             $ push
             $ chooseOneAtATime
-              iid
+              player
               [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
           -- No need to record payment... yet
           pure c
         OrCost xs -> do
           push
-            $ chooseOne iid
+            $ chooseOne player
             $ map
               ( \x ->
                   Label
@@ -314,7 +315,7 @@ instance RunMessage ActiveCost where
             _ -> pure n
           when canAfford
             $ push
-            $ Ask iid
+            $ Ask player
             $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
@@ -346,7 +347,7 @@ instance RunMessage ActiveCost where
           c
             <$ push
               ( chooseOne
-                  iid
+                  player
                   [ TargetLabel
                     target
                     [PayCost acId iid skipAdditionalCosts (ExhaustCost target)]
@@ -360,7 +361,7 @@ instance RunMessage ActiveCost where
           pushAll
             [ FocusChaosTokens targets
             , chooseOne
-                iid
+                player
                 [ TargetLabel
                   (ChaosTokenTarget target)
                   [PayCost acId iid skipAdditionalCosts (SealChaosTokenCost target)]
@@ -384,7 +385,7 @@ instance RunMessage ActiveCost where
               pushAll
                 $ [ FocusChaosTokens tokens
                   , chooseN
-                      iid
+                      player
                       n
                       [ TargetLabel
                         (ChaosTokenTarget t)
@@ -416,7 +417,7 @@ instance RunMessage ActiveCost where
           targets <- map AssetTarget <$> selectList (matcher <> AssetReady)
           push
             ( chooseOne
-                iid
+                player
                 [ TargetLabel
                   target
                   [PayCost acId iid skipAdditionalCosts (DiscardCost FromPlay target)]
@@ -449,7 +450,7 @@ instance RunMessage ActiveCost where
           enemies <- selectListMap EnemyTarget matcher
           push
             $ chooseOrRunOne
-              iid
+              player
               [TargetLabel target [PlaceDoom source target x] | target <- enemies]
           withPayment $ DoomPayment x
         DoomCost _ (AgendaMatcherTarget matcher) x -> do
@@ -483,7 +484,7 @@ instance RunMessage ActiveCost where
           let minimumHorror = max 1 (requiredResources - availableResources)
           sanity <- field InvestigatorRemainingSanity iid
           push
-            $ Ask iid
+            $ Ask player
             $ ChoosePaymentAmounts
               "Pay X Horror"
               Nothing
@@ -509,18 +510,17 @@ instance RunMessage ActiveCost where
               push $ InvestigatorDirectDamage iid' source x 0
               withPayment $ DirectDamagePayment x
             _ -> error "exactly one investigator expected for direct damage"
-        InvestigatorDamageCost source' investigatorMatcher damageStrategy x ->
-          do
-            investigators <- selectList investigatorMatcher
-            push
-              $ chooseOrRunOne
-                iid
-                [ targetLabel
-                  iid'
-                  [InvestigatorAssignDamage iid' source' damageStrategy x 0]
-                | iid' <- investigators
-                ]
-            withPayment $ InvestigatorDamagePayment x
+        InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
+          investigators <- selectList investigatorMatcher
+          push
+            $ chooseOrRunOne
+              player
+              [ targetLabel
+                iid'
+                [InvestigatorAssignDamage iid' source' damageStrategy x 0]
+              | iid' <- investigators
+              ]
+          withPayment $ InvestigatorDamagePayment x
         FieldResourceCost (FieldCost mtchr fld) -> do
           n <- getSum <$> selectAgg Sum fld mtchr
           push $ PayCost acId iid skipAdditionalCosts (ResourceCost n)
@@ -554,7 +554,7 @@ instance RunMessage ActiveCost where
                       (iid : map fst canHelpPay)
                       (getSpendableResources)
                   push
-                    ( Ask iid
+                    ( Ask player
                         $ ChoosePaymentAmounts
                           ("Pay " <> tshow x <> " resources")
                           (Just x)
@@ -580,7 +580,7 @@ instance RunMessage ActiveCost where
               else
                 push
                   ( chooseOne
-                      iid
+                      player
                       [ Label
                           "Spend 1 additional action"
                           [ PayCost acId iid skipAdditionalCosts (ActionCost 1)
@@ -614,7 +614,7 @@ instance RunMessage ActiveCost where
           assets <- selectList assetMatcher
           push
             $ chooseOrRunOne
-              iid
+              player
               [ TargetLabel
                 (AssetTarget aid)
                 [SpendUses (AssetTarget aid) uType n]
@@ -632,7 +632,7 @@ instance RunMessage ActiveCost where
             assets <- selectList assetMatcher
             push
               $ chooseOrRunOne
-                iid
+                player
                 [ TargetLabel
                   (AssetTarget aid)
                   [SpendUses (AssetTarget aid) uType n]
@@ -646,7 +646,7 @@ instance RunMessage ActiveCost where
           let maxUses = min uses m
 
           push
-            $ Ask iid
+            $ Ask player
             $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
@@ -668,9 +668,7 @@ instance RunMessage ActiveCost where
             then push $ PayCost acId iid skipAdditionalCosts (ClueCost (Static 1))
             else
               push
-                $ questionLabel
-                  ("Spend 1-" <> tshow mVal <> " clues, as a group")
-                  iid
+                $ questionLabel ("Spend 1-" <> tshow mVal <> " clues, as a group") player
                 $ DropDown
                   [ (tshow n, PayCost acId iid skipAdditionalCosts (ClueCost (Static n)))
                   | n <- [1 .. mVal]
@@ -685,9 +683,7 @@ instance RunMessage ActiveCost where
             then push $ PayCost acId iid skipAdditionalCosts (GroupClueCost (Static sVal) locationMatcher)
             else
               push
-                $ questionLabel
-                  "Spend 1-3 clues, as a group"
-                  iid
+                $ questionLabel "Spend 1-3 clues, as a group" player
                 $ DropDown
                   [ (tshow n, PayCost acId iid skipAdditionalCosts (GroupClueCost (Static n) locationMatcher))
                   | n <- [sVal .. mVal]
@@ -717,9 +713,9 @@ instance RunMessage ActiveCost where
                           (PayCost acId iid' True (ClueCost (Static 1)))
                     )
                     iidsWithClues
-              leadInvestigatorId <- getLeadInvestigatorId
+              lead <- getLeadPlayer
               push
-                $ Ask leadInvestigatorId
+                $ Ask lead
                 $ ChoosePaymentAmounts
                   (displayCostType cost)
                   (Just totalClues)
@@ -747,7 +743,7 @@ instance RunMessage ActiveCost where
                 handCards
           push
             $ chooseN
-              iid
+              player
               x
               [ targetLabel
                 (toCardId card)
@@ -779,7 +775,7 @@ instance RunMessage ActiveCost where
                 )
                 handCards
           push
-            $ Ask iid
+            $ Ask player
             $ ChoosePaymentAmounts
               "Number of cards to pay"
               Nothing
@@ -791,7 +787,7 @@ instance RunMessage ActiveCost where
           assets <- selectList assetMatcher
           push
             $ chooseOne
-              iid
+              player
               [ targetLabel
                 asset
                 [ PayCost
@@ -837,7 +833,7 @@ instance RunMessage ActiveCost where
           c
             <$ push
               ( chooseN
-                  iid
+                  player
                   x
                   [ targetLabel
                     (toCardId card)
@@ -896,7 +892,7 @@ instance RunMessage ActiveCost where
                           ]
                 )
                 cards
-          c <$ push (chooseOne iid cardMsgs)
+          c <$ push (chooseOne player cardMsgs)
         DiscardCombinedCost x -> do
           handCards <-
             fieldMap
@@ -928,7 +924,7 @@ instance RunMessage ActiveCost where
                           ]
                 )
                 cards
-          c <$ push (chooseOne iid cardMsgs)
+          c <$ push (chooseOne player cardMsgs)
         ShuffleDiscardCost 0 _ -> pure c
         ShuffleDiscardCost n cardMatcher -> do
           cards <-
@@ -950,7 +946,7 @@ instance RunMessage ActiveCost where
                       ]
                 )
                 cards
-          c <$ pushAll [FocusCards cards, chooseOne iid cardMsgs, UnfocusCards]
+          c <$ pushAll [FocusCards cards, chooseOne player cardMsgs, UnfocusCards]
         Free -> pure c
     PaidCost acId _ _ payment
       | acId == activeCostId c ->

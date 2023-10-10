@@ -27,9 +27,10 @@ instance RunMessage WilliamYorick where
           modifiers' <- getModifiers (InvestigatorTarget iid)
           unless (CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
             discards <- field InvestigatorDiscard iid
+            player <- getPlayer iid
             when (notNull discards)
               $ push
-              $ chooseOne iid
+              $ chooseOne player
               $ Done "Do not return card to hand"
               : [ targetLabel
                   (toCardId card)

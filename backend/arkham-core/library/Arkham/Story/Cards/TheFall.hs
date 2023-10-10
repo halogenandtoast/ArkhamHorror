@@ -26,9 +26,10 @@ instance RunMessage TheFall where
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 2
       lid <- selectJust $ locationIs Locations.darkSpires
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "You cannot bring yourself to do what must be done."
               [SetFlippable lid True]

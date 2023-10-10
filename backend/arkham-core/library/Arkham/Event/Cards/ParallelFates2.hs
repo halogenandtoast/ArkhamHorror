@@ -31,9 +31,10 @@ instance RunMessage ParallelFates2 where
       targets <-
         selectTargets
           $ InvestigatorWithoutModifier CannotManipulateDeck
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ TargetLabel
             target
             [ lookAt
@@ -48,15 +49,16 @@ instance RunMessage ParallelFates2 where
           ]
       pure e
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
         , chooseOne
-            iid
+            player
             [ Label "Shuffle them in" [ShuffleCardsIntoDeck Deck.EncounterDeck cards]
             , Label
                 "Put back in any order"
                 [ chooseOneAtATime
-                    iid
+                    player
                     [ targetLabel
                       (toCardId card)
                       [ PutCardOnTopOfDeck
@@ -73,15 +75,16 @@ instance RunMessage ParallelFates2 where
       pure e
     SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck _) cards -> do
       drawing <- drawCards iid attrs 1
+      player <- getPlayer iid
       pushAll
         [ FocusCards cards
         , chooseOne
-            iid
+            player
             [ Label "Shuffle them in" [ShuffleCardsIntoDeck deck cards]
             , Label
                 "Put back in any order"
                 [ chooseOneAtATime
-                    iid
+                    player
                     [ targetLabel
                       (toCardId card)
                       [ PutCardOnTopOfDeck

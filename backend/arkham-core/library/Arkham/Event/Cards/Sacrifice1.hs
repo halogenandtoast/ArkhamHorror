@@ -26,12 +26,13 @@ instance RunMessage Sacrifice1 where
           $ AssetWithClass Mystic
           <> DiscardableAsset
           <> assetControlledBy iid
+      player <- getPlayer iid
       pushAll
         [ chooseOrRunOne
-            iid
+            player
             [TargetLabel target [Discard (toSource attrs) target] | target <- targets]
         , chooseAmounts
-            iid
+            player
             "Number of cards and resources"
             (TotalAmountTarget 3)
             [("Cards", (0, 3)), ("Resources", (0, 3))]

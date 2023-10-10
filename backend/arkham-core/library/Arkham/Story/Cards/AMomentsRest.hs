@@ -27,6 +27,7 @@ instance RunMessage AMomentsRest where
           $ EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaAMomentsRest
       mHealHorror <- getHealHorrorMessage (toSource attrs) 5 iid
+      player <- getPlayer iid
       let
         handleEnemy enemy =
           targetLabel
@@ -35,7 +36,7 @@ instance RunMessage AMomentsRest where
         choices =
           [ Label
             "Choose an enemy in play. Exhaust that enemy and disengage it from all investigators"
-            [chooseOne iid $ map handleEnemy enemies]
+            [chooseOne player $ map handleEnemy enemies]
           | notNull enemies
           ]
             <> [ Label "You heal 5 horror" [healHorror]
@@ -48,7 +49,7 @@ instance RunMessage AMomentsRest where
         Nothing -> error "missing"
         Just xs -> sample xs
       pushAll
-        $ [chooseOrRunOne iid choices | notNull choices]
+        $ [chooseOrRunOne player choices | notNull choices]
         <> [ReplaceLocation ruinsOfCarcosa otherRuinsOfCarcosa DefaultReplace]
       pure s
     _ -> AMomentsRest <$> runMessage msg attrs

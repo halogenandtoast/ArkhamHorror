@@ -51,9 +51,10 @@ instance RunMessage UnvisitedIsleMistyClearing where
       circleTest iid attrs attrs [#willpower, #agility] 11
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Place 1 doom on this location" [PlaceDoom (toSource attrs) (toTarget attrs) 1]
           , Label "Take 1 damage and 1 horror" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]
           ]

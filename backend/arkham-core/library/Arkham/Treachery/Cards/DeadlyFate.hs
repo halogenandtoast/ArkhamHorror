@@ -36,10 +36,11 @@ instance RunMessage DeadlyFate where
           -- tricky, we must create an enemy that has been discaded, have it
           -- attack,  and then remove it
           -- This technically means we have an enemy at no location
+          player <- getPlayer iid
           pushAll
             [ FocusCards [EncounterCard c]
             , chooseOne
-                iid
+                player
                 [ Label "Draw enemy" [InvestigatorDrewEncounterCard iid c]
                 , Label
                     "That enemy attacks you (from the discard pile)"

@@ -35,8 +35,9 @@ instance RunMessage AcridMiasma where
     -- not revelation but puts card into active
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       moveHunters <- selectListMap HunterMove HunterEnemy
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ Label "Take 1 damage and 1 horror" [assignDamageAndHorror iid attrs 1 1]
         : [Label "Resolve the hunter keyword on each enemy in play" moveHunters | notNull moveHunters]
       pure t

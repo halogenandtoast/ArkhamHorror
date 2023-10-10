@@ -28,9 +28,10 @@ instance RunMessage SleightOfHand where
           $ PlayableCard Cost.PaidCost
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch (CardWithTrait Item)
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             (toCardId card)
             [ PutCardIntoPlay iid card (Just $ toTarget attrs) windows'

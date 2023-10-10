@@ -47,11 +47,12 @@ instance RunMessage BeneathTheLodge where
     HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
     HandlePointOfFailure iid target n | isTarget attrs target -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
+      player <- getPlayer iid
       pushAll
         $ if hasClues
           then
             [ chooseOne
-                iid
+                player
                 [ Label "Lose 1 clue" [RemoveClues (toSource attrs) (toTarget iid) 1]
                 , Label "Take 1 horror" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
                 ]

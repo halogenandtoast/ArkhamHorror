@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement

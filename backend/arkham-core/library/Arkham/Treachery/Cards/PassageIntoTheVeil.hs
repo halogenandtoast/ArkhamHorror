@@ -36,20 +36,20 @@ instance RunMessage PassageIntoTheVeil where
           SkillWillpower
           (if huntingHorrorAtYourLocation then 5 else 3)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          assetIds <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
-          push
-            $ chooseOne
-              iid
-              [ Label
-                  "Discard the top 5 cards of your deck"
-                  [DiscardTopOfDeck iid 5 (toSource attrs) Nothing]
-              , Label
-                  "Take 1 direct damage and deal 1 damage to each of your Ally assets"
-                  ( InvestigatorDirectDamage iid source 1 0
-                      : [Msg.AssetDamage aid source 1 0 | aid <- assetIds]
-                  )
-              ]
-          pure t
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      assetIds <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ Label
+              "Discard the top 5 cards of your deck"
+              [DiscardTopOfDeck iid 5 (toSource attrs) Nothing]
+          , Label
+              "Take 1 direct damage and deal 1 damage to each of your Ally assets"
+              ( InvestigatorDirectDamage iid source 1 0
+                  : [Msg.AssetDamage aid source 1 0 | aid <- assetIds]
+              )
+          ]
+      pure t
     _ -> PassageIntoTheVeil <$> runMessage msg attrs

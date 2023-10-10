@@ -26,20 +26,19 @@ instance RunMessage WallsClosingIn where
     Revelation iid source | isSource attrs source -> do
       shroud <- maybe (pure 0) (field LocationShroud) =<< field InvestigatorLocation iid
       t <$ push (RevelationSkillTest iid source SkillWillpower shroud)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source -> do
-          push
-            $ chooseOne
-              iid
-              [ Label
-                  ("Take " <> tshow n <> " horror")
-                  [InvestigatorAssignDamage iid source DamageAny 0 n]
-              , Label
-                  "Randomly choose 1 enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
-                  [DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1]
-              ]
-          pure t
-    DrewFromScenarioDeck _ _ target cards
-      | isTarget attrs target ->
-          t <$ push (PlaceUnderneath ActDeckTarget cards)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ Label
+              ("Take " <> tshow n <> " horror")
+              [InvestigatorAssignDamage iid source DamageAny 0 n]
+          , Label
+              "Randomly choose 1 enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
+              [DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1]
+          ]
+      pure t
+    DrewFromScenarioDeck _ _ target cards | isTarget attrs target -> do
+      t <$ push (PlaceUnderneath ActDeckTarget cards)
     _ -> WallsClosingIn <$> runMessage msg attrs

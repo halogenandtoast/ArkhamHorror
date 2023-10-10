@@ -39,6 +39,7 @@ instance RunMessage Shortcut2 where
       pure e
     UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
       connectingLocations <- selectList $ AccessibleLocation
-      push $ chooseOne iid $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)
+      player <- getPlayer iid
+      push $ chooseOne player $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)
       pure e
     _ -> Shortcut2 <$> runMessage msg attrs

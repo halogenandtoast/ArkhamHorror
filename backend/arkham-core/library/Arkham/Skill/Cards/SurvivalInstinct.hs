@@ -28,16 +28,17 @@ instance RunMessage SurvivalInstinct where
       unblockedConnectedLocations <- accessibleLocations iid
       canMove <- iid <=~> InvestigatorCanMove
       canDisengage <- iid <=~> InvestigatorCanDisengage
+      player <- getPlayer iid
       let
         moveOptions =
-          chooseOrRunOne iid
+          chooseOrRunOne player
             $ [Label "Do not move to a connecting location" []]
             <> targetLabels unblockedConnectedLocations (only . Move . move attrs iid)
 
       case engagedEnemies of
         es | notNull es && canDisengage -> do
           pushAll
-            $ [ chooseOne iid
+            $ [ chooseOne player
                   $ [ Label "Disengage from each other enemy" $ map (DisengageEnemy iid) es
                     , Label "Skip" []
                     ]

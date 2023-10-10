@@ -46,7 +46,6 @@ import Arkham.Cost qualified as Cost
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
-import Arkham.Decklist
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect
@@ -91,7 +90,6 @@ import Arkham.Id
 import Arkham.Investigator (
   becomePrologueInvestigator,
   becomeYithian,
-  lookupInvestigator,
   returnToBody,
  )
 import Arkham.Investigator.Types (
@@ -180,7 +178,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Exception (throw)
 import Control.Lens (each, itraverseOf, itraversed, non, over, set)
-import Control.Monad.Random (StdGen, mkStdGen)
+import Control.Monad.Random (StdGen)
 import Control.Monad.Reader (local, runReader)
 import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
@@ -189,7 +187,6 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal (getMonoidalMap)
 import Data.Map.Monoidal qualified as MonoidalMap
-import Data.Map.Strict (size)
 import Data.Map.Strict qualified as Map
 import Data.Monoid (First (..))
 import Data.Sequence qualified as Seq
@@ -297,7 +294,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
 
   gameRef <- newIORef game
   queueRef <- newQueue []
-  genRef <- newIORef (mkStdGen seed)
+  -- genRef <- newIORef (mkStdGen seed)
 
   -- runGameEnvT (GameEnv gameRef queueRef genRef (\_ -> pure ())) $ do
   --   investigatorsList <-
@@ -358,7 +355,7 @@ addPlayer pid = do
 toExternalGame
   :: MonadRandom m
   => Game
-  -> Map InvestigatorId (Question Message)
+  -> Map PlayerId (Question Message)
   -> m Game
 toExternalGame g mq = do
   newGameSeed <- getRandom
@@ -604,6 +601,13 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "question" .= toJSON gameQuestion
       , "cards" .= toJSON gameCards
       ]
+
+getPlayerInvestigator :: HasGame m => PlayerId -> m Investigator
+getPlayerInvestigator pid = do
+  investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
+  case find ((== pid) . attr investigatorPlayerId) investigators of
+    Nothing -> error "Unknown player"
+    Just i -> pure i
 
 getInvestigator
   :: (HasCallStack, HasGame m) => InvestigatorId -> m Investigator
@@ -3502,11 +3506,10 @@ runMessages mLogger = do
               case playingInvestigators of
                 [] -> pushEnd EndInvestigation
                 [x] -> push $ ChoosePlayer x SetTurnPlayer
-                xs ->
+                xs -> do
+                  player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
                   push
-                    $ questionLabel
-                      "Choose player to take turn"
-                      (g ^. leadInvestigatorIdL)
+                    $ questionLabel "Choose player to take turn" player
                     $ ChooseOne
                       [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
                       | iid <- xs
@@ -3529,11 +3532,12 @@ runMessages mLogger = do
         for_ mLogger $ liftIO . ($ msg)
 
         case msg of
-          Ask iid q -> do
+          Ask pid q -> do
+            iid <- runWithEnv $ toId <$> getPlayerInvestigator pid
             runWithEnv
               ( toExternalGame
                   (g & activeInvestigatorIdL .~ iid)
-                  (singletonMap iid q)
+                  (singletonMap pid q)
               )
               >>= putGame
           AskMap askMap -> runWithEnv (toExternalGame g askMap) >>= putGame
@@ -3798,7 +3802,7 @@ runGameMessage msg g = case msg of
       & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
   PerformTarotReading -> do
-    lead <- getLead
+    lead <- getLeadPlayer
     push
       $ questionLabel "Choose Tarot Reading Type" lead
       $ ChooseOne
@@ -3944,9 +3948,10 @@ runGameMessage msg g = case msg of
     iids <- getInvestigatorIds
     case iids of
       [x] -> push $ ChoosePlayer x SetLeadInvestigator
-      xs@(x : _) ->
+      xs@(x : _) -> do
+        player <- getPlayer x
         push
-          $ questionLabel "Choose lead investigator" x
+          $ questionLabel "Choose lead investigator" player
           $ ChooseOne
             [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
             | iid <- xs
@@ -3954,8 +3959,8 @@ runGameMessage msg g = case msg of
       [] -> pure ()
     pure g
   ChoosePlayer iid SetLeadInvestigator -> do
-    let allPlayers = view playerOrderL g
-    push $ ChoosePlayerOrder (filter (/= iid) allPlayers) [iid]
+    let players = view playerOrderL g
+    push $ ChoosePlayerOrder (filter (/= iid) players) [iid]
     pure $ g & leadInvestigatorIdL .~ iid
   ChoosePlayer iid SetTurnPlayer -> do
     pushAll [BeginTurn iid, After (BeginTurn iid)]
@@ -4122,9 +4127,10 @@ runGameMessage msg g = case msg of
           then
             pushAll
               $ map (uncurry InvestigatorSpendClues) investigatorsWithClues
-          else
+          else do
+            player <- getPlayer (gameLeadInvestigatorId g)
             pushAll
-              [ chooseOne (gameLeadInvestigatorId g)
+              [ chooseOne player
                   $ map (\(i, _) -> targetLabel i [InvestigatorSpendClues i 1]) xs
               , SpendClues (n - 1) (map fst investigatorsWithClues)
               ]
@@ -4227,10 +4233,11 @@ runGameMessage msg g = case msg of
         Zone.FromBottomOfDeck _ -> Zone.FromDeck
         other -> other
       foundCards = gameFoundCards g
+    player <- getPlayer iid
     for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
       DiscardRest -> do
         push
-          $ chooseOneAtATime iid
+          $ chooseOneAtATime player
           $ map
             ( \case
                 EncounterCard c ->
@@ -4243,7 +4250,7 @@ runGameMessage msg g = case msg of
       PutBackInAnyOrder -> do
         when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
         push
-          $ chooseOneAtATime iid
+          $ chooseOneAtATime player
           $ map
             ( \c ->
                 TargetLabel
@@ -4645,7 +4652,9 @@ runGameMessage msg g = case msg of
       Just (EnemyWillAttack details2) -> do
         _ <- popMessage
         push $ EnemyAttacks (EnemyAttack details2 : as)
-      _ -> push $ chooseOneAtATime (gameLeadInvestigatorId g) $ map toUI as
+      _ -> do
+        player <- getPlayer (gameLeadInvestigatorId g)
+        push $ chooseOneAtATime player $ map toUI as
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     pure $ g & entitiesL . assetsL %~ deleteMap aid
@@ -4802,13 +4811,14 @@ runGameMessage msg g = case msg of
           , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
           , phaseStep NextInvestigatorsTurnBeginsStep [ChoosePlayer iid SetTurnPlayer]
           ]
-      xs ->
+      xs -> do
+        player <- getPlayer (g ^. leadInvestigatorIdL)
         pushAll
           [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow]
           , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
           , phaseStep
               NextInvestigatorsTurnBeginsStep
-              [ questionLabel "Choose player to take turn" (g ^. leadInvestigatorIdL)
+              [ questionLabel "Choose player to take turn" player
                   $ ChooseOne
                     [PortraitLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs]
               ]
@@ -4824,9 +4834,10 @@ runGameMessage msg g = case msg of
   ChoosePlayerOrder [y] (x : xs) -> do
     pure $ g & playerOrderL .~ (x : (xs <> [y]))
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
+    player <- getPlayer (gameLeadInvestigatorId g)
     push
       $ chooseOne
-        (gameLeadInvestigatorId g)
+        player
         [ targetLabel
           iid
           [ ChoosePlayerOrder
@@ -4974,15 +4985,16 @@ runGameMessage msg g = case msg of
     pushAll msgs
     pure $ g & phaseStepL ?~ step
   AllDrawEncounterCard -> do
-    playerIds <- filterM (fmap not . isEliminated) (view playerOrderL g)
+    investigators <-
+      traverse (traverseToSnd getPlayer) =<< filterM (fmap not . isEliminated) (view playerOrderL g)
     pushAll
       $ [ chooseOne
-          iid
+          player
           [ TargetLabel
               EncounterDeckTarget
               [InvestigatorDrawEncounterCard iid]
           ]
-        | iid <- playerIds
+        | (iid, player) <- investigators
         ]
       <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
     pure g
@@ -5011,12 +5023,13 @@ runGameMessage msg g = case msg of
           getAvailableSkillsFor
             skillType
             (skillTestInvestigator skillTest)
+        player <- getPlayer (skillTestInvestigator skillTest)
         pure
           $ if Set.size availableSkills < 2
             then defaultCase
             else
               [ chooseOne
-                  (skillTestInvestigator skillTest)
+                  player
                   $ SkillLabel skillType []
                   : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType skillType) (ToSkillType skillType')]
                     | skillType' <- setToList availableSkills
@@ -5036,10 +5049,11 @@ runGameMessage msg g = case msg of
             -- if we choose a type it should replace for example if we have int+agi+wil+com and we use mind over matter
             -- we should be asked for agi and com and end up with int+int+wil+int
             -- Easiest way might be to let the skill test handle the replacement so we don't have to nest
+            player <- getPlayer (skillTestInvestigator skillTest)
             pure
               $ map
                 ( \(base, setToList -> skillsTypes) ->
-                    chooseOne (skillTestInvestigator skillTest)
+                    chooseOne player
                       $ SkillLabel base []
                       : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType base) (ToSkillType skillType')]
                         | skillType' <- skillsTypes
@@ -5093,19 +5107,20 @@ runGameMessage msg g = case msg of
       storyId = StoryId $ toCardCode card
       story' = overAttrs (Story.placementL .~ placement) (createStory card mtarget storyId)
     -- if we have a target the ui should visually replace them, otherwise we add to UI by focus
+    player <- getPlayer iid
     case storyPlacement (toAttrs story') of
       Unplaced ->
         pushAll
           [ FocusCards [card]
           , chooseOne
-              iid
+              player
               [targetLabel (toCardId card) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]]
           , UnfocusCards
           ]
       _ ->
         push
           $ chooseOne
-            iid
+            player
             [ targetLabel (toTarget storyId) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
             ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
@@ -5241,10 +5256,11 @@ runGameMessage msg g = case msg of
           [] -> push (Discard GameSource (toTarget enemyId))
           lids -> do
             lead <- getLead
+            player <- getPlayer $ fromMaybe lead $ enemyCreationInvestigator enemyCreation
             pushAll
               $ windows'
               <> [ chooseOrRunOne
-                    (fromMaybe lead $ enemyCreationInvestigator enemyCreation)
+                    player
                     [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
                     | lid <- lids
                     ]

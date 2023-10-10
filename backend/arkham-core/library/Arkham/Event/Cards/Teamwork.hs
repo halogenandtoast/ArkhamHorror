@@ -44,10 +44,11 @@ instance RunMessage Teamwork where
                         <> AssetOneOf (map AssetWithTrait [Ally, Item])
                     )
             )
+      player <- getPlayer iid
       e
         <$ push
           ( chooseOne
-              iid
+              player
               ( Done "Done Trading"
                   : [ TargetLabel
                       (AssetTarget aid)

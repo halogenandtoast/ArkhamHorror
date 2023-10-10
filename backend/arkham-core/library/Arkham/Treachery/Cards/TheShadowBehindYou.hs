@@ -65,8 +65,9 @@ instance RunMessage TheShadowBehindYou where
         hasNonHiddenCards = any (notElem Hidden . toKeywords) handCards
         hasHiddenCards = any (elem Hidden . toKeywords) handCards
 
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ Label
             "Discard all cards in your hand"
             $ DiscardHand iid (toSource attrs)

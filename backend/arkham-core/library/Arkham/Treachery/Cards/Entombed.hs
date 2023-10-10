@@ -50,7 +50,8 @@ instance RunMessage Entombed where
           SkillLabel
             sType
             [beginSkillTest iid source (toTarget iid) sType difficulty]
-      push $ chooseOne iid [testChoice SkillAgility, testChoice SkillCombat]
+      player <- getPlayer iid
+      push $ chooseOne player [testChoice SkillAgility, testChoice SkillCombat]
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)

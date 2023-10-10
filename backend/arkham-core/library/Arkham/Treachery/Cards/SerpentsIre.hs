@@ -49,10 +49,11 @@ instance RunMessage SerpentsIre where
         then push $ gainSurge attrs
         else do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid ->
+          for_ mlid $ \lid -> do
+            player <- getPlayer iid
             push
               $ chooseOne
-                iid
+                player
                 [ targetLabel
                   eid
                   [ EnemySpawn (Just iid) lid eid

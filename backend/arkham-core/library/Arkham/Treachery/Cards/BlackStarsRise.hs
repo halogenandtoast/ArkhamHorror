@@ -26,8 +26,9 @@ instance RunMessage BlackStarsRise where
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
           hasAgenda <- selectAny AnyAgenda
+          player <- getPlayer iid
           push
-            $ chooseOrRunOne iid
+            $ chooseOrRunOne player
             $ [ Label
                 "Place 1 doom on current agenda. This effect can cause the current agenda to advance."
                 [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]

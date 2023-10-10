@@ -23,18 +23,18 @@ instance RunMessage TwinSuns where
     Revelation iid source | isSource attrs source -> do
       push $ RevelationSkillTest iid source SkillIntellect 4
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source -> do
-          agenda <- selectJust AnyAgenda
-          push
-            $ chooseOne
-              iid
-              [ Label
-                  "Remove 1 doom from the current agenda"
-                  [RemoveDoom (toSource attrs) (toTarget agenda) 1]
-              , Label
-                  "Take 1 horror for each point you failed by"
-                  [InvestigatorAssignDamage iid source DamageAny 0 n]
-              ]
-          pure t
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
+      agenda <- selectJust AnyAgenda
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ Label
+              "Remove 1 doom from the current agenda"
+              [RemoveDoom (toSource attrs) (toTarget agenda) 1]
+          , Label
+              "Take 1 horror for each point you failed by"
+              [InvestigatorAssignDamage iid source DamageAny 0 n]
+          ]
+      pure t
     _ -> TwinSuns <$> runMessage msg attrs

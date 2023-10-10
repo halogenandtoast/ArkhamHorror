@@ -24,9 +24,10 @@ instance RunMessage StandTogether where
         selectList
           $ NotInvestigator (InvestigatorWithId iid)
           <> colocatedWith iid
+      player <- getPlayer iid
       pushAll
         $ [ chooseOrRunOne
-            iid
+            player
             [ targetLabel
                 iid'
                 [ TakeResources iid' 2 (toSource attrs) False

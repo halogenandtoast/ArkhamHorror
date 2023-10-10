@@ -31,8 +31,9 @@ instance RunMessage TerrorUnleashed where
 
         let x = doom + max 1 breaches
 
+        player <- getPlayer iid
         pushAll
           $ (guard (breaches == 0) *> [PlaceBreaches (toTarget location) 1])
-          <> replicate x (chooseOne iid [assignDamageLabel iid attrs 1, assignHorrorLabel iid attrs 1])
+          <> replicate x (chooseOne player [assignDamageLabel iid attrs 1, assignHorrorLabel iid attrs 1])
       pure t
     _ -> TerrorUnleashed <$> runMessage msg attrs

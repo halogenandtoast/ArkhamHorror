@@ -38,9 +38,10 @@ instance RunMessage Nimble where
     ResolveSkill sId | sId == toId attrs && moveCount meta > 0 -> do
       let iid = skillOwner attrs
       connectingLocations <- accessibleLocations iid
+      player <- getPlayer iid
       unless (null connectingLocations) $ do
         push
-          $ chooseOne iid
+          $ chooseOne player
           $ Label "Do not move" []
           : [ targetLabel
               location

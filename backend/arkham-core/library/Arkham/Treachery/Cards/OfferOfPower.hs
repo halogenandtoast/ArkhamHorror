@@ -17,8 +17,9 @@ instance RunMessage OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       drawing <- drawCards iid attrs 2
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ Label "Draw 2 cards and place 2 doom on agenda"
               $ [drawing, PlaceDoomOnAgenda, PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
           , Label "Take 2 horror" [assignHorror iid attrs 2]

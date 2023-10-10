@@ -21,8 +21,9 @@ trialByFire3 = event TrialByFire3 Cards.trialByFire3
 instance RunMessage TrialByFire3 where
   runMessage msg e@(TrialByFire3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      player <- getPlayer iid
       push
-        $ chooseOne iid
+        $ chooseOne player
         $ [ SkillLabel skill [turnModifiers attrs iid $ BaseSkillOf skill 7 : map (`BaseSkillOf` 5) rest]
           | (skill, rest) <- eachWithRest allSkills
           ]

@@ -31,9 +31,10 @@ instance RunMessage WarningShot where
           selectList
             $ ConnectedLocation
             <> LocationCanBeEnteredBy eid'
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [targetLabel lid (map (`EnemyMove` lid) eids) | lid <- lids]
       pure e
     _ -> WarningShot <$> runMessage msg attrs

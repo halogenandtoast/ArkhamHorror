@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Aspect.Types
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigate.Types
 import Arkham.Matcher
@@ -40,6 +41,7 @@ instance IsAspect InsteadOf Investigate where
   aspect iid source a@(InsteadOf skillType replaced) action = do
     ignorable <- canIgnoreAspect iid source (InsteadOfAspect a)
     investigation <- action
+    player <- getPlayer iid
     pure
       $ if investigation.skillType == replaced
         then
@@ -48,7 +50,7 @@ instance IsAspect InsteadOf Investigate where
                 then
                   Left
                     [ chooseOne
-                        iid
+                        player
                         [ Label
                             ("Ignore use " <> tshow skillType <> " instead of " <> tshow replaced)
                             [toMessage investigation]

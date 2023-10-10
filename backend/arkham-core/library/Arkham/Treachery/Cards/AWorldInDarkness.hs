@@ -32,9 +32,10 @@ instance RunMessage AWorldInDarkness where
         else do
           hasResources <- fieldMap InvestigatorResources (>= 1) iid
           canDiscard <- iid <=~> InvestigatorWithDiscardableCard
+          player <- getPlayer iid
           pushAll
             $ replicate doom
-            $ chooseOne iid
+            $ chooseOne player
             $ [Label "Lose 1 resource" [LoseResources iid (toSource attrs) 1] | hasResources]
             <> [ Label "Choose and discard 1 card from your hand" [toMessage $ chooseAndDiscardCard iid attrs]
                | canDiscard

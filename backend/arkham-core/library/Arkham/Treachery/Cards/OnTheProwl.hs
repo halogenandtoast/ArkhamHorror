@@ -40,10 +40,11 @@ instance RunMessage OnTheProwl where
                in
                 case matches of
                   [(x, _)] -> push (MoveUntil x (EnemyTarget eid))
-                  xs ->
+                  xs -> do
+                    player <- getPlayer iid
                     push
                       $ chooseOne
-                        iid
+                        player
                         [ targetLabel x [MoveUntil x (EnemyTarget eid)]
                         | (x, _) <- xs
                         ]

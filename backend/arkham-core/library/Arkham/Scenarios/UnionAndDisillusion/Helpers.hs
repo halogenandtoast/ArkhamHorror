@@ -4,9 +4,11 @@ import Arkham.Prelude
 
 import Arkham.Action
 import Arkham.Classes.Entity
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Criteria
 import Arkham.Field
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Brazier
 import Arkham.Location.Types
@@ -43,14 +45,15 @@ circleTest iid source target skillTypes n =
       (AndSkillBaseValue skillTypes)
       n
 
-passedCircleTest :: HasQueue Message m => InvestigatorId -> LocationAttrs -> m ()
+passedCircleTest :: (HasGame m, HasQueue Message m) => InvestigatorId -> LocationAttrs -> m ()
 passedCircleTest iid attrs = do
   let
     brazierChoice =
       case locationBrazier attrs of
         Just Lit -> Label "Unlight the brazier" [unlightBrazier (toId attrs)]
         _unlit -> Label "Light the brazier" [lightBrazier (toId attrs)]
-  push $ chooseOne iid [brazierChoice, Label "Leave brazier alone" []]
+  player <- getPlayer iid
+  push $ chooseOne player [brazierChoice, Label "Leave brazier alone" []]
 
 pattern DuringCircleAction :: Criterion
 pattern DuringCircleAction <- DuringSkillTest (SkillTestForAction (ActionIs Circle))

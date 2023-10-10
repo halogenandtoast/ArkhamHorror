@@ -22,9 +22,10 @@ instance RunMessage MysteriousChanting where
       enemies <- selectList $ NearestEnemy $ EnemyWithTrait Cultist
       case enemies of
         [] -> push $ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Cultist
-        xs ->
+        xs -> do
+          player <- getPlayer iid
           pushAll
-            [ chooseOne iid
+            [ chooseOne player
                 $ [targetLabel eid [PlaceDoom (toSource attrs) (toTarget eid) 2] | eid <- xs]
             ]
       pure t

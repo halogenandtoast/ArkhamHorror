@@ -24,9 +24,10 @@ instance RunMessage WhisperedBargain where
   runMessage msg t@(WhisperedBargain attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Place 1 Doom on Azathoth" [PlaceDoom (toSource attrs) (toTarget azathoth) 1]
           , Label
               "Azathoth attacks each you"

@@ -31,13 +31,14 @@ instance RunMessage Mesmerize where
             selectListMap
               AssetTarget
               (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
+          player <- getPlayer iid
           case maskedCarnevaleGoers of
-            [] -> push $ chooseOne iid [targetLabel attrs [gainSurge attrs]]
+            [] -> push $ chooseOne player [targetLabel attrs [gainSurge attrs]]
             xs ->
               pushAll
                 [ CreateEffect (toCardCode attrs) Nothing source (toTarget iid)
                 , chooseOne
-                    iid
+                    player
                     [TargetLabel target [Flip iid source target] | target <- xs]
                 ]
     _ -> Mesmerize <$> runMessage msg attrs

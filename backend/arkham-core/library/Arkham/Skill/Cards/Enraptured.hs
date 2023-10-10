@@ -32,9 +32,10 @@ instance RunMessage Enraptured where
           selectList
             $ assetControlledBy (skillOwner attrs)
             <> AssetWithUseType Uses.Secret
+        player <- getPlayer (skillOwner attrs)
         unless (null chargeAssets && null secretAssets)
           $ push
-          $ chooseOne (skillOwner attrs)
+          $ chooseOne player
           $ [ targetLabel aid [AddUses aid Uses.Charge 1]
             | aid <- chargeAssets
             ]

@@ -23,8 +23,9 @@ instance RunMessage MindWipe1 where
   runMessage msg e@(MindWipe1 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       enemies <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
+      player <- getPlayer iid
       pushIfAny enemies
-        $ chooseOne iid
+        $ chooseOne player
         $ targetLabels enemies (\t -> only $ phaseModifier attrs t Blank)
       pure e
     _ -> MindWipe1 <$> runMessage msg attrs

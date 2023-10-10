@@ -35,8 +35,9 @@ instance RunMessage SeekingAnswers2 where
         selectList
           $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
           <> locationWithDiscoverableCluesBy iid
+      player <- getPlayer iid
       pushIfAny lids
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [ targetLabel lid'
             $ [InvestigatorDiscoverClues iid lid' (toSource attrs) 1 (Just #investigate)]
           | lid' <- lids

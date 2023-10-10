@@ -65,17 +65,18 @@ instance RunMessage SixthSense4Effect where
                 [ LocationWithDistanceFrom n Anywhere
                 | n <- [1 .. 2]
                 ]
+          player <- getPlayer iid
           pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token effectId)
-                [ chooseOne iid
+                [ chooseOne player
                     $ Label "Do not choose other location" []
                     : [ targetLabel
                         location
                         [ SetSkillTestTarget
                             (BothTarget (toTarget location) (toTarget lid))
                         , chooseOne
-                            iid
+                            player
                             [ Label
                                 "Use new location's shroud"
                                 [ skillTestModifier

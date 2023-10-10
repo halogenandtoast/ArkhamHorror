@@ -23,9 +23,10 @@ instance RunMessage YouHandleThisOne where
       targets <-
         selectListMap InvestigatorTarget
           $ NotInvestigator (InvestigatorWithId iid)
+      player <- getPlayer iid
       pushAll
         $ [ chooseOrRunOne
-              iid
+              player
               [ TargetLabel
                 target
                 [HandleTargetChoice iid (toSource attrs) target]

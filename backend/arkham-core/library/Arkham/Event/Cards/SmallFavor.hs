@@ -81,9 +81,10 @@ instance RunMessage SmallFavor where
                   ]
             )
 
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs damageCount]
           | enemy <- enemies
           ]

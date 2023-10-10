@@ -24,6 +24,9 @@ instance RunMessage TruthFromFiction2 where
       clueOnLocation <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
       assets <- selectList $ AssetControlledBy (colocatedWith iid) <> AssetWithUseType Uses.Secret
       let n = if clueOnLocation then 3 else 2
-      pushAll $ replicate n $ chooseOne iid [targetLabel aid [AddUses aid Uses.Secret 1] | aid <- assets]
+      player <- getPlayer iid
+      pushAll
+        $ replicate n
+        $ chooseOne player [targetLabel aid [AddUses aid Uses.Secret 1] | aid <- assets]
       pure e
     _ -> TruthFromFiction2 <$> runMessage msg attrs

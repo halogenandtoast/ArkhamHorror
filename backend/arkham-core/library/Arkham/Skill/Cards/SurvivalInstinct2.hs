@@ -26,9 +26,10 @@ instance RunMessage SurvivalInstinct2 where
     PassedSkillTest iid (Just Action.Evade) _ (SkillTarget sid) _ _ | sid == skillId -> do
       engagedEnemyIds <- selectList EnemyEngagedWithYou
       unblockedConnectedLocationIds <- accessibleLocations iid
+      player <- getPlayer iid
       let
         moveOptions =
-          chooseOrRunOne iid
+          chooseOrRunOne player
             $ [Label "Do not move to a connecting location" []]
             <> [ targetLabel lid [Move $ move attrs iid lid]
                | lid <- unblockedConnectedLocationIds
@@ -39,7 +40,7 @@ instance RunMessage SurvivalInstinct2 where
         es ->
           pushAll
             $ [ chooseOne
-                  iid
+                  player
                   [ Label
                       "Evade each other enemy"
                       [EnemyEvaded iid eid | eid <- es]

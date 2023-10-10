@@ -29,10 +29,11 @@ instance RunMessage ScroungeForSupplies where
       when
         (null targets)
         (error "ScroungeForSupplies expected level 0 card in discard")
+      player <- getPlayer iid
       e
         <$ pushAll
           [ chooseOne
-              iid
+              player
               [ TargetLabel (CardIdTarget $ toCardId target) [addToHand iid target]
               | target <- targets
               ]

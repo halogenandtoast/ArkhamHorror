@@ -27,23 +27,22 @@ instance RunMessage DiabolicVoices where
       n <- length <$> findInDiscard (cardIs Cards.diabolicVoices)
       push $ revelationSkillTest iid attrs SkillWillpower (3 + n)
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n
-      | n > 0 ->
-          do
-            handCount <- fieldMap InvestigatorHand length iid
-            pushAll
-              $ toMessage (randomDiscardN iid attrs (min n handCount))
-              : replicate
-                (max 0 $ n - handCount)
-                ( chooseOne
-                    iid
-                    [ Label
-                        "Take Damage"
-                        [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-                    , Label
-                        "Take Horror"
-                        [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
-                    ]
-                )
-            pure t
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n > 0 -> do
+      handCount <- fieldMap InvestigatorHand length iid
+      player <- getPlayer iid
+      pushAll
+        $ toMessage (randomDiscardN iid attrs (min n handCount))
+        : replicate
+          (max 0 $ n - handCount)
+          ( chooseOne
+              player
+              [ Label
+                  "Take Damage"
+                  [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
+              , Label
+                  "Take Horror"
+                  [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
+              ]
+          )
+      pure t
     _ -> DiabolicVoices <$> runMessage msg attrs

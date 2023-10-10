@@ -44,13 +44,14 @@ instance RunMessage RexsCurse where
       Revelation iid source | isSource attrs source -> do
         t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
       UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+        player <- getPlayer iid
         retainedMessages <- withQueue $ \queue ->
           let
             (remainingWillPass, queue') = flip span queue $ \case
               Will PassedSkillTest {} -> True
               _ -> False
             (before, after) = flip break queue' $ \case
-              Ask iid' (ChooseOne [SkillTestApplyResultsButton]) | iid == iid' -> True
+              Ask pid' (ChooseOne [SkillTestApplyResultsButton]) | player == pid' -> True
               _ -> False
             remaining = case after of
               [] -> []

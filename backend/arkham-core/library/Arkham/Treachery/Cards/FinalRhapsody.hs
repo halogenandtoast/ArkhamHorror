@@ -22,9 +22,10 @@ instance RunMessage FinalRhapsody where
       t <$ push (RequestChaosTokens source (Just iid) (Reveal 5) SetAside)
     RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
       let damageCount = count ((`elem` [Skull, AutoFail]) . chaosTokenFace) tokens
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ Label
                 ("Take " <> tshow damageCount <> " damage and horror")
                 [assignDamageAndHorror iid source damageCount damageCount]

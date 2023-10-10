@@ -107,12 +107,12 @@ instance RunMessage AtDeathsDoorstep where
       whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
       pure s
     PreScenarioSetup -> do
-      iids <- getInvestigatorIds
+      players <- allPlayers
       pushAll
-        [ story iids introPart1
-        , story iids introPart2
-        , story iids introPart3
-        , story iids introPart4
+        [ story players introPart1
+        , story players introPart2
+        , story players introPart3
+        , story players introPart4
         ]
       pure s
     StandaloneSetup -> do
@@ -174,7 +174,7 @@ instance RunMessage AtDeathsDoorstep where
 
       missingPersons <- getRecordedCardCodes MissingPersons
       evidenceLeftBehind <- getRecordCount PiecesOfEvidenceWereLeftBehind
-      lead <- getLead
+      lead <- getLeadPlayer
 
       -- We want to distribute the removal of clues evenly. The logic here
       -- tries to batch a groups corresponding to the number of locations we
@@ -286,7 +286,7 @@ instance RunMessage AtDeathsDoorstep where
       pure s
     ScenarioResolution (Resolution n) -> do
       entryHall <- selectJust $ LocationWithTitle "Entry Hall"
-      iids <- allInvestigatorIds
+      players <- allPlayers
       gainXp <- toGainXp (toSource attrs) getXp
       inVictory <- isInVictoryDisplay Enemies.josefMeiger
       underEntryHall <-
@@ -335,7 +335,7 @@ instance RunMessage AtDeathsDoorstep where
           _ -> error "Invalid resolution"
 
       pushAll
-        $ [story iids storyText, Record key]
+        $ [story players storyText, Record key]
         <> gainXp
         <> [EndOfGame (Just nextStep)]
       pure s

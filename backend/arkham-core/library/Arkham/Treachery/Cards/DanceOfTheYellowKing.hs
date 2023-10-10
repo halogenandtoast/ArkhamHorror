@@ -32,21 +32,21 @@ instance RunMessage DanceOfTheYellowKing where
           then RevelationSkillTest iid source SkillWillpower 3
           else gainSurge attrs
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          lunatics <- selectList $ NearestEnemy $ EnemyWithTrait Lunatic
-          mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid ->
-            push
-              $ chooseOrRunOne
-                iid
-                [ targetLabel
-                  lunatic
-                  [ MoveUntil lid (toTarget lunatic)
-                  , EnemyEngageInvestigator lunatic iid
-                  , EnemyWillAttack $ enemyAttack lunatic attrs iid
-                  ]
-                | lunatic <- lunatics
-                ]
-          pure t
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      lunatics <- selectList $ NearestEnemy $ EnemyWithTrait Lunatic
+      mlid <- field InvestigatorLocation iid
+      for_ mlid $ \lid -> do
+        player <- getPlayer iid
+        push
+          $ chooseOrRunOne
+            player
+            [ targetLabel
+              lunatic
+              [ MoveUntil lid (toTarget lunatic)
+              , EnemyEngageInvestigator lunatic iid
+              , EnemyWillAttack $ enemyAttack lunatic attrs iid
+              ]
+            | lunatic <- lunatics
+            ]
+      pure t
     _ -> DanceOfTheYellowKing <$> runMessage msg attrs

@@ -71,7 +71,7 @@ getInPursuitEnemies = select $ OutOfPlayEnemy PursuitZone AnyEnemy
 getPlacePursuitEnemyMessages :: HasGame m => m [Message]
 getPlacePursuitEnemyMessages = do
   choices <- toList <$> getInPursuitEnemyWithHighestEvade
-  lead <- getLeadInvestigatorId
+  lead <- getLeadPlayer
   depthStart <- getDepthStart
   pure $ do
     guard $ notNull choices

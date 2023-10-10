@@ -61,9 +61,10 @@ instance RunMessage RealmOfMadness where
                 (toSource attrs)
                 (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
             ]
+      player <- getPlayer iid
       unless (null assets && null handDiscardableCards)
         $ push
-        $ chooseOne iid
+        $ chooseOne player
         $ map discardAsset assets
         <> map discardHandCard handDiscardableCards
       pure t

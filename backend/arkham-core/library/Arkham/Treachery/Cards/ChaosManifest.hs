@@ -25,7 +25,7 @@ instance RunMessage ChaosManifest where
       push $ revelationSkillTest iid attrs #willpower 3
       pure t
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
-      lead <- getLead
+      lead <- getLeadPlayer
       locations <- sampleLocations n
       push
         $ chooseOrRunOneAtATime lead

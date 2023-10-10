@@ -26,9 +26,10 @@ instance RunMessage SeekingAnswers where
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       lids <- selectList $ ConnectedLocation <> LocationWithAnyClues
+      player <- getPlayer iid
       pushIfAny lids
         $ chooseOne
-          iid
+          player
           [ targetLabel
             lid'
             [InvestigatorDiscoverClues iid lid' (toSource attrs) 1 (Just #investigate)]

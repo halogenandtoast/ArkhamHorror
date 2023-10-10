@@ -30,9 +30,10 @@ prescient = skill Prescient Cards.prescient
 instance RunMessage Prescient where
   runMessage msg s@(Prescient attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Even"
               [createCardEffect Cards.prescient (Just $ EffectInt 1) attrs iid]
@@ -75,12 +76,13 @@ instance RunMessage PrescientEffect where
           $ InDiscardOf (InvestigatorWithId iid)
           <> BasicCardMatch
             (CardWithTrait Spell)
+      player <- getPlayer iid
       pushAll
         $ DisableEffect effectId
         : if returnSpell && notNull spells
           then
             [ FocusCards spells
-            , chooseOne iid
+            , chooseOne player
                 $ Label "Do not return spell card" []
                 : [ targetLabel (toCardId spell) [addToHand iid spell]
                   | spell <- spells

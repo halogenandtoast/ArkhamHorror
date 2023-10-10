@@ -27,8 +27,9 @@ instance RunMessage AttractingAttention where
       for_ mlid $ \lid -> do
         broodOfYogSothoth <- getBroodOfYogSothoth
 
+        player <- getPlayer iid
         pushIfAny broodOfYogSothoth
-          $ chooseOneAtATime iid
+          $ chooseOneAtATime player
           $ [ targetLabel eid [MoveToward (EnemyTarget eid) (LocationWithId lid)]
             | eid <- broodOfYogSothoth
             ]

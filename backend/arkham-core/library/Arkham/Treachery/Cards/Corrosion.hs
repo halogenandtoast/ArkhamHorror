@@ -66,9 +66,10 @@ instance RunMessage Corrosion where
                 source
                 (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
             ]
+      player <- getPlayer iid
       unless (null assets && null handAssets)
         $ push
-        $ chooseOne iid
+        $ chooseOne player
         $ map discardAsset assets
         <> map discardHandAsset handAssets
       pure t

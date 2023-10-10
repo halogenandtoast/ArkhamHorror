@@ -59,9 +59,10 @@ instance RunMessage UnsolvedCase where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
       highestShroud <- selectList $ HighestShroud Anywhere
+      player <- getPlayer iid
       pushAll
         $ [ chooseOrRunOne
-            iid
+            player
             [ targetLabel
               location
               [ RemoveClues (toSource attrs) (toTarget iid) 1

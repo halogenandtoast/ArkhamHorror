@@ -24,11 +24,12 @@ instance RunMessage OnWingsOfDarkness where
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       centralLocations <- selectList $ LocationWithTrait Central
       enemiesToDisengage <- selectList $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
+      player <- getPlayer iid
       pushAll
         $ assignDamageAndHorror iid attrs 1 1
         : map (DisengageEnemy iid) enemiesToDisengage
           <> [ chooseOne
-                iid
+                player
                 [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
                 | lid <- centralLocations
                 ]

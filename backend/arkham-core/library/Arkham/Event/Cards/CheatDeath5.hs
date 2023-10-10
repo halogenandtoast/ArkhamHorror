@@ -42,13 +42,14 @@ instance RunMessage CheatDeath5 where
 
       mHealHorror <- getHealHorrorMessage attrs 2 iid
       healable <- canHaveDamageHealed attrs iid
+      player <- getPlayer iid
 
       pushAll
         $ map (DisengageEnemy iid) enemies
         <> map (Discard (toSource attrs) . toTarget) treacheries
         <> maybeToList mHealHorror
         <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
-        <> [ chooseOrRunOne iid $ targetLabels locations (only . MoveTo . move (toSource attrs) iid)
+        <> [ chooseOrRunOne player $ targetLabels locations (only . MoveTo . move (toSource attrs) iid)
            | notNull locations
            ]
         <> [ChooseEndTurn iid | yourTurn]

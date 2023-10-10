@@ -44,7 +44,7 @@ instance RunMessage ReturnToTheGathering where
   runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) =
     case msg of
       Setup -> do
-        investigatorIds <- allInvestigatorIds
+        players <- allPlayers
 
         encounterDeck <-
           buildEncounterDeckExcluding
@@ -75,7 +75,7 @@ instance RunMessage ReturnToTheGathering where
           <> placeRest
           <> [ RevealLocation Nothing studyId
              , MoveAllTo (toSource attrs) studyId
-             , story investigatorIds theGatheringIntro
+             , story players theGatheringIntro
              ]
 
         attic <- sample $ Locations.returnToAttic :| [Locations.attic]

@@ -26,9 +26,10 @@ instance RunMessage ConnectTheDots where
         selectList
           $ LocationWithLowerShroudThan (LocationWithId lid)
           <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
+      player <- getPlayer iid
       push
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel location [DiscoverCluesAtLocation iid location (toSource attrs) 2 Nothing]
           | location <- locations
           ]

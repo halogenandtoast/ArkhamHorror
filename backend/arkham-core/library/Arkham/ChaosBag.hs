@@ -17,7 +17,6 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
 import Arkham.Helpers.Message
-import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
 import Arkham.RequestedChaosTokenStrategy

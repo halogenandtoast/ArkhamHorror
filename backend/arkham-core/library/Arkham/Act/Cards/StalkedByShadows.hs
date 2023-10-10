@@ -33,9 +33,10 @@ instance RunMessage StalkedByShadows where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       theOrganist <- getTheOrganist
       currentAgenda <- AgendaTarget <$> selectJust AnyAgenda
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ Label "Place 1 doom on the current agenda" [PlaceDoom (toAbilitySource attrs 1) currentAgenda 1]
           , Label "Automatically evade The Organist" [EnemyEvaded iid theOrganist]
           ]

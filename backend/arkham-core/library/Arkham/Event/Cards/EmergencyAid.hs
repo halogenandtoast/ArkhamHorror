@@ -24,6 +24,7 @@ instance RunMessage EmergencyAid where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       iids <- selectList $ colocatedWith iid
 
+      player <- getPlayer iid
       choices <- flip mapMaybeM iids $ \iid' -> do
         healableAllies <-
           selectList
@@ -38,7 +39,7 @@ instance RunMessage EmergencyAid where
               Just
                 $ targetLabel
                   iid'
-                  [ chooseOrRunOne iid
+                  [ chooseOrRunOne player
                       $ [ targetLabel iid' [HealDamage (InvestigatorTarget iid') (toSource attrs) 2]
                         | healable
                         ]
@@ -48,6 +49,6 @@ instance RunMessage EmergencyAid where
                   ]
             else Nothing
 
-      pushAll [chooseOne iid choices]
+      pushAll [chooseOne player choices]
       pure e
     _ -> EmergencyAid <$> runMessage msg attrs

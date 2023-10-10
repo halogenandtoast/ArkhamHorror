@@ -20,11 +20,10 @@ maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth
 maskOfUmordhoth = treachery MaskOfUmordhoth Cards.maskOfUmordhoth
 
 instance HasModifiersFor MaskOfUmordhoth where
-  getModifiersFor (EnemyTarget eid) (MaskOfUmordhoth attrs)
-    | treacheryOnEnemy eid attrs = do
-        isUnique <- member eid <$> select UniqueEnemy
-        let keyword = if isUnique then Keyword.Retaliate else Keyword.Aloof
-        pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
+  getModifiersFor (EnemyTarget eid) (MaskOfUmordhoth attrs) | treacheryOnEnemy eid attrs = do
+    isUnique <- member eid <$> select UniqueEnemy
+    let keyword = if isUnique then Keyword.Retaliate else Keyword.Aloof
+    pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MaskOfUmordhoth where
@@ -37,10 +36,11 @@ instance RunMessage MaskOfUmordhoth where
             [ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Cultist
             , Revelation iid source
             ]
-        eids ->
+        eids -> do
+          player <- getPlayer iid
           push
             $ chooseOrRunOne
-              iid
+              player
               [ targetLabel eid [AttachTreachery treacheryId (EnemyTarget eid)]
               | eid <- eids
               ]

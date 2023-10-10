@@ -141,10 +141,10 @@ instance RunMessage TheLastKing where
             ]
 
       destinations <- shuffleM $ map fst otherPlacements
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
 
       pushAll
-        $ [ story investigatorIds intro
+        $ [ story players intro
           , SetEncounterDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
@@ -204,10 +204,11 @@ instance RunMessage TheLastKing where
               $ if isEasyStandard attrs
                 then EnemyWithTrait Trait.Lunatic
                 else EnemyWithMostRemainingHealth $ EnemyWithTrait Trait.Lunatic
+          player <- getPlayer iid
           when (notNull targets) $ do
             push
               $ chooseOrRunOne
-                iid
+                player
                 [targetLabel target [PlaceTokens (ChaosTokenEffectSource Skull) target Doom 1] | target <- targets]
         Cultist | isEasyStandard attrs -> do
           clueCount <- field InvestigatorClues iid
@@ -233,7 +234,7 @@ instance RunMessage TheLastKing where
         forToSnd
           investigatorIds
           (field InvestigatorName)
-      lead <- getLead
+      lead <- getLeadPlayer
       clueCounts <- traverse (field ActClues) =<< selectList AnyAct
       vipsSlain <-
         selectListMap toCardCode
@@ -277,22 +278,22 @@ instance RunMessage TheLastKing where
         <> [ScenarioResolutionStep 1 (Resolution n)]
       pure s
     ScenarioResolutionStep 1 (Resolution n) -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       gainXp <- toGainXp attrs getXp
       case n of
         1 ->
           pushAll
-            $ [story investigatorIds resolution1]
+            $ [story players resolution1]
             <> gainXp
             <> [EndOfGame (Just $ InterludeStep 1 Nothing)]
         2 ->
           pushAll
-            $ [story investigatorIds resolution2]
+            $ [story players resolution2]
             <> gainXp
             <> [EndOfGame Nothing]
         3 ->
           pushAll
-            $ [story investigatorIds resolution3]
+            $ [story players resolution3]
             <> gainXp
             <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"

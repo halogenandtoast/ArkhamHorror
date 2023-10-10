@@ -34,10 +34,11 @@ instance RunMessage CallingInFavors where
         \ally -> do
           cardDef <- field AssetCardDef ally
           pure (AssetTarget ally, maybe 0 toPrintedCost $ cdCost cardDef)
+      player <- getPlayer iid
       let
         choice =
           chooseOne
-            iid
+            player
             [ TargetLabel
               target
               [ ReturnToHand iid target

@@ -27,9 +27,10 @@ instance RunMessage CoupDeGrace where
         selectList
           $ EnemyAt (locationWithInvestigator iid)
           <> EnemyCanBeDamagedBySource (toSource attrs)
+      player <- getPlayer iid
       pushAll
         $ chooseOrRunOne
-          iid
+          player
           [ targetLabel
             enemy
             [EnemyDamage enemy $ nonAttack (toSource attrs) 1]

@@ -45,14 +45,15 @@ instance RunMessage Contraband2 where
           map (\(aid, uses) -> (Supply, useCount uses, aid)) supplyAssets
 
       drawing <- drawCards iid attrs 1
+      player <- getPlayer iid
 
       push
         $ chooseOne
-          iid
+          player
           [ Label
               "Place 2 ammo or supply tokens on that asset and draw 1 card."
               [ chooseOne
-                  iid
+                  player
                   [ targetLabel assetId [AddUses assetId useType' 2, drawing]
                   | (useType', _, assetId) <-
                       ammoAssetsWithUseCount <> supplyAssetsWithUseCount
@@ -61,7 +62,7 @@ instance RunMessage Contraband2 where
           , Label
               "Double the number of ammo or supply tokens on that asset."
               [ chooseOne
-                  iid
+                  player
                   [ targetLabel assetId [AddUses assetId useType' assetUseCount]
                   | (useType', assetUseCount, assetId) <-
                       ammoAssetsWithUseCount <> supplyAssetsWithUseCount

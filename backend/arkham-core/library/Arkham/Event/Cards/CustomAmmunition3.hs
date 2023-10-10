@@ -50,9 +50,10 @@ instance RunMessage CustomAmmunition3 where
                 $ cardIs
                   Cards.customAmmunition3
             )
+      player <- getPlayer iid
       push
         $ chooseOne
-          iid
+          player
           [ targetLabel
             asset
             [ PlaceEvent iid eid (AttachedToAsset asset Nothing)

@@ -11,7 +11,6 @@ import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Field
 import Arkham.Helpers.Log
-import Arkham.Helpers.Query
 import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

@@ -50,24 +50,24 @@ thePathToCarcosa difficulty =
 instance RunMessage ThePathToCarcosa where
   runMessage msg c = case msg of
     CampaignStep PrologueStep -> do
-      investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       lolaHayesChosen <- selectAny (InvestigatorWithTitle "Lola Hayes")
       pushAll
-        $ [story investigatorIds prologue]
-        <> [story investigatorIds lolaPrologue | lolaHayesChosen]
+        $ [story players prologue]
+        <> [story players lolaPrologue | lolaHayesChosen]
         <> [NextCampaignStep Nothing]
       pure c
     CampaignStep (InterludeStep 1 _) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- allInvestigatorIds
+      lead <- getLeadPlayer
+      players <- allPlayers
       doubt <- getRecordCount Doubt
       conviction <- getRecordCount Conviction
       push
         $ chooseOne
-          leadInvestigatorId
+          lead
           [ Label
               "Things seem to have calmed down. Perhaps we should go back inside and investigate further."
-              [ story investigatorIds lunacysReward1
+              [ story players lunacysReward1
               , Record YouIntrudedOnASecretMeeting
               , RecordCount Doubt (doubt + 1)
               , RemoveAllChaosTokens Cultist
@@ -79,7 +79,7 @@ instance RunMessage ThePathToCarcosa where
               ]
           , Label
               "I don't trust this place one bit. Letbs block the door and get the hell out of here!"
-              [ story investigatorIds lunacysReward2
+              [ story players lunacysReward2
               , Record YouFledTheDinnerParty
               , RemoveAllChaosTokens Cultist
               , RemoveAllChaosTokens Tablet
@@ -90,7 +90,7 @@ instance RunMessage ThePathToCarcosa where
               ]
           , Label
               "If these people are allowed to live, these horrors will only repeat themselves. We have to put an end to this. We have to kill them."
-              [ story investigatorIds lunacysReward3
+              [ story players lunacysReward3
               , Record YouSlayedTheMonstersAtTheDinnerParty
               , RecordCount Conviction (conviction + 1)
               , RemoveAllChaosTokens Cultist
@@ -104,23 +104,24 @@ instance RunMessage ThePathToCarcosa where
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
       investigatorIds <- allInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
+      players <- allPlayers
+      lead <- getLeadPlayer
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt
       let
         respondToWarning =
           chooseOne
-            leadInvestigatorId
+            lead
             [ Label
                 "Possession? Oaths? There must be another explanation for all of this. Proceed to Ignore the Warning."
-                [ story investigatorIds ignoreTheWarning
+                [ story players ignoreTheWarning
                 , Record YouIgnoredDanielsWarning
                 , RecordCount Doubt (doubt + 2)
                 , NextCampaignStep Nothing
                 ]
             , Label
                 "We must heed Daniel’s warning. We must not speak the name of the King in Yellow. Proceed to Heed the Warning."
-                ( [ story investigatorIds headTheWarning
+                ( [ story players headTheWarning
                   , Record YouHeadedDanielsWarning
                   , RecordCount Conviction (conviction + 2)
                   ]
@@ -132,15 +133,15 @@ instance RunMessage ThePathToCarcosa where
         Nothing -> error "Missing key from The Unspeakable Oath"
         Just DanielSurvived -> do
           pushAll
-            $ [story investigatorIds danielSurvived]
+            $ [story players danielSurvived]
             <> map (\iid -> GainXP iid CampaignSource 2) investigatorIds
             <> [respondToWarning]
         Just DanielDidNotSurvive -> do
           pushAll
-            [story investigatorIds danielDidNotSurvive, respondToWarning]
+            [story players danielDidNotSurvive, respondToWarning]
         Just DanielWasPossessed -> do
           pushAll
-            [story investigatorIds danielWasPossessed, respondToWarning]
+            [story players danielWasPossessed, respondToWarning]
         Just _ -> error "Invalid key for The Unspeakable Oath"
       pure c
     CampaignStep EpilogueStep -> do
@@ -149,8 +150,9 @@ instance RunMessage ThePathToCarcosa where
         investigatorIds = flip mapMaybe possessed $ \case
           SomeRecorded RecordableCardCode (Recorded cardCode) -> Just (InvestigatorId cardCode)
           _ -> Nothing
+      players <- traverse getPlayer investigatorIds
       pushAll
-        $ [story investigatorIds epilogue | notNull investigatorIds]
+        $ [story players epilogue | notNull players]
         <> [EndOfGame Nothing]
       pure c
     EnemyDefeated _ cardId _ _ -> do

@@ -37,11 +37,12 @@ instance RunMessage AChanceEncounter where
             (fieldMap InvestigatorDiscard (map PlayerCard))
             investigatorIds
       let filteredDiscards = filter (elem Ally . toTraits) discards
+      player <- getPlayer iid
       e
         <$ pushAll
           [ FocusCards filteredDiscards
           , chooseOne
-              iid
+              player
               [ TargetLabel
                 (CardIdTarget $ toCardId card)
                 [ PutCardIntoPlay iid card Nothing windows'

@@ -89,8 +89,8 @@ standaloneChaosTokens =
 instance RunMessage TheSecretName where
   runMessage msg s@(TheSecretName (attrs `With` meta)) = case msg of
     PreScenarioSetup -> do
-      iids <- allInvestigatorIds
-      lead <- getLead
+      players <- allPlayers
+      lead <- getLeadPlayer
       anyMystic <- selectAny $ InvestigatorWithClass Mystic
       membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge
       enemiesOfTheLodge <- getHasRecord TheInvestigatorsAreEnemiesOfTheLodge
@@ -103,30 +103,29 @@ instance RunMessage TheSecretName where
       pushAll
         $ [ storyWithChooseOne
             lead
-            iids
+            players
             intro1
             [ Label
                 "Tell the Lodge of the witches in the woods."
-                [ story iids intro2
+                [ story players intro2
                 , Record TheInvestigatorsToldTheLodgeAboutTheCoven
                 , AddChaosToken Cultist
                 ]
             , Label
                 "Tell him you know of no possible connection. (You are lying.)"
                 [ story
-                    iids
-                    ( intro3
-                        <> (if anyMystic then intro3Mystic else mempty)
-                        <> intro3Part2
-                    )
+                    players
+                    $ intro3
+                    <> (if anyMystic then intro3Mystic else mempty)
+                    <> intro3Part2
                 , Record TheInvestigatorsHidTheirKnowledgeOfTheCoven
                 ]
             ]
           | membersOfTheLodge
           ]
-        <> [story iids intro4 | enemiesOfTheLodge]
-        <> [story iids intro5 | learnedNothing]
-        <> [story iids intro6 | neverSeenOrHeardFromAgain]
+        <> [story players intro4 | enemiesOfTheLodge]
+        <> [story players intro5 | learnedNothing]
+        <> [story players intro6 | neverSeenOrHeardFromAgain]
       pure s
     SetChaosTokensForScenario -> do
       whenM getIsStandalone $ push (SetChaosTokens standaloneChaosTokens)
@@ -262,8 +261,9 @@ instance RunMessage TheSecretName where
           }
     ScenarioResolution resolution -> do
       iids <- allInvestigatorIds
+      players <- allPlayers
       step <- getCurrentActStep
-      lead <- getLead
+      lead <- getLeadPlayer
       let
         brownJenkinBonus = if brownJenkinDefeated meta then 1 else 0
         nahabBonus = if nahabDefeated meta then 1 else 0
@@ -278,11 +278,11 @@ instance RunMessage TheSecretName where
               | iid <- iids
               ]
       case resolution of
-        NoResolution -> pushAll [story iids noResolution, scenarioResolution 1]
+        NoResolution -> pushAll [story players noResolution, scenarioResolution 1]
         Resolution 1 -> do
           gainXp <- toGainXp attrs $ getXpWithBonus (brownJenkinBonus + nahabBonus)
           pushAll
-            $ story iids resolution1
+            $ story players resolution1
             : gainXp
               <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
               <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
@@ -291,7 +291,7 @@ instance RunMessage TheSecretName where
         Resolution 2 -> do
           gainXp <- toGainXp attrs $ getXpWithBonus 2
           pushAll
-            $ story iids resolution2
+            $ story players resolution2
             : gainXp
               <> [ recordSetInsert
                     MementosDiscovered

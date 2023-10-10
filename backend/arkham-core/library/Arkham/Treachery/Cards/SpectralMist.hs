@@ -46,9 +46,10 @@ instance RunMessage SpectralMist where
           $ LocationWithTrait Bayou
           <> NotLocation
             (LocationWithTreachery $ treacheryIs Cards.spectralMist)
+      player <- getPlayer iid
       pushWhen (notNull targets)
         $ chooseOne
-          iid
+          player
           [ targetLabel target [AttachTreachery treacheryId target]
           | target <- targets
           ]

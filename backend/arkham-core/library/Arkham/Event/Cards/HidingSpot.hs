@@ -41,7 +41,8 @@ instance RunMessage HidingSpot where
   runMessage msg e@(HidingSpot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       locations <- selectList Anywhere
-      push $ chooseOne iid $ targetLabels locations (only . PlaceEvent iid eid . AttachedToLocation)
+      player <- getPlayer iid
+      push $ chooseOne player $ targetLabels locations (only . PlaceEvent iid eid . AttachedToLocation)
       pure e
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ Discard (toAbilitySource attrs 1) (toTarget attrs)

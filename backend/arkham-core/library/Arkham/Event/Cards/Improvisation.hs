@@ -17,10 +17,10 @@ newtype Improvisation = Improvisation EventAttrs
 improvisation :: EventCard Improvisation
 improvisation = event Improvisation Cards.improvisation
 
-switchRole :: InvestigatorId -> Message
-switchRole iid =
+switchRole :: PlayerId -> InvestigatorId -> Message
+switchRole pid iid =
   chooseOne
-    iid
+    pid
     [Label (tshow role) [SetRole iid role] | role <- [minBound .. maxBound]]
 
 reductionEffect :: InvestigatorId -> EventAttrs -> Message
@@ -31,8 +31,9 @@ instance RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       drawing <- drawCards iid attrs 1
+      player <- getPlayer iid
       pushAll
-        [ switchRole iid
+        [ switchRole player iid
         , reductionEffect iid attrs
         , drawing
         ]

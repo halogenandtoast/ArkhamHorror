@@ -53,10 +53,11 @@ instance RunMessage ImDoneRunninEffect where
           [ eid <=~> EnemyCanBeDamagedBySource effectSource
           , withoutModifier iid CannotDealDamage
           ]
+      player <- getPlayer iid
       when canDamage
         $ push
         $ chooseOne
-          iid
+          player
           [ Label "Do not damage enemy" []
           , Label "Damage enemy" [EnemyDamage eid $ nonAttack effectSource 1]
           ]

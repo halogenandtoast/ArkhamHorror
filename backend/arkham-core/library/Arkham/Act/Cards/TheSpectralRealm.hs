@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Helpers.Query
 import Arkham.Matcher hiding (RevealLocation)
 
 newtype TheSpectralRealm = TheSpectralRealm ActAttrs

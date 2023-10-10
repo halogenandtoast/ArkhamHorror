@@ -31,8 +31,7 @@ instance HasAbilities Overgrowth where
   getAbilities (Overgrowth a) =
     [ restrictedAbility a 1 OnSameLocation
         $ ActionAbility Nothing
-        $ ActionCost
-          1
+        $ ActionCost 1
     ]
 
 instance RunMessage Overgrowth where
@@ -53,7 +52,8 @@ instance RunMessage Overgrowth where
         target = toTarget attrs
         chooseSkillTest sType =
           SkillLabel sType [beginSkillTest iid source target sType 4]
-      push $ chooseOne iid $ map chooseSkillTest [SkillCombat, SkillIntellect]
+      player <- getPlayer iid
+      push $ chooseOne player $ map chooseSkillTest [SkillCombat, SkillIntellect]
       pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)

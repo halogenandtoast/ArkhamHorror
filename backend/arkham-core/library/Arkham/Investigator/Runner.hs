@@ -2565,7 +2565,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , card <- cards
               , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
               ]
-          player <- getPlayer iid
           pushBatch batchId
             $ if null choices
               then chooseOne player [Label "No cards found" []]

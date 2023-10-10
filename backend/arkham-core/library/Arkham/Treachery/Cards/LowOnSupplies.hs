@@ -24,8 +24,9 @@ instance RunMessage LowOnSupplies where
       anyWithResources <- selectAny InvestigatorWithAnyResources
       hasAssets <- selectAny (HasMatchingAsset AnyAsset)
       investigatorIds <- getInvestigatorIds
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ ( if anyWithResources
               then
                 [ Label

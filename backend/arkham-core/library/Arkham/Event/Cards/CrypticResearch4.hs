@@ -19,6 +19,7 @@ instance RunMessage CrypticResearch4 where
     PlayThisEvent iid eid | attrs `is` eid -> do
       iids <- selectList $ colocatedWith iid
       investigators <- forToSnd iids $ \iid' -> drawCards iid' attrs 3
-      push $ chooseOne iid $ [targetLabel iid' [drawing] | (iid', drawing) <- investigators]
+      player <- getPlayer iid
+      push $ chooseOne player $ [targetLabel iid' [drawing] | (iid', drawing) <- investigators]
       pure e
     _ -> CrypticResearch4 <$> runMessage msg attrs

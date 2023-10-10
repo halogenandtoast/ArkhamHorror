@@ -102,6 +102,7 @@ filterOutEnemyMessages eid (Ask pid q) = case q of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOneAtATime x)
   ChooseUpgradeDeck -> Just (Ask pid ChooseUpgradeDeck)
+  ChooseDeck -> Just (Ask pid ChooseDeck)
   choose@ChoosePaymentAmounts {} -> Just (Ask pid choose)
   choose@ChooseAmounts {} -> Just (Ask pid choose)
   PickScenarioSettings -> Just (Ask pid PickScenarioSettings)

@@ -35,8 +35,9 @@ instance RunMessage PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       investigators <- getInvestigators
+      player <- getPlayer iid
       push
-        $ chooseOrRunOne iid
+        $ chooseOrRunOne player
         $ [targetLabel iid' [AttachTreachery treacheryId $ InvestigatorTarget iid'] | iid' <- investigators]
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do

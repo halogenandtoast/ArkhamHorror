@@ -27,10 +27,11 @@ instance RunMessage BaitAndSwitch where
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
       choices <- selectList ConnectedLocation
+      player <- getPlayer iid
       let
         enemyMoveChoices =
           chooseOne
-            iid
+            player
             [ targetLabel choice [EnemyMove enemyId choice]
             | choice <- choices
             ]

@@ -22,9 +22,10 @@ instance RunMessage Guidance where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigators <-
         selectList $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel
               investigator
               [GainActions investigator (toSource attrs) 1]

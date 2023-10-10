@@ -53,5 +53,6 @@ instance RunMessage DynamiteBlast2 where
       let
         availableChoices =
           map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
-      e <$ pushAll [chooseOne iid availableChoices]
+      player <- getPlayer iid
+      e <$ pushAll [chooseOne player availableChoices]
     _ -> DynamiteBlast2 <$> runMessage msg attrs

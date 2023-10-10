@@ -29,9 +29,10 @@ instance RunMessage GetOverHere where
           $ NonEliteEnemy
           <> EnemyAt
             (LocationMatchAny [m, ConnectedFrom m, LocationWithDistanceFrom 2 m])
+      player <- getPlayer iid
       pushAll
         [ chooseOne
-            iid
+            player
             [ targetLabel
               enemy
               [ EnemyEngageInvestigator enemy iid

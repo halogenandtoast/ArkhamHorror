@@ -20,6 +20,7 @@ instance RunMessage ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       firearms <- selectList $ AssetWithTrait Firearm <> AssetControlledBy (InvestigatorAt YourLocation)
-      push $ chooseOrRunOne iid [targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms]
+      player <- getPlayer iid
+      push $ chooseOrRunOne player [targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms]
       pure e
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

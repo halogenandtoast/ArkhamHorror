@@ -74,16 +74,17 @@ instance RunMessage Decoy where
                   ]
             )
 
+      player <- getPlayer iid
       let
         targets = [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]
-        evadeOneEnemy = chooseOrRunOne iid targets
+        evadeOneEnemy = chooseOrRunOne player targets
 
       push
         $ if enemyCount == 2 && length targets > 1
           then
             chooseOne
-              iid
-              [Label "Evade 1 enemy" [evadeOneEnemy], Label "Evade 2 enemies" [chooseOrRunN iid 2 targets]]
+              player
+              [Label "Evade 1 enemy" [evadeOneEnemy], Label "Evade 2 enemies" [chooseOrRunN player 2 targets]]
           else evadeOneEnemy
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do

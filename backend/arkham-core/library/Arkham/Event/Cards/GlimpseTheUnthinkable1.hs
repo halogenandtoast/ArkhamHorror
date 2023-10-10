@@ -34,9 +34,10 @@ instance RunMessage GlimpseTheUnthinkable1 where
         selectList
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
+      player <- getPlayer iid
       push
         $ chooseAmounts
-          iid
+          player
           "Choose number of cards to discard"
           (MaxAmountTarget $ length cards)
           [("Number of cards to discard", (0, length cards))]
@@ -50,9 +51,10 @@ instance RunMessage GlimpseTheUnthinkable1 where
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       drawing <- drawCards iid attrs n
+      player <- getPlayer iid
       pushAll
         [ chooseN
-            iid
+            player
             n
             [ TargetLabel
               (CardIdTarget $ toCardId c)

@@ -97,7 +97,7 @@ gatherTheMidnightMasks conviction doubt = do
 
 cultistEffect :: (HasGame m, HasQueue Message m) => m ()
 cultistEffect = do
-  lead <- getLead
+  lead <- getLeadPlayer
   byakhee <- selectList $ EnemyWithTrait Byakhee <> UnengagedEnemy
   byakheePairs <- forToSnd byakhee investigatorsNearestToEnemy
   let
@@ -117,10 +117,10 @@ cultistEffect = do
       | (eid, _) <- byakheePairs
       ]
  where
-  moveTowardMessages leadId eid hset = case hset of
+  moveTowardMessages lead eid hset = case hset of
     [] -> []
     [x] -> [moveToward eid x]
-    xs -> [chooseOne leadId [targetLabel x [moveToward eid x] | x <- xs]]
+    xs -> [chooseOne lead [targetLabel x [moveToward eid x] | x <- xs]]
   moveToward eid x = MoveToward (toTarget eid) (locationWithInvestigator x)
 
 instance RunMessage APhantomOfTruth where
@@ -131,7 +131,8 @@ instance RunMessage APhantomOfTruth where
         push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
       pure s
     StandaloneSetup -> do
-      lead <- getLead
+      lead <- getLeadPlayer
+      leadId <- getLeadInvestigatorId
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
       pushAll
         [ chooseOne
@@ -139,12 +140,13 @@ instance RunMessage APhantomOfTruth where
             [ Label "Conviction" [RecordCount Conviction 1]
             , Label "Doubt" [RecordCount Doubt 1]
             ]
-        , ShuffleCardsIntoDeck (InvestigatorDeck lead) [theManInThePallidMask]
+        , ShuffleCardsIntoDeck (InvestigatorDeck leadId) [theManInThePallidMask]
         ]
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
-      lead <- getLead
+      lead <- getLeadPlayer
+      players <- allPlayers
 
       theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims
       youIntrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting
@@ -182,8 +184,8 @@ instance RunMessage APhantomOfTruth where
       standalone <- getIsStandalone
 
       pushAll
-        $ story investigatorIds intro
-        : map (story investigatorIds) dreamPath
+        $ story players intro
+        : map (story players) dreamPath
           <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) [lostSoul]
              | not standalone
              , (iid, lostSoul) <- zip investigatorIds lostSouls
@@ -261,6 +263,7 @@ instance RunMessage APhantomOfTruth where
 
       jordanInterviewed <- interviewed Assets.jordanPerry
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
 
       (montparnasseId, placeMontparnasse) <- placeLocation montparnasse
       (gareDOrsayId, placeGareDOrsay) <- placeLocation gareDOrsay
@@ -283,11 +286,11 @@ instance RunMessage APhantomOfTruth where
           ]
 
       pushAll
-        $ [story investigatorIds dream11 | n == 11]
-        <> [story investigatorIds dream12 | n == 12]
+        $ [story players dream11 | n == 11]
+        <> [story players dream12 | n == 12]
         <> [RecordCount Doubt (doubt + 1) | n == 12]
-        <> [story investigatorIds dream13, story investigatorIds awakening]
-        <> [story investigatorIds jordansInformation | jordanInterviewed]
+        <> [story players dream13, story players awakening]
+        <> [story players jordansInformation | jordanInterviewed]
         <> [setupModifier attrs iid (StartingResources 3) | jordanInterviewed, iid <- investigatorIds]
         <> [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
@@ -327,6 +330,7 @@ instance RunMessage APhantomOfTruth where
       _ -> pure s
     ScenarioResolution res -> do
       investigatorIds <- allInvestigatorIds
+      players <- allPlayers
       jordanSlain <-
         selectOne
           (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry)
@@ -350,7 +354,7 @@ instance RunMessage APhantomOfTruth where
           Resolution 3 -> (resolution3, YouWereUnableToFindNigel, ElderThing)
           _ -> error "Invalid resolution"
       pushAll
-        $ [story investigatorIds storyText, Record record]
+        $ [story players storyText, Record record]
         <> sufferTrauma
         <> [ RemoveAllChaosTokens Cultist
            , RemoveAllChaosTokens Tablet

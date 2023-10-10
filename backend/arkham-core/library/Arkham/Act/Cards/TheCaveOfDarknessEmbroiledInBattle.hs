@@ -12,7 +12,6 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Name

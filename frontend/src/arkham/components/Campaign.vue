@@ -30,10 +30,10 @@ const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === '
 
 <template>
   <div v-if="upgradeDeck" id="game" class="game">
-    <UpgradeDeck :game="game" :playerId="playerId" />
+    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" />
   </div>
   <div v-else-if="chooseDeck" id="game" class="game">
-    <ChooseDeck :game="game" :playerId="playerId" />
+    <ChooseDeck :game="game" :key="playerId" :playerId="playerId" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
     <Scenario
@@ -45,7 +45,7 @@ const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === '
       @update="update"
     />
     <template v-else>
-      <StoryQuestion :game="game" :playerId="playerId" @choose="choose" />
+      <StoryQuestion :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
     </template>
   </div>
 </template>

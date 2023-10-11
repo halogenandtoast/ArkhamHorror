@@ -26,6 +26,18 @@ const difficulty = computed<Difficulty>(() => {
   return 'Easy'
 })
 
+const box = computed(() => {
+  if (campaign.value) {
+    return `url('${imgsrc(`boxes/${campaign.value.id}.jpg`)}')`
+  }
+
+  if (scenario.value) {
+    return `url('${imgsrc(`boxes/${scenario.value.id.replace(/^c/, '')}.jpg`)}')`
+  }
+
+  return null
+})
+
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
 </script>
 
@@ -95,7 +107,7 @@ h2 {
 
 .campaign-icon {
   filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);
-  width: 50px;
+  max-height: 50px;
 }
 
 .scenario-icon {
@@ -186,7 +198,6 @@ h2 {
 }
 
 .investigators {
-  margin-top: 10px;
   display: flex;
   background: rgba(255,255,255,0.02);
   padding: 10px;
@@ -197,6 +208,27 @@ h2 {
   flex-direction: row;
   align-items: center;
   padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+  * {
+    z-index: 1;
+  }
+
+  &:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    background-image: v-bind(box);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    z-index: 0;
+  }
 }
 
 .finished-game {
@@ -210,7 +242,7 @@ h2 {
 
   .campaign-icon {
     filter: invert(28%) sepia(0%) hue-rotate(-180deg) saturate(3);
-    width: 50px;
+    max-height: 50px;
   }
 }
 

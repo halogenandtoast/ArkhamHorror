@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{
   game: Game
   card: Card | CardContents
   revealed?: boolean
-  investigatorId: string
+  playerId: string
 }>(), { revealed: false })
 
 const emit = defineEmits<{
@@ -37,7 +37,7 @@ const image = computed(() => {
 })
 
 const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : cardContents.value.id)
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {

@@ -7,7 +7,7 @@ import Prompt from '@/components/Prompt.vue';
 
 export interface Props {
   game: Game
-  investigatorId: string
+  playerId: string
 }
 
 const props = defineProps<Props>()
@@ -15,7 +15,7 @@ const waiting = ref(false)
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const solo = inject('solo', false)
-const investigator = computed(() => props.game.investigators[props.investigatorId])
+const investigator = computed(() => props.game.investigators.find(i => i.playerId === props.playerId))
 const xp = computed(() => investigator.value.xp)
 const skipping = ref(false)
 

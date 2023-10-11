@@ -1375,6 +1375,7 @@ schoolhouse_213 =
 theHiddenChamber :: CardDef
 theHiddenChamber =
   victory 2
+    $ singleSided
     $ location
       "02214"
       ("The Hidden Chamber" <:> "Prison of the Beast")

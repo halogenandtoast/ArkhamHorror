@@ -31,7 +31,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 export interface Props {
   game: Game
   scenario: Scenario
-  investigatorId: string
+  playerId: string
 }
 
 const props = defineProps<Props>()
@@ -145,7 +145,7 @@ function handleConnections() {
         node.dataset.connection = connection
         node.classList.remove("original")
 
-        const investigator = props.game.investigators[props.investigatorId]
+        const investigator = Object.values(props.game.investigators).find(i => i.playerId == props.playerId)
         const { connectedLocations } = investigator
         const activeLine = (leftDivId == investigator.location && connectedLocations.includes(rightDivId)) || (rightDivId == investigator.location && connectedLocations.includes(leftDivId))
         if (activeLine) {
@@ -379,7 +379,7 @@ const unusedLabels = computed(() => {
   return []
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const unusedCanInteract = (u: string) => choices.value.findIndex((c) => {
      if (c.tag === "GridLabel") {
@@ -413,14 +413,14 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 <template>
   <div v-if="!gameOver" id="scenario" class="scenario">
     <div class="scenario-body">
-      <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
+      <StatusBar :game="game" :playerId="playerId" @choose="choose" />
       <CardRow
         v-if="showCards.ref.length > 0"
         :game="game"
         :cards="showCards.ref"
         :isDiscards="viewingDiscard"
         :title="cardRowTitle"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
         @choose="choose"
         @close="hideCards"
       />
@@ -440,7 +440,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           <Enemy
             :enemy="topEnemyInVoid"
             :game="game"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             @choose="choose"
           />
         </div>
@@ -449,7 +449,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           :key="scenarioDeck[0]"
           v-for="[,scenarioDeck] in scenarioDecks"
         />
-        <VictoryDisplay :game="game" :victoryDisplay="scenario.victoryDisplay" @show="doShowCards" :investigatorId="investigatorId" />
+        <VictoryDisplay :game="game" :victoryDisplay="scenario.victoryDisplay" @show="doShowCards" :playerId="playerId" />
         <div class="scenario-encounter-decks">
 
           <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">
@@ -464,7 +464,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
           <EncounterDeck
             :game="game"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             @choose="choose"
             style="grid-area: encounterDeck"
           />
@@ -482,7 +482,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             v-if="spectralEncounterDeck"
             :spectral="spectralEncounterDeck.length"
             :game="game"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             @choose="choose"
             style="grid-area: spectralDeck"
           />
@@ -496,7 +496,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :cardsUnder="cardsUnderAgenda"
             :cardsNextTo="cardsNextToAgenda"
             :game="game"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             :style="{ 'grid-area': `agenda${agenda.deckId}`, 'justify-self': 'center' }"
             @choose="choose"
             @show="doShowCards"
@@ -509,7 +509,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :cardsUnder="cardsUnderAct"
             :cardsNextTo="cardsNextToAct"
             :game="game"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             :style="{ 'grid-area': `act${act.deckId}`, 'justify-self': 'center' }"
             @choose="choose"
             @show="doShowCards"
@@ -521,7 +521,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           :key="enemy.id"
           :enemy="enemy"
           :game="game"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="choose"
         />
 
@@ -530,7 +530,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           :key="enemy.id"
           :enemy="enemy"
           :game="game"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="choose"
         />
 
@@ -552,7 +552,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           :game="game"
           :chaosBag="scenario.chaosBag"
           :skillTest="game.skillTest"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="choose"
         />
 
@@ -578,7 +578,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             class="location"
             :key="location.label"
             :game="game"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             :location="location"
             :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
             @choose="choose"
@@ -588,7 +588,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :key="enemy.id"
             :enemy="enemy"
             :game="game"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center' }"
             @choose="choose"
           />
@@ -610,7 +610,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
       <PlayerTabs
         :game="game"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
         :players="players"
         :playerOrder="playerOrder"
         :activePlayerId="activePlayerId"

@@ -11,7 +11,7 @@ import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api'
 import CardView from '@/arkham/components/Card.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
-import Scenario from '@/arkham/components/Scenario.vue'
+import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
@@ -75,10 +75,10 @@ const cards = computed(() => store.cards)
 const ready = ref(false)
 const solo = ref(false)
 const game = ref<Arkham.Game | null>(null)
-const investigatorId = ref<string | null>(null)
+const playerId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
 
-const question = computed(() => investigatorId.value ? game.value?.question[investigatorId.value] : null)
+const question = computed(() => playerId.value ? game.value?.question[playerId.value] : null)
 
 async function undo() {
   resultQueue.value = []
@@ -129,9 +129,9 @@ const handleResult = (result) => {
               gameLog.value = Object.freeze([...updatedGame.log])
               if (solo.value === true) {
                 if (Object.keys(game.value.question).length == 1) {
-                  investigatorId.value = Object.keys(game.value.question)[0]
-                } else if (game.value.activeInvestigatorId !== investigatorId.value) {
-                  investigatorId.value = Object.keys(game.value.question)[0]
+                  playerId.value = Object.keys(game.value.question)[0]
+                } else if (game.value.activePlayerId !== playerId.value) {
+                  playerId.value = Object.keys(game.value.question)[0]
                 }
               }
             })
@@ -181,12 +181,12 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
   return Promise.all(images)
 }
 
-fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
+fetchGame(props.gameId, spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
   loadAllImages(newGame).then(() => {
     game.value = newGame
     solo.value = multiplayerMode === "Solo"
     gameLog.value = Object.freeze(newGame.log)
-    investigatorId.value = newInvestigatorId
+    playerId.value = newPlayerId
     ready.value = true
   })
 
@@ -202,7 +202,13 @@ fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInve
 
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !spectate) {
-    send(JSON.stringify({tag: 'Answer', contents: { choice: idx , investigatorId: investigatorId.value } }))
+    send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
+  }
+}
+
+async function chooseDeck(deckId: string): Promise<void> {
+  if(game.value && !spectate) {
+    send(JSON.stringify({tag: 'DeckAnswer', deckId }))
   }
 }
 
@@ -218,7 +224,7 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   }
 }
 
-function switchInvestigator (newInvestigatorId: string) { investigatorId.value = newInvestigatorId }
+function switchInvestigator (newPlayerId: string) { playerId.value = newPlayerId }
 
 async function update(state: Arkham.Game) { game.value = state }
 
@@ -255,6 +261,7 @@ function debugExport () {
 
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 
+provide('chooseDeck', chooseDeck)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)
@@ -262,7 +269,7 @@ provide('solo', solo)
 </script>
 
 <template>
-  <div id="game" v-if="ready && game && investigatorId">
+  <div id="game" v-if="ready && game && playerId">
     <CardOverlay />
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
@@ -272,7 +279,7 @@ provide('solo', solo)
         <h2>Waiting for more players</h2>
       </header>
       <div id='invite'>
-        <div v-if="investigatorId == game.leadInvestigatorId">
+        <div v-if="playerId == game.activePlayerId">
           <p>Invite them with this url:</p>
           <div class="invite-link">
             <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
@@ -287,7 +294,7 @@ provide('solo', solo)
             <h2>{{gameCard.title}}</h2>
             <div class="revelation-card-container">
               <div class="revelation-card">
-                <CardView :game="game" :card="gameCard.card" :investigatorId="investigatorId" />
+                <CardView :game="game" :card="gameCard.card" :playerId="playerId" />
                 <img v-if="gameCard.card.tag === 'PlayerCard'" :src="imgsrc('player_back.jpg')" class="card back" />
                 <img v-else :src="imgsrc('back.png')" class="card back" />
               </div>
@@ -318,13 +325,13 @@ provide('solo', solo)
           v-if="game.campaign && !gameOver && question && question.tag === 'PickCampaignSettings'"
           :game="game"
           :campaign="game.campaign"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
         />
         <Campaign
           v-else-if="game.campaign"
           :game="game"
           :gameLog="gameLog"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="choose"
           @update="update"
         />
@@ -332,14 +339,12 @@ provide('solo', solo)
           v-else-if="game.scenario && !gameOver && question && question.tag === 'PickScenarioSettings'"
           :game="game"
           :scenario="game.scenario"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
         />
-        <Scenario
+        <StandaloneScenario
           v-else-if="game.scenario && !gameOver"
           :game="game"
-          :gameLog="gameLog"
-          :scenario="game.scenario"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="choose"
           @update="update"
         />

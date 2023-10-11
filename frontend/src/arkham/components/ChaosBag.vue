@@ -14,7 +14,7 @@ const props = defineProps<{
   game: Game
   skillTest: SkillTest | null
   chaosBag: ChaosBag
-  investigatorId: string
+  playerId: string
 }>()
 
 const emit = defineEmits<{
@@ -68,12 +68,12 @@ const revealedChaosTokens = computed(() => {
   return props.game.skillTestChaosTokens;
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
 
 const investigatorPortrait = computed(() => {
-  const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON) 
+  const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
     const player = props.game.investigators[choice.investigatorId]
 
@@ -111,7 +111,7 @@ const choose = (idx: number) => emit('choose', idx)
       class="portrait"
       :src="investigatorPortrait"
     />
-    <Token v-for="(revealedToken, index) in revealedChaosTokens" :key="index" :token="revealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+    <Token v-for="(revealedToken, index) in revealedChaosTokens" :key="index" :token="revealedToken" :playerId="playerId" :game="game" @choose="choose" />
     <img
       v-if="tokenAction !== -1"
       class="token token--can-draw"
@@ -126,7 +126,7 @@ const choose = (idx: number) => emit('choose', idx)
         />
         </div>
     </template>
-    <ChaosBagChoice v-if="chaosBag.choice && 'step' in chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice.step" :game="game" :investigatorId="investigatorId" @choose="choose" />
+    <ChaosBagChoice v-if="chaosBag.choice && 'step' in chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice.step" :game="game" :playerId="playerId" @choose="choose" />
   </div>
 </template>
 

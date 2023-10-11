@@ -10,7 +10,7 @@ import * as Arkham from '@/arkham/types/Story'
 export interface Props {
   game: Game
   story: Arkham.Story
-  investigatorId: string
+  playerId: string
   atLocation?: boolean
 }
 
@@ -23,7 +23,7 @@ const image = computed(() => {
 
 const id = computed(() => props.story.id)
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {

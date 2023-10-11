@@ -12,7 +12,7 @@ import * as Arkham from '@/arkham/types/Event';
 const props = defineProps<{
   game: Game
   event: Arkham.Event
-  investigatorId: string
+  playerId: string
 }>()
 
 const emits = defineEmits<{
@@ -29,7 +29,7 @@ const cardCode = computed(() => props.event.cardCode)
 const image = computed(() => {
   return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
 })
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {
@@ -94,7 +94,7 @@ const choose = (index: number) => emits('choose', index)
       v-for="(sealedToken, index) in event.sealedChaosTokens"
       :key="index"
       :token="sealedToken"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       :game="game"
       @choose="choose"
     />

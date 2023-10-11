@@ -7,7 +7,7 @@ import Draggable from '@/components/Draggable.vue';
 withDefaults(defineProps<{
   game: Game
   cards: CardContents[]
-  investigatorId: string
+  playerId: string
   isDiscards?: boolean
   title: string
 }>(), { isDiscards: false })
@@ -20,7 +20,7 @@ withDefaults(defineProps<{
     </template>
     <div class="card-row-cards">
       <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
-        <Card :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+        <Card :game="game" :card="card" :playerId="playerId" @choose="$emit('choose', $event)" />
       </div>
     </div>
     <button class="close" @click="$emit('close')">Close</button>

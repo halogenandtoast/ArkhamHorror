@@ -843,6 +843,7 @@ library
       Arkham.DamageEffect
       Arkham.Deck
       Arkham.Decklist
+      Arkham.Decklist.Type
       Arkham.Decks
       Arkham.DefeatedBy
       Arkham.Difficulty

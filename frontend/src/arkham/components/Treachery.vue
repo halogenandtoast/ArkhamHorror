@@ -12,7 +12,7 @@ import * as Arkham from '@/arkham/types/Treachery';
 export interface Props {
   game: Game
   treachery: Arkham.Treachery
-  investigatorId: string
+  playerId: string
   attached?: boolean
 }
 
@@ -22,7 +22,7 @@ const image = computed(() => {
   return imgsrc(`cards/${props.treachery.cardCode.replace('c', '')}.jpg`)
 })
 const id = computed(() => props.treachery.id)
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function canInteract(c: Message): boolean {
   if (c.tag === "TargetLabel") {

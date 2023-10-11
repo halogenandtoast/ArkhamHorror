@@ -11,17 +11,19 @@ import * as ArkhamGame from '@/arkham/types/Game'
 export interface Props {
   game: Game
   card: Card
-  investigatorId: string
+  playerId: string
   ownerId: string
 }
 
 const props = defineProps<Props>()
 
+const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
+
 const cardContents = computed<CardContents>(() =>
   props.card.tag == 'VengeanceCard' ? props.card.contents.contents : props.card.contents)
 
 const id = computed(() => cardContents.value.id)
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const cardAction = computed(() => {
   return choices.value.findIndex((choice) => {

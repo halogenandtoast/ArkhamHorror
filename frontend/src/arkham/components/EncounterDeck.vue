@@ -8,17 +8,25 @@ import { useDebug } from '@/arkham/debug'
 
 export interface Props {
   game: Game
-  investigatorId: string
+  playerId: string
   spectral?: number
 }
 
 const isSpectral = computed(() => props.spectral !== undefined && props.spectral !== null)
 
 const props = defineProps<Props>()
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+
+const investigator = computed(() => {
+  return Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
+})
+
+const investigatorId = computed(() => {
+  return investigator.value ? investigator.value.id : "00000"
+})
 
 const usingSpectral = computed(() => {
-  const { modifiers } = props.game.investigators[props.investigatorId]
+  const { modifiers } = investigator?.value ?? { modifiers: [] }
   return modifiers ? modifiers.some((m) => m.type.tag === "UseEncounterDeck" && m.type.contents === "SpectralEncounterDeck") : false
 })
 
@@ -33,17 +41,15 @@ const deckAction = computed(() => {
 const investigatorPortrait = computed(() => {
   const choice = choices.value[deckAction.value]
 
-  if (!choice) {
+  if (!choice || !investigator.value) {
     return null;
   }
 
-  const player = props.game.investigators[props.investigatorId]
-
-  if (player.isYithian) {
-    return imgsrc(`portraits/${props.investigatorId.replace('c', '')}.jpg`)
+  if (investigator.value.isYithian) {
+    return imgsrc(`portraits/${investigator.value.id.replace('c', '')}.jpg`)
   }
 
-  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+  return imgsrc(`portraits/${investigator.value.cardCode.replace('c', '')}.jpg`)
 })
 
 const deckLabel = computed(() => {

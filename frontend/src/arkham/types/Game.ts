@@ -48,6 +48,7 @@ export interface Game {
   gameState: GameState;
   investigators: Record<string, Investigator>;
   leadInvestigatorId: string;
+  activePlayerId: string;
   locations: Record<string, Location>;
   phase: Phase;
   phaseStep: PhaseStep | null;
@@ -153,6 +154,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     gameState: gameStateDecoder,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     leadInvestigatorId: JsonDecoder.string,
+    activePlayerId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
     phaseStep: JsonDecoder.nullable(phaseStepDecoder),

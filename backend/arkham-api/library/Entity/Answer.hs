@@ -8,13 +8,18 @@ import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
-import Arkham.Card.CardCode
+import Arkham.Card
+import Arkham.Classes.Entity
+import Arkham.Decklist
+import Arkham.Entities
 import Arkham.Game
 import Arkham.Id
+import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
+import Foundation
 import Json
 import Safe (fromJustNote)
 
@@ -25,12 +30,13 @@ data Answer
   | AmountsAnswer AmountsResponse
   | StandaloneSettingsAnswer [StandaloneSetting]
   | CampaignSettingsAnswer CampaignSettings
+  | DeckAnswer {deckId :: ArkhamDeckId}
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
 data QuestionResponse = QuestionResponse
   { qrChoice :: Int
-  , qrInvestigatorId :: Maybe InvestigatorId
+  , qrPlayerId :: Maybe PlayerId
   }
   deriving stock (Show, Generic)
 
@@ -195,60 +201,74 @@ makeCampaignLog settings =
     Success a -> crossedOut a
     Error err -> error $ "Failed to parse " <> tshow e <> ": " <> T.pack err
 
-answerInvestigator :: Answer -> Maybe InvestigatorId
-answerInvestigator = \case
-  Answer response -> qrInvestigatorId response
+answerPlayer :: Answer -> Maybe PlayerId
+answerPlayer = \case
+  Answer response -> qrPlayerId response
   Raw _ -> Nothing
   AmountsAnswer _ -> Nothing
   PaymentAmountsAnswer _ -> Nothing
   StandaloneSettingsAnswer _ -> Nothing
   CampaignSettingsAnswer _ -> Nothing
+  DeckAnswer _ -> Nothing
 
-handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
-handleAnswer Game {..} investigatorId = \case
-  StandaloneSettingsAnswer settings' ->
+playerInvestigator :: Entities -> PlayerId -> InvestigatorId
+playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPlayerId) (toList entitiesInvestigators) of
+  Just investigator -> toId investigator
+  Nothing -> error $ "No investigator for player " <> tshow pid
+
+handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m [Message]
+handleAnswer Game {..} playerId = \case
+  DeckAnswer deckId -> do
+    deck <- runDB $ get404 deckId
+    player <- runDB $ get404 (coerce playerId)
+    when (arkhamDeckUserId deck /= arkhamPlayerUserId player) notFound
+    let investigatorId = investigator_code $ arkhamDeckList deck
+    runDB $ update (traceShowId $ coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
+    pure [LoadDecklist playerId (arkhamDeckList deck)]
+  StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
-     in [SetCampaignLog standaloneCampaignLog]
-  CampaignSettingsAnswer settings' ->
+    pure [SetCampaignLog standaloneCampaignLog]
+  CampaignSettingsAnswer settings' -> do
     let campaignLog' = makeCampaignLog settings'
-     in [SetCampaignLog campaignLog']
-  AmountsAnswer response -> case Map.lookup investigatorId gameQuestion of
+    pure [SetCampaignLog campaignLog']
+  AmountsAnswer response -> case Map.lookup playerId gameQuestion of
     Just (ChooseAmounts _ _ _ target) ->
-      [ ResolveAmounts
-          investigatorId
-          (Map.toList $ arAmounts response)
-          target
-      ]
+      pure
+        [ ResolveAmounts
+            (playerInvestigator gameEntities playerId)
+            (Map.toList $ arAmounts response)
+            target
+        ]
     Just (QuestionLabel _ _ (ChooseAmounts _ _ _ target)) ->
-      [ ResolveAmounts
-          investigatorId
-          (Map.toList $ arAmounts response)
-          target
-      ]
+      pure
+        [ ResolveAmounts
+            (playerInvestigator gameEntities playerId)
+            (Map.toList $ arAmounts response)
+            target
+        ]
     _ -> error "Wrong question type"
   PaymentAmountsAnswer response ->
-    case Map.lookup investigatorId gameQuestion of
-      Just (ChoosePaymentAmounts _ _ info) ->
+    case Map.lookup playerId gameQuestion of
+      Just (ChoosePaymentAmounts _ _ info) -> do
         let
           costMap =
             Map.fromList
               $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
-         in
-          concatMap
+        pure
+          $ concatMap
             ( \(iid, n) ->
                 replicate n (Map.findWithDefault Noop iid costMap)
             )
-            $ Map.toList (parAmounts response)
+          $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
-  Raw message -> [message]
-  Answer response ->
+  Raw message -> pure [message]
+  Answer response -> do
     let
       q =
         fromJustNote
           "Invalid question type"
-          (Map.lookup investigatorId gameQuestion)
-     in
-      go id q response
+          (Map.lookup playerId gameQuestion)
+    pure $ go id q response
  where
   go
     :: (Question Message -> Question Message)
@@ -258,10 +278,10 @@ handleAnswer Game {..} investigatorId = \case
   go f q response = case q of
     QuestionLabel lbl mCard q' -> go (QuestionLabel lbl mCard) q' response
     Read t qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask investigatorId $ f $ Read t qs]
+      Nothing -> [Ask playerId $ f $ Read t qs]
       Just msg -> [uiToRun msg]
     ChooseOne qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask investigatorId $ f $ ChooseOne qs]
+      Nothing -> [Ask playerId $ f $ ChooseOne qs]
       Just msg -> [uiToRun msg]
     ChooseN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
@@ -270,8 +290,8 @@ handleAnswer Game {..} investigatorId = \case
         (Just m', msgs'') ->
           if n - 1 == 0
             then [uiToRun m']
-            else [uiToRun m', Ask investigatorId $ f $ ChooseN (n - 1) msgs'']
-        (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseN n msgs'']
+            else [uiToRun m', Ask playerId $ f $ ChooseN (n - 1) msgs'']
+        (Nothing, msgs'') -> [Ask playerId $ f $ ChooseN n msgs'']
     ChooseUpToN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
@@ -280,16 +300,16 @@ handleAnswer Game {..} investigatorId = \case
         (Just m', msgs'') ->
           if n - 1 == 0
             then [uiToRun m']
-            else [uiToRun m', Ask investigatorId $ f $ ChooseUpToN (n - 1) msgs'']
-        (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseUpToN n msgs'']
+            else [uiToRun m', Ask playerId $ f $ ChooseUpToN (n - 1) msgs'']
+        (Nothing, msgs'') -> [Ask playerId $ f $ ChooseUpToN n msgs'']
     ChooseOneAtATime msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of
         (Just m', []) -> [uiToRun m']
         (Just m', msgs'') ->
-          [uiToRun m', Ask investigatorId $ f $ ChooseOneAtATime msgs'']
+          [uiToRun m', Ask playerId $ f $ ChooseOneAtATime msgs'']
         (Nothing, msgs'') ->
-          [Ask investigatorId $ f $ ChooseOneAtATime msgs'']
+          [Ask playerId $ f $ ChooseOneAtATime msgs'']
     ChooseSome msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of
@@ -297,8 +317,8 @@ handleAnswer Game {..} investigatorId = \case
         (Just m', msgs'') -> case msgs'' of
           [] -> [uiToRun m']
           [Done _] -> [uiToRun m']
-          rest -> [uiToRun m', Ask investigatorId $ f $ ChooseSome rest]
-        (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseSome msgs'']
+          rest -> [uiToRun m', Ask playerId $ f $ ChooseSome rest]
+        (Nothing, msgs'') -> [Ask playerId $ f $ ChooseSome msgs'']
     ChooseSome1 doneMsg msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of
@@ -306,13 +326,13 @@ handleAnswer Game {..} investigatorId = \case
         (Just m', msgs'') -> case msgs'' of
           [] -> [uiToRun m']
           [Done _] -> [uiToRun m']
-          rest -> [uiToRun m', Ask investigatorId $ f $ ChooseSome $ Done doneMsg : rest]
-        (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseSome $ Done doneMsg : msgs'']
+          rest -> [uiToRun m', Ask playerId $ f $ ChooseSome $ Done doneMsg : rest]
+        (Nothing, msgs'') -> [Ask playerId $ f $ ChooseSome $ Done doneMsg : msgs'']
     PickSupplies remaining chosen qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask investigatorId $ f $ PickSupplies remaining chosen qs]
+      Nothing -> [Ask playerId $ f $ PickSupplies remaining chosen qs]
       Just msg -> [uiToRun msg]
     DropDown qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask investigatorId $ f $ DropDown qs]
+      Nothing -> [Ask playerId $ f $ DropDown qs]
       Just (_, msg) -> [msg]
     _ -> error "Wrong question type"
 

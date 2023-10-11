@@ -102,8 +102,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   StartCampaign -> do
     standalone <- getIsStandalone
     when standalone $ do
+      players <- allPlayers
+      pushAll
+        $ map chooseDeck players
+        <> [DoStep 1 StartCampaign, StartScenario scenarioId]
+    pure a
+  DoStep 1 StartCampaign -> do
+    standalone <- getIsStandalone
+    when standalone $ do
       lead <- getLeadPlayer
-      pushAll [Ask lead PickScenarioSettings, StartScenario scenarioId]
+      pushAll [Ask lead PickScenarioSettings]
     pure a
   InitDeck iid deck -> do
     standalone <- getIsStandalone

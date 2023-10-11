@@ -1,9 +1,10 @@
-module Arkham.Decklist where
+module Arkham.Decklist (module Arkham.Decklist, module Arkham.Decklist.Type) where
 
 import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Card.PlayerCard
+import Arkham.Decklist.Type
 import Arkham.Id
 import Arkham.Investigator
 import Arkham.PlayerCard
@@ -16,15 +17,6 @@ import Text.Parsec (ParsecT, char, digit, many1, parse, sepBy)
 import Text.Read (read)
 
 type Parser = ParsecT Text () Identity
-
-data ArkhamDBDecklist = ArkhamDBDecklist
-  { slots :: Map CardCode Int
-  , investigator_code :: InvestigatorId
-  , investigator_name :: Text
-  , meta :: Maybe Text
-  }
-  deriving stock (Generic, Show)
-  deriving anyclass (FromJSON, ToJSON)
 
 loadDecklist :: CardGen m => ArkhamDBDecklist -> m (InvestigatorId, [PlayerCard])
 loadDecklist decklist = (investigatorId,) <$> loadDecklistCards decklist

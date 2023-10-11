@@ -10,13 +10,13 @@ import * as ArkhamGame from '@/arkham/types/Game';
 
 export interface Props {
   game: Game
-  investigatorId: string
+  playerId: string
 }
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
-const question = computed(() => props.game.question[props.investigatorId])
+const question = computed(() => props.game.question[props.playerId])
 const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
 }
@@ -47,7 +47,7 @@ const labelChoices = computed(() => {
   if (!question.value || question.value.tag !== 'QuestionLabel') {
     return []
   }
-  
+
   if (question.value.question.tag !== 'ChooseOne') {
     return []
   }
@@ -81,7 +81,7 @@ const choose = (idx: number) => emit('choose', idx)
   <template v-if="question && question.tag === QuestionType.READ">
     <StoryEntry
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       :question="question"
       @choose="choose"
     />

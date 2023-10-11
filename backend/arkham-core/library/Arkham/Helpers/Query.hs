@@ -7,6 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.EncounterSet (EncounterSet)
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
@@ -25,13 +26,13 @@ getLeadInvestigatorId = do
   mOthers <- selectOne (IncludeEliminated Anyone)
   pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
-getLead :: HasGame m => m InvestigatorId
+getLead :: (HasCallStack, HasGame m) => m InvestigatorId
 getLead = getLeadInvestigatorId
 
 getPlayer :: HasGame m => InvestigatorId -> m PlayerId
 getPlayer = field InvestigatorPlayerId
 
-getActiveInvestigatorId :: HasGame m => m InvestigatorId
+getActiveInvestigatorId :: (HasCallStack, HasGame m) => m InvestigatorId
 getActiveInvestigatorId = selectJust ActiveInvestigator
 
 getInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
@@ -56,12 +57,12 @@ allInvestigators :: HasGame m => m [InvestigatorId]
 allInvestigators = allInvestigatorIds
 
 allPlayers :: HasGame m => m [PlayerId]
-allPlayers = selectFields InvestigatorPlayerId Anyone
+allPlayers = getAllPlayers
 
-getLeadPlayer :: HasGame m => m PlayerId
+getLeadPlayer :: (HasCallStack, HasGame m) => m PlayerId
 getLeadPlayer = field InvestigatorPlayerId =<< getLead
 
-getLeadInvestigatorPlayer :: HasGame m => m (InvestigatorId, PlayerId)
+getLeadInvestigatorPlayer :: (HasCallStack, HasGame m) => m (InvestigatorId, PlayerId)
 getLeadInvestigatorPlayer = traverseToSnd (field InvestigatorPlayerId) =<< getLead
 
 selectAssetController
@@ -88,7 +89,7 @@ the card a match, but "flip" it to the correct side.
 This logic is a bit too generous and we may want to specify
 on double sided cards which card code is on the other side.
 -}
-getSetAsideCard :: HasGame m => CardDef -> m Card
+getSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> m Card
 getSetAsideCard def = do
   card <- selectJust . SetAsideCardMatch $ cardIs def
   pure
@@ -96,7 +97,7 @@ getSetAsideCard def = do
       then card
       else lookupCard (toCardCode def) (toCardId card)
 
-getSetAsideEncounterCard :: HasGame m => CardDef -> m EncounterCard
+getSetAsideEncounterCard :: (HasCallStack, HasGame m) => CardDef -> m EncounterCard
 getSetAsideEncounterCard =
   fmap (fromJustNote "must be encounter card") . maybeGetSetAsideEncounterCard
 
@@ -112,7 +113,7 @@ maybeGetSetAsideEncounterCard = fmap (preview _EncounterCard) . getSetAsideCard
 getSetAsideCardsMatching :: HasGame m => CardMatcher -> m [Card]
 getSetAsideCardsMatching = selectList . SetAsideCardMatch
 
-getJustLocationByName :: HasGame m => Name -> m LocationId
+getJustLocationByName :: (HasCallStack, HasGame m) => Name -> m LocationId
 getJustLocationByName name =
   fromJustNote ("Missing " <> show name) <$> getLocationByName name
 

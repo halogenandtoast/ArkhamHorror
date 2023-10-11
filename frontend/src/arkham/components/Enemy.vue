@@ -18,13 +18,15 @@ import * as Arkham from '@/arkham/types/Enemy'
 const props = withDefaults(defineProps<{
   game: Game
   enemy: Arkham.Enemy
-  investigatorId: string
+  playerId: string
   atLocation?: boolean
 }>(), { atLocation: false })
 
 const emits = defineEmits<{
   choose: [value: number]
 }>()
+
+const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
 
 const enemyStory = computed(() => {
   const { stories } = props.game
@@ -38,7 +40,7 @@ const image = computed(() => {
 
 const id = computed(() => props.enemy.id)
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
@@ -141,7 +143,7 @@ watch(abilities, (abilities) => {
 
 <template>
   <div class="enemy">
-    <Story v-if="enemyStory" :story="enemyStory" :game="game" :investigatorId="investigatorId" @choose="choose"/>
+    <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
     <template v-else>
       <div class="card-frame">
         <img :src="image"
@@ -165,7 +167,7 @@ watch(abilities, (abilities) => {
             v-for="(sealedToken, index) in enemy.sealedChaosTokens"
             :key="index"
             :token="sealedToken"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             :game="game"
             @choose="choose"
           />
@@ -187,7 +189,7 @@ watch(abilities, (abilities) => {
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       :attached="true"
       :class="{ 'small-treachery': atLocation }"
       @choose="$emit('choose', $event)"
@@ -197,7 +199,7 @@ watch(abilities, (abilities) => {
       :key="assetId"
       :asset="game.assets[assetId]"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
     <template v-if="debug.active">

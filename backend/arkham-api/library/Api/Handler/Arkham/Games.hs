@@ -15,15 +15,12 @@ module Api.Handler.Arkham.Games (
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
-import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
-import Arkham.Decklist
 import Arkham.Difficulty
 import Arkham.Game
 import Arkham.Game.Diff
 import Arkham.Id
-import Arkham.Investigator
 import Arkham.Message
 import Conduit
 import Control.Lens (view)
@@ -31,13 +28,10 @@ import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
-import Data.List.NonEmpty qualified as NonEmpty
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
-import Data.Traversable (for)
 import Database.Esqueleto.Experimental hiding (update)
 import Entity.Answer
-import Entity.Arkham.Player
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
 import Json
@@ -80,7 +74,7 @@ catchingConnectionException f =
   f `catch` \e -> $(logWarn) $ tshow (e :: ConnectionException)
 
 data GetGameJson = GetGameJson
-  { investigatorId :: Maybe InvestigatorId
+  { playerId :: Maybe PlayerId
   , multiplayerMode :: MultiplayerVariant
   , game :: PublicGame ArkhamGameId
   }
@@ -92,16 +86,12 @@ getApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   webSockets $ gameStream (Just userId) gameId
   ge <- runDB $ get404 gameId
-  ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404 (UniquePlayer userId gameId)
-  let
-    Game {..} = arkhamGameCurrentData ge
-    investigatorId = case arkhamGameMultiplayerVariant ge of
-      Solo -> coerce gameActiveInvestigatorId
-      WithFriends -> coerce arkhamPlayerInvestigatorId
+  -- ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404 (UniquePlayer userId gameId)
+  let Game {..} = arkhamGameCurrentData ge
   gameLog <- runDB $ getGameLog gameId Nothing
   pure
     $ GetGameJson
-      (Just investigatorId)
+      (Just gameActivePlayerId)
       (arkhamGameMultiplayerVariant ge)
       (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
 
@@ -109,13 +99,11 @@ getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
   webSockets $ gameStream Nothing gameId
   ge <- runDB $ get404 gameId
-  let
-    Game {..} = arkhamGameCurrentData ge
-    investigatorId = coerce gameActiveInvestigatorId
+  let Game {..} = arkhamGameCurrentData ge
   gameLog <- runDB $ getGameLog gameId Nothing
   pure
     $ GetGameJson
-      (Just investigatorId)
+      (Just gameActivePlayerId)
       (arkhamGameMultiplayerVariant ge)
       (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
 
@@ -124,7 +112,8 @@ getApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   games <- runDB $ select $ do
     (players :& games) <-
-      from
+      distinct
+        $ from
         $ table @ArkhamPlayer
         `innerJoin` table @ArkhamGame
           `on` (\(players :& games) -> players.arkhamGameId ==. games.id)
@@ -170,23 +159,25 @@ postApiV1ArkhamGamesR = do
       Nothing -> error "missing either a campign id or a scenario id"
 
   let ag = ArkhamGame campaignName game 0 multiplayerVariant now now
-  (key, pid) <- runDB $ do
+  let repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
+  (key, pids) <- runDB $ do
     gameId <- insert ag
-    pid <- insert $ ArkhamPlayer userId gameId "00000"
-    pure (gameId, pid)
+    pids <- insertMany $ replicate repeatCount $ ArkhamPlayer userId gameId "00000"
+    pure (gameId, pids)
 
   gameRef <- newIORef game
-  ge <- readIORef gameRef
-  let diffDown = diff ge game
+  -- ge <- readIORef gameRef
 
   runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
-    addPlayer (PlayerId $ coerce pid)
+    for_ pids $ \pid -> addPlayer (PlayerId $ coerce pid)
     runMessages Nothing
 
   updatedQueue <- readIORef (queueToRef queueRef)
   updatedGame <- readIORef gameRef
 
   let ag' = ag {arkhamGameCurrentData = updatedGame}
+
+  -- let diffDown = diff ge game
 
   runDB $ do
     replace key ag'
@@ -202,7 +193,7 @@ putApiV1ArkhamGameR gameId = do
 
 updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
 updateGame response gameId userId writeChannel = do
-  (Entity pid arkhamPlayer@ArkhamPlayer {..}, ArkhamGame {..}) <-
+  (Entity pid arkhamPlayer, ArkhamGame {..}) <-
     runDB
       $ (,)
       <$> getBy404 (UniquePlayer userId gameId)
@@ -210,14 +201,14 @@ updateGame response gameId userId writeChannel = do
   mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   let
     gameJson@Game {..} = arkhamGameCurrentData
-    investigatorId =
+    playerId =
       fromMaybe
-        (coerce arkhamPlayerInvestigatorId)
-        (answerInvestigator response)
-    messages = handleAnswer gameJson investigatorId response
+        (coerce pid)
+        (answerPlayer response)
     currentQueue =
       maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
+  messages <- handleAnswer gameJson playerId response
   gameRef <- newIORef gameJson
   queueRef <- newQueue (messages <> currentQueue)
   logRef <- newIORef []
@@ -251,11 +242,11 @@ updateGame response gameId userId writeChannel = do
         (Choice diffDown updatedQueue)
         (arkhamGameStep + 1)
         (ActionDiff $ view actionDiffL ge)
-    when (arkhamGameMultiplayerVariant == Solo)
-      $ replace pid
-      $ arkhamPlayer
-        { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
-        }
+  -- when (arkhamGameMultiplayerVariant == Solo)
+  --   $ replace pid
+  --   $ arkhamPlayer
+  --     { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+  --     }
 
   atomically
     $ writeTChan writeChannel

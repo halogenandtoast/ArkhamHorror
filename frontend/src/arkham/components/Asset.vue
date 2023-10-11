@@ -18,7 +18,7 @@ import { Card } from '../types/Card';
 const props = defineProps<{
   game: Game
   asset: Arkham.Asset
-  investigatorId: string
+  playerId: string
 }>()
 
 const emits = defineEmits<{
@@ -26,6 +26,7 @@ const emits = defineEmits<{
   showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
 }>()
 
+const investigatorId = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId)?.id)
 const id = computed(() => props.asset.id)
 const hasPool = computed(() => {
   const {
@@ -44,7 +45,7 @@ const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
   return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
 })
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {
@@ -184,7 +185,7 @@ watch(abilities, (abilities) => {
         <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
         <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
         <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-        <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+        <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
       </div>
 
       <div v-if="showAbilities" class="abilities" :data-image="image">
@@ -200,7 +201,7 @@ watch(abilities, (abilities) => {
       v-for="eventId in asset.events"
       :event="game.events[eventId]"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       :key="eventId"
       @choose="$emit('choose', $event)"
     />
@@ -213,7 +214,7 @@ watch(abilities, (abilities) => {
       v-for="assetId in asset.assets"
       :asset="game.assets[assetId]"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       :key="assetId"
       @choose="$emit('choose', $event)"
     />

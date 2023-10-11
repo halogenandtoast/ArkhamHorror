@@ -28,37 +28,39 @@ interface RefWrapper<T> {
 
 export interface Props {
   game: Game
-  player: Arkham.Investigator
-  investigatorId: string
+  investigator: Arkham.Investigator
+  playerId: string
   tarotCards: TarotCard[]
 }
 
 const props = defineProps<Props>()
 
+const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
+
 const stories = computed(() =>
   Object.
     values(props.game.stories).
-    filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === props.investigatorId && s.otherSide === null)
+    filter((s) => s.placement.tag === "InThreatArea" && s.placement.contents === investigatorId.value && s.otherSide === null)
 )
 
 const engagedEnemies = computed(() =>
-  props.player.engagedEnemies.map((e) => props.game.enemies[e]).filter((e) => e.placement.tag === "InThreatArea" && e.placement.contents === props.investigatorId)
+  props.investigator.engagedEnemies.map((e) => props.game.enemies[e]).filter((e) => e.placement.tag === "InThreatArea" && e.placement.contents === investigatorId.value)
 )
 
 const inHandEnemies = computed(() =>
-  Object.values(props.game.enemies).filter((e) => e.placement.tag === "StillInHand" && e.placement.contents === props.investigatorId)
+  Object.values(props.game.enemies).filter((e) => e.placement.tag === "StillInHand" && e.placement.contents === props.investigatorId.value)
 )
 
-const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
+const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
 
 const topOfDiscard = computed(() => discards.value[0])
 
 const topOfDeckRevealed = computed(() =>
-  props.player.modifiers?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfDeckIsRevealed")
+  props.investigator.modifiers?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfDeckIsRevealed")
 )
 
 const topOfDeck = computed(() => {
-  const topCard = props.player.deck[0]
+  const topCard = props.investigator.deck[0]
   if  (topOfDeckRevealed.value && topCard) {
     return imgsrc(`cards/${topCard.cardCode.replace(/^c/, '')}.jpg`)
   }
@@ -66,7 +68,7 @@ const topOfDeck = computed(() => {
 })
 
 const hunchDeck = computed(() => {
-  const match = props.player.decks.find(([k,]) => k === "HunchDeck")
+  const match = props.investigator.decks.find(([k,]) => k === "HunchDeck")
   if (match) {
     return match[1]
   }
@@ -75,7 +77,7 @@ const hunchDeck = computed(() => {
 })
 
 const topOfHunchDeckRevealed = computed(() => {
-  const { revealedHunchCard } = props.player
+  const { revealedHunchCard } = props.investigator
   const hunchCard = topOfHunchDeck.value
   if (hunchCard) {
     return toCardContents(hunchCard).id === revealedHunchCard
@@ -93,9 +95,9 @@ const topOfHunchDeck = computed(() => {
 })
 
 const playTopOfDeckAction = computed(() => {
-  const topOfDeck = props.player.deck[0]
+  const topOfDeck = props.investigator.deck[0]
   if (topOfDeck !== undefined && topOfDeck !== null) {
-    return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.player.deck[0].id)
+    return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.investigator.deck[0].id)
   }
   return -1
 })
@@ -103,8 +105,8 @@ const playTopOfDeckAction = computed(() => {
 const viewingDiscard = ref(false)
 const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : pluralize('Card', discards.value.length))
 
-const id = computed(() => props.player.id)
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const id = computed(() => props.investigator.id)
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const tarotCardAbility = (card: TarotCard) => {
   return choices.value.findIndex((c) => {
@@ -150,17 +152,17 @@ const hideCards = () => {
 }
 
 const committedCards = computed(() => props.game.skillTest?.committedCards || [])
-const playerHand = computed(() => props.player.hand.
+const playerHand = computed(() => props.investigator.hand.
   filter((card) =>
     !committedCards.value.some((cc) => toCardContents(card).id == toCardContents(cc).id))
 )
 
 const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.inFrontOf === props.player.id))
+  filter((a) => a.inFrontOf === props.investigator.id))
 
 const debug = useDebug()
-const events = computed(() => props.player.events.map((e) => props.game.events[e]).filter(e => e))
-const emptySlots = computed(() => props.player.slots.filter((s) => s.empty))
+const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
+const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
 
 
 const slotImg = (slot: Arkham.Slot) => {
@@ -291,17 +293,17 @@ function onLeave(el, done) {
           v-for="event in events"
           :event="event"
           :game="game"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           :key="event.id"
           :data-index="event.cardId"
           @choose="$emit('choose', $event)"
           @showCards="doShowCards"
         />
         <Asset
-          v-for="asset in player.assets"
+          v-for="asset in investigator.assets"
           :asset="game.assets[asset]"
           :game="game"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           :key="asset"
           @choose="$emit('choose', $event)"
           @showCards="doShowCards"
@@ -313,7 +315,7 @@ function onLeave(el, done) {
           :story="story"
           :game="game"
           :data-index="story.cardId"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="$emit('choose', $event)"
         />
 
@@ -323,17 +325,17 @@ function onLeave(el, done) {
           :enemy="enemy"
           :game="game"
           :data-index="enemy.cardId"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="$emit('choose', $event)"
         />
 
         <Treachery
-          v-for="treacheryId in player.treacheries"
+          v-for="treacheryId in investigator.treacheries"
           :key="treacheryId"
           :treachery="game.treacheries[treacheryId]"
           :game="game"
           :data-index="game.treacheries[treacheryId].cardId"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="$emit('choose', $event)"
         />
 
@@ -342,7 +344,7 @@ function onLeave(el, done) {
           class="location"
           :key="key"
           :game="game"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           :location="location"
           :data-index="location.cardId"
           :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
@@ -358,7 +360,7 @@ function onLeave(el, done) {
           <CommittedSkills
             :game="game"
             :cards="committedCards"
-            :investigatorId="investigatorId"
+            :playerId="playerId"
             @choose="$emit('choose', $event)"
           />
         </div>
@@ -367,7 +369,7 @@ function onLeave(el, done) {
 
     <ChoiceModal
       :game="game"
-      :investigatorId="id"
+      :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
 
@@ -377,8 +379,8 @@ function onLeave(el, done) {
           v-if="topOfHunchDeck && topOfHunchDeckRevealed"
           :card="topOfHunchDeck"
           :game="game"
-          :ownerId="player.id"
-          :investigatorId="investigatorId"
+          :ownerId="investigator.id"
+          :playerId="playerId"
           @choose="$emit('choose', $event)"
         />
         <img
@@ -392,15 +394,15 @@ function onLeave(el, done) {
 
       <Investigator
         :game="game"
-        :player="player"
+        :investigator="investigator"
         :choices="choices"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
         @choose="$emit('choose', $event)"
         @showCards="doShowCards"
       />
 
       <div class="discard">
-        <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+        <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" @choose="$emit('choose', $event)" />
         <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
       </div>
 
@@ -413,7 +415,7 @@ function onLeave(el, done) {
             width="150px"
             @click="$emit('choose', drawCardsAction)"
           />
-          <span class="deck-size">{{player.deckSize}}</span>
+          <span class="deck-size">{{investigator.deckSize}}</span>
           <button v-if="playTopOfDeckAction !== -1" @click="$emit('choose', playTopOfDeckAction)">Play</button>
         </div>
         <template v-if="debug.active">
@@ -425,8 +427,8 @@ function onLeave(el, done) {
           v-for="card in playerHand"
           :card="card"
           :game="game"
-          :investigatorId="investigatorId"
-          :ownerId="player.id"
+          :playerId="playerId"
+          :ownerId="investigator.id"
           :key="toCardContents(card).id"
           @choose="$emit('choose', $event)"
         />
@@ -437,7 +439,7 @@ function onLeave(el, done) {
           :enemy="enemy"
           :game="game"
           :data-index="enemy.cardId"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="$emit('choose', $event)"
         />
 
@@ -447,7 +449,7 @@ function onLeave(el, done) {
           :treachery="game.treacheries[treacheryId]"
           :game="game"
           :data-index="treacheryId"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="$emit('choose', $event)"
         />
 
@@ -457,7 +459,7 @@ function onLeave(el, done) {
     <CardRow
       v-if="showCards.ref.length > 0"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       :cards="showCards.ref"
       :isDiscards="viewingDiscard"
       :title="cardRowTitle"

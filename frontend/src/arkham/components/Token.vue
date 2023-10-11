@@ -8,7 +8,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 const props = withDefaults(defineProps<{
   game: Game
   token: ChaosToken
-  investigatorId: string
+  playerId: string
   cancelled?: boolean
   selected?: boolean
 }>(), { cancelled: false, selected: false })
@@ -53,7 +53,7 @@ const image = computed(() => {
   }
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const revealedTokenAction = computed(() => {
   if (props.cancelled || props.selected) {

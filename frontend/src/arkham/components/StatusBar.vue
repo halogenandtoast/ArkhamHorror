@@ -13,14 +13,14 @@ import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 
 export interface Props {
   game: Game
-  investigatorId: string
+  playerId: string
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
-const question = computed(() => props.game.question[props.investigatorId])
+const question = computed(() => props.game.question[props.playerId])
 const hide = ref(false)
 
 const choose = (idx: number) => emit('choose', idx)
@@ -71,7 +71,8 @@ const testResult = computed(() => {
 
 // focused cards are handled by the player's choice modal
 const focusedCards = computed(() => {
-  const playerCards = Object.values(props.game.investigators[props.investigatorId].foundCards).flat()
+  const investigator = Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
+  const playerCards = Object.values(investigator?.foundCards ?? []).flat()
   if (playerCards.length > 0) {
     return playerCards
   }
@@ -148,7 +149,7 @@ const label = function(body: string) {
           v-if="game.skillTest && game.skillTest.committedCards.length > 0"
           :game="game"
           :cards="game.skillTest.committedCards"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           @choose="choose"
         />
         <dl>

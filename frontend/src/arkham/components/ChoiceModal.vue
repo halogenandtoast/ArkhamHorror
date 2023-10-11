@@ -10,12 +10,13 @@ import Draggable from '@/components/Draggable.vue';
 
 const props = defineProps<{
   game: Game
-  investigatorId: string
+  playerId: string
 }>()
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
 const focusedCards = computed(() => {
-  const playerCards = Object.values(props.game.investigators[props.investigatorId].foundCards).flat()
+  const playerCards = Object.values(investigator.value?.foundCards ?? []).flat()
   if (playerCards.length > 0) {
     return playerCards
   }
@@ -31,7 +32,7 @@ const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise
 const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
 
 const paymentAmountsLabel = computed(() => {
-  const question = props.game.question[props.investigatorId]
+  const question = props.game.question[props.playerId]
   if (question?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     return question.label
   }
@@ -40,7 +41,7 @@ const paymentAmountsLabel = computed(() => {
 })
 
 const amountsLabel = computed(() => {
-  const question = props.game.question[props.investigatorId]
+  const question = props.game.question[props.playerId]
   if (question?.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.label
   }
@@ -52,7 +53,7 @@ const amountsLabel = computed(() => {
   return null
 })
 
-const question = computed(() => props.game.question[props.investigatorId])
+const question = computed(() => props.game.question[props.playerId])
 
 const investigatorName = (iid: string) => props.game.investigators[iid].name.title
 
@@ -89,7 +90,7 @@ const setInitialAmounts = () => {
 onMounted(setInitialAmounts)
 
 watch(
-  () => props.game.question[props.investigatorId],
+  () => props.game.question[props.playerId],
   setInitialAmounts)
 
 const unmetAmountRequirements = computed(() => {
@@ -226,7 +227,7 @@ const replaceIcons = function(body: string) {
           v-for="(card, index) in focusedCards"
           :card="card"
           :game="game"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           :key="index"
           @choose="$emit('choose', $event)"
         />

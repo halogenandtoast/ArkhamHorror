@@ -703,6 +703,7 @@ newGame investigator = do
         , gamePlayerCount = 1
         , gameActiveInvestigatorId = investigatorId
         , gameLeadInvestigatorId = investigatorId
+        , gameActivePlayerId = attr investigatorPlayerId investigator
         , gamePlayers = [attr investigatorPlayerId investigator]
         , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
         , gamePhaseStep = Nothing

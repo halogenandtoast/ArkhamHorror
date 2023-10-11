@@ -93,10 +93,6 @@ allInvestigatorCards =
       , dianaStanley
       , ritaYoung
       , marieLambeau
-      , gavriellaMizrah
-      , jeromeDavids
-      , valentinoRivas
-      , pennyWhite
       , tommyMuldoon
       , mandyThompson
       , tonyMorgan
@@ -113,7 +109,11 @@ allInvestigatorCards =
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
-allEncounterInvestigatorCards = mapFromList $ concatMap toCardCodePairs [bodyOfAYithian]
+allEncounterInvestigatorCards =
+  mapFromList
+    $ concatMap
+      toCardCodePairs
+      [bodyOfAYithian, gavriellaMizrah, jeromeDavids, valentinoRivas, pennyWhite]
 
 withAlternate :: CardCode -> CardDef -> CardDef
 withAlternate ccode = withAlternates [ccode]

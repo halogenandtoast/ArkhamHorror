@@ -134,7 +134,7 @@ h2 {
 
 .scenario-details {
   display: flex;
-  background-color: #333;
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 5px 10px;
   margin-left: 10px;
   margin-right: 10px;

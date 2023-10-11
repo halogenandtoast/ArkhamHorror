@@ -211,27 +211,57 @@ const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0)
     @click="$emit('choose', investigatorAction)"
   />
   <div v-else>
-    <div class="player-card">
-      <div class="stats">
-        <div class="willpower willpower-icon">{{willpower}}</div>
-        <div class="intellect intellect-icon">{{intellect}}</div>
-        <div class="combat combat-icon">{{combat}}</div>
-        <div class="agility agility-icon">{{agility}}</div>
+    <div class="player-area">
+      <div class="player-card">
+        <div class="stats">
+          <div class="willpower willpower-icon">{{willpower}}</div>
+          <div class="intellect intellect-icon">{{intellect}}</div>
+          <div class="combat combat-icon">{{combat}}</div>
+          <div class="agility agility-icon">{{agility}}</div>
+        </div>
+        <img
+          :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
+          class="card"
+          :src="image"
+          @click="$emit('choose', investigatorAction)"
+        />
       </div>
-      <img
-        :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
-        class="card"
-        :src="image"
-        @click="$emit('choose', investigatorAction)"
-      />
 
-      <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+      <div class="player-buttons">
+        <span><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
+        <span v-if="investigator.additionalActions.length > 0">
+          <template v-for="action in investigator.additionalActions" :key="action">
+            <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
+              <i class="action"></i>
+            </button>
+            <i v-else class="action" :class="`${investigator.class.toLowerCase()}Action`"></i>
+          </template>
+        </span>
+        <template v-if="debug.active">
+          <button @click="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
+        </template>
+        <AbilityButton
+          v-for="ability in abilities"
+          :key="ability.index"
+          :ability="ability.contents"
+          @click="$emit('choose', ability.index)"
+          />
+        <button
+          :disabled="endTurnAction == -1"
+          @click="$emit('choose', endTurnAction)"
+        >End turn</button>
+
+        <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+      </div>
     </div>
 
     <div class="resources">
       <div class="keys" v-if="keys.length > 0">
         <Key v-for="key in keys" :key="key" :name="key" />
       </div>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'SpendResources', contents: [id, 1]})">-</button>
+      </template>
       <PoolItem
         type="resource"
         :amount="resources"
@@ -239,8 +269,7 @@ const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0)
         @choose="$emit('choose', takeResourceAction)"
       />
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'TakeResources', contents: [id, 1, {tag: 'GameSource' }, false]})">+</button>
-        <button @click="debug.send(game.id, {tag: 'SpendResources', contents: [id, 1]})">-</button>
+        <button class="plus-button" @click="debug.send(game.id, {tag: 'TakeResources', contents: [id, 1, {tag: 'GameSource' }, false]})">+</button>
       </template>
       <PoolItem
         type="clue"
@@ -249,7 +278,10 @@ const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0)
         @choose="$emit('choose', spendCluesAction)"
       />
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})">+</button>
+        <button class="plus-button" @click="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})">+</button>
+      </template>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
       </template>
       <PoolItem
         type="health"
@@ -258,8 +290,10 @@ const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0)
         @choose="$emit('choose', healthAction)"
       />
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})">+</button>
-        <button @click="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
+        <button class="plus-button" @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})">+</button>
+      </template>
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
       </template>
       <PoolItem
         type="sanity"
@@ -268,31 +302,8 @@ const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0)
         @choose="$emit('choose', sanityAction)"
       />
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
-        <button @click="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
+        <button class="plus-button" @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
       </template>
-      <span><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
-      <span v-if="investigator.additionalActions.length > 0">
-        <template v-for="action in investigator.additionalActions" :key="action">
-          <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
-            <i class="action"></i>
-          </button>
-          <i v-else class="action" :class="`${investigator.class.toLowerCase()}Action`"></i>
-        </template>
-      </span>
-      <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
-      </template>
-      <AbilityButton
-        v-for="ability in abilities"
-        :key="ability.index"
-        :ability="ability.contents"
-        @click="$emit('choose', ability.index)"
-        />
-      <button
-        :disabled="endTurnAction == -1"
-        @click="$emit('choose', endTurnAction)"
-      >End turn</button>
     </div>
   </div>
 </template>
@@ -322,6 +333,9 @@ i.action {
   display: flex;
   align-self: center;
   align-items: center;
+  justify-content: space-between;
+  margin-right: 10px;
+  margin-top: 5px;
 }
 
 .turn-info {
@@ -498,4 +512,18 @@ i.action {
   animation: become-ghost 1s linear, ghost 3s linear 1s infinite;
 }
 
+.player-area {
+  display: flex;
+  margin-right: 10px;
+}
+
+.player-buttons {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.plus-button {
+  margin-right: 10px;
+}
 </style>

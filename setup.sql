@@ -133,7 +133,7 @@ ALTER SEQUENCE public.arkham_log_entries_id_seq OWNED BY public.arkham_log_entri
 --
 
 CREATE TABLE public.arkham_players (
-    id bigint NOT NULL,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     arkham_game_id uuid NOT NULL,
     user_id bigint NOT NULL,
     investigator_id text NOT NULL
@@ -1028,4 +1028,3 @@ ALTER TABLE ONLY sqitch.tags
 --
 -- PostgreSQL database dump complete
 --
-

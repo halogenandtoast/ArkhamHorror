@@ -1,7 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -11,6 +11,7 @@ export enum QuestionType {
   CHOOSE_N = 'ChooseN',
   CHOOSE_ONE_AT_A_TIME = 'ChooseOneAtATime',
   CHOOSE_UPGRADE_DECK = 'ChooseUpgradeDeck',
+  CHOOSE_DECK = 'ChooseDeck',
   CHOOSE_PAYMENT_AMOUNTS = 'ChoosePaymentAmounts',
   CHOOSE_AMOUNTS = 'ChooseAmounts',
   QUESTION_LABEL = 'QuestionLabel',
@@ -144,6 +145,10 @@ export interface ChooseUpgradeDeck {
   tag: QuestionType.CHOOSE_UPGRADE_DECK
 }
 
+export interface ChooseDeck {
+  tag: QuestionType.CHOOSE_DECK
+}
+
 export interface AmountChoice {
   label: string
   minBound: number
@@ -197,6 +202,13 @@ export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
     tag: JsonDecoder.isExactly(QuestionType.CHOOSE_UPGRADE_DECK),
   },
   'ChooseUpgradeDeck',
+);
+
+export const chooseDeckDecoder = JsonDecoder.object<ChooseDeck>(
+  {
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_DECK),
+  },
+  'ChooseDeck',
 );
 
 export const pickScenarioSettingsDecoder = JsonDecoder.object<PickScenarioSettings>(
@@ -317,6 +329,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseUpToNDecoder,
     chooseOneAtATimeDecoder,
     chooseUpgradeDeckDecoder,
+    chooseDeckDecoder,
     chooseAmountsDecoder,
     choosePaymentAmountsDecoder,
     questionLabelDecoder,

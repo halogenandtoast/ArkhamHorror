@@ -170,6 +170,9 @@ getAllAbilities = getAbilities <$> getGame
 getSettings :: HasGame m => m Settings
 getSettings = gameSettings <$> getGame
 
+getAllPlayers :: HasGame m => m [PlayerId]
+getAllPlayers = gamePlayers <$> getGame
+
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getAllModifiers = gameModifiers <$> getGame
 

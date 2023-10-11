@@ -8,7 +8,7 @@ import { CampaignLogSettings } from '@/arkham/types/CampaignSettings'
 import { JsonDecoder } from 'ts.data.json';
 
 interface FetchData {
-  investigatorId: string
+  playerId: string
   multiplayerMode: string
   game: Game
 }
@@ -21,10 +21,10 @@ interface FetchReplay {
 export const fetchGame = (gameId: string, spectate = false): Promise<FetchData> => api
   .get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`)
   .then((resp) => {
-    const { investigatorId, game, multiplayerMode } = resp.data;
+    const { playerId, game, multiplayerMode } = resp.data;
     return gameDecoder
       .decodeToPromise(game)
-      .then((gameData) => Promise.resolve({ investigatorId, game: gameData, multiplayerMode }));
+      .then((gameData) => Promise.resolve({ playerId, game: gameData, multiplayerMode }));
   });
 
 export const fetchGameReplay = (gameId: string, step: number): Promise<FetchReplay> => api

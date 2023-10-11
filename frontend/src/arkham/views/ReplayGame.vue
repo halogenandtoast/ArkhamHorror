@@ -16,7 +16,7 @@ const debug = ref(false)
 provide('debug', debug)
 const ready = ref(false)
 const game = ref<Arkham.Game | null>(null)
-const investigatorId = ref<string | null>(null)
+const playerId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
 const step = ref(1)
 const totalSteps = ref(0)
@@ -31,7 +31,7 @@ watch(step, currentStep => {
     game.value = newGame;
     totalSteps.value = newTotalSteps
     gameLog.value = Object.freeze(newGame.log);
-    investigatorId.value = newGame.activeInvestigatorId;
+    playerId.value = newGame.activePlayerId;
   });
 }, {immediate: true})
 </script>
@@ -43,14 +43,14 @@ watch(step, currentStep => {
         v-if="game.campaign"
         :game="game"
         :gameLog="gameLog"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
       />
       <Scenario
         v-else-if="game.scenario && !gameOver"
         :game="game"
         :gameLog="gameLog"
         :scenario="game.scenario"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
       />
       <div class="sidebar">
         <CardOverlay />

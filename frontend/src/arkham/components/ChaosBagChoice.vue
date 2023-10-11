@@ -7,7 +7,7 @@ import Token from '@/arkham/components/Token.vue';
 
 const props = defineProps<{
   game: Game
-  investigatorId: string
+  playerId: string
   choice: ChaosBagStep
 }>()
 
@@ -94,7 +94,7 @@ const allResolved = computed(() => {
     <div class="token-choices-inner">
       <div v-for="(tokenChoice, idx) in tokenChoices" :key="idx">
         <template v-if="tokenChoice.tag ==='Resolved'">
-          <Token v-for="(token, idx) in tokenChoice.tokens" :key="idx" :token="token" :game="game" :investigatorId="investigatorId" @choose="choose" />
+          <Token v-for="(token, idx) in tokenChoice.tokens" :key="idx" :token="token" :game="game" :playerId="playerId" @choose="choose" />
         </template>
         <template v-else-if="'step' in tokenChoice && tokenChoice.step.tag === 'Draw'">
           <img :src="imgsrc('ct_blank.png')" class="token" v-if="tokenChoice.tag === 'Decided'" />
@@ -102,7 +102,7 @@ const allResolved = computed(() => {
           <img :src="imgsrc('ct_choose.png')" class="token" v-if="tokenChoice.tag === 'Undecided'" />
         </template>
         <template v-else-if="'step' in tokenChoice">
-          <ChaosBagChoice :choice="tokenChoice.step" :game="game" :investigatorId="investigatorId" @choose="choose" />
+          <ChaosBagChoice :choice="tokenChoice.step" :game="game" :playerId="playerId" @choose="choose" />
         </template>
         <template v-else>
           <div class="error"> Token choice was unhandled, please report with: {{tokenChoice}}</div>
@@ -110,7 +110,7 @@ const allResolved = computed(() => {
       </div>
       <template v-if="allResolved">
         <div v-for="(token, idx) in tokenGroups" :key="idx">
-          <Token :key="idx" :token="token" :game="game" :investigatorId="investigatorId" @choose="choose" :cancelled="isCancel || isIgnore" :selected="isResolve" />
+          <Token :key="idx" :token="token" :game="game" :playerId="playerId" @choose="choose" :cancelled="isCancel || isIgnore" :selected="isResolve" />
         </div>
       </template>
     </div>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watchEffect, inject } from 'vue';
+import { computed, ref, watchEffect, inject } from 'vue';
 import type { Ref } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
@@ -10,7 +10,7 @@ import type { TarotCard } from '@/arkham/types/TarotCard';
 
 export interface Props {
   game: Game
-  investigatorId: string
+  playerId: string
   players: Record<string, Investigator>
   playerOrder: string[]
   activePlayerId: string
@@ -19,22 +19,26 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const selectedTab = ref(props.investigatorId)
+const investigatorId = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)?.id
+
+const selectedTab = ref(props.playerId)
 
 const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
 
-function tabClass(index: string) {
-  const pid = props.players[index].id
+const investigators = computed(() => props.playerOrder.map(iid => props.players[iid]))
+
+function tabClass(investigator: Investigator) {
+  const pid = investigator.playerId
   return [
     {
-      'tab--selected': index === selectedTab.value,
+      'tab--selected': pid === selectedTab.value,
       'tab--active-player': pid == props.activePlayerId,
-      'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].id),
+      'tab--has-actions': pid !== props.playerId && hasChoices(investigator.playerId),
     },
-    `tab--${props.players[index].class}`,
+    `tab--${investigator.class}`,
   ]
 }
 
@@ -44,7 +48,7 @@ function selectTab(i: string) {
 
 function selectTabExtended(i: string) {
   selectedTab.value = i
-  if (solo?.value && props.investigatorId !== i && switchInvestigator) {
+  if (solo?.value && props.playerId !== i && switchInvestigator) {
     switchInvestigator(i)
   }
 }
@@ -54,36 +58,37 @@ function tarotCardsFor(i: string) {
 }
 
 
-watchEffect(() => selectedTab.value = props.investigatorId)
+watchEffect(() => selectedTab.value = props.playerId)
 </script>
 
 <template>
   <div class="player-info">
     <ul class='tabs__header'>
-      <li v-for='iid in playerOrder'
-        :key='players[iid].name.title'
-        @click.exact='selectTab(iid)'
-        @click.shift='selectTabExtended(iid)'
-        :class='tabClass(iid)'
+      <li v-for='investigator in investigators'
+        :key='investigator.name.title'
+        @click.exact='selectTab(investigator.playerId)'
+        @click.shift='selectTabExtended(investigator.playerId)'
+        :class='tabClass(investigator)'
       >
-        {{ players[iid].name.title }}
+        {{ investigator.name.title }}
       </li>
     </ul>
     <Tab
-      v-for="(player, index) in players"
-      :key="index"
-      :index="index"
+      v-for="investigator in investigators"
+      :key="investigator.playerId"
+      :index="investigator.playerId"
       :selectedTab="selectedTab"
-      :playerClass="player.class"
-      :title="player.name.title"
-      :investigatorId="index"
-      :activePlayer="player.id == activePlayerId"
+      :playerClass="investigator.class"
+      :title="investigator.name.title"
+      :playerId="playerId"
+      :investigatorId="investigator.id"
+      :activePlayer="investigator.playerId == activePlayerId"
     >
       <Player
         :game="game"
-        :investigatorId="investigatorId"
-        :player="player"
-        :tarotCards="tarotCardsFor(player.id)"
+        :playerId="playerId"
+        :investigator="investigator"
+        :tarotCards="tarotCardsFor(investigator.id)"
         @choose="$emit('choose', $event)"
       />
     </Tab>

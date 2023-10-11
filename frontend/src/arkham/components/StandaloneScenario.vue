@@ -3,7 +3,6 @@ import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import StoryQuestion from '@/arkham/components/StoryQuestion.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
-import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import ChooseDeck from '@/arkham/components/ChooseDeck.vue';
 
 const props = defineProps<{
@@ -29,10 +28,7 @@ const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === '
 </script>
 
 <template>
-  <div v-if="upgradeDeck" id="game" class="game">
-    <UpgradeDeck :game="game" :playerId="playerId" />
-  </div>
-  <div v-else-if="chooseDeck" id="game" class="game">
+  <div v-if="chooseDeck" id="game" class="game">
     <ChooseDeck :game="game" :playerId="playerId" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">

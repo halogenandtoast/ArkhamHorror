@@ -8,6 +8,7 @@ const props = defineProps<{
   activePlayer: boolean
   playerClass: string
   investigatorId: string
+  playerId: string
 }>()
 
 const isActive = computed(() => props.selectedTab == props.index)

@@ -5,7 +5,7 @@ import Card from '@/arkham/components/Card.vue';
 
 defineProps<{
   game: Game
-  investigatorId: string
+  playerId: string
   cards: PlayerCard[]
 }>()
 
@@ -17,7 +17,7 @@ defineEmits<{
 <template>
   <div class="discards">
     <div v-for="card in cards" :key="card.contents.id" class="discard">
-      <Card :game="game" :card="card" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+      <Card :game="game" :card="card" :playerId="playerId" @choose="$emit('choose', $event)" />
     </div>
   </div>
 </template>

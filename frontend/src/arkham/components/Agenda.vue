@@ -18,7 +18,7 @@ const props = defineProps<{
   game: Game
   cardsUnder: Card[]
   cardsNextTo: Card[]
-  investigatorId: string
+  playerId: string
 }>()
 
 const emit = defineEmits<{
@@ -32,7 +32,7 @@ const image = computed(() => {
   return imgsrc(`cards/${id.value.replace('c', '')}${suffix}.jpg`);
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
@@ -108,7 +108,7 @@ const debug = useDebug()
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
     <AbilityButton
@@ -123,7 +123,7 @@ const debug = useDebug()
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
     <div class="pool">

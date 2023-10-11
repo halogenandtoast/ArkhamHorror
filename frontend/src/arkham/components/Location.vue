@@ -19,7 +19,7 @@ import { TokenType } from '@/arkham/types/Token';
 export interface Props {
   game: Game
   location: Arkham.Location
-  investigatorId: string
+  playerId: string
 }
 
 const showAbilities = ref<boolean>(false)
@@ -48,7 +48,7 @@ const image = computed(() => {
 })
 
 const id = computed(() => props.location.id)
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function isCardAction(c: Message): boolean {
   if (c.tag === "TargetLabel") {
@@ -141,7 +141,8 @@ const enemies = computed(() => {
 })
 
 const blocked = computed(() => {
-  const { modifiers } = props.game.investigators[props.investigatorId]
+  const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const { modifiers } = investigator ?? { modifiers: [] }
   const allModifiers = [...modifiers || [], ...props.location.modifiers]
 
   if (allModifiers) {
@@ -183,9 +184,9 @@ const debug = useDebug()
         <Investigator
           :game="game"
           :choices="choices"
-          :investigatorId="investigatorId"
+          :playerId="playerId"
           :portrait="true"
-          :player="game.investigators[cardCode]"
+          :investigator="game.investigators[cardCode]"
           @choose="$emit('choose', $event)"
           />
       </div>
@@ -232,14 +233,14 @@ const debug = useDebug()
         :treachery="game.treacheries[treacheryId]"
         :game="game"
         :attached="true"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
         @choose="$emit('choose', $event)"
       />
       <Event
         v-for="eventId in location.events"
         :event="game.events[eventId]"
         :game="game"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
         :key="eventId"
         @choose="$emit('choose', $event)"
       />
@@ -249,7 +250,7 @@ const debug = useDebug()
         v-for="assetId in location.assets"
         :asset="game.assets[assetId]"
         :game="game"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
         :key="assetId"
         @choose="$emit('choose', $event)"
       />
@@ -258,7 +259,7 @@ const debug = useDebug()
         :key="enemyId"
         :enemy="game.enemies[enemyId]"
         :game="game"
-        :investigatorId="investigatorId"
+        :playerId="playerId"
         :atLocation="true"
         @choose="$emit('choose', $event)"
       />

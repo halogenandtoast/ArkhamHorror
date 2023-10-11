@@ -15,8 +15,8 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
 export interface Props {
   choices: Message[]
-  player: Arkham.Investigator
-  investigatorId: string
+  investigator: Arkham.Investigator
+  playerId: string
   game: Game
   portrait?: boolean
 }
@@ -24,7 +24,7 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { portrait: false })
 const emit = defineEmits(['showCards', 'choose'])
 
-const id = computed(() => props.player.id)
+const id = computed(() => props.investigator.id)
 const debug = useDebug()
 
 function canActivateAbility(c: Message): boolean {
@@ -126,28 +126,28 @@ const endTurnAction = computed(() => {
 })
 
 const image = computed(() => {
-  if (props.player.isYithian) {
+  if (props.investigator.isYithian) {
     return imgsrc("cards/04244.jpg");
   }
 
-  return imgsrc(`cards/${props.player.cardCode.replace('c', '')}.jpg`);
+  return imgsrc(`cards/${props.investigator.cardCode.replace('c', '')}.jpg`);
 })
 
 const portraitImage = computed(() => {
-  if (props.player.isYithian) {
+  if (props.investigator.isYithian) {
     return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
   }
 
-  return imgsrc(`portraits/${props.player.cardCode.replace('c', '')}.jpg`)
+  return imgsrc(`portraits/${props.investigator.cardCode.replace('c', '')}.jpg`)
 })
 
 
-const cardsUnderneath = computed(() => props.player.cardsUnderneath)
+const cardsUnderneath = computed(() => props.investigator.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
 
-const modifiers = computed(() => props.player.modifiers)
+const modifiers = computed(() => props.investigator.modifiers)
 
 const ethereal = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Ethereal") ?? false
@@ -187,19 +187,19 @@ function isActiveEffectAction(action: { tag?: "EffectAction"; contents: any }) {
   return choice !== -1
 }
 
-const keys = computed(() => props.player.keys)
+const keys = computed(() => props.investigator.keys)
 
-const willpower = computed(() => calculateSkill(props.player.willpower, "SkillWillpower", modifiers.value ?? []))
-const intellect = computed(() => calculateSkill(props.player.intellect, "SkillIntellect", modifiers.value ?? []))
-const combat = computed(() => calculateSkill(props.player.combat, "SkillCombat", modifiers.value ?? []))
-const agility = computed(() => calculateSkill(props.player.agility, "SkillAgility", modifiers.value ?? []))
+const willpower = computed(() => calculateSkill(props.investigator.willpower, "SkillWillpower", modifiers.value ?? []))
+const intellect = computed(() => calculateSkill(props.investigator.intellect, "SkillIntellect", modifiers.value ?? []))
+const combat = computed(() => calculateSkill(props.investigator.combat, "SkillCombat", modifiers.value ?? []))
+const agility = computed(() => calculateSkill(props.investigator.agility, "SkillAgility", modifiers.value ?? []))
 
 
 // const doom = computed(() => props.player.tokens[TokenType.Doom])
-const clues = computed(() => props.player.tokens[TokenType.Clue] || 0)
-const resources = computed(() => props.player.tokens[TokenType.Resource] || 0)
-const horror = computed(() => (props.player.tokens[TokenType.Horror] || 0) + props.player.assignedSanityDamage)
-const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + props.player.assignedHealthDamage)
+const clues = computed(() => props.investigator.tokens[TokenType.Clue] || 0)
+const resources = computed(() => props.investigator.tokens[TokenType.Resource] || 0)
+const horror = computed(() => (props.investigator.tokens[TokenType.Horror] || 0) + props.investigator.assignedSanityDamage)
+const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0) + props.investigator.assignedHealthDamage)
 </script>
 
 <template>
@@ -271,13 +271,13 @@ const damage = computed(() => (props.player.tokens[TokenType.Damage] || 0) + pro
         <button @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
         <button @click="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
       </template>
-      <span><i class="action" v-for="n in player.remainingActions" :key="n"></i></span>
-      <span v-if="player.additionalActions.length > 0">
-        <template v-for="action in player.additionalActions" :key="action">
-          <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${player.class.toLowerCase()}ActionButton`]">
+      <span><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
+      <span v-if="investigator.additionalActions.length > 0">
+        <template v-for="action in investigator.additionalActions" :key="action">
+          <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
             <i class="action"></i>
           </button>
-          <i v-else class="action" :class="`${player.class.toLowerCase()}Action`"></i>
+          <i v-else class="action" :class="`${investigator.class.toLowerCase()}Action`"></i>
         </template>
       </span>
       <template v-if="debug.active">

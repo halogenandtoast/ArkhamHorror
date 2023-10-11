@@ -46,6 +46,7 @@ import Arkham.Cost qualified as Cost
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
+import Arkham.Decklist
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect
@@ -90,6 +91,7 @@ import Arkham.Id
 import Arkham.Investigator (
   becomePrologueInvestigator,
   becomeYithian,
+  lookupInvestigator,
   returnToBody,
  )
 import Arkham.Investigator.Types (
@@ -261,6 +263,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
         , gameOutOfPlayEntities = mempty
+        , gameActivePlayerId = (PlayerId nil)
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
         , gameLeadInvestigatorId = InvestigatorId "00000"
@@ -573,6 +576,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "stories" .= toJSON (entitiesStories gameEntities)
       , "playerCount" .= toJSON gamePlayerCount
       , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
+      , "activePlayerId" .= toJSON gameActivePlayerId
       , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
       , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
       , "playerOrder" .= toJSON gamePlayerOrder
@@ -602,7 +606,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "cards" .= toJSON gameCards
       ]
 
-getPlayerInvestigator :: HasGame m => PlayerId -> m Investigator
+getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator
 getPlayerInvestigator pid = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   case find ((== pid) . attr investigatorPlayerId) investigators of
@@ -1215,7 +1219,7 @@ abilityMatches a@Ability {..} = \case
     if result then pure True else abilityMatches a (AbilityOneOf xs)
   AbilityOnEncounterCard -> abilitySource `sourceMatches` M.EncounterCardSource
 
-getAbilitiesMatching :: HasGame m => AbilityMatcher -> m [Ability]
+getAbilitiesMatching :: (HasCallStack, HasGame m) => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
   filterM (`abilityMatches` matcher) abilities
@@ -1677,7 +1681,7 @@ getLocationsMatching lmatcher = do
       SameLocation -> pure []
       ThisLocation -> pure []
 
-guardYourLocation :: HasGame m => (LocationId -> m [a]) -> m [a]
+guardYourLocation :: (HasCallStack, HasGame m) => (LocationId -> m [a]) -> m [a]
 guardYourLocation body = do
   mlid <- field InvestigatorLocation . view activeInvestigatorIdL =<< getGame
   case mlid of
@@ -3533,10 +3537,9 @@ runMessages mLogger = do
 
         case msg of
           Ask pid q -> do
-            iid <- runWithEnv $ toId <$> getPlayerInvestigator pid
             runWithEnv
               ( toExternalGame
-                  (g & activeInvestigatorIdL .~ iid)
+                  (g & activePlayerIdL .~ pid)
                   (singletonMap pid q)
               )
               >>= putGame
@@ -3700,6 +3703,13 @@ createActiveCostForAdditionalCardCosts iid card = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  LoadDecklist playerId decklist -> do
+    (iid, deck) <- loadDecklist decklist
+    let investigator = lookupInvestigator iid playerId
+    push $ InitDeck iid (Deck deck)
+    let activeInvestigatorF =
+          if gameActiveInvestigatorId g == InvestigatorId "00000" then set activeInvestigatorIdL iid else id
+    pure $ g & (entitiesL . investigatorsL %~ insertEntity investigator) & activeInvestigatorF
   Run msgs -> g <$ pushAll msgs
   If wType _ -> do
     window <- checkWindows [mkWindow Timing.AtIf wType]

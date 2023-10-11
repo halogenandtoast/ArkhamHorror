@@ -7,11 +7,11 @@ import CardView from '@/arkham/components/Card.vue';
 const props = defineProps<{
   game: Game
   cards: (Card | CardContents)[]
-  investigatorId: string
+  playerId: string
 }>()
 
 const cardContents = computed<CardContents[]>(() => {
-  return props.cards.map<CardContents>(c => c.tag === 'CardContents' ? c : 
+  return props.cards.map<CardContents>(c => c.tag === 'CardContents' ? c :
     (c.tag === 'VengeanceCard' ? c.contents.contents : c.contents)).reverse()
 })
 
@@ -28,7 +28,7 @@ const choose = (value: number) => {
   <div class="card-row-cards">
     <div class="card-row-cards--inner">
       <div v-for="card in cardContents" :key="card.id" class="card-row-card">
-        <CardView :game="props.game" :card="card" :investigatorId="props.investigatorId" @choose="choose" />
+        <CardView :game="props.game" :card="card" :playerId="playerId" @choose="choose" />
       </div>
     </div>
   </div>

@@ -51,6 +51,7 @@ export interface Investigator {
   modifiers?: Modifier[];
   name: Name;
   id: string;
+  playerId: string;
   cardCode: string;
   class: ClassSymbol;
   health: number;
@@ -131,6 +132,7 @@ export const slotsDecoder = JsonDecoder.
 export const investigatorDecoder = JsonDecoder.object<Investigator>({
   name: nameDecoder,
   id: JsonDecoder.string,
+  playerId: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   class: classSymbolDecoder,
   health: JsonDecoder.number,

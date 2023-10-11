@@ -17,7 +17,7 @@ const props = defineProps<{
   game: Game
   cardsUnder: Card[]
   cardsNextTo: Card[]
-  investigatorId: string
+  playerId: string
 }>()
 
 const emits = defineEmits<{
@@ -45,7 +45,7 @@ const image = computed(() => {
   return imgsrc(`cards/${newId}${sidePart}.jpg`)
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
@@ -150,7 +150,7 @@ async function chooseAbility(ability: AbilityMessage) {
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
-      :investigatorId="investigatorId"
+      :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
 

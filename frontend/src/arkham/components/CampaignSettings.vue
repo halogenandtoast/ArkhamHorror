@@ -23,7 +23,7 @@ import { Game } from '@/arkham/types/Game'
 export interface Props {
   game: Game
   campaign: Campaign
-  investigatorId: string
+  playerId: string
 }
 
 const props = defineProps<Props>()

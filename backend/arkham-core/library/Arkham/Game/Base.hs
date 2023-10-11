@@ -57,6 +57,7 @@ data Game = Game
     -- used for determining if game should start
     gamePlayerCount :: Int
   , gameActiveInvestigatorId :: InvestigatorId
+  , gameActivePlayerId :: PlayerId
   , gameTurnPlayerInvestigatorId :: Maybe InvestigatorId
   , gameLeadInvestigatorId :: InvestigatorId
   , -- For "in player order"

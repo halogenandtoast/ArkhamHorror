@@ -10,7 +10,7 @@ import { StandaloneSetting, RecordedContent, SettingCondition } from '../types/S
 const props = defineProps<{
   game: Game
   scenario: Scenario
-  investigatorId: string
+  playerId: string
 }>()
 const standaloneSettings = ref<StandaloneSetting[]>([])
 

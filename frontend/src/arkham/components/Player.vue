@@ -95,6 +95,9 @@ const topOfHunchDeck = computed(() => {
 })
 
 const playTopOfDeckAction = computed(() => {
+  if(props.playerId !== props.investigator.playerId) {
+    return -1
+  }
   const topOfDeck = props.investigator.deck[0]
   if (topOfDeck !== undefined && topOfDeck !== null) {
     return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.investigator.deck[0].id)
@@ -109,6 +112,9 @@ const id = computed(() => props.investigator.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const tarotCardAbility = (card: TarotCard) => {
+  if(props.playerId !== props.investigator.playerId) {
+    return -1
+  }
   return choices.value.findIndex((c) => {
     if (c.tag === "AbilityLabel") {
       return c.ability.source.tag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
@@ -119,6 +125,9 @@ const tarotCardAbility = (card: TarotCard) => {
 }
 
 const drawCardsAction = computed(() => {
+  if(props.playerId !== props.investigator.playerId) {
+    return -1
+  }
   return choices
     .value
     .findIndex((c) => {

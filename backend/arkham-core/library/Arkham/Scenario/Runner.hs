@@ -32,6 +32,7 @@ import Arkham.Enemy.Creation
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
@@ -103,15 +104,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     standalone <- getIsStandalone
     when standalone $ do
       players <- allPlayers
+      lead <- getActivePlayer
       pushAll
-        $ map chooseDeck players
-        <> [DoStep 1 StartCampaign, StartScenario scenarioId]
-    pure a
-  DoStep 1 StartCampaign -> do
-    standalone <- getIsStandalone
-    when standalone $ do
-      lead <- getLeadPlayer
-      pushAll [Ask lead PickScenarioSettings]
+        $ Ask lead PickScenarioSettings
+        : map chooseDeck players
+          <> [StartScenario scenarioId]
     pure a
   InitDeck iid deck -> do
     standalone <- getIsStandalone

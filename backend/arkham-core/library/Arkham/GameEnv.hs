@@ -173,6 +173,9 @@ getSettings = gameSettings <$> getGame
 getAllPlayers :: HasGame m => m [PlayerId]
 getAllPlayers = gamePlayers <$> getGame
 
+getActivePlayer :: HasGame m => m PlayerId
+getActivePlayer = gameActivePlayerId <$> getGame
+
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getAllModifiers = gameModifiers <$> getGame
 

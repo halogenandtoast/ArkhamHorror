@@ -869,6 +869,7 @@ data Message
   | SetScenarioMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
+  | ForPlayer PlayerId Message
   | -- The Circle Undone
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId

@@ -56,10 +56,6 @@ class
 
 type InvestigatorCard a = CardBuilder PlayerId a
 
-newtype PrologueMetadata = PrologueMetadata {original :: Value}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 data instance Field Investigator :: Type -> Type where
   InvestigatorName :: Field Investigator Name
   InvestigatorRemainingActions :: Field Investigator Int

@@ -22,13 +22,13 @@ import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base
 
-newtype PennyWhite = PennyWhite (InvestigatorAttrs `With` PrologueMetadata)
+newtype PennyWhite = PennyWhite InvestigatorAttrs
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
   deriving newtype (Entity)
 
-pennyWhite :: PrologueMetadata -> InvestigatorCard PennyWhite
-pennyWhite meta =
+pennyWhite :: InvestigatorCard PennyWhite
+pennyWhite =
   startsWithInHand
     [ Cards.strayCat
     , Cards.lucky
@@ -40,21 +40,21 @@ pennyWhite meta =
     , Cards.ableBodied
     ]
     $ startsWith [Cards.digDeep, Cards.knife, Cards.flashlight]
-    $ investigator (PennyWhite . (`with` meta)) Cards.pennyWhite
+    $ investigator PennyWhite Cards.pennyWhite
     $ Stats {health = 7, sanity = 5, willpower = 4, intellect = 1, combat = 3, agility = 2}
 
 instance HasModifiersFor PennyWhite where
-  getModifiersFor target (PennyWhite (a `With` _)) | a `is` target = do
+  getModifiersFor target (PennyWhite a) | a `is` target = do
     pure
       $ toModifiersWith a setActiveDuringSetup
       $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
-  getModifiersFor (AssetTarget aid) (PennyWhite (a `With` _)) = do
+  getModifiersFor (AssetTarget aid) (PennyWhite a) = do
     isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
     pure $ toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-1) | isFlashlight]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PennyWhite where
-  getAbilities (PennyWhite (a `With` _)) =
+  getAbilities (PennyWhite a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 (Self <> ClueOnLocation)
         $ freeReaction
@@ -62,12 +62,12 @@ instance HasAbilities PennyWhite where
     ]
 
 instance HasChaosTokenValue PennyWhite where
-  getChaosTokenValue iid ElderSign (PennyWhite (attrs `With` _)) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (PennyWhite attrs) | iid == toId attrs = do
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage PennyWhite where
-  runMessage msg i@(PennyWhite (attrs `With` meta)) = case msg of
+  runMessage msg i@(PennyWhite attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
       pure i
@@ -93,7 +93,7 @@ instance RunMessage PennyWhite where
       pure i
     DrawCards cardDraw | cardDrawInvestigator cardDraw == toId attrs -> do
       pure i
-    _ -> PennyWhite . (`with` meta) <$> runMessage msg attrs
+    _ -> PennyWhite <$> runMessage msg attrs
 
 newtype PennyWhiteEffect = PennyWhiteEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)

@@ -205,9 +205,10 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       players <- allPlayers
       clues <- selectSum ActClues AnyAct
       pushAll
-        [ story players noResolution
-        , RecordCount PiecesOfEvidenceWereLeftBehind clues
-        , EndOfGame Nothing
-        ]
+        $ [ story players noResolution
+          , RecordCount PiecesOfEvidenceWereLeftBehind clues
+          ]
+        <> map chooseDeck players
+        <> [EndOfGame Nothing]
       pure s
     _ -> DisappearanceAtTheTwilightEstate <$> runMessage msg attrs

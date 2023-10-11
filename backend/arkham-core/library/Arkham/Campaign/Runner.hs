@@ -19,6 +19,7 @@ import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.RunMessage
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
@@ -30,13 +31,11 @@ defaultCampaignRunner :: IsCampaign a => Runner a
 defaultCampaignRunner msg a = case msg of
   StartCampaign -> do
     players <- allPlayers
+    lead <- getActivePlayer
     pushAll
-      $ map chooseDeck players
-      <> [DoStep 1 StartCampaign, CampaignStep $ campaignStep $ toAttrs a]
-    pure a
-  DoStep 1 StartCampaign -> do
-    lead <- getLeadPlayer
-    pushAll [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep]
+      $ [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep]
+      <> map chooseDeck players
+      <> [CampaignStep $ campaignStep $ toAttrs a]
     pure a
   CampaignStep (ScenarioStep sid) -> do
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]

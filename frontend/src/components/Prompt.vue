@@ -36,6 +36,7 @@ const cancelFun = computed(() => typeof props.cancel === 'function' ? props.canc
   height: 100%;
   width: 100%;
   background-color: rgba(94,110,141,.9);
+  z-index: 999999999;
 }
 
 .cd-popup-container {

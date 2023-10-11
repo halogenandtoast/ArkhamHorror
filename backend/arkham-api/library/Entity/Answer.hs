@@ -223,7 +223,7 @@ handleAnswer Game {..} playerId = \case
     player <- runDB $ get404 (coerce playerId)
     when (arkhamDeckUserId deck /= arkhamPlayerUserId player) notFound
     let investigatorId = investigator_code $ arkhamDeckList deck
-    runDB $ update (traceShowId $ coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
+    runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
     pure [LoadDecklist playerId (arkhamDeckList deck)]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'

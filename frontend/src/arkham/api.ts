@@ -135,8 +135,8 @@ export const newGame = (
   })
   .then((resp) => gameDecoder.decodeToPromise(resp.data));
 
-export const joinGame = (gameId: string, deckId: string): Promise<Game> => api
-  .put(`arkham/games/${gameId}/join`, { deckId })
+export const joinGame = (gameId: string): Promise<Game> => api
+  .put(`arkham/games/${gameId}/join`)
   .then((resp) => gameDecoder.decodeToPromise(resp.data));
 
 export const undoChoice = (gameId: string): Promise<void> => api

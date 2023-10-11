@@ -14,7 +14,6 @@ module Api.Handler.Arkham.Games (
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
-import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Difficulty
@@ -86,12 +85,17 @@ getApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   webSockets $ gameStream (Just userId) gameId
   ge <- runDB $ get404 gameId
-  -- ArkhamPlayer {..} <- runDB $ entityVal <$> getBy404 (UniquePlayer userId gameId)
+  Entity playerId _ <- runDB $ getBy404 (UniquePlayer userId gameId)
   let Game {..} = arkhamGameCurrentData ge
   gameLog <- runDB $ getGameLog gameId Nothing
+  let
+    player =
+      case arkhamGameMultiplayerVariant ge of
+        WithFriends -> coerce playerId
+        Solo -> gameActivePlayerId
   pure
     $ GetGameJson
-      (Just gameActivePlayerId)
+      (Just player)
       (arkhamGameMultiplayerVariant ge)
       (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
 
@@ -193,7 +197,7 @@ putApiV1ArkhamGameR gameId = do
 
 updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
 updateGame response gameId userId writeChannel = do
-  (Entity pid arkhamPlayer, ArkhamGame {..}) <-
+  (Entity pid _, ArkhamGame {..}) <-
     runDB
       $ (,)
       <$> getBy404 (UniquePlayer userId gameId)

@@ -1,10 +1,6 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { fetchDecks, joinGame, fetchGame } from '@/arkham/api'
-import { imgsrc } from '@/arkham/helpers'
-import * as Decks from '@/arkham/types/Deck'
-import * as Arkham from '@/arkham/types/Game'
+import { joinGame } from '@/arkham/api'
 
 export interface Props {
   gameId: string
@@ -12,53 +8,22 @@ export interface Props {
 const props = defineProps<Props>()
 
 const router = useRouter()
-const decks = ref<Decks.Deck[]>([])
-const game = ref<Arkham.Game | null>(null)
-
-const deckId = ref<string | null>(null)
-const ready = ref(false)
-
-fetchDecks().then((result) => {
-  decks.value = result
-  fetchGame(props.gameId).then(({ game: newGame }) => {
-    game.value = newGame;
-  });
-  ready.value = true
-})
-
-const disabled = computed(() => !deckId.value)
 
 async function join() {
-  if (deckId.value) {
-    joinGame(props.gameId, deckId.value)
+    joinGame(props.gameId)
       .then((game) => router.push(`/games/${game.id}`));
-  }
 }
-
-const investigators = computed(() => Object.keys(game.value?.investigators || {}))
 </script>
 
 <template>
-  <div v-if="ready" class="container">
-    <div v-if="decks.length == 0">
-      No decks, please add one first here <router-link to="/decks">here</router-link>
-    </div>
-    <div v-else>
+  <div class="container">
+    <div>
       <header>
         <router-link to="/" class="back-link">‹</router-link>
         <h2>Join Game</h2>
       </header>
 
-      <img v-for="investigator in investigators" :key="investigator" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <form id="join-game" @submit.prevent="join">
-        <div>
-          <p>Deck</p>
-          <select v-model="deckId">
-            <option disabled :value="null">-- Select a Deck--</option>
-            <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-          </select>
-        </div>
-
         <button type="submit" :disabled="disabled">Join</button>
       </form>
     </div>

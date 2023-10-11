@@ -18,15 +18,15 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 
-newtype ValentinoRivas = ValentinoRivas (InvestigatorAttrs `With` PrologueMetadata)
+newtype ValentinoRivas = ValentinoRivas InvestigatorAttrs
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
   deriving newtype (Entity)
 
-valentinoRivas :: PrologueMetadata -> InvestigatorCard ValentinoRivas
-valentinoRivas meta =
+valentinoRivas :: InvestigatorCard ValentinoRivas
+valentinoRivas =
   investigatorWith
-    (ValentinoRivas . (`with` meta))
+    ValentinoRivas
     Cards.valentinoRivas
     (Stats {health = 5, sanity = 7, willpower = 1, intellect = 3, combat = 2, agility = 4})
     $ ( startsWithL
@@ -44,7 +44,7 @@ valentinoRivas meta =
       )
 
 instance HasModifiersFor ValentinoRivas where
-  getModifiersFor target (ValentinoRivas (a `With` _)) | isTarget a target = do
+  getModifiersFor target (ValentinoRivas a) | isTarget a target = do
     pure
       $ toModifiersWith
         a
@@ -57,7 +57,7 @@ instance HasModifiersFor ValentinoRivas where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ValentinoRivas where
-  getAbilities (ValentinoRivas (a `With` _)) =
+  getAbilities (ValentinoRivas a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 (Self <> DuringSkillTest (YourSkillTest AnySkillTest))
         $ FastAbility
@@ -65,12 +65,12 @@ instance HasAbilities ValentinoRivas where
     ]
 
 instance HasChaosTokenValue ValentinoRivas where
-  getChaosTokenValue iid ElderSign (ValentinoRivas (attrs `With` _)) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (ValentinoRivas attrs) | iid == toId attrs = do
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage ValentinoRivas where
-  runMessage msg i@(ValentinoRivas (attrs `With` meta)) = case msg of
+  runMessage msg i@(ValentinoRivas attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ skillTestModifier (toSource attrs) SkillTestTarget (Difficulty (-1))
       pure i
@@ -93,4 +93,4 @@ instance RunMessage ValentinoRivas where
       pure i
     DrawCards cardDraw | cardDrawInvestigator cardDraw == toId attrs -> do
       pure i
-    _ -> ValentinoRivas . (`with` meta) <$> runMessage msg attrs
+    _ -> ValentinoRivas <$> runMessage msg attrs

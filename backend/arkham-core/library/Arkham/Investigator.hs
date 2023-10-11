@@ -12,7 +12,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner hiding (allInvestigators)
-import Arkham.Investigator.Types qualified as Attrs
 import Data.Aeson (Result (..))
 import Data.Map.Strict qualified as Map
 import Data.Typeable
@@ -109,6 +108,10 @@ allInvestigators =
       , SomeInvestigatorCard dianaStanley
       , SomeInvestigatorCard ritaYoung
       , SomeInvestigatorCard marieLambeau
+      , SomeInvestigatorCard gavriellaMizrah
+      , SomeInvestigatorCard jeromeDavids
+      , SomeInvestigatorCard valentinoRivas
+      , SomeInvestigatorCard pennyWhite
       , SomeInvestigatorCard tommyMuldoon
       , SomeInvestigatorCard mandyThompson
       , SomeInvestigatorCard tonyMorgan
@@ -155,42 +158,3 @@ returnToBody i =
                             Success x -> x
                             _ -> error "Investigator mind is too corrupted to return to their body"
                          )
-    `handleInvestigator` ( \(GavriellaMizrah (_ `With` meta)) -> case fromJSON (original meta) of
-                            Success x -> x
-                            _ -> error "Investigator mind is too corrupted to return to their body"
-                         )
-    `handleInvestigator` ( \(JeromeDavids (_ `With` meta)) -> case fromJSON (original meta) of
-                            Success x -> x
-                            _ -> error "Investigator mind is too corrupted to return to their body"
-                         )
-    `handleInvestigator` ( \(ValentinoRivas (_ `With` meta)) -> case fromJSON (original meta) of
-                            Success x -> x
-                            _ -> error "Investigator mind is too corrupted to return to their body"
-                         )
-    `handleInvestigator` ( \(PennyWhite (_ `With` meta)) -> case fromJSON (original meta) of
-                            Success x -> x
-                            _ -> error "Investigator mind is too corrupted to return to their body"
-                         )
-
-becomePrologueInvestigator :: Investigator -> InvestigatorId -> Investigator
-becomePrologueInvestigator (Investigator a) = \case
-  "05046" ->
-    setId
-      $ Investigator
-      $ cbCardBuilder (gavriellaMizrah (PrologueMetadata $ toJSON a)) nullCardId playerId
-  "05047" ->
-    setId
-      $ Investigator
-      $ cbCardBuilder (jeromeDavids (PrologueMetadata $ toJSON a)) nullCardId playerId
-  "05048" ->
-    setId
-      $ Investigator
-      $ cbCardBuilder (valentinoRivas (PrologueMetadata $ toJSON a)) nullCardId playerId
-  "05049" ->
-    setId
-      $ Investigator
-      $ cbCardBuilder (pennyWhite (PrologueMetadata $ toJSON a)) nullCardId playerId
-  _ -> error "Not a prologue investigator"
- where
-  setId = overAttrs (\attrs -> attrs {Attrs.investigatorId = toId a})
-  playerId = attr investigatorPlayerId a

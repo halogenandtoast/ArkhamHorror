@@ -89,7 +89,6 @@ import Arkham.Helpers.Message hiding (
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
-  becomePrologueInvestigator,
   becomeYithian,
   lookupInvestigator,
   returnToBody,
@@ -346,11 +345,12 @@ addPlayer pid = do
     playerCount = game.playerCount
     state = game.state
     players = game.players
+    activePlayerF = if gameActivePlayerId game == PlayerId nil then set activePlayerIdL pid else id
     pendingPlayers = case state of
       IsPending xs -> xs
       _ -> []
     state' = if length players + 1 < playerCount then IsPending (pendingPlayers <> [pid]) else IsActive
-    game' = game & playersL <>~ [pid] & gameStateL .~ state' & initialSeedL .~ seed
+    game' = game & playersL <>~ [pid] & gameStateL .~ state' & initialSeedL .~ seed & activePlayerF
   when (state' == IsActive) $ atomicWriteIORef (queueToRef queueRef) [StartCampaign]
   putGame game'
 
@@ -455,9 +455,13 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           `with` ConnectionData []
           `with` additionalData
       Just locationId -> do
-        location <- getLocation locationId
-        matcher <- getConnectedMatcher location
-        connectedLocationIds <- selectList (AccessibleLocation <> matcher)
+        myou <- selectOne You -- maybe eliminated, and therefor no connections
+        connectedLocationIds <- case myou of
+          Nothing -> pure []
+          Just _ -> do
+            location <- getLocation locationId
+            matcher <- getConnectedMatcher location
+            selectList (AccessibleLocation <> matcher)
         pure
           $ inner
           `with` ConnectionData connectedLocationIds
@@ -3704,12 +3708,28 @@ createActiveCostForAdditionalCardCosts iid card = do
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
   LoadDecklist playerId decklist -> do
+    -- if the player is changing decks during the game (i.e. prologue investigators) we need to replace the old investigator
+    let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
+        replaceIds = InvestigatorId "00000" : toList mOldId
+
     (iid, deck) <- loadDecklist decklist
     let investigator = lookupInvestigator iid playerId
     push $ InitDeck iid (Deck deck)
     let activeInvestigatorF =
-          if gameActiveInvestigatorId g == InvestigatorId "00000" then set activeInvestigatorIdL iid else id
-    pure $ g & (entitiesL . investigatorsL %~ insertEntity investigator) & activeInvestigatorF
+          if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
+        turnPlayerInvestigatorF =
+          if gameTurnPlayerInvestigatorId g `elem` (map Just replaceIds)
+            then set turnPlayerInvestigatorIdL (Just iid)
+            else id
+    pure
+      $ g
+      & ( entitiesL
+            . investigatorsL
+            %~ insertEntity investigator
+            . Map.filter ((/= playerId) . attr investigatorPlayerId)
+        )
+      & activeInvestigatorF
+      & turnPlayerInvestigatorF
   Run msgs -> g <$ pushAll msgs
   If wType _ -> do
     window <- checkWindows [mkWindow Timing.AtIf wType]
@@ -5677,10 +5697,6 @@ runGameMessage msg g = case msg of
     original <- getInvestigator iid
     let yithian = becomeYithian original
     pure $ g & (entitiesL . investigatorsL . at iid ?~ yithian)
-  BecomePrologueInvestigator iid pid -> do
-    original <- getInvestigator iid
-    let prologueInvestigator = becomePrologueInvestigator original pid
-    pure $ g & (entitiesL . investigatorsL . at iid ?~ prologueInvestigator)
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy

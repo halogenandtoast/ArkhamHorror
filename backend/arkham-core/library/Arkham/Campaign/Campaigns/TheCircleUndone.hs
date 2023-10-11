@@ -12,24 +12,22 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.Import
+import Arkham.Card.CardDef
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Decklist
 import Arkham.Difficulty
-import Arkham.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Name
 import Arkham.Trait (Trait (SilverTwilight))
 
-newtype Metadata = Metadata
-  { prologueInvestigators :: Map InvestigatorId InvestigatorId
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype TheCircleUndone = TheCircleUndone (CampaignAttrs `With` Metadata)
+newtype TheCircleUndone = TheCircleUndone CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 instance IsCampaign TheCircleUndone where
@@ -54,7 +52,7 @@ instance IsCampaign TheCircleUndone where
 theCircleUndone :: Difficulty -> TheCircleUndone
 theCircleUndone difficulty =
   campaignWith
-    (TheCircleUndone . (`with` Metadata mempty))
+    TheCircleUndone
     (CampaignId "05")
     "The Circle Undone"
     difficulty
@@ -63,70 +61,71 @@ theCircleUndone difficulty =
     .~ mkCampaignLog
       { campaignLogRecordedSets =
           singletonMap MissingPersons
-            $ map (recorded . unInvestigatorId) allPrologueInvestigators
+            $ map (recorded . cdCardCode) allPrologueInvestigators
       }
 
-allPrologueInvestigators :: [InvestigatorId]
-allPrologueInvestigators = ["05046", "05047", "05048", "05049"]
+allPrologueInvestigators :: [CardDef]
+allPrologueInvestigators =
+  [ Investigators.gavriellaMizrah
+  , Investigators.jeromeDavids
+  , Investigators.pennyWhite
+  , Investigators.valentinoRivas
+  ]
 
 instance RunMessage TheCircleUndone where
-  runMessage msg c@(TheCircleUndone (attrs `With` metadata)) = case msg of
+  runMessage msg c@(TheCircleUndone attrs) = case msg of
+    StartCampaign -> do
+      -- skip picking decks
+      lead <- getActivePlayer
+      pushAll
+        $ [Ask lead PickCampaignSettings | campaignStep attrs /= PrologueStep]
+        <> [CampaignStep $ campaignStep attrs]
+      pure c
     CampaignStep PrologueStep -> do
-      investigatorIds <- allInvestigatorIds
       players <- allPlayers
       pushAll
         $ story players prologue
-        : [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
-          | iid <- investigatorIds
+        : [ ForPlayer player (CampaignStep PrologueStep)
+          | player <- players
           ]
           <> [ story players intro
              , CampaignStep (PrologueStepPart 2)
              , NextCampaignStep Nothing
              ]
       pure c
-    CampaignStep (InvestigatorCampaignStep iid PrologueStep) -> do
+    ForPlayer player (CampaignStep PrologueStep) -> do
+      taken <- selectList Anyone
       let
         availablePrologueInvestigators =
           filter
-            (`notElem` toList (prologueInvestigators metadata))
+            ((`notElem` taken) . InvestigatorId . cdCardCode)
             allPrologueInvestigators
-      player <- getPlayer iid
       push
         $ questionLabel
           "Choose one of the following neutral investigators to control for the duration of this prologue"
           player
         $ ChooseOne
           [ CardLabel
-            (unInvestigatorId pId)
-            [BecomePrologueInvestigator iid pId]
-          | pId <- availablePrologueInvestigators
+            (cdCardCode card)
+            [ LoadDecklist player
+                $ ArkhamDBDecklist mempty (InvestigatorId $ cdCardCode card) (toTitle card) Nothing
+            ]
+          | card <- availablePrologueInvestigators
           ]
       pure c
-    BecomePrologueInvestigator iid pId -> do
-      pure
-        . TheCircleUndone
-        $ attrs
-        `With` metadata
-          { prologueInvestigators =
-              insertMap
-                iid
-                pId
-                (prologueInvestigators metadata)
-          }
     CampaignStep (PrologueStepPart 2) -> do
+      taken <- selectListMap unInvestigatorId Anyone
       let
         prologueInvestigatorsNotTaken =
-          map unInvestigatorId
-            $ allPrologueInvestigators
-            \\ toList
-              (prologueInvestigators metadata)
+          map cdCardCode allPrologueInvestigators
+            \\ toList taken
         readingFor = \case
           "05046" -> gavriellaIntro
           "05047" -> jeromeIntro
           "05048" -> valentinoIntro
           "05049" -> pennyIntro
           _ -> error "Invalid prologue investigator"
-        readings = map readingFor $ toList (prologueInvestigators metadata)
+        readings = map readingFor taken
       players <- allPlayers
       pushAll
         $ crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
@@ -298,24 +297,6 @@ instance RunMessage TheCircleUndone where
         <> [GameOver]
 
       pure c
-    PreScenarioSetup -> do
-      case mapToList (prologueInvestigators metadata) of
-        [] -> pure ()
-        xs -> pushAll $ map (uncurry BecomePrologueInvestigator) xs
-      pure c
-    EndOfScenario _ -> do
-      pure
-        . TheCircleUndone
-        $ attrs
-        `With` metadata
-          { prologueInvestigators = mempty
-          }
-    ResetGame -> do
-      case mapToList (prologueInvestigators metadata) of
-        [] -> defaultCampaignRunner msg c
-        xs -> do
-          for_ xs $ \(iid, _) -> push $ LoadDeck iid $ Deck []
-          pure c
     HandleOption option -> do
       lead <- getLeadPlayer
       investigators <- allInvestigators

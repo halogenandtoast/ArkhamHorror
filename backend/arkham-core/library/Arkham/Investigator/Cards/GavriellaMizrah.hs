@@ -16,13 +16,13 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 
-newtype GavriellaMizrah = GavriellaMizrah (InvestigatorAttrs `With` PrologueMetadata)
+newtype GavriellaMizrah = GavriellaMizrah InvestigatorAttrs
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
   deriving newtype (Entity)
 
-gavriellaMizrah :: PrologueMetadata -> InvestigatorCard GavriellaMizrah
-gavriellaMizrah meta =
+gavriellaMizrah :: InvestigatorCard GavriellaMizrah
+gavriellaMizrah =
   startsWith [Cards.fortyFiveAutomatic, Cards.physicalTraining, Cards.fateOfAllFools]
     $ startsWithInHand
       [ Cards.firstAid
@@ -33,32 +33,32 @@ gavriellaMizrah meta =
       , Cards.delayTheInevitable
       , Cards.delayTheInevitable
       ]
-    $ investigator (GavriellaMizrah . (`with` meta)) Cards.gavriellaMizrah
+    $ investigator GavriellaMizrah Cards.gavriellaMizrah
     $ Stats {health = 8, sanity = 4, willpower = 3, intellect = 2, combat = 4, agility = 1}
 
 instance HasModifiersFor GavriellaMizrah where
-  getModifiersFor target (GavriellaMizrah (a `With` _)) | a `isTarget` target = do
+  getModifiersFor target (GavriellaMizrah a) | a `isTarget` target = do
     pure
       $ toModifiersWith a setActiveDuringSetup
       $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-4)]
-  getModifiersFor (AssetTarget aid) (GavriellaMizrah (a `With` _)) = do
+  getModifiersFor (AssetTarget aid) (GavriellaMizrah a) = do
     isFortyFiveAutomatic <- aid <=~> assetIs Cards.fortyFiveAutomatic
     pure $ toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-2) | isFortyFiveAutomatic]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GavriellaMizrah where
-  getAbilities (GavriellaMizrah (a `With` _)) =
+  getAbilities (GavriellaMizrah a) =
     [ restrictedAbility a 1 (Self <> ClueOnLocation)
         $ freeReaction (EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy)
     ]
 
 instance HasChaosTokenValue GavriellaMizrah where
-  getChaosTokenValue iid ElderSign (GavriellaMizrah (attrs `With` _)) | attrs `is` iid = do
+  getChaosTokenValue iid ElderSign (GavriellaMizrah attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage GavriellaMizrah where
-  runMessage msg i@(GavriellaMizrah (attrs `With` meta)) = case msg of
+  runMessage msg i@(GavriellaMizrah attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
       pure i
@@ -80,4 +80,4 @@ instance RunMessage GavriellaMizrah where
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i
     DrawCards cardDraw | attrs `is` cardDraw.investigator -> pure i
-    _ -> GavriellaMizrah . (`with` meta) <$> runMessage msg attrs
+    _ -> GavriellaMizrah <$> runMessage msg attrs

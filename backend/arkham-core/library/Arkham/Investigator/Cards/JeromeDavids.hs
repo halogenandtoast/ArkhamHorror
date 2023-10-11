@@ -16,13 +16,13 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 
-newtype JeromeDavids = JeromeDavids (InvestigatorAttrs `With` PrologueMetadata)
+newtype JeromeDavids = JeromeDavids InvestigatorAttrs
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
   deriving newtype (Entity)
 
-jeromeDavids :: PrologueMetadata -> InvestigatorCard JeromeDavids
-jeromeDavids meta =
+jeromeDavids :: InvestigatorCard JeromeDavids
+jeromeDavids =
   startsWithInHand
     [ Cards.hyperawareness
     , Cards.mindOverMatter
@@ -35,18 +35,18 @@ jeromeDavids meta =
     , Cards.curiosity
     , Cards.curiosity
     ]
-    $ investigator (JeromeDavids . (`with` meta)) Cards.jeromeDavids
+    $ investigator JeromeDavids Cards.jeromeDavids
     $ Stats {health = 4, sanity = 8, willpower = 2, intellect = 4, combat = 1, agility = 3}
 
 instance HasModifiersFor JeromeDavids where
-  getModifiersFor target (JeromeDavids (a `With` _)) | a `is` target = do
+  getModifiersFor target (JeromeDavids a) | a `is` target = do
     pure
       $ toModifiersWith a setActiveDuringSetup
       $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-2)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JeromeDavids where
-  getAbilities (JeromeDavids (a `With` _)) =
+  getAbilities (JeromeDavids a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 Self
         $ ReactionAbility
@@ -55,12 +55,12 @@ instance HasAbilities JeromeDavids where
     ]
 
 instance HasChaosTokenValue JeromeDavids where
-  getChaosTokenValue iid ElderSign (JeromeDavids (attrs `With` _)) | attrs `is` iid = do
+  getChaosTokenValue iid ElderSign (JeromeDavids attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage JeromeDavids where
-  runMessage msg i@(JeromeDavids (attrs `With` meta)) = case msg of
+  runMessage msg i@(JeromeDavids attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       push $ CancelNext (toSource attrs) RevelationMessage
       pure i
@@ -81,4 +81,4 @@ instance RunMessage JeromeDavids where
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i
     DrawCards cardDraw | attrs `is` cardDraw.investigator -> pure i
-    _ -> JeromeDavids . (`with` meta) <$> runMessage msg attrs
+    _ -> JeromeDavids <$> runMessage msg attrs

@@ -21,6 +21,7 @@ import StatusBar from '@/arkham/components/StatusBar.vue';
 import Key from '@/arkham/components/Key.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
+import Connections from '@/arkham/components/Connections.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
@@ -51,160 +52,11 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-function handleConnections() {
-  const toConnection = (div1: HTMLElement, div2: HTMLElement) => {
-    const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
-      const { id: div1Id } = a.dataset
-      const { id: div2Id } = b.dataset
-
-      if(!div1Id || !div2Id) {
-        return 0
-      }
-
-      if (div1Id < div2Id) {
-        return -1;
-      }
-      if (div1Id > div2Id) {
-        return 1;
-      }
-
-      // names must be equal
-      return 0;
-    })
-
-    const { id: leftDivId } = leftDiv.dataset
-    const { id: rightDivId } = rightDiv.dataset
-
-    if (leftDivId && rightDivId) {
-      return leftDivId + ":" + rightDivId
-    }
-  }
-  const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
-    const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
-      const { id: div1Id } = a.dataset
-      const { id: div2Id } = b.dataset
-
-      if (!div1Id || !div2Id) return 0
-
-      if (div1Id < div2Id) {
-        return -1;
-      }
-      if (div1Id > div2Id) {
-        return 1;
-      }
-
-      // names must be equal
-      return 0;
-    })
-
-    const closeEnough = (a: string, b: number) => {
-      return diff(a, b) < 0.5
-    }
-
-    const diff = (a: string, b: number) => {
-      const x = parseFloat(a)
-      const y = b
-
-      return Math.abs(x - y)
-    }
-
-    const { id: leftDivId } = leftDiv.dataset
-    const { id: rightDivId } = rightDiv.dataset
-
-    if (leftDivId && rightDivId) {
-      const line = document.querySelector<HTMLElement>(".line")
-      const parentNode = line?.parentNode
-
-      if(line && parentNode) {
-        const connection = leftDivId + ":" + rightDivId
-        const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
-        const {left: leftDivLeft, top: leftDivTop, right: leftDivRight } = leftDiv.getBoundingClientRect();
-        const {left: rightDivLeft, top: rightDivTop, right: rightDivRight } = rightDiv.getBoundingClientRect();
-        const leftDivWidth = leftDivRight - leftDivLeft;
-        const rightDivWidth = rightDivRight - rightDivLeft;
-        const x1 = (leftDivLeft - bodyLeft) + (leftDivWidth/2)
-        const y1 = (leftDivTop - bodyTop)
-        const x2 = (rightDivLeft - bodyLeft) + (rightDivWidth/2)
-        const y2 = (rightDivTop - bodyTop)
-        const existingNode = document.querySelector(`[data-connection="${connection}"]`)
-
-        if (existingNode) {
-          const ex1 = existingNode.getAttribute("x1") || "-1"
-          const ey1 = existingNode.getAttribute("y1") || "-1"
-          const ex2 = existingNode.getAttribute("x2") || "-1"
-          const ey2 = existingNode.getAttribute("y2") || "-1"
-
-          if (closeEnough(ex1, x1) && closeEnough(ey1, y1) && closeEnough(ex2, x2) && closeEnough(ey2, y2)) {
-            return
-          } else {
-            parentNode.removeChild(existingNode);
-          }
-        }
-
-        const node = line.cloneNode(true) as HTMLElement
-        node.dataset.connection = connection
-        node.classList.remove("original")
-
-        const investigator = Object.values(props.game.investigators).find(i => i.playerId == props.playerId)
-        const { connectedLocations } = investigator
-        const activeLine = (leftDivId == investigator.location && connectedLocations.includes(rightDivId)) || (rightDivId == investigator.location && connectedLocations.includes(leftDivId))
-        if (activeLine) {
-          node.classList.add("active")
-        }
-        parentNode.insertBefore(node, line.nextSibling)
-
-        node.setAttribute('x1',x1.toString())
-        node.setAttribute('y1',y1.toString())
-        node.setAttribute('x2',x2.toString())
-        node.setAttribute('y2',y2.toString())
-      }
-    }
-  }
-
-  let allConnections: string[] = []
-  for(const location of locations.value) {
-    const id = location.id
-    const connections = typeof location.connectedLocations == "object" ? Object.values(location.connectedLocations) : location.connectedLocations
-    connections.forEach((connection) => {
-      const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
-      const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
-      if(start && end) {
-        const conn = toConnection(start, end)
-        if (conn) {
-          allConnections.push(conn)
-          makeLine(start, end)
-        }
-      }
-    });
-  }
-
-  document.querySelectorAll<HTMLElement>(".line:not(.original").forEach((node) => {
-    const con = node.dataset.connection
-    if(con) {
-      if(!allConnections.some((c) => c === con)) {
-        node.parentNode?.removeChild(node)
-      }
-    }
-  })
-
-}
-
 interface RefWrapper<T> {
   ref: ComputedRef<T>
 }
 
 const locationMap = ref<Element | null>(null)
-
-const requestId = ref<number | undefined>(undefined)
-const drawHandler = () => {
-  requestId.value = undefined
-  handleConnections()
-  requestId.value = window.requestAnimationFrame(drawHandler);
-}
-
-onBeforeUnmount(() => { if (requestId.value) window.cancelAnimationFrame(requestId.value) })
-
-onMounted(() => requestId.value = window.requestAnimationFrame(drawHandler))
 
 const scenarioGuide = computed(() => {
   const { reference, difficulty } = props.scenario;
@@ -567,9 +419,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="showOutOfPlay"><font-awesome-icon icon="eye" /> Out of Play</button>
       </div>
 
-      <svg id="svg">
-        <line id="line" class="line original" stroke-dasharray="5, 5"/>
-      </svg>
+      <Connections :game="game" :playerId="playerId" />
 
       <div class="location-cards-container">
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
@@ -792,34 +642,6 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   }
 }
 
-#svg {
-  pointer-events: none;
-  position: absolute;
-  isolation: isolate;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -100000000;
-}
-
-#line{
-  stroke-width:6px;
-  /* stroke:#a6b5bb; */
-  stroke:rgba(0,0,0, 0.2);
-
-  @media (prefers-color-scheme: dark) {
-    stroke:rgba(255,255,255, 0.2);
-  }
-}
-
-.active {
-  stroke:rgba(0,0,0,0.5) !important;
-
-  @media (prefers-color-scheme: dark) {
-    stroke:rgba(255,255,255, 0.7) !important;
-  }
-}
 
 .view-out-of-play-button {
   text-decoration: none;

@@ -107,12 +107,14 @@ const hasPool = computed(() => {
 
 <template>
   <div class="card-container" :data-index="card.id">
-    <img
-      :class="{'card--can-interact': cardAction !== -1}"
-      class="card"
-      :src="image"
-      @click="emit('choose', cardAction)"
-    />
+    <canvas ref="canvas" class="card">
+      <img
+        :class="{'card--can-interact': cardAction !== -1}"
+        class="card"
+        :src="image"
+        @click="emit('choose', cardAction)"
+      />
+    </canvas>
     <span class="vengeance" v-if="card.tag === 'VengeanceCard'">Vengeance 1</span>
     <div class="pool" v-if="hasPool">
       <PoolItem v-if="damage" type="doom" :amount="damage" />

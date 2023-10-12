@@ -155,6 +155,12 @@ const blocked = computed(() => {
   return false
 })
 
+const modifiers = computed(() => props.location.modifiers)
+
+const explosion = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Explosion") ?? false
+})
+
 
 const keys = computed(() => props.location.keys)
 
@@ -192,7 +198,7 @@ const debug = useDebug()
       </div>
     </div>
     <div class="location-column">
-      <div class="card-frame">
+      <div class="card-frame" :class="{ explosion }">
         <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
         <img
@@ -397,6 +403,30 @@ const debug = useDebug()
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@keyframes explosion {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: -3072px;
+  }
+}
+
+.explosion::before {
+  animation: explosion 0.5s steps(48, end) forwards;
+  z-index: 100000000000000000000;
+  content: ' ';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 62px;
+  background: black;
+  background: url("./img/arkham/explosion.png") no-repeat;
+  background-position: 0 0;
+  background-size: 3072px;
 }
 
 .abilities {

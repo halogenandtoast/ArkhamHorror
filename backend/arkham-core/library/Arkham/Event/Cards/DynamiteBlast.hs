@@ -28,8 +28,9 @@ instance RunMessage DynamiteBlast where
         investigators <- selectList $ investigatorAt location
         pure
           ( location
-          , map (nonAttackEnemyDamage attrs 3) enemies
-              <> map (\iid' -> assignDamage iid' attrs 3) investigators
+          , gameModifier attrs location Explosion
+              : map (nonAttackEnemyDamage attrs 3) enemies
+                <> map (\iid' -> assignDamage iid' attrs 3) investigators
           )
       let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices
       player <- getPlayer iid

@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import {
-  onMounted,
-  onBeforeUnmount,
   computed,
   ref,
   ComputedRef,
@@ -59,63 +57,46 @@ interface RefWrapper<T> {
 const locationMap = ref<Element | null>(null)
 
 const scenarioGuide = computed(() => {
-  const { reference, difficulty } = props.scenario;
+  const { reference, difficulty } = props.scenario
   const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
     ? 'b'
-    : '';
+    : ''
 
-  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.jpg`);
+  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.jpg`)
 })
 
 const scenarioDecks = computed(() => {
-  if (!props.scenario.decks) {
-    return null;
-  }
+  if (!props.scenario.decks) return null
 
-  return Object.entries(props.scenario.decks);
-
+  return Object.entries(props.scenario.decks)
 })
 
-const transpose = (matrix: any[][]) => {
-  return matrix[0].map((_col, i) => matrix.map(row => row[i]));
-}
-
+const transpose = (matrix: any[][]) => matrix[0].map((_col, i) => matrix.map(row => row[i]))
 
 // Removed empty rows and columns from the location layout
 const cleanLocationLayout = (locationLayout: string[]) => {
-
   const labels = [...locations.value.map((location) => location.label),...enemiesAsLocations.value.map((enemy) => enemy.asSelfLocation), ...unusedLabels.value]
 
-  if(labels.length === 0) {
-    return locationLayout
-  }
+  if(labels.length === 0) return locationLayout
 
   const rows = locationLayout.map((r) => r.split(/\s+/).filter((c) => c !== ''))
-
-  const cleanedRows = rows.filter((row) => {
-    return row.some(cell => labels.some(l => l === cell))
-  })
-
+  const cleanedRows = rows.filter((row) => row.some(cell => labels.some(l => l === cell)))
   const transposed = transpose(cleanedRows)
-
-  const cleanedCols = transposed.filter((col) => {
-    return col.some(cell => labels.some(l => l === cell))
-  })
+  const cleanedCols = transposed.filter((col) => col.some(cell => labels.some(l => l === cell)))
 
   return transpose(cleanedCols).map((row) => row.join(' '))
 }
 
 const locationStyles = computed(() => {
-  const { locationLayout } = props.scenario;
-  if (locationLayout) {
-    const cleaned = cleanLocationLayout(locationLayout)
-    return {
-      display: 'grid',
-      'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
-      'gap': '80px',
-    };
+  const { locationLayout } = props.scenario
+  if (!locationLayout) return null
+
+  const cleaned = cleanLocationLayout(locationLayout)
+  return {
+    display: 'grid',
+    'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
+    'gap': '80px',
   }
-  return null;
 })
 
 const scenarioDeckStyles = computed(() => {
@@ -128,20 +109,16 @@ const scenarioDeckStyles = computed(() => {
 })
 
 const activeCard = computed(() => {
-  if (props.game.activeCard) {
-    const { cardCode } = toCardContents(props.game.activeCard);
-    return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
-  }
+  if (!props.game.activeCard) return null
 
-  return null;
+  const { cardCode } = toCardContents(props.game.activeCard)
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`)
 })
 
 const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
-const discards = computed<Card[]>(() => props.scenario.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
-const outOfPlayEnemies = computed(() =>
-  Object.values(props.game.outOfPlayEnemies).map(e => ({...props.game.cards[e.cardId], tokens: e.tokens}))
-)
+const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
+const outOfPlayEnemies = computed(() => Object.values(props.game.outOfPlayEnemies).map(e => ({...props.game.cards[e.cardId], tokens: e.tokens})))
 const outOfPlay = computed(() => (props.scenario?.setAsideCards || []).concat(outOfPlayEnemies.value))
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
@@ -150,7 +127,6 @@ const noCards = computed<Card[]>(() => [])
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
 const viewingDiscard = ref(false)
 const cardRowTitle = ref("")
-
 
 const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
   cardRowTitle.value = title
@@ -163,21 +139,17 @@ const showRemovedFromPlay = () => doShowCards(removedFromPlay, 'Removed from Pla
 const showDiscards = () => doShowCards(discards, 'Discards', true)
 const hideCards = () => showCards.ref = noCards
 
-const showCardsUnderScenarioReference = () => {
-  doShowCards(cardsUnderScenarioReference, 'Cards Under Scenario Reference', false)
-}
+const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, 'Cards Under Scenario Reference', false)
 
 const viewUnderScenarioReference = computed(() => `${cardsUnderScenarioReference.value.length} Cards Underneath`)
 
 const viewDiscardLabel = computed(() => pluralize('Card', discards.value.length))
 const topOfEncounterDiscard = computed(() => {
-  if (props.scenario.discard[0]) {
-    const { cardCode } = props.scenario.discard[0];
+  if (!props.scenario.discard[0]) return null
 
-    return imgsrc(`/cards/${cardCode.replace('c', '')}.jpg`);
-  }
+  const { cardCode } = props.scenario.discard[0]
 
-  return null;
+  return imgsrc(`/cards/${cardCode.replace('c', '')}.jpg`)
 })
 
 const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
@@ -185,13 +157,10 @@ const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['Spec
 const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
 
 const topOfSpectralDiscard = computed(() => {
-  if (spectralDiscard.value && spectralDiscard.value[0]) {
-    const { cardCode } = spectralDiscard.value[0];
+  if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
 
-    return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
-  }
-
-  return null;
+  const { cardCode } = spectralDiscard.value[0]
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`)
 })
 
 const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
@@ -224,22 +193,16 @@ const locations = computed(() => Object.values(props.game.locations).
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
   const { locationLayout, usesGrid } = props.scenario;
-  if (locationLayout && usesGrid) {
-    return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
-  }
+  if (!locationLayout || !usesGrid) return []
 
-  return []
+  return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
-const unusedCanInteract = (u: string) => choices.value.findIndex((c) => {
-     if (c.tag === "GridLabel") {
-       return c.gridLabel === u
-     }
-
-     return false
-})
+const unusedCanInteract = (u: string) => choices.value.findIndex((c) =>
+  c.tag === "GridLabel" && c.gridLabel === u
+)
 
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const hasPool = computed(() => resources.value && resources.value > 0)
@@ -878,8 +841,6 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
     transform: translate(0, -12px);
   }
 }
-
-
 
 .tarot-cards {
   display: flex;

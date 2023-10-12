@@ -259,6 +259,7 @@ data ModifierType
   | AdditionalTargets Int
   | MayIgnoreLocationEffectsAndKeywords
   | Ethereal -- only for UI, from Ethereal Form
+  | Explosion -- only for UI, from Dyanamite
   deriving stock (Show, Eq, Ord, Data)
 
 _PlayableModifierContexts :: Prism' ModifierType [(CardMatcher, [ModifierType])]

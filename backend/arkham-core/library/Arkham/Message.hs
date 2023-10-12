@@ -124,10 +124,10 @@ instance IsLabel "other" AdvancementMethod where
 class Is a b where
   is :: a -> b -> Bool
 
-instance Sourceable a => Is a Source where
+instance (Sourceable a) => Is a Source where
   is = isSource
 
-instance Targetable a => Is a Target where
+instance (Targetable a) => Is a Target where
   is = isTarget
 
 pattern UseThisAbility :: InvestigatorId -> Source -> Int -> Message
@@ -206,7 +206,7 @@ data AbilityRef = AbilityRef Source Int
 getChoiceAmount :: Text -> [(Text, Int)] -> Int
 getChoiceAmount key choices =
   let choicesMap = mapFromList @(Map Text Int) choices
-   in findWithDefault 0 key choicesMap
+  in  findWithDefault 0 key choicesMap
 
 class IsMessage msg where
   toMessage :: msg -> Message
@@ -892,6 +892,8 @@ data Message
   | -- Commit
     Do Message
   | DoBatch BatchId Message
+  | -- UI
+    ClearUI
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''Message)
@@ -973,7 +975,7 @@ chooseOrRunN _ n msgs | length msgs == n = Run $ map uiToRun msgs
 chooseOrRunN pid n msgs = Ask pid (ChooseN n msgs)
 
 chooseAmounts
-  :: Targetable target
+  :: (Targetable target)
   => PlayerId
   -> Text
   -> AmountTarget

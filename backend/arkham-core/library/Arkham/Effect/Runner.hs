@@ -32,8 +32,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndPhase -> do
       phase <- getPhase
-      when (isEndOfWindow a (EffectPhaseWindowFor phase))
-        $ push (DisableEffect effectId)
+      when (isEndOfWindow a (EffectPhaseWindowFor phase)) $
+        push (DisableEffect effectId)
       pure a
     EndTurn _ | isEndOfWindow a EffectTurnWindow -> do
       a <$ push (DisableEffect effectId)
@@ -59,5 +59,7 @@ instance RunMessage EffectAttrs where
     ResolvedCard _ _ | isEndOfWindow a EffectCardResolutionWindow -> do
       a <$ push (DisableEffect effectId)
     ResolvedAbility {} | isEndOfWindow a EffectAbilityWindow -> do
+      a <$ push (DisableEffect effectId)
+    ClearUI | isEndOfWindow a EffectUI -> do
       a <$ push (DisableEffect effectId)
     _ -> pure a

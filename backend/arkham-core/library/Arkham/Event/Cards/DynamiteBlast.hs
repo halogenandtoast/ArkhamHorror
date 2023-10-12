@@ -28,7 +28,7 @@ instance RunMessage DynamiteBlast where
         investigators <- selectList $ investigatorAt location
         pure
           ( location
-          , gameModifier attrs location Explosion
+          , uiEffect attrs location Explosion
               : map (nonAttackEnemyDamage attrs 3) enemies
                 <> map (\iid' -> assignDamage iid' attrs 3) investigators
           )

@@ -22,7 +22,7 @@ import Arkham.Window (Window)
 import Control.Lens (each, sumOf)
 
 withModifiers
-  :: (HasGame m, Targetable target) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
+  :: (HasGame m, Targetable target) => target -> [Modifier] -> (forall n. (HasGame n) => n a) -> m a
 withModifiers = withModifiers'
 
 getModifiers :: forall a m. (HasGame m, Targetable a) => a -> m [ModifierType]
@@ -46,13 +46,13 @@ withoutModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
-toModifier :: Sourceable a => a -> ModifierType -> Modifier
+toModifier :: (Sourceable a) => a -> ModifierType -> Modifier
 toModifier a mType = Modifier (toSource a) mType False
 
-toModifiers :: Sourceable a => a -> [ModifierType] -> [Modifier]
+toModifiers :: (Sourceable a) => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
-toModifiersWith :: Sourceable a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
+toModifiersWith :: (Sourceable a) => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
 toModifiersWith a f xs = map (f . toModifier a) xs
 
 skillTestModifier
@@ -78,7 +78,7 @@ skillTestModifiers source target modifiers =
     (toSource source)
     (toTarget target)
 
-effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
+effectModifiers :: (Sourceable a) => a -> [ModifierType] -> EffectMetadata Window Message
 effectModifiers source = EffectModifiers . toModifiers source
 
 createWindowModifierEffect
@@ -163,14 +163,17 @@ abilityModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 abilityModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectAbilityWindow source target [modifier]
 
-chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType -> Message
+chaosTokenEffect :: (Sourceable source) => source -> ChaosToken -> ModifierType -> Message
 chaosTokenEffect (toSource -> source) token modifier =
   CreateChaosTokenEffect (EffectModifiers $ toModifiers source [modifier]) source token
 
-getAdditionalSearchTargets :: HasGame m => InvestigatorId -> m Int
+uiEffect :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+uiEffect (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectUI source target [modifier]
+
+getAdditionalSearchTargets :: (HasGame m) => InvestigatorId -> m Int
 getAdditionalSearchTargets iid = sumOf (each . _AdditionalTargets) <$> getModifiers iid
 
-getTotalSearchTargets :: HasGame m => InvestigatorId -> [a] -> Int -> m Int
+getTotalSearchTargets :: (HasGame m) => InvestigatorId -> [a] -> Int -> m Int
 getTotalSearchTargets iid targets n = do
   additionalTargets <- getAdditionalSearchTargets iid
   pure $ min (length targets) (n + additionalTargets)

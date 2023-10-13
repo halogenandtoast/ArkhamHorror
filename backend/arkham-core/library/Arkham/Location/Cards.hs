@@ -96,6 +96,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allLocationCards :: Map CardCode CardDef
@@ -4953,6 +4954,7 @@ dreamGateWondrousJourney =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 dreamGatePointlessReality :: CardDef
@@ -5004,6 +5006,7 @@ dreamGatePointlessReality =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 studyAberrantGateway :: CardDef

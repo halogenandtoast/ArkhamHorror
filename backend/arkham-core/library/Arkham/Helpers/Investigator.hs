@@ -326,6 +326,7 @@ investigator f cardDef Stats {..} =
                 , investigatorStartsWithInHand = []
                 , investigatorCardsUnderneath = []
                 , investigatorFoundCards = mempty
+                , investigatorBondedCards = mempty
                 , investigatorUsedAbilities = mempty
                 , investigatorUsedAdditionalActions = mempty
                 , investigatorMulligansTaken = 0
@@ -561,6 +562,9 @@ check (toId -> iid) capability = iid <=~> capability
 checkAll
   :: (EntityId a ~ InvestigatorId, Entity a, HasGame m) => a -> [InvestigatorMatcher] -> m Bool
 checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
+
+searchBonded :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
+searchBonded (asId -> iid) def = fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
 
 -- TODO: Decide if we want to use or keep these instances, these let you do
 -- >       canModifyDeck <- can.manipulate.deck attrs

@@ -59,6 +59,7 @@ investigator cardCode name classSymbol traits =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allInvestigatorCards :: Map CardCode CardDef

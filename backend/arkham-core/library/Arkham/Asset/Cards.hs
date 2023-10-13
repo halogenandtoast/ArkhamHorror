@@ -122,6 +122,7 @@ baseAsset mEncounterSet cardCode name cost classSymbols =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allPlayerAssetCards :: Map CardCode CardDef
@@ -3482,6 +3483,7 @@ hallowedMirror =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Relic, Occult, Blessed]
     , cdSlots = [#accessory]
+    , cdBondedWith = [(3, "05314")]
     }
 
 occultLexicon :: CardDef
@@ -3490,6 +3492,7 @@ occultLexicon =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tome, Occult]
     , cdSlots = [#hand]
+    , cdBondedWith = [(3, "05317")]
     }
 
 doubleDouble4 :: CardDef
@@ -3578,6 +3581,7 @@ theHungeringBlade1 =
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdAdditionalCost = Just (ShuffleBondedCost 3 "06019")
     , cdLevel = 1
+    , cdBondedWith = [(3, "06019")]
     }
 
 solemnVow :: CardDef

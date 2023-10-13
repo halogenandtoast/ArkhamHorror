@@ -58,6 +58,7 @@ story cardCode name encounterSet =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allStoryCards :: Map CardCode CardDef

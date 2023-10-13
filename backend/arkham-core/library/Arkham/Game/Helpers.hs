@@ -487,7 +487,9 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
         ]
     AssetTarget tid -> andM [can.manipulate.deck iid, selectAny $ Matcher.AssetWithId tid]
     _ -> error "Unhandled shuffle into deck cost"
-  ShuffleBondedCost {} -> pure True
+  ShuffleBondedCost n cardCode -> do
+    bondedCards <- field InvestigatorBondedCards iid
+    pure $ count ((== cardCode) . toCardCode) bondedCards >= n
   DiscardHandCost {} -> pure True
   DiscardTopOfDeckCost {} -> pure True
   AdditionalActionsCost {} -> pure True

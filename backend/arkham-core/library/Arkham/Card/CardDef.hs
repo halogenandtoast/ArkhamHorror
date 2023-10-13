@@ -112,6 +112,7 @@ data CardDef = CardDef
   , cdGrantedXp :: Maybe Int
   , cdCanReplace :: Bool
   , cdDeckRestrictions :: [DeckRestriction]
+  , cdBondedWith :: [(Int, CardCode)]
   }
   deriving stock (Show, Eq, Ord, Data)
 

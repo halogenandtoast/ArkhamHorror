@@ -58,6 +58,7 @@ act cardCode name stage encounterSet =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allActCards :: Map CardCode CardDef

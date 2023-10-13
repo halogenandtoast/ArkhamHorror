@@ -2020,6 +2020,7 @@ getSkill sid = do
     $ fromJustNote missingSkill
     $ preview (entitiesL . skillsL . ix sid) g
     <|> getInDiscardEntity skillsL sid g
+    <|> getRemovedEntity skillsL sid g
  where
   missingSkill = "Unknown skill: " <> show sid
 
@@ -2455,6 +2456,7 @@ maybeAsset aid = do
     $ preview (entitiesL . assetsL . ix aid) g
     <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
     <|> getInDiscardEntity assetsL aid g
+    <|> getRemovedEntity assetsL aid g
 
 getTreachery :: HasGame m => TreacheryId -> m Treachery
 getTreachery tid =
@@ -2476,6 +2478,15 @@ getInDiscardEntity lensFunc entityId game =
       (preview (lensFunc . ix entityId))
       (toList $ view inDiscardEntitiesL game)
 
+getRemovedEntity
+  :: (id ~ EntityId entity, Ord id)
+  => Lens' Entities (EntityMap entity)
+  -> id
+  -> Game
+  -> Maybe entity
+getRemovedEntity lensFunc entityId game =
+  preview (lensFunc . ix entityId) (view actionRemovedEntitiesL game)
+
 getEvent :: (HasCallStack, HasGame m) => EventId -> m Event
 getEvent eid = fromJustNote missingEvent <$> getEventMaybe eid
  where
@@ -2489,6 +2500,7 @@ getEventMaybe eid = do
     <|> preview (inSearchEntitiesL . eventsL . ix eid) g
     <|> preview (inHandEntitiesL . each . eventsL . ix eid) g
     <|> getInDiscardEntity eventsL eid g
+    <|> getRemovedEntity eventsL eid g
 
 getEffect :: HasGame m => EffectId -> m Effect
 getEffect eid =
@@ -5626,14 +5638,12 @@ runGameMessage msg g = case msg of
     case toCardType card of
       EventType -> do
         -- There is only one card, Astounding Revelation, that does this so we just hard code for now
-        let
-          event' = lookupEvent (toCardCode card) iid (EventId $ unsafeCardIdToUUID cid) cid
-          dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
+        let eventId = EventId $ unsafeCardIdToUUID cid
+        let event' = lookupEvent (toCardCode card) iid eventId cid
         pure
           $ g
-          & inDiscardEntitiesL
-          . at iid
-          ?~ (dEntities & eventsL . at (toId event') ?~ event')
+          & (actionRemovedEntitiesL . eventsL %~ insertEntity event')
+          & (inSearchEntitiesL . eventsL %~ deleteMap eventId)
       _ -> error $ "Unhandled card type: " <> show card
   Discarded (TreacheryTarget aid) _ _ -> do
     push $ RemoveTreachery aid

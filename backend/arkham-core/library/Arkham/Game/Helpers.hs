@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Game.Helpers (
   module Arkham.Game.Helpers,
   module X,
@@ -677,7 +679,7 @@ getActionsWith iid window f = do
             _ -> Nothing
         )
         modifiersForFilter
-  unfilteredActions <- map f . nub <$> getAllAbilities
+  unfilteredActions <- traceShowId . map f . nub <$> getAllAbilities
   actions' <-
     if null abilityFilters
       then pure unfilteredActions

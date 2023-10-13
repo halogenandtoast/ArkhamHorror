@@ -18,6 +18,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
+import Arkham.Matcher.Types (AssetMatcher (AssetWithId), Be (..))
 import Arkham.Message hiding (AssetDamage, Damage)
 import Arkham.Name
 import Arkham.Placement
@@ -234,6 +235,9 @@ data AssetAttrs = AssetAttrs
 instance Is AssetAttrs AssetId where
   is = (==) . toId
   {-# INLINE is #-}
+
+instance Be AssetAttrs AssetMatcher where
+  be = AssetWithId . assetId
 
 instance HasField "horror" AssetAttrs Int where
   getField = assetHorror

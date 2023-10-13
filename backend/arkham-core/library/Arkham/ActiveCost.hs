@@ -948,9 +948,8 @@ instance RunMessage ActiveCost where
                 cards
           c <$ pushAll [FocusCards cards, chooseOne player cardMsgs, UnfocusCards]
         Free -> pure c
-    PaidCost acId _ _ payment
-      | acId == activeCostId c ->
-          pure $ c & costPaymentsL <>~ payment
+    PaidCost acId _ _ payment | acId == activeCostId c -> do
+      pure $ c & costPaymentsL <>~ payment
     PayCostFinished acId | acId == activeCostId c -> do
       case activeCostTarget c of
         ForAbility ability -> do

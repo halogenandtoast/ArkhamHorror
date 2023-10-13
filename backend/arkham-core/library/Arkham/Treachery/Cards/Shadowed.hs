@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Runner hiding (EnemyFight)
 
 newtype Shadowed = Shadowed TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -33,8 +33,8 @@ instance RunMessage Shadowed where
             ]
         else do
           player <- getPlayer iid
-          push
-            $ chooseOrRunOne
+          push $
+            chooseOrRunOne
               player
               [ targetLabel
                 cultist

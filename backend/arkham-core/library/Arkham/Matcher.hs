@@ -17,6 +17,9 @@ import Data.Data.Lens (biplate)
 class OneOf a where
   oneOf :: [a] -> a
 
+instance OneOf WindowMatcher where
+  oneOf = OrWindowMatcher
+
 instance OneOf InvestigatorMatcher where
   oneOf = AnyInvestigator
 
@@ -46,7 +49,7 @@ instance WithTrait CardMatcher where
 
 -- ** Investigator Helpers **
 
-investigatorIs :: HasCardCode a => a -> InvestigatorMatcher
+investigatorIs :: (HasCardCode a) => a -> InvestigatorMatcher
 investigatorIs = InvestigatorIs . toCardCode
 
 notInvestigator :: InvestigatorId -> InvestigatorMatcher
@@ -71,7 +74,7 @@ replaceInvestigatorMatcher iid n = transform go
   go m | m == n = InvestigatorWithId iid
   go m = m
 
-handWith :: HasCardCode a => a -> InvestigatorMatcher
+handWith :: (HasCardCode a) => a -> InvestigatorMatcher
 handWith = HandWith . hasCard
 
 -- ** Prey Helpers **
@@ -88,7 +91,7 @@ preyWith (RestrictedBearerOf e m1) m2 = RestrictedBearerOf e $ m1 <> m2
 
 -- ** Asset Helpers **
 
-assetIs :: HasCardCode a => a -> AssetMatcher
+assetIs :: (HasCardCode a) => a -> AssetMatcher
 assetIs = AssetIs . toCardCode
 
 assetControlledBy :: InvestigatorId -> AssetMatcher
@@ -102,7 +105,7 @@ assetAtLocationWith = AssetAt . locationWithInvestigator
 
 -- ** Enemy Helpers **
 
-enemyIs :: HasCardCode a => a -> EnemyMatcher
+enemyIs :: (HasCardCode a) => a -> EnemyMatcher
 enemyIs = EnemyIs . toCardCode
 
 enemyAt :: LocationId -> EnemyMatcher
@@ -120,7 +123,7 @@ canEnterLocation :: (AsId a, IdOf a ~ InvestigatorId) => a -> LocationMatcher
 canEnterLocation = CanEnterLocation . InvestigatorWithId . asId
 {-# INLINE canEnterLocation #-}
 
-locationIs :: HasCardCode a => a -> LocationMatcher
+locationIs :: (HasCardCode a) => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}
 
@@ -145,7 +148,7 @@ locationWithTreachery :: TreacheryId -> LocationMatcher
 locationWithTreachery = LocationWithTreachery . TreacheryWithId
 {-# INLINE locationWithTreachery #-}
 
-locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher
+locationWithoutTreachery :: (HasCardCode a) => a -> LocationMatcher
 locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
 {-# INLINE locationWithoutTreachery #-}
 
@@ -153,13 +156,13 @@ accessibleFrom :: LocationId -> LocationMatcher
 accessibleFrom = AccessibleFrom . LocationWithId
 {-# INLINE accessibleFrom #-}
 
-locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
+locationNotOneOf :: (IsLocationMatcher a) => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
 
 -- ** Treachery Helpers **
 
-treacheryIs :: HasCardCode a => a -> TreacheryMatcher
+treacheryIs :: (HasCardCode a) => a -> TreacheryMatcher
 treacheryIs = TreacheryIs . toCardCode
 
 treacheryAt :: LocationId -> TreacheryMatcher
@@ -174,7 +177,7 @@ treacheryInThreatAreaOf = TreacheryInThreatAreaOf . InvestigatorWithId
 
 -- ** Event Helpers **
 
-eventIs :: HasCardCode a => a -> EventMatcher
+eventIs :: (HasCardCode a) => a -> EventMatcher
 eventIs = EventIs . toCardCode
 
 eventAt :: LocationId -> EventMatcher
@@ -189,7 +192,7 @@ skillControlledBy = SkillControlledBy . InvestigatorWithId
 
 -- ** Card Helpers **
 
-cardIs :: HasCardCode a => a -> CardMatcher
+cardIs :: (HasCardCode a) => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
 
 -- ** Extended Card Helpers **
@@ -202,7 +205,7 @@ basic = BasicCardMatch
 
 -- ** Card List Helpers **
 
-hasCard :: HasCardCode a => a -> CardListMatcher
+hasCard :: (HasCardCode a) => a -> CardListMatcher
 hasCard = HasCard . cardIs
 
 -- ** Replacements

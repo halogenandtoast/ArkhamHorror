@@ -75,6 +75,10 @@ data TreacheryAttrs = TreacheryAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance AsId TreacheryAttrs where
+  type IdOf TreacheryAttrs = TreacheryId
+  asId = treacheryId
+
 instance HasField "resources" TreacheryAttrs Int where
   getField = treacheryResources
 
@@ -183,17 +187,17 @@ withTreacheryInvestigator :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ ->
-    error
-      $ show (cdName $ toCardDef attrs)
-      <> " must be attached to an investigator"
+    error $
+      show (cdName $ toCardDef attrs)
+        <> " must be attached to an investigator"
 
 withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryOwner attrs f = case treacheryOwner attrs of
   Just iid -> f iid
   _ ->
-    error
-      $ show (cdName $ toCardDef attrs)
-      <> " must be owned by an investigator"
+    error $
+      show (cdName $ toCardDef attrs)
+        <> " must be owned by an investigator"
 
 treachery
   :: (TreacheryAttrs -> a)
@@ -234,7 +238,7 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
-data Treachery = forall a. IsTreachery a => Treachery a
+data Treachery = forall a. (IsTreachery a) => Treachery a
 
 instance Named Treachery where
   toName (Treachery t) = toName (toAttrs t)
@@ -284,7 +288,7 @@ instance IsCard Treachery where
 
 data SomeTreacheryCard
   = forall a.
-    IsTreachery a =>
+    (IsTreachery a) =>
     SomeTreacheryCard
       (TreacheryCard a)
 

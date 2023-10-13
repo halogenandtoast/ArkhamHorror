@@ -21,38 +21,21 @@ dynamiteBlast2 = event DynamiteBlast2 Cards.dynamiteBlast2
 instance RunMessage DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity
   runMessage msg e@(DynamiteBlast2 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      connectedLocationIds <-
-        selectList
-          $ AccessibleFrom
-          $ LocationWithId
-            currentLocationId
+    PlayThisEvent iid eid | eid == eventId -> do
+      currentLocationId <- fieldJust InvestigatorLocation iid
+      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId currentLocationId
       canDealDamage <- withoutModifier iid CannotDealDamage
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- if canDealDamage then selectList (enemyAt lid) else pure []
-        investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
+        investigatorIds <- selectList $ investigatorAt lid
         pure
           ( lid
-          , map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
-              <> map
-                ( \iid' ->
-                    InvestigatorAssignDamage
-                      iid'
-                      (EventSource eid)
-                      DamageAny
-                      3
-                      0
-                )
-                investigatorIds
+          , uiEffect attrs lid Explosion
+              : map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
+                <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
           )
-      let
-        availableChoices =
-          map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
+      let availableChoices = map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
       player <- getPlayer iid
-      e <$ pushAll [chooseOne player availableChoices]
+      pushAll [chooseOne player availableChoices]
+      pure e
     _ -> DynamiteBlast2 <$> runMessage msg attrs

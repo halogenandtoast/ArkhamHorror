@@ -199,8 +199,9 @@ import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
 import Data.UUID qualified as UUID
-import System.Environment
 import Text.Pretty.Simple
+
+-- import System.Environment
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -3469,18 +3470,27 @@ getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid
 getEvadedEnemy (_ : xs) = getEvadedEnemy xs
 
+class Monad m => HasDebugLevel m where
+  getDebugLevel :: m Int
+
+instance HasDebugLevel m => HasDebugLevel (ReaderT env m) where
+  getDebugLevel = lift getDebugLevel
+
+-- debugLevel <- fromMaybe @Int 0 . (readMay =<<) <$> liftIO (lookupEnv "DEBUG")
+
 runMessages
   :: ( HasGameRef env
      , HasStdGen env
      , HasQueue Message m
      , MonadReader env m
      , HasGameLogger m
+     , HasDebugLevel m
      )
   => Maybe (Message -> IO ())
   -> m ()
 runMessages mLogger = do
   g <- readGame
-  debugLevel <- fromMaybe @Int 0 . (readMay =<<) <$> liftIO (lookupEnv "DEBUG")
+  debugLevel <- getDebugLevel
   when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
 
   unless (g ^. gameStateL /= IsActive) $ do

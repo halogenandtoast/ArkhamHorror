@@ -21,7 +21,7 @@ instance RunMessage GraspingHands where
     Revelation iid (isSource attrs -> True) -> do
       push $ revelationSkillTest iid attrs #agility 3
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ assignDamage iid attrs n
       pure t
     _ -> GraspingHands <$> runMessage msg attrs

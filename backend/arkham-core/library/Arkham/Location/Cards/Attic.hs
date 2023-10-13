@@ -17,8 +17,7 @@ attic :: LocationCard Attic
 attic = location Attic Cards.attic 1 (PerPlayer 2)
 
 instance HasAbilities Attic where
-  getAbilities (Attic a) =
-    withRevealedAbilities a [forcedAbility a 1 $ Enters #after You $ be a]
+  getAbilities (Attic a) = withRevealedAbilities a [forcedAbility a 1 $ Enters #after You $ be a]
 
 instance RunMessage Attic where
   runMessage msg a@(Attic attrs) = case msg of

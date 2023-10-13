@@ -132,6 +132,7 @@ data TestApp = TestApp
   , gen :: IORef StdGen
   , testLogger :: Maybe (Message -> IO ())
   , testGameLogger :: ClientMessage -> IO ()
+  , debugLevel :: IORef Int
   }
 
 cloneTestApp :: TestApp -> IO TestApp
@@ -146,10 +147,14 @@ cloneTestApp testApp = do
       , gen = gen
       , testLogger = testLogger testApp
       , testGameLogger = testGameLogger testApp
+      , debugLevel = debugLevel testApp
       }
 
 newtype TestAppT a = TestAppT {unTestAppT :: StateT TestApp IO a}
   deriving newtype (MonadState TestApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)
+
+instance HasDebugLevel TestAppT where
+  getDebugLevel = liftIO . readIORef =<< gets debugLevel
 
 instance HasGame TestAppT where
   getGame = do
@@ -665,6 +670,12 @@ chooseOptionMatching _reason f = do
       Nothing -> liftIO $ expectationFailure "could not find a matching message"
     _ -> error $ "unsupported questions type: " <> show question
 
+debug :: (Investigator -> TestAppT ()) -> Investigator -> TestAppT ()
+debug f i = do
+  ref <- gets debugLevel
+  atomicWriteIORef ref 1
+  f i
+
 {- | Run a test with a default investigator.
 We use jenny barnes because she has no direct interaction with the game state
 -}
@@ -678,7 +689,8 @@ gameTestWith investigatorDef body = do
   gameRef <- newIORef g
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
-  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ())
+  debugLevelRef <- newIORef 0
+  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
 
@@ -748,8 +760,9 @@ newGame investigator = do
     gameRef <- newIORef game
     queueRef <- Queue <$> newIORef []
     genRef <- newIORef $ mkStdGen (gameSeed game)
+    debugLevelRef <- newIORef 0
 
-    runTestApp (TestApp gameRef queueRef genRef Nothing (pure . const ())) $ do
+    runTestApp (TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef) $ do
       a1 <- testAgenda "01105" id
       let s'' = overAttrs (agendaStackL .~ IntMap.fromList [(1, [toCard a1, toCard a1])]) scenario'
       pure $ game {gameMode = That s''}

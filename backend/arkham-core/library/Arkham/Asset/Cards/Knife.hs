@@ -34,7 +34,7 @@ instance RunMessage Knife where
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
-    InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       pushAll
         [ skillTestModifiers attrs iid [SkillModifier #combat 2, DamageDealt 1]
         , chooseFightEnemy iid (toAbilitySource attrs 2) #combat

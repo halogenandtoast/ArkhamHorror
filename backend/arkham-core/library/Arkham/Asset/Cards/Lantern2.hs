@@ -12,6 +12,7 @@ import Arkham.DamageEffect
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Projection
 
 newtype Lantern2 = Lantern2 AssetAttrs
@@ -40,17 +41,16 @@ instance RunMessage Lantern2 where
         , toMessage investigation
         ]
       pure a
-    InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
-      targets <- selectTargets $ enemyAtLocationWith iid
-      player <- getPlayer iid
-      push $ chooseOne player [TargetLabel target [Damage target source 1] | target <- targets]
-      pure a
-    InOutOfPlay (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      let source = toAbilitySource attrs 2
+      let
+        n =
+          case assetPlacement attrs of
+            OutOfPlay RemovedZone -> 2
+            _ -> 1
       enemies <- selectList $ enemyAtLocationWith iid
       player <- getPlayer iid
       push
-        $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack source 2] | enemy <- enemies]
+        $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack source n] | enemy <- enemies]
       pure a
     _ -> Lantern2 <$> runMessage msg attrs

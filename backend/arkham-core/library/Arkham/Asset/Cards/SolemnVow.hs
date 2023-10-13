@@ -37,7 +37,6 @@ instance RunMessage SolemnVow where
         push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
       SolemnVow <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      liftIO . print =<< selectList InvestigatorHasCardWithDamage
       hasDamage <- iid <=~> InvestigatorHasCardWithDamage
       hasHorror <- iid <=~> InvestigatorHasCardWithHorror
 

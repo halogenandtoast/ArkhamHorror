@@ -43,7 +43,7 @@ instance RunMessage Investments where
           Supply
           1
       pure a
-    InDiscard _ (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       let n = useCount (assetUses attrs)
       push $ TakeResources iid n (toSource attrs) False
       pure a

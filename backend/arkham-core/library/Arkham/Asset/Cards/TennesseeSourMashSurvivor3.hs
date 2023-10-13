@@ -40,7 +40,7 @@ instance RunMessage TennesseeSourMashSurvivor3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ skillTestModifier attrs iid (SkillModifier SkillWillpower 2)
       pure a
-    InDiscard _ (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       pushAll
         $ [ skillTestModifier
               attrs
@@ -55,7 +55,7 @@ instance RunMessage TennesseeSourMashSurvivor3 where
               False
           ]
       pure a
-    InDiscard _ (PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _) ->
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
         mTarget <- getSkillTestTarget
         case mTarget of

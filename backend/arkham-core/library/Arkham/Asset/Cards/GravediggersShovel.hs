@@ -36,7 +36,7 @@ instance RunMessage GravediggersShovel where
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
-    InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ discoverAtYourLocation iid (toAbilitySource attrs 2) 1
       pure a
     _ -> GravediggersShovel <$> runMessage msg attrs

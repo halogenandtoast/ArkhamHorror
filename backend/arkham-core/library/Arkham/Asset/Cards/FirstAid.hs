@@ -35,7 +35,6 @@ instance HasAbilities FirstAid where
 
 instance RunMessage FirstAid where
   runMessage msg a@(FirstAid attrs) = case msg of
-    InDiscard _ msg'@(UseThisAbility _ (isSource attrs -> True) 1) -> runMessage msg' a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       horrorInvestigators <- select $ HealableInvestigator source #horror $ colocatedWith iid

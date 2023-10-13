@@ -29,7 +29,7 @@ instance HasAbilities PoliceBadge2 where
 
 instance RunMessage PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of
-    InDiscard _ (UseThisAbility _ (isSource attrs -> True) 1) -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       iid <- selectJust TurnInvestigator
       push $ GainActions iid (toAbilitySource attrs 1) 2
       pure a

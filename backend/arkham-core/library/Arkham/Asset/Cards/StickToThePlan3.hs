@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Timing qualified as Timing
 import Arkham.Trait qualified as Trait

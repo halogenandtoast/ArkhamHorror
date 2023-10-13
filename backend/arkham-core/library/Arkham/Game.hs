@@ -4708,7 +4708,16 @@ runGameMessage msg g = case msg of
     runMessage (RemoveAsset aid) g
   RemoveFromGame (AssetTarget aid) -> do
     card <- field AssetCard aid
-    runMessage (RemoveAsset aid) (g & removedFromPlayL %~ (card :))
+    runMessage
+      (RemoveAsset aid)
+      ( g
+          & removedFromPlayL
+          %~ (card :)
+          & entitiesL
+          . assetsL
+          . ix aid
+          %~ overAttrs (\x -> x {assetPlacement = OutOfPlay RemovedZone})
+      )
   RemoveFromGame (LocationTarget lid) -> do
     pure $ g & (entitiesL . locationsL %~ deleteMap lid)
   RemoveFromGame (ActTarget aid) -> do

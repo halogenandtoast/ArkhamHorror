@@ -39,7 +39,7 @@ instance RunMessage TennesseeSourMashRogue3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ skillTestModifier attrs iid (SkillModifier SkillWillpower 3)
       pure a
-    InDiscard _ (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       pushAll
         $ [ skillTestModifiers
               attrs

@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Matcher
+import Arkham.Placement
 
 newtype GravediggersShovel2 = GravediggersShovel2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -36,10 +37,12 @@ instance RunMessage GravediggersShovel2 where
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
-    InDiscard _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 2) 1
-      pure a
-    InOutOfPlay (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 2) 2
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      let
+        n =
+          case assetPlacement attrs of
+            OutOfPlay RemovedZone -> 2
+            _ -> 1
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 2) n
       pure a
     _ -> GravediggersShovel2 <$> runMessage msg attrs

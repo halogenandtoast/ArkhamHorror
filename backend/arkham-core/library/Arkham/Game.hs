@@ -2458,13 +2458,25 @@ maybeAsset aid = do
     <|> getInDiscardEntity assetsL aid g
     <|> getRemovedEntity assetsL aid g
 
-getTreachery :: HasGame m => TreacheryId -> m Treachery
-getTreachery tid =
-  fromJustNote missingTreachery
-    . preview (entitiesL . treacheriesL . ix tid)
-    <$> getGame
+getTreachery :: (HasCallStack, HasGame m) => TreacheryId -> m Treachery
+getTreachery tid = fromMaybe (throw missingTreachery) <$> maybeTreachery tid
  where
-  missingTreachery = "Unknown treachery: " <> show tid
+  missingTreachery =
+    MissingEntity
+      $ "Unknown treachery: "
+      <> tshow tid
+      <> "\n"
+      <> T.pack (prettyCallStack callStack)
+
+maybeTreachery :: HasGame m => TreacheryId -> m (Maybe Treachery)
+maybeTreachery tid = do
+  g <- getGame
+  pure
+    $ preview (entitiesL . treacheriesL . ix tid) g
+    <|> preview (inHandEntitiesL . each . treacheriesL . ix tid) g
+    <|> preview (inSearchEntitiesL . treacheriesL . ix tid) g
+    <|> getInDiscardEntity treacheriesL tid g
+    <|> getRemovedEntity treacheriesL tid g
 
 getInDiscardEntity
   :: (id ~ EntityId entity, Ord id)

@@ -676,7 +676,7 @@ getActionsWith iid window f = do
             _ -> Nothing
         )
         modifiersForFilter
-  unfilteredActions <- traceShowId . map f . nub <$> getAllAbilities
+  unfilteredActions <- map f . nub <$> getAllAbilities
   actions' <-
     if null abilityFilters
       then pure unfilteredActions

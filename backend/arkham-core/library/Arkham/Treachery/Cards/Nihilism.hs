@@ -4,15 +4,12 @@ module Arkham.Treachery.Cards.Nihilism (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Runner hiding (IgnoreChaosToken)
 
 newtype Nihilism = Nihilism TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -23,28 +20,25 @@ nihilism = treachery Nihilism Cards.nihilism
 
 instance HasAbilities Nihilism where
   getAbilities (Nihilism a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ OrWindowMatcher
-          [ RevealChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
-          , CancelChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
-          , IgnoreChaosToken Timing.After You (ChaosTokenFaceIs AutoFail)
-          ]
-    , restrictedAbility a 2 OnSameLocation
-        $ ActionAbility Nothing
-        $ ActionCost
-          2
+    [ restrictedAbility a 1 (InThreatAreaOf You) $
+        ForcedAbility $
+          oneOf
+            [ RevealChaosToken #after You #autofail
+            , CancelChaosToken #after You #autofail
+            , IgnoreChaosToken #after You #autofail
+            ]
+    , restrictedAbility a 2 OnSameLocation (ActionAbility Nothing $ ActionCost 2)
     ]
 
 instance RunMessage Nihilism where
   runMessage msg t@(Nihilism attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          t <$ push (InvestigatorAssignDamage iid source DamageAny 1 1)
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
+      push $ attachTreachery attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ assignDamageAndHorror iid (toAbilitySource attrs 1) 1 1
+      pure t
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
       pure t
     _ -> Nihilism <$> runMessage msg attrs

@@ -253,6 +253,12 @@ instance HasField "location" Enemy (TestAppT (Maybe LocationId)) where
 instance HasField "abilities" AssetId (TestAppT [Ability]) where
   getField = field AssetAbilities
 
+instance HasField "owner" AssetId (TestAppT (Maybe InvestigatorId)) where
+  getField = field AssetOwner
+
+instance HasField "controller" AssetId (TestAppT (Maybe InvestigatorId)) where
+  getField = field AssetController
+
 instance HasField "abilities" TreacheryId (TestAppT [Ability]) where
   getField = field TreacheryAbilities
 
@@ -797,3 +803,6 @@ beginsWithInPlay investigator card = it ("begins with " <> T.unpack (toTitle car
   withProp @"deck" (Deck (assetCard : cards)) self
   run $ SetupInvestigator (toId self)
   assertAny $ Matcher.assetIs card
+
+setActive :: Investigator -> TestAppT ()
+setActive player = run $ SetActiveInvestigator (toId player)

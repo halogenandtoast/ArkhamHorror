@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Types where
 
@@ -185,6 +186,9 @@ instance ToGameLoggerFormat InvestigatorAttrs where
       <> "\":"
       <> tshow (toId attrs)
       <> "}"
+
+instance Be InvestigatorId InvestigatorMatcher where
+  be = InvestigatorWithId
 
 instance ToJSON InvestigatorAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "investigator"

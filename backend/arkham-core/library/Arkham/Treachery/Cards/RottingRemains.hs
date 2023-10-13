@@ -18,7 +18,7 @@ instance RunMessage RottingRemains where
     Revelation iid (isSource attrs -> True) -> do
       push $ revelationSkillTest iid attrs #willpower 3
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ assignHorror iid attrs n
       pure t
     _ -> RottingRemains <$> runMessage msg attrs

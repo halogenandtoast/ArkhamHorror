@@ -20,38 +20,21 @@ dynamiteBlast3 = event DynamiteBlast3 Cards.dynamiteBlast3
 
 instance RunMessage DynamiteBlast3 where
   runMessage msg e@(DynamiteBlast3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      connectedLocationIds <-
-        selectList
-          $ AccessibleFrom
-          $ LocationWithId
-            currentLocationId
+    PlayThisEvent iid eid | eid == eventId -> do
+      currentLocationId <- fieldJust InvestigatorLocation iid
+      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId currentLocationId
       canDealDamage <- withoutModifier iid CannotDealDamage
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- if canDealDamage then selectList (enemyAt lid) else pure []
-        investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
+        investigatorIds <- selectList $ investigatorAt lid
         pure
           ( lid
-          , map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
-              <> map
-                ( \iid' ->
-                    InvestigatorAssignDamage
-                      iid'
-                      (EventSource eid)
-                      DamageAny
-                      3
-                      0
-                )
-                investigatorIds
+          , uiEffect eid lid Explosion
+              : map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
+                <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
           )
-      let
-        availableChoices =
-          map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
+      let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices
       player <- getPlayer iid
-      e <$ pushAll [chooseOne player availableChoices]
+      pushAll [chooseOne player availableChoices]
+      pure e
     _ -> DynamiteBlast3 <$> runMessage msg attrs

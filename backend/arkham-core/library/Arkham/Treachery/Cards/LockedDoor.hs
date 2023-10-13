@@ -3,14 +3,11 @@ module Arkham.Treachery.Cards.LockedDoor (
   lockedDoor,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
@@ -26,31 +23,24 @@ instance HasModifiersFor LockedDoor where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LockedDoor where
-  getAbilities (LockedDoor a) =
-    [restrictedAbility a 1 OnSameLocation (ActionAbility Nothing $ ActionCost 1)]
+  getAbilities (LockedDoor a) = [restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      targets <-
+      locations <-
         selectList $ LocationWithMostClues $ LocationWithoutTreachery $ treacheryIs Cards.lockedDoor
-      case targets of
-        [] -> pure ()
-        [x] -> pushAll [AttachTreachery treacheryId (LocationTarget x)]
-        xs -> do
-          player <- getPlayer iid
-          push
-            $ chooseOne player
-            $ [ targetLabel x [AttachTreachery treacheryId (LocationTarget x)]
-              | x <- xs
-              ]
+      player <- getPlayer iid
+      pushIfAny locations $
+        chooseOrRunOne player $
+          targetLabels locations (only . AttachTreachery treacheryId . toTarget)
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (toAbilitySource attrs 1) attrs sType 4]
       player <- getPlayer iid
       push $ chooseOne player $ map chooseSkillTest [#combat, #agility]
       pure t
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> LockedDoor <$> runMessage msg attrs

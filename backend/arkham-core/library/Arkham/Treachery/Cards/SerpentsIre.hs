@@ -15,7 +15,7 @@ import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Trait (Trait (Serpent))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Runner hiding (EnemyFight)
 import Arkham.Zone
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
@@ -51,8 +51,8 @@ instance RunMessage SerpentsIre where
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid -> do
             player <- getPlayer iid
-            push
-              $ chooseOne
+            push $
+              chooseOne
                 player
                 [ targetLabel
                   eid

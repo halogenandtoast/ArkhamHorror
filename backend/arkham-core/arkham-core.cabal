@@ -2530,6 +2530,7 @@ test-suite spec
       Arkham.Asset.Cards.ScryingSpec
       Arkham.Asset.Cards.Shotgun4Spec
       Arkham.Asset.Cards.ShrivellingSpec
+      Arkham.Asset.Cards.SolemnVowSpec
       Arkham.Asset.Cards.StrayCatSpec
       Arkham.Asset.Cards.SwitchbladeSpec
       Arkham.Asset.Cards.TheBlackFan3Spec

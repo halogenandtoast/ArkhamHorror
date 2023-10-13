@@ -8,6 +8,11 @@ module Arkham.Treachery.Runner (
 
 import Arkham.Prelude
 
+import Arkham.Classes.Entity as X
+import Arkham.Classes.HasAbilities as X
+import Arkham.Classes.HasModifiersFor as X
+import Arkham.Classes.Query as X
+import Arkham.Classes.RunMessage as X
 import Arkham.Helpers.Investigator as X (eliminationWindow)
 import Arkham.Helpers.Message as X hiding (
   AssetDamage,
@@ -23,11 +28,10 @@ import Arkham.Helpers.SkillTest as X
 import Arkham.Placement as X
 import Arkham.Source as X
 import Arkham.Target as X
+import Arkham.Treachery.Helpers as X
 import Arkham.Treachery.Types as X
 
 import Arkham.Ability.Type
-import Arkham.Classes.Entity
-import Arkham.Classes.RunMessage
 import Arkham.Id
 import Arkham.Message qualified as Msg
 import Arkham.Token

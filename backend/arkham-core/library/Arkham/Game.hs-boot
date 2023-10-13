@@ -89,12 +89,16 @@ abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 instance HasDistance Game
 instance HasAbilities Game
 
+class Monad m => HasDebugLevel m where
+  getDebugLevel :: m Int
+
 runMessages
   :: ( HasGameRef env
      , HasStdGen env
      , HasQueue Message m
      , MonadReader env m
      , HasGameLogger m
+     , HasDebugLevel m
      )
   => Maybe (Message -> IO ())
   -> m ()

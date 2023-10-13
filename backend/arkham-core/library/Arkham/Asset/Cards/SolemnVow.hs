@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -21,34 +22,31 @@ solemnVow = asset SolemnVow Cards.solemnVow
 
 instance HasAbilities SolemnVow where
   getAbilities (SolemnVow attrs) =
-    [ controlledAbility
-        attrs
-        1
-        ( exists (You <> AnyInvestigator [InvestigatorHasCardWithDamage, InvestigatorHasCardWithHorror])
-            <> exists (InvestigatorAt YourLocation <> OwnsAsset (AssetWithId $ toId attrs))
-        )
-        $ FastAbility Free
+    [ restrictedAbility attrs 1 ControlsThis (FastAbility Free)
+        `withCriteria` exists (You <> oneOf [InvestigatorHasCardWithDamage, InvestigatorHasCardWithHorror])
+        `withCriteria` exists (InvestigatorAt YourLocation <> OwnsAsset (be attrs))
     ]
 
 instance RunMessage SolemnVow where
   runMessage msg a@(SolemnVow attrs) = case msg of
-    InvestigatorPlayAsset iid aid | aid == toId attrs -> do
-      owner <- field AssetOwner aid
+    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+      owner <- field AssetOwner (toId attrs)
       player <- getPlayer iid
       when (Just iid == owner) $ do
-        iids <- selectList $ colocatedWith iid <> NotInvestigator (InvestigatorWithId iid)
-        push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` aid)
+        iids <- selectList $ colocatedWith iid <> NotInvestigator (be iid)
+        push $ chooseOrRunOne player $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
       SolemnVow <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      liftIO . print =<< selectList InvestigatorHasCardWithDamage
       hasDamage <- iid <=~> InvestigatorHasCardWithDamage
       hasHorror <- iid <=~> InvestigatorHasCardWithHorror
 
-      damageAssets <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AssetWithHealth
-      horrorAssets <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AssetWithSanity
+      damageAssets <- selectList $ assetControlledBy iid <> AssetWithHealth
+      horrorAssets <- selectList $ assetControlledBy iid <> AssetWithSanity
 
-      iid' <- selectJust $ OwnsAsset (AssetWithId $ toId attrs)
-      damageAssets' <- selectList $ AssetControlledBy (InvestigatorWithId iid') <> AssetWithHealth
-      horrorAssets' <- selectList $ AssetControlledBy (InvestigatorWithId iid') <> AssetWithSanity
+      iid' <- selectJust $ OwnsAsset (be attrs)
+      damageAssets' <- selectList $ assetControlledBy iid' <> AssetWithHealth
+      horrorAssets' <- selectList $ assetControlledBy iid' <> AssetWithSanity
 
       let
         damageChoices source =

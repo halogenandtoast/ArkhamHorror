@@ -209,10 +209,18 @@ instance RunMessage AssetAttrs where
       pushAll
         $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
         <> [whenEnterMsg, afterEnterMsg]
+
+      let placementF = case assetPlacement of
+            Unplaced -> placementL .~ InPlayArea iid
+            _ -> id
+          controllerF = case assetController of
+            Nothing -> controllerL ?~ iid
+            Just _ -> id
+
       pure
         $ a
-        & (placementL .~ InPlayArea iid)
-        & (controllerL ?~ iid)
+        & placementF
+        & controllerF
         & ( usesL
               .~ if assetUses == NoUses
                 then foldl' applyModifier startingUses modifiers

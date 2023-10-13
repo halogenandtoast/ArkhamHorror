@@ -26,6 +26,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Attack
+import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
@@ -479,6 +480,15 @@ getCanAffordCost
 getCanAffordCost iid (toSource -> source) mAction windows' = \case
   Free -> pure True
   UpTo {} -> pure True
+  ShuffleIntoDeckCost target -> case target of
+    TreacheryTarget tid ->
+      andM
+        [ can.manipulate.deck iid
+        , selectAny $ Matcher.TreacheryWithId tid
+        ]
+    AssetTarget tid -> andM [can.manipulate.deck iid, selectAny $ Matcher.AssetWithId tid]
+    _ -> error "Unhandled shuffle into deck cost"
+  ShuffleBondedCost {} -> pure True
   DiscardHandCost {} -> pure True
   DiscardTopOfDeckCost {} -> pure True
   AdditionalActionsCost {} -> pure True
@@ -3062,6 +3072,16 @@ sourceMatches s = \case
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> member eid <$> select em
     _ -> pure False
+  Matcher.SourceIsAsset am ->
+    let
+      isAssetSource s' = case s' of
+        AssetSource aid -> member aid <$> select am
+        AbilitySource (AssetSource aid) _ -> member aid <$> select am
+        ProxySource pSource _ -> isAssetSource pSource
+        BothSource lSource rSource -> orM [isAssetSource lSource, isAssetSource rSource]
+        _ -> pure False
+     in
+      isAssetSource s
   Matcher.AnySource -> pure True
   Matcher.SourceMatches ms -> allM (sourceMatches s) ms
   Matcher.SourceOwnedBy whoMatcher ->

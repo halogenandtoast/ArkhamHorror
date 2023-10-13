@@ -32,8 +32,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndPhase -> do
       phase <- getPhase
-      when (isEndOfWindow a (EffectPhaseWindowFor phase)) $
-        push (DisableEffect effectId)
+      when (isEndOfWindow a (EffectPhaseWindowFor phase))
+        $ push (DisableEffect effectId)
       pure a
     EndTurn _ | isEndOfWindow a EffectTurnWindow -> do
       a <$ push (DisableEffect effectId)
@@ -48,9 +48,7 @@ instance RunMessage EffectAttrs where
     CancelSkillEffects -> case effectSource of
       (SkillSource _) -> a <$ push (DisableEffect effectId)
       _ -> pure a
-    PaidCost {} | isEndOfWindow a EffectCostWindow -> do
-      a <$ push (DisableEffect effectId)
-    PayCostFinished {} | isEndOfWindow a EffectCostWindow -> do
+    PaidAllCosts {} | isEndOfWindow a EffectCostWindow -> do
       a <$ push (DisableEffect effectId)
     PlayCard _ card _ _ _ | isEndOfWindow a (EffectCardCostWindow $ toCardId card) -> do
       a <$ push (DisableEffect effectId)

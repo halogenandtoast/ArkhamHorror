@@ -27,7 +27,7 @@ import Arkham.Slot
 import Arkham.Trait
 import Data.Aeson.TH
 
-data DeckRestriction = Signature InvestigatorId | CampaignModeOnly
+data DeckRestriction = Signature InvestigatorId | CampaignModeOnly | PerDeckLimit Int
   deriving stock (Show, Eq, Ord, Data)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity

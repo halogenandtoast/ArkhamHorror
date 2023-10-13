@@ -14,7 +14,8 @@ data Token
   | Doom
   | LostSoul
   | Bounty
-  deriving stock (Show, Eq, Ord, Generic)
+  | Offering
+  deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 instance IsLabel "damage" Token where

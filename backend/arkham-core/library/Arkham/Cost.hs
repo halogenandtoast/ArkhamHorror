@@ -13,6 +13,7 @@ import Arkham.Zone as X
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
+import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.Entity
@@ -20,6 +21,7 @@ import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Name
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
@@ -142,6 +144,8 @@ data Cost
   | SealChaosTokenCost ChaosToken -- internal to track sealed token
   | SupplyCost LocationMatcher Supply
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
+  | ShuffleBondedCost Int CardCode
+  | ShuffleIntoDeckCost Target
   deriving stock (Show, Eq, Ord, Data)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
@@ -161,6 +165,15 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  ShuffleIntoDeckCost _ -> "Shuffle into deck"
+  ShuffleBondedCost n cCode -> case lookupCardDef cCode of
+    Just def ->
+      "You must search your bonded cards for "
+        <> irregular n "copy" "copies"
+        <> " of "
+        <> toTitle def
+        <> " into your deck"
+    Nothing -> error "impossible"
   ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
   ActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
@@ -275,6 +288,9 @@ displayCostType = \case
   IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n
  where
   pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
+  irregular n singular plural = case n of
+    1 -> "1 " <> singular
+    _ -> tshow n <> " " <> plural
 
 instance Semigroup Cost where
   Free <> a = a

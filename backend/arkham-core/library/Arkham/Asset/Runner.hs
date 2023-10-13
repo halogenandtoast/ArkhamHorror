@@ -69,19 +69,15 @@ instance RunMessage AssetAttrs where
           else a <$ push (Ready $ toTarget a)
       _ -> a <$ push (Ready $ toTarget a)
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
-    PlaceClues _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Clue n
-    PlaceResources _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Token.Resource n
-    RemoveResources _ target n | isTarget a target -> do
-      pure $ a & tokensL %~ subtractTokens Token.Resource n
-    PlaceDoom _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Doom n
-    RemoveDoom _ target n | isTarget a target -> do
-      pure $ a & tokensL %~ subtractTokens Doom n
+    PlaceTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
     RemoveClues _ target n | isTarget a target -> do
       when (assetClues a - n <= 0)
         $ pushAll
         =<< windows
           [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & tokensL %~ subtractTokens Clue n
+    RemoveTokens _ target tType n | isTarget a target -> do
+      pure $ a & tokensL %~ subtractTokens tType n
     CheckDefeated source (isTarget a -> True) -> do
       mDefeated <- defeated a source
       for_ mDefeated $ \defeatedBy -> do
@@ -95,8 +91,6 @@ instance RunMessage AssetAttrs where
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
         <> [checkDefeated source aid]
       pure a
-    PlaceDamage _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Token.Damage n
-    PlaceHorror _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Horror n
     MovedHorror (isSource a -> True) _ n -> do
       pure $ a & tokensL %~ subtractTokens #horror n
     MovedHorror source (isTarget a -> True) n -> do
@@ -164,16 +158,14 @@ instance RunMessage AssetAttrs where
       LocationTarget lid -> pure $ a & (placementL .~ AttachedToLocation lid)
       EnemyTarget eid -> pure $ a & (placementL .~ AttachedToEnemy eid)
       _ -> error "Cannot attach asset to that type"
-    RemoveFromGame target
-      | a `isTarget` target ->
-          a <$ push (RemoveFromPlay $ toSource a)
+    RemoveFromGame target | a `isTarget` target -> do
+      a <$ push (RemoveFromPlay $ toSource a)
     Discard source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll $ windows' <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
       pure a
-    Exile target
-      | a `isTarget` target ->
-          a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
+    Exile target | a `isTarget` target -> do
+      a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
     RemoveFromPlay source | isSource a source -> do
       windowMsg <-
         checkWindows
@@ -256,8 +248,7 @@ instance RunMessage AssetAttrs where
       pure $ a & cardsUnderneathL <>~ cards
     AddToHand _ cards -> do
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
-    PlaceAsset aid placement
-      | aid == assetId ->
-          pure $ a & placementL .~ placement
+    PlaceAsset aid placement | aid == assetId -> do
+      pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     _ -> pure a

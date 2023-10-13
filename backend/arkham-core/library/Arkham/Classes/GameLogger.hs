@@ -37,3 +37,6 @@ sendTarot msg = do
 
 pluralize :: Int -> Text -> Text
 pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
+
+irregular :: Int -> Text -> Text -> Text
+irregular n singular plural = if n == 1 then "1 " <> singular else tshow n <> " " <> plural <> "s"

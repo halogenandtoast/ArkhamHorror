@@ -9,6 +9,7 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
 import Event from '@/arkham/components/Event.vue';
+import Treachery from '@/arkham/components/Treachery.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue';
@@ -37,7 +38,8 @@ const hasPool = computed(() => {
     sealedChaosTokens,
     keys,
   } = props.asset;
-  return sanity || health || tokens[TokenType.Damage] || tokens[TokenType.Horror] || uses || (tokens[TokenType.Doom] || 0) > 0 || (tokens[TokenType.Clue] || 0) > 0 || (tokens[TokenType.Resource] || 0) > 0 || sealedChaosTokens.length > 0 || keys.length > 0;
+
+  return Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || uses || sanity || health
 })
 
 const exhausted = computed(() => props.asset.exhausted)
@@ -116,6 +118,7 @@ const debug = useDebug()
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
 const resources = computed(() => props.asset.tokens[TokenType.Resource])
+const offerings = computed(() => props.asset.tokens[TokenType.Offering])
 
 const damage = computed(() => props.asset.tokens[TokenType.Damage])
 const horror = computed(() => props.asset.tokens[TokenType.Horror])
@@ -185,6 +188,7 @@ watch(abilities, (abilities) => {
         <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
         <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
         <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+        <PoolItem v-if="offerings && offerings > 0" type="resource" :amount="offerings" />
         <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
       </div>
 
@@ -203,6 +207,15 @@ watch(abilities, (abilities) => {
       :game="game"
       :playerId="playerId"
       :key="eventId"
+      @choose="$emit('choose', $event)"
+    />
+    <Treachery
+      v-for="treacheryId in asset.treacheries"
+      :treachery="game.treacheries[treacheryId]"
+      :game="game"
+      :attached="true"
+      :playerId="playerId"
+      :key="treacheryId"
       @choose="$emit('choose', $event)"
     />
     <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>

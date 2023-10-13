@@ -199,9 +199,8 @@ import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
 import Data.UUID qualified as UUID
+import System.Environment (lookupEnv)
 import Text.Pretty.Simple
-
--- import System.Environment
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -263,6 +262,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
         , gameOutOfPlayEntities = mempty
+        , gameActionRemovedEntities = mempty
         , gameActivePlayerId = (PlayerId nil)
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
@@ -421,6 +421,7 @@ withAssetMetadata a = do
   amModifiers <- getModifiers' (toTarget a)
   amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
   amAssets <- select (AssetAttachedToAsset $ AssetWithId $ toId a)
+  amTreacheries <- select (TreacheryIsAttachedTo $ toTarget a)
   pure $ a `with` AssetMetadata {..}
 
 withInvestigatorConnectionData
@@ -1152,6 +1153,9 @@ getTreacheriesMatching matcher = do
       targets <- selectListMap (Just . EnemyTarget) enemyMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget `elem` targets
+    TreacheryIsAttachedTo target -> \treachery -> do
+      let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
+      pure $ treacheryTarget == Just target
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryPlacement (toAttrs treachery) of
@@ -1725,6 +1729,8 @@ getAssetsMatching matcher = do
       filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
     AssetWithClues valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr assetClues) as
+    AssetWithTokens valueMatcher tokenType ->
+      filterM ((`gameValueMatches` valueMatcher) . Token.countTokens tokenType . attr assetTokens) as
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . attr assetSlots) as
@@ -3476,7 +3482,8 @@ class Monad m => HasDebugLevel m where
 instance HasDebugLevel m => HasDebugLevel (ReaderT env m) where
   getDebugLevel = lift getDebugLevel
 
--- debugLevel <- fromMaybe @Int 0 . (readMay =<<) <$> liftIO (lookupEnv "DEBUG")
+instance HasDebugLevel IO where
+  getDebugLevel = fromMaybe @Int 0 . (readMay =<<) <$> lookupEnv "DEBUG"
 
 runMessages
   :: ( HasGameRef env
@@ -3762,6 +3769,7 @@ runGameMessage msg g = case msg of
       $ g
       & (inActionL .~ False)
       & (actionCanBeUndoneL .~ False)
+      & (actionRemovedEntitiesL .~ mempty)
       & (actionDiffL .~ [])
       & (inDiscardEntitiesL .~ mempty)
       & (outOfPlayEntitiesL %~ deleteMap RemovedZone)
@@ -4102,7 +4110,13 @@ runGameMessage msg g = case msg of
             ]
           <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
-  RemoveAsset aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid
+  RemoveAsset aid -> do
+    removedEntitiesF <- case notNull (gameActiveAbilities g) of
+      True -> do
+        asset <- getAsset aid
+        pure $ actionRemovedEntitiesL . assetsL %~ insertEntity asset
+      False -> pure id
+    pure $ g & entitiesL . assetsL %~ deleteMap aid & removedEntitiesF
   RemoveEvent eid -> do
     popMessageMatching_ $ \case
       Discard _ (EventTarget eid') -> eid == eid'
@@ -4123,7 +4137,13 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
-    pure $ g & entitiesL . treacheriesL %~ deleteMap tid
+    removedEntitiesF <- case gameInAction g of
+      True -> do
+        treachery <- getTreachery tid
+        pure $ actionRemovedEntitiesL . treacheriesL %~ insertEntity treachery
+      False -> pure id
+
+    pure $ g & entitiesL . treacheriesL %~ deleteMap tid & removedEntitiesF
   When (RemoveLocation lid) -> do
     pushM
       $ checkWindows
@@ -4374,25 +4394,13 @@ runGameMessage msg g = case msg of
       & (entitiesL . enemiesL %~ deleteMap enemyId)
       & (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL . at enemyId ?~ enemy)
   RemovedFromPlay (AssetSource assetId) -> do
-    asset <- getAsset assetId
-    let
-      discardLens = case assetOwner (toAttrs asset) of
-        Nothing -> id
-        Just iid ->
-          let
-            dEntities =
-              fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
-           in
-            inDiscardEntitiesL
-              . at iid
-              ?~ (dEntities & assetsL . at assetId ?~ asset)
-    pure $ g & entitiesL . assetsL %~ deleteMap assetId & discardLens
+    runMessage (RemoveAsset assetId) g
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
     push $ addToHand iid card
     pure $ g & entitiesL . eventsL %~ deleteMap eventId
-  After (ShuffleIntoDeck _ (AssetTarget aid)) ->
-    pure $ g & entitiesL . assetsL %~ deleteMap aid
+  After (ShuffleIntoDeck _ (AssetTarget aid)) -> do
+    runMessage (RemoveAsset aid) g
   After (ShuffleIntoDeck _ (EventTarget eid)) ->
     pure $ g & entitiesL . eventsL %~ deleteMap eid
   ShuffleIntoDeck deck (TreacheryTarget treacheryId) -> do
@@ -4697,15 +4705,10 @@ runGameMessage msg g = case msg of
         push $ chooseOneAtATime player $ map toUI as
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
-    pure $ g & entitiesL . assetsL %~ deleteMap aid
+    runMessage (RemoveAsset aid) g
   RemoveFromGame (AssetTarget aid) -> do
     card <- field AssetCard aid
-    asset <- getAsset aid
-    pure
-      $ g
-      & (entitiesL . assetsL %~ deleteMap aid)
-      & (outOfPlayEntitiesL . at RemovedZone . non mempty . assetsL . at aid ?~ asset)
-      & (removedFromPlayL %~ (card :))
+    runMessage (RemoveAsset aid) (g & removedFromPlayL %~ (card :))
   RemoveFromGame (LocationTarget lid) -> do
     pure $ g & (entitiesL . locationsL %~ deleteMap lid)
   RemoveFromGame (ActTarget aid) -> do
@@ -5593,49 +5596,21 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL <>~ extraEntities
   RemoveCardEntity card -> do
     case toCardType card of
-      AssetType -> pure $ g & entitiesL . assetsL %~ deleteMap (AssetId (unsafeCardIdToUUID $ toCardId card))
+      AssetType -> do
+        let aid = AssetId (unsafeCardIdToUUID $ toCardId card)
+        runMessage (RemoveAsset aid) g
       _ -> error "Unhandle remove card entity type"
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
-  ResolvedAbility _ -> pure $ g & activeAbilitiesL %~ drop 1
-  Discarded (AssetTarget aid) _ (EncounterCard _) ->
-    pure $ g & entitiesL . assetsL %~ deleteMap aid
+  ResolvedAbility _ -> do
+    let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty else id
+    pure $ g & activeAbilitiesL %~ drop 1 & removedEntitiesF
+  Discarded (AssetTarget aid) _ (EncounterCard _) -> do
+    runMessage (RemoveAsset aid) g
   Discarded (AssetTarget aid) _ _ -> do
     mAsset <- maybeAsset aid
     case mAsset of
       Nothing -> pure g
-      Just asset -> do
-        let
-          discardLens =
-            if gameInAction g
-              then case assetOwner (toAttrs asset) of
-                Nothing -> id
-                Just iid ->
-                  let
-                    dEntities =
-                      fromMaybe defaultEntities
-                        $ view (inDiscardEntitiesL . at iid) g
-                   in
-                    inDiscardEntitiesL
-                      . at iid
-                      ?~ (dEntities & assetsL . at aid ?~ asset)
-              else id
-        pure $ g & entitiesL . assetsL %~ deleteMap aid & discardLens
-  DiscardedCost (AssetTarget aid) -> do
-    -- When discarded as a cost, the entity may still need to be in the environment to handle ability resolution
-    asset <- getAsset aid
-    case assetOwner (toAttrs asset) of
-      Nothing ->
-        error "Unhandled: Asset was discarded for cost but was unowned"
-      Just iid -> do
-        let
-          dEntities =
-            fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
-        pure
-          $ g
-          & ( inDiscardEntitiesL
-                . at iid
-                ?~ (dEntities & assetsL . at aid ?~ asset)
-            )
+      Just _ -> runMessage (RemoveAsset aid) g
   DiscardedCost (SearchedCardTarget cid) -> do
     iid <- getActiveInvestigatorId
     card <- getCard cid
@@ -5654,7 +5629,8 @@ runGameMessage msg g = case msg of
   Discarded (TreacheryTarget aid) _ _ -> do
     push $ RemoveTreachery aid
     pure g
-  Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
+  Exiled (AssetTarget aid) _ -> do
+    runMessage (RemoveAsset aid) g
   Discard _ (EventTarget eid) -> do
     mEvent <- getEventMaybe eid
     case mEvent of
@@ -5839,7 +5815,6 @@ applyBlank s = do
         other -> Just other
     modify $ insertMap target modifiers'
 
--- can we run these on different threadsjjkk
 instance RunMessage Game where
   runMessage msg g = do
     preloadEntities g
@@ -5847,6 +5822,7 @@ instance RunMessage Game where
       >>= (modeL . here) (runMessage msg)
       >>= (modeL . there) (runMessage msg)
       >>= entitiesL (runMessage msg)
+      >>= actionRemovedEntitiesL (runMessage msg)
       >>= itraverseOf
         (inHandEntitiesL . itraversed)
         (\i -> runMessage (InHand i msg))

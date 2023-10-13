@@ -32,3 +32,5 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
 instance IsCard Card
 instance IsCard PlayerCard
 instance IsCard EncounterCard
+
+lookupCardDef :: HasCardCode cardCode => cardCode -> Maybe CardDef

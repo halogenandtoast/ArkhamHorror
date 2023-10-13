@@ -658,6 +658,7 @@ scenarioCard cCode name ecSet =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allScenarioCards :: Map CardCode CardDef

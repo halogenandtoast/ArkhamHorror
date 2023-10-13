@@ -58,6 +58,7 @@ agenda cardCode name stage encounterSet =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allAgendaCards :: Map CardCode CardDef

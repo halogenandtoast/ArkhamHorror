@@ -8,7 +8,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Events
-import Arkham.Helpers.Investigator (getCanShuffleDeck)
+import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Window (Window, windowType)
@@ -38,12 +38,14 @@ getCard = \case
 instance RunMessage HallowedMirror3 where
   runMessage msg a@(HallowedMirror3 attrs) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
-      handSoothingMelody <- genCard Events.soothingMelody
-      deckSoothingMelodies <- replicateM 2 (genCard Events.soothingMelody)
-      canShuffleDeck <- getCanShuffleDeck iid
-      pushAll
-        $ addToHand iid handSoothingMelody
-        : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
+      bonded <- take 3 <$> searchBonded iid Events.soothingMelody
+      case bonded of
+        [] -> pure ()
+        (handSoothingMelody : deckSoothingMelodies) -> do
+          canShuffleDeck <- getCanShuffleDeck iid
+          pushAll
+            $ addToHand iid handSoothingMelody
+            : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
       HallowedMirror3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       player <- getPlayer iid

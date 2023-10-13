@@ -72,6 +72,7 @@ event cardCode name cost classSymbol =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allPlayerEventCards :: Map CardCode CardDef

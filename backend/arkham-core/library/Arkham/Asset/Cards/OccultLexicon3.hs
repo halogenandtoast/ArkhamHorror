@@ -8,7 +8,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Events
-import Arkham.Helpers.Investigator (getCanShuffleDeck)
+import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Window (Window, windowType)
@@ -38,12 +38,14 @@ getCard = \case
 instance RunMessage OccultLexicon3 where
   runMessage msg a@(OccultLexicon3 attrs) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
-      handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
-      deckBloodRites <- replicateM 2 (genCard Events.bloodRite)
-      canShuffleDeck <- getCanShuffleDeck iid
-      pushAll
-        $ addToHand iid handBloodRite
-        : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
+      bonded <- take 3 <$> searchBonded iid Events.bloodRite
+      case bonded of
+        [] -> pure ()
+        (handBloodRite : deckBloodRites) -> do
+          canShuffleDeck <- getCanShuffleDeck iid
+          pushAll
+            $ addToHand iid handBloodRite
+            : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
       OccultLexicon3 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       player <- getPlayer iid

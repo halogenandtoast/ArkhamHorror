@@ -270,11 +270,8 @@ instance RunMessage ActiveCost where
           push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) target
           pure c
         ShuffleBondedCost n cCode -> do
-          case lookupCardDef cCode of
-            Nothing -> error $ "missing card def: " <> show cCode
-            Just def -> do
-              cards <- replicateM n $ genCard def
-              push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
+          bondedCards <- fieldMap InvestigatorBondedCards (take n . filter ((== cCode) . toCardCode)) iid
+          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) bondedCards
           pure c
         ResolveEachHauntedAbility lid -> do
           hauntedAbilities <-

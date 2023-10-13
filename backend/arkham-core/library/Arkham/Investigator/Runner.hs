@@ -302,6 +302,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let (permanentCards, deck'') = partition (cdPermanent . toCardDef) (unDeck deck')
     beforeDrawingStartingHand <- checkWindows [mkWhen (Window.DrawingStartingHand investigatorId)]
     let deck''' = filter ((`notElem` investigatorStartsWithInHand) . toCardDef) deck''
+
+    let bonded = nub $ concatMap (cdBondedWith . toCardDef) (unDeck investigatorDeck)
+
+    bondedCards <- concatForM bonded $ \(n, cCode) -> do
+      case lookupCardDef cCode of
+        Nothing -> error "missing card"
+        Just def -> replicateM n (genCard def)
+
     pushAll
       $ startsWithMsgs
       <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing (Window.defaultWindows investigatorId)
@@ -311,7 +319,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          , DrawStartingHand investigatorId
          , TakeStartingResources investigatorId
          ]
-    pure $ a & (deckL .~ Deck deck''')
+    pure $ a & (deckL .~ Deck deck''') & bondedCardsL .~ bondedCards
   DrawStartingHand iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     if any (`elem` modifiers') [CannotDrawCards, CannotManipulateDeck]
@@ -2401,6 +2409,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & handL
       %~ filter (`notElem` cards)
       & cardsUnderneathL
+      %~ filter (`notElem` cards)
+      & bondedCardsL
       %~ filter (`notElem` cards)
       & discardL
       %~ filter ((`notElem` cards) . PlayerCard)

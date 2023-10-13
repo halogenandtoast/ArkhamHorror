@@ -25,7 +25,7 @@ data Keyword
   | Permanent
   | Researched CampaignLogKey
   | Seal ChaosTokenMatcher
-  | Bonded CardCode
+  | Bonded Int CardCode
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

@@ -64,6 +64,7 @@ skill cardCode name icons classSymbol =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 allPlayerSkillCards :: Map CardCode CardDef

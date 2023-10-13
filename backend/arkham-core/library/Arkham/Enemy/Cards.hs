@@ -67,6 +67,7 @@ baseEnemy cardCode name mEncounterSet isWeakness =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 unique :: CardDef -> CardDef

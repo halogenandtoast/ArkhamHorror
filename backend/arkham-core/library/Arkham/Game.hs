@@ -2799,6 +2799,7 @@ instance Projection Investigator where
       InvestigatorAssignedDamage -> pure investigatorAssignedHealthDamage
       InvestigatorMentalTrauma -> pure investigatorMentalTrauma
       InvestigatorPhysicalTrauma -> pure investigatorPhysicalTrauma
+      InvestigatorBondedCards -> pure investigatorBondedCards
       InvestigatorResources -> pure $ investigatorResources attrs
       InvestigatorDoom -> pure $ investigatorDoom attrs
       InvestigatorClues -> pure $ investigatorClues attrs

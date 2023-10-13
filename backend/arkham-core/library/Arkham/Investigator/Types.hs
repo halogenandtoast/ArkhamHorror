@@ -98,6 +98,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorCardCode :: Field Investigator CardCode
   InvestigatorKeys :: Field Investigator (Set ArkhamKey)
   InvestigatorPlayerId :: Field Investigator PlayerId
+  InvestigatorBondedCards :: Field Investigator [Card]
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
@@ -144,6 +145,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorUsedAbilities :: [UsedAbility]
   , investigatorUsedAdditionalActions :: [AdditionalAction]
   , investigatorMulligansTaken :: Int
+  , investigatorBondedCards :: [Card]
   , -- handling liquid courage
     investigatorHorrorHealed :: Int
   , -- the forgotten age

@@ -71,6 +71,7 @@ baseTreachery cardCode name mEncounterSet isWeakness =
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
+    , cdBondedWith = []
     }
 
 surge :: CardDef -> CardDef
@@ -1682,7 +1683,7 @@ bloodlust :: CardDef
 bloodlust =
   (weakness "06019" "Bloodlust")
     { cdCardTraits = setFromList [Madness]
-    , cdKeywords = singleton (Keyword.Bonded "06018")
+    , cdKeywords = singleton (Keyword.Bonded 3 "06018")
     }
 
 theHarbinger :: CardDef

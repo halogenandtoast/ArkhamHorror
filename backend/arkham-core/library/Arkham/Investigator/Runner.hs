@@ -96,11 +96,11 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
 -- There are a few conditions that can occur that mean we must need to use an ability.
 -- No valid targets. For example Marksmanship
 -- Can't afford card. For example On Your Own
-getAllAbilitiesSkippable :: (HasGame m) => InvestigatorAttrs -> [Window] -> m Bool
+getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> m Bool
 getAllAbilitiesSkippable attrs windows =
   allM (getWindowSkippable attrs windows) windows
 
-getWindowSkippable :: (HasGame m) => InvestigatorAttrs -> [Window] -> Window -> m Bool
+getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
 getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard pc)) | iid == toId attrs = do
   modifiers' <- getModifiers (toCardId card)
   modifiers'' <- getModifiers (CardTarget card)
@@ -123,13 +123,13 @@ getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid ab) = do
     excludeOne (uab : xs) = uab : excludeOne xs
   andM
     [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
-    , withAlteredGame withoutCanModifiers $
-        passesCriteria iid Nothing (abilitySource ab) [w] (abilityCriteria ab)
+    , withAlteredGame withoutCanModifiers
+        $ passesCriteria iid Nothing (abilitySource ab) [w] (abilityCriteria ab)
     ]
 getWindowSkippable _ _ _ = pure True
 
 getHealthDamageableAssets
-  :: (HasGame m)
+  :: HasGame m
   => InvestigatorId
   -> AssetMatcher
   -> Int
@@ -154,7 +154,7 @@ getHealthDamageableAssets iid matcher _ damageTargets horrorTargets = do
   pure $ setFromList $ filter (`notMember` excludes) allAssets
 
 getSanityDamageableAssets
-  :: (HasGame m)
+  :: HasGame m
   => InvestigatorId
   -> AssetMatcher
   -> Int
@@ -178,7 +178,7 @@ getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
       xs -> select (AssetOneOf xs)
   pure $ setFromList $ filter (`notMember` excludes) allAssets
 
-canDo :: (HasGame m) => InvestigatorId -> Action -> m Bool
+canDo :: HasGame m => InvestigatorId -> Action -> m Bool
 canDo iid action = do
   mods <- getModifiers iid
   let
@@ -209,10 +209,10 @@ runWindow attrs windows actions playableCards = do
           toForcedAbilities = map (($ windows) . UseAbility iid)
           toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
         -- Silent forced abilities should trigger automatically
-        pushAll $
-          toForcedAbilities silent
-            <> [chooseOne player (toUseAbilities normal) | notNull normal]
-            <> [RunWindow iid windows]
+        pushAll
+          $ toForcedAbilities silent
+          <> [chooseOne player (toUseAbilities normal) | notNull normal]
+          <> [RunWindow iid windows]
       else do
         actionsWithMatchingWindows <-
           for actions $ \ability@Ability {..} ->
@@ -222,18 +222,18 @@ runWindow attrs windows actions playableCards = do
                 )
                 windows
         skippable <- getAllAbilitiesSkippable attrs windows
-        push $
-          chooseOne player $
-            [ targetLabel (toCardId c) $
-              [ InitiatePlayCard iid c Nothing windows False
-              , RunWindow iid windows
-              ]
+        push
+          $ chooseOne player
+          $ [ targetLabel (toCardId c)
+              $ [ InitiatePlayCard iid c Nothing windows False
+                , RunWindow iid windows
+                ]
             | c <- playableCards
             ]
-              <> map
-                (\(ability, windows') -> AbilityLabel iid ability windows' [RunWindow iid windows])
-                actionsWithMatchingWindows
-              <> [Label "Skip playing fast cards or using reactions" [] | skippable]
+          <> map
+            (\(ability, windows') -> AbilityLabel iid ability windows' [RunWindow iid windows])
+            actionsWithMatchingWindows
+          <> [Label "Skip playing fast cards or using reactions" [] | skippable]
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
@@ -252,8 +252,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     pure $ a & usedAbilitiesL .~ usedAbilities'
   ResetGame ->
-    pure $
-      (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)
+    pure
+      $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)
         { Attrs.investigatorId = investigatorId
         , investigatorXp = investigatorXp
         , investigatorPhysicalTrauma = investigatorPhysicalTrauma
@@ -302,15 +302,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let (permanentCards, deck'') = partition (cdPermanent . toCardDef) (unDeck deck')
     beforeDrawingStartingHand <- checkWindows [mkWhen (Window.DrawingStartingHand investigatorId)]
     let deck''' = filter ((`notElem` investigatorStartsWithInHand) . toCardDef) deck''
-    pushAll $
-      startsWithMsgs
-        <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing (Window.defaultWindows investigatorId)
-           | card <- permanentCards
-           ]
-        <> [ beforeDrawingStartingHand
-           , DrawStartingHand investigatorId
-           , TakeStartingResources investigatorId
-           ]
+    pushAll
+      $ startsWithMsgs
+      <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing (Window.defaultWindows investigatorId)
+         | card <- permanentCards
+         ]
+      <> [ beforeDrawingStartingHand
+         , DrawStartingHand investigatorId
+         , TakeStartingResources investigatorId
+         ]
     pure $ a & (deckL .~ Deck deck''')
   DrawStartingHand iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -322,11 +322,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           applyModifier (StartingHand m) n = max 0 (n + m)
           applyModifier _ n = n
         (discard, hand, deck) <- drawOpeningHand a startingHandAmount
-        pure $
-          a
-            & (discardL .~ discard)
-            & (handL .~ hand)
-            & (deckL .~ Deck deck)
+        pure
+          $ a
+          & (discardL .~ discard)
+          & (handL .~ hand)
+          & (deckL .~ Deck deck)
   ReturnToHand iid (AssetTarget aid) | iid == investigatorId -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
   ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
@@ -337,11 +337,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       discardFilter = case preview _PlayerCard card of
         Just pc -> filter (/= pc)
         Nothing -> id
-    pure $
-      a
-        & (discardL %~ discardFilter)
-        & (handL %~ filter (/= card))
-        & (handL %~ (card :))
+    pure
+      $ a
+      & (discardL %~ discardFilter)
+      & (handL %~ filter (/= card))
+      & (handL %~ (card :))
   CheckAdditionalActionCosts iid _ action msgs | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     let
@@ -357,10 +357,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else do
         canPay <-
           getCanAffordCost iid a Nothing [mkWhen Window.NonFast] (mconcat additionalCosts)
-        when canPay $
-          pushAll $
-            [PayForAbility (abilityEffect a $ mconcat additionalCosts) []]
-              <> msgs
+        when canPay
+          $ pushAll
+          $ [PayForAbility (abilityEffect a $ mconcat additionalCosts) []]
+          <> msgs
     pure a
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -386,17 +386,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     unableToMulligan <- hasModifier a CannotMulligan
     hand <- field InvestigatorHand iid
     player <- getPlayer iid
-    push $
-      if null hand || unableToMulligan
+    push
+      $ if null hand || unableToMulligan
         then FinishedWithMulligan investigatorId
         else
-          chooseOne player $
-            Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
-              : [ targetLabel (toCardId card) $
-                  [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
-                | card <- hand
-                , cdCanReplace (toCardDef card)
-                ]
+          chooseOne player
+            $ Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
+            : [ targetLabel (toCardId card)
+                $ [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
+              | card <- hand
+              , cdCanReplace (toCardDef card)
+              ]
     pure a
   BeginTrade iid _source (AssetTarget aid) iids | iid == investigatorId -> do
     player <- getPlayer iid
@@ -404,9 +404,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   BeginTrade iid source ResourceTarget iids | iid == investigatorId -> do
     player <- getPlayer iid
-    push $
-      chooseOne player $
-        [targetLabel iid' [TakeResources iid' 1 source False, SpendResources iid 1] | iid' <- iids]
+    push
+      $ chooseOne player
+      $ [targetLabel iid' [TakeResources iid' 1 source False, SpendResources iid 1] | iid' <- iids]
     pure a
   SetRole iid role | iid == investigatorId -> do
     pure $ a {investigatorClass = role}
@@ -470,22 +470,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     hand' <- field InvestigatorHand iid
 
     player <- getPlayer iid
-    pushAll $
-      [ShuffleDiscardBackIn iid, window]
-        <> [ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
-           | notNull choices
-           ]
-        <> [ InvestigatorMulligan iid
-           | (a ^. mulligansTakenL + 1) < allowedMulligans
-           , startingHandAmount - length hand' > 0
-           ]
-    pure $
-      a
-        & (tokensL %~ setTokens Resource startingResources)
-        & (discardL .~ discard)
-        & (handL .~ hand <> additionalHandCards)
-        & (deckL .~ Deck deck)
-        & (mulligansTakenL +~ 1)
+    pushAll
+      $ [ShuffleDiscardBackIn iid, window]
+      <> [ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
+         | notNull choices
+         ]
+      <> [ InvestigatorMulligan iid
+         | (a ^. mulligansTakenL + 1) < allowedMulligans
+         , startingHandAmount - length hand' > 0
+         ]
+    pure
+      $ a
+      & (tokensL %~ setTokens Resource startingResources)
+      & (discardL .~ discard)
+      & (handL .~ hand <> additionalHandCards)
+      & (deckL .~ Deck deck)
+      & (mulligansTakenL +~ 1)
   ShuffleDiscardBackIn iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     if null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers'
@@ -521,29 +521,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         if investigatorSanityDamage a >= modifiedSanity then 1 else 0
     windowMsg <- checkWindows [mkAfter $ Window.InvestigatorDefeated defeatedBy iid]
     killed <- hasModifier a KilledIfDefeated
-    pushAll $
-      windowMsg
-        : [ChooseLeadInvestigator | isLead]
-          <> [InvestigatorKilled (toSource a) iid | killed]
-          <> [InvestigatorWhenEliminated (toSource a) iid]
-    pure $
-      a
-        & (defeatedL .~ True)
-        & (endedTurnL .~ True)
-        & (physicalTraumaL +~ physicalTrauma)
-        & (mentalTraumaL +~ mentalTrauma)
+    pushAll
+      $ windowMsg
+      : [ChooseLeadInvestigator | isLead]
+        <> [InvestigatorKilled (toSource a) iid | killed]
+        <> [InvestigatorWhenEliminated (toSource a) iid]
+    pure
+      $ a
+      & (defeatedL .~ True)
+      & (endedTurnL .~ True)
+      & (physicalTraumaL +~ physicalTrauma)
+      & (mentalTraumaL +~ mentalTrauma)
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
     isLead <- (== iid) <$> getLeadInvestigatorId
-    pushAll $
-      [ChooseLeadInvestigator | isLead && not investigatorResigned]
-        <> [InvestigatorWhenEliminated (toSource a) iid]
+    pushAll
+      $ [ChooseLeadInvestigator | isLead && not investigatorResigned]
+      <> [InvestigatorWhenEliminated (toSource a) iid]
     pure $ a & resignedL .~ True & endedTurnL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
     mlid <- field InvestigatorLocation iid
-    pushAll $
-      [PlaceTokens (toSource a) (toTarget lid) Clue (investigatorClues a) | lid <- toList mlid]
-        <> [PlaceKey (toTarget lid) k | k <- toList investigatorKeys, lid <- toList mlid]
+    pushAll
+      $ [PlaceTokens (toSource a) (toTarget lid) Clue (investigatorClues a) | lid <- toList mlid]
+      <> [PlaceKey (toTarget lid) k | k <- toList investigatorKeys, lid <- toList mlid]
     pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
@@ -556,9 +556,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseAndDiscardAsset iid source assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList $ assetMatcher <> DiscardableAsset <> assetControlledBy iid
     player <- getPlayer iid
-    push $
-      chooseOrRunOne player $
-        map (\aid -> targetLabel aid [Discard source $ AssetTarget aid]) discardableAssetIds
+    push
+      $ chooseOrRunOne player
+      $ map (\aid -> targetLabel aid [Discard source $ AssetTarget aid]) discardableAssetIds
     pure a
   AttachAsset aid _ -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
@@ -582,9 +582,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     inHandCount <- getInHandCount a
     -- investigatorHand: can only discard cards actually in hand
     player <- getPlayer iid
-    pushWhen (inHandCount > handSize) $
-      chooseOne player $
-        [ targetLabel (toCardId card) [DiscardCard iid GameSource (toCardId card), CheckHandSize iid]
+    pushWhen (inHandCount > handSize)
+      $ chooseOne player
+      $ [ targetLabel (toCardId card) [DiscardCard iid GameSource (toCardId card), CheckHandSize iid]
         | card <- filter (isNothing . cdCardSubType . toCardDef) $ onlyPlayerCards investigatorHand
         ]
     pure a
@@ -597,12 +597,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> pure ()
         cs -> do
           player <- getPlayer investigatorId
-          pushAll $
-            replicate (discardAmount handDiscard) $
-              chooseOrRunOne player $
-                [ targetLabel (toCardId c) [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
-                | c <- filter (`cardMatch` discardFilter handDiscard) cs
-                ]
+          pushAll
+            $ replicate (discardAmount handDiscard)
+            $ chooseOrRunOne player
+            $ [ targetLabel (toCardId c) [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
+              | c <- filter (`cardMatch` discardFilter handDiscard) cs
+              ]
       DiscardRandom -> do
         -- only cards actually in hand
         let filtered = filter (`cardMatch` discardFilter handDiscard) investigatorHand
@@ -636,21 +636,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             handDiscard
               { discardAmount = max 0 (discardAmount handDiscard - 1)
               }
-        pure $
-          a
-            & handL
-            %~ filter (/= card)
-            & discardL
-            %~ (pc :)
-            & discardingL
-            %~ fmap updateHandDiscard
+        pure
+          $ a
+          & handL
+          %~ filter (/= card)
+          & discardL
+          %~ (pc :)
+          & discardingL
+          %~ fmap updateHandDiscard
       EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
       VengeanceCard _ -> error "vengeance card"
   DoneDiscarding iid | iid == investigatorId -> case investigatorDiscarding of
     Nothing -> pure a
     Just handDiscard -> do
-      when (discardAmount handDiscard == 0) $
-        for_ (discardThen handDiscard) push
+      when (discardAmount handDiscard == 0)
+        $ for_ (discardThen handDiscard) push
       pure $ a & discardingL .~ Nothing
   RemoveCardFromHand iid cardId | iid == investigatorId -> do
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
@@ -660,10 +660,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     card <- fromJustNote "missing card" . preview _PlayerCard <$> field AssetCard aid
     deck' <- shuffleM (card : unDeck investigatorDeck)
     push $ After msg
-    pure $
-      a
-        & (deckL .~ Deck deck')
-        & (slotsL %~ removeFromSlots aid)
+    pure
+      $ a
+      & (deckL .~ Deck deck')
+      & (slotsL %~ removeFromSlots aid)
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid) | iid == investigatorId -> do
     card <- fromJustNote "missing card" . preview _PlayerCard <$> field EventCard eid
     deck' <- shuffleM (card : unDeck investigatorDeck)
@@ -683,10 +683,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     let shouldDiscard = pcOwner card == Just investigatorId && card `notElem` investigatorDiscard
 
-    pure $
-      a
-        & (if shouldDiscard then (discardL %~ (card :)) else id)
-        & (slotsL %~ removeFromSlots aid)
+    pure
+      $ a
+      & (if shouldDiscard then (discardL %~ (card :)) else id)
+      & (slotsL %~ removeFromSlots aid)
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ -> do
@@ -714,8 +714,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         _ -> error "multiple overrides found"
     enemyIds <- selectList $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
     player <- getPlayer iid
-    push $
-      chooseOne
+    push
+      $ chooseOne
         player
         [ FightLabel eid [FightEnemy iid eid source mTarget skillType isAction]
         | eid <- enemyIds
@@ -726,15 +726,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #engage)]
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #engage)]
 
-    pushAll $
-      [ BeginAction
-      , beforeWindowMsg
-      , TakeAction iid (Just #engage) (ActionCost 1)
-      ]
-        <> [ CheckAttackOfOpportunity iid False
-           | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
-           ]
-        <> [EngageEnemy iid eid False, afterWindowMsg, FinishAction]
+    pushAll
+      $ [ BeginAction
+        , beforeWindowMsg
+        , TakeAction iid (Just #engage) (ActionCost 1)
+        ]
+      <> [ CheckAttackOfOpportunity iid False
+         | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
+         ]
+      <> [EngageEnemy iid eid False, afterWindowMsg, FinishAction]
     pure a
   FightEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -807,8 +807,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         _ -> error "multiple overrides found"
     enemyIds <- selectList $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher) modifiers
     player <- getPlayer iid
-    push $
-      chooseOne
+    push
+      $ chooseOne
         player
         [ EvadeLabel eid [EvadeEnemy iid eid source mTarget skillType isAction]
         | eid <- enemyIds
@@ -865,9 +865,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ToLocationMatching matcher -> do
         lids <- selectList matcher
         player <- getPlayer investigatorId
-        push $
-          chooseOrRunOne player $
-            [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
+        push
+          $ chooseOrRunOne player
+          $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
       ToLocation destinationLocationId -> do
         let
           source = moveSource movement
@@ -876,16 +876,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         windowMsgs <-
           Helpers.windows
             [Window.Moves iid source mFromLocation destinationLocationId]
-        pushAll $
-          [ Will (MoveFrom source iid fromLocationId)
-          | fromLocationId <- maybeToList mFromLocation
-          ]
-            <> [Will (MoveTo $ move source iid destinationLocationId)]
-            <> [ MoveFrom source iid fromLocationId
-               | fromLocationId <- maybeToList mFromLocation
-               ]
-            <> [MoveTo $ move source iid destinationLocationId]
-            <> windowMsgs
+        pushAll
+          $ [ Will (MoveFrom source iid fromLocationId)
+            | fromLocationId <- maybeToList mFromLocation
+            ]
+          <> [Will (MoveTo $ move source iid destinationLocationId)]
+          <> [ MoveFrom source iid fromLocationId
+             | fromLocationId <- maybeToList mFromLocation
+             ]
+          <> [MoveTo $ move source iid destinationLocationId]
+          <> windowMsgs
     pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _) | iid == iid' && iid == investigatorId -> do
     pushM $ checkWindows [mkWhen (Window.WouldPassSkillTest iid)]
@@ -912,24 +912,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorDirectDamage iid source damage horror
     | iid == toId a
     , not (investigatorDefeated || investigatorResigned) -> do
-        pushAll $
-          [ CheckWindow [iid] $
-            (mkWhen $ Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+        pushAll
+          $ [ CheckWindow [iid]
+              $ (mkWhen $ Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
               : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
                 <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror) | horror > 0]
-          | damage > 0 || horror > 0
-          ]
-            <> [ InvestigatorDoAssignDamage
-                  iid
-                  source
-                  DamageAny
-                  (AssetWithModifier CanBeAssignedDirectDamage)
-                  damage
-                  horror
-                  []
-                  []
-               , checkDefeated source iid
-               ]
+            | damage > 0 || horror > 0
+            ]
+          <> [ InvestigatorDoAssignDamage
+                iid
+                source
+                DamageAny
+                (AssetWithModifier CanBeAssignedDirectDamage)
+                damage
+                horror
+                []
+                []
+             , checkDefeated source iid
+             ]
         pure a
   InvestigatorAssignDamage iid source strategy damage horror
     | iid == toId a
@@ -938,16 +938,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         if TreatAllDamageAsDirect `elem` modifiers
           then push $ InvestigatorDirectDamage iid source damage horror
           else
-            pushAll $
-              [ CheckWindow [iid] $
-                (mkWhen $ Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+            pushAll
+              $ [ CheckWindow [iid]
+                  $ (mkWhen $ Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
                   : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
                     <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror) | horror > 0]
-              | damage > 0 || horror > 0
-              ]
-                <> [ InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror [] []
-                   , checkDefeated source iid
-                   ]
+                | damage > 0 || horror > 0
+                ]
+              <> [ InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror [] []
+                 , checkDefeated source iid
+                 ]
         pure a
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a -> do
     let
@@ -965,29 +965,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
     placedWindowMsg <-
       checkWindows $ concatMap (\t -> map (mkWindow t) placedWindows) [#when, #after]
-    pushAll $
-      [ placedWindowMsg
-      , CheckWindow [iid] $
-          [ mkWhen (Window.DealtDamage source damageEffect target damage)
-          | target <- nub damageTargets
-          , let damage = count (== target) damageTargets
-          ]
+    pushAll
+      $ [ placedWindowMsg
+        , CheckWindow [iid]
+            $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
+              | target <- nub damageTargets
+              , let damage = count (== target) damageTargets
+              ]
             <> [ mkWhen (Window.DealtHorror source target horror)
                | target <- nub horrorTargets
                , let horror = count (== target) horrorTargets
                ]
             <> [mkWhen (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
-      , CheckWindow [iid] $
-          [ mkAfter (Window.DealtDamage source damageEffect target damage)
-          | target <- nub damageTargets
-          , let damage = count (== target) damageTargets
-          ]
+        , CheckWindow [iid]
+            $ [ mkAfter (Window.DealtDamage source damageEffect target damage)
+              | target <- nub damageTargets
+              , let damage = count (== target) damageTargets
+              ]
             <> [ mkAfter (Window.DealtHorror source target horror)
                | target <- nub horrorTargets
                , let horror = count (== target) horrorTargets
                ]
             <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
-      ]
+        ]
     when
       ( damageStrategy
           == DamageFromHastur
@@ -1148,14 +1148,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure (asset, (health', sanity'))
 
     player <- getPlayer iid
-    push $
-      chooseOne player $
-        targetLabel
-          a
-          [ Msg.InvestigatorDamage investigatorId source health sanity
-          , continue health sanity (toTarget a)
-          ]
-          : map toAssetMessage assetsWithCounts
+    push
+      $ chooseOne player
+      $ targetLabel
+        a
+        [ Msg.InvestigatorDamage investigatorId source health sanity
+        , continue health sanity (toTarget a)
+        ]
+      : map toAssetMessage assetsWithCounts
     pure a
   InvestigatorDoAssignDamage iid source strategy matcher health sanity damageTargets horrorTargets | iid == toId a -> do
     healthDamageMessages <-
@@ -1182,9 +1182,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
           case strategy of
             DamageAssetsFirst -> do
-              pure $
-                [damageInvestigator | null healthDamageableAssets]
-                  <> map damageAsset healthDamageableAssets
+              pure
+                $ [damageInvestigator | null healthDamageableAssets]
+                <> map damageAsset healthDamageableAssets
             DamageAny ->
               pure $ damageInvestigator : map damageAsset healthDamageableAssets
             DamageFromHastur ->
@@ -1194,8 +1194,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 setToList
                   . intersection (setFromList healthDamageableAssets)
                   <$> select (matcher <> AssetControlledBy You <> assetIs def)
-              pure $
-                if null validAssets
+              pure
+                $ if null validAssets
                   then damageInvestigator : map damageAsset healthDamageableAssets
                   else map damageAsset validAssets
             SingleTarget -> error "handled elsewhere"
@@ -1224,38 +1224,38 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
           case strategy of
             DamageAssetsFirst ->
-              pure $
-                [damageInvestigator | null sanityDamageableAssets]
-                  <> map damageAsset sanityDamageableAssets
+              pure
+                $ [damageInvestigator | null sanityDamageableAssets]
+                <> map damageAsset sanityDamageableAssets
             DamageAny -> do
               mustBeDamagedFirstBeforeInvestigator <-
                 selectList
                   ( AssetCanBeAssignedHorrorBy iid
                       <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
                   )
-              pure $
-                [ damageInvestigator
-                | null mustBeDamagedFirstBeforeInvestigator
-                ]
-                  <> map damageAsset sanityDamageableAssets
+              pure
+                $ [ damageInvestigator
+                  | null mustBeDamagedFirstBeforeInvestigator
+                  ]
+                <> map damageAsset sanityDamageableAssets
             DamageFromHastur -> do
               mustBeDamagedFirstBeforeInvestigator <-
                 selectList
                   ( AssetCanBeAssignedHorrorBy iid
                       <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
                   )
-              pure $
-                [ damageInvestigator
-                | null mustBeDamagedFirstBeforeInvestigator
-                ]
-                  <> map damageAsset sanityDamageableAssets
+              pure
+                $ [ damageInvestigator
+                  | null mustBeDamagedFirstBeforeInvestigator
+                  ]
+                <> map damageAsset sanityDamageableAssets
             DamageFirst def -> do
               validAssets <-
                 setToList
                   . intersection (setFromList sanityDamageableAssets)
                   <$> select (matcher <> AssetControlledBy You <> assetIs def)
-              pure $
-                if null validAssets
+              pure
+                $ if null validAssets
                   then damageInvestigator : map damageAsset sanityDamageableAssets
                   else map damageAsset validAssets
             SingleTarget -> error "handled elsewhere"
@@ -1272,18 +1272,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       investigateCost = foldr applyModifier 1 modifiers
       applyModifier (ActionCostOf (IsAction Action.Investigate) m) n = max 0 (n + m)
       applyModifier _ n = n
-    pushAll $
-      [ BeginAction
-      , beforeWindowMsg
-      , TakeAction investigatorId (Just #investigate) (ActionCost investigateCost)
-      ]
-        <> [ CheckAttackOfOpportunity investigatorId False
-           | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
-           ]
-        <> [ toMessage $ investigation {investigateIsAction = False}
-           , afterWindowMsg
-           , FinishAction
-           ]
+    pushAll
+      $ [ BeginAction
+        , beforeWindowMsg
+        , TakeAction investigatorId (Just #investigate) (ActionCost investigateCost)
+        ]
+      <> [ CheckAttackOfOpportunity investigatorId False
+         | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
+         ]
+      <> [ toMessage $ investigation {investigateIsAction = False}
+         , afterWindowMsg
+         , FinishAction
+         ]
     pure a
   InvestigatorDiscoverCluesAtTheirLocation iid source n maction | iid == investigatorId -> do
     mlid <- field InvestigatorLocation iid
@@ -1329,12 +1329,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy windows' asAction | iid == toId a -> do
     event <- selectJust $ EventWithCardId $ toCardId card
     player <- getPlayer iid
-    push $
-      chooseOne player $
-        [ targetLabel (toCardId choice) $
-          [ ReturnToHand iid (toTarget event)
-          , InitiatePlayCardAs iid card choice msgs chosenCardStrategy windows' asAction
-          ]
+    push
+      $ chooseOne player
+      $ [ targetLabel (toCardId choice)
+          $ [ ReturnToHand iid (toTarget event)
+            , InitiatePlayCardAs iid card choice msgs chosenCardStrategy windows' asAction
+            ]
         | choice <- choices
         ]
     pure a
@@ -1349,10 +1349,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         LeaveChosenCard -> []
         RemoveChosenCardFromGame -> [RemovePlayerCardFromGame True choice]
 
-    pushAll $
-      chosenCardMsgs
-        <> msgs
-        <> [InitiatePlayCard iid (PlayerCard choiceAsCard) Nothing windows' asAction]
+    pushAll
+      $ chosenCardMsgs
+      <> msgs
+      <> [InitiatePlayCard iid (PlayerCard choiceAsCard) Nothing windows' asAction]
     pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter (/= card)
   InitiatePlayCard iid card mtarget windows' asAction | iid == investigatorId ->
     do
@@ -1373,17 +1373,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure a
   CardEnteredPlay iid card | iid == investigatorId -> do
     send $ format a <> " played " <> format card
-    pure $
-      a
-        & (handL %~ filter (/= card))
-        & (discardL %~ filter ((/= card) . PlayerCard))
-        & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+    pure
+      $ a
+      & (handL %~ filter (/= card))
+      & (discardL %~ filter ((/= card) . PlayerCard))
+      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   ObtainCard card -> do
-    pure $
-      a
-        & (handL %~ filter (/= card))
-        & (discardL %~ filter ((/= card) . PlayerCard))
-        & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+    pure
+      $ a
+      & (handL %~ filter (/= card))
+      & (discardL %~ filter ((/= card) . PlayerCard))
+      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   PutCampaignCardIntoPlay iid cardDef -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of
@@ -1415,28 +1415,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       FitsSlots -> push (InvestigatorPlayedAsset iid aid)
       MissingSlots missingSlotTypes -> do
         assetsThatCanProvideSlots <-
-          selectList $
-            assetControlledBy iid
-              <> DiscardableAsset
-              <> AssetOneOf (map AssetInSlot missingSlotTypes)
+          selectList
+            $ assetControlledBy iid
+            <> DiscardableAsset
+            <> AssetOneOf (map AssetInSlot missingSlotTypes)
 
         -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
         let assetsInSlotsOf aid' = nub $ concat $ filter (elem aid') $ map slotItems $ concat $ toList (a ^. slotsL)
 
         player <- getPlayer iid
-        push $
-          if null assetsThatCanProvideSlots
+        push
+          $ if null assetsThatCanProvideSlots
             then InvestigatorPlayedAsset iid aid
             else
-              chooseOne player $
-                [ targetLabel
-                  aid'
-                  $ map (Discard GameSource . toTarget) assets
+              chooseOne player
+                $ [ targetLabel
+                    aid'
+                    $ map (Discard GameSource . toTarget) assets
                     <> [ InvestigatorPlayAsset iid aid
                        ]
-                | aid' <- assetsThatCanProvideSlots
-                , let assets = assetsInSlotsOf aid'
-                ]
+                  | aid' <- assetsThatCanProvideSlots
+                  , let assets = assetsInSlotsOf aid'
+                  ]
     pure a
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
     slotTypes <- field AssetSlots aid
@@ -1452,7 +1452,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- we need to figure out which slots are or aren't available
     -- we've claimed we can play this, but we might need to change the slotType
     let
-      handleSlotType :: (HasGame m) => Map SlotType [Slot] -> SlotType -> m (Map SlotType [Slot])
+      handleSlotType :: HasGame m => Map SlotType [Slot] -> SlotType -> m (Map SlotType [Slot])
       handleSlotType slots' sType = do
         available <- availableSlotTypesFor sType canHoldMap assetCard a
         case nub available of
@@ -1469,25 +1469,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     pure $ a & handL %~ (filter (/= assetCard)) & slotsL .~ slots
   RemoveCampaignCard cardDef -> do
-    pure $
-      a
-        & (deckL %~ Deck . filter ((/= toCardCode cardDef) . toCardCode) . unDeck)
+    pure
+      $ a
+      & (deckL %~ Deck . filter ((/= toCardCode cardDef) . toCardCode) . unDeck)
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     assets <- selectList $ assetControlledBy iid
     for_ assets $ \assetId -> do
       cardCode' <- field AssetCardCode assetId
       when (cardCode == cardCode') (push $ RemoveFromGame (AssetTarget assetId))
-    pure $
-      a
-        & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
-        & (discardL %~ filter ((/= cardCode) . toCardCode))
-        & (handL %~ filter ((/= cardCode) . toCardCode))
+    pure
+      $ a
+      & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
+      & (discardL %~ filter ((/= cardCode) . toCardCode))
+      & (handL %~ filter ((/= cardCode) . toCardCode))
   PutCardIntoPlay _ card _ _ -> do
-    pure $
-      a
-        & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
-        & (discardL %~ filter ((/= card) . PlayerCard))
-        & (handL %~ filter (/= card))
+    pure
+      $ a
+      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+      & (discardL %~ filter ((/= card) . PlayerCard))
+      & (handL %~ filter (/= card))
   Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId -> do
     pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId -> do
@@ -1521,19 +1521,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else push $ AssignDamage (InvestigatorTarget $ toId a)
     pure a
   AssignDamage target | isTarget a target -> do
-    pure $
-      a
-        & tokensL
-        %~ ( addTokens Token.Damage investigatorAssignedHealthDamage
-              . addTokens Horror investigatorAssignedSanityDamage
-           )
-        & (assignedHealthDamageL .~ 0)
-        & (assignedSanityDamageL .~ 0)
+    pure
+      $ a
+      & tokensL
+      %~ ( addTokens Token.Damage investigatorAssignedHealthDamage
+            . addTokens Horror investigatorAssignedSanityDamage
+         )
+      & (assignedHealthDamageL .~ 0)
+      & (assignedSanityDamageL .~ 0)
   CancelAssignedDamage target damageReduction horrorReduction | isTarget a target -> do
-    pure $
-      a
-        & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
-        & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
+    pure
+      $ a
+      & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
+      & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
   HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
     push afterWindow
@@ -1544,10 +1544,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if cannotHealHorror
       then pure a
       else do
-        pure $
-          a
-            & (tokensL %~ subtractTokens Horror amount)
-            & (horrorHealedL .~ (min amount $ investigatorSanityDamage a))
+        pure
+          $ a
+          & (tokensL %~ subtractTokens Horror amount)
+          & (horrorHealedL .~ (min amount $ investigatorSanityDamage a))
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
     cannotHealHorror <- hasModifier a CannotHealHorror
@@ -1556,16 +1556,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else do
         afterWindow <-
           checkWindows
-            [ mkAfter $
-                Window.Healed HorrorType (toTarget a) source (investigatorHorrorHealed + additional)
+            [ mkAfter
+                $ Window.Healed HorrorType (toTarget a) source (investigatorHorrorHealed + additional)
             ]
         push afterWindow
-        pure $
-          a
-            & tokensL
-            %~ subtractTokens Horror additional
-            & horrorHealedL
-            .~ 0
+        pure
+          $ a
+          & tokensL
+          %~ subtractTokens Horror additional
+          & horrorHealedL
+          .~ 0
   HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
@@ -1616,8 +1616,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ToLocationMatching matcher -> do
         lids <- selectList matcher
         player <- getPlayer investigatorId
-        push $
-          chooseOrRunOne
+        push
+          $ chooseOrRunOne
             player
             [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
         pure a
@@ -1629,15 +1629,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
         afterEnterWindow <- checkWindows [mkAfter (Window.Entering iid lid)]
-        pushAll $
-          movedByWindows
-            <> [ WhenWillEnterLocation iid lid
-               , Do (WhenWillEnterLocation iid lid)
-               , EnterLocation iid lid
-               , afterEnterWindow
-               , afterMoveButBeforeEnemyEngagement
-               , CheckEnemyEngagement iid
-               ]
+        pushAll
+          $ movedByWindows
+          <> [ WhenWillEnterLocation iid lid
+             , Do (WhenWillEnterLocation iid lid)
+             , EnterLocation iid lid
+             , afterEnterWindow
+             , afterMoveButBeforeEnemyEngagement
+             , CheckEnemyEngagement iid
+             ]
         pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & locationL .~ lid
@@ -1694,7 +1694,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           ((st, x) : rest) -> go rs ((st, putIntoSlot aid x) : rest)
 
     let
-      fill :: (HasGame m) => [(AssetId, Card, SlotType)] -> Map SlotType [Slot] -> m (Map SlotType [Slot])
+      fill :: HasGame m => [(AssetId, Card, SlotType)] -> Map SlotType [Slot] -> m (Map SlotType [Slot])
       fill [] slots = pure slots
       fill ((aid, card, slotType) : rs) slots = do
         availableSlots1 <- filterM (canPutIntoSlot card) (slots ^. at slotType . non [])
@@ -1730,9 +1730,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure $ a & slotsL .~ slots'
       else do
         player <- getPlayer iid
-        push $
-          chooseOne player $
-            [ targetLabel aid' $ map (Discard GameSource . toTarget) assets <> [RefillSlots iid]
+        push
+          $ chooseOne player
+          $ [ targetLabel aid' $ map (Discard GameSource . toTarget) assets <> [RefillSlots iid]
             | aid' <- failedAssetIds
             , let assets = assetsInSlotsOf aid'
             ]
@@ -1740,13 +1740,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
   Do BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
-    pure $
-      a
-        & (endedTurnL .~ False)
-        & (remainingActionsL .~ actionsForTurn)
-        & (usedAdditionalActionsL .~ mempty)
-        & (actionsTakenL .~ mempty)
-        & (actionsPerformedL .~ mempty)
+    pure
+      $ a
+      & (endedTurnL .~ False)
+      & (remainingActionsL .~ actionsForTurn)
+      & (usedAdditionalActionsL .~ mempty)
+      & (actionsTakenL .~ mempty)
+      & (actionsPerformedL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
     let (cs, deck') = draw n investigatorDeck
     windowMsgs <-
@@ -1756,12 +1756,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             <$> checkWindows
               ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
         else pure []
-    pushAll $
-      windowMsgs
-        <> [DeckHasNoCards investigatorId mTarget | null deck']
-        <> [ DiscardedTopOfDeck iid cs source target
-           | target <- maybeToList mTarget
-           ]
+    pushAll
+      $ windowMsgs
+      <> [DeckHasNoCards investigatorId mTarget | null deck']
+      <> [ DiscardedTopOfDeck iid cs source target
+         | target <- maybeToList mTarget
+         ]
     pure $ a & deckL .~ deck' & discardL %~ (reverse cs <>)
   DiscardUntilFirst iid' source (Deck.InvestigatorDeck iid) matcher | iid == investigatorId -> do
     (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck investigatorDeck)
@@ -1782,8 +1782,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           ]
         pure $ a & deckL .~ mempty
       (x : xs) -> do
-        push $
-          RevealedCards
+        push
+          $ RevealedCards
             iid
             source
             (Deck.InvestigatorDeck iid')
@@ -1880,11 +1880,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             let
               weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn
               msgs' =
-                (<> msgs) $
-                  guard (shuffleBackInEachWeakness && notNull weaknesses)
-                    *> [ FocusCards weaknesses
-                       , chooseOne player $
-                          [ Label
+                (<> msgs)
+                  $ guard (shuffleBackInEachWeakness && notNull weaknesses)
+                  *> [ FocusCards weaknesses
+                     , chooseOne player
+                        $ [ Label
                               "Shuffle Weaknesses back in"
                               [ UnfocusCards
                               , ShuffleCardsIntoDeck
@@ -1892,20 +1892,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                                   weaknesses
                               ]
                           ]
-                       ]
+                     ]
 
             windowMsgs <-
               if null deck'
                 then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
                 else pure []
             (before, _, after) <- frame $ Window.DrawCards iid $ map toCard allDrawn
-            pushAll $
-              windowMsgs
-                <> [DeckHasNoCards iid Nothing | null deck']
-                <> [InvestigatorDrewPlayerCard iid card | card <- allDrawn]
-                <> [before]
-                <> msgs'
-                <> [after]
+            pushAll
+              $ windowMsgs
+              <> [DeckHasNoCards iid Nothing | null deck']
+              <> [InvestigatorDrewPlayerCard iid card | card <- allDrawn]
+              <> [before]
+              <> msgs'
+              <> [after]
             pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ Deck deck'
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-
@@ -1930,8 +1930,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n source True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #resource)]
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #resource)]
-    unlessM (hasModifier a CannotGainResources) $
-      pushAll
+    unlessM (hasModifier a CannotGainResources)
+      $ pushAll
         [ BeginAction
         , beforeWindowMsg
         , TakeAction iid (Just #resource) (ActionCost 1)
@@ -1947,15 +1947,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlaceTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ addTokens token n
   DoBatch _ (EmptyDeck iid mDrawing) | iid == investigatorId -> do
-    pushAll $
-      [EmptyDeck iid mDrawing]
-        <> maybeToList mDrawing
-        <> [Msg.InvestigatorDamage iid EmptyDeckSource 0 1]
+    pushAll
+      $ [EmptyDeck iid mDrawing]
+      <> maybeToList mDrawing
+      <> [Msg.InvestigatorDamage iid EmptyDeckSource 0 1]
     pure a
   EmptyDeck iid _ | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
-    pushWhen (CardsCannotLeaveYourDiscardPile `notElem` modifiers') $
-      ShuffleDiscardBackIn iid
+    pushWhen (CardsCannotLeaveYourDiscardPile `notElem` modifiers')
+      $ ShuffleDiscardBackIn iid
     pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards) $ do
@@ -1968,34 +1968,34 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
-    pure $
-      a
-        & (handL %~ filter (/= card))
-        & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+    pure
+      $ a
+      & (handL %~ filter (/= card))
+      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   PlaceUnderneath target cards | isTarget a target -> do
     update <-
-      fmap appEndo $
-        foldMapM
+      fmap appEndo
+        $ foldMapM
           ( \card -> do
               mAssetId <- selectOne $ AssetWithCardId $ toCardId card
-              pure $
-                Endo $
-                  (slotsL %~ maybe id removeFromSlots mAssetId)
-                    . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+              pure
+                $ Endo
+                $ (slotsL %~ maybe id removeFromSlots mAssetId)
+                . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
           )
           cards
     pure $ a & cardsUnderneathL <>~ cards & update
   PlaceUnderneath _ cards -> do
     update <-
-      fmap (appEndo . mconcat) $
-        traverse
+      fmap (appEndo . mconcat)
+        $ traverse
           ( \card -> do
               mAssetId <- selectOne $ AssetWithCardId $ toCardId card
-              pure $
-                Endo $
-                  (slotsL %~ maybe id removeFromSlots mAssetId)
-                    . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
-                    . (handL %~ filter (/= card))
+              pure
+                $ Endo
+                $ (slotsL %~ maybe id removeFromSlots mAssetId)
+                . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+                . (handL %~ filter (/= card))
           )
           cards
     pure $ a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
@@ -2011,8 +2011,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   BeforeSkillTest skillTest | skillTestInvestigator skillTest == toId a -> do
     skillTestModifiers' <- getModifiers SkillTestTarget
-    push $
-      if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
+    push
+      $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
         then StartSkillTest investigatorId
         else CommitToSkillTest skillTest $ StartSkillTestButton investigatorId
     pure a
@@ -2074,8 +2074,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                         pure $ (skillDifficulty - investigatorResources a) >= n
                 prevented = flip any modifiers' $ \case
                   CanOnlyUseCardsInRole role ->
-                    null $
-                      intersect
+                    null
+                      $ intersect
                         (cdClassSymbols $ toCardDef card)
                         (setFromList [Neutral, role])
                   CannotCommitCards matcher -> cardMatch card matcher
@@ -2084,12 +2084,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
               icons <- iconsForCard (toCard card)
 
-              pure $
-                PlayerCard card
-                  `notElem` committedCards
-                  && (any (`member` skillIcons) icons || (null icons && toCardType card == SkillType))
-                  && passesCommitRestrictions
-                  && not prevented
+              pure
+                $ PlayerCard card
+                `notElem` committedCards
+                && (any (`member` skillIcons) icons || (null icons && toCardType card == SkillType))
+                && passesCommitRestrictions
+                && not prevented
             EncounterCard card ->
               pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef card)
             VengeanceCard _ -> error "vengeance card"
@@ -2103,23 +2103,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     player <- getPlayer iid
     if notNull committableCards || notNull committedCards || notNull actions
       then
-        push $
-          SkillTestAsk $
-            chooseOne player $
-              map
-                (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
-                committableCards
-                <> map
-                  (\card -> targetLabel (toCardId card) [SkillTestUncommitCard iid card, beginMessage])
-                  committedCards
-                <> map
-                  (\action -> AbilityLabel iid action [window] [beginMessage])
-                  actions
-                <> triggerMessage
+        push
+          $ SkillTestAsk
+          $ chooseOne player
+          $ map
+            (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
+            committableCards
+          <> map
+            (\card -> targetLabel (toCardId card) [SkillTestUncommitCard iid card, beginMessage])
+            committedCards
+          <> map
+            (\action -> AbilityLabel iid action [window] [beginMessage])
+            actions
+          <> triggerMessage
       else
-        pushWhen (notNull triggerMessage) $
-          SkillTestAsk $
-            chooseOne player triggerMessage
+        pushWhen (notNull triggerMessage)
+          $ SkillTestAsk
+          $ chooseOne player triggerMessage
     pure a
   CommitToSkillTest skillTest triggerMessage | skillTestInvestigator skillTest /= investigatorId -> do
     let iid = skillTestInvestigator skillTest
@@ -2184,8 +2184,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     _ -> False
                 passesCriterias <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
                 icons <- iconsForCard (toCard card)
-                pure $
-                  and
+                pure
+                  $ and
                     [ PlayerCard card `notElem` committedCards
                     , or
                         [ any (`member` skillIcons) icons
@@ -2198,15 +2198,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef card)
               VengeanceCard _ -> error "vengeance card"
       player <- getPlayer investigatorId
-      pushWhen (notNull committableCards || notNull committedCards) $
-        SkillTestAsk $
-          chooseOne player $
-            map
-              (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
-              committableCards
-              <> map
-                (\card -> targetLabel (toCardId card) [SkillTestUncommitCard investigatorId card, beginMessage])
-                committedCards
+      pushWhen (notNull committableCards || notNull committedCards)
+        $ SkillTestAsk
+        $ chooseOne player
+        $ map
+          (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
+          committableCards
+        <> map
+          (\card -> targetLabel (toCardId card) [SkillTestUncommitCard investigatorId card, beginMessage])
+          committedCards
     pure a
   CheckWindow iids windows | investigatorId `elem` iids -> do
     a <$ push (RunWindow investigatorId windows)
@@ -2240,9 +2240,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> pure $ a & remainingActionsL %~ max 0 . subtract n
         xs -> do
           player <- getPlayer iid
-          push $
-            chooseOrRunOne player $
-              [ Label
+          push
+            $ chooseOrRunOne player
+            $ [ Label
                 ("Use action from " <> lbl)
                 [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
               | ac@(AdditionalAction lbl _ _) <- xs
@@ -2250,9 +2250,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           pure a
       xs -> do
         player <- getPlayer iid
-        push $
-          chooseOrRunOne player $
-            [ Label
+        push
+          $ chooseOrRunOne player
+          $ [ Label
               ("Use action from " <> lbl)
               [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
             | ac@(AdditionalAction lbl _ _) <- xs
@@ -2285,9 +2285,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           then pure $ a' & usedAdditionalActionsL <>~ additionalActions
           else do
             player <- getPlayer iid
-            push $
-              chooseN player additional $
-                [ Label ("Lose action from " <> lbl) [LoseAdditionalAction iid ac]
+            push
+              $ chooseN player additional
+              $ [ Label ("Lose action from " <> lbl) [LoseAdditionalAction iid ac]
                 | ac@(AdditionalAction lbl _ _) <- additionalActions
                 ]
             pure a'
@@ -2300,9 +2300,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   LoseAdditionalAction iid n | iid == investigatorId -> do
     pure $ a & usedAdditionalActionsL %~ (n :)
   TakeAction iid mAction cost | iid == investigatorId -> do
-    pushAll $
-      [PayForAbility (abilityEffect a cost) []]
-        <> [TakenAction iid action | action <- maybeToList mAction]
+    pushAll
+      $ [PayForAbility (abilityEffect a cost) []]
+      <> [TakenAction iid action | action <- maybeToList mAction]
     pure a
   TakenAction iid action | iid == investigatorId -> do
     pure $ a & actionsTakenL %~ (<> [action]) & actionsPerformedL %~ (<> [action])
@@ -2311,55 +2311,55 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PutCardOnTopOfDeck _ (Deck.InvestigatorDeck iid) card | iid == toId a -> do
     case card of
       PlayerCard pc ->
-        pure $
-          a
-            & (deckL %~ Deck . (pc :) . unDeck)
-            & handL
-            %~ filter (/= card)
-            & discardL
-            %~ filter (/= pc)
-            & (foundCardsL . each %~ filter (/= PlayerCard pc))
+        pure
+          $ a
+          & (deckL %~ Deck . (pc :) . unDeck)
+          & handL
+          %~ filter (/= card)
+          & discardL
+          %~ filter (/= pc)
+          & (foundCardsL . each %~ filter (/= PlayerCard pc))
       EncounterCard _ ->
         error "Can not put encounter card on top of investigator deck"
       VengeanceCard _ ->
         error "Can not put vengeance card on top of investigator deck"
   PutCardOnTopOfDeck _ _ card -> case card of
     PlayerCard pc ->
-      pure $
-        a
-          & (deckL %~ Deck . filter (/= pc) . unDeck)
-          & handL
-          %~ filter (/= card)
-          & discardL
-          %~ filter (/= pc)
-          & (foundCardsL . each %~ filter (/= PlayerCard pc))
+      pure
+        $ a
+        & (deckL %~ Deck . filter (/= pc) . unDeck)
+        & handL
+        %~ filter (/= card)
+        & discardL
+        %~ filter (/= pc)
+        & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure $ a & handL %~ filter (/= card)
     VengeanceCard vcard -> pure $ a & handL %~ filter (/= vcard)
   PutCardOnBottomOfDeck _ (Deck.InvestigatorDeck iid) card | iid == toId a -> do
     case card of
       PlayerCard pc ->
-        pure $
-          a
-            & (deckL %~ Deck . (<> [pc]) . unDeck)
-            & handL
-            %~ filter (/= card)
-            & discardL
-            %~ filter (/= pc)
-            & (foundCardsL . each %~ filter (/= PlayerCard pc))
+        pure
+          $ a
+          & (deckL %~ Deck . (<> [pc]) . unDeck)
+          & handL
+          %~ filter (/= card)
+          & discardL
+          %~ filter (/= pc)
+          & (foundCardsL . each %~ filter (/= PlayerCard pc))
       EncounterCard _ ->
         error "Can not put encounter card on bottom of investigator deck"
       VengeanceCard _ ->
         error "Can not put vengeance card on bottom of investigator deck"
   PutCardOnBottomOfDeck _ _ card -> case card of
     PlayerCard pc ->
-      pure $
-        a
-          & (deckL %~ Deck . filter (/= pc) . unDeck)
-          & handL
-          %~ filter (/= card)
-          & discardL
-          %~ filter (/= pc)
-          & (foundCardsL . each %~ filter (/= PlayerCard pc))
+      pure
+        $ a
+        & (deckL %~ Deck . filter (/= pc) . unDeck)
+        & handL
+        %~ filter (/= card)
+        & discardL
+        %~ filter (/= pc)
+        & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
   AddToHand iid cards | iid == investigatorId -> do
@@ -2378,38 +2378,38 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 else Nothing
         _ -> Nothing
     player <- getPlayer iid
-    pushWhen (notNull choices) $
-      chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
+    pushWhen (notNull choices)
+      $ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
-    pure $
-      a
-        & (handL %~ (cards <>))
-        & (cardsUnderneathL %~ filter (`notElem` cards))
-        & (slotsL %~ flip (foldr removeFromSlots) assetIds)
-        & (discardL %~ filter ((`notElem` cards) . PlayerCard))
-        & (foundCardsL . each %~ filter (`notElem` cards))
+    pure
+      $ a
+      & (handL %~ (cards <>))
+      & (cardsUnderneathL %~ filter (`notElem` cards))
+      & (slotsL %~ flip (foldr removeFromSlots) assetIds)
+      & (discardL %~ filter ((`notElem` cards) . PlayerCard))
+      & (foundCardsL . each %~ filter (`notElem` cards))
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [] | iid == investigatorId -> do
     -- can't shuffle zero cards
     pure a
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | iid == toId a -> do
     let cards' = mapMaybe (preview _PlayerCard) cards
     deck <- shuffleM $ cards' <> filter (`notElem` cards') (unDeck investigatorDeck)
-    pure $
-      a
-        & deckL
-        .~ Deck deck
-        & handL
-        %~ filter (`notElem` cards)
-        & cardsUnderneathL
-        %~ filter (`notElem` cards)
-        & discardL
-        %~ filter ((`notElem` cards) . PlayerCard)
-        & (foundCardsL . each %~ filter (`notElem` cards))
+    pure
+      $ a
+      & deckL
+      .~ Deck deck
+      & handL
+      %~ filter (`notElem` cards)
+      & cardsUnderneathL
+      %~ filter (`notElem` cards)
+      & discardL
+      %~ filter ((`notElem` cards) . PlayerCard)
+      & (foundCardsL . each %~ filter (`notElem` cards))
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId | iid' == toId a -> do
     let
       card =
-        fromJustNote "missing card" $
-          find ((== cardId) . toCardId) (findWithDefault [] cardSource investigatorFoundCards)
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (findWithDefault [] cardSource investigatorFoundCards)
       foundCards = investigatorFoundCards & ix cardSource %~ filter (/= card)
     push $ addToHand iid' card
     pure $ a & foundCardsL .~ foundCards
@@ -2418,9 +2418,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId | iid' == toId a -> do
     let
       card =
-        fromJustNote "missing card" $
-          find ((== cardId) . toCardId) (concat $ toList investigatorFoundCards)
-            >>= toPlayerCard
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (concat $ toList investigatorFoundCards)
+          >>= toPlayerCard
       foundCards = Map.map (filter ((/= cardId) . toCardId)) investigatorFoundCards
     push $ PutCardOnTopOfDeck iid' (Deck.InvestigatorDeck iid') (toCard card)
     pure $ a & foundCardsL .~ foundCards
@@ -2441,49 +2441,49 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     player <- getPlayer iid
     for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
       DiscardRest -> do
-        push $
-          chooseOneAtATime player $
-            map
-              ( \case
-                  PlayerCard c -> targetLabel (toCardId c) [AddToDiscard iid c]
-                  EncounterCard c -> targetLabel (toCardId c) [AddToEncounterDiscard c]
-                  VengeanceCard _ -> error "not possible"
-              )
-              (findWithDefault [] Zone.FromDeck investigatorFoundCards)
+        push
+          $ chooseOneAtATime player
+          $ map
+            ( \case
+                PlayerCard c -> targetLabel (toCardId c) [AddToDiscard iid c]
+                EncounterCard c -> targetLabel (toCardId c) [AddToEncounterDiscard c]
+                VengeanceCard _ -> error "not possible"
+            )
+            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
       PutBackInAnyOrder -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
-        push $
-          chooseOneAtATime player $
-            mapTargetLabelWith
-              toCardId
-              (\c -> [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)])
-              (findWithDefault [] Zone.FromDeck investigatorFoundCards)
+        push
+          $ chooseOneAtATime player
+          $ mapTargetLabelWith
+            toCardId
+            (\c -> [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)])
+            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
-        pushWhen (notNull investigatorFoundCards) $
-          ShuffleCardsIntoDeck
+        pushWhen (notNull investigatorFoundCards)
+          $ ShuffleCardsIntoDeck
             (Deck.InvestigatorDeck iid)
             (findWithDefault [] Zone.FromDeck investigatorFoundCards)
       PutBack -> when (foundKey cardSource == Zone.FromDeck) (error "Can not take deck")
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              case abilityLimitType (abilityLimit usedAbility) of
-                Just (PerSearch _) -> False
-                _ -> True
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just (PerSearch _) -> False
+              _ -> True
+        )
   EndSearch iid _ _ _ | iid == investigatorId -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              case abilityLimitType (abilityLimit usedAbility) of
-                Just (PerSearch _) -> False
-                _ -> True
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just (PerSearch _) -> False
+              _ -> True
+        )
   SearchEnded iid | iid == investigatorId -> pure $ a & foundCardsL .~ mempty
   CancelSearch iid | iid == investigatorId -> do
     let zoneCards = mapToList investigatorFoundCards
@@ -2565,8 +2565,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , card <- cards
               , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
               ]
-          pushBatch batchId $
-            if null choices
+          pushBatch batchId
+            $ if null choices
               then chooseOne player [Label "No cards found" []]
               else chooseN player (min n (length choices)) choices
         RemoveFoundFromGame _ n -> do
@@ -2576,8 +2576,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               | (_, cards) <- mapToList targetCards
               , card <- cards
               ]
-          pushBatch batchId $
-            if null choices
+          pushBatch batchId
+            $ if null choices
               then chooseOne player [Label "No cards found" []]
               else chooseN player (min n (length choices)) choices
         DrawFound who n -> do
@@ -2587,8 +2587,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               | (zone, cards) <- mapToList targetCards
               , card <- cards
               ]
-          pushBatch batchId $
-            if null choices
+          pushBatch batchId
+            $ if null choices
               then chooseOne player [Label "No cards found" []]
               else chooseN player (min n (length choices)) choices
         DrawFoundUpTo who n -> do
@@ -2598,8 +2598,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               | (zone, cards) <- mapToList targetCards
               , card <- cards
               ]
-          pushBatch batchId $
-            if null choices
+          pushBatch batchId
+            $ if null choices
               then chooseOne player [Label "No cards found" []]
               else chooseUpToN player n "Do not draw more cards" choices
         PlayFound who n -> do
@@ -2621,23 +2621,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             pure (zone, cards')
           let
             choices =
-              [ targetLabel (toCardId card) $
-                [addToHand who card, PutCardIntoPlay iid card Nothing windows']
+              [ targetLabel (toCardId card)
+                $ [addToHand who card, PutCardIntoPlay iid card Nothing windows']
               | (_, cards) <- playableCards
               , card <- cards
               ]
           pushBatch batchId $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
         DeferSearchedToTarget searchTarget -> do
           -- N.B. You must handle target duplication (see Mandy Thompson) yourself
-          pushBatch batchId $
-            if null targetCards
+          pushBatch batchId
+            $ if null targetCards
               then chooseOne player [Label "No cards found" [SearchNoneFound iid searchTarget]]
               else SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
         ReturnCards -> pure ()
 
       when (searchType == Searching) $ do
-        pushBatch batchId $
-          CheckWindow [iid] [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
+        pushBatch batchId
+          $ CheckWindow [iid] [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
       pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId | iid == investigatorId -> do
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
@@ -2645,16 +2645,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ CheckTrauma iid
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
   CheckTrauma iid | iid == investigatorId -> do
-    pushWhen (investigatorPhysicalTrauma >= investigatorHealth) $
-      InvestigatorKilled (toSource a) iid
-    pushWhen (investigatorMentalTrauma >= investigatorSanity) $
-      DrivenInsane iid
+    pushWhen (investigatorPhysicalTrauma >= investigatorHealth)
+      $ InvestigatorKilled (toSource a) iid
+    pushWhen (investigatorMentalTrauma >= investigatorSanity)
+      $ DrivenInsane iid
     pure a
   HealTrauma iid physical mental | iid == investigatorId -> do
-    pure $
-      a
-        & (physicalTraumaL %~ max 0 . subtract physical)
-        & (mentalTraumaL %~ max 0 . subtract mental)
+    pure
+      $ a
+      & (physicalTraumaL %~ max 0 . subtract physical)
+      & (mentalTraumaL %~ max 0 . subtract mental)
   GainXP iid _ amount | iid == investigatorId -> pure $ a & xpL +~ amount
   SpendXP iid amount | iid == investigatorId -> do
     pure $ a & xpL %~ max 0 . subtract amount
@@ -2679,16 +2679,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     when addToRemovedFromGame $ push $ RemovedFromGame card
     case preview _PlayerCard card of
       Just pc ->
-        pure $
-          a
-            & discardL
-            %~ filter (/= pc)
-            & handL
-            %~ filter (/= card)
-            & (deckL %~ Deck . filter (/= pc) . unDeck)
-            & foundCardsL
-            . each
-            %~ filter (/= card)
+        pure
+          $ a
+          & discardL
+          %~ filter (/= pc)
+          & handL
+          %~ filter (/= card)
+          & (deckL %~ Deck . filter (/= pc) . unDeck)
+          & foundCardsL
+          . each
+          %~ filter (/= card)
       Nothing ->
         -- encounter cards can only be in hand
         pure $ a & (handL %~ filter (/= card))
@@ -2712,11 +2712,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , mkAfter $ Window.FailInvestigationSkillTest iid currentLocation n
               ]
             _ -> []
-    pushM $
-      checkWindows $
-        mkWhen (Window.FailSkillTest iid n)
-          : mkAfter (Window.FailSkillTest iid n)
-          : windows
+    pushM
+      $ checkWindows
+      $ mkWhen (Window.FailSkillTest iid n)
+      : mkAfter (Window.FailSkillTest iid n)
+      : windows
     pure a
   When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
@@ -2765,10 +2765,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           toForcedAbilities = map (($ windows) . UseAbility iid)
           toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
         player <- getPlayer iid
-        pushAll $
-          toForcedAbilities silent
-            <> [chooseOne player (toUseAbilities normal) | notNull normal]
-            <> [PlayerWindow iid additionalActions isAdditional]
+        pushAll
+          $ toForcedAbilities silent
+          <> [chooseOne player (toUseAbilities normal) | notNull normal]
+          <> [PlayerWindow iid additionalActions isAdditional]
       else do
         modifiers <- getModifiers (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a [#resource]
@@ -2779,8 +2779,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           drawCardsF = if usesAction then drawCardsAction else drawCards
           effectActions = flip mapMaybe additionalActions' $ \case
             AdditionalAction _ _ (EffectAction tooltip effectId) ->
-              Just $
-                EffectActionButton
+              Just
+                $ EffectActionButton
                   (Tooltip tooltip)
                   effectId
                   [UseEffectAction iid effectId windows]
@@ -2794,27 +2794,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         canPlay <- canDo iid #play
         player <- getPlayer iid
 
-        push $
-          AskPlayer $
-            chooseOne player $
-              nub $
-                additionalActions
-                  <> [ ComponentLabel (InvestigatorComponent iid ResourceToken) $
-                      [TakeResources iid 1 (toSource a) usesAction]
-                     | canAffordTakeResources && CannotGainResources `notElem` modifiers && canTakeResource
-                     ]
-                  <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
-                     | canAffordDrawCards
-                     , canDraw
-                     , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
-                     ]
-                  <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing windows usesAction]
-                     | canPlay
-                     , c <- playableCards
-                     ]
-                  <> [EndTurnButton iid [ChooseEndTurn iid]]
-                  <> map ((\f -> f windows []) . AbilityLabel iid) actions
-                  <> effectActions
+        push
+          $ AskPlayer
+          $ chooseOne player
+          $ nub
+          $ additionalActions
+          <> [ ComponentLabel (InvestigatorComponent iid ResourceToken)
+              $ [TakeResources iid 1 (toSource a) usesAction]
+             | canAffordTakeResources && CannotGainResources `notElem` modifiers && canTakeResource
+             ]
+          <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
+             | canAffordDrawCards
+             , canDraw
+             , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
+             ]
+          <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing windows usesAction]
+             | canPlay
+             , c <- playableCards
+             ]
+          <> [EndTurnButton iid [ChooseEndTurn iid]]
+          <> map ((\f -> f windows []) . AbilityLabel iid) actions
+          <> effectActions
     pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
     let windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
@@ -2826,75 +2826,75 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         usesAction = not isAdditional
         choices =
           additionalActions
-            <> [ targetLabel (toCardId c) $
-                [InitiatePlayCard investigatorId c Nothing windows usesAction]
+            <> [ targetLabel (toCardId c)
+                $ [InitiatePlayCard investigatorId c Nothing windows usesAction]
                | c <- playableCards
                ]
             <> map ((\f -> f windows []) . AbilityLabel investigatorId) actions
       player <- getPlayer investigatorId
-      unless (null choices) $
-        push $
-          AskPlayer $
-            chooseOne player choices
+      unless (null choices)
+        $ push
+        $ AskPlayer
+        $ chooseOne player choices
     pure a
   EndInvestigation -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   EndEnemy -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   ScenarioCountIncrementBy CurrentDepth n | n > 0 -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel
+        )
   EndUpkeep -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   EndMythos -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+        )
   EndRound -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerRound
-          )
-        & usedAdditionalActionsL
-        .~ mempty
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerRound
+        )
+      & usedAdditionalActionsL
+      .~ mempty
   EndTurn iid | iid == toId a -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter
-          ( \UsedAbility {..} ->
-              abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
-          )
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
+        )
   UseCardAbility iid (isSource a -> True) 500 _ _ -> do
     otherInvestigators <-
       selectList $ colocatedWith investigatorId <> NotInvestigator (InvestigatorWithId investigatorId)
@@ -2902,12 +2902,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Nothing -> error "No other investigators"
       Just (x :| xs) -> do
         player <- getPlayer iid
-        push $
-          chooseOrRunOne player $
-            [ targetLabel iid' $
-              [ chooseSome1 player "Done giving keys" $
-                  [Label ("Give " <> keyName k <> " key") [PlaceKey (toTarget iid') k] | k <- toList investigatorKeys]
-              ]
+        push
+          $ chooseOrRunOne player
+          $ [ targetLabel iid'
+              $ [ chooseSome1 player "Done giving keys"
+                    $ [Label ("Give " <> keyName k <> " key") [PlaceKey (toTarget iid') k] | k <- toList investigatorKeys]
+                ]
             | iid' <- x : xs
             ]
     pure a
@@ -2927,6 +2927,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
         depth <- getWindowDepth
+        traits' <- sourceTraits $ abilitySource ability
         let
           used =
             UsedAbility
@@ -2935,6 +2936,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , usedAbilityWindows = windows
               , usedTimes = 1
               , usedDepth = depth
+              , usedAbilityTraits = traits'
               }
         pure $ a & usedAbilitiesL %~ (used :)
       Just _ -> do
@@ -2950,10 +2952,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         | otherwise = used
     pure $ a & usedAbilitiesL %~ map updateUsed
   SkillTestEnds _ _ -> do
-    pure $
-      a
-        & usedAbilitiesL
-        %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a
@@ -2962,13 +2964,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & locationL .~ LocationId nil
   _ -> pure a
 
-getFacingDefeat :: (HasGame m) => InvestigatorAttrs -> m Bool
+getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
   canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
   modifiedHealth <- getModifiedHealth a
   modifiedSanity <- getModifiedSanity a
-  pure $
-    or
+  pure
+    $ or
       [ investigatorHealthDamage a + investigatorAssignedHealthDamage >= modifiedHealth
       , and
           [ investigatorSanityDamage a + investigatorAssignedSanityDamage >= modifiedSanity
@@ -2982,9 +2984,9 @@ takeUpkeepResources a = do
   if mayChooseNotToTakeResources
     then do
       player <- getPlayer (toId a)
-      push $
-        chooseOne player $
-          [ Label "Do not take resource(s)" []
+      push
+        $ chooseOne player
+        $ [ Label "Do not take resource(s)" []
           , Label "Take resource(s)" [TakeResources (toId a) 1 (toSource a) False]
           ]
       pure a

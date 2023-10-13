@@ -24,15 +24,19 @@ instance RunMessage DynamiteBlast3 where
       currentLocationId <- fieldJust InvestigatorLocation iid
       connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId currentLocationId
       canDealDamage <- withoutModifier iid CannotDealDamage
-      choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
+      choices <- forMaybeM (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- if canDealDamage then selectList (enemyAt lid) else pure []
         investigatorIds <- selectList $ investigatorAt lid
-        pure
-          ( lid
-          , uiEffect eid lid Explosion
-              : map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
-                <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
-          )
+        if null enemyIds && null investigatorIds
+          then pure Nothing
+          else
+            pure
+              $ Just
+                ( lid
+                , uiEffect eid lid Explosion
+                    : map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
+                      <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
+                )
       let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices
       player <- getPlayer iid
       pushAll [chooseOne player availableChoices]

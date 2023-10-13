@@ -108,6 +108,7 @@ allPlayerTreacheryCards =
       , amnesia
       , angeredSpirits
       , atychiphobia
+      , bloodlust
       , boughtInBlood
       , callOfTheUnknown
       , calledByTheMists
@@ -1675,6 +1676,13 @@ detachedFromReality :: CardDef
 detachedFromReality =
   (weakness "06014" "Detached from Reality")
     { cdCardTraits = setFromList [Madness]
+    }
+
+bloodlust :: CardDef
+bloodlust =
+  (weakness "06019" "Bloodlust")
+    { cdCardTraits = setFromList [Madness]
+    , cdKeywords = singleton (Keyword.Bonded "06018")
     }
 
 theHarbinger :: CardDef

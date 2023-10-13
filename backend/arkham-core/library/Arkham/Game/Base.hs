@@ -46,6 +46,7 @@ data Game = Game
     gameMode :: GameMode
   , -- Entities
     gameEntities :: Entities
+  , gameActionRemovedEntities :: Entities -- entities removed during the current action
   , gamePlayers :: [PlayerId]
   , gameOutOfPlayEntities :: Map OutOfPlayZone Entities
   , gameModifiers :: Map Target [Modifier]

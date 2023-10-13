@@ -11,6 +11,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ChaosToken qualified as Token
 import Arkham.ClassSymbol
+import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
 import Arkham.EncounterSet hiding (Dunwich)
 import Arkham.GameValue
@@ -521,6 +522,7 @@ allPlayerAssetCards =
       , theFool03
       , theGoldPocketWatch4
       , theHierophantV3
+      , theHungeringBlade1
       , theKingInYellow
       , theMoonXiii1
       , theNecronomicon
@@ -3565,6 +3567,17 @@ patricesViolin =
     , cdUnique = True
     , cdSlots = [#hand]
     , cdSkills = [#willpower, #agility, #wild]
+    }
+
+theHungeringBlade1 :: CardDef
+theHungeringBlade1 =
+  (asset "06018" ("The Hungering Blade" <:> "Calamitous Blade of Celephaïs") 3 Guardian)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon, Melee, Relic, Cursed]
+    , cdSlots = [#hand]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdAdditionalCost = Just (ShuffleBondedCost 3 "06019")
+    , cdLevel = 1
     }
 
 solemnVow :: CardDef

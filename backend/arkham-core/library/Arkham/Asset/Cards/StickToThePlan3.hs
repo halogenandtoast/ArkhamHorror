@@ -74,21 +74,12 @@ instance RunMessage StickToThePlan3 where
           | card <- tacticsAndSupplies
           ]
       pure a
-    InitiatePlayCard iid card _ _ _
-      | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
-          let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
-          pushAll
-            [ CreateWindowModifierEffect
-                EffectTurnWindow
-                ( EffectModifiers
-                    $ toModifiers
-                      attrs
-                      [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
-                )
-                (toSource attrs)
-                (CardIdTarget $ toCardId card)
-            , addToHand iid card
-            , msg
-            ]
-          pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining
+    InitiatePlayCard iid card _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
+      let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
+      pushAll
+        [ costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs)
+        , addToHand iid card
+        , msg
+        ]
+      pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining
     _ -> StickToThePlan3 <$> runMessage msg attrs

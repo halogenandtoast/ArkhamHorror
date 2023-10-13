@@ -716,6 +716,7 @@ library
       Arkham.Asset.Cards.TheFool03
       Arkham.Asset.Cards.TheGoldPocketWatch4
       Arkham.Asset.Cards.TheHierophantV3
+      Arkham.Asset.Cards.TheHungeringBlade1
       Arkham.Asset.Cards.TheKingInYellow
       Arkham.Asset.Cards.TheMoonXIII1
       Arkham.Asset.Cards.TheNecronomicon
@@ -2179,6 +2180,7 @@ library
       Arkham.Treachery.Cards.BetweenWorlds
       Arkham.Treachery.Cards.BeyondTheVeil
       Arkham.Treachery.Cards.BlackStarsRise
+      Arkham.Treachery.Cards.Bloodlust
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BrokenRails
       Arkham.Treachery.Cards.BurdensOfThePast

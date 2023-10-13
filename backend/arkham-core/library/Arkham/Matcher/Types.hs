@@ -36,6 +36,7 @@ import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
+import Arkham.Token
 import Arkham.Trait
 import Arkham.Zone
 import Control.Lens.Plated (Plated)
@@ -163,6 +164,7 @@ data AssetMatcher
   | AssetWithUseCount UseType Int
   | AssetWithDoom ValueMatcher
   | AssetWithClues ValueMatcher
+  | AssetWithTokens ValueMatcher Token
   | AssetInSlot SlotType
   | AssetInTwoHandSlots
   | AssetIs CardCode
@@ -460,6 +462,7 @@ data TreacheryMatcher
   | TreacheryInHandOf InvestigatorMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher
   | TreacheryIs CardCode
+  | TreacheryIsAttachedTo Target
   | TreacheryWithCardId CardId
   | TreacheryAt LocationMatcher
   | TreacheryOnEnemy EnemyMatcher
@@ -795,6 +798,7 @@ data SkillTestMatcher
 data SourceMatcher
   = SourceWithTrait Trait
   | SourceIsEnemyAttack EnemyMatcher
+  | SourceIsAsset AssetMatcher
   | EncounterCardSource
   | SourceMatchesAny [SourceMatcher]
   | SourceOwnedBy InvestigatorMatcher

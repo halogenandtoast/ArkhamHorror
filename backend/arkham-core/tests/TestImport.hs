@@ -730,6 +730,7 @@ newGame investigator = do
         , gameInHandEntities = mempty
         , gameInDiscardEntities = mempty
         , gameOutOfPlayEntities = mempty
+        , gameActionRemovedEntities = mempty
         , gameInSearchEntities = defaultEntities
         , gameGameState = IsActive
         , gameFoundCards = mempty

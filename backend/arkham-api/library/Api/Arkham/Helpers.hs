@@ -75,6 +75,9 @@ data GameApp = GameApp
   , appLogger :: ClientMessage -> IO ()
   }
 
+instance HasDebugLevel GameAppT where
+  getDebugLevel = liftIO getDebugLevel
+
 instance HasGame GameAppT where
   getGame = readIORef =<< asks appGame
 

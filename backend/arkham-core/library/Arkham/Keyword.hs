@@ -5,6 +5,7 @@ module Arkham.Keyword where
 import Arkham.Prelude
 
 import Arkham.CampaignLogKey
+import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.Matcher.Types
 import Data.Aeson.TH
 
@@ -24,6 +25,7 @@ data Keyword
   | Permanent
   | Researched CampaignLogKey
   | Seal ChaosTokenMatcher
+  | Bonded CardCode
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

@@ -347,6 +347,8 @@ allTreacheries =
       SomeTreacheryCard rookieMistake
     , SomeTreacheryCard shockingDiscovery
     , SomeTreacheryCard detachedFromReality
+    , -- guardian
+      SomeTreacheryCard bloodlust
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

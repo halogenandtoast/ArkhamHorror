@@ -51,7 +51,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..), mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 
 activeCostActions :: ActiveCost -> [Action]
@@ -160,12 +160,11 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
       -- we also skip additional cost checks and abilities of this type
       -- will need to trigger the appropriate check
       pushAll
-        ( PayCost activeCostId iid True cost
-            : [TakenAction iid action | action <- maybeToList mAction]
-              <> [ CheckAttackOfOpportunity iid False
-                 | not abilityDoesNotProvokeAttacksOfOpportunity
-                 ]
-        )
+        $ PayCost activeCostId iid True cost
+        : [TakenAction iid action | action <- maybeToList mAction]
+          <> [ CheckAttackOfOpportunity iid False
+             | not abilityDoesNotProvokeAttacksOfOpportunity
+             ]
     ActionAbilityWithSkill mAction _ cost ->
       if mAction `notElem` map Just [#fight, #evade, #resign, #parley]
         then
@@ -181,22 +180,18 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
             : [TakenAction iid action | action <- maybeToList mAction]
     ActionAbility mAction cost -> do
       let action = fromMaybe Action.Ability $ mAction
-      beforeWindowMsg <-
-        checkWindows
-          [mkWindow Timing.When (Window.PerformAction iid action)]
-      if action
-        `notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
+      beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action]
+      if action `notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
         then
           pushAll
-            ( [ BeginAction
+            $ [ BeginAction
               , beforeWindowMsg
               , PayCost activeCostId iid False cost
               , TakenAction iid action
               ]
-                <> [ CheckAttackOfOpportunity iid False
-                   | not abilityDoesNotProvokeAttacksOfOpportunity
-                   ]
-            )
+            <> [ CheckAttackOfOpportunity iid False
+               | not abilityDoesNotProvokeAttacksOfOpportunity
+               ]
         else
           pushAll
             $ [ BeginAction
@@ -206,8 +201,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
               ]
 
 nonAttackOfOpportunityActions :: [Action]
-nonAttackOfOpportunityActions =
-  [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
+nonAttackOfOpportunityActions = [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
 
 instance RunMessage ActiveCost where
   runMessage msg c = case msg of
@@ -215,8 +209,7 @@ instance RunMessage ActiveCost where
       let iid = activeCostInvestigator c
       case activeCostTarget c of
         ForCost _ -> do
-          pushAll
-            [PayCost acId iid False (activeCostCosts c), PayCostFinished acId]
+          pushAll [PayCost acId iid False (activeCostCosts c), PayCostFinished acId]
           pure c
         ForCard isPlayAction card -> do
           modifiers' <- getModifiers (InvestigatorTarget iid)
@@ -228,9 +221,7 @@ instance RunMessage ActiveCost where
             actions = case cdActions cardDef of
               [] -> [Action.Play | isPlayAction == IsPlayAction]
               as -> as
-          beforeWindowMsg <-
-            checkWindows
-              $ map (mkWindow Timing.When . Window.PerformAction iid) actions
+          beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
           pushAll
             $ [ BeginAction
               , beforeWindowMsg
@@ -275,6 +266,16 @@ instance RunMessage ActiveCost where
           as -> as
       player <- getPlayer iid
       case cost of
+        ShuffleIntoDeckCost target -> do
+          push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) target
+          pure c
+        ShuffleBondedCost n cCode -> do
+          case lookupCardDef cCode of
+            Nothing -> error $ "missing card def: " <> show cCode
+            Just def -> do
+              cards <- replicateM n $ genCard def
+              push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
+          pure c
         ResolveEachHauntedAbility lid -> do
           hauntedAbilities <-
             selectList
@@ -995,6 +996,7 @@ instance RunMessage ActiveCost where
         ForCost card ->
           pushAll
             [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
+      push PaidAllCosts
       pure c
     _ -> pure c
 

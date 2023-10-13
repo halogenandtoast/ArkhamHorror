@@ -542,7 +542,8 @@ allAssets =
     , SomeAssetCard gateBox
     , SomeAssetCard patricesViolin
     , --- guardian [tde]
-      SomeAssetCard solemnVow
+      SomeAssetCard theHungeringBlade1
+    , SomeAssetCard solemnVow
     , -- The Search for Kadath
       --- mystic [sfk]
       SomeAssetCard scrollOfProphecies

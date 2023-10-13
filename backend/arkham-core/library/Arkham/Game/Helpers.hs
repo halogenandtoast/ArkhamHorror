@@ -413,10 +413,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
             Cosmos -> pure True
         go (abilityType ability)
       PlayerLimit (PerSearch trait) n -> do
-        traitMatchingUsedAbilities <-
-          filterM
-            (fmap (elem trait) . sourceTraits . abilitySource . usedAbility)
-            usedAbilities
+        let traitMatchingUsedAbilities = filter (elem trait . usedAbilityTraits) usedAbilities
         let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
         pure $ usedCount < n
       PlayerLimit _ n ->

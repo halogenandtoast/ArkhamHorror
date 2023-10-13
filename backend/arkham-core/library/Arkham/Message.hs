@@ -546,6 +546,7 @@ data Message
   | HealHorrorDirectly Target Source Int
   | HuntersMove
   | HunterMove EnemyId
+  | InDiscard InvestigatorId Message -- Nothing uses this yet
   | InSearch Message
   | InHand InvestigatorId Message
   | InOutOfPlay Message

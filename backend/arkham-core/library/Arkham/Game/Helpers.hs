@@ -1046,10 +1046,10 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     canAffordAdditionalCosts <-
       allM
         (getCanAffordCost iid (CardSource c) Nothing windows')
-        ( [ActionCost 1 | not inFastWindow && costStatus /= PaidCost && source /= GameSource]
-            <> additionalCosts
-            <> sealedChaosTokenCost
-        )
+        $ [ActionCost 1 | not inFastWindow && costStatus /= PaidCost && source /= GameSource]
+        <> additionalCosts
+        <> sealedChaosTokenCost
+        <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
 
     passesSlots <-
       if null (cdSlots pcDef)

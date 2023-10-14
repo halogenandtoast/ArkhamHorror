@@ -25,14 +25,15 @@ bloodlust = treachery Bloodlust Cards.bloodlust
 
 instance HasAbilities Bloodlust where
   getAbilities (Bloodlust attrs) =
-    [ restrictedAbility
-        attrs
-        1
-        ( DuringSkillTest
-            $ YourSkillTest
-            $ WhileAttackingAnEnemy AnyEnemy
-            <> SkillTestSourceMatches (SourceIsAsset $ assetIs Assets.theHungeringBlade1 <> AssetControlledBy You)
-        )
+    [ limitedAbility (PerCopyLimit Cards.bloodlust PerTestOrAbility 1)
+        $ restrictedAbility
+          attrs
+          1
+          ( DuringSkillTest
+              $ YourSkillTest
+              $ WhileAttackingAnEnemy AnyEnemy
+              <> SkillTestSourceMatches (SourceIsAsset $ assetIs Assets.theHungeringBlade1 <> AssetControlledBy You)
+          )
         $ FastAbility (ShuffleIntoDeckCost $ toTarget attrs)
     ]
 

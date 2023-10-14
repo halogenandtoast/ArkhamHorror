@@ -49,6 +49,8 @@ import Arkham.Phase
 import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
+import Arkham.Token (Token)
+import Arkham.Token qualified as Token
 import Arkham.Treachery.Types
 import Arkham.Window (defaultWindows)
 import Data.Text qualified as T
@@ -249,6 +251,9 @@ instance HasField "abilities" Enemy (TestAppT [Ability]) where
 
 instance HasField "location" Enemy (TestAppT (Maybe LocationId)) where
   getField = field EnemyLocation . toEntityId
+
+instance HasField "countTokens" AssetId (Token -> TestAppT Int) where
+  getField aid tType = fieldMap AssetTokens (Token.countTokens tType) aid
 
 instance HasField "abilities" AssetId (TestAppT [Ability]) where
   getField = field AssetAbilities

@@ -423,10 +423,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
           $ find
             ((== ability) . usedAbility)
             usedAbilities
-      PerCopyLimit cardDef _ n -> do
+      MaxPer cardDef _ n -> do
         let
           abilityCardDef = \case
-            PerCopyLimit cDef _ _ -> Just cDef
+            MaxPer cDef _ _ -> Just cDef
             _ -> Nothing
         pure
           . (< n)

@@ -31,7 +31,7 @@ instance HasModifiersFor ChildrenOfValusia where
 
 instance HasAbilities ChildrenOfValusia where
   getAbilities (ChildrenOfValusia a) =
-    [ limitedAbility (PerCopyLimit Cards.childrenOfValusia PerRound 1)
+    [ limitedAbility (MaxPer Cards.childrenOfValusia PerRound 1)
         $ mkAbility a 1
         $ ForcedAbility
         $ RoundEnds Timing.When

@@ -46,7 +46,7 @@ instance HasModifiersFor DeepDark where
 
 instance HasAbilities DeepDark where
   getAbilities (DeepDark (a `With` _)) =
-    [ limitedAbility (PerCopyLimit Cards.deepDark PerRound 1)
+    [ limitedAbility (MaxPer Cards.deepDark PerRound 1)
         $ mkAbility a 1
         $ ForcedAbility
         $ RoundEnds Timing.When

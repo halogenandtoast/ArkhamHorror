@@ -27,7 +27,7 @@ instance HasAbilities Basilisk where
   getAbilities (Basilisk a) =
     withBaseAbilities
       a
-      [ limitedAbility (PerCopyLimit Cards.basilisk PerRound 1)
+      [ limitedAbility (MaxPer Cards.basilisk PerRound 1)
           $ mkAbility a 1
           $ ForcedAbility
           $ PlacedCounterOnLocation

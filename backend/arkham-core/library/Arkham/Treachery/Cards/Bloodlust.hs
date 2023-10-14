@@ -25,7 +25,7 @@ bloodlust = treachery Bloodlust Cards.bloodlust
 
 instance HasAbilities Bloodlust where
   getAbilities (Bloodlust attrs) =
-    [ limitedAbility (PerCopyLimit Cards.bloodlust PerTestOrAbility 1)
+    [ limitedAbility (MaxPer Cards.bloodlust PerTestOrAbility 1)
         $ restrictedAbility
           attrs
           1

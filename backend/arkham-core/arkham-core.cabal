@@ -608,6 +608,7 @@ library
       Arkham.Asset.Cards.Pantalone
       Arkham.Asset.Cards.Pathfinder1
       Arkham.Asset.Cards.PatricesViolin
+      Arkham.Asset.Cards.PendantOfTheQueen
       Arkham.Asset.Cards.PennyWhite
       Arkham.Asset.Cards.PeterClover
       Arkham.Asset.Cards.PeterSylvestre
@@ -659,6 +660,7 @@ library
       Arkham.Asset.Cards.ScryingMirror
       Arkham.Asset.Cards.SealOfTheSeventhSign5
       Arkham.Asset.Cards.SebastienMoreau
+      Arkham.Asset.Cards.SegmentOfOnyx1
       Arkham.Asset.Cards.ShardsOfTheVoid3
       Arkham.Asset.Cards.Sharpshooter3
       Arkham.Asset.Cards.Shotgun4

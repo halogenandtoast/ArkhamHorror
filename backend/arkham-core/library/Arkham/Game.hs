@@ -4418,6 +4418,18 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . enemiesL %~ deleteMap enemyId)
       & (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL . at enemyId ?~ enemy)
+  PlaceInBonded _ (toCardId -> cardId) -> do
+    assets <- selectList $ AssetWithCardId cardId
+    events <- selectList $ EventWithCardId cardId
+    skills <- selectList $ SkillWithCardId cardId
+    enemies <- selectList $ EnemyWithCardId cardId
+    treacheries <- selectList $ TreacheryWithCardId cardId
+    pushAll $ map (RemovedFromPlay . AssetSource) assets
+    pushAll $ map (RemovedFromPlay . EventSource) events
+    pushAll $ map (RemovedFromPlay . SkillSource) skills
+    pushAll $ map (RemovedFromPlay . EnemySource) enemies
+    pushAll $ map (RemovedFromPlay . TreacherySource) treacheries
+    pure g
   RemovedFromPlay (AssetSource assetId) -> do
     runMessage (RemoveAsset assetId) g
   ReturnToHand iid (EventTarget eventId) -> do

@@ -134,24 +134,22 @@ instance RunMessage AssetAttrs where
       when shouldDiscard $ push $ Discard GameSource (AssetTarget assetId)
       pure a
     AddUses aid useType' n | aid == assetId -> case assetUses of
-      Uses useType'' m
-        | useType' == useType'' ->
-            pure $ a & usesL .~ Uses useType' (n + m)
-      UsesWithLimit useType'' m l
-        | useType' == useType'' ->
-            pure $ a & usesL .~ UsesWithLimit useType' (min (n + m) l) l
+      Uses useType'' m | useType' == useType'' -> do
+        pure $ a & usesL .~ Uses useType' (n + m)
+      UsesWithLimit useType'' m l | useType' == useType'' -> do
+        pure $ a & usesL .~ UsesWithLimit useType' (min (n + m) l) l
       _ ->
         error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
     SpendUses target useType' n | isTarget a target -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do
         let remainingUses = max 0 (m - n)
         when (remainingUses == 0)
-          $ for_ assetWhenNoUses
-          $ \case
+          $ for_ assetWhenNoUses \case
             DiscardWhenNoUses -> push $ Discard GameSource $ toTarget a
             ReturnToHandWhenNoUses ->
               for_ assetController $ \iid ->
                 push $ ReturnToHand iid $ toTarget a
+            NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
         pure $ a & usesL .~ Uses useType' remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of

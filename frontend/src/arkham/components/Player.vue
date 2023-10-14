@@ -173,7 +173,6 @@ const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
 const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
 
-
 const slotImg = (slot: Arkham.Slot) => {
   switch (slot.tag) {
     case 'HandSlot':

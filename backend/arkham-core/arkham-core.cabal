@@ -2524,6 +2524,7 @@ test-suite spec
       Arkham.Asset.Cards.MedicalTextsSpec
       Arkham.Asset.Cards.OldBookOfLoreSpec
       Arkham.Asset.Cards.PatricesViolinSpec
+      Arkham.Asset.Cards.PendantOfTheQueenSpec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
@@ -2534,6 +2535,7 @@ test-suite spec
       Arkham.Asset.Cards.Rolands38SpecialSpec
       Arkham.Asset.Cards.ScavengingSpec
       Arkham.Asset.Cards.ScryingSpec
+      Arkham.Asset.Cards.SegmentOfOnyx1Spec
       Arkham.Asset.Cards.Shotgun4Spec
       Arkham.Asset.Cards.ShrivellingSpec
       Arkham.Asset.Cards.SolemnVowSpec

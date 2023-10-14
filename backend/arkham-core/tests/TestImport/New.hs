@@ -98,6 +98,13 @@ useReaction = chooseOptionMatching "use reaction ability" \case
     _ -> False
   _ -> False
 
+useReactionOf :: (HasCallStack, Sourceable source) => source -> TestAppT ()
+useReactionOf (toSource -> source) = chooseOptionMatching "use reaction ability" \case
+  AbilityLabel {ability} -> case abilityType ability of
+    ReactionAbility {} -> abilitySource ability == source
+    _ -> False
+  _ -> False
+
 -- N.B. This won't work for multiple assets for the same card type
 useFastActionOf :: (HasCallStack, Sourceable source) => source -> Int -> TestAppT ()
 useFastActionOf (toSource -> source) idx = chooseOptionMatching "use fast action" \case

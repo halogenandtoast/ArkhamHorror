@@ -45,6 +45,14 @@ export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionTyp
 export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
   { kind: additionalActionTypeDecoder }, 'AdditionalAction')
 
+interface InvestigatorSearch {
+  searchingFoundCards: Record<string, Card[]>;
+}
+
+export const investigatorSearchDecoder = JsonDecoder.object<InvestigatorSearch>({
+  searchingFoundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
+}, 'InvestigatorSearch');
+
 export interface Investigator {
   deckSize?: number;
   connectedLocations: string[];
@@ -163,7 +171,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   resigned: JsonDecoder.boolean,
   additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction').map((arr) => arr.map((action) => action.kind)),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
-  foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
+  foundCards: JsonDecoder.nullable(investigatorSearchDecoder).map((search) => search?.searchingFoundCards || {}),
   xp: JsonDecoder.number,
   supplies: JsonDecoder.array<string>(JsonDecoder.string, 'supplies'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
@@ -172,4 +180,4 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   isYithian: JsonDecoder.boolean,
   slots: slotsDecoder,
-}, 'Investigator');
+}, 'Investigator', { foundCards: 'search' });

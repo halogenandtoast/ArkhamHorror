@@ -2553,6 +2553,7 @@ test-suite spec
       Arkham.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Enemy.Cards.TonysQuarrySpec
       Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec
+      Arkham.Event.Cards.AstoundingRevelationSpec
       Arkham.Event.Cards.BackstabSpec
       Arkham.Event.Cards.BaitAndSwitchSpec
       Arkham.Event.Cards.Barricade3Spec

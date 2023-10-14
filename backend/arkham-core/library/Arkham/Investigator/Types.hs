@@ -35,6 +35,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
+import Control.Lens (_Just)
 import Data.Text qualified as T
 import Data.Typeable
 import GHC.Records
@@ -141,7 +142,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorStartsWith :: [CardDef]
   , investigatorStartsWithInHand :: [CardDef]
   , investigatorCardsUnderneath :: [Card]
-  , investigatorFoundCards :: Map Zone [Card]
+  , investigatorSearch :: Maybe InvestigatorSearch
   , investigatorUsedAbilities :: [UsedAbility]
   , investigatorUsedAdditionalActions :: [AdditionalAction]
   , investigatorMulligansTaken :: Int
@@ -158,6 +159,19 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorDiscarding :: Maybe (HandDiscard Message)
   }
   deriving stock (Show, Eq, Generic)
+
+data InvestigatorSearch = InvestigatorSearch
+  { searchingType :: SearchType
+  , searchingInvestigator :: InvestigatorId
+  , searchingSource :: Source
+  , searchingTarget :: Target
+  , searchingZones :: [(Zone, ZoneReturnStrategy)]
+  , searchingMatcher :: CardMatcher
+  , searchingFoundCardsStrategy :: FoundCardsStrategy
+  , searchingFoundCards :: Map Zone [Card]
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 investigatorDoom :: InvestigatorAttrs -> Int
 investigatorDoom = countTokens Doom . investigatorTokens
@@ -327,3 +341,10 @@ toInvestigator :: SomeInvestigatorCard -> PlayerId -> Investigator
 toInvestigator (SomeInvestigatorCard f) = Investigator . cbCardBuilder f nullCardId
 
 makeLensesWith suffixedFields ''InvestigatorAttrs
+
+searchingFoundCardsL :: Lens' InvestigatorSearch (Map Zone [Card])
+searchingFoundCardsL =
+  lens searchingFoundCards $ \m x -> m {searchingFoundCards = x}
+
+foundCardsL :: Traversal' InvestigatorAttrs (Map Zone [Card])
+foundCardsL = searchL . _Just . searchingFoundCardsL

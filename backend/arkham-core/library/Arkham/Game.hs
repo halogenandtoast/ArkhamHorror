@@ -4823,9 +4823,8 @@ runGameMessage msg g = case msg of
           $ (g ^. focusedCardsL)
           <> ( concat
                 . Map.elems
-                . investigatorFoundCards
-                $ toAttrs
-                  investigator'
+                . view Investigator.foundCardsL
+                $ toAttrs investigator'
              )
     case card of
       PlayerCard pc -> do
@@ -5780,7 +5779,7 @@ preloadEntities g = do
                   handEffectCards
              in
               insertMap (toId investigator') handEntities entities
-    foundOfElems = concat . Map.elems . investigatorFoundCards . toAttrs
+    foundOfElems = concat . Map.elems . view Investigator.foundCardsL . toAttrs
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef)
         $ (concat . Map.elems $ gameFoundCards g)

@@ -2423,8 +2423,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       card =
         fromJustNote "missing card"
-          $ find ((== cardId) . toCardId) (findWithDefault [] cardSource investigatorFoundCards)
-      foundCards = investigatorFoundCards & ix cardSource %~ filter (/= card)
+          $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
+      foundCards = a ^. foundCardsL & ix cardSource %~ filter (/= card)
     push $ addToHand iid' card
     pure $ a & foundCardsL .~ foundCards
   CommitCard _ card -> do
@@ -2433,17 +2433,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       card =
         fromJustNote "missing card"
-          $ find ((== cardId) . toCardId) (concat $ toList investigatorFoundCards)
+          $ find ((== cardId) . toCardId) (concat $ toList $ a ^. foundCardsL)
           >>= toPlayerCard
-      foundCards = Map.map (filter ((/= cardId) . toCardId)) investigatorFoundCards
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
     push $ PutCardOnTopOfDeck iid' (Deck.InvestigatorDeck iid') (toCard card)
     pure $ a & foundCardsL .~ foundCards
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid') | iid' == investigatorId -> do
-    let cards = findWithDefault [] Zone.FromDeck investigatorFoundCards
+    let cards = findWithDefault [] Zone.FromDeck $ a ^. foundCardsL
     push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid') cards
     pure $ a & foundCardsL %~ deleteMap Zone.FromDeck
   PutAllFocusedIntoDiscard _ (InvestigatorTarget iid') | iid' == investigatorId -> do
-    let cards = onlyPlayerCards $ findWithDefault [] Zone.FromDiscard investigatorFoundCards
+    let cards = onlyPlayerCards $ findWithDefault [] Zone.FromDiscard $ a ^. foundCardsL
     pure $ a & foundCardsL %~ deleteMap Zone.FromDiscard & discardL <>~ cards
   EndSearch iid _ (InvestigatorTarget iid') cardSources | iid == investigatorId -> do
     push (SearchEnded iid)
@@ -2463,7 +2463,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 EncounterCard c -> targetLabel (toCardId c) [AddToEncounterDiscard c]
                 VengeanceCard _ -> error "not possible"
             )
-            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
+            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       PutBackInAnyOrder -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
         push
@@ -2471,13 +2471,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ mapTargetLabelWith
             toCardId
             (\c -> [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)])
-            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
+            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
-        pushWhen (notNull investigatorFoundCards)
+        pushWhen (notNull $ a ^. foundCardsL)
           $ ShuffleCardsIntoDeck
             (Deck.InvestigatorDeck iid)
-            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
+            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       PutBack -> when (foundKey cardSource == Zone.FromDeck) (error "Can not take deck")
     pure
       $ a
@@ -2498,15 +2498,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               Just (PerSearch _) -> False
               _ -> True
         )
-  SearchEnded iid | iid == investigatorId -> pure $ a & foundCardsL .~ mempty
+  SearchEnded iid | iid == investigatorId -> pure $ a & searchL .~ Nothing
   CancelSearch iid | iid == investigatorId -> do
-    let zoneCards = mapToList investigatorFoundCards
+    let zoneCards = mapToList (a ^. foundCardsL)
     updates <- fmap (appEndo . mconcat) $ for zoneCards $ \(zone, cards) -> case zone of
       Zone.FromDeck -> do
         deck' <- Deck <$> shuffleM (unDeck investigatorDeck <> onlyPlayerCards cards)
         pure $ Endo $ deckL .~ deck'
       _ -> error "Unhandled zone, this was added for Shocking Discovery only which is FromDeck"
-    pure $ a & foundCardsL .~ mempty & updates
+    pure $ a & searchL .~ Nothing & updates
   Search searchType iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
     if searchType == Searching
       then
@@ -2552,107 +2552,120 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           filter
             ((`notElem` findWithDefault [] Zone.FromDeck foundCards) . PlayerCard)
             (unDeck investigatorDeck)
-        targetCards = Map.map (filter (`cardMatch` cardMatcher)) foundCards
       pushBatch batchId $ EndSearch iid source target cardSources
-
-      let
-        applyMod (AdditionalTargets n) = over biplate (+ n)
-        applyMod _ = id
-        foundStrategy' = foldr applyMod foundStrategy mods
-
-      player <- getPlayer iid
-      case foundStrategy' of
-        DrawOrCommitFound who n -> do
-          committable <- filterM (getIsCommittable who) $ concatMap snd $ mapToList targetCards
-          let
-            choices =
-              [ targetLabel
-                (toCardId card)
-                [ if card `elem` committable
-                    then
-                      chooseOne
-                        player
-                        [Label "Add to hand" [addFoundToHand], Label "Commit to skill test" [CommitCard who card]]
-                    else addFoundToHand
-                ]
-              | (zone, cards) <- mapToList targetCards
-              , card <- cards
-              , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
-              ]
-          pushBatch batchId
-            $ if null choices
-              then chooseOne player [Label "No cards found" []]
-              else chooseN player (min n (length choices)) choices
-        RemoveFoundFromGame _ n -> do
-          let
-            choices =
-              [ targetLabel (toCardId card) [RemovePlayerCardFromGame False card]
-              | (_, cards) <- mapToList targetCards
-              , card <- cards
-              ]
-          pushBatch batchId
-            $ if null choices
-              then chooseOne player [Label "No cards found" []]
-              else chooseN player (min n (length choices)) choices
-        DrawFound who n -> do
-          let
-            choices =
-              [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
-              | (zone, cards) <- mapToList targetCards
-              , card <- cards
-              ]
-          pushBatch batchId
-            $ if null choices
-              then chooseOne player [Label "No cards found" []]
-              else chooseN player (min n (length choices)) choices
-        DrawFoundUpTo who n -> do
-          let
-            choices =
-              [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
-              | (zone, cards) <- mapToList targetCards
-              , card <- cards
-              ]
-          pushBatch batchId
-            $ if null choices
-              then chooseOne player [Label "No cards found" []]
-              else chooseUpToN player n "Do not draw more cards" choices
-        PlayFound who n -> do
-          let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
-          playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
-            cards' <- filterM (getIsPlayable who source UnpaidCost windows') cards
-            pure (zone, cards')
-          let
-            choices =
-              [ targetLabel (toCardId card) [addToHand who card, PayCardCost iid card windows']
-              | (_, cards) <- playableCards
-              , card <- cards
-              ]
-          pushBatch batchId $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
-        PlayFoundNoCost who n -> do
-          let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
-          playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
-            cards' <- filterM (getIsPlayable who source Cost.PaidCost windows') cards
-            pure (zone, cards')
-          let
-            choices =
-              [ targetLabel (toCardId card)
-                $ [addToHand who card, PutCardIntoPlay iid card Nothing windows']
-              | (_, cards) <- playableCards
-              , card <- cards
-              ]
-          pushBatch batchId $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
-        DeferSearchedToTarget searchTarget -> do
-          -- N.B. You must handle target duplication (see Mandy Thompson) yourself
-          pushBatch batchId
-            $ if null targetCards
-              then chooseOne player [Label "No cards found" [SearchNoneFound iid searchTarget]]
-              else SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
-        ReturnCards -> pure ()
+      pushBatch batchId $ ResolveSearch iid
 
       when (searchType == Searching) $ do
         pushBatch batchId
           $ CheckWindow [iid] [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
-      pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
+
+      pure
+        $ a
+        & searchL
+        ?~ InvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards
+        & deckL
+        .~ Deck deck
+  ResolveSearch iid | iid == investigatorId -> do
+    case investigatorSearch of
+      Just
+        (InvestigatorSearch _ _ source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards) -> do
+          mods <- getModifiers iid
+          let
+            applyMod (AdditionalTargets n) = over biplate (+ n)
+            applyMod _ = id
+            foundStrategy' = foldr applyMod foundStrategy mods
+            targetCards = Map.map (filter (`cardMatch` cardMatcher)) foundCards
+
+          player <- getPlayer iid
+          case foundStrategy' of
+            DrawOrCommitFound who n -> do
+              committable <- filterM (getIsCommittable who) $ concatMap snd $ mapToList targetCards
+              let
+                choices =
+                  [ targetLabel
+                    (toCardId card)
+                    [ if card `elem` committable
+                        then
+                          chooseOne
+                            player
+                            [Label "Add to hand" [addFoundToHand], Label "Commit to skill test" [CommitCard who card]]
+                        else addFoundToHand
+                    ]
+                  | (zone, cards) <- mapToList targetCards
+                  , card <- cards
+                  , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseN player (min n (length choices)) choices
+            RemoveFoundFromGame _ n -> do
+              let
+                choices =
+                  [ targetLabel (toCardId card) [RemovePlayerCardFromGame False card]
+                  | (_, cards) <- mapToList targetCards
+                  , card <- cards
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseN player (min n (length choices)) choices
+            DrawFound who n -> do
+              let
+                choices =
+                  [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                  | (zone, cards) <- mapToList targetCards
+                  , card <- cards
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseN player (min n (length choices)) choices
+            DrawFoundUpTo who n -> do
+              let
+                choices =
+                  [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                  | (zone, cards) <- mapToList targetCards
+                  , card <- cards
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseUpToN player n "Do not draw more cards" choices
+            PlayFound who n -> do
+              let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
+              playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
+                cards' <- filterM (getIsPlayable who source UnpaidCost windows') cards
+                pure (zone, cards')
+              let
+                choices =
+                  [ targetLabel (toCardId card) [addToHand who card, PayCardCost iid card windows']
+                  | (_, cards) <- playableCards
+                  , card <- cards
+                  ]
+              push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
+            PlayFoundNoCost who n -> do
+              let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
+              playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
+                cards' <- filterM (getIsPlayable who source Cost.PaidCost windows') cards
+                pure (zone, cards')
+              let
+                choices =
+                  [ targetLabel (toCardId card)
+                    $ [addToHand who card, PutCardIntoPlay iid card Nothing windows']
+                  | (_, cards) <- playableCards
+                  , card <- cards
+                  ]
+              push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
+            DeferSearchedToTarget searchTarget -> do
+              -- N.B. You must handle target duplication (see Mandy Thompson) yourself
+              push
+                $ if null targetCards
+                  then chooseOne player [Label "No cards found" [SearchNoneFound iid searchTarget]]
+                  else SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+            ReturnCards -> pure ()
+      _ -> pure ()
+    pure a
   RemoveFromDiscard iid cardId | iid == investigatorId -> do
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
   PlaceInBonded iid card | iid == investigatorId -> do

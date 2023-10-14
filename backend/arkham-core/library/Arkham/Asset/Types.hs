@@ -205,7 +205,7 @@ instance FromJSON (SomeField Asset) where
     "AssetCardsUnderneath" -> pure $ SomeField AssetCardsUnderneath
     _ -> error "no such field"
 
-data WhenNoUses = DiscardWhenNoUses | ReturnToHandWhenNoUses
+data WhenNoUses = DiscardWhenNoUses | ReturnToHandWhenNoUses | NotifySelfOfNoUses
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -241,6 +241,9 @@ instance Be AssetAttrs AssetMatcher where
 
 instance HasField "horror" AssetAttrs Int where
   getField = assetHorror
+
+instance HasField "controller" AssetAttrs (Maybe InvestigatorId) where
+  getField = assetController
 
 assetDoom :: AssetAttrs -> Int
 assetDoom = countTokens Doom . assetTokens

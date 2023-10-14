@@ -555,8 +555,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
-  RemovedFromPlay source@(AssetSource _) ->
-    pure $ a & (slotsL . each %~ filter ((/= source) . slotSource))
+  RemovedFromPlay source@(AssetSource aid) -> do
+    -- TODO: Do we need to refill slots?
+    pure $ a & (slotsL . each %~ filter ((/= source) . slotSource)) & (slotsL %~ removeFromSlots aid)
   TakeControlOfAsset iid aid | iid == investigatorId -> do
     a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId -> do
@@ -2651,6 +2652,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId | iid == investigatorId -> do
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
+  PlaceInBonded iid card | iid == investigatorId -> do
+    pure $ a & bondedCardsL %~ nub . (card :)
   SufferTrauma iid physical mental | iid == investigatorId -> do
     push $ CheckTrauma iid
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental

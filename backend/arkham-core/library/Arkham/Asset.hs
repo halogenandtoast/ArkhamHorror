@@ -544,6 +544,9 @@ allAssets =
     , --- guardian [tde]
       SomeAssetCard theHungeringBlade1
     , SomeAssetCard solemnVow
+    , --- seeker [tde]
+      SomeAssetCard segmentOfOnyx1
+    , SomeAssetCard pendantOfTheQueen
     , -- The Search for Kadath
       --- mystic [sfk]
       SomeAssetCard scrollOfProphecies

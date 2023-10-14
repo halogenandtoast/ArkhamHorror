@@ -419,6 +419,7 @@ allPlayerAssetCards =
       , pantalone
       , pathfinder1
       , patricesViolin
+      , pendantOfTheQueen
       , pennyWhite
       , peterSylvestre
       , peterSylvestre2
@@ -467,6 +468,7 @@ allPlayerAssetCards =
       , scrying3
       , scryingMirror
       , sealOfTheSeventhSign5
+      , segmentOfOnyx1
       , shardsOfTheVoid3
       , sharpshooter3
       , shotgun4
@@ -3592,6 +3594,27 @@ solemnVow =
       , cdCardTraits = singleton Spirit
       , cdKeywords = singleton Keyword.Myriad
       }
+
+segmentOfOnyx1 :: CardDef
+segmentOfOnyx1 =
+  fast
+    $ (asset "06021" "Segment of Onyx" 1 Seeker)
+      { cdSkills = [#wild]
+      , cdCardTraits = setFromList [Item, Relic, Occult]
+      , cdLevel = 1
+      , cdBondedWith = [(1, "06022")]
+      , cdKeywords = singleton Keyword.Myriad
+      }
+
+pendantOfTheQueen :: CardDef
+pendantOfTheQueen =
+  (asset "06022" ("Pendant of the Queen" <:> "Of Nothing at All") 0 Seeker)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdKeywords = singleton (Keyword.Bonded 1 "06021")
+    , cdUses = uses Charge 3
+    , cdSlots = [#accessory]
+    , cdCost = Nothing
+    }
 
 scrollOfProphecies :: CardDef
 scrollOfProphecies =

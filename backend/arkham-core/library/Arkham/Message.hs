@@ -710,6 +710,7 @@ data Message
   | RemoveTraits Target [Trait]
   | SetCardAside Card
   | SetOutOfPlay OutOfPlayZone Target
+  | PlaceInBonded InvestigatorId Card
   | DoSetOutOfPlay OutOfPlayZone Target
   | RemoveFromPlay Source
   | RemovedFromPlay Source
@@ -798,6 +799,7 @@ data Message
   | SpendClues Int [InvestigatorId]
   | SpendResources InvestigatorId Int
   | SpendUses Target UseType Int
+  | SpentAllUses Target
   | StartCampaign
   | StartScenario ScenarioId
   | RestartScenario

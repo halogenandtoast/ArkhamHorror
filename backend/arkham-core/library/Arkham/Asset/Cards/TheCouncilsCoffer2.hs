@@ -20,7 +20,7 @@ theCouncilsCoffer2 = asset TheCouncilsCoffer2 Cards.theCouncilsCoffer2
 
 instance HasAbilities TheCouncilsCoffer2 where
   getAbilities (TheCouncilsCoffer2 a) =
-    [ limitedAbility (PerCopyLimit Cards.theCouncilsCoffer2 PerCampaign 1)
+    [ limitedAbility (MaxPer Cards.theCouncilsCoffer2 PerCampaign 1)
         $ restrictedAbility a 0 (if useCount (assetUses a) == 0 then NoRestriction else Never)
         $ SilentForcedAbility AnyWindow
     , restrictedAbility a 1 OnSameLocation

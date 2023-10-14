@@ -283,6 +283,9 @@ prop b action = do
   overTest $ updateLens this' .~ this'
   pure this'
 
+updateProp :: forall s a b. (TestUpdate a, UpdateField s a b) => b -> a -> TestAppT ()
+updateProp b a = void $ prop @s b (pure a)
+
 withProp
   :: forall (s :: Symbol) b
    . UpdateField s Investigator b

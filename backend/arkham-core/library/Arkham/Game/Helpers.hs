@@ -2499,6 +2499,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               _ -> member card <$> select cardMatcher
           ]
       _ -> noMatch
+    Matcher.PlayEventDiscarding timing whoMatcher eventMatcher -> guardTiming timing $ \case
+      Window.PlayEventDiscarding who event ->
+        andM
+          [ matchWho iid who whoMatcher
+          , event <=~> eventMatcher
+          ]
+      _ -> noMatch
     Matcher.AgendaEntersPlay timing agendaMatcher -> guardTiming timing $ \case
       Window.EnterPlay (AgendaTarget aid) -> member aid <$> select agendaMatcher
       _ -> noMatch

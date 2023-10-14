@@ -409,10 +409,15 @@ withLocationConnectionData
 withLocationConnectionData inner@(With target _) = do
   matcher <- getConnectedMatcher target
   lmConnectedLocations <- selectList matcher
-  lmInvestigators <- select (investigatorAt $ toId target)
-  lmEnemies <- select (EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target)
-  lmAssets <- select (AssetAtLocation $ toId target)
-  lmEvents <- select (EventAt $ LocationWithId $ toId target)
+  lmInvestigators <- select $ investigatorAt $ toId target
+  lmEnemies <- select $ EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target
+  lmAssets <- select $ AssetAtLocation $ toId target
+  lmEvents <-
+    select
+      $ oneOf
+        [ EventWithPlacement $ AtLocation $ toId target
+        , EventWithPlacement $ AttachedToLocation $ toId target
+        ]
   lmTreacheries <- select (treacheryAt $ toId target)
   pure $ inner `with` LocationMetadata {..}
 
@@ -433,7 +438,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     additionalActions <- getAdditionalActions (toAttrs investigator')
     engagedEnemies <- selectList (enemyEngagedWith $ toId investigator')
     assets <- selectList (assetControlledBy $ toId investigator')
-    events <- selectList (assetControlledBy $ toId investigator')
+    events <- selectList (eventControlledBy $ toId investigator')
     treacheries <- selectList (treacheryInThreatAreaOf $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
     let
@@ -1962,10 +1967,13 @@ getEventsMatching matcher = do
     EventControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
+    EventWithoutModifier modifierType -> do
+      filterM (fmap (notElem modifierType) . getModifiers . toId) as
     EventWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr eventDoom) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
     EventMatches ms -> foldM filterMatcher as ms
+    EventOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AnyEvent -> pure as
     EventAt locationMatcher -> do
       lids <- selectList locationMatcher
@@ -2920,6 +2928,9 @@ instance Query ExtendedCardMatcher where
         cardIsMatch <- matches' c matcher'
         modifiers <- getModifiers (toCardId c)
         pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers
+      CardWithoutModifier modifier -> do
+        modifiers <- getModifiers (toCardId c)
+        pure $ modifier `notElem` modifiers
       CardWithPerformableAbility abilityMatcher modifiers' -> do
         iid <- view activeInvestigatorIdL <$> getGame
         let
@@ -4432,6 +4443,14 @@ runGameMessage msg g = case msg of
     pure g
   RemovedFromPlay (AssetSource assetId) -> do
     runMessage (RemoveAsset assetId) g
+  RemovedFromPlay (EventSource eventId) -> do
+    runMessage (RemoveEvent eventId) g
+  RemovedFromPlay (SkillSource skillId) -> do
+    runMessage (RemoveSkill skillId) g
+  RemovedFromPlay (EnemySource enemyId) -> do
+    runMessage (RemoveEnemy enemyId) g
+  RemovedFromPlay (TreacherySource treacheryId) -> do
+    runMessage (RemoveTreachery treacheryId) g
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
     push $ addToHand iid card
@@ -4540,6 +4559,7 @@ runGameMessage msg g = case msg of
               if card `elem` investigatorHand (toAttrs investigator')
                 then Zone.FromHand
                 else Zone.FromDiscard
+
           pushAll
             [ CardEnteredPlay iid card
             , InvestigatorPlayEvent iid eid mtarget windows' zone

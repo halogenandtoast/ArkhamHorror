@@ -547,6 +547,8 @@ allAssets =
     , --- seeker [tde]
       SomeAssetCard segmentOfOnyx1
     , SomeAssetCard pendantOfTheQueen
+    , --- rogue [tde]
+      SomeAssetCard crystallizerOfDreams
     , -- The Search for Kadath
       --- mystic [sfk]
       SomeAssetCard scrollOfProphecies

@@ -288,6 +288,8 @@ allEnemies =
       -- signature
       SomeEnemyCard tonysQuarry
     , SomeEnemyCard watcherFromAnotherDimension
+    , -- rogue
+      SomeEnemyCard guardianOfTheCrystallizer
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

@@ -21,8 +21,8 @@ const emits = defineEmits<{
 
 const id = computed(() => props.event.id)
 const hasPool = computed(() => {
-  const { doom } = props.event
-  return doom > 0
+  const { doom, sealedChaosTokens } = props.event
+  return doom > 0 || sealedChaosTokens.length > 0
 })
 
 const cardCode = computed(() => props.event.cardCode)
@@ -80,6 +80,17 @@ const choose = (index: number) => emits('choose', index)
       class="card event"
       @click="$emit('choose', cardAction)"
     />
+    <div v-if="hasPool" class="pool">
+      <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
+      <Token
+        v-for="(sealedToken, index) in event.sealedChaosTokens"
+        :key="index"
+        :token="sealedToken"
+        :playerId="playerId"
+        :game="game"
+        @choose="choose"
+      />
+    </div>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability.index"
@@ -87,17 +98,6 @@ const choose = (index: number) => emits('choose', index)
       :data-image="image"
       @click="$emit('choose', ability.index)"
       />
-    <div v-if="hasPool" class="pool">
-      <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
-    </div>
-    <Token
-      v-for="(sealedToken, index) in event.sealedChaosTokens"
-      :key="index"
-      :token="sealedToken"
-      :playerId="playerId"
-      :game="game"
-      @choose="choose"
-    />
   </div>
 </template>
 
@@ -111,18 +111,12 @@ const choose = (index: number) => emits('choose', index)
 .event {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .event--can-interact {
   border: 2px solid $select;
   cursor:pointer;
-}
-
-.pool {
-  display: flex;
-  flex-direction: row;
-  height: 2em;
-  justify-content: center;
 }
 
 .button{
@@ -134,6 +128,20 @@ const choose = (index: number) => emits('choose', index)
 }
 
 :deep(.token) {
-  width: 20px;
+  width: 40px;
+}
+
+.pool {
+  position: absolute;
+  top: 50%;
+  align-items: center;
+  display: flex;
+  align-self: flex-start;
+  align-items: flex-end;
+  * {
+    transform: scale(0.6);
+  }
+  z-index: 1;
+  pointer-events: none;
 }
 </style>

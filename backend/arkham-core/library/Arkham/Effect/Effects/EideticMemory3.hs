@@ -22,6 +22,8 @@ instance HasModifiersFor EideticMemory3 where
   getModifiersFor (EventTarget eid) (EideticMemory3 a@EffectAttrs {..}) = do
     cardId <- field EventCardId eid
     pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
+  getModifiersFor (CardIdTarget cardId) (EideticMemory3 a@EffectAttrs {..}) = do
+    pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
   getModifiersFor _ _ = pure []
 
 instance RunMessage EideticMemory3 where

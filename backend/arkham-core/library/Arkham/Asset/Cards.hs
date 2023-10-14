@@ -75,54 +75,11 @@ baseAsset
   -> Set ClassSymbol
   -> CardDef
 baseAsset mEncounterSet cardCode name cost classSymbols =
-  CardDef
-    { cdCardCode = cardCode
-    , cdName = name
-    , cdRevealedName = Nothing
-    , cdCost = Just (StaticCost cost)
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = AssetType
-    , cdCardSubType = Nothing
+  (emptyCardDef cardCode name AssetType)
+    { cdCost = Just (StaticCost cost)
     , cdClassSymbols = classSymbols
-    , cdSkills = mempty
-    , cdCardTraits = mempty
-    , cdRevealedCardTraits = mempty
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = mempty
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
     , cdEncounterSet = fst <$> mEncounterSet
     , cdEncounterSetQuantity = snd <$> mEncounterSet
-    , cdUnique = False
-    , cdDoubleSided = False
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
-    , cdArt = unCardCode cardCode
-    , cdLocationSymbol = Nothing
-    , cdLocationRevealedSymbol = Nothing
-    , cdLocationConnections = []
-    , cdLocationRevealedConnections = []
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 allPlayerAssetCards :: Map CardCode CardDef
@@ -215,6 +172,7 @@ allPlayerAssetCards =
       , combatTraining1
       , crystalPendulum
       , crystallineElderSign3
+      , crystallizerOfDreams
       , daisysToteBag
       , daisysToteBagAdvanced
       , darioElAmin
@@ -3614,6 +3572,16 @@ pendantOfTheQueen =
     , cdUses = uses Charge 3
     , cdSlots = [#accessory]
     , cdCost = Nothing
+    }
+
+crystallizerOfDreams :: CardDef
+crystallizerOfDreams =
+  (asset "06024" "Crystallizer of Dreams" 1 Rogue)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdBondedWith = [(1, "06025")]
+    , cdAdditionalCost = Just (ShuffleBondedCost 1 "06025")
+    , cdSlots = [#accessory]
     }
 
 scrollOfProphecies :: CardDef

@@ -1373,12 +1373,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> False
       unless shouldSkip $ do
         afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
-
-        pushAll
-          [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
-          , PlayCard iid card mtarget windows' asAction
-          , afterPlayCard
-          ]
+        if cdSkipPlayWindows (toCardDef card)
+          then push $ PlayCard iid card mtarget windows' asAction
+          else
+            pushAll
+              [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
+              , PlayCard iid card mtarget windows' asAction
+              , afterPlayCard
+              ]
       pure a
   CardEnteredPlay iid card | iid == investigatorId -> do
     send $ format a <> " played " <> format card
@@ -2055,7 +2057,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             filterM (field TreacheryCanBeCommitted)
               =<< selectList (treacheryInHandOf investigatorId)
           treacheryCards <- traverse (field TreacheryCard) committableTreacheries
-          flip filterM (investigatorHand <> treacheryCards) $ \case
+          let asIfInHandForCommit = mapMaybe (preview _CanCommitToSkillTestsAsIfInHand) modifiers'
+          flip filterM (asIfInHandForCommit <> investigatorHand <> treacheryCards) $ \case
             PlayerCard card -> do
               let
                 passesCommitRestriction = \case

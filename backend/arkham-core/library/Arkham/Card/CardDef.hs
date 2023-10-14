@@ -113,8 +113,62 @@ data CardDef = CardDef
   , cdCanReplace :: Bool
   , cdDeckRestrictions :: [DeckRestriction]
   , cdBondedWith :: [(Int, CardCode)]
+  , cdSkipPlayWindows :: Bool
   }
   deriving stock (Show, Eq, Ord, Data)
+
+emptyCardDef :: CardCode -> Name -> CardType -> CardDef
+emptyCardDef cCode name cType =
+  CardDef
+    { cdCardCode = cCode
+    , cdName = name
+    , cdRevealedName = Nothing
+    , cdCost = Nothing
+    , cdAdditionalCost = Nothing
+    , cdLevel = 0
+    , cdCardType = cType
+    , cdCardSubType = Nothing
+    , cdClassSymbols = mempty
+    , cdSkills = mempty
+    , cdCardTraits = mempty
+    , cdRevealedCardTraits = mempty
+    , cdKeywords = mempty
+    , cdFastWindow = Nothing
+    , cdActions = mempty
+    , cdRevelation = NoRevelation
+    , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
+    , cdCriteria = Nothing
+    , cdOverrideActionPlayableIfCriteriaMet = False
+    , cdCommitRestrictions = mempty
+    , cdAttackOfOpportunityModifiers = mempty
+    , cdPermanent = False
+    , cdEncounterSet = Nothing
+    , cdEncounterSetQuantity = Nothing
+    , cdUnique = False
+    , cdDoubleSided = False
+    , cdLimits = []
+    , cdExceptional = False
+    , cdUses = NoUses
+    , cdPlayableFromDiscard = False
+    , cdStage = Nothing
+    , cdSlots = mempty
+    , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = mempty
+    , cdArt = unCardCode cCode
+    , cdLocationSymbol = Nothing
+    , cdLocationRevealedSymbol = Nothing
+    , cdLocationConnections = mempty
+    , cdLocationRevealedConnections = mempty
+    , cdPurchaseMentalTrauma = Nothing
+    , cdGrantedXp = Nothing
+    , cdCanReplace = True
+    , cdDeckRestrictions = []
+    , cdBondedWith = []
+    , cdSkipPlayWindows = False
+    }
 
 instance IsCardMatcher CardDef where
   toCardMatcher = cardIs

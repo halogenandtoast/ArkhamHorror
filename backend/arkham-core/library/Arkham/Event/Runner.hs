@@ -24,8 +24,11 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Message qualified as Msg
 import Arkham.Placement
+import Arkham.Window (mkAfter)
+import Arkham.Window qualified as Window
 
 instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = do
@@ -80,13 +83,14 @@ runEventMessage msg a@EventAttrs {..} = case msg of
 
       afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
 
+    after <- checkWindows [mkAfter (Window.PlayEventDiscarding (eventController a) (toId a))]
     case eventPlacement of
       Unplaced -> case afterPlay of
-        DiscardThis -> push $ Discard GameSource (toTarget a)
+        DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
         RemoveThisFromGame -> push (RemoveEvent $ toId a)
         ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
       Limbo -> case afterPlay of
-        DiscardThis -> push $ Discard GameSource (toTarget a)
+        DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
         RemoveThisFromGame -> push (RemoveEvent $ toId a)
         ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
       _ -> pure ()

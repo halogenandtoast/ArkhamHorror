@@ -84,6 +84,7 @@ data ModifierType
   | CanBecomeFastOrReduceCostOf CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | RevealChaosTokensBeforeCommittingCards
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
+  | CanCommitToSkillTestsAsIfInHand Card
   | CanOnlyBeAttackedByAbilityOn (Set CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
@@ -280,6 +281,11 @@ _AdditionalTargets = prism' AdditionalTargets $ \case
 _CannotEnter :: Prism' ModifierType LocationId
 _CannotEnter = prism' CannotEnter $ \case
   CannotEnter n -> Just n
+  _ -> Nothing
+
+_CanCommitToSkillTestsAsIfInHand :: Prism' ModifierType Card
+_CanCommitToSkillTestsAsIfInHand = prism' CanCommitToSkillTestsAsIfInHand $ \case
+  CanCommitToSkillTestsAsIfInHand n -> Just n
   _ -> Nothing
 
 data Modifier = Modifier

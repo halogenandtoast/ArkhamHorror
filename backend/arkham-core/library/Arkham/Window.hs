@@ -174,6 +174,7 @@ data WindowType
   | WouldRemoveBreaches Target
   | WouldRemoveBreach Target -- END Breaches
   | PlayCard InvestigatorId Card
+  | PlayEventDiscarding InvestigatorId EventId
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId

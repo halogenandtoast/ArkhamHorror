@@ -393,6 +393,7 @@ library
       Arkham.Asset.Cards.Cornered2
       Arkham.Asset.Cards.Courage
       Arkham.Asset.Cards.CrystallineElderSign3
+      Arkham.Asset.Cards.CrystallizerOfDreams
       Arkham.Asset.Cards.CrystalPendulum
       Arkham.Asset.Cards.DaisysToteBag
       Arkham.Asset.Cards.DaisysToteBagAdvanced
@@ -974,6 +975,7 @@ library
       Arkham.Enemy.Cards.GrapplingHorror
       Arkham.Enemy.Cards.GraveEater
       Arkham.Enemy.Cards.GraveyardGhouls
+      Arkham.Enemy.Cards.GuardianOfTheCrystallizer
       Arkham.Enemy.Cards.HandOfTheBrotherhood
       Arkham.Enemy.Cards.HarbingerOfValusia
       Arkham.Enemy.Cards.HarlanEarnstoneCrazedByTheCurse

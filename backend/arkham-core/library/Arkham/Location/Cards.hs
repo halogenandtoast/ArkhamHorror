@@ -2,7 +2,6 @@ module Arkham.Location.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -49,54 +48,17 @@ location
   -> EncounterSet
   -> CardDef
 location cardCode name traits locationSymbol connectedLocationSymbols encounterSet =
-  CardDef
-    { cdCardCode = cardCode
-    , cdName = name
-    , cdRevealedName = Just name
-    , cdCost = Nothing
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = LocationType
-    , cdCardSubType = Nothing
-    , cdClassSymbols = mempty
-    , cdSkills = mempty
+  (emptyCardDef cardCode name LocationType)
+    { cdRevealedName = Just name
     , cdCardTraits = setFromList traits
     , cdRevealedCardTraits = setFromList traits
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = mempty
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
     , cdEncounterSet = Just encounterSet
     , cdEncounterSetQuantity = Just 1
-    , cdUnique = False
     , cdDoubleSided = True
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
-    , cdArt = unCardCode cardCode
     , cdLocationSymbol = Just locationSymbol
     , cdLocationRevealedSymbol = Just locationSymbol
     , cdLocationConnections = connectedLocationSymbols
     , cdLocationRevealedConnections = connectedLocationSymbols
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 allLocationCards :: Map CardCode CardDef
@@ -4907,106 +4869,29 @@ pathwayIntoVoid =
 
 dreamGateWondrousJourney :: CardDef
 dreamGateWondrousJourney =
-  CardDef
-    { cdCardCode = "06015a"
-    , cdName = "Dream-Gate" <:> "Wondrous Journey"
-    , cdRevealedName = Just $ "Dream-Gate" <:> "Wondrous Journey"
-    , cdCost = Nothing
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = LocationType
-    , cdCardSubType = Nothing
-    , cdClassSymbols = mempty
-    , cdSkills = mempty
+  (emptyCardDef "06015a" ("Dream-Gate" <:> "Wondrous Journey") LocationType)
+    { cdRevealedName = Just $ "Dream-Gate" <:> "Wondrous Journey"
     , cdCardTraits = setFromList [Dreamlands]
     , cdRevealedCardTraits = setFromList [Dreamlands]
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = mempty
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
-    , cdEncounterSet = Nothing
-    , cdEncounterSetQuantity = Nothing
-    , cdUnique = False
-    , cdDoubleSided = False
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
     , cdArt = "06015a"
     , cdLocationSymbol = Just NoSymbol
     , cdLocationRevealedSymbol = Just NoSymbol
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 dreamGatePointlessReality :: CardDef
 dreamGatePointlessReality =
-  CardDef
-    { cdCardCode = "06015b"
-    , cdName = "Dream-Gate" <:> "Pointless Reality"
-    , cdRevealedName = Just $ "Dream-Gate" <:> "Pointless Reality"
-    , cdCost = Nothing
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = LocationType
-    , cdCardSubType = Nothing
-    , cdClassSymbols = mempty
-    , cdSkills = mempty
+  (emptyCardDef "06015b" ("Dream-Gate" <:> "Pointless Reality") LocationType)
+    { cdRevealedName = Just $ "Dream-Gate" <:> "Pointless Reality"
     , cdCardTraits = setFromList [Dreamlands]
     , cdRevealedCardTraits = setFromList [Dreamlands]
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = mempty
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
-    , cdEncounterSet = Nothing
-    , cdEncounterSetQuantity = Nothing
-    , cdUnique = False
     , cdDoubleSided = False
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
     , cdArt = "06015b"
     , cdLocationSymbol = Just NoSymbol
     , cdLocationRevealedSymbol = Just NoSymbol
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 studyAberrantGateway :: CardDef

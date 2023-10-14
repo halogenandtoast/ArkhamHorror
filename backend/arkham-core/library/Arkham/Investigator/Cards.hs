@@ -2,7 +2,6 @@ module Arkham.Investigator.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -12,54 +11,10 @@ import Arkham.Trait hiding (Supply)
 
 investigator :: CardCode -> Name -> ClassSymbol -> [Trait] -> CardDef
 investigator cardCode name classSymbol traits =
-  CardDef
-    { cdCardCode = cardCode
-    , cdName = name
-    , cdRevealedName = Nothing
-    , cdCost = Nothing
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = InvestigatorType
-    , cdCardSubType = Nothing
-    , cdClassSymbols = singleton classSymbol
-    , cdSkills = mempty
+  (emptyCardDef cardCode name InvestigatorType)
+    { cdClassSymbols = singleton classSymbol
     , cdCardTraits = setFromList traits
-    , cdRevealedCardTraits = mempty
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = mempty
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
-    , cdEncounterSet = Nothing
-    , cdEncounterSetQuantity = Nothing
     , cdUnique = True
-    , cdDoubleSided = False
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
-    , cdArt = unCardCode cardCode
-    , cdLocationSymbol = Nothing
-    , cdLocationRevealedSymbol = Nothing
-    , cdLocationConnections = []
-    , cdLocationRevealedConnections = []
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 allInvestigatorCards :: Map CardCode CardDef

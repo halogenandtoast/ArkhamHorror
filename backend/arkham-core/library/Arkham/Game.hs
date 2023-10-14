@@ -5384,14 +5384,17 @@ runGameMessage msg g = case msg of
       $ (`mkWindow` Window.Discarded iid source card)
       <$> [#when, #after]
     pure g
-  InvestigatorAssignDamage iid' (InvestigatorSource iid) _ n 0 | n > 0 -> do
-    let
-      historyItem = mempty {historyDealtDamageTo = [InvestigatorTarget iid']}
-      turn = isJust $ view turnPlayerInvestigatorIdL g
-      setTurnHistory =
-        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+  InvestigatorAssignDamage iid' source _ n 0 | n > 0 -> do
+    miid <- getSourceController source
+    case miid of
+      Nothing -> pure g
+      Just iid -> do
+        let
+          historyItem = mempty {historyDealtDamageTo = [InvestigatorTarget iid']}
+          turn = isJust $ view turnPlayerInvestigatorIdL g
+          setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
-    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
+        pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   Msg.EnemyDamage eid assignment@(damageAssignmentAmount -> n) | n > 0 -> do
     let source = damageAssignmentSource assignment
     miid <- getSourceController source

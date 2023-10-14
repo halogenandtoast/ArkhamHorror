@@ -13,6 +13,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Timing qualified as Timing
 
@@ -32,7 +33,10 @@ instance HasAbilities Premonition where
 instance RunMessage Premonition where
   runMessage msg e@(Premonition attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) RemoveChaosTokens
+      pushAll
+        [ PlaceEvent iid eid (InPlayArea iid)
+        , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) RemoveChaosTokens
+        ]
       pure e
     RequestedChaosTokens (isSource attrs -> True) _ ts -> do
       pushAll

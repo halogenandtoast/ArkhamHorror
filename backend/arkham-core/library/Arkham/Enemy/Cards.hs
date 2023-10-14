@@ -2,7 +2,6 @@ module Arkham.Enemy.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -20,54 +19,11 @@ baseEnemy
   -> Maybe CardSubType
   -> CardDef
 baseEnemy cardCode name mEncounterSet isWeakness =
-  CardDef
-    { cdCardCode = cardCode
-    , cdName = name
-    , cdRevealedName = Nothing
-    , cdCost = Nothing
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = if isJust isWeakness then PlayerEnemyType else EnemyType
-    , cdCardSubType = isWeakness
+  (emptyCardDef cardCode name $ if isJust isWeakness then PlayerEnemyType else EnemyType)
+    { cdCardSubType = isWeakness
     , cdClassSymbols = if isJust isWeakness then singleton Neutral else mempty
-    , cdSkills = mempty
-    , cdCardTraits = mempty
-    , cdRevealedCardTraits = mempty
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = mempty
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
     , cdEncounterSet = fst <$> mEncounterSet
     , cdEncounterSetQuantity = snd <$> mEncounterSet
-    , cdUnique = False
-    , cdDoubleSided = False
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
-    , cdArt = unCardCode cardCode
-    , cdLocationSymbol = Nothing
-    , cdLocationRevealedSymbol = Nothing
-    , cdLocationConnections = []
-    , cdLocationRevealedConnections = []
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 unique :: CardDef -> CardDef
@@ -99,6 +55,7 @@ allPlayerEnemyCards =
       , hoods
       , tonysQuarry
       , watcherFromAnotherDimension
+      , guardianOfTheCrystallizer
       , tommyMalloy
       ]
 
@@ -1545,6 +1502,13 @@ watcherFromAnotherDimension =
       , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
       , cdRevelation = IsRevelation
       }
+
+guardianOfTheCrystallizer :: CardDef
+guardianOfTheCrystallizer =
+  (weakness "06025" "Guardian of the Crystallizer")
+    { cdCardTraits = singleton Monster
+    , cdKeywords = setFromList [Keyword.Bonded 1 "06024", Keyword.Hunter]
+    }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul =

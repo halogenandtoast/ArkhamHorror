@@ -2,7 +2,6 @@ module Arkham.Story.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -11,54 +10,10 @@ import Arkham.Name
 
 story :: CardCode -> Name -> EncounterSet -> CardDef
 story cardCode name encounterSet =
-  CardDef
-    { cdCardCode = cardCode
-    , cdName = name
-    , cdRevealedName = Nothing
-    , cdCost = Nothing
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = StoryType
-    , cdCardSubType = Nothing
-    , cdClassSymbols = mempty
-    , cdSkills = mempty
-    , cdCardTraits = mempty
-    , cdRevealedCardTraits = mempty
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = mempty
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
-    , cdEncounterSet = Just encounterSet
+  (emptyCardDef cardCode name StoryType)
+    { cdEncounterSet = Just encounterSet
     , cdEncounterSetQuantity = Just 1
-    , cdUnique = False
     , cdDoubleSided = True
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
-    , cdArt = unCardCode cardCode
-    , cdLocationSymbol = Nothing
-    , cdLocationRevealedSymbol = Nothing
-    , cdLocationConnections = []
-    , cdLocationRevealedConnections = []
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 allStoryCards :: Map CardCode CardDef

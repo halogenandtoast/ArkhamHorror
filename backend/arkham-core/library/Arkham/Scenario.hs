@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -611,54 +610,9 @@ data SomeScenario = forall a. IsScenario a => SomeScenario (Difficulty -> a)
 
 scenarioCard :: CardCode -> Name -> EncounterSet -> CardDef
 scenarioCard cCode name ecSet =
-  CardDef
-    { cdCardCode = cCode
-    , cdName = name
-    , cdRevealedName = Nothing
-    , cdCost = Nothing
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = ScenarioType
-    , cdCardSubType = Nothing
-    , cdClassSymbols = mempty
-    , cdSkills = mempty
-    , cdCardTraits = mempty
-    , cdRevealedCardTraits = mempty
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = mempty
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = Nothing
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
-    , cdEncounterSet = Just ecSet
-    , cdEncounterSetQuantity = Nothing
-    , cdUnique = True
+  (emptyCardDef cCode name ScenarioType)
+    { cdEncounterSet = Just ecSet
     , cdDoubleSided = True
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = mempty
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = mempty
-    , cdArt = unCardCode cCode
-    , cdLocationSymbol = Nothing
-    , cdLocationRevealedSymbol = Nothing
-    , cdLocationConnections = mempty
-    , cdLocationRevealedConnections = mempty
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 allScenarioCards :: Map CardCode CardDef

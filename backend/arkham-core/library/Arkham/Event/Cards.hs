@@ -25,54 +25,9 @@ import Arkham.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 event cardCode name cost classSymbol =
-  CardDef
-    { cdCardCode = cardCode
-    , cdName = name
-    , cdRevealedName = Nothing
-    , cdCost = Just (StaticCost cost)
-    , cdAdditionalCost = Nothing
-    , cdLevel = 0
-    , cdCardType = EventType
-    , cdCardSubType = Nothing
+  (emptyCardDef cardCode name EventType)
+    { cdCost = Just (StaticCost cost)
     , cdClassSymbols = singleton classSymbol
-    , cdSkills = mempty
-    , cdCardTraits = mempty
-    , cdRevealedCardTraits = mempty
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = NoRevelation
-    , cdVictoryPoints = Nothing
-    , cdVengeancePoints = Nothing
-    , cdCriteria = Nothing
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = mempty
-    , cdAttackOfOpportunityModifiers = mempty
-    , cdPermanent = False
-    , cdEncounterSet = Nothing
-    , cdEncounterSetQuantity = Nothing
-    , cdUnique = False
-    , cdDoubleSided = False
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = Uses.NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
-    , cdArt = unCardCode cardCode
-    , cdLocationSymbol = Nothing
-    , cdLocationRevealedSymbol = Nothing
-    , cdLocationConnections = []
-    , cdLocationRevealedConnections = []
-    , cdPurchaseMentalTrauma = Nothing
-    , cdGrantedXp = Nothing
-    , cdCanReplace = True
-    , cdDeckRestrictions = []
-    , cdBondedWith = []
     }
 
 allPlayerEventCards :: Map CardCode CardDef
@@ -974,6 +929,7 @@ thePaintedWorld =
   (event "03012" "The Painted World" 0 Neutral)
     { cdSkills = [#willpower, #agility, #wild]
     , cdCardTraits = singleton Spell
+    , cdSkipPlayWindows = True
     , cdFastWindow =
         Just
           $ PlayerHasPlayableCard

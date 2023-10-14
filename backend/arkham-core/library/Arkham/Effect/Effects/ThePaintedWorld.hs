@@ -25,6 +25,12 @@ instance HasModifiersFor ThePaintedWorld where
       $ toModifiers
         a
         [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
+  getModifiersFor (CardIdTarget cardId) (ThePaintedWorld a@EffectAttrs {..}) = do
+    -- Mainly used for cards like Crystallizer of Dreams that work with After you play effects
+    pure
+      $ toModifiers
+        a
+        [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ThePaintedWorld where

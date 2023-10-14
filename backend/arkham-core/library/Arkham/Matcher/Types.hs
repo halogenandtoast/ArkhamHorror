@@ -293,10 +293,12 @@ data EventMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher
   | EventAttachedToAsset AssetMatcher
+  | EventWithoutModifier ModifierType
   | EventIs CardCode
   | EventReady
   | EventCardMatch CardMatcher
   | EventMatches [EventMatcher]
+  | EventOneOf [EventMatcher]
   | AnyEvent
   | NotEvent EventMatcher
   | EventWithPlacement Placement
@@ -506,6 +508,7 @@ data ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
   | CanCancelRevelationEffect ExtendedCardMatcher
   | CanCancelAllEffects ExtendedCardMatcher
+  | CardWithoutModifier ModifierType
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup ExtendedCardMatcher where
@@ -523,6 +526,9 @@ instance IsLabel "spell" ExtendedCardMatcher where
 
 instance IsLabel "asset" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #asset
+
+instance IsLabel "event" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #event
 
 instance IsLabel "enemy" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #enemy
@@ -725,6 +731,7 @@ data WindowMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | DrawsCards Timing Who ValueMatcher
   | PlayCard Timing Who ExtendedCardMatcher
+  | PlayEventDiscarding Timing Who EventMatcher
   | PhaseBegins Timing PhaseMatcher
   | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher

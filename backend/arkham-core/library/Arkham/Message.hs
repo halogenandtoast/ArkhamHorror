@@ -759,6 +759,7 @@ data Message
       [(Zone, ZoneReturnStrategy)]
       CardMatcher
       FoundCardsStrategy
+  | ResolveSearch InvestigatorId
   | SearchFound InvestigatorId Target DeckSignifier [Card]
   | FoundCards (Map Zone [Card])
   | SearchNoneFound InvestigatorId Target

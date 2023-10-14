@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.ShockingDiscoverySpec (spec) where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Investigator.Cards (mandyThompson)
-import Arkham.Investigator.Types (InvestigatorAttrs (investigatorFoundCards))
+import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Treacheries
 import TestImport.New
@@ -45,5 +45,5 @@ spec = describe "Shocking Discovery" do
         asDefs self.discard `shouldReturn` [Treacheries.shockingDiscovery]
         self.hand `shouldReturn` []
         (unDeck <$> self.deck) `shouldMatchListM` otherCards
-        (attr investigatorFoundCards <$> getInvestigator (toId self)) `shouldReturn` mempty
+        (view Investigator.foundCardsL . toAttrs <$> getInvestigator (toId self)) `shouldReturn` mempty
         assertAny $ enemyIs Cards.swarmOfRats

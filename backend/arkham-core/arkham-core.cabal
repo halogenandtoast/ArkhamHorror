@@ -2536,6 +2536,7 @@ test-suite spec
       Arkham.Asset.Cards.StrayCatSpec
       Arkham.Asset.Cards.SwitchbladeSpec
       Arkham.Asset.Cards.TheBlackFan3Spec
+      Arkham.Asset.Cards.TheHungeringBlade1Spec
       Arkham.Asset.Cards.TheNecronomiconSpec
       Arkham.Asset.Cards.Tonys38LongColtSpec
       Arkham.Asset.Cards.WendysAmuletSpec
@@ -2608,6 +2609,7 @@ test-suite spec
       Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
+      Arkham.Treachery.Cards.BloodlustSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.DetachedFromRealitySpec
       Arkham.Treachery.Cards.FinalRhapsodySpec

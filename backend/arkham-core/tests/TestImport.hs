@@ -334,6 +334,9 @@ instance UpdateField "deck" Investigator (Deck PlayerCard) where
 instance UpdateField "hand" Investigator [Card] where
   updateField cards = pure . overAttrs (\attrs -> attrs {investigatorHand = cards})
 
+instance UpdateField "bonded" Investigator [Card] where
+  updateField cards = pure . overAttrs (\attrs -> attrs {investigatorBondedCards = cards})
+
 instance UpdateField "discard" Investigator [PlayerCard] where
   updateField cards i = pure $ overAttrs (\attrs -> attrs {investigatorDiscard = cards}) i
 

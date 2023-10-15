@@ -25,6 +25,7 @@ baseTreachery cardCode name mEncounterSet isWeakness =
     , cdClassSymbols = if isJust isWeakness then singleton Neutral else mempty
     , cdEncounterSet = fst <$> mEncounterSet
     , cdEncounterSetQuantity = snd <$> mEncounterSet
+    , cdRevelation = IsRevelation
     }
 
 surge :: CardDef -> CardDef

@@ -2053,10 +2053,13 @@ getStoriesMatching matcher = do
       pure $ filter ((== placement) . attr storyPlacement) as
 
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
-getEnemy eid =
-  fromJustNote missingEnemy
-    . preview (entitiesL . enemiesL . ix eid)
-    <$> getGame
+getEnemy eid = do
+  g <- getGame
+  pure
+    $ fromJustNote missingEnemy
+    $ preview (entitiesL . enemiesL . ix eid) g
+    <|> getInDiscardEntity enemiesL eid g
+    <|> getRemovedEntity enemiesL eid g
  where
   missingEnemy = "Unknown enemy: " <> show eid
 
@@ -4147,11 +4150,12 @@ runGameMessage msg g = case msg of
           <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   RemoveAsset aid -> do
-    removedEntitiesF <- case notNull (gameActiveAbilities g) of
-      True -> do
-        asset <- getAsset aid
-        pure $ actionRemovedEntitiesL . assetsL %~ insertEntity asset
-      False -> pure id
+    removedEntitiesF <-
+      if notNull (gameActiveAbilities g)
+        then do
+          asset <- getAsset aid
+          pure $ actionRemovedEntitiesL . assetsL %~ insertEntity asset
+        else pure id
     pure $ g & entitiesL . assetsL %~ deleteMap aid & removedEntitiesF
   RemoveEvent eid -> do
     popMessageMatching_ $ \case
@@ -4162,7 +4166,15 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       EnemyDefeated eid' _ _ _ -> eid == eid'
       _ -> False
-    pure $ g & entitiesL . enemiesL %~ deleteMap eid
+    enemy <- getEnemy eid
+    pure
+      $ g
+      & entitiesL
+      . enemiesL
+      %~ deleteMap eid
+      & actionRemovedEntitiesL
+      . enemiesL
+      %~ insertEntity enemy
   RemoveSkill sid -> pure $ g & entitiesL . skillsL %~ deleteMap sid
   When (RemoveEnemy enemy) -> do
     pushM
@@ -5672,6 +5684,8 @@ runGameMessage msg g = case msg of
   ResolvedAbility _ -> do
     let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty else id
     pure $ g & activeAbilitiesL %~ drop 1 & removedEntitiesF
+  Do (Discarded (EnemyTarget eid) _ _) -> do
+    pure $ g & actionRemovedEntitiesL . enemiesL %~ deleteMap eid
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     runMessage (RemoveAsset aid) g
   Discarded (AssetTarget aid) _ _ -> do

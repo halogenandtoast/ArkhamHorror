@@ -1011,6 +1011,7 @@ instance RunMessage EnemyAttrs where
         $ windows'
         <> [ RemovedFromPlay $ toSource a
            , Discarded (toTarget a) source (toCard a)
+           , Do (Discarded (toTarget a) source (toCard a))
            ]
       pure $ a & keysL .~ mempty
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do

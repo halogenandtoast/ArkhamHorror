@@ -13,6 +13,7 @@ import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier (ModifierType (..))
@@ -105,6 +106,7 @@ allPlayerEventCards =
       , dynamiteBlast
       , dynamiteBlast2
       , dynamiteBlast3
+      , easyMark1
       , eatLead
       , eatLead2
       , eavesdrop
@@ -2264,6 +2266,16 @@ astoundingRevelation =
     , cdCardTraits = setFromList [Research]
     , cdCost = Nothing
     , cdCardInSearchEffects = True
+    , cdKeywords = singleton Keyword.Myriad
+    }
+
+easyMark1 :: CardDef
+easyMark1 =
+  (event "06026" "Easy Mark" 0 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = singleton Trick
+    , cdKeywords = singleton Keyword.Myriad
+    , cdCriteria = Just $ Criteria.AnyCriterion [Criteria.CanGainResources, Criteria.CanDrawCards]
     }
 
 firstWatch :: CardDef

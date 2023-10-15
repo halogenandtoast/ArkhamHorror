@@ -354,6 +354,8 @@ allEvents =
       SomeEventCard occultEvidence
     , --- seeker [tde]
       SomeEventCard astoundingRevelation
+    , --- rogue [tde]
+      SomeEventCard easyMark1
     , -- The Search for Kadath
       --- guardian [sfk]
       SomeEventCard firstWatch

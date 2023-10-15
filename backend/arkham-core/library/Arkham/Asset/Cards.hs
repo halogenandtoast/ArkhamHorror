@@ -3609,6 +3609,7 @@ empowerSelfStamina2 =
     , cdCardTraits = setFromList [Ritual]
     , cdSlots = [#arcane]
     , cdLevel = 2
+    , cdKeywords = singleton Keyword.Myriad
     }
 
 empowerSelfAlacrity2 :: CardDef
@@ -3618,6 +3619,7 @@ empowerSelfAlacrity2 =
     , cdCardTraits = setFromList [Ritual]
     , cdSlots = [#arcane]
     , cdLevel = 2
+    , cdKeywords = singleton Keyword.Myriad
     }
 
 empowerSelfAcuity2 :: CardDef
@@ -3627,6 +3629,7 @@ empowerSelfAcuity2 =
     , cdCardTraits = setFromList [Ritual]
     , cdSlots = [#arcane]
     , cdLevel = 2
+    , cdKeywords = singleton Keyword.Myriad
     }
 
 oldBookOfLore3 :: CardDef

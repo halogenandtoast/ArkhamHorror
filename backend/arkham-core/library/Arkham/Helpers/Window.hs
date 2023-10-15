@@ -2,6 +2,7 @@ module Arkham.Helpers.Window where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -118,3 +119,8 @@ evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyEvaded _ eid) -> Just eid
     _ -> Nothing
+
+cardPlayed :: [Window] -> Card
+cardPlayed [] = error "missing play card window"
+cardPlayed ((windowType -> Window.PlayCard _ c) : _) = c
+cardPlayed (_ : xs) = cardPlayed xs

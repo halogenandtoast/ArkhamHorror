@@ -88,7 +88,7 @@ async function createDeck() {
       deck.value = null
       emit('newDeck', newDeck)
     }).catch((error) => {
-      fetch("https://arkhamdb.com/api/public/cards/")
+      fetch("/cards.json")
         .then((response) => response.json()).then((data) => {
           errors.value = error.response.data.map((error: UnimplementedCardError) => {
             const match = data.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))

@@ -2548,6 +2548,7 @@ test-suite spec
       Arkham.Asset.Cards.Tonys38LongColtSpec
       Arkham.Asset.Cards.WendysAmuletSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
+      Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
       Arkham.Enemy.Cards.StubbornDetectiveSpec

@@ -111,6 +111,13 @@ useFastActionOf (toSource -> source) idx = chooseOptionMatching "use fast action
   AbilityLabel {ability} -> abilityIndex ability == idx && abilitySource ability == source
   _ -> False
 
+genMyCard :: Investigator -> CardDef -> TestAppT Card
+genMyCard self cardDef = do
+  card <- genCard cardDef
+  pure $ case card of
+    PlayerCard pc -> PlayerCard (pc {pcOwner = Just (toId self)})
+    other -> other
+
 useForcedAbility :: HasCallStack => TestAppT ()
 useForcedAbility = chooseOptionMatching "use forced ability" \case
   AbilityLabel {ability} -> case abilityType ability of
@@ -166,6 +173,9 @@ instance HasField "arcaneSlots" Investigator (TestAppT [Slot]) where
 
 instance HasField "discard" Investigator (TestAppT [PlayerCard]) where
   getField = field InvestigatorDiscard . toEntityId
+
+instance HasField "bonded" Investigator (TestAppT [Card]) where
+  getField = field InvestigatorBondedCards . toEntityId
 
 instance HasField "deck" Investigator (TestAppT (Deck PlayerCard)) where
   getField = field InvestigatorDeck . toEntityId

@@ -2489,6 +2489,7 @@ test-suite spec
       Arkham.Asset.Cards.BulletproofVest3Spec
       Arkham.Asset.Cards.BurglarySpec
       Arkham.Asset.Cards.CatBurglar1Spec
+      Arkham.Asset.Cards.CrystallizerOfDreamsSpec
       Arkham.Asset.Cards.DaisysToteBagSpec
       Arkham.Asset.Cards.DigDeep2Spec
       Arkham.Asset.Cards.DigDeepSpec

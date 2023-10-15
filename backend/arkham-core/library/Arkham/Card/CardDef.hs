@@ -27,19 +27,27 @@ import Arkham.Slot
 import Arkham.Trait
 import Data.Aeson.TH
 
-data DeckRestriction = Signature InvestigatorId | CampaignModeOnly | PerDeckLimit Int
+data DeckRestriction
+  = Signature InvestigatorId
+  | CampaignModeOnly
+  | PerDeckLimit Int
+  | MultiplayerOnly
   deriving stock (Show, Eq, Ord, Data)
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Ord, Data)
 
-data EventChoicesRepeatable = EventChoicesRepeatable | EventChoicesNotRepeatable
+data EventChoicesRepeatable
+  = EventChoicesRepeatable
+  | EventChoicesNotRepeatable
   deriving stock (Show, Eq, Ord, Data)
 
 data EventChoice = EventChooseN Int EventChoicesRepeatable
   deriving stock (Show, Eq, Ord, Data)
 
-data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
+data CardLimit
+  = LimitPerInvestigator Int
+  | LimitPerTrait Trait Int
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''DeckRestriction)
@@ -55,7 +63,10 @@ toCardCodePairs c =
       (\cardCode -> (cardCode, c {cdArt = unCardCode cardCode}))
       (cdAlternateCardCodes c)
 
-data IsRevelation = NoRevelation | IsRevelation | CannotBeCanceledRevelation
+data IsRevelation
+  = NoRevelation
+  | IsRevelation
+  | CannotBeCanceledRevelation
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

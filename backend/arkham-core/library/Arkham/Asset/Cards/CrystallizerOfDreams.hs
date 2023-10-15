@@ -30,13 +30,12 @@ instance HasModifiersFor CrystallizerOfDreams where
 
 instance HasAbilities CrystallizerOfDreams where
   getAbilities (CrystallizerOfDreams a) =
-    [ restrictedAbility a 1 (ControlsThis <> cardRestriction)
-        $ ReactionAbility
-          (PlayEventDiscarding #after You $ EventWithoutModifier RemoveFromGameInsteadOfDiscard)
-          Free
+    [ controlledAbility a 1 cardRestriction
+        $ freeReaction
+        $ PlayEventDiscarding #after You (EventWithoutModifier RemoveFromGameInsteadOfDiscard)
     ]
    where
-    cardRestriction = if length (assetCardsUnderneath a) < 5 then NoRestriction else Never
+    cardRestriction = mwhen (length (assetCardsUnderneath a) >= 5) Never
 
 getPlayedEvent :: [Window] -> EventId
 getPlayedEvent = \case

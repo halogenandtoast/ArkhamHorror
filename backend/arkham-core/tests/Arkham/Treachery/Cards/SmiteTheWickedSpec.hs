@@ -47,7 +47,7 @@ spec = describe "Smite the Wicked" $ do
     chooseOnlyOption "trigger smite the wicked"
     fieldAssert InvestigatorMentalTrauma (== 1) investigator
 
-  it "won't cause trauma if enemy is defeated" $ gameTest $ \investigator -> do
+  it "won't cause trauma if enemy is defeated" . gameTest $ \investigator -> do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocationWith id

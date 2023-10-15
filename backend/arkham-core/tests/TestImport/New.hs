@@ -265,6 +265,9 @@ instance HasField "countTokens" AssetId (Token -> TestAppT Int) where
 instance HasField "abilities" AssetId (TestAppT [Ability]) where
   getField = field AssetAbilities
 
+instance HasField "cardsUnderneath" AssetId (TestAppT [Card]) where
+  getField = field AssetCardsUnderneath
+
 instance HasField "owner" AssetId (TestAppT (Maybe InvestigatorId)) where
   getField = field AssetOwner
 

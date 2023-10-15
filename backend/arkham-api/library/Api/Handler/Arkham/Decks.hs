@@ -44,6 +44,7 @@ data CreateDeckPost = CreateDeckPost
   { deckId :: Text
   , deckName :: Text
   , deckUrl :: Text
+  , deckList :: ArkhamDBDecklist
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -77,12 +78,10 @@ postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
 postApiV1ArkhamDecksR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   postData <- requireCheckJsonBody
-  edeck <- fromPostData userId postData
-  case edeck of
-    Left err -> error $ T.pack err
-    Right deck -> case toDeckErrors deck of
-      [] -> runDB $ insertEntity deck
-      err -> sendStatusJSON status400 err
+  let deck = fromPostData userId postData
+  case toDeckErrors deck of
+    [] -> runDB $ insertEntity deck
+    err -> sendStatusJSON status400 err
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
@@ -137,20 +136,15 @@ putApiV1ArkhamGameDecksR gameId = do
         (arkhamGameStep + 1)
         (ActionDiff $ view actionDiffL ge)
 
-fromPostData
-  :: MonadIO m => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
+fromPostData :: UserId -> CreateDeckPost -> ArkhamDeck
 fromPostData userId CreateDeckPost {..} = do
-  edecklist <- getDeckList deckUrl
-  pure $ do
-    decklist <- edecklist
-    pure
-      $ ArkhamDeck
-        { arkhamDeckUserId = userId
-        , arkhamDeckUrl = deckUrl
-        , arkhamDeckInvestigatorName = tshow $ investigator_name decklist
-        , arkhamDeckName = deckName
-        , arkhamDeckList = decklist
-        }
+  ArkhamDeck
+    { arkhamDeckUserId = userId
+    , arkhamDeckUrl = deckUrl
+    , arkhamDeckInvestigatorName = tshow $ investigator_name deckList
+    , arkhamDeckName = deckName
+    , arkhamDeckList = deckList
+    }
 
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
 getDeckList url = liftIO $ eitherDecode <$> simpleHttp (T.unpack url)

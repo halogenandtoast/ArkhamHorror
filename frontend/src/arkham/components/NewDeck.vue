@@ -31,6 +31,7 @@ const deck = ref<string | null>(null)
 const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
+const deckList = ref<string | null>(null)
 
 function loadDeck() {
   if (!deck.value) {
@@ -48,6 +49,7 @@ function loadDeck() {
         deckUrl.value = null
       })
       .then((data) => {
+        deckList.value = data
         investigator.value = null
         investigatorError.value = null
         if (investigators.value.map(i => i.art).includes(data.investigator_code)) {
@@ -80,7 +82,7 @@ function pasteDeck(evt: ClipboardEvent) {
 async function createDeck() {
   errors.value = []
   if (deckId.value && deckName.value && deckUrl.value) {
-    newDeck(deckId.value, deckName.value, deckUrl.value).then((newDeck) => {
+    newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
       deckId.value = null
       deckName.value = null
       deckUrl.value = null

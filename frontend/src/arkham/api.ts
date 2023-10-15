@@ -63,11 +63,13 @@ export const newDeck = (
   deckId: string,
   deckName: string,
   deckUrl: string,
+  deckList: any,
 ): Promise<Deck> => api
   .post('arkham/decks', {
     deckId,
     deckName,
     deckUrl,
+    deckList,
   })
   .then((resp) => deckDecoder.decodeToPromise(resp.data))
 

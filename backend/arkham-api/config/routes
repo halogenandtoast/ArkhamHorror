@@ -13,6 +13,7 @@
       /investigators ApiV1ArkhamInvestigatorsR GET
       /decks ApiV1ArkhamDecksP:
         / ApiV1ArkhamDecksR GET POST
+        !/validate ApiV1ArkhamDecksValidateR POST
         /#ArkhamDeckId ApiV1ArkhamDeckP:
           / ApiV1ArkhamDeckR GET DELETE
           /sync ApiV1ArkhamSyncDeckR POST

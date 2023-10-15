@@ -73,6 +73,11 @@ export const newDeck = (
   })
   .then((resp) => deckDecoder.decodeToPromise(resp.data))
 
+export const validateDeck = (
+  deckList: any
+): Promise<void> => api
+  .post('arkham/decks/validate', deckList)
+
 export const deleteDeck = (deckId: string): Promise<void> => api
   .delete(`arkham/decks/${deckId}`);
 

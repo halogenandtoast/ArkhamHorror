@@ -197,9 +197,9 @@ const deckUrlToPage = (url: string): string => {
               </div>
               <div class="deck--non-view-options">
                 <div class="open-deck">
-                  <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
+                  <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
                 </div>
-                <div class="sync-deck">
+                <div v-if="deck.url" class="sync-deck">
                   <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
                 </div>
                 <div class="deck-delete">

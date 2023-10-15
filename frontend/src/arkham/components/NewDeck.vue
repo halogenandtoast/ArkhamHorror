@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import {imgsrc} from '@/arkham/helpers';
-import { fetchInvestigators, newDeck } from '@/arkham/api'
+import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
 import { CardDef } from '@/arkham/types/CardDef';
 
 const ready = ref(false)
 const emit = defineEmits(['newDeck'])
 
 fetchInvestigators().then(async (response) => {
-  investigators.value = response
-  ready.value = true
+  fetch("/cards.json").then(async (cardResponse) => {
+    cards.value = await cardResponse.json()
+    investigators.value = response
+    ready.value = true
+  })
 })
 
 interface UnimplementedCardError {
@@ -23,6 +26,7 @@ interface ArkhamDBCard {
   xp?: string
 }
 
+const cards = ref([])
 const errors = ref([])
 const investigatorError = ref<string | null>(null)
 const investigator = ref<string | null>(null)
@@ -32,6 +36,32 @@ const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const deckList = ref<string | null>(null)
+
+function loadDeckFromFile(e) {
+  const files = e.target.files || e.dataTransfer.files;
+  const deck = files[0]
+  if (deck) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      let data = JSON.parse(e.target.result)
+      deckList.value = data
+      investigator.value = null
+      investigatorError.value = null
+      if (investigators.value.map(i => i.art).includes(data.investigator_code)) {
+        if(data.meta && data.meta.alternate_front) {
+          investigator.value = data.meta.alternate_front
+        } else {
+          investigator.value = data.investigator_code
+        }
+      } else {
+        investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck`
+      }
+      deckId.value = data.id.toString()
+      deckName.value = data.name
+    }
+    reader.readAsText(deck)
+  }
+}
 
 function loadDeck() {
   if (!deck.value) {
@@ -63,6 +93,18 @@ function loadDeck() {
         }
         deckId.value = matches[4]
         deckName.value = data.name
+
+        errors.value = []
+        validateDeck(deckList.value).catch((error) => {
+          errors.value = error.response.data.map((error: UnimplementedCardError) => {
+            const match = cards.value.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
+            if (match) {
+              const { name, xp } = match
+              return xp ? `${name} (${xp})` : name
+            }
+            return "Unknown card"
+          })
+        })
       })
   } else {
     investigator.value = null
@@ -81,7 +123,7 @@ function pasteDeck(evt: ClipboardEvent) {
 
 async function createDeck() {
   errors.value = []
-  if (deckId.value && deckName.value && deckUrl.value) {
+  if (deckId.value && deckName.value) {
     newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
       deckId.value = null
       deckName.value = null
@@ -90,17 +132,14 @@ async function createDeck() {
       deck.value = null
       emit('newDeck', newDeck)
     }).catch((error) => {
-      fetch("/cards.json")
-        .then((response) => response.json()).then((data) => {
-          errors.value = error.response.data.map((error: UnimplementedCardError) => {
-            const match = data.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
-            if (match) {
-              const { name, xp } = match
-              return xp ? `${name} (${xp})` : name
-            }
-            return "Unknown card"
-          })
-        })
+      errors.value = error.response.data.map((error: UnimplementedCardError) => {
+        const match = cards.value.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
+        if (match) {
+          const { name, xp } = match
+          return xp ? `${name} (${xp})` : name
+        }
+        return "Unknown card"
+      })
     })
   }
 }
@@ -118,6 +157,7 @@ async function createDeck() {
           @paste.prevent="pasteDeck($event)"
           placeholder="ArkhamDB deck url"
         />
+        <input type="file" @change="loadDeckFromFile" />
         <input v-if="investigator" v-model="deckName" />
         <button :disabled="!investigator" @click.prevent="createDeck">Create</button>
       </div>

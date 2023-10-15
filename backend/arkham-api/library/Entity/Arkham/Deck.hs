@@ -22,7 +22,7 @@ share
 ArkhamDeck sql=arkham_decks
   Id UUID default=uuid_generate_v4()
   userId UserId OnDeleteCascade
-  url Text
+  url Text Maybe
   name Text
   investigatorName Text
   list ArkhamDBDecklist

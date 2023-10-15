@@ -8,7 +8,7 @@ export interface DeckList {
 export interface Deck {
   id: string;
   name: string;
-  url : string;
+  url : string | null;
   list: DeckList;
 }
 
@@ -24,7 +24,7 @@ export const deckDecoder = JsonDecoder.object<Deck>(
   {
     id: JsonDecoder.string,
     name: JsonDecoder.string,
-    url: JsonDecoder.string,
+    url: JsonDecoder.nullable(JsonDecoder.string),
     list: deckListDecoder,
   },
   'Deck',

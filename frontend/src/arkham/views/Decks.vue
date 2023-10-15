@@ -60,9 +60,9 @@ const deckUrlToPage = (url: string): string => {
         <img class="portrait--decklist" :src="imgsrc(`cards/${deck.list.investigator_code.replace('c', '')}.jpg`)" />
         <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
         <div class="open-deck">
-          <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
+          <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
         </div>
-        <div class="sync-deck">
+        <div v-if="deck.url" class="sync-deck">
           <a href="#" @click.prevent="sync(deck)"><font-awesome-icon icon="refresh" /></a>
         </div>
         <div class="deck-delete">

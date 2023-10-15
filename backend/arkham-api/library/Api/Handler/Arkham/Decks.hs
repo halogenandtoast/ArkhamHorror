@@ -2,6 +2,7 @@ module Api.Handler.Arkham.Decks (
   getApiV1ArkhamDecksR,
   getApiV1ArkhamDeckR,
   postApiV1ArkhamDecksR,
+  postApiV1ArkhamDecksValidateR,
   deleteApiV1ArkhamDeckR,
   putApiV1ArkhamGameDecksR,
   postApiV1ArkhamSyncDeckR,
@@ -43,8 +44,14 @@ getApiV1ArkhamDecksR = do
 data CreateDeckPost = CreateDeckPost
   { deckId :: Text
   , deckName :: Text
-  , deckUrl :: Text
+  , deckUrl :: Maybe Text
   , deckList :: ArkhamDBDecklist
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON)
+
+newtype ValidateDeckPost = ValidateDeckPost
+  { validateDeckList :: ArkhamDBDecklist
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -64,14 +71,13 @@ newtype DeckError = UnimplementedCard CardCode
 instance ToJSON DeckError where
   toJSON = genericToJSON $ defaultOptions {tagSingleConstructors = True}
 
-toDeckErrors :: ArkhamDeck -> [DeckError]
-toDeckErrors deck = flip mapMaybe cardCodes $ \cardCode ->
+toDeckErrors :: ArkhamDBDecklist -> [DeckError]
+toDeckErrors decklist = flip mapMaybe cardCodes $ \cardCode ->
   maybe
     (Just $ UnimplementedCard cardCode)
     (const Nothing)
     (Map.lookup cardCode allPlayerCards)
  where
-  decklist = arkhamDeckList deck
   cardCodes = Map.keys $ slots decklist
 
 postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
@@ -79,8 +85,16 @@ postApiV1ArkhamDecksR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   postData <- requireCheckJsonBody
   let deck = fromPostData userId postData
-  case toDeckErrors deck of
+  case toDeckErrors (arkhamDeckList deck) of
     [] -> runDB $ insertEntity deck
+    err -> sendStatusJSON status400 err
+
+postApiV1ArkhamDecksValidateR :: Handler ()
+postApiV1ArkhamDecksValidateR = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  decklist <- requireCheckJsonBody
+  case toDeckErrors decklist of
+    [] -> sendStatusJSON status200 ()
     err -> sendStatusJSON status400 err
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
@@ -179,7 +193,7 @@ postApiV1ArkhamSyncDeckR deckId = do
     $ sendStatusJSON
       Status.status400
       (JSONError "Deck does not belong to this user")
-  edecklist <- getDeckList (arkhamDeckUrl deck)
+  edecklist <- maybe (pure $ Left "no deck url") getDeckList (arkhamDeckUrl deck)
   case edecklist of
     Right decklist -> do
       runDB $ update $ \d -> do

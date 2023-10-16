@@ -1562,13 +1562,15 @@ getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
+  startingCost <- getStartingCost
   foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   pcDef = toCardDef c
-  startingCost = case cdCost pcDef of
-    Just (StaticCost n) -> n
-    Just DynamicCost -> 0
-    Nothing -> 0
+  getStartingCost = case cdCost pcDef of
+    Just (StaticCost n) -> pure n
+    Just DynamicCost -> pure 0
+    Just DiscardAmountCost -> fieldMap InvestigatorDiscard (count ((== toCardCode c) . toCardCode)) iid
+    Nothing -> pure 0
   -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
   applyModifier n _ | isNothing (cdCost pcDef) = pure n
   applyModifier n (ReduceCostOf cardMatcher m) = do

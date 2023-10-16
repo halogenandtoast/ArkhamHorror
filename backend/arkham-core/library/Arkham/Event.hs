@@ -360,6 +360,8 @@ allEvents =
       SomeEventCard stargazing1
     , SomeEventCard theStarsAreRight
     , SomeEventCard openGate
+    , --- survivor [tde]
+      SomeEventCard fortuitousDiscovery
     , -- The Search for Kadath
       --- guardian [sfk]
       SomeEventCard firstWatch

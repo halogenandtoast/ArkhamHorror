@@ -8,7 +8,9 @@ import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.EncounterCard
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.PlayerCard
 import Arkham.Scenario
 import Data.Map.Strict qualified as Map
@@ -31,6 +33,8 @@ getApiV1ArkhamCardsR = do
         else
           allInvestigatorCards
             <> Map.filter (isNothing . cdEncounterSet) allPlayerCards
+            <> Map.fromList
+              (map (toCardCode &&& id) [Locations.dreamGateWondrousJourney, Events.theStarsAreRight]) -- is encounter back so won't show correctly
     safeBCodes = ["03047b", "03084b"]
     safeDCodes = ["03084d"]
 

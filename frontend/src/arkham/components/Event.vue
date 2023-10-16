@@ -9,11 +9,14 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Event';
 
-const props = defineProps<{
+export interface Props {
   game: Game
   event: Arkham.Event
   playerId: string
-}>()
+  attached?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { attached: false })
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -73,7 +76,7 @@ const choose = (index: number) => emits('choose', index)
 </script>
 
 <template>
-  <div class="event">
+  <div class="event" :class="{ attached }">
     <img
       :src="image"
       :class="{ 'event--can-interact': cardAction !== -1 }"
@@ -143,5 +146,11 @@ const choose = (index: number) => emits('choose', index)
   }
   z-index: 1;
   pointer-events: none;
+}
+
+.attached .card {
+  object-fit: cover;
+  object-position: left bottom;
+  height: $card-width*0.6;
 }
 </style>

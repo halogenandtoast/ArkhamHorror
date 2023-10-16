@@ -249,6 +249,7 @@ const debug = useDebug()
         :playerId="playerId"
         :key="eventId"
         @choose="$emit('choose', $event)"
+        :attached="true"
       />
     </div>
     <div class="location-asset-column">

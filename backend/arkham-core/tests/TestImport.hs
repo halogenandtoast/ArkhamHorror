@@ -759,6 +759,7 @@ newGame investigator = do
         , gameIgnoreCanModifiers = False
         , gameEnemyEvading = Nothing
         , gameGitRevision = gitHash
+        , gameCardUses = mempty
         , gameAllowEmptySpaces = False
         , gamePerformTarotReadings = False
         }

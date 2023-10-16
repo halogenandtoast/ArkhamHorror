@@ -199,3 +199,6 @@ getGameInAction = gameInAction <$> getGame
 
 getIgnoreCanModifiers :: HasGame m => m Bool
 getIgnoreCanModifiers = gameIgnoreCanModifiers <$> getGame
+
+getCardUses :: HasGame m => CardCode -> m Int
+getCardUses cCode = findWithDefault 0 cCode . gameCardUses <$> getGame

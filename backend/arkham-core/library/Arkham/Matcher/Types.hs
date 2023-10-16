@@ -116,6 +116,7 @@ data InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
   | InvestigatorWithKey ArkhamKey
+  | InvestigatorWithBondedCard CardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher
@@ -584,7 +585,7 @@ instance IsLabel "treachery" CardMatcher where
   fromLabel = CardWithType TreacheryType
 
 instance IsLabel "event" CardMatcher where
-  fromLabel = CardWithType EventType
+  fromLabel = CardWithOneOf [CardWithType EventType, CardWithType EncounterEventType]
 
 instance IsLabel "skill" CardMatcher where
   fromLabel = CardWithType SkillType
@@ -593,7 +594,7 @@ instance IsLabel "enemy" CardMatcher where
   fromLabel = CardWithType EnemyType
 
 instance IsLabel "asset" CardMatcher where
-  fromLabel = CardWithType AssetType
+  fromLabel = CardWithOneOf [CardWithType AssetType, CardWithType EncounterAssetType]
 
 instance IsLabel "ally" CardMatcher where
   fromLabel = CardWithTrait Ally

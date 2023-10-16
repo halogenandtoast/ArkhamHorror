@@ -964,6 +964,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       n <- selectCount (Matcher.AssetWithTrait t)
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
+  passesLimit (MaxPerGame m) = do
+    n <- getCardUses (toCardCode c)
+    pure $ m > n
   go :: forall n. HasGame n => n Bool
   go = withDepthGuard 3 False $ do
     iids <- filter (/= iid) <$> getInvestigatorIds
@@ -1152,6 +1155,9 @@ passesCriteria iid mcard source windows' = \case
   Criteria.EncounterDeckIsNotEmpty -> do
     deck <- scenarioField ScenarioEncounterDeck
     pure $ not $ null deck
+  Criteria.EncounterDeckWith cardListMatcher -> do
+    deck <- scenarioFieldMap ScenarioEncounterDeck (map toCard . unDeck)
+    cardListMatches deck cardListMatcher
   Criteria.DoomCountIs valueMatcher -> do
     doomCount <- getDoomCount
     gameValueMatches doomCount valueMatcher
@@ -3145,6 +3151,9 @@ sourceMatches s = \case
       _ -> False
     EncounterAssetType -> case s of
       AssetSource _ -> True
+      _ -> False
+    EncounterEventType -> case s of
+      EventSource _ -> True
       _ -> False
     ActType -> case s of
       ActSource _ -> True

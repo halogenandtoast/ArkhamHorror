@@ -356,6 +356,9 @@ allEvents =
       SomeEventCard astoundingRevelation
     , --- rogue [tde]
       SomeEventCard easyMark1
+    , --- mystic [tde]
+      SomeEventCard stargazing1
+    , SomeEventCard theStarsAreRight
     , -- The Search for Kadath
       --- guardian [sfk]
       SomeEventCard firstWatch

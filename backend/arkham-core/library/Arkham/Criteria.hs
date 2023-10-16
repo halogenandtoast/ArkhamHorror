@@ -151,6 +151,7 @@ data Criterion
   | ScenarioCardHasResignAbility
   | ScenarioDeckWithCard ScenarioDeckKey
   | EncounterDeckIsNotEmpty
+  | EncounterDeckWith CardListMatcher
   | Self
   | SetAsideCardExists CardMatcher
   | OutOfPlayEnemyExists OutOfPlayZone EnemyMatcher

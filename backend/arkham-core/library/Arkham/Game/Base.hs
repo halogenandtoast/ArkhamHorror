@@ -87,6 +87,7 @@ data Game = Game
   , gameActionDiff :: [Diff.Patch]
   , gameInAction :: Bool
   , gameCards :: Map CardId Card
+  , gameCardUses :: Map CardCode Int
   , -- handling costs
     gameActiveCost :: Map ActiveCostId ActiveCost
   , -- track GitSha for debugging

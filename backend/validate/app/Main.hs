@@ -620,7 +620,7 @@ getValidationResults cards = runValidateT $ do
         (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
   -- validate events
-  for_ Events.allPlayerEventCards $ \def -> do
+  for_ (Events.allPlayerEventCards <> Events.allEncounterEventCards) $ \def -> do
     let mfunc = lookup (toCardCode def) allEvents
     when
       (isNothing mfunc)

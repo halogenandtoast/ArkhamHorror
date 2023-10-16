@@ -361,12 +361,12 @@ pattern StoryCard <- CardWithType StoryType
     StoryCard = CardWithType StoryType
 
 pattern EventCard :: CardMatcher
-pattern EventCard <- CardWithType EventType
+pattern EventCard <- CardWithOneOf [CardWithType EventType, CardWithType EncounterEventType]
   where
     EventCard = CardWithType EventType
 
 pattern AssetCard :: CardMatcher
-pattern AssetCard <- CardWithType AssetType
+pattern AssetCard <- CardWithOneOf [CardWithType AssetType, CardWithType EncounterAssetType]
   where
     AssetCard = CardWithType AssetType
 

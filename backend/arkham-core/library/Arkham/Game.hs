@@ -291,6 +291,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
         , gameInSetup = True
         , gameIgnoreCanModifiers = False -- only to be used with local
         , gameGitRevision = gitHash
+        , gameCardUses = mempty
         , gameAllowEmptySpaces = False
         , gamePerformTarotReadings = includeTarotReadings
         }
@@ -1021,6 +1022,9 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
+    InvestigatorWithBondedCard cardMatcher -> \i -> do
+      bondedCards <- field InvestigatorBondedCards (toId i)
+      pure $ any (`cardMatch` cardMatcher) bondedCards
 
 isHighestAmongst
   :: HasGame m
@@ -4161,7 +4165,13 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       Discard _ (EventTarget eid') -> eid == eid'
       _ -> False
-    pure $ g & entitiesL . eventsL %~ deleteMap eid
+    removedEntitiesF <-
+      if notNull (gameActiveAbilities g)
+        then do
+          event' <- getEvent eid
+          pure $ actionRemovedEntitiesL . eventsL %~ insertEntity event'
+        else pure id
+    pure $ g & entitiesL . eventsL %~ deleteMap eid & removedEntitiesF
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
       EnemyDefeated eid' _ _ _ -> eid == eid'
@@ -4524,7 +4534,13 @@ runGameMessage msg g = case msg of
         windows'
     case find (== card) playableCards of
       Nothing -> pure g
-      Just _ -> runGameMessage (PutCardIntoPlay iid card mtarget windows') g
+      Just _ -> do
+        g' <- runGameMessage (PutCardIntoPlay iid card mtarget windows') g
+        let
+          recordLimit g'' = \case
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            _ -> g''
+        pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
   PutCardIntoPlay iid card mtarget windows' -> do
     let cardId = toCardId card
     case card of
@@ -5581,6 +5597,14 @@ runGameMessage msg g = case msg of
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ resolve $ Revelation iid (AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
+      EncounterEventType -> do
+        sendRevelation (toJSON $ toCard card)
+        eventId <- getRandom
+        let owner = fromMaybe iid (toCardOwner card)
+        let event' = createEvent card owner eventId
+        -- Event is assumed to have a revelation ability if drawn from encounter deck
+        pushAll $ resolve $ Revelation iid (EventSource eventId)
+        pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
         sendRevelation (toJSON $ toCard card)
         locationId <- getRandom

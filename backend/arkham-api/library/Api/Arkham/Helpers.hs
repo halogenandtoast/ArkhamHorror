@@ -155,4 +155,5 @@ displayCardType = \case
   EnemyType -> "enemy"
   LocationType -> "location"
   EncounterAssetType -> "asset"
+  EncounterEventType -> "event"
   InvestigatorType -> "investigator"

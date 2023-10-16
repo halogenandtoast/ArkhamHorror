@@ -8,6 +8,7 @@ import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Enemy.Cards
+import Arkham.Event.Cards
 import Arkham.Investigator.Cards (allEncounterInvestigatorCards)
 import Arkham.Location.Cards
 import Arkham.Story.Cards
@@ -25,6 +26,7 @@ allEncounterCards =
     <> allSpecialLocationCards
     <> allEncounterTreacheryCards
     <> allEncounterAssetCards
+    <> allEncounterEventCards
     <> allStoryCards
     <> allActCards
     <> allAgendaCards

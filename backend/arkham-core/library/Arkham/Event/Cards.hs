@@ -131,6 +131,7 @@ allPlayerEventCards =
       , firstWatch
       , flare1
       , forewarned1
+      , fortuitousDiscovery
       , fortuneOrFate2
       , galvanize1
       , getOverHere
@@ -2318,6 +2319,15 @@ openGate =
           <> Criteria.EventCount (lessThan 3) (eventIs openGate)
     , cdFastWindow = Just $ DuringTurn You
     , cdKeywords = singleton Keyword.Myriad
+    }
+
+fortuitousDiscovery :: CardDef
+fortuitousDiscovery =
+  (event "06034" "Fortuitous Discovery" 0 Survivor)
+    { cdCardTraits = setFromList [Fortune, Insight]
+    , cdActions = [#investigate]
+    , cdKeywords = singleton Keyword.Myriad
+    , cdCost = Just DiscardAmountCost
     }
 
 firstWatch :: CardDef

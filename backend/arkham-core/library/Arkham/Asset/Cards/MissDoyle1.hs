@@ -22,8 +22,6 @@ newtype MissDoyle1 = MissDoyle1 AssetAttrs
 missDoyle1 :: AssetCard MissDoyle1
 missDoyle1 = ally MissDoyle1 Cards.missDoyle1 (2, 2)
 
-{- Forced: After Miss Doyle enters play: Search your bonded cards for Hope, Zeal, and Augur. Randomly choose 1 to put into play and shuffle the other 2 into your deck. When Miss Doyle leaves play, find each of those assets (even if they are out of play) and remove them from the game. -}
-
 instance HasAbilities MissDoyle1 where
   getAbilities (MissDoyle1 a) =
     [ restrictedAbility a 1 ControlsThis $ ForcedAbility $ AssetEntersPlay #when $ AssetWithId (toId a)
@@ -59,7 +57,7 @@ instance RunMessage MissDoyle1 where
       mzeal <- findCard (`cardMatch` (cardIs Cards.zeal <> CardOwnedBy iid))
       maugur <- findCard (`cardMatch` (cardIs Cards.augur <> CardOwnedBy iid))
 
-      for_ (catMaybes $ traceShowId [mhope, mzeal, maugur]) $ \cat ->
+      for_ (catMaybes [mhope, mzeal, maugur]) $ \cat ->
         push $ PlaceInBonded iid cat
 
       pure a

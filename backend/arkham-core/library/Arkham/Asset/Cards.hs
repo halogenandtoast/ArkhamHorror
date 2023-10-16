@@ -122,6 +122,7 @@ allPlayerAssetCards =
       , archaicGlyphsProphecyForetold3
       , armorOfArdennes5
       , artStudent
+      , augur
       , augustLindquist
       , azureFlame
       , azureFlame3
@@ -282,6 +283,7 @@ allPlayerAssetCards =
       , higherEducation3
       , hiredMuscle1
       , holyRosary
+      , hope
       , hyperawareness
       , hyperawareness2
       , hypnoticTherapy
@@ -347,6 +349,7 @@ allPlayerAssetCards =
       , medicalTexts
       , medicoDellaPeste
       , miskatonicArchaeologyFunding4
+      , missDoyle1
       , mistsOfRlyeh
       , mistsOfRlyeh2
       , mistsOfRlyeh4
@@ -525,6 +528,7 @@ allPlayerAssetCards =
       , wither
       , wither4
       , yaotl1
+      , zeal
       , zebulonWhateley
       , zoeysCross
       ]
@@ -3584,6 +3588,45 @@ crystallizerOfDreams =
     , cdAdditionalCost = Just (ShuffleBondedCost 1 "06025")
     , cdSlots = [#accessory]
     }
+
+missDoyle1 :: CardDef
+missDoyle1 =
+  (asset "06030" ("Miss Doyle" <:> "Cat General of Ulthar") 3 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
+    , cdLevel = 1
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdBondedWith = [(1, "06031"), (1, "06032"), (1, "06033")]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+hope :: CardDef
+hope =
+  fast
+    $ (asset "06031" "Hope" 1 Survivor)
+      { cdSkills = [#intellect, #combat]
+      , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
+      , cdKeywords = singleton (Keyword.Bonded 1 "06030")
+      }
+
+zeal :: CardDef
+zeal =
+  fast
+    $ (asset "06032" "Zeal" 1 Survivor)
+      { cdSkills = [#intellect, #agility]
+      , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
+      , cdKeywords = singleton (Keyword.Bonded 1 "06030")
+      }
+
+augur :: CardDef
+augur =
+  fast
+    $ (asset "06033" "Augur" 1 Survivor)
+      { cdSkills = [#combat, #agility]
+      , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
+      , cdKeywords = singleton (Keyword.Bonded 1 "06030")
+      }
 
 scrollOfProphecies :: CardDef
 scrollOfProphecies =

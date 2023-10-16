@@ -549,6 +549,11 @@ allAssets =
     , SomeAssetCard pendantOfTheQueen
     , --- rogue [tde]
       SomeAssetCard crystallizerOfDreams
+    , --- survivor [tde]
+      SomeAssetCard missDoyle1
+    , SomeAssetCard hope
+    , SomeAssetCard zeal
+    , SomeAssetCard augur
     , -- The Search for Kadath
       --- mystic [sfk]
       SomeAssetCard scrollOfProphecies

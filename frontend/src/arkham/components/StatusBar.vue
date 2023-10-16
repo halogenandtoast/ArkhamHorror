@@ -48,7 +48,7 @@ const portraitLabelImage = (investigatorId: string) => {
 const cardLabels = computed(() =>
   choices.value.
     flatMap<[CardLabel, number][]>((choice, index) => {
-      return choice.tag === "CardLabel" ? [[choice as CardLabel, index]] : []
+      return choice.tag === "CardLabel" ? [{choice, index}] : []
     }))
 
 const tarotLabels = computed(() =>
@@ -175,7 +175,7 @@ const label = function(body: string) {
       <div v-if="skillTestResults" class="skill-test-results-break"></div>
 
       <div v-if="cardLabels.length > 0">
-        <template v-for="[[choice, index]] in cardLabels" :key="index">
+        <template v-for="{choice, index} in cardLabels" :key="index">
           <a href='#' @click.prevent="choose(index)">
             <img class="card" :src="cardLabelImage(choice.cardCode)"/>
           </a>

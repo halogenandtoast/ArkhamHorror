@@ -167,11 +167,16 @@ instance IsCard EncounterCard where
   toCardId = ecId
   toCardOwner = ecOwner
 
-setOwner :: InvestigatorId -> Card -> Card
-setOwner iid = \case
-  PlayerCard pc -> PlayerCard (pc {pcOwner = Just iid})
-  EncounterCard ec -> EncounterCard (ec {ecOwner = Just iid})
-  VengeanceCard vc -> VengeanceCard (setOwner iid vc)
+setOwner :: CardGen m => InvestigatorId -> Card -> m Card
+setOwner iid card = do
+  let result = go card
+  replaceCard (toCardId result) result
+  pure result
+ where
+  go = \case
+    PlayerCard pc -> PlayerCard (pc {pcOwner = Just iid})
+    EncounterCard ec -> EncounterCard (ec {ecOwner = Just iid})
+    VengeanceCard vc -> VengeanceCard (go vc)
 
 data Card
   = PlayerCard PlayerCard

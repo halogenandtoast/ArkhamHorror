@@ -282,15 +282,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   , Deck (before <> rest)
                   )
               _ -> do
-                card <- genCard cardDef
-                let
-                  setOwner = \case
-                    PlayerCard pc -> PlayerCard $ pc {pcOwner = Just investigatorId}
-                    other -> other
+                card <- setOwner investigatorId =<< genCard cardDef
                 pure
                   ( PutCardIntoPlay
                       investigatorId
-                      (setOwner card)
+                      card
                       Nothing
                       (Window.defaultWindows investigatorId)
                       : msgs
@@ -310,7 +306,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         Nothing -> error "missing card"
         Just def -> do
           cs <- replicateM n (genCard def)
-          pure $ map (setOwner iid) cs
+          traverse (setOwner iid) cs
 
     pushAll
       $ startsWithMsgs
@@ -453,7 +449,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- investigatorHand is dangerous, but we want to use it here because we're
     -- only affecting cards actually in hand [I think]
     (discard, hand, deck) <-
-      if any (`elem` (modifiers')) [CannotDrawCards, CannotManipulateDeck]
+      if any (`elem` modifiers') [CannotDrawCards, CannotManipulateDeck]
         then pure (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
         else drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows [mkAfter (Window.DrawingStartingHand iid)]
@@ -925,7 +921,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     , not (investigatorDefeated || investigatorResigned) -> do
         pushAll
           $ [ CheckWindow [iid]
-              $ (mkWhen $ Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+              $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
               : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
                 <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror) | horror > 0]
             | damage > 0 || horror > 0
@@ -951,7 +947,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else
             pushAll
               $ [ CheckWindow [iid]
-                  $ (mkWhen $ Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+                  $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
                   : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
                     <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror) | horror > 0]
                 | damage > 0 || horror > 0
@@ -2671,7 +2667,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   RemoveFromDiscard iid cardId | iid == investigatorId -> do
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
   PlaceInBonded iid card | iid == investigatorId -> do
-    pure $ a & bondedCardsL %~ nub . (card :)
+    pure
+      $ a
+      & bondedCardsL
+      %~ nub
+      . (card :)
+      & handL
+      %~ filter (/= card)
+      & discardL
+      %~ filter ((/= card) . toCard)
+      & deckL
+      %~ filter ((/= card) . toCard)
+      & (foundCardsL . each %~ filter (/= card))
+      & cardsUnderneathL
+      %~ filter (/= card)
+      & decksL
+      . each
+      %~ filter (/= card)
   SufferTrauma iid physical mental | iid == investigatorId -> do
     push $ CheckTrauma iid
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental

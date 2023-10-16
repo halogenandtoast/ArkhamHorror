@@ -35,6 +35,10 @@ const betaUpdate = async () => props.updateBeta(beta.value == "On")
   border-radius: 10px;
 }
 
+input[type="radio"] {
+  display: unset;
+}
+
 h1 {
   margin: 0;
   padding: 0;

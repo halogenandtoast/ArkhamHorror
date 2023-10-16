@@ -28,6 +28,7 @@ interface ArkhamDBCard {
 
 const cards = ref([])
 const errors = ref([])
+const valid = ref(false)
 const investigatorError = ref<string | null>(null)
 const investigator = ref<string | null>(null)
 const investigators = ref<CardDef[]>([])
@@ -38,6 +39,7 @@ const deckUrl = ref<string | null>(null)
 const deckList = ref<string | null>(null)
 
 function loadDeckFromFile(e) {
+  valid.value = false
   const files = e.target.files || e.dataTransfer.files;
   const deck = files[0]
   if (deck) {
@@ -58,12 +60,15 @@ function loadDeckFromFile(e) {
       }
       deckId.value = data.id.toString()
       deckName.value = data.name
+
+      runValidations()
     }
     reader.readAsText(deck)
   }
 }
 
 function loadDeck() {
+  valid.value = false
   if (!deck.value) {
     return
   }
@@ -94,17 +99,7 @@ function loadDeck() {
         deckId.value = matches[4]
         deckName.value = data.name
 
-        errors.value = []
-        validateDeck(deckList.value).catch((error) => {
-          errors.value = error.response.data.map((error: UnimplementedCardError) => {
-            const match = cards.value.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
-            if (match) {
-              const { name, xp } = match
-              return xp ? `${name} (${xp})` : name
-            }
-            return "Unknown card"
-          })
-        })
+        runValidations()
       })
   } else {
     investigator.value = null
@@ -112,6 +107,21 @@ function loadDeck() {
     deckName.value = null
     deckUrl.value = null
   }
+}
+
+function runValidations() {
+  valid.value = false
+  errors.value = []
+  validateDeck(deckList.value).then(() => valid.value = true).catch((error) => {
+    errors.value = error.response.data.map((error: UnimplementedCardError) => {
+      const match = cards.value.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
+      if (match) {
+        const { name, xp } = match
+        return xp ? `${name} (${xp})` : name
+      }
+      return "Unknown card"
+    })
+  })
 }
 
 function pasteDeck(evt: ClipboardEvent) {
@@ -123,7 +133,7 @@ function pasteDeck(evt: ClipboardEvent) {
 
 async function createDeck() {
   errors.value = []
-  if (deckId.value && deckName.value) {
+  if (deckId.value && deckName.value && valid.value) {
     newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
       deckId.value = null
       deckName.value = null
@@ -159,7 +169,7 @@ async function createDeck() {
         />
         <input type="file" @change="loadDeckFromFile" />
         <input v-if="investigator" v-model="deckName" />
-        <button :disabled="!investigator" @click.prevent="createDeck">Create</button>
+        <button :disabled="!valid" @click.prevent="createDeck">Create</button>
       </div>
     </div>
     <div class="errors" v-if="investigatorError">

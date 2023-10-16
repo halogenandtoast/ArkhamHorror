@@ -578,6 +578,8 @@ allAssets =
       SomeAssetCard livreDeibon
     , --- rogue [eote]
       SomeAssetCard theBlackFan3
+    , --- mystic [eote]
+      SomeAssetCard dragonPole
     , -- The Scarlet Keys
       --- guardian [tsk]
       -- , SomeAssetCard runicAxe

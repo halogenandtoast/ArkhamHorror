@@ -14,6 +14,9 @@ import Arkham.SkillType
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
+evadeAction :: Cost -> AbilityType
+evadeAction cost = ActionAbility (Just Evade) (ActionCost 1 <> cost)
+
 fightAction :: Cost -> AbilityType
 fightAction cost = ActionAbility (Just Fight) (ActionCost 1 <> cost)
 

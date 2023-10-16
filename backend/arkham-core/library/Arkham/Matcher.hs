@@ -17,6 +17,9 @@ import Data.Data.Lens (biplate)
 class OneOf a where
   oneOf :: [a] -> a
 
+instance OneOf CardMatcher where
+  oneOf = CardWithOneOf
+
 instance OneOf WindowMatcher where
   oneOf = OrWindowMatcher
 

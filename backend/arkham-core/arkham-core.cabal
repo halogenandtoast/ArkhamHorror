@@ -341,6 +341,7 @@ library
       Arkham.Asset.Cards.ArmorOfArdennes5
       Arkham.Asset.Cards.ArtStudent
       Arkham.Asset.Cards.AshleighClarke
+      Arkham.Asset.Cards.Augur
       Arkham.Asset.Cards.AugustLindquist
       Arkham.Asset.Cards.AzureFlame
       Arkham.Asset.Cards.AzureFlame3
@@ -508,6 +509,7 @@ library
       Arkham.Asset.Cards.HighRoller2
       Arkham.Asset.Cards.HiredMuscle1
       Arkham.Asset.Cards.HolyRosary
+      Arkham.Asset.Cards.Hope
       Arkham.Asset.Cards.Hyperawareness
       Arkham.Asset.Cards.Hyperawareness2
       Arkham.Asset.Cards.HypnoticTherapy
@@ -578,6 +580,7 @@ library
       Arkham.Asset.Cards.MedicalTexts
       Arkham.Asset.Cards.MedicoDellaPeste
       Arkham.Asset.Cards.MiskatonicArchaeologyFunding4
+      Arkham.Asset.Cards.MissDoyle1
       Arkham.Asset.Cards.MistsOfRlyeh
       Arkham.Asset.Cards.MistsOfRlyeh2
       Arkham.Asset.Cards.MistsOfRlyeh4
@@ -761,6 +764,7 @@ library
       Arkham.Asset.Cards.Wither
       Arkham.Asset.Cards.Wither4
       Arkham.Asset.Cards.Yaotl1
+      Arkham.Asset.Cards.Zeal
       Arkham.Asset.Cards.ZebulonWhateley
       Arkham.Asset.Cards.ZoeysCross
       Arkham.Asset.Helpers

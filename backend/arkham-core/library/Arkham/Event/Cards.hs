@@ -200,6 +200,7 @@ allPlayerEventCards =
       , onTheLam
       , oops
       , oops2
+      , openGate
       , parallelFates
       , parallelFates2
       , payDay1
@@ -2304,6 +2305,19 @@ theStarsAreRight =
     , cdCost = Nothing
     , cdRevelation = IsRevelation
     , cdCardType = EncounterEventType
+    }
+
+openGate :: CardDef
+openGate =
+  (event "06029" "Open Gate" 1 Mystic)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = singleton Spell
+    , cdCriteria =
+        Just
+          $ Criteria.InvestigatorExists (You <> InvestigatorAt Anywhere)
+          <> Criteria.EventCount (lessThan 3) (eventIs openGate)
+    , cdFastWindow = Just $ DuringTurn You
+    , cdKeywords = singleton Keyword.Myriad
     }
 
 firstWatch :: CardDef

@@ -132,6 +132,7 @@ data Criterion
   | InvestigatorsHaveSpendableClues ValueMatcher
   | LocationExists LocationMatcher
   | AssetCount Int AssetMatcher
+  | EventCount ValueMatcher EventMatcher
   | LocationCount Int LocationMatcher
   | ExtendedCardCount Int ExtendedCardMatcher
   | AllUndefeatedInvestigatorsResigned

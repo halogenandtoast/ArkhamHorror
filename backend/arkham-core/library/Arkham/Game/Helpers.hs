@@ -1465,6 +1465,9 @@ passesCriteria iid mcard source windows' = \case
     (== n) <$> selectCount (Matcher.replaceYourLocation iid matcher)
   Criteria.AssetCount n matcher -> do
     (== n) <$> selectCount (Matcher.resolveAssetMatcher iid matcher)
+  Criteria.EventCount valueMatcher matcher -> do
+    n <- selectCount (Matcher.resolveEventMatcher iid matcher)
+    gameValueMatches n valueMatcher
   Criteria.ExtendedCardCount n matcher ->
     (== n) <$> selectCount matcher
   Criteria.AllLocationsMatch targetMatcher locationMatcher -> do

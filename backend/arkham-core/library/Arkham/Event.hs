@@ -359,6 +359,7 @@ allEvents =
     , --- mystic [tde]
       SomeEventCard stargazing1
     , SomeEventCard theStarsAreRight
+    , SomeEventCard openGate
     , -- The Search for Kadath
       --- guardian [sfk]
       SomeEventCard firstWatch

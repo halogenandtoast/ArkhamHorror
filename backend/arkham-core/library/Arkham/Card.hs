@@ -165,7 +165,13 @@ instance IsCard PlayerCard where
 instance IsCard EncounterCard where
   toCard = EncounterCard
   toCardId = ecId
-  toCardOwner = const Nothing
+  toCardOwner = ecOwner
+
+setOwner :: InvestigatorId -> Card -> Card
+setOwner iid = \case
+  PlayerCard pc -> PlayerCard (pc {pcOwner = Just iid})
+  EncounterCard ec -> EncounterCard (ec {ecOwner = Just iid})
+  VengeanceCard vc -> VengeanceCard (setOwner iid vc)
 
 data Card
   = PlayerCard PlayerCard

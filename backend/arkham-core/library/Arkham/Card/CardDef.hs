@@ -48,6 +48,7 @@ data EventChoice = EventChooseN Int EventChoicesRepeatable
 data CardLimit
   = LimitPerInvestigator Int
   | LimitPerTrait Trait Int
+  | MaxPerGame Int
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''DeckRestriction)

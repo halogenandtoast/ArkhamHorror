@@ -118,6 +118,7 @@ data CardType
   | EnemyType
   | LocationType
   | EncounterAssetType
+  | EncounterEventType
   | ActType
   | AgendaType
   | StoryType
@@ -134,6 +135,7 @@ encounterCardTypes =
   , EnemyType
   , LocationType
   , EncounterAssetType
+  , EncounterEventType
   , StoryType
   , ActType
   , AgendaType

@@ -1312,6 +1312,7 @@ library
       Arkham.Event.Cards.SoothingMelody
       Arkham.Event.Cards.StandTogether
       Arkham.Event.Cards.StandTogether3
+      Arkham.Event.Cards.Stargazing1
       Arkham.Event.Cards.StormOfSpirits
       Arkham.Event.Cards.StormOfSpirits3
       Arkham.Event.Cards.SureGamble3
@@ -1322,6 +1323,7 @@ library
       Arkham.Event.Cards.Teamwork
       Arkham.Event.Cards.TelescopicSight3
       Arkham.Event.Cards.ThePaintedWorld
+      Arkham.Event.Cards.TheStarsAreRight
       Arkham.Event.Cards.ThinkOnYourFeet
       Arkham.Event.Cards.ThinkOnYourFeet2
       Arkham.Event.Cards.TimeWarp2

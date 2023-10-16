@@ -308,7 +308,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     bondedCards <- concatForM bonded $ \(n, cCode) -> do
       case lookupCardDef cCode of
         Nothing -> error "missing card"
-        Just def -> replicateM n (genCard def)
+        Just def -> do
+          cs <- replicateM n (genCard def)
+          pure $ map (setOwner iid) cs
 
     pushAll
       $ startsWithMsgs

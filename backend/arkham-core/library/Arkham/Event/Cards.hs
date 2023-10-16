@@ -237,6 +237,7 @@ allPlayerEventCards =
       , soothingMelody
       , standTogether
       , standTogether3
+      , stargazing1
       , stormOfSpirits
       , stormOfSpirits3
       , sureGamble3
@@ -275,6 +276,13 @@ allPlayerEventCards =
       , youHandleThisOne
       , youOweMeOne
       ]
+
+allEncounterEventCards :: Map CardCode CardDef
+allEncounterEventCards =
+  mapFromList
+    $ concatMap
+      toCardCodePairs
+      [theStarsAreRight]
 
 onTheLam :: CardDef
 onTheLam =
@@ -2276,6 +2284,26 @@ easyMark1 =
     , cdCardTraits = singleton Trick
     , cdKeywords = singleton Keyword.Myriad
     , cdCriteria = Just $ Criteria.AnyCriterion [Criteria.CanGainResources, Criteria.CanDrawCards]
+    }
+
+stargazing1 :: CardDef
+stargazing1 =
+  (event "06027" "Stargazing" 0 Mystic)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Insight, Augury]
+    , cdLimits = [MaxPerGame 2]
+    , cdCriteria = Just $ Criteria.EncounterDeckWith $ LengthIs (atLeast 10)
+    , cdBondedWith = [(1, "06028")]
+    }
+
+theStarsAreRight :: CardDef
+theStarsAreRight =
+  (event "06028" "TheStarsAreRight" 0 Mystic)
+    { cdCardTraits = singleton Augury
+    , cdKeywords = singleton (Keyword.Bonded 1 "06027")
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterEventType
     }
 
 firstWatch :: CardDef

@@ -139,7 +139,7 @@ toSomeEntities Entities {..} =
 
 makeLensesWith suffixedFields ''Entities
 
--- Entity id generation uses the card id, thi sis only necessary for entities with non in-play effects
+-- Entity id generation uses the card id, this is only necessary for entities with non in-play effects
 addCardEntityWith
   :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities
 addCardEntityWith i f e card = case card of

@@ -8,6 +8,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.Id
 import Arkham.EncounterCard
+import Arkham.Id
 import Arkham.Json
 import Arkham.Name
 import Data.Aeson.TH
@@ -20,6 +21,7 @@ data EncounterCard = MkEncounterCard
   , ecOriginalCardCode :: CardCode
   , ecIsFlipped :: Maybe Bool
   , ecAddedPeril :: Bool
+  , ecOwner :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -47,6 +49,7 @@ lookupEncounterCard cardDef cardId =
     , ecIsFlipped =
         Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
     , ecAddedPeril = False
+    , ecOwner = Nothing
     }
 
 $(deriveJSON (aesonOptions $ Just "ec") ''EncounterCard)

@@ -39,7 +39,6 @@ instance RunMessage AkachiOnyele where
       player <- getPlayer iid
       pushIfAny assets
         $ chooseOne player
-        $ Done "Do not use Elder Sign ability"
-        : targetLabels assets (\asset -> only $ AddUses asset Charge 1)
+        $ targetLabels assets (\asset -> only $ AddUses asset Charge 1)
       pure i
     _ -> AkachiOnyele <$> runMessage msg attrs

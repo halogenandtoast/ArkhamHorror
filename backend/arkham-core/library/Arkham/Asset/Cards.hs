@@ -196,6 +196,7 @@ allPlayerAssetCards =
       , drHenryArmitage
       , drMilanChristopher
       , drWilliamTMaleson
+      , dragonPole
       , drawingThin
       , duke
       , earlSawyer
@@ -3694,6 +3695,14 @@ theBlackFan3 =
     , cdSlots = [#hand]
     , cdUnique = True
     , cdExceptional = True
+    }
+
+dragonPole :: CardDef
+dragonPole =
+  (asset "08060" "Dragon Pole" 3 Mystic)
+    { cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSkills = [#combat]
+    , cdSlots = [#hand, #hand]
     }
 
 runicAxe :: CardDef

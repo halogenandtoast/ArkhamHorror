@@ -22,7 +22,7 @@ emergencyAid = event EmergencyAid Cards.emergencyAid
 instance RunMessage EmergencyAid where
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      iids <- selectList $ colocatedWith iid
+      iids <- selectList =<< guardAffectsColocated iid
 
       player <- getPlayer iid
       choices <- flip mapMaybeM iids $ \iid' -> do

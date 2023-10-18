@@ -6,6 +6,7 @@ import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Trait
 
@@ -19,7 +20,8 @@ extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 instance RunMessage ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      firearms <- selectList $ AssetWithTrait Firearm <> AssetControlledBy (InvestigatorAt YourLocation)
+      investigatorTargets <- guardAffectsColocated iid
+      firearms <- selectList $ AssetWithTrait Firearm <> AssetControlledBy investigatorTargets
       player <- getPlayer iid
       push $ chooseOrRunOne player [targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms]
       pure e

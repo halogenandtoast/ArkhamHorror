@@ -404,7 +404,9 @@ canCommitToAnotherLocation
   :: HasGame m => InvestigatorAttrs -> LocationId -> m Bool
 canCommitToAnotherLocation attrs otherLocation = do
   modifiers <- getModifiers (toTarget attrs)
-  anyM permit modifiers
+  if any (`elem` modifiers) [CannotCommitToOtherInvestigatorsSkillTests]
+    then pure False
+    else anyM permit modifiers
  where
   permit (CanCommitToSkillTestPerformedByAnInvestigatorAt matcher) = elem otherLocation <$> select matcher
   permit _ = pure False
@@ -510,7 +512,7 @@ getInvestigatorsWithHealHorror
   -> InvestigatorMatcher
   -> m [(InvestigatorId, Message)]
 getInvestigatorsWithHealHorror a n =
-  selectList >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
+  selectList . affectsOthers >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
 
 additionalActionCovers
   :: HasGame m => Source -> Maybe Action -> AdditionalAction -> m Bool
@@ -578,3 +580,12 @@ instance HasGame m => Capable (InvestigatorAttrs -> m Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (\c -> (<=~> c) . toId) can'
+
+guardAffectsOthers :: HasGame m => InvestigatorId -> InvestigatorMatcher -> m InvestigatorMatcher
+guardAffectsOthers iid matcher = do
+  -- This is mainly for self centered
+  selfCentered <- hasModifier iid CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+  pure $ if selfCentered then matcher <> InvestigatorWithId iid else matcher
+
+guardAffectsColocated :: HasGame m => InvestigatorId -> m InvestigatorMatcher
+guardAffectsColocated iid = guardAffectsOthers iid (colocatedWith iid)

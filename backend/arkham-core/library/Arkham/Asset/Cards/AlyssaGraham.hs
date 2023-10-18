@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
 import Arkham.Matcher
 import Arkham.SkillType
 
@@ -40,18 +41,20 @@ instance RunMessage AlyssaGraham where
       pure a
     SearchFound iid target deck cards | isTarget attrs target -> do
       player <- getPlayer iid
+      canAffectOtherPlayers <- can.affect.otherPlayers iid
       pushAll
         [ FocusCards cards
-        , chooseOne
+        , chooseOrRunOne
             player
-            [ Label
+            $ [ Label
                 "Add 1 Doom to Alyssa to move card to bottom"
                 [ UnfocusCards
                 , PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
                 , MoveTopOfDeckToBottom (toSource attrs) deck 1
                 ]
-            , Label "Leave card on top" [UnfocusCards]
-            ]
+              | canAffectOtherPlayers
+              ]
+            <> [Label "Leave card on top" [UnfocusCards]]
         ]
       pure a
     _ -> AlyssaGraham <$> runMessage msg attrs

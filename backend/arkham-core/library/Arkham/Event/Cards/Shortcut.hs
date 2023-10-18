@@ -5,9 +5,11 @@ module Arkham.Event.Cards.Shortcut (
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Movement
 
@@ -20,21 +22,19 @@ shortcut = event Shortcut Cards.shortcut
 
 instance RunMessage Shortcut where
   runMessage msg e@(Shortcut attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      investigatorIds <- selectList $ colocatedWith iid
+    PlayThisEvent iid eid | eid == eventId -> do
+      investigatorIds <- selectList =<< guardAffectsOthers iid (can.move <> colocatedWith iid)
       connectingLocations <- selectList AccessibleLocation
       player <- getPlayer iid
       unless (null connectingLocations)
         $ pushAll
           [ chooseOrRunOne
               player
-              [ TargetLabel
-                (InvestigatorTarget iid')
+              [ targetLabel
+                iid'
                 [ chooseOne
                     player
-                    [ TargetLabel
-                      (LocationTarget lid')
-                      [Move $ move (toSource attrs) iid' lid']
+                    [ targetLabel lid' [Move $ move (toSource attrs) iid' lid']
                     | lid' <- connectingLocations
                     ]
                 ]

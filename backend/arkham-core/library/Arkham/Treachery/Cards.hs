@@ -97,6 +97,7 @@ allPlayerTreacheryCards =
       , rexsCurse
       , rookieMistake
       , searchingForIzzie
+      , selfCentered
       , selfDestructive
       , sellYourSoul
       , shellShock
@@ -1636,6 +1637,13 @@ detachedFromReality =
 bloodlust :: CardDef
 bloodlust =
   (weakness "06019" "Bloodlust")
+    { cdCardTraits = setFromList [Madness]
+    , cdKeywords = singleton (Keyword.Bonded 3 "06018")
+    }
+
+selfCentered :: CardDef
+selfCentered =
+  (weakness "06035" "Bloodlust")
     { cdCardTraits = setFromList [Madness]
     , cdKeywords = singleton (Keyword.Bonded 3 "06018")
     }

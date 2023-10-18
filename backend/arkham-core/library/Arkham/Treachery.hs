@@ -349,6 +349,8 @@ allTreacheries =
     , SomeTreacheryCard detachedFromReality
     , -- guardian
       SomeTreacheryCard bloodlust
+    , -- weaknesses
+      SomeTreacheryCard selfCentered
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

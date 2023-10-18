@@ -19,23 +19,21 @@ letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
 
 instance RunMessage LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid)) _ _
-      | eid == eventId -> do
-          withQueue_ $ map $ \case
-            Revelation _ (TreacherySource tid')
-              | tid == tid' ->
-                  Revelation iid (TreacherySource tid')
-            AfterRevelation _ tid' | tid == tid' -> AfterRevelation iid tid'
-            Surge _ (TreacherySource tid')
-              | tid == tid' ->
-                  Surge iid (TreacherySource tid')
-            other -> other
-          e
-            <$ pushAll
-              [ CreateEffect
-                  (toCardCode attrs)
-                  Nothing
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-              ]
+    InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid)) _ _ | eid == eventId -> do
+      withQueue_ $ map $ \case
+        Revelation _ (TreacherySource tid') | tid == tid' -> do
+          Revelation iid (TreacherySource tid')
+        AfterRevelation _ tid' | tid == tid' -> AfterRevelation iid tid'
+        Surge _ (TreacherySource tid') | tid == tid' -> do
+          Surge iid (TreacherySource tid')
+        other -> other
+
+      pushAll
+        [ CreateEffect
+            (toCardCode attrs)
+            Nothing
+            (toSource attrs)
+            (InvestigatorTarget iid)
+        ]
+      pure e
     _ -> LetMeHandleThis <$> runMessage msg attrs

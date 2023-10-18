@@ -10,9 +10,17 @@ import Arkham.Card.CardCode
 import Arkham.Id
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
+import Arkham.Modifier
 import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
+
+affectsOthers :: InvestigatorMatcher -> InvestigatorMatcher
+affectsOthers matcher =
+  InvestigatorIfThen
+    (InvestigatorWithModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage)
+    (You <> matcher)
+    matcher
 
 class OneOf a where
   oneOf :: [a] -> a

@@ -26,7 +26,7 @@ eldritchInspiration = event EldritchInspiration Cards.eldritchInspiration
 
 instance RunMessage EldritchInspiration where
   runMessage msg e@(EldritchInspiration attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       mmsg <- fromQueue $ find \case
         Do (If wType _) -> case wType of
           Window.RevealChaosTokenEffect {} -> True

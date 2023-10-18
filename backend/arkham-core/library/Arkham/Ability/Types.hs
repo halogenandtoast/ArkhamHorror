@@ -48,6 +48,9 @@ instance Sourceable Ability where
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m {abilityLimit = x}
 
+abilityTypeL :: Lens' Ability AbilityType
+abilityTypeL = lens abilityType $ \m x -> m {abilityType = x}
+
 abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
 abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
 

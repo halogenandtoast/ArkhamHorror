@@ -2138,9 +2138,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- field LocationClues locationId
     otherLocation <- field InvestigatorLocation (skillTestInvestigator skillTest)
-    canCommit <- maybe (pure False) (canCommitToAnotherLocation a) otherLocation
+    otherLocationOk <- maybe (pure False) (canCommitToAnotherLocation a) otherLocation
+    allowedToCommit <- withoutModifier investigatorId CannotCommitToOtherInvestigatorsSkillTests
     lid <- field InvestigatorLocation (toId a)
-    when (not isPerlious && (Just locationId == lid || canCommit)) $ do
+    when (not isPerlious && allowedToCommit && (Just locationId == lid || otherLocationOk)) $ do
       committedCards <- field InvestigatorCommittedCards investigatorId
       allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
       let

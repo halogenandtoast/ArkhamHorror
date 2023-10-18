@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Matcher
+import Arkham.Helpers.Investigator
 import Arkham.SkillType
 
 newtype Encyclopedia = Encyclopedia AssetAttrs
@@ -27,7 +27,7 @@ instance RunMessage Encyclopedia where
   runMessage msg a@(Encyclopedia attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      targets <- selectTargets $ colocatedWith iid
+      targets <- selectTargets =<< guardAffectsColocated iid
       player <- getPlayer iid
       push
         $ chooseOne player

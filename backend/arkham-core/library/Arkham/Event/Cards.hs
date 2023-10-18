@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Agenda.AdvancementReason
 import Arkham.Asset.Uses qualified as Uses
+import Arkham.Capability
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -341,7 +342,7 @@ dynamiteBlast =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Tactic]
     , cdAlternateCardCodes = ["01524"]
-    , cdCriteria = Just $ Criteria.CanDealDamage
+    , cdCriteria = Just Criteria.CanDealDamage
     }
 
 extraAmmunition1 :: CardDef
@@ -353,7 +354,7 @@ extraAmmunition1 =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetControlledBy (InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithTrait Firearm
     , cdAlternateCardCodes = ["01526"]
     }
@@ -399,6 +400,7 @@ crypticResearch4 =
     , cdLevel = 4
     , cdFastWindow = Just $ DuringTurn You
     , cdAlternateCardCodes = ["01543"]
+    , cdCriteria = Just $ Criteria.exists $ affectsOthers $ InvestigatorAt YourLocation <> can.draw.cards
     }
 
 elusive :: CardDef
@@ -626,6 +628,12 @@ teamwork =
   (event "02018" "Teamwork" 0 Guardian)
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#wild]
+    , cdCriteria =
+        Just
+          $ Criteria.InvestigatorExists
+          $ affectsOthers
+          $ NotInvestigator You
+          <> InvestigatorAt YourLocation
     }
 
 taunt2 :: CardDef
@@ -647,7 +655,7 @@ shortcut =
         Just
           $ Criteria.LocationExists AccessibleLocation
           <> Criteria.InvestigatorExists
-            (InvestigatorCanMove <> InvestigatorAt YourLocation)
+            (affectsOthers $ InvestigatorCanMove <> InvestigatorAt YourLocation)
     }
 
 seekingAnswers :: CardDef
@@ -697,9 +705,10 @@ emergencyAid =
           $ Criteria.AnyCriterion
             [ Criteria.AssetExists
                 $ HealableAsset ThisCard DamageType
-                $ AssetControlledBy (InvestigatorAt YourLocation)
+                $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
                 <> #ally
             , Criteria.InvestigatorExists
+                $ affectsOthers
                 $ HealableInvestigator ThisCard DamageType
                 $ InvestigatorAt YourLocation
             ]
@@ -755,6 +764,7 @@ flare1 =
     , cdCardTraits = singleton Tactic
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 1
+    , cdCriteria = Just $ Criteria.InvestigatorExists $ affectsOthers can.manipulate.deck
     }
 
 standTogether3 :: CardDef
@@ -983,7 +993,7 @@ letMeHandleThis =
         Just
           $ DrawCard
             #after
-            NotYou
+            (affectsOthers NotYou)
             ( BasicCardMatch
                 $ NonPeril
                 <> CardWithOneOf
@@ -1087,7 +1097,7 @@ heroicRescue =
         Just
           $ EnemyWouldAttack
             #when
-            (NotYou <> InvestigatorAt YourLocation)
+            (affectsOthers $ NotYou <> InvestigatorAt YourLocation)
             AnyEnemyAttack
             NonEliteEnemy
     }
@@ -2108,6 +2118,7 @@ fortuneOrFate2 =
   (event "05237" "Fortune or Fate" 2 Survivor)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Fortune, Blessed]
+    , cdLimits = [MaxPerGame 1]
     , cdFastWindow =
         Just $ PlacedDoomCounter #when (SourceIsCancelable AnySource) ScenarioCardTarget
     }
@@ -2462,11 +2473,10 @@ contraband2 =
     , cdLevel = 2
     , cdCriteria =
         Just
-          $ Criteria.AssetExists
-            ( AssetControlledBy (InvestigatorAt YourLocation)
-                <> AssetNotAtUseLimit
-                <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
-            )
+          $ Criteria.exists
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+          <> AssetNotAtUseLimit
+          <> oneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     }
 
 thinkOnYourFeet2 :: CardDef
@@ -2959,7 +2969,7 @@ hypnoticGaze2 =
         Just
           $ EnemyAttacks
             #when
-            (InvestigatorAt YourLocation)
+            (affectsOthers $ InvestigatorAt YourLocation)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
     , cdLevel = 2

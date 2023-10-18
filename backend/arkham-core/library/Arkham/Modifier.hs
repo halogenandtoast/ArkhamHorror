@@ -109,6 +109,8 @@ data ModifierType
   | CannotCancelHorror
   | CannotCancelOrIgnoreChaosToken ChaosTokenFace
   | CannotCommitCards CardMatcher
+  | CannotCommitToOtherInvestigatorsSkillTests
+  | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
   | CannotDiscoverClues
   | CannotDrawCards
   | CannotEngage InvestigatorId

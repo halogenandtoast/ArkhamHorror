@@ -25,17 +25,15 @@ instance RunMessage StandTogether where
       player <- getPlayer iid
       canAffectOthers <- can.affect.otherPlayers iid
       choices <- for investigators $ \iid' -> do
-        otherDrawing <- drawCardsIfCan iid' (toSource attrs) 2
         gainResources <- gainResourcesIfCan iid' (toSource attrs) 2
-        pure (iid', catMaybes [otherDrawing, gainResources])
+        pure (iid', maybeToList gainResources)
 
-      youDrawing <- drawCardsIfCan iid (toSource attrs) 2
       youGainResources <- gainResourcesIfCan iid (toSource attrs) 2
 
       pushAll
         $ [ chooseOrRunOne
             player
-            [targetLabel iid' $ (guard canAffectOthers *> msgs) <> catMaybes [youDrawing, youGainResources]]
+            [targetLabel iid' $ (guard canAffectOthers *> msgs) <> maybeToList youGainResources]
           | (iid', msgs) <- choices
           ]
       pure e

@@ -5,6 +5,7 @@ module Arkham.Event.Cards.StandTogether3 (
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -19,26 +20,23 @@ standTogether3 = event StandTogether3 Cards.standTogether3
 
 instance RunMessage StandTogether3 where
   runMessage msg e@(StandTogether3 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId attrs -> do
-      investigatorIds <- filter (/= iid) <$> selectList (colocatedWith iid)
-      drawing1 <- drawCards iid attrs 2
-      case investigatorIds of
-        [] -> error "should not have happened"
-        xs -> do
-          investigators <- forToSnd xs $ \x -> drawCards x attrs 2
-          player <- getPlayer iid
-          pushAll
-            [ chooseOrRunOne
-                player
-                [ TargetLabel
-                  (InvestigatorTarget x)
-                  [ TakeResources iid 2 (toSource attrs) False
-                  , TakeResources x 2 (toSource attrs) False
-                  , drawing1
-                  , drawing2
-                  ]
-                | (x, drawing2) <- investigators
-                ]
-            ]
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      investigators <- selectList $ notInvestigator iid <> colocatedWith iid
+      player <- getPlayer iid
+      canAffectOthers <- can.affect.otherPlayers iid
+      choices <- for investigators $ \iid' -> do
+        otherDrawing <- drawCardsIfCan iid' (toSource attrs) 2
+        gainResources <- gainResourcesIfCan iid' (toSource attrs) 2
+        pure (iid', catMaybes [otherDrawing, gainResources])
+
+      youDrawing <- drawCardsIfCan iid (toSource attrs) 2
+      youGainResources <- gainResourcesIfCan iid (toSource attrs) 2
+
+      pushAll
+        $ [ chooseOrRunOne
+            player
+            [targetLabel iid' $ (guard canAffectOthers *> msgs) <> catMaybes [youDrawing, youGainResources]]
+          | (iid', msgs) <- choices
+          ]
       pure e
     _ -> StandTogether3 <$> runMessage msg attrs

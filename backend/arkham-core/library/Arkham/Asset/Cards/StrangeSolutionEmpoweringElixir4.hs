@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
 import Arkham.Matcher
 
 newtype StrangeSolutionEmpoweringElixir4 = StrangeSolutionEmpoweringElixir4 AssetAttrs
@@ -24,9 +25,10 @@ instance HasAbilities StrangeSolutionEmpoweringElixir4 where
     [ controlledAbility
         attrs
         1
-        ( InvestigatorExists
+        ( exists
+            $ affectsOthers
             $ InvestigatorAt YourLocation
-            <> AnyInvestigator [InvestigatorCanGainResources, InvestigatorCanDrawCards Anyone]
+            <> oneOf [can.gain.resources, can.draw.cards]
         )
         $ actionAbilityWithCost (assetUseCost attrs Charge 1 <> exhaust attrs)
     ]
@@ -35,7 +37,7 @@ instance RunMessage StrangeSolutionEmpoweringElixir4 where
   runMessage msg a@(StrangeSolutionEmpoweringElixir4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      investigators <- selectList $ colocatedWith iid
+      investigators <- selectList $ affectsOthers $ colocatedWith iid
       choices <- forMaybeM investigators $ \i -> do
         mGainResources <- gainResourcesIfCan i source 2
         mDrawCards <- drawCardsIfCan i source 1

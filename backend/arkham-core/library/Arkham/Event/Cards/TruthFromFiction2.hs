@@ -22,7 +22,8 @@ instance RunMessage TruthFromFiction2 where
   runMessage msg e@(TruthFromFiction2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       clueOnLocation <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
-      assets <- selectList $ AssetControlledBy (colocatedWith iid) <> AssetWithUseType Uses.Secret
+      assets <-
+        selectList $ AssetControlledBy (affectsOthers $ colocatedWith iid) <> AssetWithUseType Uses.Secret
       let n = if clueOnLocation then 3 else 2
       player <- getPlayer iid
       pushAll

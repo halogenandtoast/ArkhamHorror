@@ -24,7 +24,7 @@ instance HasAbilities Encyclopedia2 where
 instance RunMessage Encyclopedia2 where
   runMessage msg a@(Encyclopedia2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <- selectTargets $ colocatedWith iid
+      targets <- selectTargets $ affectsOthers $ colocatedWith iid
       player <- getPlayer iid
       push
         $ chooseOne player

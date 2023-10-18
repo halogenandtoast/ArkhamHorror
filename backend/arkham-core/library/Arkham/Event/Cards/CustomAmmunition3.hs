@@ -42,7 +42,7 @@ instance RunMessage CustomAmmunition3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <-
         selectList
-          $ AssetControlledBy (colocatedWith iid)
+          $ AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> AssetWithTrait Firearm
           <> NotAsset
             ( AssetWithAttachedEvent

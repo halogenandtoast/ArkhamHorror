@@ -5,6 +5,7 @@ module Arkham.Event.Cards.CrackTheCase (
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -24,7 +25,7 @@ instance RunMessage CrackTheCase where
   runMessage msg e@(CrackTheCase attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
-      iids <- selectList $ investigatorAt lid <> InvestigatorCanGainResources
+      iids <- selectList $ affectsOthers $ investigatorAt lid <> can.gain.resources
       shroud <- field LocationShroud lid
       player <- getPlayer iid
       pushAll

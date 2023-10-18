@@ -11,7 +11,6 @@ import Arkham.Asset.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Movement
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -27,14 +26,13 @@ instance HasAbilities Safeguard where
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
           ( Moves
-              Timing.After
-              NotYou
+              #after
+              (affectsOthers NotYou)
               AnySource
               YourLocation
               (ConnectedFrom YourLocation <> CanEnterLocation You)
           )
-        $ ExhaustCost
-        $ toTarget a
+        $ exhaust a
     ]
 
 getMovedToLocation :: [Window] -> LocationId

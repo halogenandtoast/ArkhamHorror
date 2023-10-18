@@ -29,9 +29,7 @@ instance RunMessage GhastlyRevelation where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       clues <- field InvestigatorClues iid
-      otherInvestigators <-
-        selectList
-          $ NotInvestigator (InvestigatorWithId iid)
+      otherInvestigators <- selectList $ affectsOthers $ notInvestigator iid
       locations <- selectList Anywhere
       player <- getPlayer iid
       push

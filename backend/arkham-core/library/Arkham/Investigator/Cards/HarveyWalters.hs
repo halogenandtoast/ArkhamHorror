@@ -25,7 +25,7 @@ instance HasAbilities HarveyWalters where
   getAbilities (HarveyWalters a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 Self
-        $ freeReaction (DrawsCards #after (InvestigatorAt YourLocation) (atLeast 1))
+        $ freeReaction (DrawsCards #after (affectsOthers $ InvestigatorAt YourLocation) (atLeast 1))
     ]
 
 instance HasChaosTokenValue HarveyWalters where

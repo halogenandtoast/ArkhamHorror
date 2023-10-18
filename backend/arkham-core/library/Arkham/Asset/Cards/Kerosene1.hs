@@ -34,7 +34,9 @@ instance HasAbilities Kerosene1 where
                       $ InvestigatorAt YourLocation
                   )
               , AssetExists
-                  ( HealableAsset (toSource a) HorrorType $ AssetAt YourLocation
+                  ( HealableAsset (toSource a) HorrorType
+                      $ AssetAt YourLocation
+                      <> AssetControlledBy (affectsOthers Anyone)
                   )
               ]
         )
@@ -52,13 +54,16 @@ instance RunMessage Kerosene1 where
           <$> selectAgg
             Sum
             InvestigatorHorror
-            (colocatedWith iid <> InvestigatorWithAnyHorror)
+            (affectsOthers $ colocatedWith iid <> InvestigatorWithAnyHorror)
       totalAssetHorror <-
         getSum
           <$> selectAgg
             Sum
             AssetHorror
-            (AssetAt (locationWithInvestigator iid) <> AssetWithHorror)
+            ( AssetAt (locationWithInvestigator iid)
+                <> AssetWithHorror
+                <> AssetControlledBy (affectsOthers Anyone)
+            )
 
       let maxHorror = min 2 (totalInvestigatorHorror + totalAssetHorror)
 
@@ -91,8 +96,8 @@ instance RunMessage Kerosene1 where
       assets <-
         selectTargets
           $ HealableAsset (toSource attrs) HorrorType
-          $ AssetAt
-            (locationWithInvestigator iid)
+          $ AssetAt (locationWithInvestigator iid)
+          <> AssetControlledBy (affectsOthers Anyone)
 
       player <- getPlayer iid
       push

@@ -41,16 +41,22 @@ whenStandalone :: HasGame m => m () -> m ()
 whenStandalone = whenM getIsStandalone
 
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
-addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
-  Deck <$> flip
-    filterM
-    (unDeck deck)
-    \card -> do
-      when
-        (toCardDef card == randomWeakness)
-        (sample (NE.fromList nonCampaignOnlyWeaknesses) >>= tell . pure)
-      pure $ toCardDef card /= randomWeakness
+  :: MonadRandom m => Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+addRandomBasicWeaknessIfNeeded playerCount deck = do
+  let
+    weaknessFilter =
+      if playerCount < 2
+        then notElem MultiplayerOnly . cdDeckRestrictions
+        else const True
+  runWriterT $ do
+    Deck <$> flip
+      filterM
+      (unDeck deck)
+      \card -> do
+        when
+          (toCardDef card == randomWeakness)
+          (sample (NE.fromList $ filter weaknessFilter nonCampaignOnlyWeaknesses) >>= tell . pure)
+        pure $ toCardDef card /= randomWeakness
  where
   nonCampaignOnlyWeaknesses =
     filter (not . isCampaignOnly) allBasicWeaknesses

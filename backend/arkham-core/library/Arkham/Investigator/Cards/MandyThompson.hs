@@ -32,7 +32,7 @@ instance HasAbilities MandyThompson where
     [ playerLimit PerRound
         $ restrictedAbility attrs 1 Self
         $ freeReaction
-        $ WouldSearchDeck #when (InvestigatorAt YourLocation)
+        $ WouldSearchDeck #when (affectsOthers $ InvestigatorAt YourLocation)
         $ DeckOneOf [EncounterDeck, DeckOf ThatInvestigator]
     ]
 

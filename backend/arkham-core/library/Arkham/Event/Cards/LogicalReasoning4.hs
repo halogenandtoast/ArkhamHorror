@@ -28,7 +28,7 @@ instance RunMessage LogicalReasoning4 where
       pushAll $ replicate n $ ResolveEvent iid eid Nothing []
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
-      iids <- selectList $ colocatedWith iid
+      iids <- selectList $ affectsOthers $ colocatedWith iid
       options <- for iids $ \iid' -> do
         mHealHorror <- getHealHorrorMessage attrs 2 iid'
         terrors <- selectList $ TreacheryWithTrait Terror <> treacheryInThreatAreaOf iid'

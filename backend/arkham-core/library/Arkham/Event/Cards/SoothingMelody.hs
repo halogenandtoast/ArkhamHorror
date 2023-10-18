@@ -28,9 +28,8 @@ soothingMelody =
 instance RunMessage SoothingMelody where
   runMessage msg e@(SoothingMelody attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
-      drawing <- drawCards iid attrs 1
-      pushAll $ ResolveEventChoice iid eid 1 Nothing [] : [drawing | canDraw]
+      drawing <- drawCardsIfCan iid attrs 1
+      pushAll $ ResolveEventChoice iid eid 1 Nothing [] : toList drawing
       pure e
     ResolveEventChoice iid eid n _ _ | eid == toId attrs -> do
       modifiers' <- liftA2 (<>) (getModifiers (toCardId attrs)) (getModifiers attrs)
@@ -52,11 +51,13 @@ instance RunMessage SoothingMelody where
           $ HealableAsset (toSource attrs) DamageType
           $ AssetAt YourLocation
           <> AllyAsset
+          <> AssetControlledBy (affectsOthers Anyone)
       horrorAssets <-
         selectListMap AssetTarget
           $ HealableAsset (toSource attrs) HorrorType
           $ AssetAt YourLocation
           <> AllyAsset
+          <> AssetControlledBy (affectsOthers Anyone)
 
       let
         componentLabel component target = case target of

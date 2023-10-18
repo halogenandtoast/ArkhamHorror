@@ -34,7 +34,7 @@ instance HasAbilities LonnieRitter where
             $ HealableAsset
               (toSource a)
               DamageType
-              (AssetWithTrait Item <> AssetControlledBy (InvestigatorAt YourLocation))
+              (AssetWithTrait Item <> AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation))
         )
         $ FastAbility
         $ exhaust a
@@ -48,7 +48,7 @@ instance RunMessage LonnieRitter where
         selectList
           $ HealableAsset (toSource attrs) DamageType
           $ AssetWithTrait Item
-          <> AssetControlledBy (InvestigatorAt $ locationWithInvestigator iid)
+          <> AssetControlledBy (affectsOthers $ InvestigatorAt $ locationWithInvestigator iid)
       canHealHorror <- selectAny $ HealableAsset (toSource attrs) HorrorType (AssetWithId $ toId attrs)
       player <- getPlayer iid
       push

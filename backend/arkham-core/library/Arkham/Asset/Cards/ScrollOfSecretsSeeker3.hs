@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
@@ -22,13 +23,16 @@ scrollOfSecretsSeeker3 =
 
 instance HasAbilities ScrollOfSecretsSeeker3 where
   getAbilities (ScrollOfSecretsSeeker3 a) =
-    [ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost $ exhaust a <> assetUseCost a Secret 1
+    [ controlledAbility a 1 (exists $ affectsOthers can.manipulate.deck)
+        $ actionAbilityWithCost
+        $ exhaust a
+        <> assetUseCost a Secret 1
     ]
 
 instance RunMessage ScrollOfSecretsSeeker3 where
   runMessage msg a@(ScrollOfSecretsSeeker3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <- selectTargets $ InvestigatorWithoutModifier CannotManipulateDeck
+      targets <- selectTargets $ affectsOthers can.manipulate.deck
       player <- getPlayer iid
       push
         $ chooseOne player

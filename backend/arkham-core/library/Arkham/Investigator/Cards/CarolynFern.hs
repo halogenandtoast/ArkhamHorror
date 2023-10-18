@@ -33,8 +33,8 @@ instance HasAbilities CarolynFern where
         (Self <> Negate (TreacheryExists $ treacheryIs Treacheries.rationalThought))
         $ freeReaction
         $ OrWindowMatcher
-          [ AssetHealed #after #horror (#ally <> AssetControlledBy Anyone) (SourceOwnedBy You)
-          , InvestigatorHealed #after #horror Anyone (SourceOwnedBy You)
+          [ AssetHealed #after #horror (#ally <> AssetControlledBy (affectsOthers Anyone)) (SourceOwnedBy You)
+          , InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceOwnedBy You)
           ]
     ]
 

@@ -23,8 +23,9 @@ instance RunMessage EmergencyCache3 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       supplyAssets <-
         selectList
-          $ AssetControlledBy (InvestigatorWithId iid)
+          $ AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> AssetWithUses Supply
+          <> AssetNotAtUseLimit
       player <- getPlayer iid
       if null supplyAssets
         then pushAll [TakeResources iid 4 (toSource attrs) False]

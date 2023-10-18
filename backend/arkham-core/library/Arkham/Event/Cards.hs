@@ -330,7 +330,7 @@ dodge =
         Just
           $ EnemyAttacks
             #when
-            (InvestigatorAt YourLocation)
+            (affectsOthers $ InvestigatorAt YourLocation)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
     , cdAlternateCardCodes = ["01523", "60113"]
@@ -730,7 +730,7 @@ contraband =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetControlledBy (InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
           <> AssetNotAtUseLimit
     }
@@ -774,7 +774,9 @@ standTogether3 =
     , cdCardTraits = singleton Spirit
     , cdCriteria =
         Just
-          $ Criteria.InvestigatorExists (InvestigatorAt YourLocation <> NotYou)
+          $ Criteria.exists (InvestigatorAt YourLocation <> NotYou)
+          <> Criteria.exists
+            (affectsOthers $ InvestigatorAt YourLocation <> oneOf [can.gain.resources, can.draw.cards])
     , cdLevel = 3
     }
 
@@ -795,7 +797,7 @@ hypnoticGaze =
         Just
           $ EnemyAttacks
             #when
-            (InvestigatorAt YourLocation)
+            (affectsOthers $ InvestigatorAt YourLocation)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
     , cdAlternateCardCodes = ["60414"]
@@ -1023,8 +1025,9 @@ noStoneUnturned =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists
+          $ affectsOthers
           $ InvestigatorAt YourLocation
-          <> InvestigatorWithoutModifier CannotManipulateDeck
+          <> can.manipulate.deck
     }
 
 sleightOfHand :: CardDef
@@ -1234,7 +1237,7 @@ logicalReasoning =
                 $ InvestigatorAt YourLocation
             , Criteria.TreacheryExists
                 $ TreacheryWithTrait Terror
-                <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
+                <> TreacheryInThreatAreaOf (affectsOthers $ InvestigatorAt YourLocation)
             ]
     }
 
@@ -1262,7 +1265,7 @@ recharge2 =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetControlledBy (InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     , cdLevel = 2
     }
@@ -1331,7 +1334,17 @@ emergencyCache3 =
   (event "03239" "Emergency Cache" 0 Neutral)
     { cdCardTraits = setFromList [Supply]
     , cdLevel = 3
-    , cdCriteria = Just $ Criteria.InvestigatorExists $ InvestigatorCanGainResources <> You
+    , cdCriteria =
+        Just
+          $ Criteria.AnyCriterion
+            [ Criteria.InvestigatorExists
+                $ You
+                <> can.gain.resources
+            , Criteria.AssetExists
+                $ AssetWithUseType Uses.Supply
+                <> AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+                <> AssetNotAtUseLimit
+            ]
     }
 
 onTheHunt :: CardDef
@@ -1349,6 +1362,7 @@ guidance =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists
+          $ affectsOthers
           $ NotYou
           <> InvestigatorAt YourLocation
           <> YetToTakeTurn
@@ -1364,7 +1378,7 @@ narrowEscape =
         Just
           $ EnemyAttacks
             #when
-            (InvestigatorAt YourLocation)
+            You
             (CancelableEnemyAttack AttackOfOpportunityAttack)
             AnyEnemy
     }
@@ -1378,7 +1392,7 @@ wardOfProtection2 =
         Just
           $ DrawCard
             #when
-            Anyone
+            (affectsOthers Anyone)
             (CanCancelRevelationEffect $ BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
             EncounterDeck
     , cdLevel = 2
@@ -1431,8 +1445,9 @@ noStoneUnturned5 =
     , cdCriteria =
         Just
           $ Criteria.InvestigatorExists
+          $ affectsOthers
           $ InvestigatorAt YourLocation
-          <> InvestigatorWithoutModifier CannotManipulateDeck
+          <> can.manipulate.deck
     , cdLevel = 5
     }
 
@@ -1450,7 +1465,7 @@ timeWarp2 =
   (event "03311" "Time Warp" 1 Mystic)
     { cdCardTraits = setFromList [Spell, Paradox]
     , cdFastWindow =
-        Just $ PerformAction #after (InvestigatorAt YourLocation) AnyAction
+        Just $ PerformAction #after (affectsOthers $ InvestigatorAt YourLocation) AnyAction
     , cdCriteria = Just $ Criteria.ActionCanBeUndone <> Criteria.DuringTurn Anyone
     , cdLevel = 2
     }
@@ -1529,7 +1544,7 @@ youHandleThisOne =
   (event "04028" "\"You handle this one!\"" 0 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
-    , cdCriteria = Just (Criteria.InvestigatorExists NotYou)
+    , cdCriteria = Just (Criteria.InvestigatorExists $ affectsOthers NotYou)
     , cdFastWindow =
         Just
           $ DrawCard
@@ -1673,7 +1688,7 @@ customAmmunition3 =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetControlledBy (InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithTrait Firearm
           <> NotAsset
             (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
@@ -1845,7 +1860,7 @@ darkInsight =
           $ OrWindowMatcher
             [ DrawCard
                 #when
-                (InvestigatorAt YourLocation)
+                (affectsOthers $ InvestigatorAt YourLocation)
                 (BasicCardMatch $ NonPeril <> CardWithOneOf [IsEncounterCard, WeaknessCard])
                 AnyDeck
             , DrawCard
@@ -1969,7 +1984,7 @@ crackTheCase =
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just $ DiscoveringLastClue #after You YourLocation
     , cdCriteria =
-        Just $ Criteria.InvestigatorExists $ InvestigatorCanGainResources <> InvestigatorAt YourLocation
+        Just $ Criteria.exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
     }
 
 intelReport :: CardDef
@@ -2248,7 +2263,7 @@ youOweMeOne =
   (event "05319" "\"You owe me one!\"" 0 Rogue)
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = setFromList [Favor, Gambit]
-    , cdCriteria = Just $ Criteria.InvestigatorExists (NotInvestigator You <> HandWith AnyCards)
+    , cdCriteria = Just $ Criteria.exists (affectsOthers $ NotInvestigator You <> HandWith AnyCards)
     }
 
 lure2 :: CardDef
@@ -2383,7 +2398,7 @@ dodge2 =
         Just
           $ EnemyAttacks
             #when
-            (InvestigatorAt YourLocation)
+            (affectsOthers $ InvestigatorAt YourLocation)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
     , cdLevel = 2
@@ -2410,7 +2425,8 @@ moneyTalks2 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Favor, Gambit]
     , cdFastWindow =
-        Just $ InitiatedSkillTest #when (InvestigatorAt Anywhere) AnySkillType AnySkillTestValue
+        Just
+          $ InitiatedSkillTest #when (affectsOthers $ InvestigatorAt Anywhere) AnySkillType AnySkillTestValue
     , cdLevel = 2
     }
 
@@ -2534,7 +2550,7 @@ logicalReasoning4 =
                 $ InvestigatorAt YourLocation
             , Criteria.TreacheryExists
                 $ TreacheryWithTrait Terror
-                <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
+                <> TreacheryInThreatAreaOf (affectsOthers $ InvestigatorAt YourLocation)
             ]
     }
 
@@ -2566,7 +2582,7 @@ truthFromFiction2 =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetControlledBy (InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithUseType Uses.Secret
     }
 
@@ -2661,9 +2677,11 @@ standTogether =
     , cdSkills = [#willpower]
     , cdCriteria =
         Just
-          $ Criteria.InvestigatorExists
-          $ NotYou
-          <> InvestigatorAt YourLocation
+          $ Criteria.exists
+            ( NotYou
+                <> InvestigatorAt YourLocation
+            )
+          <> Criteria.exists (affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)
     }
 
 evidence1 :: CardDef
@@ -2983,7 +3001,7 @@ recharge4 =
     , cdCriteria =
         Just
           $ Criteria.AssetExists
-          $ AssetControlledBy (InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     , cdLevel = 4
     }
@@ -3007,12 +3025,12 @@ aTestOfWill =
             [ DrawCard
                 #when
                 (InvestigatorAt YourLocation)
-                (CanCancelRevelationEffect $ BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
+                (BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 #when
                 You
-                (CanCancelRevelationEffect $ BasicCardMatch NonWeaknessTreachery)
+                (BasicCardMatch NonWeaknessTreachery)
                 EncounterDeck
             ]
     }
@@ -3038,13 +3056,13 @@ aTestOfWill2 =
           $ OrWindowMatcher
             [ DrawCard
                 #when
-                (InvestigatorAt YourLocation)
+                (affectsOthers $ InvestigatorAt YourLocation)
                 (CanCancelRevelationEffect $ BasicCardMatch $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 #when
                 You
-                (BasicCardMatch NonWeaknessTreachery)
+                (CanCancelRevelationEffect $ BasicCardMatch NonWeaknessTreachery)
                 EncounterDeck
             ]
     , cdLevel = 2
@@ -3095,7 +3113,7 @@ lucky3 =
         Just
           $ WouldHaveSkillTestResult
             #when
-            (InvestigatorAt YourLocation)
+            (affectsOthers $ InvestigatorAt YourLocation)
             AnySkillTest
           $ FailureResult AnyValue
     , cdLevel = 3

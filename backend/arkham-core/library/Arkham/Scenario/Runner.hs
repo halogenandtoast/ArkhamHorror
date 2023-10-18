@@ -114,7 +114,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     standalone <- getIsStandalone
     if standalone
       then do
-        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
+        playerCount <- getPlayerCount
+        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
         weaknesses <- traverse genPlayerCard randomWeaknesses
         let
           mentalTrauma =

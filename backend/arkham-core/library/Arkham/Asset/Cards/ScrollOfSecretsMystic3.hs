@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
@@ -17,24 +18,20 @@ newtype ScrollOfSecretsMystic3 = ScrollOfSecretsMystic3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrollOfSecretsMystic3 :: AssetCard ScrollOfSecretsMystic3
-scrollOfSecretsMystic3 =
-  asset ScrollOfSecretsMystic3 Cards.scrollOfSecretsMystic3
+scrollOfSecretsMystic3 = asset ScrollOfSecretsMystic3 Cards.scrollOfSecretsMystic3
 
 instance HasAbilities ScrollOfSecretsMystic3 where
   getAbilities (ScrollOfSecretsMystic3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Secret 1
+    [ controlledAbility a 1 (exists $ affectsOthers can.manipulate.deck)
+        $ actionAbilityWithCost
+        $ exhaust a
+        <> assetUseCost a Secret 1
     ]
 
 instance RunMessage ScrollOfSecretsMystic3 where
   runMessage msg a@(ScrollOfSecretsMystic3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <-
-        selectTargets
-          $ InvestigatorWithoutModifier CannotManipulateDeck
+      targets <- selectTargets $ affectsOthers can.manipulate.deck
       let
         doSearch target x =
           lookAt

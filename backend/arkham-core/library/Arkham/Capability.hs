@@ -16,7 +16,11 @@ instance Capable InvestigatorMatcher where
     Capabilities
       { search = SearchCapabilities {deck = InvestigatorCanSearchDeck}
       , manipulate = ManipulateCapabilities {deck = InvestigatorWithoutModifier CannotManipulateDeck}
-      , draw = DrawCapabilities {cards = InvestigatorWithoutModifier CannotDrawCards}
+      , draw =
+          DrawCapabilities
+            { cards =
+                InvestigatorWithoutModifier CannotDrawCards <> InvestigatorWithoutModifier CannotManipulateDeck
+            }
       , gain = GainCapabilities {resources = InvestigatorWithoutModifier CannotGainResources}
       , have =
           HaveCapabilities

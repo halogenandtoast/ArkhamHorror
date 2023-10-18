@@ -8,6 +8,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Trait
 
@@ -29,7 +31,7 @@ instance HasAbilities Scrying3 where
 instance RunMessage Scrying3 where
   runMessage msg a@(Scrying3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      targets <- map InvestigatorTarget <$> getInvestigatorIds
+      targets <- selectTargets =<< guardAffectsOthers iid can.manipulate.deck
       player <- getPlayer iid
       push
         $ chooseOne

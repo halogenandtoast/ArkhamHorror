@@ -12,6 +12,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 
 newtype TheStarsAreRight = TheStarsAreRight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,7 +26,7 @@ instance RunMessage TheStarsAreRight where
   runMessage msg e@(TheStarsAreRight attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       player <- getPlayer iid
-      investigators <- getInvestigators
+      investigators <- selectList $ affectsOthers UneliminatedInvestigator
       iid' <- getActiveInvestigatorId
       investigatorsWithChoice <- for investigators $ \investigator -> do
         canDraw <- can.draw.cards investigator

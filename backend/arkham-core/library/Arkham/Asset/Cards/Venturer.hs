@@ -23,7 +23,7 @@ instance HasAbilities Venturer where
         a
         1
         ( exists
-            $ AssetControlledBy (InvestigatorAt YourLocation)
+            $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
             <> AssetOneOf [AssetWithUseType Supply, AssetWithUseType Ammo]
             <> AssetNotAtUseLimit
             <> NotAsset (AssetWithId $ toId a)
@@ -39,13 +39,13 @@ instance RunMessage Venturer where
       supplyAssets <-
         selectList
           $ AssetWithUseType Supply
-          <> AssetControlledBy (colocatedWith iid)
+          <> AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> NotAsset (AssetWithId $ toId attrs)
       ammoAssets <-
         selectList
           $ AssetWithUseType Ammo
           <> AssetControlledBy
-            (colocatedWith iid)
+            (affectsOthers $ colocatedWith iid)
       player <- getPlayer iid
       push
         $ chooseOne player

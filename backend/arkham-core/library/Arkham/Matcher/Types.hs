@@ -576,6 +576,9 @@ instance IsString CardMatcher where
 instance IsLabel "spell" CardMatcher where
   fromLabel = CardWithTrait Spell
 
+instance IsLabel "item" CardMatcher where
+  fromLabel = CardWithTrait Item
+
 instance IsLabel "survivor" CardMatcher where
   fromLabel = CardWithClass Survivor
 
@@ -978,6 +981,9 @@ data CardListMatcher
   | AnyCards
   | DifferentLengthIsAtLeast Int CardMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "item" CardListMatcher where
+  fromLabel = HasCard #item
 
 data DeckMatcher
   = EncounterDeck

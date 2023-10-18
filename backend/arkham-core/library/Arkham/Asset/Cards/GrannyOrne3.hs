@@ -34,7 +34,7 @@ instance HasAbilities GrannyOrne3 where
         $ ReactionAbility
           ( WouldHaveSkillTestResult
               Timing.When
-              (InvestigatorAt YourLocation)
+              (affectsOthers $ InvestigatorAt YourLocation)
               AnySkillTest
               (FailureResult AnyValue)
           )

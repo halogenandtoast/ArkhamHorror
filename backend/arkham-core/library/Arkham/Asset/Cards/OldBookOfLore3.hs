@@ -29,14 +29,14 @@ oldBookOfLore3 = asset OldBookOfLore3 Cards.oldBookOfLore3
 
 instance HasAbilities OldBookOfLore3 where
   getAbilities (OldBookOfLore3 a) =
-    [ controlledAbility a 1 (exists $ InvestigatorAt YourLocation <> can.search.deck)
+    [ controlledAbility a 1 (exists $ affectsOthers $ InvestigatorAt YourLocation <> can.search.deck)
         $ actionAbilityWithCost (exhaust a)
     ]
 
 instance RunMessage OldBookOfLore3 where
   runMessage msg a@(OldBookOfLore3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- selectList $ colocatedWith iid
+      investigators <- selectList $ affectsOthers $ colocatedWith iid
       let source = toAbilitySource attrs 1
       player <- getPlayer iid
       push

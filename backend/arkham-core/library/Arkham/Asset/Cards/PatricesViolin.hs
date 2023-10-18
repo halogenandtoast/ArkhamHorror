@@ -21,14 +21,15 @@ patricesViolin = asset PatricesViolin Cards.patricesViolin
 
 instance HasAbilities PatricesViolin where
   getAbilities (PatricesViolin x) =
-    [ controlledAbility x 1 (atYourLocation $ oneOf [can.gain.resources, can.draw.cards])
+    [ controlledAbility x 1 (atYourLocation $ affectsOthers $ oneOf [can.gain.resources, can.draw.cards])
         $ FastAbility (exhaust x <> HandDiscardCost 1 AnyCard)
     ]
 
 instance RunMessage PatricesViolin where
   runMessage msg a@(PatricesViolin attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- selectList $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
+      investigators <-
+        selectList $ affectsOthers $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

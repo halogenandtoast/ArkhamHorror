@@ -5,11 +5,11 @@ module Arkham.Event.Cards.NoStoneUnturned (
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype NoStoneUnturned = NoStoneUnturned EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -23,8 +23,9 @@ instance RunMessage NoStoneUnturned where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <-
         selectList
+          $ affectsOthers
           $ InvestigatorAt YourLocation
-          <> InvestigatorWithoutModifier CannotManipulateDeck
+          <> can.manipulate.deck
 
       player <- getPlayer iid
       pushAll

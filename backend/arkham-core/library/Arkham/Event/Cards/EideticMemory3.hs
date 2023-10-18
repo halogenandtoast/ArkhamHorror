@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
@@ -42,6 +43,7 @@ instance RunMessage EideticMemory3 where
         filterM
           (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)
           candidates
+      canAffectOthers <- can.affect.otherPlayers iid
       push
         $ InitiatePlayCardAsChoose
           iid
@@ -53,7 +55,7 @@ instance RunMessage EideticMemory3 where
               (CardSource $ toCard attrs)
               (CardIdTarget $ toCardId attrs)
           ]
-          RemoveChosenCardFromGame
+          (if canAffectOthers then RemoveChosenCardFromGame else LeaveChosenCard)
           playableWindows
           True
       pure e

@@ -30,7 +30,7 @@ instance HasAbilities HypnoticTherapy where
         <> exhaust a
     , restrictedAbility a 2 ControlsThis
         $ ReactionAbility
-          ( InvestigatorHealed Timing.After HorrorType Anyone
+          ( InvestigatorHealed Timing.After HorrorType (affectsOthers Anyone)
               $ SourceOwnedBy You
               <> NotSource (SourceIs (toSource a))
           )

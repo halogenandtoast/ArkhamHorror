@@ -1646,6 +1646,7 @@ selfCentered =
   (weakness "06035" "Bloodlust")
     { cdCardTraits = setFromList [Madness]
     , cdKeywords = singleton (Keyword.Bonded 3 "06018")
+    , cdDeckRestrictions = [MultiplayerOnly]
     }
 
 theHarbinger :: CardDef

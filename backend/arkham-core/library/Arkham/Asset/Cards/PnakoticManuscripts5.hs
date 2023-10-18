@@ -30,7 +30,7 @@ instance HasAbilities PnakoticManuscripts5 where
         $ ReactionAbility
           ( WouldPerformRevelationSkillTest
               Timing.When
-              (InvestigatorAt YourLocation)
+              (affectsOthers $ InvestigatorAt YourLocation)
           )
         $ UseCost (AssetWithId $ toId a) Secret 1
     , restrictedAbility a 2 ControlsThis
@@ -51,7 +51,7 @@ instance RunMessage PnakoticManuscripts5 where
       push $ skillTestModifier (toAbilitySource attrs 1) iid DoNotDrawChaosTokensForSkillChecks
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      iids <- selectList $ colocatedWith iid
+      iids <- selectList $ affectsOthers $ colocatedWith iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne

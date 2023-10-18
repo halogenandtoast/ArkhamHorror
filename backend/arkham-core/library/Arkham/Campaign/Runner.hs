@@ -71,7 +71,8 @@ defaultCampaignRunner msg a = case msg of
   AddChaosToken token -> pure $ updateAttrs a (chaosBagL %~ (token :))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid deck -> do
-    (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
+    playerCount <- getPlayerCount
+    (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
     let
       mentalTrauma =
         getSum
@@ -98,7 +99,8 @@ defaultCampaignRunner msg a = case msg of
             deckDiff
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
-    (deck', _) <- addRandomBasicWeaknessIfNeeded deck
+    playerCount <- getPlayerCount
+    (deck', _) <- addRandomBasicWeaknessIfNeeded playerCount deck
     when (mentalTrauma > 0) $ push $ SufferTrauma iid 0 mentalTrauma
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of

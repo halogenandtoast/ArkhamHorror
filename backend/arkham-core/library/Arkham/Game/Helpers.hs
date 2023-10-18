@@ -973,13 +973,13 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     iidsWithModifiers <- for iids $ \iid' -> do
       modifiers <- getModifiers (InvestigatorTarget iid')
       pure (iid', modifiers)
-    canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
+    canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) -> do
       flip anyM modifiers $ \case
         CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
-          liftA2
-            (&&)
-            (member iid <$> select iMatcher)
-            (pure $ cardMatch c cMatcher)
+          andM
+            [ liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch c cMatcher)
+            , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+            ]
         _ -> pure False
     additionalResources <-
       sum <$> traverse (field InvestigatorResources . fst) canHelpPay

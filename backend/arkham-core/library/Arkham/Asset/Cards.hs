@@ -3556,6 +3556,8 @@ solemnVow =
       { cdSkills = [#willpower, #willpower]
       , cdCardTraits = singleton Spirit
       , cdKeywords = singleton Keyword.Myriad
+      , cdCriteria =
+          Just $ Criteria.InvestigatorExists $ affectsOthers $ NotYou <> InvestigatorAt YourLocation
       }
 
 segmentOfOnyx1 :: CardDef

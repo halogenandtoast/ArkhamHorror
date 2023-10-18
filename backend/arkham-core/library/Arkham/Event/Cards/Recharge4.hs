@@ -32,10 +32,9 @@ instance RunMessage Recharge4 where
   runMessage msg e@(Recharge4 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <-
-        selectListMap AssetTarget
-          $ AssetControlledBy
-            (InvestigatorAt $ LocationWithInvestigator $ InvestigatorWithId iid)
-          <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
+        selectTargets
+          $ AssetControlledBy (affectsOthers $ colocatedWith iid)
+          <> oneOf [AssetWithTrait Spell, AssetWithTrait Relic]
       player <- getPlayer iid
       push
         $ chooseOne

@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -40,11 +41,11 @@ instance HasAbilities TetsuoMori where
         a
         1
         ( exists
+            $ affectsOthers
             $ InvestigatorAt YourLocation
             <> oneOf
-              [ InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
-                  <> DiscardWith (HasCard $ CardWithTrait Item)
-              , InvestigatorWithoutModifier CannotManipulateDeck
+              [ can.have.cards.leaveDiscard <> DiscardWith #item
+              , can.manipulate.deck
               ]
         )
         $ freeReaction (Matcher.AssetDefeated #when ByAny $ AssetWithId $ toId a)
@@ -55,11 +56,11 @@ instance RunMessage TetsuoMori where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       iids <-
         selectList
+          $ affectsOthers
           $ colocatedWith iid
           <> AnyInvestigator
-            [ InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
-                <> DiscardWith (HasCard $ CardWithTrait Item)
-            , InvestigatorWithoutModifier CannotManipulateDeck
+            [ can.have.cards.leaveDiscard <> DiscardWith #item
+            , can.manipulate.deck
             ]
       player <- getPlayer iid
       push

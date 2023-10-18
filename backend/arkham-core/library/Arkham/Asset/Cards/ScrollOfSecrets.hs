@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
@@ -21,17 +22,16 @@ scrollOfSecrets = asset ScrollOfSecrets Cards.scrollOfSecrets
 
 instance HasAbilities ScrollOfSecrets where
   getAbilities (ScrollOfSecrets a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Secret 1
+    [ controlledAbility a 1 (exists $ affectsOthers can.manipulate.deck)
+        $ actionAbilityWithCost
+        $ exhaust a
+        <> assetUseCost a Secret 1
     ]
 
 instance RunMessage ScrollOfSecrets where
   runMessage msg a@(ScrollOfSecrets attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <- selectTargets $ InvestigatorWithoutModifier CannotManipulateDeck
+      targets <- selectTargets $ affectsOthers can.manipulate.deck
       player <- getPlayer iid
       push
         $ chooseOne
@@ -76,7 +76,7 @@ instance RunMessage ScrollOfSecrets where
                       ]
                   ]
               ]
-            | card <- mapMaybe (preview _EncounterCard) cards
+            | card <- onlyEncounterCards cards
             ]
         , UnfocusCards
         ]
@@ -101,7 +101,7 @@ instance RunMessage ScrollOfSecrets where
                       [PutCardOnTopOfDeck iid deck (PlayerCard card)]
                   ]
               ]
-            | card <- mapMaybe (preview _PlayerCard) cards
+            | card <- onlyPlayerCards cards
             ]
         , UnfocusCards
         ]

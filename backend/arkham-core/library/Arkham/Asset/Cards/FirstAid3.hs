@@ -32,8 +32,12 @@ instance HasAbilities FirstAid3 where
                   ]
             , exists
                 $ oneOf
-                  [ HealableAsset (toSource x) HorrorType $ AssetAt YourLocation
-                  , HealableAsset (toSource x) DamageType $ AssetAt YourLocation
+                  [ HealableAsset (toSource x) HorrorType
+                      $ AssetAt YourLocation
+                      <> AssetControlledBy (affectsOthers Anyone)
+                  , HealableAsset (toSource x) DamageType
+                      $ AssetAt YourLocation
+                      <> AssetControlledBy (affectsOthers Anyone)
                   ]
             ]
         )
@@ -56,13 +60,13 @@ instance RunMessage FirstAid3 where
         horrorAssets <-
           select
             $ HealableAsset (toSource attrs) HorrorType
-            $ AssetAt
-            $ locationWithInvestigator iid
+            $ AssetAt (locationWithInvestigator iid)
+            <> AssetControlledBy (affectsOthers Anyone)
         damageAssets <-
           select
             $ HealableAsset (toSource attrs) DamageType
-            $ AssetAt
-            $ locationWithInvestigator iid
+            $ AssetAt (locationWithInvestigator iid)
+            <> AssetControlledBy (affectsOthers Anyone)
         let allAssets = setToList $ horrorAssets <> damageAssets
         pure $ flip map allAssets $ \asset' ->
           let target = AssetTarget asset'

@@ -1014,14 +1014,15 @@ getInvestigatorsMatching matcher = do
     HealableInvestigator _source damageType matcher' -> \i ->
       case damageType of
         DamageType -> do
-          member (toId i) <$> select (matcher' <> InvestigatorWithAnyDamage)
+          modifiers' <- getActiveInvestigatorModifiers
+          if any (`elem` modifiers') [CannotAffectOtherPlayersWithPlayerEffectsExceptDamage]
+            then member (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyDamage)
+            else member (toId i) <$> select (matcher' <> InvestigatorWithAnyDamage)
         HorrorType -> do
           modifiers' <- getActiveInvestigatorModifiers
           if CannotHealHorror `elem` modifiers'
-            then pure False
-            else
-              member (toId i)
-                <$> select (matcher' <> InvestigatorWithAnyHorror)
+            then member (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyHorror)
+            else member (toId i) <$> select (matcher' <> InvestigatorWithAnyHorror)
     InvestigatorWithMostCardsInPlayArea -> \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> \i ->
@@ -1029,6 +1030,10 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithBondedCard cardMatcher -> \i -> do
       bondedCards <- field InvestigatorBondedCards (toId i)
       pure $ any (`cardMatch` cardMatcher) bondedCards
+    InvestigatorIfThen m1 m2 m3 -> \i -> do
+      you <- view activeInvestigatorIdL <$> getGame
+      youMatch <- you <=~> m1
+      toId i <=~> (if youMatch then m2 else m3)
 
 isHighestAmongst
   :: HasGame m

@@ -32,11 +32,12 @@ instance RunMessage MedicalTexts where
         $ targetLabels investigators
         $ \iid' -> only $ beginSkillTest iid (toAbilitySource attrs 1) iid' #intellect 2
       pure a
-    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+    PassedThisSkillTest you (isAbilitySource attrs 1 -> True) -> do
       mtarget <- getSkillTestTarget
       case mtarget of
-        Just target@(InvestigatorTarget iid) ->
-          pushWhenM (canHaveDamageHealed attrs iid)
+        Just target@(InvestigatorTarget iid) -> do
+          whenM (withoutModifier you CannotAffectOtherPlayersWithPlayerEffectsExceptDamage)
+            $ pushWhenM (canHaveDamageHealed attrs iid)
             $ HealDamage target (toAbilitySource attrs 1) 1
         _ -> error "invalid target"
       pure a

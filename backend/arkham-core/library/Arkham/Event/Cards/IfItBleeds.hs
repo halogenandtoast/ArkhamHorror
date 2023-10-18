@@ -11,7 +11,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window
@@ -35,10 +34,11 @@ instance RunMessage IfItBleeds where
         horrorValue <- field EnemySanityDamage enemyId
         healMessages <-
           map snd
-            <$> getInvestigatorsWithHealHorror
-              attrs
-              horrorValue
-              (colocatedWith iid)
+            <$> ( getInvestigatorsWithHealHorror
+                    attrs
+                    horrorValue
+                    =<< guardAffectsColocated iid
+                )
         pure $ targetLabel enemyId healMessages
       player <- getPlayer iid
       push $ chooseOne player choices

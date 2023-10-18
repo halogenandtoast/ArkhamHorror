@@ -16,7 +16,7 @@ newtype FirstAid = FirstAid AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstAid :: AssetCard FirstAid
-firstAid = assetWith FirstAid Cards.firstAid (whenNoUsesL ?~ DiscardWhenNoUses)
+firstAid = assetWith FirstAid Cards.firstAid discardWhenNoUses
 
 -- validity here is a little complex, you have to be able to heal horror and an investigator exists at your location that has any horror, or the same for damage
 
@@ -50,6 +50,6 @@ instance RunMessage FirstAid where
           $ chooseOrRunOne player
           $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `member` damageInvestigators]
           <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
-      push $ chooseOne player choices
+      pushIfAny choices $ chooseOne player choices
       pure a
     _ -> FirstAid <$> runMessage msg attrs

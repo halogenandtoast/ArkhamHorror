@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
@@ -20,7 +21,11 @@ oldBookOfLore = asset OldBookOfLore Cards.oldBookOfLore
 instance HasAbilities OldBookOfLore where
   getAbilities (OldBookOfLore a) =
     [ (controlledAbility a 1)
-        (exists $ InvestigatorAt YourLocation <> InvestigatorWithoutModifier CannotManipulateDeck)
+        ( exists
+            $ affectsOthers
+            $ InvestigatorAt YourLocation
+            <> InvestigatorWithoutModifier CannotManipulateDeck
+        )
         (actionAbilityWithCost $ exhaust a)
     ]
 
@@ -28,7 +33,7 @@ instance RunMessage OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      investigators <- selectList $ colocatedWith iid
+      investigators <- selectList =<< guardAffectsColocated iid
       player <- getPlayer iid
       push
         $ chooseOne player

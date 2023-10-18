@@ -23,7 +23,7 @@ instance HasModifiersFor LetMeHandleThis where
 
 instance RunMessage LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs) = case msg of
-    AfterRevelation _ tid'
-      | effectTarget attrs == TreacheryTarget tid' ->
-          e <$ push (DisableEffect $ effectId attrs)
+    AfterRevelation _ tid' | attrs.target == TreacheryTarget tid' -> do
+      push $ disable attrs
+      pure e
     _ -> LetMeHandleThis <$> runMessage msg attrs

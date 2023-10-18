@@ -23,6 +23,11 @@ instance Capable InvestigatorMatcher where
             { cards =
                 HaveCardsCapabilities {leaveDiscard = InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile}
             }
+      , affect =
+          AffectCapabilities
+            { otherPlayers = InvestigatorWithoutModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+            }
+      , move = InvestigatorWithoutModifier CannotMove
       }
 
 data Capabilities a = Capabilities
@@ -31,6 +36,13 @@ data Capabilities a = Capabilities
   , manipulate :: ManipulateCapabilities a
   , gain :: GainCapabilities a
   , have :: HaveCapabilities a
+  , affect :: AffectCapabilities a
+  , move :: a
+  }
+  deriving stock (Functor)
+
+data AffectCapabilities a = AffectCapabilities
+  { otherPlayers :: a
   }
   deriving stock (Functor)
 

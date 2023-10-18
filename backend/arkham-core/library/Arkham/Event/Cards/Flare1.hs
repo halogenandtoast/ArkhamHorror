@@ -3,11 +3,13 @@ module Arkham.Event.Cards.Flare1 where
 import Arkham.Prelude
 
 import Arkham.Asset.Helpers
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Event.Runner
 import Arkham.Helpers.Enemy
+import Arkham.Matcher
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,7 +21,7 @@ flare1 = event Flare1 Cards.flare1
 instance RunMessage Flare1 where
   runMessage msg e@(Flare1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      investigators <- getInvestigators
+      investigators <- selectList $ affectsOthers can.manipulate.deck
       fightableEnemies <- getFightableEnemyIds iid attrs
       player <- getPlayer iid
 

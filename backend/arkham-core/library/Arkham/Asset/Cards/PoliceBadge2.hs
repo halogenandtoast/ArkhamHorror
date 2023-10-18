@@ -25,7 +25,8 @@ instance HasModifiersFor PoliceBadge2 where
 instance HasAbilities PoliceBadge2 where
   getAbilities (PoliceBadge2 a) = [restrictedAbility a 1 criteria $ FastAbility $ DiscardCost FromPlay (toTarget a)]
    where
-    criteria = ControlsThis <> InvestigatorExists (TurnInvestigator <> InvestigatorAt YourLocation)
+    criteria =
+      ControlsThis <> InvestigatorExists (affectsOthers $ TurnInvestigator <> InvestigatorAt YourLocation)
 
 instance RunMessage PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of

@@ -20,20 +20,17 @@ clarityOfMind = asset ClarityOfMind Cards.clarityOfMind
 
 instance HasAbilities ClarityOfMind where
   getAbilities (ClarityOfMind a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> InvestigatorExists
-              (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
-        )
+        (exists $ HealableInvestigator (toAbilitySource a 1) #horror $ InvestigatorAt YourLocation)
         $ actionAbilityWithCost (assetUseCost a Charge 1)
     ]
 
 instance RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
+      iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 (colocatedWith iid)
       player <- getPlayer iid
       push $ chooseOrRunOne player $ map (uncurry targetLabel . second only) iidsWithHeal
       pure a

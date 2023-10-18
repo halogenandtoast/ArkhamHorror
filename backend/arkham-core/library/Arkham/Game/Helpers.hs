@@ -1391,13 +1391,7 @@ passesCriteria iid mcard source windows' = \case
       investigatorMatcher = case discardSignifier of
         Criteria.DiscardOf matcher -> matcher
         Criteria.AnyPlayerDiscard -> Matcher.Anyone
-    investigatorIds <-
-      filterM
-        ( fmap (notElem CardsCannotLeaveYourDiscardPile)
-            . getModifiers
-            . InvestigatorTarget
-        )
-        =<< selectList investigatorMatcher
+    investigatorIds <- selectList (investigatorMatcher <> can.have.cards.leaveDiscard)
     discards <- concatMapM (field InvestigatorDiscard) investigatorIds
     let
       filteredDiscards = case traits of

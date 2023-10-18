@@ -6,6 +6,7 @@ import Arkham.Classes.HasQueue as X hiding (push, pushAll)
 import Arkham.Helpers.Message.Discard as X
 import Arkham.Message as X
 
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue qualified as Queue
@@ -15,6 +16,7 @@ import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Creation
 import Arkham.Exception
+import Arkham.Helpers.Investigator ()
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
@@ -48,7 +50,7 @@ drawCardsIfCan
   -> Int
   -> m (Maybe Message)
 drawCardsIfCan i source n = do
-  canDraw <- i <=~> InvestigatorCanDrawCards Anyone
+  canDraw <- can.draw.cards i
   drawing <- drawCards i source n
   pure $ guard canDraw $> drawing
 
@@ -375,7 +377,7 @@ takeResources iid (toSource -> source) n = TakeResources iid n source False
 gainResourcesIfCan
   :: (HasGame m, Sourceable source) => InvestigatorId -> source -> Int -> m (Maybe Message)
 gainResourcesIfCan iid source n = do
-  canGainResources <- iid <=~> InvestigatorCanGainResources
+  canGainResources <- can.gain.resources iid
   pure $ guard canGainResources $> takeResources iid source n
 
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message

@@ -394,3 +394,6 @@ allyWith f cardDef (health, sanity) g =
  where
   setHealth = healthL .~ (health <$ guard (health > 0))
   setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
+
+discardWhenNoUses :: AssetAttrs -> AssetAttrs
+discardWhenNoUses = whenNoUsesL ?~ DiscardWhenNoUses

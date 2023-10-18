@@ -10,6 +10,7 @@ import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -22,20 +23,14 @@ contraband = event Contraband Cards.contraband
 
 instance RunMessage Contraband where
   runMessage msg e@(Contraband attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      investigatorIds <-
-        selectList
-          $ InvestigatorAt
-          $ LocationWithInvestigator
-          $ InvestigatorWithId iid
+    PlayThisEvent iid eid | eid == eventId -> do
+      investigatorIds <- selectList =<< guardAffectsColocated iid
 
       ammoAssets <-
         selectList
-          ( AssetWithUseType Ammo
-              <> AssetNotAtUseLimit
-              <> AssetOneOf
-                (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
-          )
+          $ AssetWithUseType Ammo
+          <> AssetNotAtUseLimit
+          <> oneOf (map assetControlledBy investigatorIds)
 
       ammoAssetsWithUseCount <-
         map (\(c, aid) -> (Ammo, c, aid))
@@ -45,11 +40,9 @@ instance RunMessage Contraband where
 
       supplyAssets <-
         selectList
-          ( AssetWithUseType Supply
-              <> AssetNotAtUseLimit
-              <> AssetOneOf
-                (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
-          )
+          $ AssetWithUseType Supply
+          <> AssetNotAtUseLimit
+          <> oneOf (map assetControlledBy investigatorIds)
 
       supplyAssetsWithUseCount <-
         map (\(c, aid) -> (Supply, c, aid))
@@ -58,15 +51,12 @@ instance RunMessage Contraband where
             (\aid -> (,aid) . useCount <$> field AssetUses aid)
 
       player <- getPlayer iid
-      e
-        <$ pushAll
-          [ chooseOne
-              player
-              [ targetLabel
-                assetId
-                [AddUses assetId useType' assetUseCount]
-              | (useType', assetUseCount, assetId) <-
-                  ammoAssetsWithUseCount <> supplyAssetsWithUseCount
-              ]
-          ]
+      pushAll
+        [ chooseOne
+            player
+            [ targetLabel assetId [AddUses assetId useType' assetUseCount]
+            | (useType', assetUseCount, assetId) <- ammoAssetsWithUseCount <> supplyAssetsWithUseCount
+            ]
+        ]
+      pure e
     _ -> Contraband <$> runMessage msg attrs

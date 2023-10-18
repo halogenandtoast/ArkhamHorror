@@ -5,6 +5,7 @@ module Arkham.Event.Cards.StandTogether (
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -19,22 +20,23 @@ standTogether = event StandTogether Cards.standTogether
 
 instance RunMessage StandTogether where
   runMessage msg e@(StandTogether attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      investigators <-
-        selectList
-          $ NotInvestigator (InvestigatorWithId iid)
-          <> colocatedWith iid
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      investigators <- selectList $ notInvestigator iid <> colocatedWith iid
       player <- getPlayer iid
+      canAffectOthers <- can.affect.otherPlayers iid
+      choices <- for investigators $ \iid' -> do
+        otherDrawing <- drawCardsIfCan iid' (toSource attrs) 2
+        gainResources <- gainResourcesIfCan iid' (toSource attrs) 2
+        pure (iid', catMaybes [otherDrawing, gainResources])
+
+      youDrawing <- drawCardsIfCan iid (toSource attrs) 2
+      youGainResources <- gainResourcesIfCan iid (toSource attrs) 2
+
       pushAll
         $ [ chooseOrRunOne
             player
-            [ targetLabel
-                iid'
-                [ TakeResources iid' 2 (toSource attrs) False
-                , TakeResources iid 2 (toSource attrs) False
-                ]
-            ]
-          | iid' <- investigators
+            [targetLabel iid' $ (guard canAffectOthers *> msgs) <> catMaybes [youDrawing, youGainResources]]
+          | (iid', msgs) <- choices
           ]
       pure e
     _ -> StandTogether <$> runMessage msg attrs

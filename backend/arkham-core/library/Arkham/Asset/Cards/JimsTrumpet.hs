@@ -9,13 +9,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import Arkham.Damage
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -26,44 +22,34 @@ jimsTrumpet = asset JimsTrumpet Cards.jimsTrumpet
 
 instance HasAbilities JimsTrumpet where
   getAbilities (JimsTrumpet x) =
-    [ restrictedAbility
+    [ controlledAbility
         x
         1
-        ( ControlsThis
-            <> InvestigatorExists
-              ( HealableInvestigator (toSource x) HorrorType
-                  $ AnyInvestigator
-                    [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
-              )
+        ( exists
+            $ HealableInvestigator (toSource x) #horror
+            $ oneOf [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
         )
         $ ReactionAbility
-          (RevealChaosToken Timing.When Anyone (ChaosTokenFaceIs Skull))
-          (ExhaustCost $ toTarget x)
+          (RevealChaosToken #when Anyone (ChaosTokenFaceIs Skull))
+          (exhaust x)
     ]
 
 instance RunMessage JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source ->
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       case assetPlacement of
-        InPlayArea controllerId -> do
-          locationId <-
-            fieldMap
-              InvestigatorLocation
-              (fromJustNote "must be at a location")
-              controllerId
-          investigatorIdsWithHeal <-
+        InPlayArea controller -> do
+          location <- getJustLocation controller
+          investigatorsWithHeal <-
             getInvestigatorsWithHealHorror attrs 1
-              $ AnyInvestigator
-                [ colocatedWith controllerId
-                , InvestigatorAt (AccessibleFrom $ LocationWithId locationId)
-                ]
+              $ oneOf [colocatedWith controller, InvestigatorAt (accessibleFrom location)]
 
-          player <- getPlayer controllerId
+          player <- getPlayer controller
           push
             $ chooseOne
               player
               [ targetLabel iid [healHorror]
-              | (iid, healHorror) <- investigatorIdsWithHeal
+              | (iid, healHorror) <- investigatorsWithHeal
               ]
           pure a
         _ -> error "Invalid call"

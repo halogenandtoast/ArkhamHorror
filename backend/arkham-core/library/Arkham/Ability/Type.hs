@@ -74,4 +74,23 @@ data AbilityType
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
   deriving stock (Show, Ord, Eq, Data)
 
+abilityTypeCostL :: Traversal' AbilityType Cost
+abilityTypeCostL f = \case
+  FastAbility' cost action -> (`FastAbility'` action) <$> f cost
+  ReactionAbility window cost -> ReactionAbility window <$> f cost
+  ActionAbility action cost -> ActionAbility action <$> f cost
+  ActionAbilityWithSkill action skillType cost ->
+    ActionAbilityWithSkill action skillType <$> f cost
+  ActionAbilityWithBefore action actionBefore cost ->
+    ActionAbilityWithBefore action actionBefore <$> f cost
+  SilentForcedAbility window -> SilentForcedAbility window <$ f mempty
+  ForcedAbility window -> ForcedAbility window <$ f mempty
+  ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window <$> f cost
+  AbilityEffect cost -> AbilityEffect <$> f cost
+  Objective abilityType -> Objective <$> abilityTypeCostL f abilityType
+  Haunted -> pure Haunted
+  Cosmos -> pure Cosmos
+  ForcedWhen criteria abilityType ->
+    ForcedWhen criteria <$> abilityTypeCostL f abilityType
+
 $(deriveJSON defaultOptions ''AbilityType)

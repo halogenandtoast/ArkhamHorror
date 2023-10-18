@@ -27,7 +27,9 @@ instance HasAbilities MinhThiPhan where
   getAbilities (MinhThiPhan attrs) =
     [ limitedAbility (PerInvestigatorLimit PerRound 1)
         $ restrictedAbility attrs 1 Self
-        $ ReactionAbility (CommittedCard Timing.After (InvestigatorAt YourLocation) AnyCard) Free
+        $ ReactionAbility
+          (CommittedCard Timing.After (affectsOthers $ InvestigatorAt YourLocation) AnyCard)
+          Free
     ]
 
 instance HasChaosTokenValue MinhThiPhan where

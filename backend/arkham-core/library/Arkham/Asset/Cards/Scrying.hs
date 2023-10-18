@@ -8,6 +8,8 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
 newtype Scrying = Scrying AssetAttrs
@@ -25,7 +27,7 @@ instance HasAbilities Scrying where
 instance RunMessage Scrying where
   runMessage msg a@(Scrying attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      targets <- map InvestigatorTarget <$> getInvestigators
+      targets <- selectTargets =<< guardAffectsOthers iid can.manipulate.deck
       let source = toAbilitySource attrs 1
       player <- getPlayer iid
       push

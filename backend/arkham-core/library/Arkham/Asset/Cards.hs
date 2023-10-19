@@ -297,6 +297,7 @@ allPlayerAssetCards =
       , jakeWilliams
       , jennysTwin45s
       , jeromeDavids
+      , jessicaHyde1
       , jewelOfAureolus3
       , jimsTrumpet
       , joeyTheRatVigil
@@ -3647,6 +3648,16 @@ scrollOfProphecies =
     , cdCardTraits = setFromList [Item, Tome]
     , cdUses = uses Secret 4
     , cdSlots = [#hand]
+    }
+
+jessicaHyde1 :: CardDef
+jessicaHyde1 =
+  (asset "06118" ("Jessica Hyde" <:> "Wrong Place, Wrong Time") 3 Survivor)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Ally, Wayfarer, Cursed]
+    , cdLevel = 1
+    , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 tetsuoMori :: CardDef

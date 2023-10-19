@@ -85,6 +85,7 @@ allPlayerTreacheryCards =
       , indebted
       , internalInjury
       , lostSoul
+      , narcolepsy
       , nihilism
       , obsessive
       , offerYouCannotRefuse
@@ -1650,7 +1651,7 @@ selfCentered =
 
 narcolepsy :: CardDef
 narcolepsy =
-  (basicWeakness "06037" "Narcolepsu")
+  (basicWeakness "06037" "Narcolepsy")
     { cdCardTraits = setFromList [Madness]
     , cdDeckRestrictions = [MultiplayerOnly]
     }

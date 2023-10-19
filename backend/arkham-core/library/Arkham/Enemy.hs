@@ -290,6 +290,8 @@ allEnemies =
     , SomeEnemyCard watcherFromAnotherDimension
     , -- rogue
       SomeEnemyCard guardianOfTheCrystallizer
+    , -- basic weakness
+      SomeEnemyCard yourWorstNightmare
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

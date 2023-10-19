@@ -96,7 +96,7 @@ data ModifierType
   | CannotBeAttacked
   | CannotBeFlipped
   | CannotBeDefeated
-  | CanOnlyBeDefeatedBy Source
+  | CanOnlyBeDefeatedBy SourceMatcher
   | CanOnlyBeDefeatedByDamage
   | CancelAttacksByEnemies Card EnemyMatcher
   | CannotBeDamaged
@@ -301,6 +301,7 @@ data ActionTarget
   = FirstOneOfPerformed [Action]
   | IsAction Action
   | EnemyAction Action EnemyMatcher
+  | IsAnyAction
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "draw" ActionTarget where

@@ -214,6 +214,7 @@ preventedByInvestigatorModifiers iid ability = do
     MustTakeAction x -> not <$> preventsAbility x -- reads a little weird but we want only thing things x would prevent with cannot take action
     _ -> pure False
   preventsAbility = \case
+    IsAnyAction -> pure True
     FirstOneOfPerformed as -> case abilityAction ability of
       Just action
         | action `elem` as ->

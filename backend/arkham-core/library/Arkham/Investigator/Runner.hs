@@ -192,6 +192,7 @@ canDo iid action = do
       FirstOneOfPerformed {} -> pure False
       IsAction action' -> pure $ action == action'
       EnemyAction {} -> pure False
+      IsAnyAction {} -> pure True
 
   not <$> anyM prevents mods
 

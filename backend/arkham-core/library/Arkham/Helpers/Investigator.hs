@@ -346,6 +346,7 @@ matchTarget attrs (FirstOneOfPerformed as) action =
   action `elem` as && all (`notElem` investigatorActionsPerformed attrs) as
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
+matchTarget _ IsAnyAction _ = True
 
 getActionCost :: HasGame m => InvestigatorAttrs -> [Action] -> m Int
 getActionCost attrs as = do

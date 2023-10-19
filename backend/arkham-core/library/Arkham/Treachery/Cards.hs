@@ -1643,9 +1643,15 @@ bloodlust =
 
 selfCentered :: CardDef
 selfCentered =
-  (weakness "06035" "Bloodlust")
+  (basicWeakness "06035" "Self-Centered")
     { cdCardTraits = setFromList [Madness]
-    , cdKeywords = singleton (Keyword.Bonded 3 "06018")
+    , cdDeckRestrictions = [MultiplayerOnly]
+    }
+
+narcolepsy :: CardDef
+narcolepsy =
+  (basicWeakness "06037" "Narcolepsu")
+    { cdCardTraits = setFromList [Madness]
     , cdDeckRestrictions = [MultiplayerOnly]
     }
 

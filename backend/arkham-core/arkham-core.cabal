@@ -535,6 +535,7 @@ library
       Arkham.Asset.Cards.Kerosene1
       Arkham.Asset.Cards.KeyOfYs
       Arkham.Asset.Cards.KeyToTheChamber
+      Arkham.Asset.Cards.Kleptomania
       Arkham.Asset.Cards.Knife
       Arkham.Asset.Cards.KnightOfSwords3
       Arkham.Asset.Cards.Knuckleduster
@@ -1106,6 +1107,7 @@ library
       Arkham.Enemy.Cards.YogSothoth
       Arkham.Enemy.Cards.YoungDeepOne
       Arkham.Enemy.Cards.YoungPsychopath
+      Arkham.Enemy.Cards.YourWorstNightmare
       Arkham.Enemy.Creation
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
@@ -2294,6 +2296,7 @@ library
       Arkham.Treachery.Cards.Mesmerize
       Arkham.Treachery.Cards.MysteriesOfTheLodge
       Arkham.Treachery.Cards.MysteriousChanting
+      Arkham.Treachery.Cards.Narcolepsy
       Arkham.Treachery.Cards.Nihilism
       Arkham.Treachery.Cards.NobodysHome
       Arkham.Treachery.Cards.NoTurningBack

@@ -211,6 +211,8 @@ data ModifierType
   | ReduceCostOf CardMatcher Int
   | CanReduceCostOf CardMatcher Int
   | RemoveFromGameInsteadOfDiscard
+  | BondedInsteadOfDiscard
+  | BondedInsteadOfShuffle
   | RemoveKeyword Keyword
   | ReturnToHandAfterTest
   | SanityModifier Int

@@ -417,6 +417,7 @@ library
       Arkham.Asset.Cards.DoubleDouble4
       Arkham.Asset.Cards.DragonPole
       Arkham.Asset.Cards.DrawingThin
+      Arkham.Asset.Cards.DreamDiary
       Arkham.Asset.Cards.DrElliHorowitz
       Arkham.Asset.Cards.DrFrancisMorgan
       Arkham.Asset.Cards.DrHenryArmitage
@@ -2058,6 +2059,7 @@ library
       Arkham.Skill.Cards.DesperateSearch
       Arkham.Skill.Cards.DoubleOrNothing
       Arkham.Skill.Cards.Enraptured
+      Arkham.Skill.Cards.EssenceOfTheDream
       Arkham.Skill.Cards.Eureka
       Arkham.Skill.Cards.Fearless
       Arkham.Skill.Cards.Fearless2

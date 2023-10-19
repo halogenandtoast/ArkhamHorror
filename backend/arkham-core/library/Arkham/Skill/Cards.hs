@@ -9,6 +9,7 @@ import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.GameValue
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType
@@ -42,6 +43,7 @@ allPlayerSkillCards =
       , desperateSearch
       , doubleOrNothing
       , enraptured
+      , essenceOfTheDream
       , eureka
       , fearless
       , fearless2
@@ -486,6 +488,13 @@ daring =
   (skill "06111" "Daring" [#wild, #wild, #wild] Guardian)
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyTestWithActions [Action.Fight, Action.Evade]]
+    }
+
+essenceOfTheDream :: CardDef
+essenceOfTheDream =
+  (skill "06113" "Essence of the Dream" [#wild, #wild] Seeker)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdKeywords = singleton (Keyword.Bonded 1 "06112")
     }
 
 riseToTheOccasion3 :: CardDef

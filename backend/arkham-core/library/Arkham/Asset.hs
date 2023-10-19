@@ -557,7 +557,9 @@ allAssets =
     , --- basic weakness [tde]
       SomeAssetCard kleptomania
     , -- The Search for Kadath
-      --- mystic [sfk]
+      --- seeker [sfk]
+      SomeAssetCard dreamDiary
+    , --- mystic [sfk]
       SomeAssetCard scrollOfProphecies
     , --- survivor [sfk]
       SomeAssetCard jessicaHyde1

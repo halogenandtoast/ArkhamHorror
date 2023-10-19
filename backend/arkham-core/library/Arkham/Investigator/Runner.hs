@@ -72,6 +72,7 @@ import Arkham.Movement
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest
 import Arkham.Token
 import Arkham.Token qualified as Token
@@ -597,7 +598,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ]
     pure a
   AddToDiscard iid pc | iid == investigatorId -> do
-    pure $ a & discardL %~ (pc :) & (foundCardsL . each %~ filter (/= PlayerCard pc))
+    let
+      discardF =
+        if toCardCode pc == "06113"
+          then bondedCardsL %~ (toCard pc :)
+          else discardL %~ (pc :)
+    pure $ a & discardF & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | discardInvestigator handDiscard == investigatorId -> do
     push $ DoneDiscarding investigatorId
     case discardStrategy handDiscard of
@@ -644,12 +650,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             handDiscard
               { discardAmount = max 0 (discardAmount handDiscard - 1)
               }
+          discardF =
+            if toCardCode pc == "06113"
+              then bondedCardsL %~ (toCard pc :)
+              else discardL %~ (pc :)
         pure
           $ a
           & handL
           %~ filter (/= card)
-          & discardL
-          %~ (pc :)
+          & discardF
           & discardingL
           %~ fmap updateHandDiscard
       EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
@@ -677,6 +686,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     deck' <- shuffleM (card : unDeck investigatorDeck)
     push $ After msg
     pure $ a & (deckL .~ Deck deck')
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (SkillTarget aid) | iid == investigatorId -> do
+    card <- fromJustNote "missing card" . preview _PlayerCard <$> field SkillCard aid
+    if toCardCode card == "06113"
+      then pure $ a & (bondedCardsL %~ (toCard card :))
+      else do
+        deck' <- shuffleM (card : unDeck investigatorDeck)
+        push $ After msg
+        pure $ a & (deckL .~ Deck deck')
   Discarded (AssetTarget aid) _ (PlayerCard card) -> do
     -- TODO: This message is ugly, we should do something different
     -- TODO: There are a number of messages here that mean the asset is no longer in play, we should consolidate to a singular message
@@ -1759,6 +1776,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (actionsPerformedL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
     let (cs, deck') = draw n investigatorDeck
+        (cs', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) cs
     windowMsgs <-
       if null deck'
         then
@@ -1772,16 +1790,38 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ DiscardedTopOfDeck iid cs source target
          | target <- maybeToList mTarget
          ]
-    pure $ a & deckL .~ deck' & discardL %~ (reverse cs <>)
+    pure
+      $ a
+      & deckL
+      .~ deck'
+      & discardL
+      %~ (reverse cs' <>)
+      & bondedCardsL
+      <>~ map toCard essenceOfTheDreams
   DiscardUntilFirst iid' source (Deck.InvestigatorDeck iid) matcher | iid == investigatorId -> do
     (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck investigatorDeck)
+    let (discards', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) discards
     case remainingDeck of
       [] -> do
         pushAll [RequestedPlayerCard iid' source Nothing discards, DeckHasNoCards iid Nothing]
-        pure $ a & deckL .~ mempty & discardL %~ (reverse discards <>)
+        pure
+          $ a
+          & deckL
+          .~ mempty
+          & discardL
+          %~ (reverse discards' <>)
+          & bondedCardsL
+          <>~ map toCard essenceOfTheDreams
       (x : xs) -> do
         push (RequestedPlayerCard iid' source (Just x) discards)
-        pure $ a & deckL .~ Deck xs & discardL %~ (reverse discards <>)
+        pure
+          $ a
+          & deckL
+          .~ Deck xs
+          & discardL
+          %~ (reverse discards <>)
+          & bondedCardsL
+          <>~ map toCard essenceOfTheDreams
   RevealUntilFirst iid source (Deck.InvestigatorDeck iid') matcher | iid == investigatorId && iid' == iid -> do
     let (revealed, remainingDeck) = break (`cardMatch` matcher) (unDeck investigatorDeck)
     case remainingDeck of
@@ -2400,11 +2440,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (slotsL %~ flip (foldr removeFromSlots) assetIds)
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
+      & (bondedCardsL %~ filter (`notElem` cards))
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [] | iid == investigatorId -> do
     -- can't shuffle zero cards
     pure a
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | iid == toId a -> do
-    let cards' = mapMaybe (preview _PlayerCard) cards
+    let (cards', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) $ mapMaybe (preview _PlayerCard) cards
     deck <- shuffleM $ cards' <> filter (`notElem` cards') (unDeck investigatorDeck)
     pure
       $ a
@@ -2416,6 +2457,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       %~ filter (`notElem` cards)
       & bondedCardsL
       %~ filter (`notElem` cards)
+      & bondedCardsL
+      <>~ map toCard essenceOfTheDreams
       & discardL
       %~ filter ((`notElem` cards) . PlayerCard)
       & (foundCardsL . each %~ filter (`notElem` cards))
@@ -2444,7 +2487,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & foundCardsL %~ deleteMap Zone.FromDeck
   PutAllFocusedIntoDiscard _ (InvestigatorTarget iid') | iid' == investigatorId -> do
     let cards = onlyPlayerCards $ findWithDefault [] Zone.FromDiscard $ a ^. foundCardsL
-    pure $ a & foundCardsL %~ deleteMap Zone.FromDiscard & discardL <>~ cards
+    let (cards', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) cards
+    pure
+      $ a
+      & foundCardsL
+      %~ deleteMap Zone.FromDiscard
+      & discardL
+      <>~ cards'
+      & bondedCardsL
+      <>~ map toCard essenceOfTheDreams
   EndSearch iid _ (InvestigatorTarget iid') cardSources | iid == investigatorId -> do
     push (SearchEnded iid)
     let

@@ -2028,6 +2028,8 @@ getSkillsMatching matcher = do
       pure $ filter ((`elem` iids) . attr skillOwner) as
     SkillWithPlacement placement ->
       pure $ filter ((== placement) . attr skillPlacement) as
+    SkillIs cardCode ->
+      pure $ filter ((== cardCode) . toCardCode) as
     SkillMatches ms -> foldM filterMatcher as ms
     AnySkill -> pure as
     YourSkill -> do

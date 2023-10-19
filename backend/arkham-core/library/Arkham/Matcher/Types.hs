@@ -445,6 +445,7 @@ data SkillMatcher
   | SkillControlledBy InvestigatorMatcher
   | SkillWithPlacement Placement
   | SkillMatches [SkillMatcher]
+  | SkillIs CardCode
   | YourSkill
   | AnySkill
   deriving stock (Show, Eq, Ord, Data)

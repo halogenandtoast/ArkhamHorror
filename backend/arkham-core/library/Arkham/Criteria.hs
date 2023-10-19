@@ -7,6 +7,7 @@ module Arkham.Criteria (
 
 import Arkham.Prelude
 
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Cost.Status
 import Arkham.Criteria.Override
@@ -167,6 +168,7 @@ data Criterion
   | DuringPhase PhaseMatcher
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
   | CanMoveThis GridDirection
+  | NotYetRecorded CampaignLogKey
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

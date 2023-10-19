@@ -1010,3 +1010,6 @@ targetToCard = \case
   SearchedCardTarget cId -> getCard cId
   CardIdTarget cId -> getCard cId
   unknown -> error $ "unhandled: " <> show unknown
+
+sourceToCard :: HasGame m => Source -> m Card
+sourceToCard = targetToCard . sourceToTarget

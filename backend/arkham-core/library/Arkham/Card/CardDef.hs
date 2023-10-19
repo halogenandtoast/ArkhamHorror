@@ -34,7 +34,8 @@ data DeckRestriction
   | MultiplayerOnly
   deriving stock (Show, Eq, Ord, Data)
 
-data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
+data AttackOfOpportunityModifier
+  = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Ord, Data)
 
 data EventChoicesRepeatable

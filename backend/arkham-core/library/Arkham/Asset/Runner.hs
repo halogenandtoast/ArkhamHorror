@@ -244,6 +244,8 @@ instance RunMessage AssetAttrs where
       _ -> pure $ a & exhaustedL .~ False
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL <>~ cards
+    AddToDiscard _ c -> do
+      pure $ a & cardsUnderneathL %~ filter (/= toCard c)
     CommitCard _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= card)
     AddToHand _ cards -> do

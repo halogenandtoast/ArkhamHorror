@@ -131,6 +131,7 @@ allPlayerEventCards =
       , fightOrFlight
       , firstWatch
       , flare1
+      , followed
       , forewarned1
       , fortuitousDiscovery
       , fortuneOrFate2
@@ -2364,12 +2365,22 @@ firstWatch =
     , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
     }
 
+followed :: CardDef
+followed =
+  (event "06114" "Followed" 2 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = singleton Tactic
+    , cdActions = [#investigate]
+    , cdCriteria = Just $ Criteria.exists $ EnemyAt YourLocation
+    }
+
 readTheSigns :: CardDef
 readTheSigns =
   (event "06117" "Read the Signs" 2 Mystic)
     { cdSkills = [#willpower, #intellect]
     , cdActions = [#investigate]
     , cdCardTraits = setFromList [Spell]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
 etherealForm :: CardDef

@@ -25,12 +25,10 @@ instance RunMessage Investigator where
 lookupInvestigator :: InvestigatorId -> PlayerId -> Investigator
 lookupInvestigator iid pid = case lookup (toCardCode iid) allInvestigators of
   Nothing -> lookupPromoInvestigator iid pid
-  Just c -> toInvestigator c pid
+  Just c -> overAttrs (artL .~ toCardCode iid) $ toInvestigator c pid
 
 normalizeInvestigatorId :: InvestigatorId -> InvestigatorId
-normalizeInvestigatorId iid
-  | toCardCode iid `elem` Map.keys allInvestigators = iid
-  | otherwise = findWithDefault (error "Missing investigator") iid promoInvestigators
+normalizeInvestigatorId iid = findWithDefault iid iid promoInvestigators
 
 {- | Handle promo investigators
 

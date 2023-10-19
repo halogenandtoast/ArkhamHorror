@@ -365,6 +365,8 @@ allEvents =
     , -- The Search for Kadath
       --- guardian [sfk]
       SomeEventCard firstWatch
+    , --- rogue [sfk]
+      SomeEventCard followed
     , --- mystic [sfk]
       SomeEventCard readTheSigns
     , -- A Thousand Shapes of Horror

@@ -208,6 +208,7 @@ data ModifierType
   | NoDamageDealt
   | NonDirectHorrorMustBeAssignToThisFirst
   | PlaceOnBottomOfDeckInsteadOfDiscard
+  | LeaveCardWhereItIs
   | ReduceCostOf CardMatcher Int
   | CanReduceCostOf CardMatcher Int
   | RemoveFromGameInsteadOfDiscard

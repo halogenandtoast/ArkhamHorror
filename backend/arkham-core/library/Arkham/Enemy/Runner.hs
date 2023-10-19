@@ -902,9 +902,11 @@ instance RunMessage EnemyAttrs where
                 _ -> First Nothing
               mOnlyBeDefeatedByModifier =
                 getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-              validDefeat =
-                canBeDefeated
-                  && maybe True (== source) mOnlyBeDefeatedByModifier
+            validDefeat <-
+              ( canBeDefeated
+                  &&
+                )
+                <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
             when validDefeat $ do
               modifiedHealth <- getModifiedHealth a
               when (enemyDamage a + amount' >= modifiedHealth) $ do
@@ -963,10 +965,13 @@ instance RunMessage EnemyAttrs where
           _ -> First Nothing
         mOnlyBeDefeatedByModifier =
           getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-        validDefeat =
-          canBeDefeated
-            && maybe True (== source) mOnlyBeDefeatedByModifier
-            && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
+      validDefeat <-
+        ( ( canBeDefeated
+              && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
+          )
+            &&
+          )
+          <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
       when validDefeat
         $ push
         $ EnemyDefeated

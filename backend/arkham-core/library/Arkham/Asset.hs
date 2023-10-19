@@ -554,6 +554,8 @@ allAssets =
     , SomeAssetCard hope
     , SomeAssetCard zeal
     , SomeAssetCard augur
+    , --- basic weakness [tde]
+      SomeAssetCard kleptomania
     , -- The Search for Kadath
       --- mystic [sfk]
       SomeAssetCard scrollOfProphecies

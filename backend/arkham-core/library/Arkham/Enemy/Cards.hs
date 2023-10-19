@@ -56,6 +56,7 @@ allPlayerEnemyCards =
       , tonysQuarry
       , watcherFromAnotherDimension
       , guardianOfTheCrystallizer
+      , yourWorstNightmare
       , tommyMalloy
       ]
 
@@ -1508,6 +1509,14 @@ guardianOfTheCrystallizer =
   (weakness "06025" "Guardian of the Crystallizer")
     { cdCardTraits = singleton Monster
     , cdKeywords = setFromList [Keyword.Bonded 1 "06024", Keyword.Hunter]
+    }
+
+yourWorstNightmare :: CardDef
+yourWorstNightmare =
+  (basicWeakness "06028" "Your Worst Nightmare")
+    { cdCardTraits = singleton Monster
+    , cdKeywords = singleton Keyword.Hunter
+    , cdDeckRestrictions = [MultiplayerOnly]
     }
 
 corpseHungryGhoul :: CardDef

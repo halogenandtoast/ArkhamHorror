@@ -351,6 +351,7 @@ allTreacheries =
       SomeTreacheryCard bloodlust
     , -- weaknesses
       SomeTreacheryCard selfCentered
+    , SomeTreacheryCard narcolepsy
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

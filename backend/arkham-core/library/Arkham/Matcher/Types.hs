@@ -201,6 +201,9 @@ instance IsString AssetMatcher where
 instance IsLabel "ally" AssetMatcher where
   fromLabel = AssetWithTrait Ally
 
+instance IsLabel "item" AssetMatcher where
+  fromLabel = AssetWithTrait Ally
+
 instance Semigroup AssetMatcher where
   AnyAsset <> x = x
   x <> AnyAsset = x

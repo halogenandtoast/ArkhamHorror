@@ -31,7 +31,7 @@ instance HasModifiersFor SearchForTheStrangerV2 where
     pure
       $ toModifiers
         a
-        [CanOnlyBeDefeatedBy (EnemySource eid) | isTheManInThePallidMask]
+        [CanOnlyBeDefeatedBy (SourceIs $ EnemySource eid) | isTheManInThePallidMask]
   getModifiersFor (InvestigatorTarget _) (SearchForTheStrangerV2 a) =
     pure $ toModifiers a [CannotDiscoverClues]
   getModifiersFor _ _ = pure []

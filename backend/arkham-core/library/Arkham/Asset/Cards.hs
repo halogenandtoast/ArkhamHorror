@@ -304,6 +304,7 @@ allPlayerAssetCards =
       , keenEye3
       , kerosene1
       , keyOfYs
+      , kleptomania
       , knife
       , knightOfSwords3
       , knuckleduster
@@ -3629,6 +3630,15 @@ augur =
       , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
       }
+
+kleptomania :: CardDef
+kleptomania =
+  (basicWeakness "06036" "Kleptomania")
+    { cdCardTraits = setFromList [Madness, Talent]
+    , cdDeckRestrictions = [MultiplayerOnly]
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    }
 
 scrollOfProphecies :: CardDef
 scrollOfProphecies =

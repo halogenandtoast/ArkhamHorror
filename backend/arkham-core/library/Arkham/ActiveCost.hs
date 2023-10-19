@@ -90,6 +90,7 @@ matchTarget _takenActions performedActions (FirstOneOfPerformed as) action =
   action `elem` as && all (`notElem` performedActions) as
 matchTarget _ _ (IsAction a) action = action == a
 matchTarget _ _ (EnemyAction a _) action = action == a
+matchTarget _ _ IsAnyAction _ = True
 
 getActionCostModifier :: HasGame m => ActiveCost -> m Int
 getActionCostModifier ac = do

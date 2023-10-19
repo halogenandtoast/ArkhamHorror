@@ -84,16 +84,19 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
 
     after <- checkWindows [mkAfter (Window.PlayEventDiscarding (eventController a) (toId a))]
-    case eventPlacement of
-      Unplaced -> case afterPlay of
-        DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
-        RemoveThisFromGame -> push (RemoveEvent $ toId a)
-        ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
-      Limbo -> case afterPlay of
-        DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
-        RemoveThisFromGame -> push (RemoveEvent $ toId a)
-        ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
-      _ -> pure ()
+
+    if LeaveCardWhereItIs `elem` mods
+      then push $ RemoveEvent $ toId a
+      else case eventPlacement of
+        Unplaced -> case afterPlay of
+          DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
+          RemoveThisFromGame -> push (RemoveEvent $ toId a)
+          ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
+        Limbo -> case afterPlay of
+          DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
+          RemoveThisFromGame -> push (RemoveEvent $ toId a)
+          ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
+        _ -> pure ()
     pure a
   InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
     pure $ a & placementL .~ Limbo

@@ -3,6 +3,7 @@ module Arkham.Classes.HasQueue (
 ) where
 
 import Arkham.Prelude
+import Data.Tuple.Extra (dupe)
 
 newtype Queue msg = Queue {queueToRef :: IORef [msg]}
 
@@ -40,7 +41,7 @@ peekMessage = withQueue \case
   (m : ms) -> (m : ms, Just m)
 
 peekQueue :: HasQueue msg m => m [msg]
-peekQueue = withQueue $ \q -> (q, q)
+peekQueue = withQueue dupe
 
 pushEnd :: HasQueue msg m => msg -> m ()
 pushEnd = pushAllEnd . pure
@@ -82,6 +83,13 @@ popMessageMatching_ = void . popMessageMatching
 removeAllMessagesMatching
   :: HasQueue msg m => (msg -> Bool) -> m ()
 removeAllMessagesMatching matcher = withQueue_ $ filter (not . matcher)
+
+removeAllMessagesMatchingM
+  :: HasQueue msg m => (msg -> m Bool) -> m ()
+removeAllMessagesMatchingM matcher = do
+  queue <- peekQueue
+  queue' <- filterM (fmap not . matcher) queue
+  withQueue_ $ const queue'
 
 insertAfterMatching
   :: HasQueue msg m => [msg] -> (msg -> Bool) -> m ()

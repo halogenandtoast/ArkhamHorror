@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Runner hiding (targetL)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Keyword (Keyword (Aloof, Retaliate))

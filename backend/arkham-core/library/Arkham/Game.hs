@@ -3783,8 +3783,9 @@ runGameMessage msg g = case msg of
     let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
         replaceIds = InvestigatorId "00000" : toList mOldId
 
-    (iid, deck) <- loadDecklist decklist
-    let investigator = lookupInvestigator iid playerId
+    (iid', deck) <- loadDecklist decklist
+    let investigator = lookupInvestigator iid' playerId
+    let iid = toId investigator
     push $ InitDeck iid (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
@@ -4587,17 +4588,22 @@ runGameMessage msg g = case msg of
             ]
           pure $ g & entitiesL . assetsL %~ insertMap aid asset
         EventType -> do
-          eid <- getRandom
-          event' <-
-            runMessage
-              (SetOriginalCardCode $ pcOriginalCardCode pc)
-              (createEvent pc iid eid)
           investigator' <- getInvestigator iid
           let
             zone =
               if card `elem` investigatorHand (toAttrs investigator')
                 then Zone.FromHand
                 else Zone.FromDiscard
+          eid <- getRandom
+          let
+            event' =
+              flip overAttrs (createEvent pc iid eid) \attrs ->
+                attrs
+                  { eventWindows = windows'
+                  , eventPlayedFrom = zone
+                  , eventTarget = mtarget
+                  , eventOriginalCardCode = pcOriginalCardCode pc
+                  }
 
           pushAll
             [ CardEnteredPlay iid card
@@ -4669,11 +4675,17 @@ runGameMessage msg g = case msg of
           InvestigatorDrawEnemy _ eid -> do
             pushAll [Discard GameSource (EnemyTarget eid), UnsetActiveCard]
           Revelation iid' source' -> do
-            removeAllMessagesMatching $ \case
-              When whenMsg -> removedMsg == whenMsg
+            removeAllMessagesMatchingM $ \case
+              When whenMsg -> pure $ removedMsg == whenMsg
               AfterRevelation iid'' tid ->
-                iid' == iid'' && TreacherySource tid == source'
-              _ -> False
+                pure $ iid' == iid'' && TreacherySource tid == source'
+              RunWindow _ wins -> do
+                let
+                  isRevelationDrawCard = \case
+                    (windowType -> Window.DrawCard _ c _) -> (== c) <$> sourceToCard source'
+                    _ -> pure False
+                anyM isRevelationDrawCard wins
+              _ -> pure False
             case source' of
               TreacherySource tid ->
                 replaceMessage

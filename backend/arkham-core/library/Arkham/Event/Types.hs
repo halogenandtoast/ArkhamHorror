@@ -21,6 +21,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
+import Arkham.Window (Window)
 import Data.Typeable
 import GHC.Records
 
@@ -74,6 +75,9 @@ data EventAttrs = EventAttrs
   , eventSealedChaosTokens :: [ChaosToken]
   , eventPlacement :: Placement
   , eventAfterPlay :: AfterPlayStrategy
+  , eventPlayedFrom :: Zone
+  , eventWindows :: [Window]
+  , eventTarget :: Maybe Target
   }
   deriving stock (Show, Eq, Generic)
 
@@ -134,6 +138,9 @@ event f cardDef =
             , eventSealedChaosTokens = []
             , eventPlacement = Unplaced
             , eventAfterPlay = DiscardThis
+            , eventPlayedFrom = FromHand -- defaults but will be overwritten when needed
+            , eventWindows = []
+            , eventTarget = Nothing
             }
     }
 

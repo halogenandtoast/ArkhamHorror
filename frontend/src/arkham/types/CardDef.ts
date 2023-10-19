@@ -1,7 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 
-type CardCost = { contents: number, tag: "StaticCost" } | { tag: "DynamicCost" }
+type CardCost = { contents: number, tag: "StaticCost" } | { tag: "DynamicCost" } | { tag: "DiscardAmountCost" }
 
 type SkillIcon = { contents: string, tag: "SkillIcon" } | { tag: "WildIcon" } | { tag: "WildMinusIcon" }
 
@@ -20,7 +20,8 @@ export interface CardDef {
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
   JsonDecoder.object({ contents: JsonDecoder.number, tag: JsonDecoder.isExactly("StaticCost") }, 'StaticCost'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly("DynamicCost") }, 'DynamicCost')
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("DynamicCost") }, 'DynamicCost'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("DiscardAmountCost") }, 'DiscardAmountCost')
 ], 'CardCost')
 
 const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([

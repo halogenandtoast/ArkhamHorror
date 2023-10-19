@@ -1513,7 +1513,7 @@ guardianOfTheCrystallizer =
 
 yourWorstNightmare :: CardDef
 yourWorstNightmare =
-  (basicWeakness "06028" "Your Worst Nightmare")
+  (basicWeakness "06038" "Your Worst Nightmare")
     { cdCardTraits = singleton Monster
     , cdKeywords = singleton Keyword.Hunter
     , cdDeckRestrictions = [MultiplayerOnly]

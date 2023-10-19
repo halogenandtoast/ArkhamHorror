@@ -559,6 +559,8 @@ allAssets =
     , -- The Search for Kadath
       --- mystic [sfk]
       SomeAssetCard scrollOfProphecies
+    , --- survivor [sfk]
+      SomeAssetCard jessicaHyde1
     , -- A Thousand Shapes of Horror
       --- guardian [tsh]
       SomeAssetCard tetsuoMori

@@ -223,6 +223,7 @@ data CampaignLogKey
   | DoomApproaches
   | TheHourIsNigh
   | YouHaveTranslatedTheTome
+  | YouHaveInterpretedTheDreams
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignLogKey)

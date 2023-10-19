@@ -201,6 +201,10 @@ eventControlledBy :: InvestigatorId -> EventMatcher
 eventControlledBy = EventControlledBy . InvestigatorWithId
 
 -- ** Skill Helpers **
+
+skillIs :: HasCardCode a => a -> SkillMatcher
+skillIs = SkillIs . toCardCode
+
 skillControlledBy :: InvestigatorId -> SkillMatcher
 skillControlledBy = SkillControlledBy . InvestigatorWithId
 

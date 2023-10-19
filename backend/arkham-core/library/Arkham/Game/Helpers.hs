@@ -1149,6 +1149,9 @@ passesCriteria iid mcard source windows' = \case
   Criteria.ChaosTokenCountIs tokenMatcher valueMatcher -> do
     n <- selectCount tokenMatcher
     gameValueMatches n valueMatcher
+  Criteria.NotYetRecorded key -> do
+    recorded <- getHasRecord key
+    pure $ not recorded
   Criteria.DuringPhase phaseMatcher -> do
     p <- getPhase
     matchPhase p phaseMatcher

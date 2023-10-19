@@ -199,6 +199,7 @@ allPlayerAssetCards =
       , drWilliamTMaleson
       , dragonPole
       , drawingThin
+      , dreamDiary
       , duke
       , earlSawyer
       , eighteenDerringer
@@ -3639,6 +3640,15 @@ kleptomania =
     , cdDeckRestrictions = [MultiplayerOnly]
     , cdCost = Nothing
     , cdRevelation = IsRevelation
+    }
+
+dreamDiary :: CardDef
+dreamDiary =
+  (asset "06112" ("Dream Diary" <:> "Untranslated") 2 Seeker)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Tome, Charm]
+    , cdSlots = [#hand]
+    , cdBondedWith = [(1, "06113")]
     }
 
 scrollOfProphecies :: CardDef

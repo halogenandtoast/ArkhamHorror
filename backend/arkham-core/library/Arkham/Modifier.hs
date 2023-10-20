@@ -268,6 +268,11 @@ data ModifierType
   | Explosion -- only for UI, from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data)
 
+_MetaModifier :: Prism' ModifierType Value
+_MetaModifier = prism' MetaModifier $ \case
+  MetaModifier n -> Just n
+  _ -> Nothing
+
 _PlayableModifierContexts :: Prism' ModifierType [(CardMatcher, [ModifierType])]
 _PlayableModifierContexts = prism' PlayableModifierContexts $ \case
   PlayableModifierContexts n -> Just n

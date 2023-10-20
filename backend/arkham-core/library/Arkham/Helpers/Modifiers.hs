@@ -20,6 +20,9 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window)
 import Control.Lens (each, sumOf)
+import Data.Aeson
+import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Monoid (First (..))
 
 withModifiers
   :: (HasGame m, Targetable target) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
@@ -177,3 +180,12 @@ getTotalSearchTargets :: HasGame m => InvestigatorId -> [a] -> Int -> m Int
 getTotalSearchTargets iid targets n = do
   additionalTargets <- getAdditionalSearchTargets iid
   pure $ min (length targets) (n + additionalTargets)
+
+getMeta :: (HasGame m, Targetable target, FromJSON a) => target -> Key -> m (Maybe a)
+getMeta target k = do
+  metas <- mapMaybe (preview _MetaModifier) <$> getModifiers target
+  pure $ getFirst $ flip foldMap metas $ \case
+    Object o -> case fromJSON <$> KeyMap.lookup k o of
+      Just (Success a) -> First (Just a)
+      _ -> First Nothing
+    _ -> First Nothing

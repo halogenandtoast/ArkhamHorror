@@ -7,6 +7,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Types qualified as Field
@@ -27,7 +28,12 @@ instance RunMessage Followed where
   runMessage msg e@(Followed attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       investigation <- mkInvestigate iid attrs
-      push $ toMessage investigation
+      dmg <- fromJustNote "damage should be set" <$> getMeta (toCardId attrs) "damage"
+
+      pushAll
+        [ skillTestModifiers (toSource attrs) iid [SkillModifier #intellect (min 5 dmg), DiscoveredClues 1]
+        , toMessage investigation
+        ]
       pure e
     _ -> Followed <$> runMessage msg attrs
 
@@ -40,7 +46,7 @@ followedEffect = cardEffect FollowedEffect Cards.followed
 
 instance RunMessage FollowedEffect where
   runMessage msg e@(FollowedEffect attrs) = case msg of
-    CreatedEffect eid _ (InvestigatorSource iid) _ | eid == toId attrs -> do
+    CreatedEffect eid _ (InvestigatorSource iid) target | eid == toId attrs -> do
       enemies <- selectWithField Field.EnemyDamage $ enemyAtLocationWith iid
       player <- getPlayer iid
       push
@@ -48,8 +54,8 @@ instance RunMessage FollowedEffect where
           player
           [ targetLabel
             enemy
-            [ costModifier (toSource attrs) enemy CannotMakeAttacksOfOpportunity
-            , skillTestModifiers (toSource attrs) iid [SkillModifier #intellect (min 5 dmg), DiscoveredClues 1]
+            [ costModifier attrs enemy CannotMakeAttacksOfOpportunity
+            , cardResolutionModifier attrs target (MetaModifier $ object ["damage" .= dmg])
             , disable attrs
             ]
           | (enemy, dmg) <- enemies

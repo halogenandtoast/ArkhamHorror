@@ -86,6 +86,7 @@ allSkills =
     , SomeSkillCard cunning
     , SomeSkillCard daring
     , SomeSkillCard essenceOfTheDream
+    , SomeSkillCard momentum1
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied
     , SomeSkillCard riseToTheOccasion3

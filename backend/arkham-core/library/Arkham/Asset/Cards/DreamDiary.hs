@@ -45,7 +45,7 @@ instance RunMessage DreamDiary where
         fromJustNote "must be" . listToMaybe <$> searchBonded iid Skills.essenceOfTheDream
       push $ addToHand iid essenceOfTheDream
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ Record YouHaveInterpretedTheDreams
       pure a
     _ -> DreamDiary <$> runMessage msg attrs

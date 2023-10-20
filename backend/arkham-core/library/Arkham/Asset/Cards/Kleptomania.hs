@@ -21,15 +21,13 @@ kleptomania = asset Kleptomania Cards.kleptomania
 
 instance HasAbilities Kleptomania where
   getAbilities (Kleptomania a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> atYourLocation
-              ( affectsOthers
-                  $ NotYou
-                  <> oneOf [InvestigatorWithResources (atLeast 2), HasMatchingAsset #item]
-              )
+        ( atYourLocation
+            $ affectsOthers
+            $ NotYou
+            <> oneOf [InvestigatorWithResources (atLeast 2), HasMatchingAsset #item]
         )
         actionAbility
     , restrictedAbility a 2 ControlsThis $ ForcedAbility $ TurnEnds #when You

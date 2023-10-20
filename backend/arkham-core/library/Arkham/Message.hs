@@ -193,7 +193,7 @@ pattern PlayThisEvent iid eid <- InvestigatorPlayEvent iid eid _ _ _
 createCardEffect
   :: (Sourceable source, Targetable target)
   => CardDef
-  -> (Maybe (EffectMetadata Window Message))
+  -> Maybe (EffectMetadata Window Message)
   -> source
   -> target
   -> Message

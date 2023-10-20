@@ -48,7 +48,7 @@ instance RunMessage FollowedEffect where
           player
           [ targetLabel
             enemy
-            [ cardResolutionModifier (toSource attrs) enemy CannotMakeAttacksOfOpportunity
+            [ costModifier (toSource attrs) enemy CannotMakeAttacksOfOpportunity
             , skillTestModifiers (toSource attrs) iid [SkillModifier #intellect (min 5 dmg), DiscoveredClues 1]
             , disable attrs
             ]

@@ -127,6 +127,7 @@ data CardDef = CardDef
   , cdDeckRestrictions :: [DeckRestriction]
   , cdBondedWith :: [(Int, CardCode)]
   , cdSkipPlayWindows :: Bool
+  , cdBeforeEffect :: Bool
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -181,6 +182,7 @@ emptyCardDef cCode name cType =
     , cdDeckRestrictions = []
     , cdBondedWith = []
     , cdSkipPlayWindows = False
+    , cdBeforeEffect = False
     }
 
 instance IsCardMatcher CardDef where

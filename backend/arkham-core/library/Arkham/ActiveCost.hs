@@ -222,12 +222,15 @@ instance RunMessage ActiveCost where
             actions = case cdActions cardDef of
               [] -> [Action.Play | isPlayAction == IsPlayAction]
               as -> as
+            mEffect =
+              guard (cdBeforeEffect cardDef) $> createCardEffect cardDef Nothing iid (toCardId card)
           beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
           pushAll
             $ [ BeginAction
               , beforeWindowMsg
-              , PayCost acId iid False (activeCostCosts c)
               ]
+            <> maybeToList mEffect
+            <> [PayCost acId iid False (activeCostCosts c)]
             <> map (TakenAction iid) actions
             <> [ CheckAttackOfOpportunity iid False
                | not modifiersPreventAttackOfOpportunity

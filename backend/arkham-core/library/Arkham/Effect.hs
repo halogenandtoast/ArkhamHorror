@@ -77,6 +77,7 @@ import Arkham.Event.Events (
   blindingLightEffect,
   cheapShot2Effect,
   exposeWeakness3Effect,
+  followedEffect,
   imDoneRunninEffect,
   marksmanship1Effect,
   mindOverMatter2Effect,
@@ -314,6 +315,7 @@ allEffects =
     , ("05265", SomeEffect valentinosFateEffect)
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
+    , ("06114", SomeEffect followedEffect)
     , ("06279", SomeEffect oldBookOfLore3Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)

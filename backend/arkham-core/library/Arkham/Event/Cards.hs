@@ -2372,6 +2372,7 @@ followed =
     , cdCardTraits = singleton Tactic
     , cdActions = [#investigate]
     , cdCriteria = Just $ Criteria.exists $ EnemyAt YourLocation
+    , cdBeforeEffect = True
     }
 
 readTheSigns :: CardDef

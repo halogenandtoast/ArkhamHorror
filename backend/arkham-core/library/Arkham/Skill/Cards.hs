@@ -57,6 +57,7 @@ allPlayerSkillCards =
       , leadership
       , manualDexterity
       , manualDexterity2
+      , momentum1
       , neitherRainNorSnow
       , nimble
       , notWithoutAFight
@@ -495,6 +496,13 @@ essenceOfTheDream =
   (skill "06113" "Essence of the Dream" [#wild, #wild] Seeker)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdKeywords = singleton (Keyword.Bonded 1 "06112")
+    }
+
+momentum1 :: CardDef
+momentum1 =
+  (skill "06115" "Momentum" [#wild] Rogue)
+    { cdCardTraits = singleton Practiced
+    , cdLevel = 1
     }
 
 riseToTheOccasion3 :: CardDef

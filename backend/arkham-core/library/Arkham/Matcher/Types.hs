@@ -388,6 +388,8 @@ data LocationMatcher
   | FewestBreaches
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
+  | -- | Must be replaced
+    ThatLocation
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated LocationMatcher

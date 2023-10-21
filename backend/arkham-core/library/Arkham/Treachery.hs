@@ -407,6 +407,20 @@ allTreacheries =
     , SomeTreacheryCard mesmerize
     , SomeTreacheryCard abduction
     , SomeTreacheryCard acridMiasma
+    , -- Murder at the Excelsior Hotel
+      SomeTreacheryCard whatHaveYouDone
+    , SomeTreacheryCard noxiousFumes
+    , SomeTreacheryCard drivenToMadness
+    , SomeTreacheryCard bloodOnYourHands
+    , SomeTreacheryCard incriminatingEvidence
+    , SomeTreacheryCard violentOutburst
+    , --- Alien Interference
+      SomeTreacheryCard encephalonSignal
+    , --- Vile Experiments
+      SomeTreacheryCard harvestedBrain
+    , SomeTreacheryCard morbidAwareness
+    , --- Sins of the Past
+      SomeTreacheryCard chillingPresence
     , -- Promo
       --- Blood of Baalshandor
       SomeTreacheryCard yaztaroth

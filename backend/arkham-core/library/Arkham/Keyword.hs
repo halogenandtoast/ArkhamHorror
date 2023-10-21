@@ -26,6 +26,7 @@ data Keyword
   | Researched CampaignLogKey
   | Seal ChaosTokenMatcher
   | Bonded Int CardCode
+  | Patrol LocationMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

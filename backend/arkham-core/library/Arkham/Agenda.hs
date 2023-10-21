@@ -196,4 +196,17 @@ allAgendas =
       SomeAgendaCard theFestivitiesBegin
     , SomeAgendaCard theShadowOfTheEclipse
     , SomeAgendaCard chaosAtTheCarnevale
+    , -- Murder at the Excelsior Hotel
+      SomeAgendaCard theMurder
+    , SomeAgendaCard specialInvestigation
+    , SomeAgendaCard theTrueCulpritV1
+    , SomeAgendaCard theTrueCulpritV2
+    , SomeAgendaCard theTrueCulpritV3
+    , SomeAgendaCard theTrueCulpritV4
+    , SomeAgendaCard theTrueCulpritV5
+    , SomeAgendaCard theTrueCulpritV6
+    , SomeAgendaCard theTrueCulpritV7
+    , SomeAgendaCard theTrueCulpritV8
+    , SomeAgendaCard theTrueCulpritV9
+    , SomeAgendaCard theTrueCulpritV10
     ]

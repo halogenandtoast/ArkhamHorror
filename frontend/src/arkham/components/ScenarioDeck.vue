@@ -32,6 +32,8 @@ const deckLabel = computed(() => {
       return "Lunatics"
     case 'MonstersDeck':
       return "Monsters"
+    case 'LeadsDeck':
+      return "Leads"
     default:
       return null
   }

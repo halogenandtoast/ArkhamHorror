@@ -327,4 +327,19 @@ allEnemies =
     , SomeEnemyCard poleman
     , SomeEnemyCard carnevaleSentinel
     , SomeEnemyCard writhingAppendage
+    , -- Murder at the Excelsior Hotel
+      SomeEnemyCard arkhamOfficer
+    , SomeEnemyCard mrTrombly
+    , SomeEnemyCard conspicuousStaff
+    , SomeEnemyCard hotelGuest
+    , --- Alien Interference
+      SomeEnemyCard otherwordlyMeddler
+    , --- Excelsior Management
+      SomeEnemyCard hotelManager
+    , SomeEnemyCard hotelSecurity
+    , --- Dark Rituals
+      SomeEnemyCard dimensionalShambler
+    , SomeEnemyCard cultistOfTheEnclave
+    , --- Sins of the Past
+      SomeEnemyCard vengefulSpecter
     ]

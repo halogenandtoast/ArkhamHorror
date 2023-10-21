@@ -1368,6 +1368,7 @@ getLocationsMatching lmatcher = do
   flip runReaderT g
     $ local (\g' -> g' {gameAllowEmptySpaces = doAllowEmpty})
     $ case lmatcher' of
+      ThatLocation -> error "ThatLocation must be resolved in criteria"
       IncludeEmptySpace _ -> error "should be unwrapped above"
       LocationWithCardId cardId ->
         pure $ filter ((== cardId) . toCardId) ls
@@ -4619,6 +4620,17 @@ runGameMessage msg g = case msg of
           let treachery = createTreachery card iid tid
           push $ AttachTreachery tid (toTarget iid)
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
+        EncounterAssetType -> do
+          -- asset might have been put into play via revelation
+          mAid <- selectOne $ AssetWithCardId cardId
+          aid <- maybe getRandom pure mAid
+          let asset = createAsset card aid
+          pushAll
+            [ CardEnteredPlay iid card
+            , InvestigatorPlayAsset iid aid
+            , ResolvedCard iid card
+            ]
+          pure $ g & entitiesL . assetsL %~ insertMap aid asset
         _ -> pure g
       VengeanceCard _ -> error "Vengeance card"
   DrewPlayerEnemy iid card -> do

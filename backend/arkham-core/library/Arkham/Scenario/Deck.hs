@@ -16,6 +16,7 @@ data ScenarioDeckKey
   | ExplorationDeck -- The Untamed Wilds
   | UnknownPlacesDeck -- The Secret Name
   | CosmosDeck -- Before the Black Throne
+  | LeadsDeck -- Murder at the Excelsior Hotel
   deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

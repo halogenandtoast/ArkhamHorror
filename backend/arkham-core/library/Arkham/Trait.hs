@@ -49,6 +49,7 @@ data Trait
   | Conspirator
   | Courage
   | Creature
+  | CrimeScene
   | Criminal
   | Cultist
   | Curse
@@ -70,6 +71,7 @@ data Trait
   | Exhibit
   | Expert
   | Extradimensional
+  | Extraterrestrial
   | Eztli
   | Familiar
   | Fated
@@ -86,7 +88,9 @@ data Trait
   | Ghoul
   | Grant
   | GroundFloor
+  | Guest
   | Gug
+  | Hall
   | Hazard
   | Hex
   | HistoricalSociety
@@ -97,12 +101,14 @@ data Trait
   | Improvised
   | Injury
   | Innate
+  | Innocent
   | Insight
   | Instrument
   | Item
   | Job
   | Jungle
   | Key
+  | Lead
   | Lodge
   | Lunatic
   | Madness
@@ -110,6 +116,7 @@ data Trait
   | Medic
   | Melee
   | MexicoCity
+  | MiGo
   | Miskatonic
   | Monster
   | Mystery
@@ -160,6 +167,7 @@ data Trait
   | Spectral
   | Spell
   | Spirit
+  | Staff
   | Summon
   | Supply
   | Syndicate

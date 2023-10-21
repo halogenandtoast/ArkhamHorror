@@ -110,6 +110,12 @@ data EncounterSet
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors
+  | MurderAtTheExcelsiorHotel
+  | AlienInterference
+  | ExcelsiorManagement
+  | DarkRituals
+  | VileExperiments
+  | SinsOfThePast
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

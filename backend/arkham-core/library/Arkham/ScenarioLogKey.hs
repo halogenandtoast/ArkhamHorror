@@ -59,6 +59,10 @@ data ScenarioLogKey
   | -- | The Depths of Yoth
     CollectedAStrangeLiquid
   | MeddledWithThePast (Labeled InvestigatorId)
+  | -- | Murder at the Excelsior Hotel
+    CleanedUpTheBlood
+  | HidTheBody
+  | TidiedUpTheRoom
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey = CurrentDepth | PlaceholderCountKey

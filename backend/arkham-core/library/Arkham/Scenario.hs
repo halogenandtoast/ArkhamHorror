@@ -667,6 +667,7 @@ allScenarios =
     , ("50032", SomeScenario returnToTheDevourerBelow)
     , ("81001", SomeScenario curseOfTheRougarou)
     , ("82001", SomeScenario carnevaleOfHorrors)
+    , ("84001", SomeScenario murderAtTheExcelsiorHotel)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -714,4 +715,5 @@ scenarioEncounterSets =
     , ("50032", EncounterSet.ReturnToTheDevourerBelow)
     , ("81001", EncounterSet.CurseOfTheRougarou)
     , ("82001", EncounterSet.CarnevaleOfHorrors)
+    , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)
     ]

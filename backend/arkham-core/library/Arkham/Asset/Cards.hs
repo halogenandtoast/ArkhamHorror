@@ -141,6 +141,7 @@ allPlayerAssetCards =
       , blackjack
       , blackjack2
       , bloodPact3
+      , bloodstainedDagger
       , bookOfShadows1
       , bookOfShadows3
       , borrowedTime3
@@ -434,6 +435,7 @@ allPlayerAssetCards =
       , scryingMirror
       , sealOfTheSeventhSign5
       , segmentOfOnyx1
+      , sergeantMonroe
       , shardsOfTheVoid3
       , sharpshooter3
       , shotgun4
@@ -557,6 +559,11 @@ allEncounterAssetCards =
       , ashleighClarke
       , mrPeabody
       , danielChesterfield
+      , alienDevice
+      , managersKey
+      , tomeOfRituals
+      , sinisterSolution
+      , timeWornLocket
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef
@@ -4919,6 +4926,69 @@ gildedVolto =
     { cdCardTraits = setFromList [Item, Mask]
     , cdSkills = [#agility, #wild]
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+bloodstainedDagger :: CardDef
+bloodstainedDagger =
+  (storyAsset "84006" ("Bloodstained Dagger" <:> "The Murder Weapon") 1 MurderAtTheExcelsiorHotel)
+    { cdCardTraits = setFromList [Item, Weapon, Melee, Cursed]
+    , cdSkills = [#wild]
+    , cdSlots = [#hand]
+    , cdUnique = True
+    }
+
+sergeantMonroe :: CardDef
+sergeantMonroe =
+  (storyAsset "84008" ("Sergeant Monroe" <:> "Two Days Until Retirement") 5 MurderAtTheExcelsiorHotel)
+    { cdCardTraits = setFromList [Ally, Police]
+    , cdSkills = [#willpower, #combat, #wild]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+alienDevice :: CardDef
+alienDevice =
+  (storyAsset "84028" ("Alien Device" <:> "Machinations from Beyond") 0 AlienInterference)
+    { cdCardTraits = setFromList [Lead, Extraterrestrial]
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+managersKey :: CardDef
+managersKey =
+  (storyAsset "84031" ("Manager's Key" <:> "Stained by Blood") 0 ExcelsiorManagement)
+    { cdCardTraits = setFromList [Lead, Key]
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+tomeOfRituals :: CardDef
+tomeOfRituals =
+  (storyAsset "84034" ("Tome of Rituals" <:> "Blasphemous Volume") 0 DarkRituals)
+    { cdCardTraits = setFromList [Lead, Tome]
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+sinisterSolution :: CardDef
+sinisterSolution =
+  (storyAsset "84037" ("Sinister Solution" <:> "Vile Concoction") 0 VileExperiments)
+    { cdCardTraits = setFromList [Lead, Science]
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+timeWornLocket :: CardDef
+timeWornLocket =
+  (storyAsset "84040" ("Time-Worn Locket" <:> "Mournful Vision of the Past") 0 SinsOfThePast)
+    { cdCardTraits = setFromList [Lead, Charm]
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
     }
 
 daisysToteBagAdvanced :: CardDef

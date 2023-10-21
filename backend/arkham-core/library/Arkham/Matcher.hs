@@ -237,6 +237,15 @@ resolveAssetMatcher iid = over biplate (replaceYouMatcher iid)
 replaceYourLocation :: InvestigatorId -> LocationMatcher -> LocationMatcher
 replaceYourLocation iid = over biplate (replaceYouMatcher iid)
 
+replaceLocationMatcher :: Data a => LocationId -> LocationMatcher -> a -> a
+replaceLocationMatcher lid m = over biplate (transform go)
+ where
+  go n | m == n = LocationWithId lid
+  go x = x
+
+replaceThatLocation :: Data a => LocationId -> a -> a
+replaceThatLocation lid = replaceLocationMatcher lid ThatLocation
+
 defaultRemoveDoomMatchers :: RemoveDoomMatchers
 defaultRemoveDoomMatchers =
   RemoveDoomMatchers

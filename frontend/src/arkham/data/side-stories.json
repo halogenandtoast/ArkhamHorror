@@ -1,4 +1,5 @@
 [
   { "id": "81001", "name": "Curse of the Rougarou", "standaloneDifficulties": ["Standard", "Hard"] },
-  { "id": "82001", "name": "Carnevale of Horrors", "standaloneDifficulties": ["Standard", "Hard"] }
+  { "id": "82001", "name": "Carnevale of Horrors", "standaloneDifficulties": ["Standard", "Hard"] },
+  { "id": "84001", "name": "Murder at the Excelsior Hotel", "standaloneDifficulties": ["Standard", "Hard"] }
 ]

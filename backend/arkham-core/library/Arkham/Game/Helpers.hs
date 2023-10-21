@@ -2450,7 +2450,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       guardTiming timing $ \case
         Window.DiscoverClues who lid _ n ->
           andM
-            [ matchWho iid who whoMatcher
+            [ matchWho iid who (Matcher.replaceThatLocation lid whoMatcher)
             , locationMatches iid source window' lid whereMatcher
             , gameValueMatches n valueMatcher
             ]
@@ -2806,6 +2806,7 @@ locationMatches investigatorId source window locationId matcher' = do
       modifiers <- getModifiers (LocationTarget locationId)
       pure $ CannotInvestigate `notElem` modifiers
     Matcher.LocationIsInFrontOf _ -> locationId <=~> matcher
+    Matcher.ThatLocation -> error "That Location needs to be replaced"
 
 skillTestMatches
   :: HasGame m

@@ -537,4 +537,15 @@ allLocations =
     , SomeLocationCard floodedSquare
     , SomeLocationCard accademiaBridge
     , SomeLocationCard theGuardian
+    , -- Murder at the Excelsior Hotel
+      SomeLocationCard room225
+    , SomeLocationCard suiteBalcony
+    , SomeLocationCard secondFloorHall
+    , SomeLocationCard foyerMurderAtTheExcelsiorHotel
+    , SomeLocationCard restaurant
+    , SomeLocationCard hotelRoof
+    , SomeLocationCard room212
+    , SomeLocationCard room245
+    , SomeLocationCard officeMurderAtTheExcelsiorHotel
+    , SomeLocationCard basement
     ]

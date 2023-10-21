@@ -9,6 +9,7 @@ import Arkham.ClassSymbol
 import Arkham.EncounterSet hiding (Byakhee)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
+import Arkham.Matcher
 import Arkham.Name
 import Arkham.Trait
 
@@ -73,6 +74,7 @@ allEncounterEnemyCards =
       , anetteMason
       , anetteMasonReincarnatedEvil
       , apexStrangleweed
+      , arkhamOfficer
       , ashleighClarke
       , asylumGorger
       , avianThrall
@@ -94,6 +96,7 @@ allEncounterEnemyCards =
       , cloverClubPitBoss
       , cnidathqua
       , conglomerationOfSpheres
+      , conspicuousStaff
       , constanceDumaine
       , corpseDweller
       , corpseHungryGhoul
@@ -101,10 +104,12 @@ allEncounterEnemyCards =
       , covenInitiate
       , crazedShoggoth
       , creatureOutOfDemhe
+      , cultistOfTheEnclave
       , danielChesterfield
       , darkYoungHost
       , devoteeOfTheKey
       , dianneDevine
+      , dimensionalShambler
       , discipleOfTheDevourer
       , donLagorio
       , eaterOfTheDepths
@@ -136,6 +141,9 @@ allEncounterEnemyCards =
       , heretic_I
       , heretic_K
       , hermanCollins
+      , hotelGuest
+      , hotelManager
+      , hotelSecurity
       , huntingHorror
       , huntingNightgaunt
       , ichtaca
@@ -161,6 +169,7 @@ allEncounterEnemyCards =
       , mariaDeSilvaKnowsMoreThanSheLetsOn
       , marshGug
       , mindlessDancer
+      , mrTrombly
       , mobster
       , nahab
       , narogath
@@ -168,6 +177,7 @@ allEncounterEnemyCards =
       , nathanWickMasterOfInitiation
       , netherMist
       , oBannionsThug
+      , otherwordlyMeddler
       , padmaAmrita
       , pennyWhite
       , peterWarren
@@ -219,6 +229,7 @@ allEncounterEnemyCards =
       , tidalTerror
       , umordhoth
       , valentinoRivas
+      , vengefulSpecter
       , vengefulWitch
       , victoriaDevereux
       , whippoorwill
@@ -1735,6 +1746,86 @@ writhingAppendage =
   (enemy "82030" "Writhing Appendage" CarnevaleOfHorrors 3)
     { cdCardTraits = setFromList [Monster, Tentacle]
     , cdKeywords = setFromList [Keyword.Retaliate]
+    }
+
+arkhamOfficer :: CardDef
+arkhamOfficer =
+  (enemy "84009" "Arkham Officer" MurderAtTheExcelsiorHotel 3)
+    { cdCardTraits = setFromList [Humanoid, Police, Innocent]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol LocationWithAnyClues]
+    , cdVictoryPoints = Just 0
+    }
+
+mrTrombly :: CardDef
+mrTrombly =
+  (enemy "84020" ("Mr. Trombly" <:> "Maddened Concierge") MurderAtTheExcelsiorHotel 1)
+    { cdCardTraits = setFromList [Humanoid, Staff]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
+    }
+
+conspicuousStaff :: CardDef
+conspicuousStaff =
+  (enemy "84021" "Conspicuous Staff" MurderAtTheExcelsiorHotel 3)
+    { cdCardTraits = setFromList [Humanoid, Staff]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+hotelGuest :: CardDef
+hotelGuest =
+  (enemy "84022" "Hotel Guest" MurderAtTheExcelsiorHotel 3)
+    { cdCardTraits = setFromList [Humanoid, Guest, Innocent]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTrait CrimeScene)]
+    , cdVictoryPoints = Just 0
+    }
+
+otherwordlyMeddler :: CardDef
+otherwordlyMeddler =
+  (enemy "84029" ("Otherwordly Meddler" <:> "Presence from Beyond the Stars") AlienInterference 1)
+    { cdCardTraits = setFromList [Monster, MiGo, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
+
+hotelManager :: CardDef
+hotelManager =
+  (enemy "84032" ("Hotel Manager" <:> "Let the Feast Begin") ExcelsiorManagement 1)
+    { cdCardTraits = setFromList [Monster, Staff, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
+
+hotelSecurity :: CardDef
+hotelSecurity =
+  (enemy "84033" "Hotel Security" ExcelsiorManagement 3)
+    { cdCardTraits = setFromList [Humanoid, Monster, Staff]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+dimensionalShambler :: CardDef
+dimensionalShambler =
+  (enemy "84035" "Dimensional Shambler" DarkRituals 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 2
+    }
+
+cultistOfTheEnclave :: CardDef
+cultistOfTheEnclave =
+  (enemy "84036" "Cultist of the Enclave" DarkRituals 3)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+vengefulSpecter :: CardDef
+vengefulSpecter =
+  (enemy "84041" ("Vengeful Specter" <:> "The First Victim") SinsOfThePast 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdKeywords = setFromList [Keyword.Patrol "Room 245", Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
     }
 
 flyingPolyp :: CardDef

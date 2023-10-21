@@ -644,3 +644,9 @@ getToTheBoats = act "82006" "Get to the Boats!" 2 CarnevaleOfHorrors
 
 row :: CardDef
 row = act "82007" "Row!" 3 CarnevaleOfHorrors
+
+whatHappened :: CardDef
+whatHappened = act "84004" "What Happened...?" 1 MurderAtTheExcelsiorHotel
+
+followingLeads :: CardDef
+followingLeads = act "84005" "Following Leads" 2 MurderAtTheExcelsiorHotel

@@ -764,6 +764,20 @@ allAssets =
     , SomeAssetCard medicoDellaPeste
     , SomeAssetCard pantalone
     , SomeAssetCard gildedVolto
+    , -- Murder at the Excelsior Hotel
+      --- story [hotel]
+      SomeAssetCard bloodstainedDagger
+    , SomeAssetCard sergeantMonroe
+    , --- Alien Interference
+      SomeAssetCard alienDevice
+    , --- Excelsior Management
+      SomeAssetCard managersKey
+    , --- Dark Rituals
+      SomeAssetCard tomeOfRituals
+    , --- Vile Experiments
+      SomeAssetCard sinisterSolution
+    , --- Sins of the Past
+      SomeAssetCard timeWornLocket
     , -- Parallel Investigators
       --- Read or Die
       SomeAssetCard daisysToteBagAdvanced

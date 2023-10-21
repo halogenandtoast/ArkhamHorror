@@ -116,6 +116,7 @@ allPlayerTreacheryCards =
       , unspeakableOathCowardice
       , unspeakableOathCuriosity
       , voiceOfTheMessenger
+      , whatHaveYouDone
       , wrackedByNightmares
       , yaztaroth
       ]
@@ -145,6 +146,7 @@ allEncounterTreacheryCards =
       , betweenWorlds
       , beyondTheVeil
       , blackStarsRise
+      , bloodOnYourHands
       , brokenRails
       , burdensOfThePast
       , callToOrder
@@ -154,6 +156,7 @@ allEncounterTreacheryCards =
       , chaosManifest
       , childrenOfValusia
       , chillFromBelow
+      , chillingPresence
       , clawsOfSteam
       , collapsingReality
       , conspiracyOfBlood
@@ -178,8 +181,10 @@ allEncounterTreacheryCards =
       , dissonantVoices
       , draggedUnder
       , dreamsOfRlyeh
+      , drivenToMadness
       , eagerForDeath
       , eagerForDeathUnionAndDisillusion
+      , encephalonSignal
       , entombed
       , ephemeralExhibits
       , evilPast
@@ -198,10 +203,12 @@ allEncounterTreacheryCards =
       , graspingHands
       , graveLight
       , graveLightSpectral
+      , harvestedBrain
       , huntedByByakhee
       , huntedDown
       , huntingShadow
       , illOmen
+      , incriminatingEvidence
       , insatiableBloodlust
       , kidnapped
       , ledAstray
@@ -221,10 +228,12 @@ allEncounterTreacheryCards =
       , massHysteria
       , meddlesomeFamiliar
       , mesmerize
+      , morbidAwareness
       , mysteriesOfTheLodge
       , mysteriousChanting
       , noTurningBack
       , nobodysHome
+      , noxiousFumes
       , obscuringFog
       , offerOfPower
       , ominousPortents
@@ -299,6 +308,7 @@ allEncounterTreacheryCards =
       , unhallowedCountry
       , vastExpanse
       , vaultOfEarthlyDemise
+      , violentOutburst
       , visionsOfFuturesPast
       , voiceOfTheJungle
       , vortexOfTime
@@ -1874,6 +1884,69 @@ acridMiasma :: CardDef
 acridMiasma =
   (treachery "82037" "Acrid Miasma" CarnevaleOfHorrors 2)
     { cdCardTraits = singleton Hazard
+    }
+
+whatHaveYouDone :: CardDef
+whatHaveYouDone =
+  (weakness "84007" "What Have You Done?")
+    { cdCardTraits = singleton Madness
+    , cdEncounterSet = Just MurderAtTheExcelsiorHotel
+    , cdEncounterSetQuantity = Just 1
+    }
+
+noxiousFumes :: CardDef
+noxiousFumes =
+  (treachery "84023" "Noxious Fumes" MurderAtTheExcelsiorHotel 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+drivenToMadness :: CardDef
+drivenToMadness =
+  (treachery "84024" "Driven to Madness" MurderAtTheExcelsiorHotel 3)
+    { cdCardTraits = singleton Curse
+    }
+
+bloodOnYourHands :: CardDef
+bloodOnYourHands =
+  (treachery "84025" "Blood on Your Hands" MurderAtTheExcelsiorHotel 3)
+    { cdCardTraits = singleton Terror
+    }
+
+incriminatingEvidence :: CardDef
+incriminatingEvidence =
+  (treachery "84026" "Incriminating Evidence" MurderAtTheExcelsiorHotel 2)
+    { cdCardTraits = singleton Evidence
+    }
+
+violentOutburst :: CardDef
+violentOutburst =
+  (treachery "84027" "Violent Outburst" MurderAtTheExcelsiorHotel 3)
+    { cdCardTraits = singleton Curse
+    }
+
+encephalonSignal :: CardDef
+encephalonSignal =
+  (treachery "84030" "Encephalon Signal" AlienInterference 3)
+    { cdCardTraits = singleton Hazard
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+harvestedBrain :: CardDef
+harvestedBrain =
+  (treachery "84038" "Harvested Brain" VileExperiments 1)
+    { cdCardTraits = setFromList [Ancient, Science]
+    }
+
+morbidAwareness :: CardDef
+morbidAwareness =
+  (treachery "84039" "Morbid Awareness" VileExperiments 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+chillingPresence :: CardDef
+chillingPresence =
+  (treachery "84042" "Chilling Presence" SinsOfThePast 3)
+    { cdCardTraits = singleton Terror
     }
 
 yaztaroth :: CardDef

@@ -230,4 +230,7 @@ allActs =
       SomeActCard theCarnevaleConspiracy
     , SomeActCard getToTheBoats
     , SomeActCard row
+    , -- Murder at the Excelsior Hotel
+      SomeActCard whatHappened
+    , SomeActCard followingLeads
     ]

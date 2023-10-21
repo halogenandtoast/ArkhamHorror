@@ -132,7 +132,7 @@ export interface ChoosePaymentAmounts {
   paymentAmountChoices: PaymentAmountChoice[]
 }
 
-export type AmountTarget = { tag: 'MaxAmountTarget', contents: number } | { tag: 'TotalAmountTarget', contents: number }
+export type AmountTarget = { tag: 'MaxAmountTarget', contents: number } | { tag: 'TotalAmountTarget', contents: number } | { tag: "MinAmountTarget", contents: number }
 
 export interface ChooseAmounts {
   tag: QuestionType.CHOOSE_AMOUNTS
@@ -163,6 +163,7 @@ export const amountChoiceDecoder = JsonDecoder.object<AmountChoice>({
 
 export const amountTargetDecoder = JsonDecoder.oneOf<AmountTarget>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly('MaxAmountTarget'), contents: JsonDecoder.number}, 'MaxAmountTarget')
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly('MinAmountTarget'), contents: JsonDecoder.number}, 'MinAmountTarget')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TotalAmountTarget'), contents: JsonDecoder.number}, 'TotalAmountTarget')
   ]
 , 'AmountTarget')

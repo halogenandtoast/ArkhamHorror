@@ -685,7 +685,7 @@ instance RunMessage ActiveCost where
             then push $ PayCost acId iid skipAdditionalCosts (GroupClueCost (Static sVal) locationMatcher)
             else
               push
-                $ questionLabel "Spend 1-3 clues, as a group" player
+                $ questionLabel ("Spend " <> tshow sVal <> "-" <> tshow mVal <> " clues, as a group") player
                 $ DropDown
                   [ (tshow n, PayCost acId iid skipAdditionalCosts (GroupClueCost (Static n) locationMatcher))
                   | n <- [sVal .. mVal]

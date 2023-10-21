@@ -1192,4 +1192,7 @@ instance RunMessage EnemyAttrs where
       pure a
     Msg.Damage (isTarget a -> True) _ _ -> do
       error $ "Use EnemyDamage instead"
+    RemoveAllCopiesOfCardFromGame _ cCode | cCode == toCardCode a -> do
+      push $ RemoveEnemy (toId a)
+      pure a
     _ -> pure a

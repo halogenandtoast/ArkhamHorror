@@ -63,6 +63,8 @@ data ScenarioLogKey
     CleanedUpTheBlood
   | HidTheBody
   | TidiedUpTheRoom
+  | ThePoliceDon'tBelieveYou
+  | ThePoliceAreOnYourSide
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey = CurrentDepth | PlaceholderCountKey

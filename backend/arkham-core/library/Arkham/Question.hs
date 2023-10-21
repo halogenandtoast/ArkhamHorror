@@ -90,7 +90,7 @@ data AmountChoice = AmountChoice
   }
   deriving stock (Show, Eq)
 
-data AmountTarget = MaxAmountTarget Int | TotalAmountTarget Int
+data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarget Int
   deriving stock (Show, Eq)
 
 data Question msg

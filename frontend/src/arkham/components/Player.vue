@@ -484,6 +484,7 @@ function onLeave(el, done) {
   align-items: flex-start;
   padding: 10px;
   box-sizing: border-box;
+  background: darken(#282A36, 2%);
 }
 
 .deck--can-draw {

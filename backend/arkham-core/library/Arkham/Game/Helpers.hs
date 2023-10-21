@@ -702,7 +702,7 @@ getActionsWith iid window f = do
                 (\source -> action {abilitySource = ProxySource source base})
                 sources
           ProxySource (LocationMatcherSource m) base -> do
-            sources <- selectListMap LocationSource m
+            sources <- traceShowId <$> selectListMap LocationSource m
             pure
               $ map
                 (\source -> action {abilitySource = ProxySource source base})

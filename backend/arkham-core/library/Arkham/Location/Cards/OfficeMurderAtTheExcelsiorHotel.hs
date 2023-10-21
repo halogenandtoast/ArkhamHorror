@@ -8,28 +8,51 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Movement
 import Arkham.Name
 import Arkham.Projection
 
 newtype OfficeMurderAtTheExcelsiorHotel = OfficeMurderAtTheExcelsiorHotel LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass (IsLocation)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 officeMurderAtTheExcelsiorHotel :: LocationCard OfficeMurderAtTheExcelsiorHotel
 officeMurderAtTheExcelsiorHotel = location OfficeMurderAtTheExcelsiorHotel Cards.officeMurderAtTheExcelsiorHotel 3 (PerPlayer 2)
 
+instance HasModifiersFor OfficeMurderAtTheExcelsiorHotel where
+  getModifiersFor (InvestigatorTarget iid) (OfficeMurderAtTheExcelsiorHotel attrs) = do
+    hasManagersKey <- iid <=~> HasMatchingAsset (assetIs Assets.managersKey)
+    pure $ toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasManagersKey]
+  getModifiersFor _ _ = pure []
+
 instance HasAbilities OfficeMurderAtTheExcelsiorHotel where
   getAbilities (OfficeMurderAtTheExcelsiorHotel attrs) =
-    withRevealedAbilities
-      attrs
-      [ withTooltip
-          "{action}: Test {intellect} (0). For each point you succeed by, you may move 1 clue controlled by an investigator in the Office to Manager's key (if it is in play)."
-          $ restrictedAbility attrs 1 Here actionAbility
-      ]
+    if unrevealed attrs
+      then
+        withBaseAbilities
+          attrs
+          [ withTooltip
+              "{action}: Test {agility} (3) to attempt to pick the lock. If you succeed, reveal Office and immediately move to it."
+              $ restrictedAbility
+                (proxy (LocationMatcherSource "Basement") attrs)
+                1
+                (OnLocation "Basement")
+                #action
+          ]
+      else
+        withRevealedAbilities
+          attrs
+          [ withTooltip
+              "{action}: Test {intellect} (0). For each point you succeed by, you may move 1 clue controlled by an investigator in the Office to Manager's key (if it is in play)."
+              $ restrictedAbility attrs 1 Here actionAbility
+          ]
 
 instance RunMessage OfficeMurderAtTheExcelsiorHotel where
   runMessage msg l@(OfficeMurderAtTheExcelsiorHotel attrs) = case msg of
@@ -62,5 +85,11 @@ instance RunMessage OfficeMurderAtTheExcelsiorHotel where
         $ [ MovedClues (toSource iid) (toTarget managersKey) n
           | (iid, n) <- iidsWithAmounts
           ]
+      pure l
+    UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
+      push $ beginSkillTest iid (toAbilitySource p 1) iid #agility 3
+      pure l
+    PassedThisSkillTest iid source@(AbilitySource (ProxySource _ (isSource attrs -> True)) 1) -> do
+      pushAll [Msg.RevealLocation Nothing (toId attrs), Move $ move source iid (toId attrs)]
       pure l
     _ -> OfficeMurderAtTheExcelsiorHotel <$> runMessage msg attrs

@@ -504,6 +504,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   position: relative;
   width: 100%;
   gap: 2px;
+  background: darken(#282A36, 2%);
 }
 
 .clue--can-investigate {
@@ -560,7 +561,8 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   display: flex;
   flex: 1;
   overflow-y: auto;
-  padding-top: 100px;
+  padding-top: 32px;
+  padding-bottom: 32px;
 }
 
 .portrait {

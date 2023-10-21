@@ -1,4 +1,4 @@
-module Arkham.Scenarios.MuderAtTheExcelsiorHotel.FlavorText where
+module Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText where
 
 import Arkham.Prelude
 

@@ -448,6 +448,7 @@ data Message
   | RevealUntilFirst InvestigatorId Source DeckSignifier CardMatcher
   | RevealedCards InvestigatorId Source DeckSignifier (Maybe Card) [Card]
   | DiscardUntilFirst InvestigatorId Source DeckSignifier ExtendedCardMatcher
+  | DiscardUntilN Int InvestigatorId Source Target DeckSignifier ExtendedCardMatcher
   | DiscardTopOfDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int Source (Maybe Target) [EncounterCard]
@@ -540,6 +541,7 @@ data Message
   | HealHorror Target Source Int
   | MovedHorror Source Target Int
   | MovedDamage Source Target Int
+  | MovedClues Source Target Int
   | HealHorrorWithAdditional Target Source Int
   | AdditionalHealHorror Target Source Int
   | HealDamageDirectly Target Source Int

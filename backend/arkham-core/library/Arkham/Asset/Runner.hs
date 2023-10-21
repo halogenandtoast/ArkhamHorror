@@ -91,6 +91,10 @@ instance RunMessage AssetAttrs where
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
         <> [checkDefeated source aid]
       pure a
+    MovedClues source (isTarget a -> True) amount -> do
+      pure $ a & tokensL %~ addTokens #clue amount
+    MovedClues (isSource a -> True) _ amount -> do
+      pure $ a & tokensL %~ subtractTokens #clue amount
     MovedHorror (isSource a -> True) _ n -> do
       pure $ a & tokensL %~ subtractTokens #horror n
     MovedHorror source (isTarget a -> True) n -> do

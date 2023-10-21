@@ -560,6 +560,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   display: flex;
   flex: 1;
   overflow-y: auto;
+  padding-top: 100px;
 }
 
 .portrait {

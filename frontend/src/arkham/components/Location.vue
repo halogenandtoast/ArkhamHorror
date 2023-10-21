@@ -433,14 +433,15 @@ const debug = useDebug()
 .abilities {
   position: absolute;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  bottom:100%;
-  left: 0;
+  right:100%;
+  top: 0;
   outline: 0;
+  z-index: 10;
 }
 
 .attachments {

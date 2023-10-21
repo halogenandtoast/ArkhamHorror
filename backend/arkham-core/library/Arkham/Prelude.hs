@@ -40,6 +40,7 @@ import Control.Monad.Extra as X (
   mapMaybeM,
   mconcatMapM,
   orM,
+  partitionM,
  )
 import Control.Monad.Random as X (MonadRandom, uniform)
 import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
@@ -265,6 +266,17 @@ breakM p xs@(x : xs') = do
     else do
       (ys, zs) <- breakM p xs'
       pure (x : ys, zs)
+
+breakNM :: Monad m => Int -> (a -> m Bool) -> [a] -> m ([a], [a])
+breakNM n p xs = go n ([], xs)
+ where
+  go 0 (ys, zs) = pure (reverse ys, zs)
+  go _ (ys, []) = pure (reverse ys, [])
+  go m (ys, z : zs') = do
+    b <- p z
+    if b
+      then go (m - 1) (z : ys, zs')
+      else go m (z : ys, zs')
 
 (<$$>) :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
 (<$$>) = fmap . fmap

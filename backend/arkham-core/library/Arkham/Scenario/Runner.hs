@@ -775,6 +775,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       (x : xs) -> do
         push (RequestedEncounterCard source (Just iid) (Just x))
         pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
+  DiscardUntilN n iid source target Deck.EncounterDeck matcher -> do
+    push $ DiscardUntilN n iid source target (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
+    pure a
+  DiscardUntilN n _ _ target (Deck.EncounterDeckByKey RegularEncounterDeck) matcher -> do
+    (discards, remainingDeck) <- breakNM n (`extendedCardMatch` matcher) (unDeck scenarioEncounterDeck)
+    matches <- filterM (`extendedCardMatch` matcher) discards
+    case remainingDeck of
+      [] -> do
+        push (RequestedEncounterCards target matches)
+        encounterDeck <- shuffleM (discards <> scenarioDiscard)
+        pure $ a & encounterDeckL .~ Deck encounterDeck & discardL .~ mempty
+      xs -> do
+        push (RequestedEncounterCards target matches)
+        pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
   FoundAndDrewEncounterCard iid cardSource card -> do
     let
       cardId = toCardId card
@@ -956,7 +970,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & (victoryDisplayL %~ delete card)
   SetEncounterDeck encounterDeck -> pure $ a & encounterDeckL .~ encounterDeck
   RemoveAllCopiesOfCardFromGame _ cCode ->
-    pure $ a & setAsideCardsL %~ filter ((/= cCode) . toCardCode)
+    pure
+      $ a
+      & setAsideCardsL
+      %~ filter ((/= cCode) . toCardCode)
+      & encounterDeckL
+      %~ filter ((/= cCode) . toCardCode)
+      & discardL
+      %~ filter ((/= cCode) . toCardCode)
+      & decksL
+      . each
+      %~ filter ((/= cCode) . toCardCode)
   SetCampaignLog newLog -> do
     isStandalone <- getIsStandalone
     if isStandalone

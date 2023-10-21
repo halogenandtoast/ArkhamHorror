@@ -113,6 +113,15 @@ const unmetAmountRequirements = computed(() => {
           }
           break
         }
+      case 'MinAmountTarget':
+        {
+          const minBound = question.value.amountTargetValue.contents
+          if (minBound) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return total < minBound
+          }
+          break
+        }
       case 'TotalAmountTarget':
         {
           const requiredTotal = question.value.amountTargetValue.contents
@@ -134,6 +143,15 @@ const unmetAmountRequirements = computed(() => {
           if (maxBound) {
             const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
             return total > maxBound
+          }
+          break
+        }
+      case 'MinAmountTarget':
+        {
+          const minBound = actual.amountTargetValue.contents
+          if (minBound) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return total < minBound
           }
           break
         }

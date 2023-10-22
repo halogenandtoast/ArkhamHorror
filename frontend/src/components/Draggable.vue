@@ -84,7 +84,6 @@ function elementDrag(el: HTMLElement) {
   font-size: 0.8em;
   color: white;
   text-align: center;
-  margin-bottom: 10px;
   padding: 5px;
   > * {
     padding: 0;

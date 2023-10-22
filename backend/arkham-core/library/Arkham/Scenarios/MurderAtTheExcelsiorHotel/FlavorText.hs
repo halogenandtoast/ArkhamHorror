@@ -324,9 +324,7 @@ resolution1 =
       \ to. You may have broken free of the Excelsior’s grasp, but there will be\
       \ other victims, of that you are sure. You grab a piece of paper and hastily\
       \ scribble a note."
-    , "It’s all a facade."
-    , "Room 225. Tonight."
-    , "It’s not over."
+    , "*It’s all a facade.*<br />*Room 225. Tonight.*<br />*This isn’t over.*"
     , "If they can see past the veil of the Excelsior’s operations, then maybe\
       \ others can too. It may not be too late to stop it all from happening again!"
     ]
@@ -368,9 +366,7 @@ resolution2 =
       \ inside is a small, folded note. You look up, but the pedestrian is nowhere\
       \ in sight. You unfold the note slowly, fingers shaking from anxiety and\
       \ fear."
-    , "It’s all a facade."
-    , "Room 225. Tonight."
-    , "It’s not over."
+    , "*It’s all a facade.*<br />*Room 225. Tonight.*<br />*This isn’t over.*"
     ]
 
 resolution3 :: FlavorText
@@ -387,9 +383,7 @@ resolution3 =
       \ bars of your cell. Knowing better than to ask his intentions out loud, you\
       \ slowly walk over and unfold the note, your fingers shaking with\
       \ trepidation."
-    , "It’s all a facade."
-    , "Room 225. Tonight."
-    , "This isn’t over."
+    , "*It’s all a facade.*<br />*Room 225. Tonight.*<br />*This isn’t over.*"
     , "Just as you finish reading the note, you hear the click of the cell’s\
       \ latch unlocking. The officer is gone, and the door to your cell swings\
       \ open."

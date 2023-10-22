@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.ScenarioLogKey
 
 newtype Room225 = Room225 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,10 +20,37 @@ room225 = locationWith Room225 Cards.room225 3 (PerPlayer 1) (labelL .~ "room225
 
 instance HasAbilities Room225 where
   getAbilities (Room225 attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [ withTooltip
+          "{action}: Test {willpower} (3). If you succeed, remember that the investigators \"cleaned up the blood.\""
+          $ restrictedAbility attrs 1 Here actionAbility
+      , withTooltip
+          "{action}: Test {combat} (3). If you succeed, remember that the investigators \"hid the body.\""
+          $ restrictedAbility attrs 2 Here actionAbility
+      , withTooltip
+          "{action}: Test {intellect} (3). If you succeed, remember that the investigators \"tidied up the room.\""
+          $ restrictedAbility attrs 3 Here actionAbility
+      ]
 
 instance RunMessage Room225 where
-  runMessage msg (Room225 attrs) =
-    Room225 <$> runMessage msg attrs
+  runMessage msg l@(Room225 attrs) = case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower 3
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #combat 3
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 3) iid #intellect 3
+      pure l
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      push $ Remember CleanedUpTheBlood
+      pure l
+    PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
+      push $ Remember HidTheBody
+      pure l
+    PassedThisSkillTest _ (isAbilitySource attrs 3 -> True) -> do
+      push $ Remember TidiedUpTheRoom
+      pure l
+    _ -> Room225 <$> runMessage msg attrs

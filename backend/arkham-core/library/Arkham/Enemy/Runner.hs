@@ -1164,6 +1164,10 @@ instance RunMessage EnemyAttrs where
       pure $ a & keysL %~ deleteSet k
     RemoveClues _ target n | isTarget a target -> do
       pure $ a & tokensL %~ subtractTokens Clue n
+    MovedClues _ (isTarget a -> True) n -> do
+      pure $ a & tokensL %~ addTokens #clue n
+    MovedClues (isSource a -> True) _ n -> do
+      pure $ a & tokensL %~ subtractTokens #clue n
     FlipClues target n | isTarget a target -> do
       pure $ a & tokensL %~ flipClues n
     PlaceEnemyInVoid eid | eid == enemyId -> do

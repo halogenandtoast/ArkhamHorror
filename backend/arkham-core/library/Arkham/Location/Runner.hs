@@ -85,6 +85,10 @@ instance RunMessage LocationAttrs where
     UpdateLocation lid upd | lid == locationId -> do
       -- TODO: we may want life cycles around this, generally this might just be a bad idea
       pure $ updateLocation [upd] a
+    MovedClues _ (isTarget a -> True) n -> do
+      pure $ a & tokensL %~ addTokens #clue n
+    MovedClues (isSource a -> True) _ n -> do
+      pure $ a & tokensL %~ subtractTokens #clue n
     FlipClues target n | isTarget a target -> do
       let clueCount = max 0 $ subtract n $ locationClues a
       pure $ a & tokensL %~ flipClues n & withoutCluesL .~ (clueCount == 0)

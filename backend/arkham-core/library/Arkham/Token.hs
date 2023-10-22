@@ -30,6 +30,9 @@ instance IsLabel "resource" Token where
 instance IsLabel "clue" Token where
   fromLabel = Clue
 
+instance IsLabel "doom" Token where
+  fromLabel = Doom
+
 newtype Tokens = Tokens (Map Token Int)
   deriving newtype (Show, Eq, Ord, ToJSON, FromJSON, Monoid, Semigroup)
 

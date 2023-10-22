@@ -832,6 +832,7 @@ targetToSource = \case
   TarotTarget arcana -> TarotSource arcana
   AbilityTarget _ _ -> error "can not convert"
   BothTarget t1 t2 -> BothSource (targetToSource t1) (targetToSource t2)
+  BatchTarget bId -> BatchSource bId
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -875,6 +876,7 @@ sourceToTarget = \case
   ThisCard -> error "not converted"
   CardCostSource _ -> error "not converted"
   BothSource s1 s2 -> BothTarget (sourceToTarget s1) (sourceToTarget s2)
+  BatchSource bId -> BatchTarget bId
 
 hasFightActions
   :: HasGame m
@@ -2646,6 +2648,7 @@ targetTraits = \case
   TarotTarget _ -> pure mempty
   AbilityTarget _ _ -> pure mempty
   BothTarget _ _ -> error "won't make sense, or need to determine later"
+  BatchTarget {} -> pure mempty
 
 targetMatches :: HasGame m => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case

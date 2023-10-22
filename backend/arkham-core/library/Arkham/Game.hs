@@ -294,6 +294,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
         , gameCardUses = mempty
         , gameAllowEmptySpaces = False
         , gamePerformTarotReadings = includeTarotReadings
+        , gameCurrentBatchId = Nothing
         }
 
   gameRef <- newIORef game
@@ -4645,10 +4646,10 @@ runGameMessage msg g = case msg of
       , InvestigatorDrawEnemy iid enemyId
       ]
     pure $ g & entitiesL . enemiesL %~ insertMap enemyId enemy & resolvingCardL ?~ card
-  Would _ [] -> pure g
+  Would _ [] -> pure $ g & currentBatchIdL .~ Nothing
   Would bId (x : xs) -> do
     pushAll [x, Would bId xs]
-    pure g
+    pure $ g & currentBatchIdL ?~ bId
   CancelBatch bId -> do
     withQueue_ $ \q ->
       flip map q $ \case

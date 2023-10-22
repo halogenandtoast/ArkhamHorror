@@ -639,6 +639,9 @@ data MovesVia = MovedViaHunter | MovedViaOther
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+type FromWhere = Where
+type ToWhere = Where
+
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
@@ -729,11 +732,9 @@ data WindowMatcher
   | DuringTurn Who
   | Enters Timing Who Where
   | Leaves Timing Who Where
-  | Moves Timing Who SourceMatcher Where Where
-  | --                 ^ from ^ to
-    MoveAction Timing Who Where Where
-  | --                      ^ from ^ to
-    OrWindowMatcher [WindowMatcher]
+  | Moves Timing Who SourceMatcher FromWhere ToWhere
+  | MoveAction Timing Who FromWhere ToWhere
+  | OrWindowMatcher [WindowMatcher]
   | DealtDamage Timing SourceMatcher Who
   | DealtHorror Timing SourceMatcher Who
   | AssignedHorror Timing Who TargetListMatcher

@@ -20,6 +20,7 @@ withModifiers'
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]
 getPhase :: HasGame m => m Phase
+getCurrentBatchId :: HasGame m => m (Maybe BatchId)
 getWindowDepth :: HasGame m => m Int
 getDepthLock :: HasGame m => m Int
 getSkillTest :: HasGame m => m (Maybe SkillTest)

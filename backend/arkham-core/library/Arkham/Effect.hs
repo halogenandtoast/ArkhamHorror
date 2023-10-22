@@ -101,6 +101,7 @@ import Arkham.Investigator.Investigators (
  )
 import Arkham.Location.Locations (
   hereticsGravesSpectral_171Effect,
+  restaurantEffect,
   unvisitedIsleMossCoveredStepsEffect,
   unvisitedIsleStandingStonesEffect,
  )
@@ -355,6 +356,7 @@ allEffects =
     , ("81007", SomeEffect cursedShores)
     , ("82026", SomeEffect gildedVolto)
     , ("82035", SomeEffect mesmerize)
+    , ("84014", SomeEffect restaurantEffect)
     , ("90002", SomeEffect daisysToteBagAdvanced)
     , ("wmode", SomeEffect windowModifierEffect)
     , ("tokef", SomeEffect chaosTokenEffect)

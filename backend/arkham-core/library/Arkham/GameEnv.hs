@@ -170,6 +170,9 @@ getAllAbilities = getAbilities <$> getGame
 getSettings :: HasGame m => m Settings
 getSettings = gameSettings <$> getGame
 
+getCurrentBatchId :: HasGame m => m (Maybe BatchId)
+getCurrentBatchId = gameCurrentBatchId <$> getGame
+
 getAllPlayers :: HasGame m => m [PlayerId]
 getAllPlayers = gamePlayers <$> getGame
 

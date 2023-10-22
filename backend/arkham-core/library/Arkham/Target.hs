@@ -65,6 +65,7 @@ data Target
   | AbilityTarget InvestigatorId Ability
   | BothTarget Target Target
   | TarotTarget TarotCard
+  | BatchTarget BatchId
   deriving stock (Show, Eq, Ord, Data)
 
 investigatorTarget :: Target -> Maybe InvestigatorId

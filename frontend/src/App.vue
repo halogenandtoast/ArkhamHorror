@@ -37,6 +37,16 @@ onMounted(async () => await store.loadUserFromStorage())
   src: url("/fonts/teutonic.ttf");
 }
 
+@font-face {
+  font-family: "ArkhamCursive";
+  src: url("/fonts/AquilineTwo.ttf");
+}
+
+@font-face {
+  font-family: "ArkhamFlavor";
+  src: url("/fonts/ArnoPro-ItalicCaption.ttf");
+}
+
 body {
   margin: 0;
   padding: 0;

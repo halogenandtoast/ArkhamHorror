@@ -135,7 +135,7 @@ const replaceIcons = function(body: string) {
 }
 
 const label = function(body: string) {
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
+  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
 }
 
 </script>
@@ -193,8 +193,8 @@ const label = function(body: string) {
       <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
         <p
           v-for="(paragraph, index) in question.flavorText.body"
-          :key="index"
-        >{{paragraph}}</p>
+          :key="index" v-html="label(paragraph)">
+        </p>
       </div>
 
       <div class="question-label" v-if="question && question.tag === 'DropDown'">
@@ -479,6 +479,20 @@ button {
       font-family: "ArkhamIcons";
       content: "\E91A";
       margin-right: 10px;
+    }
+  }
+}
+
+p {
+  font-family: "ArkhamFlavor";
+  :deep(i) {
+    font-family: "ArkhamCursive";
+    text-align: center;
+    display: block;
+    font-size: 1.3em;
+    line-height: 0.3em;
+    &:last-child {
+      padding-bottom: 1.3em;
     }
   }
 }

@@ -115,6 +115,7 @@ data Cost
   | DiscardTopOfDeckCost Int
   | DiscardCost Zone Target
   | DiscardCardCost Card
+  | DiscardRandomCardCost
   | DiscardFromCost Int CostZone CardMatcher
   | DiscardDrawnCardCost
   | DiscardHandCost
@@ -228,6 +229,7 @@ displayCostType = \case
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
   DiscardCost zone _ -> "Discard from " <> zoneLabel zone
   DiscardCardCost _ -> "Discard Card"
+  DiscardRandomCardCost -> "Discard Random Card"
   DiscardFromCost n _ _ -> "Discard " <> tshow n
   DiscardDrawnCardCost -> "Discard Drawn Card"
   DoomCost _ _ n -> pluralize n "Doom"

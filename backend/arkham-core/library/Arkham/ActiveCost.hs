@@ -427,6 +427,9 @@ instance RunMessage ActiveCost where
                 ]
             )
           pure c
+        DiscardRandomCardCost -> do
+          push $ toMessage $ randomDiscard iid (activeCostSource c)
+          pure c
         DiscardCardCost card -> do
           push $ toMessage $ discardCard iid (activeCostSource c) card
           withPayment $ DiscardCardPayment [card]

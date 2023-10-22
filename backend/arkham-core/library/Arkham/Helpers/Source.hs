@@ -54,6 +54,7 @@ sourceTraits = \case
   ThisCard -> error "can not get traits"
   CardCostSource _ -> pure mempty
   BothSource _ _ -> error "doesn't make sense, or will solve later"
+  BatchSource _ -> pure mempty
 
 getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
 getSourceController = \case

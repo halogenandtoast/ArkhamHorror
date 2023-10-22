@@ -7,6 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -16,12 +17,14 @@ import Arkham.Window qualified as Window
 
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
+  mBatchId <- getCurrentBatchId
   iids <- selectList UneliminatedInvestigator
+  let windows'' = map (\w -> w {windowBatchId = windowBatchId w <|> mBatchId}) windows'
   if null iids
     then do
       iids' <- selectList Anyone
-      pure $ CheckWindow iids' windows'
-    else pure $ CheckWindow iids windows'
+      pure $ CheckWindow iids' windows''
+    else pure $ CheckWindow iids windows''
 
 windows :: HasGame m => [WindowType] -> m [Message]
 windows windows' = do

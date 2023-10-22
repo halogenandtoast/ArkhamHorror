@@ -762,6 +762,7 @@ newGame investigator = do
         , gameCardUses = mempty
         , gameAllowEmptySpaces = False
         , gamePerformTarotReadings = False
+        , gameCurrentBatch = Nothing
         }
 
   liftIO $ do

@@ -242,6 +242,7 @@ const label = function(body: string) {
           </a>
 
           <button
+            class="apply-results"
             v-if="applyResultsAction !== -1"
             @click="choose(applyResultsAction)"
           >Apply Results</button>
@@ -508,5 +509,10 @@ h2 {
   font-family: "Teutonic";
   letter-spacing: 1px;
   font-size: 1.7em;
+}
+
+.apply-results {
+  margin-bottom: 10px;
+  margin-top: 5px;
 }
 </style>

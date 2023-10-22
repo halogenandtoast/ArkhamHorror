@@ -901,7 +901,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         windowMsgs <-
           Helpers.windows
             [Window.Moves iid source mFromLocation destinationLocationId]
-        pushAll
+        batchId <- getRandom
+        pushBatched batchId
           $ [ Will (MoveFrom source iid fromLocationId)
             | fromLocationId <- maybeToList mFromLocation
             ]

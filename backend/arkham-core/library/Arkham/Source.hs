@@ -60,6 +60,7 @@ data Source
   | CardCostSource CardId
   | BothSource Source Source
   | TarotSource TarotCard
+  | BatchSource BatchId
   deriving stock (Show, Eq, Ord, Data)
 
 _AssetSource :: Prism' Source AssetId

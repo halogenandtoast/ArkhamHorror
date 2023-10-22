@@ -593,6 +593,7 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
     (> n) . length <$> getCards zone
   DiscardCost _ _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
+  DiscardRandomCardCost -> iid <=~> Matcher.InvestigatorWithDiscardableCard
   DiscardDrawnCardCost -> pure True -- TODO: Make better
   ExileCost _ -> pure True -- TODO: Make better
   RemoveCost _ -> pure True -- TODO: Make better
@@ -702,7 +703,7 @@ getActionsWith iid window f = do
                 (\source -> action {abilitySource = ProxySource source base})
                 sources
           ProxySource (LocationMatcherSource m) base -> do
-            sources <- traceShowId <$> selectListMap LocationSource m
+            sources <- selectListMap LocationSource m
             pure
               $ map
                 (\source -> action {abilitySource = ProxySource source base})

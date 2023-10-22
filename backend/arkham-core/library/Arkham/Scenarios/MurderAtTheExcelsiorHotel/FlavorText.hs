@@ -25,9 +25,7 @@ intro1 =
       \ apologize, but he simply continues walking briskly away from you. It isn’t\
       \ until you return home that you find the note in your pocket—one that wasn’t\
       \ there before."
-    , "I have answers."
-    , "Room 225. Tonight. Come alone."
-    , "They’re watching!"
+    , "*I have answers.*<br />*Room 225. Tonight. Come alone.*<br />*They’re watching!*"
     , "Uncertain of what else you can do at this point, you begin making\
       \ preparations to meet this mystery person."
     ]

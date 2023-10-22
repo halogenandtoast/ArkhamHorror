@@ -24,6 +24,7 @@ import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
 import Arkham.Trait (Trait (Guest, Innocent))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -61,6 +62,14 @@ instance HasChaosTokenValue MurderAtTheExcelsiorHotel where
 
 instance RunMessage MurderAtTheExcelsiorHotel where
   runMessage msg s@(MurderAtTheExcelsiorHotel attrs) = case msg of
+    PreScenarioSetup -> do
+      players <- allPlayers
+      pushAll
+        [ story players intro1
+        , story players (if length players == 1 then intro2 else intro3)
+        , story players intro4
+        ]
+      pure s
     Setup -> do
       lead <- getLead
       otherPlayers <- deleteFirst lead <$> allInvestigators

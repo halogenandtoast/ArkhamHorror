@@ -217,7 +217,7 @@ const label = function(body: string) {
             </a>
           </template>
           <button v-if="choice.tag === MessageType.DONE" @click="choose(index)">{{label(choice.label)}}</button>
-          <div v-if="choice.tag === MessageType.LABEL">
+          <div v-if="choice.tag === MessageType.LABEL" class="message-label">
             <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
               Choose <i class="iconSkull"></i>
             </button>
@@ -325,7 +325,6 @@ section {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  padding: 5px;
 }
 
 .button {
@@ -350,10 +349,11 @@ section {
 .intro-text {
   width: 50vw;
   text-align: justify;
-  background-color: #DFDAD8;
+  background: linear-gradient(#DFDAD8, darken(#DFDAD8, 10%));
   padding: 10px;
   margin: 10px;
-  border-radius: 2px;
+  margin-bottom: 0;
+  border-radius: 5px;
   box-sizing: border-box;
   font-size: 1.1em;
   -moz-osx-font-smoothing: grayscale;
@@ -471,6 +471,8 @@ button {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  margin-inline: 10px;
   button {
     font-size: 1.2em;
     width: 100%;
@@ -495,5 +497,16 @@ p {
       padding-bottom: 1.3em;
     }
   }
+}
+
+.message-label {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-family: "Teutonic";
+  letter-spacing: 1px;
+  font-size: 1.7em;
 }
 </style>

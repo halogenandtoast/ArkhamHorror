@@ -62,8 +62,9 @@ instance RunMessage OfficeMurderAtTheExcelsiorHotel where
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       player <- getPlayer iid
       iids <- selectWithField InvestigatorClues $ investigatorAt (toId attrs) <> InvestigatorWithAnyClues
+      managersKey <- selectOne $ assetIs Assets.managersKey
 
-      unless (null iids) $ do
+      unless (null iids || isNothing managersKey) $ do
         named <- traverse (\(iid', x) -> (,x) <$> field InvestigatorName iid') iids
         push
           $ chooseAmounts

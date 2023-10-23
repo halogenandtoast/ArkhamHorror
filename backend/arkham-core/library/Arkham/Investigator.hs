@@ -13,7 +13,6 @@ import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner hiding (allInvestigators)
 import Data.Aeson (Result (..))
-import Data.Map.Strict qualified as Map
 import Data.Typeable
 
 instance RunMessage Investigator where

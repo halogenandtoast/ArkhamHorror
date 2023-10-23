@@ -13,8 +13,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
-import Arkham.Helpers.Ability
-import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations

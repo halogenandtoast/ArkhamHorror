@@ -13,8 +13,6 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Ability
-import Arkham.Helpers.Log
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
 import Arkham.Scenario.Deck

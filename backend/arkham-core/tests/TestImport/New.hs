@@ -797,6 +797,7 @@ resolveAmounts self choices = do
   case targetValue of
     MaxAmountTarget n -> when (total > n) $ expectationFailure $ "expected " <> show total <> " to be <= " <> show n
     TotalAmountTarget n -> when (total /= n) $ expectationFailure $ "expected " <> show total <> " to be == " <> show n
+    MinAmountTarget n -> when (total < n) $ expectationFailure $ "expected " <> show total <> " to be == " <> show n
 
   run $ ResolveAmounts (toId self) choices target
 
@@ -819,6 +820,7 @@ assertMaxAmountChoice n = do
 
   case targetValue of
     MaxAmountTarget n' -> n' `shouldBe` n
+    MinAmountTarget _ -> expectationFailure "expected MaxAmountTarget"
     TotalAmountTarget _ -> expectationFailure "expected MaxAmountTarget"
 
 beginsWithInPlay :: CardDef -> CardDef -> SpecWith ()

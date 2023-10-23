@@ -265,6 +265,7 @@ data EnemyMatcher
   | IncludeOmnipotent EnemyMatcher
   | EnemyWithPlacement Placement
   | EnemyWithBounty -- Tony Morgan
+  | PatrolEnemy
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyMatcher where

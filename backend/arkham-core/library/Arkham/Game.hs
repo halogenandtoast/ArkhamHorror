@@ -2221,6 +2221,13 @@ enemyMatcherFilter = \case
   EnemyWithTrait t -> fmap (member t) . field EnemyTraits . toId
   EnemyWithoutTrait t -> fmap (notMember t) . field EnemyTraits . toId
   EnemyWithKeyword k -> fmap (elem k) . field EnemyKeywords . toId
+  PatrolEnemy ->
+    let
+      isPatrol = \case
+        Keyword.Patrol _ -> True
+        _ -> False
+     in
+      fieldMap EnemyKeywords (any isPatrol) . toId
   EnemyWithClues gameValueMatcher -> \enemy -> do
     clues <- field EnemyClues (toId enemy)
     clues `gameValueMatches` gameValueMatcher

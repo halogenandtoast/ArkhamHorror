@@ -10,7 +10,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

@@ -12,7 +12,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck

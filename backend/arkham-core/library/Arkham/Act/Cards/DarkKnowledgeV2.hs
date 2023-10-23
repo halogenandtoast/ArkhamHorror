@@ -13,7 +13,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
-import Arkham.Helpers.Ability
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers

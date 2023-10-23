@@ -12,7 +12,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyLocation))
-import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

@@ -13,7 +13,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Direction
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Id

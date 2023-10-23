@@ -410,6 +410,11 @@ instance RunMessage EnemyAttrs where
                 [mkWindow Timing.When (Window.MovedFromHunter enemyId)]
             , HunterMove (toId a)
             ]
+        -- We should never have a case where an enemy has both patrol and
+        -- hunter and should only have one patrol keyword
+        for_ keywords $ \case
+          Keyword.Patrol lMatcher -> push $ PatrolMove (toId a) lMatcher
+          _ -> pure ()
       pure a
     HunterMove eid | eid == toId a && not enemyExhausted -> do
       enemyLocation <- field EnemyLocation enemyId
@@ -552,6 +557,57 @@ instance RunMessage EnemyAttrs where
                   | l <- ls
                   ]
               pure $ a & movedFromHunterKeywordL .~ True
+    PatrolMove eid lMatcher | eid == toId a && not enemyExhausted -> do
+      enemyLocation <- field EnemyLocation enemyId
+      case enemyLocation of
+        Nothing -> pure a
+        Just loc -> do
+          modifiers' <- getModifiers (EnemyTarget enemyId)
+          let
+            locationMatcherModifier =
+              if CanEnterEmptySpace `elem` modifiers'
+                then IncludeEmptySpace
+                else id
+
+          destinationLocationIds <-
+            selectList
+              $ NearestLocationToLocation loc (locationMatcherModifier lMatcher)
+
+          (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
+          pathIds <-
+            concat
+              <$> traverse
+                (selectList . locationMatcherModifier . ClosestPathLocation loc)
+                destinationLocationIds
+          case pathIds of
+            [] -> pure ()
+            [lid] -> do
+              pushAll
+                [ EnemyMove enemyId lid
+                , -- , CheckWindow
+                  --     [leadInvestigatorId]
+                  --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
+                  CheckWindow
+                    [leadInvestigatorId]
+                    [mkWindow Timing.After (Window.EnemyMovesTo lid MovedViaOther enemyId)]
+                ]
+            ls -> do
+              push
+                $ chooseOrRunOne
+                  lead
+                  [ targetLabel
+                    l
+                    [ EnemyMove enemyId l
+                    , -- , CheckWindow
+                      --     [leadInvestigatorId]
+                      --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
+                      CheckWindow
+                        [leadInvestigatorId]
+                        [mkWindow Timing.After (Window.EnemyMovesTo l MovedViaOther enemyId)]
+                    ]
+                  | l <- ls
+                  ]
+          pure a
     EnemiesAttack | not enemyExhausted -> do
       modifiers' <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` modifiers') $ do
@@ -1199,4 +1255,6 @@ instance RunMessage EnemyAttrs where
     RemoveAllCopiesOfCardFromGame _ cCode | cCode == toCardCode a -> do
       push $ RemoveEnemy (toId a)
       pure a
+    SendMessage (isTarget a -> True) msg' -> do
+      runMessage msg' a
     _ -> pure a

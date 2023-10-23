@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Card
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Timing qualified as Timing

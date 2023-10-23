@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

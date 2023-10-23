@@ -13,7 +13,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers
 import Arkham.History
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations

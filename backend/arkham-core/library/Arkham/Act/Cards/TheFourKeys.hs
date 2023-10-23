@@ -11,7 +11,6 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Classes
-import Arkham.Helpers.Log
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Resolution

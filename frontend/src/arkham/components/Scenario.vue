@@ -505,6 +505,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   width: 100%;
   gap: 2px;
   background: darken(#282A36, 2%);
+  z-index: -2;
 }
 
 .clue--can-investigate {

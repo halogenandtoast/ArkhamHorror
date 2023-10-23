@@ -16,6 +16,7 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes hiding (matches)
 import Arkham.Classes.HasGame
+import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
@@ -378,9 +379,16 @@ instance RunMessage SkillTest where
             (s ^. committedCardsL . to mapToList)
 
       skillTestEndsWindows <- windows [Window.SkillTestEnded s]
+      discardMessages <- for discards $ \(iid, discard) -> do
+        mods <- getModifiers (toCardId discard)
+        pure
+          $ if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods
+            then PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard)
+            else AddToDiscard iid discard
+
       pushAll
         $ ResetChaosTokens (toSource s)
-        : map (uncurry AddToDiscard) discards
+        : discardMessages
           <> skillTestEndsWindows
           <> [ AfterSkillTestEnds
                 skillTestSource

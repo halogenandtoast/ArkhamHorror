@@ -21,6 +21,7 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
+import Arkham.Message qualified as Msg
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -394,6 +395,7 @@ instance RunMessage SkillTest where
                 skillTestSource
                 skillTestTarget
                 skillTestResult
+             , Msg.SkillTestEnded
              ]
       pure s
     ReturnToHand _ (CardIdTarget cardId) -> do

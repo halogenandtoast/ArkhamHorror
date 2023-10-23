@@ -793,6 +793,7 @@ data Message
   | SkillTestAsk Message
   | SkillTestCommitCard InvestigatorId Card
   | SkillTestEnds InvestigatorId Source
+  | SkillTestEnded
   | AfterSkillTestEnds Source Target SkillTest.SkillTestResult
   | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData

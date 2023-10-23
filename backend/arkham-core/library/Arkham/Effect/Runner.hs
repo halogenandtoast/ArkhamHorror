@@ -45,7 +45,7 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     BeginAction | isEndOfWindow a EffectNextActionWindow -> do
       a <$ push (DisableEffect effectId)
-    Do (SkillTestEnds _ _) | isEndOfWindow a EffectSkillTestWindow -> do
+    SkillTestEnded | isEndOfWindow a EffectSkillTestWindow -> do
       a <$ push (DisableEffect effectId)
     CancelSkillEffects -> case effectSource of
       (SkillSource _) -> a <$ push (DisableEffect effectId)

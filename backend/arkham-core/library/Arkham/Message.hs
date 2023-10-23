@@ -548,6 +548,7 @@ data Message
   | HealHorrorDirectly Target Source Int
   | HuntersMove
   | HunterMove EnemyId
+  | PatrolMove EnemyId LocationMatcher
   | InDiscard InvestigatorId Message -- Nothing uses this yet
   | InSearch Message
   | InHand InvestigatorId Message
@@ -896,6 +897,7 @@ data Message
   | Incursion LocationId
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]
+  | SendMessage Target Message
   | -- Commit
     Do Message
   | DoBatch BatchId Message

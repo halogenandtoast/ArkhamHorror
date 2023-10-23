@@ -10,7 +10,6 @@ import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Field
-import Arkham.Helpers.Log
 import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

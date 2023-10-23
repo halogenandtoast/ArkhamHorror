@@ -10,7 +10,6 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Matcher
 
 newtype SaracenicScript = SaracenicScript ActAttrs

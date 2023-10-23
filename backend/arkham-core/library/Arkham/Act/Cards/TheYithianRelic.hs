@@ -17,8 +17,6 @@ import Arkham.Deck
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Ability
-import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Projection

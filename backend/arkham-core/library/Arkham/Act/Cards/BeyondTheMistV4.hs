@@ -13,8 +13,6 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Log
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement

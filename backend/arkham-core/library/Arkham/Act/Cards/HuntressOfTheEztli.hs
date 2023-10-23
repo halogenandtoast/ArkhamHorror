@@ -14,7 +14,6 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types

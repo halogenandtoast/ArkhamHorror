@@ -1602,7 +1602,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source amount]
         push afterWindow
         pure $ a & tokensL %~ subtractTokens #horror amount
-  MovedClues source (isTarget a -> True) amount -> do
+  MovedClues _ (isTarget a -> True) amount -> do
     pure $ a & tokensL %~ addTokens #clue amount
   MovedClues (isSource a -> True) _ amount -> do
     pure $ a & tokensL %~ subtractTokens #clue amount

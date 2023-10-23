@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (EncounterDeck)
 import Arkham.Movement

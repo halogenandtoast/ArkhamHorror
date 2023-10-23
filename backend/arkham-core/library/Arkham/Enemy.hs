@@ -17,6 +17,8 @@ createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy
 createEnemy a eid = lookupEnemy (toCardCode a) eid (toCardId a)
 
 instance RunMessage Enemy where
+  runMessage (SendMessage target msg) e | e `is` target = do
+    runMessage msg e
   runMessage msg e@(Enemy x) = do
     -- we must check that an enemy exists when grabbing modifiers
     -- as some messages are not masked when targetting cards in the

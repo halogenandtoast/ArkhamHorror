@@ -13,7 +13,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, LocationCard)

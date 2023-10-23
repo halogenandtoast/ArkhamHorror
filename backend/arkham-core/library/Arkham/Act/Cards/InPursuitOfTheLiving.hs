@@ -12,8 +12,6 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Classes
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Log
-import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Trait (Trait (Spectral))

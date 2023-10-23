@@ -4320,19 +4320,28 @@ runGameMessage msg g = case msg of
               ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
               , Nothing
               )
-            else case skillAfterPlay (toAttrs skill) of
-              DiscardThis ->
-                ( AddToDiscard
-                    (skillOwner $ toAttrs skill)
-                    (lookupPlayerCard (toCardDef skill) (toCardId skill))
-                , Just skillId
-                )
-              RemoveThisFromGame ->
-                (RemoveFromGame (SkillTarget skillId), Nothing)
-              ShuffleThisBackIntoDeck ->
-                ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
-                , Just skillId
-                )
+            else
+              if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
+                then
+                  ( PutCardOnBottomOfDeck
+                      (skillOwner $ toAttrs skill)
+                      (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
+                      (toCard skill)
+                  , Just skillId
+                  )
+                else case skillAfterPlay (toAttrs skill) of
+                  DiscardThis ->
+                    ( AddToDiscard
+                        (skillOwner $ toAttrs skill)
+                        (lookupPlayerCard (toCardDef skill) (toCardId skill))
+                    , Just skillId
+                    )
+                  RemoveThisFromGame ->
+                    (RemoveFromGame (SkillTarget skillId), Nothing)
+                  ShuffleThisBackIntoDeck ->
+                    ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
+                    , Just skillId
+                    )
 
     pushAll $ map fst skillPairs
 

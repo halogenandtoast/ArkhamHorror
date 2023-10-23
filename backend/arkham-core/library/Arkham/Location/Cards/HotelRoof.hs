@@ -60,8 +60,9 @@ instance RunMessage HotelRoof where
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       player <- getPlayer iid
       iids <- selectWithField InvestigatorClues $ investigatorAt (toId attrs) <> InvestigatorWithAnyClues
+      alienDevice <- selectOne $ assetIs Assets.alienDevice
 
-      unless (null iids) $ do
+      unless (null iids || isNothing alienDevice) $ do
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
         push
           $ chooseAmounts

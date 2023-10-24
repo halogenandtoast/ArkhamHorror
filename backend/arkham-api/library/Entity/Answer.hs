@@ -30,7 +30,7 @@ data Answer
   | AmountsAnswer AmountsResponse
   | StandaloneSettingsAnswer [StandaloneSetting]
   | CampaignSettingsAnswer CampaignSettings
-  | DeckAnswer {deckId :: ArkhamDeckId}
+  | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
@@ -209,7 +209,7 @@ answerPlayer = \case
   PaymentAmountsAnswer _ -> Nothing
   StandaloneSettingsAnswer _ -> Nothing
   CampaignSettingsAnswer _ -> Nothing
-  DeckAnswer _ -> Nothing
+  DeckAnswer _ pid -> Just pid
 
 playerInvestigator :: Entities -> PlayerId -> InvestigatorId
 playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPlayerId) (toList entitiesInvestigators) of
@@ -218,7 +218,7 @@ playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPl
 
 handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m [Message]
 handleAnswer Game {..} playerId = \case
-  DeckAnswer deckId -> do
+  DeckAnswer deckId _ -> do
     deck <- runDB $ get404 deckId
     player <- runDB $ get404 (coerce playerId)
     when (arkhamDeckUserId deck /= arkhamPlayerUserId player) notFound

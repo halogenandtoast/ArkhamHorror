@@ -209,39 +209,34 @@ class HasStdGen a where
   genL :: Lens' a (IORef StdGen)
 
 newCampaign
-  :: MonadIO m
-  => CampaignId
+  :: CampaignId
   -> Maybe ScenarioId
   -> Int
   -> Int
   -> Difficulty
   -> Bool
-  -> m (Queue Message, Game)
+  -> Game
 newCampaign cid msid = newGame (maybe (This cid) (These cid) msid)
 
 newScenario
-  :: MonadIO m
-  => ScenarioId
+  :: ScenarioId
   -> Int
   -> Int
   -> Difficulty
   -> Bool
-  -> m (Queue Message, Game)
+  -> Game
 newScenario = newGame . That
 
 newGame
-  :: MonadIO m
-  => These CampaignId ScenarioId
+  :: These CampaignId ScenarioId
   -> Int
   -> Int
   -> Difficulty
   -> Bool
-  -> m (Queue Message, Game)
-newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = do
-  let
-    state = IsPending []
-    game =
-      Game
+  -> Game
+newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
+  let state = IsPending []
+   in Game
         { gameCards = mempty
         , gameWindowDepth = 0
         , gameRunWindows = True
@@ -263,7 +258,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
         , gamePlayers = mempty
         , gameOutOfPlayEntities = mempty
         , gameActionRemovedEntities = mempty
-        , gameActivePlayerId = (PlayerId nil)
+        , gameActivePlayerId = PlayerId nil
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
         , gameLeadInvestigatorId = InvestigatorId "00000"
@@ -296,39 +291,6 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings = 
         , gamePerformTarotReadings = includeTarotReadings
         , gameCurrentBatchId = Nothing
         }
-
-  gameRef <- newIORef game
-  queueRef <- newQueue []
-  -- genRef <- newIORef (mkStdGen seed)
-
-  -- runGameEnvT (GameEnv gameRef queueRef genRef (\_ -> pure ())) $ do
-  --   investigatorsList <-
-  --     traverse (fmap (first lookupInvestigator) . loadDecklist) (deck : decks)
-
-  --   let
-  --     playersMap = map (toId . fst) investigatorsList
-  --     investigatorsMap = mapFromList $ map (toFst toId . fst) investigatorsList
-  --     gameCards' =
-  --       mapFromList
-  --         $ flip concatMap investigatorsList
-  --         $ \(toId -> iid, cards) -> map (bimap toCardId (toCard . setPlayerCardOwner iid) . dupe) cards
-
-  --   when (state == IsActive) $ do
-  --     pushAll $ map (uncurry InitDeck . bimap toId Deck) investigatorsList <> [StartCampaign]
-
-  --   overGame $ \g ->
-  --     g
-  --       { gameCards = gameCards'
-  --       , gamePlayerOrder = playersMap
-  --       , gameEntities = defaultEntities {entitiesInvestigators = investigatorsMap}
-  --       }
-
-  game' <- atomicModifyIORef gameRef \x -> (x, x)
-
-  pure
-    ( queueRef
-    , game'
-    )
  where
   mode = case scenarioOrCampaignId of
     This cid -> This $ lookupCampaign cid difficulty
@@ -1638,8 +1600,6 @@ getLocationsMatching lmatcher = do
         excludes <- getLocationsMatching matcher
         pure $ filter (`notElem` excludes) ls
       ClosestPathLocation start destination -> do
-        -- lids <- getShortestPath start (pure . (== fin)) mempty
-        -- pure $ filter ((`elem` lids) . toId) ls
         -- logic is to get each adjacent location and determine which is closest to
         -- the destination
         let extraConnectionsMap = mempty
@@ -1822,8 +1782,8 @@ getAssetsMatching matcher = do
     AssetNotAtUseLimit ->
       let
         atUseLimit (UsesWithLimit _ a b) = a >= b
-        atUseLimit (Uses {}) = False
-        atUseLimit (NoUses {}) = True
+        atUseLimit Uses {} = False
+        atUseLimit NoUses {} = True
        in
         pure $ filter (atUseLimit . attr assetUses) as
     AssetWithUseType uType ->
@@ -3105,7 +3065,7 @@ instance Query ExtendedCardMatcher where
                   EncounterCard card ->
                     pure
                       $ CommittableTreachery
-                      `elem` (cdCommitRestrictions $ toCardDef card)
+                      `elem` cdCommitRestrictions (toCardDef card)
                       && matchInitial
                   VengeanceCard _ -> error "vengeance card"
       BasicCardMatch cm -> pure $ c `cardMatch` cm
@@ -3799,7 +3759,7 @@ runGameMessage msg g = case msg of
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =
-          if gameTurnPlayerInvestigatorId g `elem` (map Just replaceIds)
+          if gameTurnPlayerInvestigatorId g `elem` map Just replaceIds
             then set turnPlayerInvestigatorIdL (Just iid)
             else id
     pure
@@ -3940,7 +3900,7 @@ runGameMessage msg g = case msg of
            ]
     pure $ g & (phaseL .~ InvestigationPhase)
   BeginGame -> do
-    (before, _, after) <- frame $ Window.GameBegins
+    (before, _, after) <- frame Window.GameBegins
     pushAll [before, after]
     pure g
   InvestigatorsMulligan ->
@@ -4219,11 +4179,12 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
-    removedEntitiesF <- case gameInAction g of
-      True -> do
-        treachery <- getTreachery tid
-        pure $ actionRemovedEntitiesL . treacheriesL %~ insertEntity treachery
-      False -> pure id
+    removedEntitiesF <-
+      if gameInAction g
+        then do
+          treachery <- getTreachery tid
+          pure $ actionRemovedEntitiesL . treacheriesL %~ insertEntity treachery
+        else pure id
 
     pure $ g & entitiesL . treacheriesL %~ deleteMap tid & removedEntitiesF
   When (RemoveLocation lid) -> do

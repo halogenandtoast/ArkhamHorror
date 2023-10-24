@@ -208,7 +208,7 @@ async function choose(idx: number) {
 
 async function chooseDeck(deckId: string): Promise<void> {
   if(game.value && !spectate) {
-    send(JSON.stringify({tag: 'DeckAnswer', deckId }))
+    send(JSON.stringify({tag: 'DeckAnswer', deckId, playerId: playerId.value}))
   }
 }
 

@@ -61,7 +61,7 @@ data ModifierType
   | CannotTriggerAbilityMatching AbilityMatcher
   | ConnectedToWhen LocationMatcher LocationMatcher
   | AlternateSuccessfullEvasion
-  | AlternateSuccessfullInvestigation
+  | AlternateSuccessfullInvestigation Target
   | AlternativeReady Source
   | AnySkillValue Int
   | AsIfInHand Card
@@ -267,6 +267,11 @@ data ModifierType
   | Ethereal -- only for UI, from Ethereal Form
   | Explosion -- only for UI, from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data)
+
+_AlternateSuccessfullInvestigation :: Prism' ModifierType Target
+_AlternateSuccessfullInvestigation = prism' AlternateSuccessfullInvestigation $ \case
+  AlternateSuccessfullInvestigation n -> Just n
+  _ -> Nothing
 
 _MetaModifier :: Prism' ModifierType Value
 _MetaModifier = prism' MetaModifier $ \case

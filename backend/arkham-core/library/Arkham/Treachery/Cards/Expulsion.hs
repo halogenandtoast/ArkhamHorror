@@ -38,11 +38,15 @@ instance RunMessage Expulsion where
                 player
                 [ targetLabel
                   cultist
-                  $ [ MoveUntil yourLocation (toTarget cultist)
-                    , EnemyEngageInvestigator cultist iid
-                    , InitiateEnemyAttack $ enemyAttack cultist (toSource attrs) iid
+                  $ [ Ready (toTarget cultist)
+                    , MoveUntil yourLocation (toTarget cultist)
+                    , IfEnemyExists
+                        (enemyAtLocationWith iid <> EnemyWithId cultist)
+                        $ [ EnemyEngageInvestigator cultist iid
+                          , InitiateEnemyAttack $ enemyAttack cultist (toSource attrs) iid
+                          ]
+                        <> [PlaceKey (toTarget cultist) k | k <- ks]
                     ]
-                  <> [PlaceKey (toTarget cultist) k | k <- ks]
                 | cultist <- nearestCultists
                 ]
       pure t

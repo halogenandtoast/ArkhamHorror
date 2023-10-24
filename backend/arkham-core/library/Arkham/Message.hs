@@ -898,6 +898,7 @@ data Message
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]
   | SendMessage Target Message
+  | IfEnemyExists EnemyMatcher [Message]
   | -- Commit
     Do Message
   | DoBatch BatchId Message

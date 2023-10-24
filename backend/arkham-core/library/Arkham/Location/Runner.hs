@@ -119,14 +119,18 @@ instance RunMessage LocationAttrs where
         <> [Successful (Action.Investigate, toTarget a) iid source actual n]
         <> [after | clues == 0]
       pure a
-    Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
+    Successful (Action.Investigate, _) iid source target n | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (LocationTarget lid)
       clueAmount <- cluesToDiscover iid 1
       (before, _, after) <- frame (Window.SuccessfulInvestigation iid lid)
-      unless (AlternateSuccessfullInvestigation `elem` modifiers') $ do
-        pushAll
+      let alternateSuccessfullInvestigation = mapMaybe (preview _AlternateSuccessfullInvestigation) modifiers'
+      when (null alternateSuccessfullInvestigation)
+        $ pushAll
           [before, InvestigatorDiscoverClues iid lid (toSource a) clueAmount (Just #investigate), after]
+
+      for_ alternateSuccessfullInvestigation $ \target' ->
+        push $ Successful (Action.Investigate, toTarget lid) iid source target' n
       pure a
     PlaceUnderneath target cards | isTarget a target -> do
       pure $ a & cardsUnderneathL <>~ cards

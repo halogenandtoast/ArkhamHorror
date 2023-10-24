@@ -3816,6 +3816,9 @@ runGameMessage msg g = case msg of
     window <- checkWindows [mkWindow Timing.AtIf wType]
     g <$ pushAll [window, Do msg]
   Do (If _ msgs) -> g <$ pushAll msgs
+  IfEnemyExists eMatcher msgs -> do
+    whenM (selectAny eMatcher) $ pushAll msgs
+    pure g
   BeginAction ->
     pure
       $ g

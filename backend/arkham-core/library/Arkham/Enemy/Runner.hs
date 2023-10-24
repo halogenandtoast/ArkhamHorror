@@ -295,35 +295,24 @@ instance RunMessage EnemyAttrs where
       enemyLocation <- field EnemyLocation enemyId
       case enemyLocation of
         Nothing -> pure a
-        Just loc ->
-          if lid == loc
-            then pure a
-            else do
-              lead <- getLeadPlayer
-              adjacentLocationIds <-
-                selectList
-                  $ AccessibleFrom
-                  $ LocationWithId
-                    loc
-              closestLocationIds <- selectList $ ClosestPathLocation loc lid
-              if lid `elem` adjacentLocationIds
-                then
-                  a
-                    <$ push
-                      ( chooseOne
-                          lead
-                          [targetLabel lid [EnemyMove enemyId lid]]
-                      )
-                else
-                  a
-                    <$ pushAll
-                      [ chooseOne
-                          lead
-                          [ targetLabel lid' [EnemyMove enemyId lid']
-                          | lid' <- closestLocationIds
-                          ]
-                      , MoveUntil lid target
-                      ]
+        Just loc -> do
+          when (lid /= loc) $ do
+            lead <- getLeadPlayer
+            adjacentLocationIds <- selectList $ AccessibleFrom $ LocationWithId loc
+            closestLocationIds <- selectList $ ClosestPathLocation loc lid
+            if lid `elem` adjacentLocationIds
+              then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
+              else
+                when (notNull closestLocationIds)
+                  $ pushAll
+                    [ chooseOne
+                        lead
+                        [ targetLabel lid' [EnemyMove enemyId lid']
+                        | lid' <- closestLocationIds
+                        ]
+                    , MoveUntil lid target
+                    ]
+          pure a
     EnemyMove eid lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
       if willMove

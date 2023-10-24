@@ -42,9 +42,13 @@ instance RunMessage DanceOfTheYellowKing where
             player
             [ targetLabel
               lunatic
-              [ MoveUntil lid (toTarget lunatic)
-              , EnemyEngageInvestigator lunatic iid
-              , EnemyWillAttack $ enemyAttack lunatic attrs iid
+              [ Ready (toTarget lunatic)
+              , MoveUntil lid (toTarget lunatic)
+              , IfEnemyExists
+                  (enemyAtLocationWith iid <> EnemyWithId lunatic)
+                  [ EnemyEngageInvestigator lunatic iid
+                  , EnemyWillAttack $ enemyAttack lunatic attrs iid
+                  ]
               ]
             | lunatic <- lunatics
             ]

@@ -17,7 +17,7 @@ newtype MrTrombly = MrTrombly EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mrTrombly :: EnemyCard MrTrombly
-mrTrombly = enemy MrTrombly Cards.mrTrombly (4, Static 5, 4) (2, 1)
+mrTrombly = enemyWith MrTrombly Cards.mrTrombly (4, Static 5, 4) (2, 1) (spawnAtL ?~ "Foyer")
 
 instance HasAbilities MrTrombly where
   getAbilities (MrTrombly a) =

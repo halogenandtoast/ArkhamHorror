@@ -143,7 +143,11 @@ getModifiedKeywords e@EnemyAttrs {..} = do
   pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
  where
   applyModifier (Modifier.AddKeyword k) n = insertSet k n
+  applyModifier Modifier.LosePatrol n = filterSet (not . isPatrol) n
   applyModifier _ n = n
+  isPatrol = \case
+    Keyword.Patrol _ -> True
+    _ -> False
 
 canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do

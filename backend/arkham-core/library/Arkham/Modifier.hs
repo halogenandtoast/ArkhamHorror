@@ -215,6 +215,7 @@ data ModifierType
   | BondedInsteadOfDiscard
   | BondedInsteadOfShuffle
   | RemoveKeyword Keyword
+  | LosePatrol
   | ReturnToHandAfterTest
   | SanityModifier Int
   | SetDifficulty Int

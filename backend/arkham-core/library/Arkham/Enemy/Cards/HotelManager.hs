@@ -20,10 +20,6 @@ newtype HotelManager = HotelManager EnemyAttrs
 hotelManager :: EnemyCard HotelManager
 hotelManager = enemy HotelManager Cards.hotelManager (3, PerPlayer 6, 4) (2, 2)
 
-{-
- -  At the start of the enemy phase: Add 1 Guest enemy at Hotel Manager's location to the victory display, then place 2 doom on Hotel Manager- Move each other Guest enemy one location toward Hotel Manager-
- -}
-
 instance HasModifiersFor HotelManager where
   getModifiersFor (EnemyTarget eid) (HotelManager attrs) = do
     isGuest <- eid <=~> EnemyWithTrait Guest

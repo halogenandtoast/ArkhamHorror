@@ -177,7 +177,7 @@ allEncounterEnemyCards =
       , nathanWickMasterOfInitiation
       , netherMist
       , oBannionsThug
-      , otherwordlyMeddler
+      , otherworldlyMeddler
       , padmaAmrita
       , pennyWhite
       , peterWarren
@@ -1779,9 +1779,9 @@ hotelGuest =
     , cdVictoryPoints = Just 0
     }
 
-otherwordlyMeddler :: CardDef
-otherwordlyMeddler =
-  (enemy "84029" ("Otherwordly Meddler" <:> "Presence from Beyond the Stars") AlienInterference 1)
+otherworldlyMeddler :: CardDef
+otherworldlyMeddler =
+  (enemy "84029" ("Otherworldly Meddler" <:> "Presence from Beyond the Stars") AlienInterference 1)
     { cdCardTraits = setFromList [Monster, MiGo, Elite]
     , cdKeywords = setFromList [Keyword.Retaliate]
     , cdVictoryPoints = Just 2

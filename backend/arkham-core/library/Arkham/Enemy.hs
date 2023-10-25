@@ -335,7 +335,7 @@ allEnemies =
     , SomeEnemyCard conspicuousStaff
     , SomeEnemyCard hotelGuest
     , --- Alien Interference
-      SomeEnemyCard otherwordlyMeddler
+      SomeEnemyCard otherworldlyMeddler
     , --- Excelsior Management
       SomeEnemyCard hotelManager
     , SomeEnemyCard hotelSecurity

@@ -1935,6 +1935,7 @@ harvestedBrain :: CardDef
 harvestedBrain =
   (treachery "84038" "Harvested Brain" VileExperiments 1)
     { cdCardTraits = setFromList [Ancient, Science]
+    , cdRevelation = NoRevelation
     }
 
 morbidAwareness :: CardDef

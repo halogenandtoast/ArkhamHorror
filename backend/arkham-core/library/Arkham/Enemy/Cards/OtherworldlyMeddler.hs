@@ -1,6 +1,6 @@
-module Arkham.Enemy.Cards.OtherwordlyMeddler (
-  otherwordlyMeddler,
-  OtherwordlyMeddler (..),
+module Arkham.Enemy.Cards.OtherworldlyMeddler (
+  otherworldlyMeddler,
+  OtherworldlyMeddler (..),
 )
 where
 
@@ -13,15 +13,15 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 
-newtype OtherwordlyMeddler = OtherwordlyMeddler EnemyAttrs
+newtype OtherworldlyMeddler = OtherworldlyMeddler EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-otherwordlyMeddler :: EnemyCard OtherwordlyMeddler
-otherwordlyMeddler = enemy OtherwordlyMeddler Cards.otherwordlyMeddler (4, PerPlayer 5, 3) (2, 2)
+otherworldlyMeddler :: EnemyCard OtherworldlyMeddler
+otherworldlyMeddler = enemy OtherworldlyMeddler Cards.otherworldlyMeddler (4, PerPlayer 5, 3) (2, 2)
 
-instance HasAbilities OtherwordlyMeddler where
-  getAbilities (OtherwordlyMeddler attrs) =
+instance HasAbilities OtherworldlyMeddler where
+  getAbilities (OtherworldlyMeddler attrs) =
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 (exists $ EnemyWithId (toId attrs) <> EnemyWithAnyDoom)
@@ -30,8 +30,8 @@ instance HasAbilities OtherwordlyMeddler where
       , mkAbility attrs 2 $ ForcedAbility $ InvestigatorDefeated #after ByAny Anyone
       ]
 
-instance RunMessage OtherwordlyMeddler where
-  runMessage msg e@(OtherwordlyMeddler attrs) = case msg of
+instance RunMessage OtherworldlyMeddler where
+  runMessage msg e@(OtherworldlyMeddler attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       replaceMessageMatching
         \case
@@ -45,4 +45,4 @@ instance RunMessage OtherwordlyMeddler where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ PlaceDoom (toAbilitySource attrs 2) (toTarget attrs) 3
       pure e
-    _ -> OtherwordlyMeddler <$> runMessage msg attrs
+    _ -> OtherworldlyMeddler <$> runMessage msg attrs

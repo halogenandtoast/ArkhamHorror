@@ -138,15 +138,15 @@ instance RunMessage FollowingLeads where
               agenda <- genCard Agendas.theTrueCulpritV2
               clues <- field AssetClues alienDevice
               hotelRoof <- getJustLocationByName "Hotel Roof"
-              card <- genCard Enemies.otherwordlyMeddler
-              (otherwordlyMeddler, placeOtherwordlyMeddler) <- createEnemyAt card hotelRoof Nothing
+              card <- genCard Enemies.otherworldlyMeddler
+              (otherworldlyMeddler, placeOtherworldlyMeddler) <- createEnemyAt card hotelRoof Nothing
               doom <- perPlayer 1
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]
                 , RemoveClues (toSource attrs) (toTarget alienDevice) clues
                 , PlaceClues (toSource attrs) (toTarget sinisterSolution) clues
-                , placeOtherwordlyMeddler
-                , PlaceDoom (toSource attrs) (toTarget otherwordlyMeddler) doom
+                , placeOtherworldlyMeddler
+                , PlaceDoom (toSource attrs) (toTarget otherworldlyMeddler) doom
                 ]
             (Just alienDevice, _, _, Just managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV3
@@ -164,15 +164,15 @@ instance RunMessage FollowingLeads where
               agenda <- genCard Agendas.theTrueCulpritV4
               clues <- field AssetClues alienDevice
               hotelRoof <- getJustLocationByName "Hotel Roof"
-              card <- genCard Enemies.otherwordlyMeddler
-              (otherwordlyMeddler, placeOtherwordlyMeddler) <- createEnemyAt card hotelRoof Nothing
+              card <- genCard Enemies.otherworldlyMeddler
+              (otherworldlyMeddler, placeOtherworldlyMeddler) <- createEnemyAt card hotelRoof Nothing
               doom <- perPlayer 2
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]
                 , RemoveClues (toSource attrs) (toTarget alienDevice) clues
                 , PlaceClues (toSource attrs) (toTarget tomeOfRituals) clues
-                , placeOtherwordlyMeddler
-                , PlaceDoom (toSource attrs) (toTarget otherwordlyMeddler) (2 + doom)
+                , placeOtherworldlyMeddler
+                , PlaceDoom (toSource attrs) (toTarget otherworldlyMeddler) (2 + doom)
                 ]
             (_, Just timeWornLocket, Just sinisterSolution, _, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV5

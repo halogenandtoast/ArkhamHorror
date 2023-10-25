@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -1061,7 +1061,7 @@ library
       Arkham.Enemy.Cards.NathanWickMasterOfInitiation
       Arkham.Enemy.Cards.NetherMist
       Arkham.Enemy.Cards.OBannionsThug
-      Arkham.Enemy.Cards.OtherwordlyMeddler
+      Arkham.Enemy.Cards.OtherworldlyMeddler
       Arkham.Enemy.Cards.PadmaAmrita
       Arkham.Enemy.Cards.PennyWhite
       Arkham.Enemy.Cards.PeterWarren

@@ -201,6 +201,9 @@ instance Exists AssetMatcher where
 instance Exists LocationMatcher where
   exists = LocationExists
 
+instance Exists TreacheryMatcher where
+  exists = TreacheryExists
+
 instance Exists EnemyMatcher where
   exists = enemyExists
 

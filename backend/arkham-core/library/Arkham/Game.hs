@@ -1151,6 +1151,9 @@ getTreacheriesMatching matcher = do
       pure $ case attr treacheryOwner treachery of
         Just iid -> iid `member` iids
         Nothing -> False
+    TreacheryWithHorror gameValueMatcher -> \t -> do
+      horror <- fieldMap TreacheryTokens (Token.countTokens #horror) (toId t)
+      horror `gameValueMatches` gameValueMatcher
     TreacheryWithDoom gameValueMatcher -> \t -> do
       doom <- field TreacheryDoom (toId t)
       doom `gameValueMatches` gameValueMatcher
@@ -2073,6 +2076,10 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  EnemyWithEqualFields p q -> \enemy -> do
+    x <- field p (toId enemy)
+    y <- field q (toId enemy)
+    pure $ x >= y
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
@@ -2536,12 +2543,17 @@ instance Projection Location where
       LocationTraits -> do
         modifiers <- withDepthGuard 3 [] $ getModifiers (toTarget attrs)
         let
-          addedTraits = flip mapMaybe modifiers $ \case
-            AddTrait t -> Just t
-            _ -> Nothing
           traitFunc =
             if locationRevealed then cdRevealedCardTraits else cdCardTraits
-        pure . (setFromList addedTraits <>) . traitFunc $ toCardDef attrs
+          printedTraits = toList $ traitFunc $ toCardDef attrs
+          traits' = foldl' applyRemoves (foldl' applyModifiers printedTraits modifiers) modifiers
+          applyModifiers ks = \case
+            AddTrait t -> t : ks
+            _ -> ks
+          applyRemoves ks = \case
+            RemoveTrait t -> filter (/= t) ks
+            _ -> ks
+        pure $ setFromList traits'
       LocationKeywords -> pure . cdKeywords $ toCardDef attrs
       LocationUnrevealedName -> pure $ toName (Unrevealed l)
       LocationName -> pure $ toName l
@@ -2732,11 +2744,15 @@ getEnemyField f e = do
     EnemyTraits -> do
       modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
-        additionalTraits = foldl' applyModifier [] modifiers'
+        printedTraits = toList $ cdCardTraits (toCardDef attrs)
+        traits' = foldl' applyRemoves (foldl' applyModifier printedTraits modifiers') modifiers'
         applyModifier ks = \case
           AddTrait k -> k : ks
           _ -> ks
-      pure $ cdCardTraits (toCardDef attrs) <> setFromList additionalTraits
+        applyRemoves ks = \case
+          RemoveTrait k -> filter (/= k) ks
+          _ -> ks
+      pure $ setFromList traits'
     EnemyKeywords -> do
       modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let

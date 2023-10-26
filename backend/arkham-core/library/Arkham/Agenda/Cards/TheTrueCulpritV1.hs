@@ -24,17 +24,18 @@ theTrueCulpritV1 = agenda (3, A) TheTrueCulpritV1 Cards.theTrueCulpritV1 (Static
 
 instance HasAbilities TheTrueCulpritV1 where
   getAbilities (TheTrueCulpritV1 attrs) =
-    [ controlledAbility
-        (proxy (assetIs Cards.alienDevice) attrs)
-        1
-        (exists (enemyIs Cards.vengefulSpecter <> ExhaustedEnemy))
-        (actionAbilityWithCost $ AssetClueCost "Alien Device" (assetIs Cards.alienDevice) $ Static 2)
-    , mkAbility attrs 2
-        $ Objective
-        $ ForcedAbility
-        $ EnemyDefeated #after Anyone ByAny
-        $ enemyIs Cards.vengefulSpecter
-    ]
+    guard (onSide A attrs)
+      *> [ controlledAbility
+            (proxy (assetIs Cards.alienDevice) attrs)
+            1
+            (exists (enemyIs Cards.vengefulSpecter <> ExhaustedEnemy))
+            (actionAbilityWithCost $ AssetClueCost "Alien Device" (assetIs Cards.alienDevice) $ Static 2)
+         , mkAbility attrs 2
+            $ Objective
+            $ ForcedAbility
+            $ EnemyDefeated #after Anyone ByAny
+            $ enemyIs Cards.vengefulSpecter
+         ]
 
 instance RunMessage TheTrueCulpritV1 where
   runMessage msg a@(TheTrueCulpritV1 attrs) =

@@ -5,22 +5,60 @@ module Arkham.Agenda.Cards.TheTrueCulpritV4 (
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
+import Arkham.Matcher
 
 newtype TheTrueCulpritV4 = TheTrueCulpritV4 AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTrueCulpritV4 :: AgendaCard TheTrueCulpritV4
 theTrueCulpritV4 = agenda (3, A) TheTrueCulpritV4 Cards.theTrueCulpritV4 (Static 14)
 
+instance HasAbilities TheTrueCulpritV4 where
+  getAbilities (TheTrueCulpritV4 attrs) =
+    guard (onSide A attrs)
+      *> [ restrictedAbility
+            (proxy (assetIs Cards.tomeOfRituals) attrs)
+            1
+            ControlsThis
+            (fightAction $ AssetClueCost "Tome of Rituals" (assetIs Cards.tomeOfRituals) $ Static 2)
+         , mkAbility attrs 2
+            $ Objective
+            $ ForcedAbility
+            $ EnemyDefeated #after Anyone ByAny
+            $ enemyIs Cards.otherworldlyMeddler
+         , restrictedAbility
+            attrs
+            2
+            (exists $ enemyIs Cards.otherworldlyMeddler <> EnemyWithDoom (EqualTo $ Static 0))
+            $ Objective
+            $ ForcedAbility AnyWindow
+         ]
+
 instance RunMessage TheTrueCulpritV4 where
   runMessage msg a@(TheTrueCulpritV4 attrs) =
     case msg of
-      AdvanceAgenda aid
-        | aid == toId attrs && onSide B attrs ->
-            a <$ pushAll [advanceAgendaDeck attrs]
+      UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
+        push $ chooseFightEnemyWithTarget iid (toAbilitySource p 1) attrs #willpower
+        pure a
+      Successful (Action.Fight, target) _ _ (isTarget attrs -> True) _ -> do
+        push $ RemoveDoom (toAbilitySource attrs 1) target 3
+        pure a
+      UseThisAbility _ (isSource attrs -> True) 2 -> do
+        push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther
+        pure a
+      AdvanceAgendaBy aid AgendaAdvancedWithDoom | aid == toId attrs && onSide B attrs -> do
+        push R2
+        pure a
+      AdvanceAgendaBy aid AgendaAdvancedWithOther | aid == toId attrs && onSide B attrs -> do
+        push R1
+        pure a
       _ -> TheTrueCulpritV4 <$> runMessage msg attrs

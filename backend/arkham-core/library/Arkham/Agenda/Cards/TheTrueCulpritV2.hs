@@ -26,17 +26,18 @@ theTrueCulpritV2 = agenda (3, A) TheTrueCulpritV2 Cards.theTrueCulpritV2 (Static
 
 instance HasAbilities TheTrueCulpritV2 where
   getAbilities (TheTrueCulpritV2 attrs) =
-    [ controlledAbility
-        (proxy (assetIs Cards.sinisterSolution) attrs)
-        1
-        (exists $ You <> InvestigatorAt "Room 212")
-        actionAbility
-    , mkAbility attrs 2
-        $ Objective
-        $ ForcedAbility
-        $ EnemyDefeated #after Anyone ByAny
-        $ enemyIs Cards.otherworldlyMeddler
-    ]
+    guard (onSide A attrs)
+      *> [ controlledAbility
+            (proxy (assetIs Cards.sinisterSolution) attrs)
+            1
+            (exists $ You <> InvestigatorAt "Room 212")
+            actionAbility
+         , mkAbility attrs 2
+            $ Objective
+            $ ForcedAbility
+            $ EnemyDefeated #after Anyone ByAny
+            $ enemyIs Cards.otherworldlyMeddler
+         ]
 
 instance RunMessage TheTrueCulpritV2 where
   runMessage msg a@(TheTrueCulpritV2 attrs) =

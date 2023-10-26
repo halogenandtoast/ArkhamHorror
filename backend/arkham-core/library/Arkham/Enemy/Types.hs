@@ -79,12 +79,24 @@ data instance Field Enemy :: Type -> Type where
   EnemyKeys :: Field Enemy (Set ArkhamKey)
 
 deriving stock instance Show (Field Enemy typ)
+deriving stock instance Ord (Field Enemy typ)
 
 instance ToJSON (Field Enemy typ) where
   toJSON = toJSON . show
 
 instance Ord (SomeField Enemy) where
   compare (SomeField a) (SomeField b) = compare (show a) (show b)
+
+instance FromJSON (Field Enemy Int) where
+  parseJSON = withText "Field Enemy" $ \case
+    "EnemyDoom" -> pure EnemyDoom
+    "EnemyFight" -> pure Arkham.Enemy.Types.EnemyFight
+    "EnemyClues" -> pure EnemyClues
+    "EnemyDamage" -> pure EnemyDamage
+    "EnemyRemainingHealth" -> pure EnemyRemainingHealth
+    "EnemyHealthDamage" -> pure EnemyHealthDamage
+    "EnemySanityDamage" -> pure EnemySanityDamage
+    _ -> error "no such int field"
 
 instance FromJSON (SomeField Enemy) where
   parseJSON = withText "Field Enemy" $ \case

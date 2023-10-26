@@ -725,7 +725,6 @@ data Message
   | RemovedFromGame Card
   | RemoveLocation LocationId
   | RemovedLocation LocationId
-  | RemoveTraits Target [Trait]
   | SetCardAside Card
   | SetOutOfPlay OutOfPlayZone Target
   | PlaceInBonded InvestigatorId Card

@@ -90,7 +90,9 @@ getVictoryPoints c = do
   card <- convertToCard c
   printedVictory <- getPrintedVictoryPoints card
   modifiers' <- getModifiers $ toCardId card
-  pure $ foldr applyModifier printedVictory modifiers'
+  if LoseVictory `elem` modifiers'
+    then pure Nothing
+    else pure $ foldr applyModifier printedVictory modifiers'
  where
   applyModifier (GainVictory n) _ = Just n
   applyModifier _ n = n

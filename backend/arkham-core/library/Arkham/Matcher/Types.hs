@@ -22,6 +22,8 @@ import Arkham.Damage
 import Arkham.Deck
 import Arkham.Direction
 import Arkham.EncounterSet (EncounterSet)
+import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
+import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
@@ -225,6 +227,7 @@ data EnemyMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
   | EnemyWithClues ValueMatcher
+  | EnemyWithEqualFields (Field Enemy Int) (Field Enemy Int)
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
   | EnemyWithMostDoom EnemyMatcher
@@ -469,6 +472,7 @@ data TreacheryMatcher
   | TreacheryWithFullTitle Text Text
   | TreacheryWithId TreacheryId
   | TreacheryWithDoom ValueMatcher
+  | TreacheryWithHorror ValueMatcher
   | TreacheryWithTrait Trait
   | TreacheryInHandOf InvestigatorMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher

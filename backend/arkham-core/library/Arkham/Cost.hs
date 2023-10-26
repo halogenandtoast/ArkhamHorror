@@ -97,6 +97,7 @@ data Cost
   = ActionCost Int
   | IncreaseCostOfThis CardId Int
   | AdditionalActionsCost
+  | AssetClueCost Text AssetMatcher GameValue
   | ClueCost GameValue
   | ClueCostX
   | GroupClueCost GameValue LocationMatcher
@@ -185,6 +186,21 @@ displayCostType = \case
   ShuffleDiscardCost n _ ->
     "Shuffle " <> pluralize n "matching card" <> " into your deck"
   AdditionalActionsCost -> "Additional Action"
+  AssetClueCost lbl _ gv -> case gv of
+    Static n -> pluralize n "Clue" <> " from " <> lbl
+    PerPlayer n -> pluralize n "Clue" <> " per Player from " <> lbl
+    StaticWithPerPlayer n m ->
+      tshow n <> " + " <> tshow m <> " Clues per Player from " <> lbl
+    ByPlayerCount a b c d ->
+      tshow a
+        <> ", "
+        <> tshow b
+        <> ", "
+        <> tshow c
+        <> ", or "
+        <> tshow d
+        <> " Clues for 1, 2, 3, or 4 players from "
+        <> lbl
   ClueCost gv -> case gv of
     Static n -> pluralize n "Clue"
     PerPlayer n -> pluralize n "Clue" <> " per Player"

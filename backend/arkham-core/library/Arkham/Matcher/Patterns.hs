@@ -187,6 +187,11 @@ pattern AssetWithAnyDoom <- AssetWithDoom (GreaterThan (Static 0))
   where
     AssetWithAnyDoom = AssetWithDoom (GreaterThan (Static 0))
 
+pattern AssetWithAnyClues :: AssetMatcher
+pattern AssetWithAnyClues <- AssetWithClues (GreaterThan (Static 0))
+  where
+    AssetWithAnyClues = AssetWithClues (GreaterThan (Static 0))
+
 pattern UncontrolledAsset :: AssetMatcher
 pattern UncontrolledAsset <- NotAsset ControlledAsset
   where

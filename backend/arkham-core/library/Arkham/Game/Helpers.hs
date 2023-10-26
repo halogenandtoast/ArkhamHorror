@@ -546,6 +546,10 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
               additionalActions
         actionCount <- field InvestigatorRemainingActions iid
         pure $ (actionCount + additionalActionCount) >= modifiedActionCost
+  AssetClueCost _ aMatcher gv -> do
+    totalClueCost <- getPlayerCountValue gv
+    clues <- getSum <$> selectAgg Sum AssetClues aMatcher
+    pure $ clues >= totalClueCost
   ClueCost gameValue -> do
     spendableClues <- getSpendableClueCount [iid]
     totalClueCost <- getPlayerCountValue gameValue

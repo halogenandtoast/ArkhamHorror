@@ -192,6 +192,9 @@ atYourLocation matcher = exists (AtYourLocation <> matcher)
 class Exists a where
   exists :: a -> Criterion
 
+instance Exists AgendaMatcher where
+  exists = AgendaExists
+
 instance Exists InvestigatorMatcher where
   exists = InvestigatorExists
 

@@ -216,6 +216,11 @@ data CampaignLogKey
     ManyWereSacrificedToCnidathquaDuringTheCarnivale
   | TheSunBanishedCnidathquaIntoTheDepths
   | CnidathquaRetreatedToNurseItsWounds
+  | -- | Murder at the Excelsior Hotel
+    TheExcelsiorClaimsAnotherVictim
+  | TheInvestigatorsFledTheSceneOfTheCrime
+  | TheExcelsiorIsQuietForNow
+  | TheMurdersContinueUnsolved
   | -- | Player Cards
     YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs

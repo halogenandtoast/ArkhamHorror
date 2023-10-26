@@ -114,6 +114,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioTarotCards :: Map TarotCardScope [TarotCard]
   , scenarioTarotDeck :: [TarotCardArcana]
   , scenarioTurn :: Int
+  , scenarioTimesPlayed :: Int
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -186,6 +187,7 @@ scenario f cardCode name difficulty layout =
       , scenarioTarotCards = mempty
       , scenarioTarotDeck = mempty
       , scenarioTurn = 0
+      , scenarioTimesPlayed = 0
       }
 
 instance Entity ScenarioAttrs where

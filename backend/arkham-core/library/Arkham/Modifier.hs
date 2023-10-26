@@ -47,6 +47,7 @@ data ModifierType
   | ActionsAreFree
   | AddKeyword Keyword
   | AddTrait Trait
+  | RemoveTrait Trait
   | AddSkillIcons [SkillIcon]
   | RemoveSkillIcons [SkillIcon]
   | AdditionalActions Text Source Int
@@ -244,6 +245,7 @@ data ModifierType
   | SkillTestAutomaticallySucceeds
   | IgnoreRevelation
   | GainVictory Int
+  | LoseVictory
   | InVictoryDisplayForCountingVengeance
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyEvadeActionCriteria CriteriaOverride

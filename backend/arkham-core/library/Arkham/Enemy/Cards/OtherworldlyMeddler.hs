@@ -26,7 +26,7 @@ instance HasAbilities OtherworldlyMeddler where
       attrs
       [ restrictedAbility attrs 1 (exists $ EnemyWithId (toId attrs) <> EnemyWithAnyDoom)
           $ ForcedAbility
-          $ EnemyTakeDamage #when Matcher.AttackDamageEffect (EnemyWithId $ toId attrs) AnySource
+          $ EnemyTakeDamage #when Matcher.AttackDamageEffect (EnemyWithId $ toId attrs) AnyValue AnySource
       , mkAbility attrs 2 $ ForcedAbility $ InvestigatorDefeated #after ByAny Anyone
       ]
 

@@ -191,7 +191,7 @@ data WindowType
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int
   | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
-  | TakeDamage Source DamageEffect Target
+  | TakeDamage Source DamageEffect Target Int
   | TakeHorror Source Target
   | TookControlOfAsset InvestigatorId AssetId
   | TurnBegins InvestigatorId

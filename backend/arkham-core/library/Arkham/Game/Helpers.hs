@@ -1693,7 +1693,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.GameBegins timing -> guardTiming timing $ pure . (== Window.GameBegins)
     Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
-        Window.TakeDamage source' _ (InvestigatorTarget who) ->
+        Window.TakeDamage source' _ (InvestigatorTarget who) _ ->
           andM
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
@@ -2440,13 +2440,14 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
-    Matcher.EnemyTakeDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
+    Matcher.EnemyTakeDamage timing damageEffectMatcher enemyMatcher valueMatcher sourceMatcher ->
       guardTiming timing $ \case
-        Window.TakeDamage source' damageEffect (EnemyTarget eid) ->
+        Window.TakeDamage source' damageEffect (EnemyTarget eid) n ->
           andM
             [ damageEffectMatches damageEffect damageEffectMatcher
             , member eid <$> select enemyMatcher
             , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
             ]
         _ -> noMatch
     Matcher.DiscoverClues timing whoMatcher whereMatcher valueMatcher ->

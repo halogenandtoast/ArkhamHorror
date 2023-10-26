@@ -689,7 +689,7 @@ data WindowMatcher
   | LastClueRemovedFromAsset Timing AssetMatcher
   | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyDealtExcessDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
-  | EnemyTakeDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
+  | EnemyTakeDamage Timing DamageEffectMatcher EnemyMatcher ValueMatcher SourceMatcher
   | InvestigatorTakeDamage Timing Who SourceMatcher
   | InvestigatorTakeHorror Timing Who SourceMatcher
   | EnemyLeavesPlay Timing EnemyMatcher

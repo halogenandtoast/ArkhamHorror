@@ -31,7 +31,7 @@ isTakeDamage attrs window = case effectTarget attrs of
   _ -> False
  where
   go eid = case windowType window of
-    Window.TakeDamage _ _ (EnemyTarget eid') ->
+    Window.TakeDamage _ _ (EnemyTarget eid') _ ->
       eid == eid' && windowTiming window == Timing.After
     _ -> False
 

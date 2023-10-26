@@ -36,6 +36,7 @@ instance HasAbilities TommyMalloy where
             Timing.When
             AnyDamageEffect
             (EnemyWithId $ toId attrs)
+            AnyValue
             AnySource
       ]
 

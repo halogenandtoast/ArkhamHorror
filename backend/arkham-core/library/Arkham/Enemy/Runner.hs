@@ -879,13 +879,13 @@ instance RunMessage EnemyAttrs where
             checkWindows
               [ mkWindow
                   Timing.When
-                  (Window.TakeDamage source damageEffect $ toTarget a)
+                  (Window.TakeDamage source damageEffect (toTarget a) damageAmount)
               ]
           takeDamageAfterMsg <-
             checkWindows
               [ mkWindow
                   Timing.After
-                  (Window.TakeDamage source damageEffect $ toTarget a)
+                  (Window.TakeDamage source damageEffect (toTarget a) damageAmount)
               ]
           pushAll
             [ dealtDamageWhenMsg

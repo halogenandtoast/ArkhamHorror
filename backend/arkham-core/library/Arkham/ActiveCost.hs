@@ -663,6 +663,20 @@ instance RunMessage ActiveCost where
                     (UseCost assetMatcher uType 1)
               ]
           pure c
+        AssetClueCost _ aMatcher gv -> do
+          totalClues <- getPlayerCountValue gv
+          assets <- selectList $ aMatcher <> AssetWithAnyClues
+          let
+            source' =
+              case activeCostTarget c of
+                ForAbility a -> AbilitySource (abilitySource a) (abilityIndex a)
+                _ -> source
+          case assets of
+            [] -> error "can not pay cost"
+            [x] -> do
+              push $ RemoveClues source' (toTarget x) totalClues
+              withPayment $ CluePayment iid totalClues
+            _ -> error "unhandled assumed to be from a single asset"
         ClueCost gv -> do
           totalClues <- getPlayerCountValue gv
           push $ InvestigatorSpendClues iid totalClues

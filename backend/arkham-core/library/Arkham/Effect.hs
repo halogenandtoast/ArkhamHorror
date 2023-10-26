@@ -120,7 +120,11 @@ import Arkham.Story.Stories (
   unfinishedBusiness_JEffect,
   valentinosFateEffect,
  )
-import Arkham.Treachery.Treacheries (arcaneBarrierEffect, mysteriesOfTheLodgeEffect)
+import Arkham.Treachery.Treacheries (
+  arcaneBarrierEffect,
+  chillingPresenceEffect,
+  mysteriesOfTheLodgeEffect,
+ )
 
 createEffect
   :: MonadRandom m
@@ -357,6 +361,7 @@ allEffects =
     , ("82026", SomeEffect gildedVolto)
     , ("82035", SomeEffect mesmerize)
     , ("84014", SomeEffect restaurantEffect)
+    , ("84042", SomeEffect chillingPresenceEffect)
     , ("90002", SomeEffect daisysToteBagAdvanced)
     , ("wmode", SomeEffect windowModifierEffect)
     , ("tokef", SomeEffect chaosTokenEffect)

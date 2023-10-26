@@ -267,7 +267,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           Nothing -> error $ "Missing agenda: " <> show agendaDef
           Just toAgenda -> do
             let toAgendaId = AgendaId (toCardCode toAgenda)
-            when (newAgendaSide == Agenda.B) $ push $ AdvanceAgenda toAgendaId
+            when (newAgendaSide == Agenda.B) $ push $ AdvanceAgendaBy toAgendaId #other
             push (ReplaceAgenda fromAgendaId toAgenda)
             -- filter the stack so only agendas with higher stages are left
             pure

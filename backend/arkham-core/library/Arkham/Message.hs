@@ -121,6 +121,16 @@ instance IsLabel "clues" AdvancementMethod where
 instance IsLabel "other" AdvancementMethod where
   fromLabel = AdvancedWithOther
 
+data AgendaAdvancementMethod = AgendaAdvancedWithDoom | AgendaAdvancedWithOther
+  deriving stock (Generic, Eq, Show)
+  deriving anyclass (FromJSON, ToJSON)
+
+instance IsLabel "doom" AgendaAdvancementMethod where
+  fromLabel = AgendaAdvancedWithDoom
+
+instance IsLabel "other" AgendaAdvancementMethod where
+  fromLabel = AgendaAdvancedWithOther
+
 class Is a b where
   is :: a -> b -> Bool
 
@@ -129,6 +139,11 @@ instance Sourceable a => Is a Source where
 
 instance Targetable a => Is a Target where
   is = isTarget
+
+pattern AdvanceAgenda :: AgendaId -> Message
+pattern AdvanceAgenda aid <- AdvanceAgendaBy aid AgendaAdvancedWithDoom
+  where
+    AdvanceAgenda aid = AdvanceAgendaBy aid AgendaAdvancedWithDoom
 
 pattern UseThisAbility :: InvestigatorId -> Source -> Int -> Message
 pattern UseThisAbility iid source n <- UseCardAbility iid source n _ _
@@ -295,7 +310,7 @@ data Message
     SetAgendaDeck
   | AddAgenda Int Card
   | SetCurrentAgendaDeck Int [Card]
-  | AdvanceAgenda AgendaId
+  | AdvanceAgendaBy AgendaId AgendaAdvancementMethod
   | AdvanceToAgenda Int CardDef AgendaSide Source
   | NextAdvanceAgendaStep AgendaId Int
   | AdvanceAgendaIfThresholdSatisfied

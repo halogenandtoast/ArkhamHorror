@@ -34,13 +34,15 @@ import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
-defeated AssetAttrs {assetId} source = do
+defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDamage} source = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId
   pure $ case (remainingHealth, remainingSanity) of
-    (Just a, Just b) | a <= 0 && b <= 0 -> Just (DefeatedByDamageAndHorror source)
-    (Just a, _) | a <= 0 -> Just (DefeatedByDamage source)
-    (_, Just b) | b <= 0 -> Just (DefeatedByHorror source)
+    (Just a, Just b)
+      | a - assetAssignedHealthDamage <= 0 && b - assetAssignedSanityDamage <= 0 ->
+          Just (DefeatedByDamageAndHorror source)
+    (Just a, _) | a - assetAssignedHealthDamage <= 0 -> Just (DefeatedByDamage source)
+    (_, Just b) | b - assetAssignedSanityDamage <= 0 -> Just (DefeatedByHorror source)
     _ -> Nothing
 
 hasUses :: AssetAttrs -> Bool
@@ -83,13 +85,20 @@ instance RunMessage AssetAttrs where
       for_ mDefeated $ \defeatedBy -> do
         (before, _, after) <- frame (Window.AssetDefeated (toId a) defeatedBy)
         pushAll $ [before] <> resolve (AssetDefeated assetId) <> [after]
-      pure a
+      -- TODO: Investigator uses AssignDamage target
+      pure
+        $ a
+        & ( tokensL
+              %~ (addTokens #damage assetAssignedHealthDamage . addTokens #horror assetAssignedSanityDamage)
+          )
+        & (assignedHealthDamageL .~ 0)
+        & (assignedSanityDamageL .~ 0)
     AssetDefeated aid | aid == assetId -> a <$ push (Discard GameSource $ toTarget a)
-    Msg.AssetDamage aid source damage horror | aid == assetId -> do
+    Msg.AssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
       pushAll
         $ [PlaceDamage source (toTarget a) damage | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
-        <> [checkDefeated source aid]
+        <> [checkDefeated source aid | doCheck]
       pure a
     MovedClues _ (isTarget a -> True) amount -> do
       pure $ a & tokensL %~ addTokens #clue amount

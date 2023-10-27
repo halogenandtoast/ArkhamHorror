@@ -22,7 +22,7 @@ newtype Room245 = Room245 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 room245 :: LocationCard Room245
-room245 = locationWith Room245 Cards.room245 0 (Static 0) (labelL .~ "room245")
+room245 = locationWith Room245 Cards.room245 2 (PerPlayer 1) (labelL .~ "room245")
 
 instance HasAbilities Room245 where
   getAbilities (Room245 attrs) =

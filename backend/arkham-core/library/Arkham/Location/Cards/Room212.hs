@@ -24,7 +24,7 @@ newtype Room212 = Room212 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 room212 :: LocationCard Room212
-room212 = locationWith Room212 Cards.room212 0 (Static 0) (labelL .~ "room212")
+room212 = locationWith Room212 Cards.room212 4 (PerPlayer 2) (labelL .~ "room212")
 
 instance HasModifiersFor Room212 where
   getModifiersFor target (Room212 attrs) | attrs `is` target = do

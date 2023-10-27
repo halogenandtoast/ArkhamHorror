@@ -18,7 +18,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (Message (BeginSkillTest, RevelationSkillTest))
+import Arkham.Message (Message (RevelationSkillTest), pattern BeginSkillTest)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillTest.Base

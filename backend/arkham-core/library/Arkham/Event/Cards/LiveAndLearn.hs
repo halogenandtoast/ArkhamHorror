@@ -22,20 +22,21 @@ liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 
 instance RunMessage LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.SkillTestEnded st)] _ | eid == toId attrs -> do
-      pushAll
-        [ skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
-        , BeginSkillTest
-            $ ( buildSkillTest
-                  iid
-                  (skillTestSource st)
-                  (skillTestTarget st)
-                  (skillTestType st)
-                  (skillTestBaseValue st)
-                  (skillTestDifficulty st)
-              )
-              { skillTestAction = skillTestAction st
-              }
-        ]
+    InvestigatorPlayEvent iid eid _ [windowType -> Window.SkillTestEnded st] _ | eid == toId attrs -> do
+      push
+        $ BeginSkillTestWithPreMessages
+          [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)]
+        $ ( buildSkillTest
+              iid
+              (skillTestSource st)
+              (skillTestTarget st)
+              (skillTestType st)
+              (skillTestBaseValue st)
+              (skillTestDifficulty st)
+          )
+          { skillTestAction = skillTestAction st
+          }
       pure e
+    InvestigatorPlayEvent _ eid _ windows' _ | eid == toId attrs -> do
+      error $ "Wrong windows: " <> show windows'
     _ -> LiveAndLearn <$> runMessage msg attrs

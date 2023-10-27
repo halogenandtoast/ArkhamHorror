@@ -2426,6 +2426,19 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
+    Matcher.AssetDealtDamageOrHorror timing sourceMatcher assetMatcher ->
+      guardTiming timing $ \case
+        Window.DealtDamage source' _ (AssetTarget aid) _ ->
+          andM
+            [ member aid <$> select assetMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        Window.DealtHorror source' (AssetTarget aid) _ ->
+          andM
+            [ member aid <$> select assetMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> noMatch
     Matcher.EnemyDealtDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.DealtDamage source' damageEffect (EnemyTarget eid) _ ->

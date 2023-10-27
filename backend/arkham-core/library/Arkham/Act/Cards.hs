@@ -64,6 +64,7 @@ allActCards =
       , findingAWayInside
       , findingLadyEsprit
       , fold
+      , followingLeads
       , friendsInHighPlacesHenryDeveau
       , friendsInHighPlacesHenrysInformation
       , getTheEngineRunning
@@ -169,6 +170,7 @@ allActCards =
       , trialOfTheHuntress
       , uncoveringTheConspiracy
       , warmWelcome
+      , whatHappened
       , whatHaveYouDone
       , whatMustBeDone
       , witchHauntings

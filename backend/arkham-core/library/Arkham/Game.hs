@@ -1533,12 +1533,13 @@ getLocationsMatching lmatcher = do
               $ overallDistances
         pure $ filter ((`elem` resultIds) . toId) ls
       NearestLocationToYou matcher -> guardYourLocation $ \start -> do
-        matchingLocationIds <- map toId <$> getLocationsMatching matcher
+        currentMatch <- start <=~> matcher
         matches' <-
-          getShortestPath
-            start
-            (pure . (`elem` matchingLocationIds))
-            mempty
+          if currentMatch
+            then pure [start]
+            else do
+              matchingLocationIds <- map toId <$> getLocationsMatching matcher
+              getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
         pure $ filter ((`elem` matches') . toId) ls
       AccessibleLocation -> guardYourLocation $ \yourLocation -> do
         getLocationsMatching (AccessibleFrom $ LocationWithId yourLocation)
@@ -5171,7 +5172,7 @@ runGameMessage msg g = case msg of
       . (: [EndPhase, After EndPhase])
       =<< checkWindows [mkWindow #when (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
-  BeginSkillTest skillTest -> do
+  BeginSkillTestWithPreMessages pre skillTest -> do
     windows' <- windows [Window.InitiatedSkillTest skillTest]
     let defaultCase = windows' <> [BeginSkillTestAfterFast]
 
@@ -5252,9 +5253,9 @@ runGameMessage msg g = case msg of
     if inSkillTestWindow
       then
         if gameInAction g
-          then insertAfterMatching msgs' (== FinishAction)
-          else insertAfterMatching msgs' (== EndSkillTestWindow)
-      else pushAll msgs'
+          then insertAfterMatching (pre <> msgs') (== FinishAction)
+          else insertAfterMatching (pre <> msgs') (== EndSkillTestWindow)
+      else pushAll (pre <> msgs')
     pure $ g & (skillTestL ?~ skillTest)
   BeforeSkillTest skillTest ->
     pure $ g & activeInvestigatorIdL .~ skillTestInvestigator skillTest

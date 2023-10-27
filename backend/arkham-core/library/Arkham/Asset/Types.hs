@@ -229,6 +229,8 @@ data AssetAttrs = AssetAttrs
   , assetCardsUnderneath :: [Card]
   , assetSealedChaosTokens :: [ChaosToken]
   , assetKeys :: Set ArkhamKey
+  , assetAssignedHealthDamage :: Int
+  , assetAssignedSanityDamage :: Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -322,6 +324,8 @@ assetWith f cardDef g =
             , assetCardsUnderneath = []
             , assetSealedChaosTokens = []
             , assetKeys = mempty
+            , assetAssignedHealthDamage = 0
+            , assetAssignedSanityDamage = 0
             }
     }
 

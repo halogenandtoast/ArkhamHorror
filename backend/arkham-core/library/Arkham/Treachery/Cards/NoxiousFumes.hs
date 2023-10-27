@@ -13,6 +13,7 @@ import Arkham.Message
 import Arkham.Movement
 import Arkham.SkillTest.Type
 import Arkham.SkillType
+import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -39,7 +40,7 @@ instance RunMessage NoxiousFumes where
         ]
 
       pure t
-    PassedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillAgility) _ -> do
+    PassedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
       accessibleLocationIds <- accessibleLocations iid
       player <- getPlayer iid
       push
@@ -49,10 +50,10 @@ instance RunMessage NoxiousFumes where
           | lid <- accessibleLocationIds
           ]
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillAgility) _ -> do
+    FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
       push $ assignDamage iid (toSource attrs) 2
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillCombat) n -> do
+    FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillCombat) n -> do
       push $ assignDamage iid (toSource attrs) n
       pure t
     _ -> NoxiousFumes <$> runMessage msg attrs

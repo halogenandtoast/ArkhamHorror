@@ -690,6 +690,7 @@ data WindowMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher
   | AssetDealtDamage Timing SourceMatcher AssetMatcher
+  | AssetDealtDamageOrHorror Timing SourceMatcher AssetMatcher
   | LastClueRemovedFromAsset Timing AssetMatcher
   | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyDealtExcessDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher

@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (AssetDamage)
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message (Message (AssetDamage))
+import Arkham.Message (pattern AssetDamage)
 import Arkham.Trait
 
 newtype PeterClover = PeterClover AssetAttrs

@@ -41,23 +41,36 @@ instance HasAbilities SergeantMonroe where
         attrs
         1
         (OnSameLocation <> exists (EnemyAt YourLocation <> EnemyWithoutTrait Innocent))
-        $ ReactionAbility (AssetDealtDamage #when AnySource $ AssetWithId $ toId attrs) (exhaust attrs)
+        $ ReactionAbility
+          (AssetDealtDamageOrHorror #when AnySource $ AssetWithId $ toId attrs)
+          (exhaust attrs)
     ]
 
 getDamage :: [Window] -> Int
-getDamage ((windowType -> Window.DealtDamage _ _ _ n) : _) = n
+getDamage ((windowType -> Window.DealtDamage _ _ _ n) : rest) = n + getDamage rest
 getDamage (_ : rest) = getDamage rest
-getDamage [] = error "Invalid window"
+getDamage [] = 0
+
+getHorror :: [Window] -> Int
+getHorror ((windowType -> Window.DealtHorror _ _ n) : rest) = n + getHorror rest
+getHorror (_ : rest) = getHorror rest
+getHorror [] = 0
 
 instance RunMessage SergeantMonroe where
   runMessage msg a@(SergeantMonroe attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getDamage -> n) _ -> do
-      enemies <- selectList $ EnemyAt (locationWithAsset $ toId attrs) <> EnemyWithoutTrait Innocent
+    UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
+      let damage = getDamage windows'
+      let horror = getHorror windows'
+      enemies <- selectList $ enemyAtLocationWith iid <> EnemyWithoutTrait Innocent
       player <- getPlayer iid
+      let deal n =
+            chooseOrRunOne player
+              $ targetLabels enemies
+              $ only
+              . (`EnemyDamage` nonAttack (toAbilitySource attrs 1) n)
       push
         $ chooseOrRunOne player
-        $ targetLabels enemies
-        $ only
-        . (`EnemyDamage` nonAttack (toAbilitySource attrs 1) n)
+        $ [Label ("Deal damage dealt (" <> tshow damage <> ")") [deal damage] | damage > 0]
+        <> [Label ("Deal horror dealt (" <> tshow horror <> ")") [deal horror] | horror > 0]
       pure a
     _ -> SergeantMonroe <$> runMessage msg attrs

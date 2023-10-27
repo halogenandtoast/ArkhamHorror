@@ -282,6 +282,16 @@ newtype ToSkillType = ToSkillType SkillType
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+pattern BeginSkillTest :: SkillTest -> Message
+pattern BeginSkillTest skillTest <- BeginSkillTestWithPreMessages [] skillTest
+  where
+    BeginSkillTest skillTest = BeginSkillTestWithPreMessages [] skillTest
+
+pattern AssetDamage :: AssetId -> Source -> Int -> Int -> Message
+pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source damage horror True
+  where
+    AssetDamage aid source damage horror = AssetDamageWithCheck aid source damage horror True
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, Set Arbiter of Fates
@@ -375,7 +385,7 @@ data Message
   | AllDrawEncounterCard
   | AllInvestigatorsResigned
   | AllRandomDiscard Source CardMatcher
-  | AssetDamage AssetId Source Int Int
+  | AssetDamageWithCheck AssetId Source Int Int Bool
   | AssetDefeated AssetId
   | -- Attach
     AttachAsset AssetId Target
@@ -390,7 +400,7 @@ data Message
   | PhaseStep PhaseStep [Message]
   | BeginRound
   | ReplaceSkillTestSkill FromSkillType ToSkillType
-  | BeginSkillTest SkillTest
+  | BeginSkillTestWithPreMessages [Message] SkillTest
   | BeginSkillTestAfterFast
   | SetSkillTestTarget Target
   | BeginTrade InvestigatorId Source Target [InvestigatorId]

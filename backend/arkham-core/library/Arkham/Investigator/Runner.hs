@@ -989,6 +989,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ Window.PlacedHorror source target horror
              | (target, horror) <- mapToList horrorMap
              ]
+      checkAssets = nub $ keys horrorMap <> keys damageMap
     placedWindowMsg <-
       checkWindows $ concatMap (\t -> map (mkWindow t) placedWindows) [#when, #after]
     pushAll
@@ -1014,6 +1015,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                ]
             <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
         ]
+      <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
     when
       ( damageStrategy
           == DamageFromHastur
@@ -1056,7 +1058,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       damageAsset aid =
         ComponentLabel
           (AssetComponent aid DamageToken)
-          [ Msg.AssetDamage aid source 1 0
+          [ Msg.AssetDamageWithCheck aid source 1 0 False
           , assignRestOfHealthDamage (damageTargets <> [AssetTarget aid]) mempty
           ]
       damageInvestigator =
@@ -1111,7 +1113,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       damageAsset aid =
         ComponentLabel
           (AssetComponent aid HorrorToken)
-          [ Msg.AssetDamage aid source 0 1
+          [ Msg.AssetDamageWithCheck aid source 0 1 False
           , assignRestOfSanityDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
       damageInvestigator =
@@ -1165,7 +1167,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       toAssetMessage (asset, (h, s)) =
         TargetLabel
           (AssetTarget asset)
-          [ Msg.AssetDamage asset source (min h health) (min s sanity)
+          [ Msg.AssetDamageWithCheck asset source (min h health) (min s sanity) False
           , continue h s (AssetTarget asset)
           ]
     assetsWithCounts <- for damageableAssets $ \asset -> do
@@ -1195,7 +1197,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             damageAsset aid =
               ComponentLabel
                 (AssetComponent aid DamageToken)
-                [ Msg.AssetDamage aid source 1 0
+                [ Msg.AssetDamageWithCheck aid source 1 0 False
                 , assignRestOfHealthDamage
                     (AssetTarget aid : damageTargets)
                     horrorTargets
@@ -1245,7 +1247,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             damageAsset aid =
               ComponentLabel
                 (AssetComponent aid HorrorToken)
-                [ Msg.AssetDamage aid source 0 1
+                [ Msg.AssetDamageWithCheck aid source 0 1 False
                 , assignRestOfSanityDamage damageTargets (toTarget aid : horrorTargets)
                 ]
           case strategy of

@@ -223,22 +223,22 @@ async function start() {
             <input type="radio" v-model="gameMode" :value="'SideStory'" id="sideStory"> <label for="sideStory">Side Story</label>
           </div>
 
-          <div v-if="gameMode === 'SideStory'">
+          <template v-if="gameMode === 'SideStory'">
             <div class="scenarios">
               <div v-for="scenario in sideStories" :key="scenario.id">
                 <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
               </div>
             </div>
-          </div>
-          <div v-else>
+          </template>
+          <template v-else>
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
-                <div v-for="campaign in campaigns" :key="campaign.id">
+                <div v-for="campaign in campaigns" :key="campaign.id" class="campaign">
                   <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="imgsrc(`boxes/${campaign.id}.jpg`)" @click="selectCampaign(campaign.id)">
                 </div>
               </div>
             <!-- </select> -->
-          </div>
+          </template>
 
           <div v-if="gameMode === 'Campaign' && selectedCampaign && selectedCampaignReturnToId" class="options">
             <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
@@ -250,13 +250,13 @@ async function start() {
             <input type="radio" v-model="fullCampaign" :value="false" id="partial"> <label for="partial">Partial Campaign</label>
           </div>
 
-          <div v-if="(gameMode === 'Standalone' || (gameMode !== 'SideStory' && !fullCampaign)) && selectedCampaign">
+          <template v-if="(gameMode === 'Standalone' || (gameMode !== 'SideStory' && !fullCampaign)) && selectedCampaign">
             <div class="scenarios">
               <div v-for="scenario in campaignScenarios" :key="scenario.id">
                 <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
               </div>
             </div>
-          </div>
+          </template>
 
           <p>Difficulty</p>
           <div class="options">
@@ -479,12 +479,15 @@ header {
 
 .campaigns {
   display: grid;
+  gap: 10px;
+  line-height: 0;
 
-  grid-template-columns: repeat(auto-fill, calc(1 / 4 * 100%));
+  grid-template-columns: repeat(auto-fill, calc((1 / 3 * 100%) - 7px));
 
   img {
     width: 100%;
   }
+  margin-bottom: 10px;
 }
 
 .campaign-box:not(.selected-campaign) {
@@ -494,7 +497,10 @@ header {
 
 .scenarios {
   display: grid;
-  grid-template-columns: repeat(auto-fill, calc(1 / 8 * 100%));
+  line-height: 0;
+  grid-template-columns: repeat(auto-fill, calc((1 / 4 * 100%) - 8px));
+  gap: 10px;
+  margin-bottom: 10px;
 
   img {
     width: 100%;
@@ -529,5 +535,4 @@ header {
   max-height: 0;
   opacity: 0;
 }
-
 </style>

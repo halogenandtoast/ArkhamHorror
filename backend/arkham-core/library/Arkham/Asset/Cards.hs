@@ -524,6 +524,7 @@ allPlayerAssetCards =
       , valentinoRivas
       , vaultOfKnowledge
       , venturer
+      , versatile2
       , wellConnected
       , wellConnected3
       , wellPrepared2
@@ -3685,6 +3686,14 @@ tetsuoMori =
     , cdSlots = [#ally]
     , cdUnique = True
     }
+
+versatile2 :: CardDef
+versatile2 =
+  permanent
+    $ (asset "06167" "Versatile" 0 Neutral)
+      { cdCardTraits = singleton Talent
+      , cdLevel = 2
+      }
 
 empowerSelfStamina2 :: CardDef
 empowerSelfStamina2 =

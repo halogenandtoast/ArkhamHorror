@@ -57,9 +57,9 @@ instance RunMessage TreacheryAttrs where
       a <$ push (Discard GameSource $ toTarget a)
     Discarded target _ _ | target `elem` treacheryAttachedTarget a -> do
       a <$ push (Discard GameSource $ toTarget a)
-    After (Revelation _ (isSource a -> True)) -> do
-      when
+    After (Revelation iid (isSource a -> True)) -> do
+      pushWhen
         (treacheryPlacement == TreacheryLimbo)
-        (push $ Discard GameSource $ toTarget a)
-      pure a
+        (Discard (toSource iid) $ toTarget a)
+      pure $ a & resolvedL %~ insertSet iid
     _ -> pure a

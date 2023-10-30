@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Effect.Runner
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Trait (Trait (Geist))
 import Arkham.Treachery.Cards qualified as Cards
@@ -68,7 +67,7 @@ chillingPresenceEffect :: EffectArgs -> ChillingPresenceEffect
 chillingPresenceEffect = cardEffect ChillingPresenceEffect Cards.chillingPresence
 
 instance RunMessage ChillingPresenceEffect where
-  runMessage msg e@(ChillingPresenceEffect attrs@EffectAttrs {..}) = case msg of
+  runMessage msg e@(ChillingPresenceEffect attrs) = case msg of
     Msg.RevealChaosToken _ iid token -> do
       when (chaosTokenFace token == #eldersign) $ do
         geists <- selectList $ EnemyWithTrait Geist

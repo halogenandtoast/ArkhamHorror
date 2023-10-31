@@ -44,19 +44,19 @@ runEventMessage :: Runner EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
-    push $ Discard GameSource (toTarget eventId)
+    push $ toDiscardZ GameSource eventId
     pure a
-  Discard _ target | eventAttachedTarget a == Just target -> do
+  Discard _ _ target | eventAttachedTarget a == Just target -> do
     pushAll
       $ [UnsealChaosToken token | token <- eventSealedChaosTokens]
-      <> [Discard GameSource $ toTarget a]
+      <> [toDiscardZ GameSource a]
     pure a
-  Discard _ (AssetTarget aid) -> do
+  Discard _ _ (AssetTarget aid) -> do
     case eventPlacement of
       AttachedToAsset aid' _ | aid == aid' -> do
         pushAll
           $ [UnsealChaosToken token | token <- eventSealedChaosTokens]
-          <> [Discard GameSource $ toTarget a]
+          <> [toDiscardZ GameSource a]
       _ -> pure ()
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
@@ -89,11 +89,11 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       then push $ RemoveEvent $ toId a
       else case eventPlacement of
         Unplaced -> case afterPlay of
-          DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
+          DiscardThis -> pushAll [after, toDiscardBy (eventController a) GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
         Limbo -> case afterPlay of
-          DiscardThis -> pushAll [after, Discard GameSource (toTarget a)]
+          DiscardThis -> pushAll [after, toDiscardBy (eventController a) GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
         _ -> pure ()

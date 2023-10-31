@@ -24,38 +24,21 @@ callingInFavors = event CallingInFavors Cards.callingInFavors
 instance RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      allies <-
-        selectList
-          $ AllyAsset
-          <> AssetControlledBy
-            (InvestigatorWithId iid)
-      targetsWithCosts <- for
-        allies
-        \ally -> do
-          cardDef <- field AssetCardDef ally
-          pure (AssetTarget ally, maybe 0 toPrintedCost $ cdCost cardDef)
+      allies <- selectList $ #ally <> assetControlledBy iid
+      targetsWithCosts <- for allies \ally -> do
+        cardDef <- field AssetCardDef ally
+        pure (AssetTarget ally, maybe 0 toPrintedCost $ cdCost cardDef)
       player <- getPlayer iid
-      let
-        choice =
-          chooseOne
-            player
-            [ TargetLabel
-              target
-              [ ReturnToHand iid target
-              , CreateEffect
-                  (toCardCode attrs)
-                  (Just $ EffectInt cost)
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-              , search
-                  iid
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                  [fromTopOfDeck 9]
-                  IsAlly
-                  (PlayFound iid 1)
-              ]
-            | (target, cost) <- targetsWithCosts
+      push
+        $ chooseOne
+          player
+          [ TargetLabel
+            target
+            [ ReturnToHand iid target
+            , createCardEffect Cards.callingInFavors (Just $ EffectInt cost) attrs iid
+            , search iid attrs iid [fromTopOfDeck 9] #ally (PlayFound iid 1)
             ]
-      e <$ pushAll [choice, Discard GameSource (toTarget attrs)]
+          | (target, cost) <- targetsWithCosts
+          ]
+      pure e
     _ -> CallingInFavors <$> runMessage msg attrs

@@ -15,7 +15,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -32,32 +31,29 @@ instance HasAbilities Ambush1 where
       [ restrictedAbility
           attrs
           1
-          (LocationExists $ LocationWithId lid <> LocationWithoutInvestigators)
+          (exists $ LocationWithId lid <> LocationWithoutInvestigators)
           $ SilentForcedAbility AnyWindow
       , restrictedAbility attrs 2 ControlsThis
           $ ForcedAbility
-          $ EnemySpawns
-            Timing.After
-            (LocationWithId lid)
-            AnyEnemy
+          $ EnemySpawns #after (LocationWithId lid) AnyEnemy
       ]
     _ -> []
 
 instance RunMessage Ambush1 where
   runMessage msg e@(Ambush1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       lid <- fieldJust InvestigatorLocation iid
       push $ PlaceEvent iid eid (AttachedToLocation lid)
       pure e
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ toDiscardZ (toAbilitySource attrs 1) attrs
       pure e
-    UseCardAbility _ source 2 [(windowType -> Window.EnemySpawns enemyId _)] _ | isSource attrs source -> do
+    UseCardAbility _ (isSource attrs -> True) 2 [windowType -> Window.EnemySpawns enemyId _] _ -> do
       iid <- field EventOwner (toId attrs)
       canDealDamage <- withoutModifier iid CannotDealDamage
+      let source = toAbilitySource attrs 2
       pushAll
         $ [EnemyDamage enemyId $ nonAttack source 2 | canDealDamage]
-        <> [ Discard (toAbilitySource attrs 2) (toTarget attrs)
-           ]
+        <> [toDiscardZ source attrs]
       pure e
     _ -> Ambush1 <$> runMessage msg attrs

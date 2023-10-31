@@ -24,8 +24,10 @@ instance RunMessage BuryThemDeep where
     InvestigatorPlayEvent _ eid _ [Window Timing.After (Window.EnemyDefeated _ _ enemyId) _] _
       | eid == toId attrs -> do
           push $ AddToVictory (toTarget attrs)
-          replaceMessage
-            (Discard (toSource attrs) $ toTarget enemyId)
-            [AddToVictory (toTarget enemyId)]
+          replaceMessageMatching
+            \case
+              Discard _ (isSource attrs -> True) t -> enemyId `is` t
+              _ -> False
+            (const [AddToVictory (toTarget enemyId)])
           pure e
     _ -> BuryThemDeep <$> runMessage msg attrs

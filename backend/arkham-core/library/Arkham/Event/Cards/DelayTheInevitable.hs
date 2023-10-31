@@ -50,7 +50,7 @@ instance RunMessage DelayTheInevitable where
     UseCardAbility iid (isSource attrs -> True) 1 (getDamageAndHorror -> (damage, horror)) _ -> do
       player <- getPlayer iid
       pushAll
-        [ Discard (toAbilitySource attrs 1) (toTarget attrs)
+        [ toDiscardBy iid (toAbilitySource attrs 1) attrs
         , chooseOrRunOne player
             $ [Label "Cancel Damage" [CancelDamage iid damage] | damage > 0]
             <> [Label "Cancel Horror" [CancelHorror iid horror] | horror > 0]
@@ -69,7 +69,7 @@ instance RunMessage DelayTheInevitable where
         $ [Label "Spend 2 Resources" [SpendResources iid 2] | canAfford]
         <> [ Label
               "Discard Delay the Invevitabe"
-              [Discard (toAbilitySource attrs 2) (toTarget attrs)]
+              [toDiscardBy iid (toAbilitySource attrs 2) attrs]
            ]
       pure e
     _ -> DelayTheInevitable <$> runMessage msg attrs

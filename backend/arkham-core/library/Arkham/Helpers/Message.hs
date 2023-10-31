@@ -226,8 +226,12 @@ pattern R8 = ScenarioResolution (Resolution 8)
 gainSurge :: (Sourceable a, Targetable a) => a -> Message
 gainSurge a = GainSurge (toSource a) (toTarget a)
 
-toDiscard :: (Sourceable source, Targetable target) => source -> target -> Message
-toDiscard source target = Discard (toSource source) (toTarget target)
+toDiscardZ :: (Sourceable source, Targetable target) => source -> target -> Message
+toDiscardZ source target = Discard Nothing (toSource source) (toTarget target)
+
+toDiscardBy
+  :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> Message
+toDiscardBy iid source target = Discard (Just iid) (toSource source) (toTarget target)
 
 pushAllM :: (IsMessage msg, HasQueue Message m) => m [msg] -> m ()
 pushAllM mmsgs = do

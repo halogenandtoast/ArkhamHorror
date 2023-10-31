@@ -60,11 +60,11 @@ instance RunMessage Recharge2 where
               push
                 $ If
                   ( Window.RevealChaosTokenEventEffect
-                      (eventOwner attrs)
+                      (eventController attrs)
                       tokens
                       (toId attrs)
                   )
-                  [Discard (toSource attrs) $ AssetTarget aid]
+                  [toDiscardBy (eventController attrs) attrs aid]
             else push (AddUses aid Charge 3)
           pure e
     _ -> Recharge2 . (`with` meta) <$> runMessage msg attrs

@@ -41,7 +41,7 @@ instance HasAbilities SwampLeech where
 
 instance RunMessage SwampLeech where
   runMessage msg e@(SwampLeech attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          e <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure e
     _ -> SwampLeech <$> runMessage msg attrs

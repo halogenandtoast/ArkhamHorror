@@ -22,26 +22,20 @@ corpseDweller =
     Cards.corpseDweller
     (3, Static 5, 4)
     (2, 1)
-    ( (spawnAtL ?~ SpawnAt (LocationWithEnemy (EnemyWithTrait Humanoid)))
-        . (surgeIfUnableToSpawnL .~ True)
-    )
+    $ (spawnAtL ?~ SpawnAt (LocationWithEnemy (EnemyWithTrait Humanoid)))
+    . (surgeIfUnableToSpawnL .~ True)
 
 instance RunMessage CorpseDweller where
   runMessage msg (CorpseDweller attrs) = case msg of
     EnemySpawn miid lid eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       let iid = fromMaybe leadInvestigatorId miid
-      humanoids <-
-        selectList
-          $ EnemyWithTrait Humanoid
-          <> EnemyAt
-            (LocationWithId lid)
+      humanoids <- selectList $ EnemyWithTrait Humanoid <> enemyAt lid
       player <- getPlayer iid
       push
-        $ chooseOrRunOne
-          player
-          [ targetLabel humanoid [Discard (toSource attrs) (EnemyTarget humanoid)]
-          | humanoid <- humanoids
-          ]
+        $ chooseOrRunOne player
+        $ targetLabels humanoids
+        $ only
+        . toDiscardZ attrs
       CorpseDweller <$> runMessage msg attrs
     _ -> CorpseDweller <$> runMessage msg attrs

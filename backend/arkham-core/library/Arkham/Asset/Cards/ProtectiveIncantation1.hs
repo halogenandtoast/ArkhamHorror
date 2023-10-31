@@ -36,7 +36,7 @@ instance RunMessage ProtectiveIncantation1 where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ Label "Discard Protective Incantation" [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+        $ Label "Discard Protective Incantation" [toDiscardBy iid (toAbilitySource attrs 1) attrs]
         : [Label "Spend 1 resource" [SpendResources iid 1] | hasResources]
       pure a
     _ -> ProtectiveIncantation1 <$> runMessage msg attrs

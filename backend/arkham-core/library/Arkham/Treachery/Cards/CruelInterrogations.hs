@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -29,12 +28,7 @@ instance HasModifiersFor CruelInterrogations where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CruelInterrogations where
-  getAbilities (CruelInterrogations a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
-        $ ActionCost
-          1
-    ]
+  getAbilities (CruelInterrogations a) = [restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage CruelInterrogations where
   runMessage msg t@(CruelInterrogations attrs) = case msg of
@@ -49,16 +43,9 @@ instance RunMessage CruelInterrogations where
           )
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ beginSkillTest
-          iid
-          (toAbilitySource attrs 1)
-          (toTarget iid)
-          SkillWillpower
-          2
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower 2
       pure t
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
-        pure t
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure t
     _ -> CruelInterrogations <$> runMessage msg attrs

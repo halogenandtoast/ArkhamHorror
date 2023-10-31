@@ -32,7 +32,7 @@ instance RunMessage SpiritSpeaker where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       assetIds <- selectList $ AssetControlledBy You <> AssetWithUseType Charge
       discardableAssetIds <-
-        selectList $ AssetControlledBy You <> AssetWithUseType Charge <> DiscardableAsset
+        selectList $ assetControlledBy iid <> AssetWithUseType Charge <> DiscardableAsset
       assetIdsWithChargeCounts <- forToSnd assetIds $ fmap useCount . field AssetUses
       player <- getPlayer iid
       push
@@ -47,7 +47,7 @@ instance RunMessage SpiritSpeaker where
                     "Move all charges to your resource pool"
                     [ SpendUses target Charge n
                     , TakeResources iid n (toAbilitySource attrs 1) False
-                    , Discard (toAbilitySource attrs 1) target
+                    , toDiscardBy iid (toAbilitySource attrs 1) target
                     ]
                   | aid `elem` discardableAssetIds
                   ]

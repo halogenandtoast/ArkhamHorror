@@ -29,7 +29,7 @@ instance RunMessage Trapped where
 
       pushAll
         $ [placeHallway, placeCellar, placeAttic, placeParlor]
-        <> map (toDiscard attrs) enemies
+        <> map (toDiscardZ attrs) enemies
         <> [ RevealLocation Nothing hallway
            , MoveAllTo (toSource attrs) hallway
            , RemoveLocation study

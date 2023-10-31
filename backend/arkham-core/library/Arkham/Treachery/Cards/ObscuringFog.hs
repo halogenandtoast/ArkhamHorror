@@ -44,6 +44,6 @@ instance RunMessage ObscuringFog where
       pushWhen withoutObscuringFog $ AttachTreachery treacheryId $ LocationTarget location
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      push $ toDiscardZ (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> ObscuringFog <$> runMessage msg attrs

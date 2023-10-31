@@ -19,14 +19,14 @@ sleightOfHand = SleightOfHand . uncurry4 (baseAttrs "03029")
 instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     EndTurn _ -> do
-      case effectTarget attrs of
+      case attrs.target of
         CardIdTarget cid -> do
           mAid <- selectOne (AssetWithCardId cid)
-          for_ mAid $ \aid -> do
+          for_ mAid \aid -> do
             mController <- selectAssetController aid
-            for_ mController $ \controllerId ->
+            for_ mController \controllerId ->
               push (ReturnToHand controllerId (AssetTarget aid))
         _ -> pure ()
-      push $ Discard (toSource attrs) (toTarget attrs)
+      push $ disable attrs
       pure e
     _ -> SleightOfHand <$> runMessage msg attrs

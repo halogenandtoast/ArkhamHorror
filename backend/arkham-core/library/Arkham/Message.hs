@@ -867,7 +867,7 @@ data Message
   | AddCardEntity Card
   | RemoveCardEntity Card
   | UseCardAbility InvestigatorId Source Int [Window] Payment
-  | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int
+  | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int -- todo eliminated in favor of DoStep
   | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment
   | UseCardAbilityChoiceTarget InvestigatorId Source Int Target [Window] Payment
   | HandleTargetChoice InvestigatorId Source Target

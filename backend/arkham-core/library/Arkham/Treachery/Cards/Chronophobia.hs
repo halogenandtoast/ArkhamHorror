@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -23,24 +22,18 @@ instance HasAbilities Chronophobia where
   getAbilities (Chronophobia x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ TurnEnds
-          Timing.When
-          You
+        $ TurnEnds #when You
     , restrictedAbility x 2 OnSameLocation
         $ ActionAbility Nothing
-        $ ActionCost
-          2
+        $ ActionCost 2
     ]
 
 instance RunMessage Chronophobia where
   runMessage msg t@(Chronophobia attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          t <$ push (InvestigatorDirectDamage iid source 0 1)
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      t <$ push (InvestigatorDirectDamage iid source 0 1)
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      t <$ push (toDiscardBy iid (toAbilitySource attrs 2) attrs)
     _ -> Chronophobia <$> runMessage msg attrs

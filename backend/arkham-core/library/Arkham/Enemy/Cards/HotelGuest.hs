@@ -52,7 +52,7 @@ instance RunMessage HotelGuest where
           | skill <- [#willpower, #intellect]
           ]
       pure e
-    PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure e
     _ -> HotelGuest <$> runMessage msg attrs

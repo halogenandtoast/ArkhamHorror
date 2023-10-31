@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -49,19 +48,19 @@ instance RunMessage Entombed where
         testChoice sType =
           SkillLabel
             sType
-            [beginSkillTest iid source (toTarget iid) sType difficulty]
+            [beginSkillTest iid source iid sType difficulty]
       player <- getPlayer iid
-      push $ chooseOne player [testChoice SkillAgility, testChoice SkillCombat]
+      push $ chooseOne player [testChoice #agility, testChoice #combat]
       pure t
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
-    FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          pure
-            $ Entombed
-            $ attrs
-            `With` Metadata
-              (difficultyReduction metadata + 1)
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure t
+    FailedThisSkillTest _ (isSource attrs -> True) -> do
+      pure
+        $ Entombed
+        $ attrs
+        `With` Metadata
+          (difficultyReduction metadata + 1)
     EndRound -> do
       pure $ Entombed $ attrs `With` Metadata 0
     _ -> Entombed . (`with` metadata) <$> runMessage msg attrs

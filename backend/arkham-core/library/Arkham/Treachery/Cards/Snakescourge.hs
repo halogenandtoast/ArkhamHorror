@@ -32,8 +32,8 @@ instance HasModifiersFor Snakescourge where
       $ toModifiers
         attrs
         [ Blank
-        | iid <- maybeToList miid
-        , nonweaknessItem
+        | nonweaknessItem
+        , iid <- maybeToList miid
         , treacheryOnInvestigator iid attrs
         ]
   getModifiersFor _ _ = pure []
@@ -54,7 +54,7 @@ instance RunMessage Snakescourge where
         $ AttachTreachery (toId t) (InvestigatorTarget iid)
         : [gainSurge attrs | isPoisoned]
       pure t
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure t
     _ -> Snakescourge <$> runMessage msg attrs

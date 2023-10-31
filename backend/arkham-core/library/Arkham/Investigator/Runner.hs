@@ -567,7 +567,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     player <- getPlayer iid
     push
       $ chooseOrRunOne player
-      $ map (\aid -> targetLabel aid [Discard source $ AssetTarget aid]) discardableAssetIds
+      $ map (\aid -> targetLabel aid [toDiscardBy iid source aid]) discardableAssetIds
     pure a
   AttachAsset aid _ -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
@@ -624,13 +624,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           cards <- sampleN (discardAmount handDiscard) targets
           pushAll $ map (DiscardCard investigatorId (discardSource handDiscard) . toCardId) cards
     pure $ a & discardingL ?~ handDiscard
-  Discard source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> do
+  Discard _ source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> do
     push (DiscardCard investigatorId source cardId)
     pure a
-  Discard source (CardTarget card) | card `elem` investigatorHand -> do
+  Discard _ source (CardTarget card) | card `elem` investigatorHand -> do
     push $ DiscardCard investigatorId source (toCardId card)
     pure a
-  Discard _ (SearchedCardTarget cardId) -> do
+  Discard _ _ (SearchedCardTarget cardId) -> do
     pure $ a & foundCardsL . each %~ filter ((/= cardId) . toCardId)
   DiscardHand iid source | iid == investigatorId -> do
     pushAll $ map (DiscardCard iid source . toCardId) investigatorHand
@@ -702,7 +702,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       -- if we are planning to discard another asset immediately, wait to refill slots
       mmsg <- peekMessage
       case mmsg of
-        Just (Discard _ (AssetTarget aid')) | aid' `elem` slotAssets -> pure ()
+        Just (Discard _ _ (AssetTarget aid')) | aid' `elem` slotAssets -> pure ()
         -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
         _ -> push $ RefillSlots investigatorId
 
@@ -1461,7 +1461,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               chooseOne player
                 $ [ targetLabel
                     aid'
-                    $ map (Discard GameSource . toTarget) assets
+                    $ map (toDiscardBy iid GameSource) assets
                     <> [ InvestigatorPlayAsset iid aid
                        ]
                   | aid' <- assetsThatCanProvideSlots
@@ -1766,7 +1766,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         player <- getPlayer iid
         push
           $ chooseOne player
-          $ [ targetLabel aid' $ map (Discard GameSource . toTarget) assets <> [RefillSlots iid]
+          $ [ targetLabel aid' $ map (toDiscardBy iid GameSource) assets <> [RefillSlots iid]
             | aid' <- failedAssetIds
             , let assets = assetsInSlotsOf aid'
             ]

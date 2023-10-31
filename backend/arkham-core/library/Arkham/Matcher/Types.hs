@@ -206,6 +206,9 @@ instance IsLabel "ally" AssetMatcher where
 instance IsLabel "item" AssetMatcher where
   fromLabel = AssetWithTrait Ally
 
+instance IsLabel "mystic" AssetMatcher where
+  fromLabel = AssetWithClass Mystic
+
 instance Semigroup AssetMatcher where
   AnyAsset <> x = x
   x <> AnyAsset = x

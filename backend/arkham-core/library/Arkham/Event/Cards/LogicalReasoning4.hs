@@ -37,12 +37,13 @@ instance RunMessage LogicalReasoning4 where
           ( iid'
           , player
           , [Label "Heal 2 Horror" [healHorror] | healHorror <- toList mHealHorror]
-              <> [ Label "Discard a Terror"
-                  $ [ chooseOne player
-                        $ [ targetLabel terror [Discard (toSource attrs) $ toTarget terror]
-                          | terror <- terrors
-                          ]
-                    ]
+              <> [ Label
+                  "Discard a Terror"
+                  [ chooseOne player
+                      $ targetLabels terrors
+                      $ only
+                      . toDiscardBy iid attrs
+                  ]
                  | notNull terrors
                  ]
           )

@@ -36,20 +36,20 @@ instance HasModifiersFor TheNecronomiconAdvanced where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheNecronomiconAdvanced where
-  getAbilities (TheNecronomiconAdvanced a) =
-    [ restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis)
-        $ ActionAbility Nothing
-        $ ActionCost 1
-    ]
+  getAbilities (TheNecronomiconAdvanced a) = [controlledAbility a 1 AnyHorrorOnThis actionAbility]
 
 instance RunMessage TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      a <$ push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
       push $ InvestigatorDamage iid source 0 1
       if assetHorror attrs <= 1
-        then a <$ push (Discard (toAbilitySource attrs 1) (toTarget attrs))
+        then do
+          push $ toDiscardBy iid source attrs
+          pure a
         else
           pure
             $ TheNecronomiconAdvanced

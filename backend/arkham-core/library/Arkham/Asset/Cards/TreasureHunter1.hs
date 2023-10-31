@@ -32,7 +32,7 @@ instance RunMessage TreasureHunter1 where
       push
         $ chooseOne player
         $ [ Label "Pay 1 Resource to Treasure Hunter" [SpendResources iid 1]
-          , Label "Discard Treasure Hunter" [Discard (toAbilitySource attrs 1) $ toTarget attrs]
+          , Label "Discard Treasure Hunter" [toDiscardBy iid (toAbilitySource attrs 1) attrs]
           ]
       pure a
     _ -> TreasureHunter1 <$> runMessage msg attrs

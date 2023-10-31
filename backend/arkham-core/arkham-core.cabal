@@ -888,7 +888,6 @@ library
       Arkham.Draw.Types
       Arkham.Effect
       Arkham.Effect.Effects
-      Arkham.Effect.Effects.AChanceEncounter
       Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Effect.Effects.BindMonster2
       Arkham.Effect.Effects.CallingInFavors

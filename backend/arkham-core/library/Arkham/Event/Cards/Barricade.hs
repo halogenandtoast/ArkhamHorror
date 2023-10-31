@@ -38,7 +38,7 @@ instance RunMessage Barricade where
       lid <- fieldJust InvestigatorLocation iid
       push $ PlaceEvent iid eid (AttachedToLocation lid)
       pure e
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure e
     _ -> Barricade <$> runMessage msg attrs

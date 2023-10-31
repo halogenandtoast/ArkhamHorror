@@ -28,30 +28,28 @@ archaicGlyphs =
 instance HasAbilities ArchaicGlyphs where
   getAbilities (ArchaicGlyphs (attrs `With` meta)) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility Nothing
-        $ ActionCost 1
-        <> SkillIconCost 1 (singleton $ SkillIcon SkillIntellect)
-    , restrictedAbility attrs 2 ability2Criteria $ ForcedAbility AnyWindow
+        $ actionAbilityWithCost
+        $ SkillIconCost 1 (singleton $ SkillIcon #intellect)
+    , controlledAbility attrs 2 ability2Criteria $ ForcedAbility AnyWindow
     ]
    where
     ability2Criteria =
       if discarding meta
         then Never
         else
-          ControlsThis
-            <> AssetExists
-              (AssetWithId (toId attrs) <> AssetWithUseCount Secret 3)
+          exists
+            (AssetWithId (toId attrs) <> AssetWithUseCount Secret 3)
 
 instance RunMessage ArchaicGlyphs where
   runMessage msg a@(ArchaicGlyphs (attrs `With` meta)) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          a <$ push (AddUses (toId attrs) Secret 1)
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ AddUses (toId attrs) Secret 1
+      pure a
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       case assetPlacement attrs of
         InPlayArea controllerId -> do
           pushAll
-            [ Discard (toSource attrs) (toTarget attrs)
+            [ toDiscardBy iid attrs attrs
             , TakeResources controllerId 5 (toAbilitySource attrs 2) False
             , Record YouHaveTranslatedTheGlyphs
             ]

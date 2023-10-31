@@ -54,9 +54,9 @@ instance RunMessage ConspiracyOfBlood where
       | isSource attrs source -> do
           push $ parley iid source eid SkillWillpower 4
           pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
-        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+        push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
         pure t
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

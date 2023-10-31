@@ -43,7 +43,7 @@ instance RunMessage DaemonicPiping where
         piperOfAzathoth <- findJustCard (`cardMatch` cardIs Enemies.piperOfAzathoth)
         createPiperOfAzathoth <- createEnemyEngagedWithPrey_ piperOfAzathoth
         pushAll
-          $ map (Discard (toSource attrs) . toTarget) daemonicPipings
+          $ map (toDiscardZ attrs) daemonicPipings
           <> [createPiperOfAzathoth]
       pure t
     _ -> DaemonicPiping <$> runMessage msg attrs

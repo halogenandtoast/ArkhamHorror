@@ -196,7 +196,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetCurrentActDeck n stack@(current : _) -> do
     actIds <- selectList $ Matcher.ActWithDeckId n
     pushAll
-      $ [Discard GameSource (ActTarget actId) | actId <- actIds]
+      $ [toDiscardZ GameSource (ActTarget actId) | actId <- actIds]
       <> [AddAct n current]
     pure
       $ a
@@ -205,7 +205,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetCurrentAgendaDeck n stack@(current : _) -> do
     agendaIds <- selectList $ Matcher.AgendaWithDeckId n
     pushAll
-      $ [Discard GameSource (AgendaTarget agendaId) | agendaId <- agendaIds]
+      $ [toDiscardZ GameSource (AgendaTarget agendaId) | agendaId <- agendaIds]
       <> [AddAgenda n current]
     pure
       $ a
@@ -281,7 +281,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                 ys
       _ -> error "Can not advance agenda deck"
     pure $ a & agendaStackL . at n ?~ agendaStack'
-  Discard _ (ActTarget _) -> pure $ a & actStackL .~ mempty
+  Discard _ _ (ActTarget _) -> pure $ a & actStackL .~ mempty
   -- See: Vengeance Awaits / The Devourer Below - right now the assumption
   -- is that the act deck has been replaced.
   CheckForRemainingInvestigators -> do
@@ -597,7 +597,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = draw n scenarioEncounterDeck
     pure $ a & encounterDeckL .~ withDeck (<> cards) deck
-  Discard _ (TreacheryTarget tid) -> do
+  Discard _ _ (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     handler <- getEncounterDeckHandler $ toCardId card
     case card of

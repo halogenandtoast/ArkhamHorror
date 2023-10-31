@@ -47,20 +47,16 @@ instance RunMessage Corrosion where
       pure t
     RevelationChoice iid source n | n > 0 -> do
       assets <- selectWithField AssetCost assetMatcher
-      handAssets <-
-        fieldMap
-          InvestigatorHand
-          (filter (`cardMatch` handMatcher))
-          iid
+      handAssets <- fieldMap InvestigatorHand (filter (`cardMatch` handMatcher)) iid
       let
         discardAsset (asset, cost) =
           targetLabel
             asset
-            [Discard (toSource attrs) (AssetTarget asset), RevelationChoice iid source (n - cost)]
+            [toDiscardBy iid attrs asset, RevelationChoice iid source (n - cost)]
         discardHandAsset card =
           TargetLabel
             (CardIdTarget $ toCardId card)
-            [ Discard (toSource attrs) (CardIdTarget $ toCardId card)
+            [ toDiscardBy iid attrs (toCardId card)
             , RevelationChoice
                 iid
                 source

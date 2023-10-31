@@ -29,7 +29,7 @@ instance RunMessage StrangeSolution where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       drawing <- drawCards iid (toAbilitySource attrs 1) 2
       pushAll
-        [ Discard (toAbilitySource attrs 1) (toTarget attrs)
+        [ toDiscardBy iid (toAbilitySource attrs 1) attrs
         , drawing
         , Record YouHaveIdentifiedTheSolution
         ]

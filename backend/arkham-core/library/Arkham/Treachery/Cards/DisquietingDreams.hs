@@ -43,11 +43,11 @@ instance RunMessage DisquietingDreams where
       pure t
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       pushAll
-        [ Discard (toSource attrs) (toTarget attrs)
+        [ toDiscardBy iid (toAbilitySource attrs 2) attrs
         , search
             iid
-            (toSource attrs)
-            (toTarget iid)
+            attrs
+            iid
             [(FromTopOfDeck 10, DiscardRest)]
             WeaknessCard
             (DrawFound iid 10)

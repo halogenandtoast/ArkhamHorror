@@ -56,10 +56,10 @@ instance RunMessage WatcherFromAnotherDimension where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
       pure e
-    Successful (action, _) _ _ (isTarget attrs -> True) _ | action `elem` [#fight, #evade] -> do
+    Successful (action, _) iid _ (isTarget attrs -> True) _ | action `elem` [#fight, #evade] -> do
       case enemyPlacement attrs of
         StillInHand _ -> do
-          push $ Discard (toSource attrs) (toTarget attrs)
+          push $ toDiscardBy iid (toSource attrs) attrs
           pure e
         _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
     FailedSkillTest iid (Just action) _ (Initiator (isTarget attrs -> True)) _ _ | action `elem` [#fight, #evade] -> do

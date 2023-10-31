@@ -76,14 +76,14 @@ instance RunMessage ArcaneBarrierEffect where
             ]
         ]
       pure e
-    PassedThisSkillTest _ (isSource attrs -> True) -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       let
         moveMessages = case effectMetadata attrs of
           Just (EffectMessages msgs) -> msgs
           _ -> error "messages must be supplied"
       case effectSource attrs of
         TreacherySource tid ->
-          pushAll $ disable attrs : Discard (effectSource attrs) (toTarget tid) : moveMessages
+          pushAll $ disable attrs : toDiscardBy iid (effectSource attrs) tid : moveMessages
         _ -> error "Has to be a treachery source"
       pure e
     _ -> ArcaneBarrierEffect <$> runMessage msg attrs

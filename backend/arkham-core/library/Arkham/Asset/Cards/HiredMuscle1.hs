@@ -30,9 +30,10 @@ instance RunMessage HiredMuscle1 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
       push
-        $ chooseOne player
-        $ [ Label "Pay 1 Resource to Hired Muscle" [SpendResources iid 1]
-          , Label "Discard Hired Muscle" [Discard (toAbilitySource attrs 1) $ toTarget attrs]
+        $ chooseOne
+          player
+          [ Label "Pay 1 Resource to Hired Muscle" [SpendResources iid 1]
+          , Label "Discard Hired Muscle" [toDiscardBy iid (toAbilitySource attrs 1) attrs]
           ]
       pure a
     _ -> HiredMuscle1 <$> runMessage msg attrs

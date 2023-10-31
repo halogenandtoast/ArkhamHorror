@@ -33,7 +33,7 @@ instance RunMessage Abduction where
             $ [ Label "Lose all resources" [LoseAllResources iid]
               , Label
                   "Discard an Ally asset you control"
-                  [chooseOne player $ targetLabels targets (only . Discard (toSource attrs))]
+                  [chooseOne player $ targetLabels targets (only . toDiscardBy iid attrs)]
               ]
       pure t
     _ -> Abduction <$> runMessage msg attrs

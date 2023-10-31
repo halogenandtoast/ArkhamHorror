@@ -39,6 +39,7 @@ instance RunMessage TheCodexOfAges where
       case mElderSignToken of
         Nothing -> error "impossible"
         Just token -> do
+          -- TODO: Try to batch this
           -- This is sort of a pain because we need to replace revealing a
           -- token which means we have to cancel a bunch of steps. It is
           -- possible this won't work well if the elder sign effect is
@@ -65,6 +66,6 @@ instance RunMessage TheCodexOfAges where
           popMessageMatching_ $ \case
             RunSkillTest {} -> True
             _ -> False
-          pushAll [ResolveChaosToken token ElderSign iid, Discard (toAbilitySource attrs 1) (toTarget attrs)]
+          pushAll [ResolveChaosToken token ElderSign iid, toDiscardBy iid (toAbilitySource attrs 1) attrs]
           pure a
     _ -> TheCodexOfAges <$> runMessage msg attrs

@@ -45,7 +45,4 @@ instance RunMessage Flare1 where
       player <- getPlayer iid
       pushAll [chooseN player targetCount choices, Exile (toTarget attrs)]
       pure e
-    SearchNoneFound _ (isTarget attrs -> True) -> do
-      push $ Discard (toSource attrs) (toTarget attrs)
-      pure e
     _ -> Flare1 <$> runMessage msg attrs

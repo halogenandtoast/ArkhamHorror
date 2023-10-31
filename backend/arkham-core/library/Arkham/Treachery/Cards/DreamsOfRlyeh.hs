@@ -34,12 +34,12 @@ instance HasAbilities DreamsOfRlyeh where
 instance RunMessage DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) $ toTarget iid
+      push $ attachTreachery attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ beginSkillTest iid attrs iid #willpower 3
       pure t
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

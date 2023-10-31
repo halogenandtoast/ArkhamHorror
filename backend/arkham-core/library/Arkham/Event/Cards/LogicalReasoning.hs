@@ -23,7 +23,7 @@ instance RunMessage LogicalReasoning where
   runMessage msg e@(LogicalReasoning attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <- selectList =<< guardAffectsColocated iid
-      options <- for iids $ \iid' -> do
+      options <- for iids \iid' -> do
         mHealHorror <- getHealHorrorMessage attrs 2 iid'
         terrors <- selectList $ TreacheryWithTrait Terror <> treacheryInThreatAreaOf iid'
         player <- getPlayer iid'
@@ -31,12 +31,13 @@ instance RunMessage LogicalReasoning where
           ( iid'
           , player
           , [Label "Heal 2 Horror" [healHorror] | healHorror <- toList mHealHorror]
-              <> [ Label "Discard a Terror"
-                  $ [ chooseOne player
-                        $ [ targetLabel terror [Discard (toSource attrs) $ toTarget terror]
-                          | terror <- terrors
-                          ]
-                    ]
+              <> [ Label
+                  "Discard a Terror"
+                  [ chooseOne player
+                      $ targetLabels terrors
+                      $ only
+                      . toDiscardBy iid attrs
+                  ]
                  | notNull terrors
                  ]
           )

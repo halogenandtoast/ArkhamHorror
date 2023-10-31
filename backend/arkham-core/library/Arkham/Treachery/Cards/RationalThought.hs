@@ -13,11 +13,10 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 import Data.UUID qualified as UUID
 
@@ -68,8 +67,8 @@ instance RunMessage RationalThought where
     Revelation iid source | isSource attrs source -> do
       push $ AttachTreachery (toId attrs) (InvestigatorTarget iid)
       pure t
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure $ RationalThought $ attrs `with` Metadata True
     HealHorror (InvestigatorTarget iid) source amount
       | unCardCode (unInvestigatorId iid)
@@ -77,22 +76,20 @@ instance RunMessage RationalThought where
           do
             afterWindow <-
               checkWindows
-                [ mkWindow
-                    Timing.After
-                    ( Window.Healed
-                        HorrorType
-                        ( InvestigatorTarget
-                            $ InvestigatorId
-                              ( CardCode
-                                  $ UUID.toText
-                                  $ unTreacheryId
-                                  $ toId
-                                    attrs
-                              )
-                        )
-                        source
-                        amount
-                    )
+                [ mkAfter
+                    $ Window.Healed
+                      HorrorType
+                      ( InvestigatorTarget
+                          $ InvestigatorId
+                            ( CardCode
+                                $ UUID.toText
+                                $ unTreacheryId
+                                $ toId
+                                  attrs
+                            )
+                      )
+                      source
+                      amount
                 ]
             push afterWindow
             pure

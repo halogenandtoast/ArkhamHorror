@@ -60,9 +60,9 @@ instance RunMessage BaronSamedi where
         , UseCardAbilityStep iid (toSource attrs) 2 ws p 1
         ]
       pure a
-    UseCardAbilityStep _ (isSource attrs -> True) 2 _ _ 1 -> do
+    UseCardAbilityStep iid (isSource attrs -> True) 2 _ _ 1 -> do
       when (assetDoom attrs >= 3)
         $ push
-        $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+        $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure a
     _ -> handleDoom msg attrs

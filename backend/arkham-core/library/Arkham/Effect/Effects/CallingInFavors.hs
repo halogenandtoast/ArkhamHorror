@@ -20,20 +20,19 @@ callingInFavors :: EffectArgs -> CallingInFavors
 callingInFavors = CallingInFavors . uncurry4 (baseAttrs "03158")
 
 instance HasModifiersFor CallingInFavors where
-  getModifiersFor (InvestigatorTarget iid) (CallingInFavors attrs)
-    | (InvestigatorSource iid) == effectSource attrs = do
-        case effectMetadata attrs of
-          Just (EffectInt n) ->
-            pure
-              $ toModifiers
-                attrs
-                [ReduceCostOf (CardWithType AssetType <> CardWithTrait Ally) n]
-          _ -> error "Invalid metadata"
+  getModifiersFor (InvestigatorTarget iid) (CallingInFavors attrs) | iid `is` attrs.source = do
+    case effectMetadata attrs of
+      Just (EffectInt n) ->
+        pure
+          $ toModifiers
+            attrs
+            [ReduceCostOf (CardWithType AssetType <> CardWithTrait Ally) n]
+      _ -> error "Invalid metadata"
   getModifiersFor _ _ = pure []
 
 instance RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = case msg of
-    Discard _ (EventTarget eid)
-      | EventSource eid == effectSource attrs ->
-          e <$ push (DisableEffect $ toId attrs)
+    Discard _ _ (EventTarget eid) | EventSource eid == effectSource attrs -> do
+      push $ disable attrs
+      pure e
     _ -> CallingInFavors <$> runMessage msg attrs

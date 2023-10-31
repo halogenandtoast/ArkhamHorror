@@ -21,9 +21,7 @@ forbiddenTome = asset ForbiddenTome Cards.forbiddenTome
 
 instance HasAbilities ForbiddenTome where
   getAbilities (ForbiddenTome a) =
-    [ withCriteria
-        (mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1 <> exhaust a <> assetUseCost a Secret 1)
-        (ControlsThis <> CanDrawCards)
+    [ controlledAbility a 1 CanDrawCards $ actionAbilityWithCost $ exhaust a <> assetUseCost a Secret 1
     ]
 
 instance RunMessage ForbiddenTome where
@@ -42,7 +40,7 @@ instance RunMessage ForbiddenTome where
       pushWhen (n >= 10 && noUses)
         $ chooseOne player
         $ [ Label "Discard Forbidden Tome"
-              $ [Discard (toAbilitySource attrs 1) (toTarget attrs), Record YouHaveTranslatedTheTome]
+              $ [toDiscardBy iid (toAbilitySource attrs 1) attrs, Record YouHaveTranslatedTheTome]
           , Label "Do not discard Forbidden Tome" []
           ]
       pure a

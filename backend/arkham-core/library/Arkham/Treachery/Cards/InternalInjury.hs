@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -23,24 +22,21 @@ instance HasAbilities InternalInjury where
   getAbilities (InternalInjury x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ TurnEnds
-          Timing.When
-          You
+        $ TurnEnds #when You
     , restrictedAbility x 2 OnSameLocation
         $ ActionAbility Nothing
-        $ ActionCost
-          2
+        $ ActionCost 2
     ]
 
 instance RunMessage InternalInjury where
   runMessage msg t@(InternalInjury attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          t <$ push (InvestigatorDirectDamage iid source 1 0)
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ attachTreachery attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ directDamage iid (toAbilitySource attrs 1) 1
+      pure t
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+      pure t
     _ -> InternalInjury <$> runMessage msg attrs

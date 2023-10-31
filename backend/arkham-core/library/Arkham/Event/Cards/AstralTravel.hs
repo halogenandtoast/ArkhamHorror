@@ -46,7 +46,7 @@ instance RunMessage AstralTravel where
             xs ->
               [ chooseOne
                   player
-                  [ targetLabel x [Discard (toSource attrs) $ AssetTarget x]
+                  [ targetLabel x [toDiscardBy (eventController attrs) attrs x]
                   | x <- xs
                   ]
               ]

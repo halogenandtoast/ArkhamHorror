@@ -25,7 +25,7 @@ instance RunMessage AlterFate1 where
       pushAll
         [ chooseOne
             player
-            [ targetLabel treachery [Discard (toSource attrs) (toTarget treachery)]
+            [ targetLabel treachery [toDiscardBy iid attrs treachery]
             | treachery <- treacheries
             ]
         ]

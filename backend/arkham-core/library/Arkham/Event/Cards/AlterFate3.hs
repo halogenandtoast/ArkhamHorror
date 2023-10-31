@@ -23,11 +23,10 @@ instance RunMessage AlterFate3 where
       treacheries <- selectList $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
       player <- getPlayer iid
       pushAll
-        [ chooseOne
-            player
-            [ targetLabel treachery [Discard (toSource attrs) (toTarget treachery)]
-            | treachery <- treacheries
-            ]
+        [ chooseOne player
+            $ targetLabels treacheries
+            $ only
+            . toDiscardBy iid attrs
         ]
       pure e
     _ -> AlterFate3 <$> runMessage msg attrs

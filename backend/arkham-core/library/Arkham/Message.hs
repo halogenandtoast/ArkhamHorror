@@ -83,7 +83,7 @@ messageType ResolveChaosToken {} = Just ResolveChaosTokenMessage
 messageType EnemySpawn {} = Just EnemySpawnMessage
 messageType InvestigatorDrawEnemy {} = Just DrawEnemyMessage
 messageType EnemyDefeated {} = Just EnemyDefeatedMessage
-messageType (Discard GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
+messageType (Discard _ GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
 messageType RevealChaosToken {} = Just RevealChaosTokenMessage
 messageType InvestigatorDamage {} = Just DamageMessage
 messageType InvestigatorDoAssignDamage {} = Just DamageMessage
@@ -468,7 +468,7 @@ data Message
   | Damage Target Source Int
   | DeckHasNoCards InvestigatorId (Maybe Target)
   | DisableEffect EffectId
-  | Discard Source Target
+  | Discard (Maybe InvestigatorId) Source Target
   | DiscardHand InvestigatorId Source
   | RevealUntilFirst InvestigatorId Source DeckSignifier CardMatcher
   | RevealedCards InvestigatorId Source DeckSignifier (Maybe Card) [Card]

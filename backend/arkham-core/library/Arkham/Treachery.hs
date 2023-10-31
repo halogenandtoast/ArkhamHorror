@@ -15,7 +15,9 @@ createTreachery a iid tid =
   lookupTreachery (toCardCode a) iid tid (toCardId a)
 
 instance RunMessage Treachery where
-  runMessage msg (Treachery a) = Treachery <$> runMessage msg a
+  runMessage msg t@(Treachery a) = case msg of
+    Revelation iid (isSource t -> True) -> Treachery <$> runMessage msg (overAttrs (resolvedL %~ insertSet iid) a)
+    _ -> Treachery <$> runMessage msg a
 
 lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> CardId -> Treachery
 lookupTreachery cardCode = case lookup cardCode allTreacheries of

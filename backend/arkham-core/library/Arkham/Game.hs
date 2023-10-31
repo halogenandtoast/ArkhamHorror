@@ -4164,7 +4164,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . assetsL %~ deleteMap aid & removedEntitiesF
   RemoveEvent eid -> do
     popMessageMatching_ $ \case
-      Discard _ (EventTarget eid') -> eid == eid'
+      Discard _ _ (EventTarget eid') -> eid == eid'
       _ -> False
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)
@@ -4211,13 +4211,13 @@ runGameMessage msg g = case msg of
     pure g
   RemovedLocation lid -> do
     treacheries <- selectList $ TreacheryAt $ LocationWithId lid
-    pushAll $ concatMap (resolve . Discard GameSource . toTarget) treacheries
+    pushAll $ concatMap (resolve . toDiscard GameSource) treacheries
     enemies <- selectList $ enemyAt lid
-    pushAll $ concatMap (resolve . Discard GameSource . toTarget) enemies
+    pushAll $ concatMap (resolve . toDiscard GameSource) enemies
     events <- selectList $ eventAt lid
-    pushAll $ concatMap (resolve . Discard GameSource . toTarget) events
+    pushAll $ concatMap (resolve . toDiscard GameSource) events
     assets <- selectList $ assetAt lid
-    pushAll $ concatMap (resolve . Discard GameSource . toTarget) assets
+    pushAll $ concatMap (resolve . toDiscard GameSource) assets
     investigators <- selectList $ investigatorAt lid
     -- since we handle the would be defeated window in the previous message we
     -- skip directly to the is defeated message even though we would normally
@@ -4434,7 +4434,7 @@ runGameMessage msg g = case msg of
 
       card <- field AssetCard assetId
       if assetIsStory $ toAttrs asset
-        then push $ Discard GameSource $ toTarget assetId
+        then push $ toDiscard GameSource $ toTarget assetId
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
     pure g
   PlaceEnemy enemyId (OutOfPlay outOfPlayZone) -> do
@@ -4682,8 +4682,8 @@ runGameMessage msg g = case msg of
 
       for mRemovedMsg $ \removedMsg -> do
         case removedMsg of
-          InvestigatorDrawEnemy _ eid -> do
-            pushAll [Discard GameSource (EnemyTarget eid), UnsetActiveCard]
+          InvestigatorDrawEnemy iid' eid -> do
+            pushAll [toDiscardBy iid' GameSource (EnemyTarget eid), UnsetActiveCard]
           Revelation iid' source' -> do
             removeAllMessagesMatchingM $ \case
               When whenMsg -> pure $ removedMsg == whenMsg
@@ -4700,7 +4700,7 @@ runGameMessage msg g = case msg of
               TreacherySource tid ->
                 replaceMessage
                   (After removedMsg)
-                  [Discard GameSource (TreacheryTarget tid), UnsetActiveCard]
+                  [toDiscardBy iid' GameSource (TreacheryTarget tid), UnsetActiveCard]
               _ -> pure ()
           _ -> pure ()
 
@@ -4856,7 +4856,7 @@ runGameMessage msg g = case msg of
   PlaceEnemyInVoid eid -> do
     let
       isDiscardEnemy = \case
-        Discard _ (EnemyTarget eid') -> eid == eid'
+        Discard _ _ (EnemyTarget eid') -> eid == eid'
         _ -> False
     withQueue_ $ filter (not . isDiscardEnemy)
     enemy <- getEnemy eid
@@ -4875,7 +4875,7 @@ runGameMessage msg g = case msg of
           & (outOfPlayEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
           & (entitiesL . enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
-  Discard _ (SearchedCardTarget cardId) -> do
+  Discard _ _ (SearchedCardTarget cardId) -> do
     investigator' <- getActiveInvestigator
     let
       card =
@@ -4895,9 +4895,9 @@ runGameMessage msg g = case msg of
           ]
         pure $ g & focusedCardsL %~ filter (/= card)
       _ -> error "should not be an option for other cards"
-  Discard _ (ActTarget aid) ->
+  Discard _ _ (ActTarget aid) ->
     pure $ g & entitiesL . actsL %~ Map.filterWithKey (\k _ -> k /= aid)
-  Discard _ (AgendaTarget aid) ->
+  Discard _ _ (AgendaTarget aid) ->
     pure $ g & entitiesL . agendasL %~ Map.filterWithKey (\k _ -> k /= aid)
   Discarded (EnemyTarget eid) source _ -> do
     enemy <- getEnemy eid
@@ -5422,7 +5422,7 @@ runGameMessage msg g = case msg of
         windows' <- windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
         matches' <- selectList locationMatcher
         case matches' of
-          [] -> push (Discard GameSource (toTarget enemyId))
+          [] -> push (toDiscard GameSource (toTarget enemyId))
           lids -> do
             lead <- getLead
             player <- getPlayer $ fromMaybe lead $ enemyCreationInvestigator enemyCreation
@@ -5690,7 +5690,7 @@ runGameMessage msg g = case msg of
     pushAll
       $ checkWindowMessage
       : if ignoreRevelation
-        then [Discard GameSource (TreacheryTarget treacheryId)]
+        then [toDiscardBy iid GameSource (TreacheryTarget treacheryId)]
         else
           resolve (Revelation iid (TreacherySource treacheryId))
             <> [AfterRevelation iid treacheryId, UnsetActiveCard]
@@ -5768,7 +5768,7 @@ runGameMessage msg g = case msg of
     pure g
   Exiled (AssetTarget aid) _ -> do
     runMessage (RemoveAsset aid) g
-  Discard _ (EventTarget eid) -> do
+  Discard _ _ (EventTarget eid) -> do
     mEvent <- getEventMaybe eid
     case mEvent of
       Nothing -> pure g
@@ -5792,7 +5792,7 @@ runGameMessage msg g = case msg of
               EncounterCard _ -> error "Unhandled"
               VengeanceCard _ -> error "Vengeance card"
             pure $ g & entitiesL . eventsL %~ deleteMap eid
-  Discard _ (TreacheryTarget tid) -> do
+  Discard _ _ (TreacheryTarget tid) -> do
     treachery <- getTreachery tid
     case lookupCard (toCardCode treachery) (toCardId treachery) of
       PlayerCard pc -> do

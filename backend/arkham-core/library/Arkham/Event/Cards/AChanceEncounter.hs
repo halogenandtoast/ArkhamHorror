@@ -62,7 +62,7 @@ instance RunMessage AChanceEncounterEffect where
         -- TODO: we should include the investigator id here
         -- currently we can only get the card owner
         pushAll
-          [toDiscardZ attrs.source cardId, disable attrs]
+          [toDiscard attrs.source cardId, disable attrs]
         pure e
       _ -> error "Wrong target type"
     _ -> AChanceEncounterEffect <$> runMessage msg attrs

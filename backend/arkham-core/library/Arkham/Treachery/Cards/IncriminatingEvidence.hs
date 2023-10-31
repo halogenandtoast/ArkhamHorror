@@ -57,7 +57,7 @@ instance RunMessage IncriminatingEvidence where
             $ skillTestModifier (toAbilitySource attrs 1) lid (AlternateSuccessfullInvestigation $ toTarget attrs)
         _ -> error "Unexpected"
       pure t
-    Successful (Action.Investigate, _) _ _ (isTarget attrs -> True) _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> IncriminatingEvidence <$> runMessage msg attrs

@@ -32,21 +32,18 @@ instance HasModifiersFor GiftOfMadnessPity where
 
 instance HasAbilities GiftOfMadnessPity where
   getAbilities (GiftOfMadnessPity a) =
-    [restrictedAbility a 1 InYourHand $ ActionAbility Nothing $ ActionCost 1]
+    [restrictedAbility a 1 InYourHand actionAbility]
 
 instance RunMessage GiftOfMadnessPity where
   runMessage msg t@(GiftOfMadnessPity attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (addHiddenToHand iid attrs)
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          t
-            <$ pushAll
-              [ DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1
-              , Discard (toAbilitySource attrs 1) (toTarget attrs)
-              ]
-    DrewFromScenarioDeck _ _ target cards
-      | isTarget attrs target ->
-          t <$ push (PlaceUnderneath ActDeckTarget cards)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (addHiddenToHand iid attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      pushAll
+        [ DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1
+        , toDiscardBy iid (toAbilitySource attrs 1) attrs
+        ]
+      pure t
+    DrewFromScenarioDeck _ _ target cards | isTarget attrs target -> do
+      t <$ push (PlaceUnderneath ActDeckTarget cards)
     _ -> GiftOfMadnessPity <$> runMessage msg attrs

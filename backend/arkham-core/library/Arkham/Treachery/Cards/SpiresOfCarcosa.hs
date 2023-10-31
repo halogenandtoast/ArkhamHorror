@@ -49,6 +49,6 @@ instance RunMessage SpiresOfCarcosa where
         Nothing -> error "must be attached to location to trigger ability"
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+      push $ toDiscard (toAbilitySource attrs 2) attrs
       pure t
     _ -> SpiresOfCarcosa <$> runMessage msg attrs

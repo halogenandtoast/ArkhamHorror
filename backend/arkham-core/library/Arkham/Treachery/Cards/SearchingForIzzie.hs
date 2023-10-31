@@ -38,8 +38,8 @@ instance RunMessage SearchingForIzzie where
       withTreacheryLocation attrs $ \locationId -> do
         pushM $ mkInvestigateLocation iid (toAbilitySource attrs 1) locationId <&> setTarget attrs
         pure t
-    Successful (Action.Investigate, _) _ _ target _ | isTarget attrs target -> do
-      push $ Discard (toAbilitySource attrs 1) target
+    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) target
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       let investigator = fromJustNote "missing investigator" attrs.owner

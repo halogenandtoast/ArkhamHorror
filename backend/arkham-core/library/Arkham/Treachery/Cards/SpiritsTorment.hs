@@ -50,14 +50,11 @@ instance RunMessage SpiritsTorment where
           then
             chooseOne
               player
-              [ Label
-                  "Take 1 horror"
-                  [InvestigatorAssignDamage iid source DamageAny 0 1]
+              [ Label "Take 1 horror" [assignHorror iid source 1]
               , Label "Lose 1 action" [LoseActions iid source 1]
               ]
           else InvestigatorAssignDamage iid source DamageAny 0 1
       pure t
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      t <$ push (toDiscardBy iid (toAbilitySource attrs 2) attrs)
     _ -> SpiritsTorment <$> runMessage msg attrs

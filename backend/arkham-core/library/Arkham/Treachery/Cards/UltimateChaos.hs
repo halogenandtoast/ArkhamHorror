@@ -33,7 +33,7 @@ instance RunMessage UltimateChaos where
         investigators <- getInvestigators
         player <- getPlayer iid
         pushAll
-          $ map (Discard (toSource attrs) . toTarget) instances
+          $ map (toDiscard attrs) instances
           <> [ chooseOne
                 player
                 [ Label "Place 1 Doom on Azathoth" [PlaceDoom (toSource attrs) (toTarget azathoth) 1]

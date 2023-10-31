@@ -36,7 +36,7 @@ instance HasAbilities Obsessive where
 instance RunMessage Obsessive where
   runMessage msg t@(Obsessive attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) $ InvestigatorTarget iid
+      push $ attachTreachery attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       cards <-
@@ -48,7 +48,7 @@ instance RunMessage Obsessive where
         card <- sample cards'
         push $ DiscardCard iid (toAbilitySource attrs 1) (toCardId card)
       pure t
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure t
     _ -> Obsessive <$> runMessage msg attrs

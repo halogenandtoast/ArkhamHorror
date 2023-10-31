@@ -31,16 +31,14 @@ instance HasAbilities Yaztaroth where
   getAbilities (Yaztaroth a) =
     [ restrictedAbility a 1 OnSameLocation
         $ ActionAbility Nothing
-        $ ActionCost
-          2
+        $ ActionCost 2
     ]
 
 instance RunMessage Yaztaroth where
   runMessage msg t@(Yaztaroth attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) (toTarget attrs)
       pure t
     _ -> Yaztaroth <$> runMessage msg attrs

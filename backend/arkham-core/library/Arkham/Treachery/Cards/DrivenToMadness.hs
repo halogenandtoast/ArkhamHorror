@@ -48,6 +48,6 @@ instance RunMessage DrivenToMadness where
           push $ chooseOrRunOne player $ targetLabels humanoids $ only . attachTreachery attrs
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ toDiscardZ (toAbilitySource attrs 1) attrs
+      push $ toDiscard (toAbilitySource attrs 1) attrs
       pure t
     _ -> DrivenToMadness <$> runMessage msg attrs

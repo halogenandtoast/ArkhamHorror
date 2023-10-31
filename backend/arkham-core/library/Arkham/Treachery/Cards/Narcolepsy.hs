@@ -39,12 +39,12 @@ instance HasAbilities Narcolepsy where
 instance RunMessage Narcolepsy where
   runMessage msg t@(Narcolepsy attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) $ InvestigatorTarget iid
+      push $ attachTreachery attrs iid
       pure t
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure t
     _ -> Narcolepsy <$> runMessage msg attrs

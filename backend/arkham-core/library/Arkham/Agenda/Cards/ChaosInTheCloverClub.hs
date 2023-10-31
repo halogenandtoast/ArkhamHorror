@@ -29,7 +29,7 @@ instance RunMessage ChaosInTheCloverClub where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       criminals <-
         selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
-      pushAll $ map (toDiscardZ attrs) criminals
+      pushAll $ map (toDiscard attrs) criminals
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       lead <- getLeadPlayer

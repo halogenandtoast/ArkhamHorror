@@ -74,7 +74,7 @@ instance RunMessage ActAttrs where
       pure $ a & treacheriesL %~ insertSet tid
     Discard _ _ (ActTarget aid) | aid == toId a -> do
       pushAll
-        [toDiscardZ GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries]
+        [toDiscard GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries]
       pure a
     Discard _ _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     InvestigatorResigned _ -> do

@@ -20,13 +20,13 @@ nihilism = treachery Nihilism Cards.nihilism
 
 instance HasAbilities Nihilism where
   getAbilities (Nihilism a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $
-        ForcedAbility $
-          oneOf
-            [ RevealChaosToken #after You #autofail
-            , CancelChaosToken #after You #autofail
-            , IgnoreChaosToken #after You #autofail
-            ]
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ oneOf
+          [ RevealChaosToken #after You #autofail
+          , CancelChaosToken #after You #autofail
+          , IgnoreChaosToken #after You #autofail
+          ]
     , restrictedAbility a 2 OnSameLocation (ActionAbility Nothing $ ActionCost 2)
     ]
 
@@ -38,7 +38,7 @@ instance RunMessage Nihilism where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ assignDamageAndHorror iid (toAbilitySource attrs 1) 1 1
       pure t
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure t
     _ -> Nihilism <$> runMessage msg attrs

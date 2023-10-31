@@ -39,7 +39,7 @@ instance RunMessage Haunted where
     Revelation iid (isSource attrs -> True) -> do
       push $ AttachTreachery (toId attrs) (toTarget iid)
       pure t
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> Haunted <$> runMessage msg attrs

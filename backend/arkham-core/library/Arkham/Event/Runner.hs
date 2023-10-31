@@ -44,19 +44,19 @@ runEventMessage :: Runner EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
-    push $ toDiscardZ GameSource eventId
+    push $ toDiscard GameSource eventId
     pure a
   Discard _ _ target | eventAttachedTarget a == Just target -> do
     pushAll
       $ [UnsealChaosToken token | token <- eventSealedChaosTokens]
-      <> [toDiscardZ GameSource a]
+      <> [toDiscard GameSource a]
     pure a
   Discard _ _ (AssetTarget aid) -> do
     case eventPlacement of
       AttachedToAsset aid' _ | aid == aid' -> do
         pushAll
           $ [UnsealChaosToken token | token <- eventSealedChaosTokens]
-          <> [toDiscardZ GameSource a]
+          <> [toDiscard GameSource a]
       _ -> pure ()
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False

@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
@@ -49,19 +48,15 @@ instance HasAbilities UnhallowedCountry where
   getAbilities (UnhallowedCountry x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ TurnEnds
-          Timing.When
-          You
+        $ TurnEnds #when You
     ]
 
 instance RunMessage UnhallowedCountry where
   runMessage msg t@(UnhallowedCountry attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillWillpower 3)
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
+      | isSource attrs source -> t <$ push (toDiscardBy iid (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> UnhallowedCountry <$> runMessage msg attrs

@@ -10,9 +10,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Source
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -45,20 +43,21 @@ instance HasAbilities Punishment where
   getAbilities (Punishment a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ EnemyDefeated Timing.After Anyone ByAny AnyEnemy
+        $ EnemyDefeated #after Anyone ByAny AnyEnemy
     ]
 
 instance RunMessage Punishment where
   runMessage msg t@(Punishment attrs) = case msg of
-    Revelation iid (isSource attrs -> True) ->
-      t <$ push (AttachTreachery (toId attrs) $ toTarget iid)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ attachTreachery attrs iid
+      pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0
+      push $ assignDamage iid attrs 1
       pure t
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ beginSkillTest iid attrs attrs SkillWillpower 3
+      push $ beginSkillTest iid (toAbilitySource attrs 2) attrs #willpower 3
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ Discard (toSource attrs) (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      push $ toDiscardBy iid attrs attrs
       pure t
     _ -> Punishment <$> runMessage msg attrs

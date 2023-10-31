@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -28,7 +27,7 @@ instance HasModifiersFor OozeAndFilth where
 
 instance HasAbilities OozeAndFilth where
   getAbilities (OozeAndFilth a) =
-    [mkAbility a 1 $ ForcedAbility $ RoundEnds Timing.When]
+    [mkAbility a 1 $ ForcedAbility $ RoundEnds #when]
 
 instance RunMessage OozeAndFilth where
   runMessage msg t@(OozeAndFilth attrs) = case msg of
@@ -38,11 +37,11 @@ instance RunMessage OozeAndFilth where
       push
         $ chooseOrRunOne
           player
-          [ TargetLabel target [AttachTreachery (toId attrs) target]
+          [ TargetLabel target [attachTreachery attrs target]
           | target <- targetAgendas
           ]
       pure t
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ toDiscard (toAbilitySource attrs 1) attrs
+      pure t
     _ -> OozeAndFilth <$> runMessage msg attrs

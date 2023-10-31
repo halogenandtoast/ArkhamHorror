@@ -46,7 +46,7 @@ instance RunMessage Ambush1 where
       push $ PlaceEvent iid eid (AttachedToLocation lid)
       pure e
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ toDiscardZ (toAbilitySource attrs 1) attrs
+      push $ toDiscard (toAbilitySource attrs 1) attrs
       pure e
     UseCardAbility _ (isSource attrs -> True) 2 [windowType -> Window.EnemySpawns enemyId _] _ -> do
       iid <- field EventOwner (toId attrs)
@@ -54,6 +54,6 @@ instance RunMessage Ambush1 where
       let source = toAbilitySource attrs 2
       pushAll
         $ [EnemyDamage enemyId $ nonAttack source 2 | canDealDamage]
-        <> [toDiscardZ source attrs]
+        <> [toDiscard source attrs]
       pure e
     _ -> Ambush1 <$> runMessage msg attrs

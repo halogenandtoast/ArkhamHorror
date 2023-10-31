@@ -39,16 +39,9 @@ instance RunMessage TerrorInTheNight where
           $ AttachTreachery (toId attrs) (toTarget aid)
           : [gainSurge attrs | n >= 3]
             <> ( guard (length attached >= 2)
-                  *> ( Discard (toSource attrs) (toTarget attrs)
-                        : map (Discard (toSource attrs) . toTarget) attached
-                          <> [ InvestigatorAssignDamage
-                              iid
-                              (toSource attrs)
-                              DamageAny
-                              0
-                              3
-                             | iid <- iids
-                             ]
+                  *> ( toDiscard (toSource attrs) (toTarget attrs)
+                        : map (toDiscard (toSource attrs) . toTarget) attached
+                          <> [assignHorror iid attrs 3 | iid <- iids]
                      )
                )
         pure t

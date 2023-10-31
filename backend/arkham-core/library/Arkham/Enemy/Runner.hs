@@ -138,7 +138,7 @@ getPreyMatcher a = do
 noSpawn :: HasQueue Message m => EnemyAttrs -> Maybe InvestigatorId -> m ()
 noSpawn attrs miid = do
   pushAll
-    $ toDiscardZ GameSource attrs
+    $ toDiscard GameSource attrs
     : [ Surge iid (toSource attrs)
       | enemySurgeIfUnableToSpawn attrs
       , iid <- toList miid
@@ -182,7 +182,7 @@ instance RunMessage EnemyAttrs where
       locations' <- select $ IncludeEmptySpace Anywhere
       keywords <- getModifiedKeywords a
       if lid `notElem` locations'
-        then push (toDiscardZ GameSource eid)
+        then push (toDiscard GameSource eid)
         else do
           if Keyword.Aloof `notElem` keywords && Keyword.Massive `notElem` keywords && not enemyExhausted
             then do
@@ -1082,7 +1082,7 @@ instance RunMessage EnemyAttrs where
           <$> [Timing.When, Timing.After]
       pushAll
         $ windowMsg
-        : map (toDiscardZ GameSource) enemyAssets
+        : map (toDiscard GameSource) enemyAssets
           <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do

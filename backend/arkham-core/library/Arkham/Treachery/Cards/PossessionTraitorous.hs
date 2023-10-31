@@ -28,17 +28,18 @@ instance RunMessage PossessionTraitorous where
     Revelation iid source | isSource attrs source -> do
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
-      when (horror > sanity * 2) $ push $ InvestigatorKilled (toSource attrs) iid
-      t <$ push (PlaceTreachery (toId attrs) (TreacheryInHandOf iid))
+      pushWhen (horror > sanity * 2) $ InvestigatorKilled (toSource attrs) iid
+      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      pure t
     EndCheckWindow {} -> case treacheryInHandOf attrs of
       Just iid -> do
         horror <- field InvestigatorHorror iid
         sanity <- field InvestigatorSanity iid
-        when (horror > sanity * 2) $ push $ InvestigatorKilled (toSource attrs) iid
+        pushWhen (horror > sanity * 2) $ InvestigatorKilled (toSource attrs) iid
         pure t
       Nothing -> pure t
     InvestigatorCommittedCard _ card | toCardId card == toCardId attrs ->
       do
-        pushAll [Discard (toSource attrs) (toTarget attrs), FailSkillTest]
+        pushAll [toDiscard attrs attrs, FailSkillTest]
         pure t
     _ -> PossessionTraitorous <$> runMessage msg attrs

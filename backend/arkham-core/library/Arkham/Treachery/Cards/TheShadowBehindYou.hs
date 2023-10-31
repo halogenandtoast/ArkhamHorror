@@ -71,12 +71,12 @@ instance RunMessage TheShadowBehindYou where
         $ [ Label
             "Discard all cards in your hand"
             $ DiscardHand iid (toSource attrs)
-            : [Discard (toAbilitySource attrs 2) (toTarget attrs) | not hasHiddenCards]
+            : [toDiscardBy iid (toAbilitySource attrs 2) attrs | not hasHiddenCards]
           | hasNonHiddenCards
           ]
         <> [ Label
             "Lose all resources"
-            [LoseAllResources iid, Discard (toAbilitySource attrs 2) (toTarget attrs)]
+            [LoseAllResources iid, toDiscardBy iid (toAbilitySource attrs 2) attrs]
            | hasResources
            ]
       pure t

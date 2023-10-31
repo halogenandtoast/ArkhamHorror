@@ -47,7 +47,7 @@ instance RunMessage AgendaAttrs where
     Discard _ _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard _ _ (AgendaTarget aid) | aid == toId a -> do
       pushAll
-        [toDiscardZ GameSource tid | tid <- setToList agendaTreacheries]
+        [toDiscard GameSource tid | tid <- setToList agendaTreacheries]
       pure a
     AttachTreachery tid (AgendaTarget aid) | aid == agendaId -> do
       pure $ a & treacheriesL %~ insertSet tid

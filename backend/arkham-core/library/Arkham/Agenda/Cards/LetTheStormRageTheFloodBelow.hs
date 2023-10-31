@@ -51,7 +51,7 @@ instance RunMessage LetTheStormRageTheFloodBelow where
   runMessage msg a@(LetTheStormRageTheFloodBelow attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       openThePathBelow <- getSetAsideCard Acts.openThePathBelow
-      pushAll [toDiscardZ GameSource attrs, AddAct 1 openThePathBelow]
+      pushAll [toDiscard GameSource attrs, AddAct 1 openThePathBelow]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds

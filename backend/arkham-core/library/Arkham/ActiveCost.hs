@@ -413,7 +413,7 @@ instance RunMessage ActiveCost where
           withPayment $ SupplyPayment supply
         DiscardCost zone target -> do
           card <- targetToCard target
-          pushAll [DiscardedCost target, Discard (activeCostSource c) target]
+          pushAll [DiscardedCost target, toDiscardBy iid (activeCostSource c) target]
           withPayment $ DiscardPayment [(zone, card)]
         DiscardAssetCost matcher -> do
           targets <- map AssetTarget <$> selectList (matcher <> AssetReady)

@@ -264,7 +264,7 @@ instance RunMessage FollowingLeads where
           pushAll
             [ story players theTruth7
             , RemoveAllDoomFromPlay defaultRemoveDoomMatchers
-            , toDiscardZ GameSource attrs
+            , toDiscard GameSource attrs
             ]
         _ -> error "unknown step"
 

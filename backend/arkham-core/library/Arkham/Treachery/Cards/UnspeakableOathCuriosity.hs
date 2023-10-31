@@ -43,7 +43,7 @@ instance RunMessage UnspeakableOathCuriosity where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ gameModifier attrs iid (XPModifier (-2))
       pure t
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) (toTarget attrs)
       pure t
     _ -> UnspeakableOathCuriosity <$> runMessage msg attrs

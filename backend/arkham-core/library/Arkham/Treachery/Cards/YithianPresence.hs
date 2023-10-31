@@ -50,7 +50,7 @@ instance RunMessage YithianPresence where
   runMessage msg t@(YithianPresence attrs) = case msg of
     Revelation iid (isSource attrs -> True) ->
       t <$ push (AttachTreachery (toId t) (InvestigatorTarget iid))
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> YithianPresence <$> runMessage msg attrs

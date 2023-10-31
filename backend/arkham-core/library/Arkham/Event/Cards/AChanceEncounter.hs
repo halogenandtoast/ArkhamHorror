@@ -1,5 +1,6 @@
 module Arkham.Event.Cards.AChanceEncounter (
   aChanceEncounter,
+  aChanceEncounterEffect,
   AChanceEncounter (..),
 ) where
 
@@ -8,8 +9,8 @@ import Arkham.Prelude
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -46,3 +47,22 @@ instance RunMessage AChanceEncounter where
         ]
       pure e
     _ -> AChanceEncounter <$> runMessage msg attrs
+
+newtype AChanceEncounterEffect = AChanceEncounterEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+aChanceEncounterEffect :: EffectArgs -> AChanceEncounterEffect
+aChanceEncounterEffect = cardEffect AChanceEncounterEffect Cards.aChanceEncounter
+
+instance RunMessage AChanceEncounterEffect where
+  runMessage msg e@(AChanceEncounterEffect attrs) = case msg of
+    EndRoundWindow -> case attrs.target of
+      CardIdTarget cardId -> do
+        -- TODO: we should include the investigator id here
+        -- currently we can only get the card owner
+        pushAll
+          [toDiscardZ attrs.source cardId, disable attrs]
+        pure e
+      _ -> error "Wrong target type"
+    _ -> AChanceEncounterEffect <$> runMessage msg attrs

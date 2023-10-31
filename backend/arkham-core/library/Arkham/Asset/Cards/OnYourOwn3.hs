@@ -54,8 +54,8 @@ getCardId (_ : xs) = getCardId xs
 
 instance RunMessage OnYourOwn3 where
   runMessage msg a@(OnYourOwn3 (attrs `With` meta)) = case msg of
-    UseCardAbility _iid (isSource attrs -> True) 0 _ _ -> do
-      push $ Discard GameSource (toTarget attrs)
+    UseCardAbility iid (isSource attrs -> True) 0 _ _ -> do
+      push $ toDiscardBy iid GameSource attrs
       pure . OnYourOwn3 $ attrs `with` Metadata True
     UseCardAbility iid (isSource attrs -> True) 1 (getCardId -> cardId) _ -> do
       push $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId cardId) 2)

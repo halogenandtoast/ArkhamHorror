@@ -14,7 +14,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -28,14 +27,14 @@ instance HasAbilities VengeanceAwaits where
   getAbilities (VengeanceAwaits a)
     | onSide A a =
         [ forcedAbility a 1
-            $ AgendaAdvances Timing.When
+            $ AgendaAdvances #when
             $ AgendaWithId (toId a)
         ]
   getAbilities (VengeanceAwaits a) =
     [ mkAbility a 2
         $ Objective
         $ ForcedAbility
-        $ EnemyDefeated Timing.After Anyone ByAny
+        $ EnemyDefeated #after Anyone ByAny
         $ enemyIs Enemies.umordhoth
     ]
 
@@ -53,13 +52,13 @@ instance RunMessage VengeanceAwaits where
           ritualSite <- getJustLocationByName "Ritual Site"
           enemies <- selectTargets $ enemyAt ritualSite
           createUmordhoth <- createEnemyAt_ umordhoth ritualSite Nothing
-          pushAll $ map (Discard (toSource attrs)) enemies <> [createUmordhoth]
+          pushAll $ map (toDiscardZ attrs) enemies <> [createUmordhoth]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push R2
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       actIds <- selectList AnyAct
-      pushAll $ map (Discard GameSource . toTarget) actIds
+      pushAll $ map (toDiscardZ GameSource) actIds
       pure a
     _ -> VengeanceAwaits <$> runMessage msg attrs

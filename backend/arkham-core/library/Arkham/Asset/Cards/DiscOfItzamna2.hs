@@ -20,15 +20,15 @@ instance HasAbilities DiscOfItzamna2 where
 
 instance RunMessage DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       -- this does not cancel so we must remove manually
       menemySpawnMessage <- fromQueue $ find ((== Just EnemySpawnMessage) . messageType)
       case menemySpawnMessage of
         Just msg'@(EnemySpawn _ _ enemyId) ->
           replaceMessage
             msg'
-            [ Discard (toAbilitySource attrs 1) (toTarget attrs)
-            , Discard (toAbilitySource attrs 1) (toTarget enemyId)
+            [ toDiscardBy iid (toAbilitySource attrs 1) attrs
+            , toDiscardBy iid (toAbilitySource attrs 1) enemyId
             ]
         _ -> pure ()
       pure a

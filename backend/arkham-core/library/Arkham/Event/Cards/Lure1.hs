@@ -39,13 +39,10 @@ instance HasModifiersFor Lure1 where
 instance RunMessage Lure1 where
   runMessage msg e@(Lure1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
+      lid <- fieldJust InvestigatorLocation iid
       push $ PlaceEvent iid eid $ AttachedToLocation lid
       pure e
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (Discard (toAbilitySource attrs 1) (toTarget attrs))
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure e
     _ -> Lure1 <$> runMessage msg attrs

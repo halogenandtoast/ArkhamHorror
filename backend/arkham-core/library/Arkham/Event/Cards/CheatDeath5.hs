@@ -46,7 +46,7 @@ instance RunMessage CheatDeath5 where
 
       pushAll
         $ map (DisengageEnemy iid) enemies
-        <> map (Discard (toSource attrs) . toTarget) treacheries
+        <> map (toDiscardBy iid attrs) treacheries
         <> maybeToList mHealHorror
         <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
         <> [ chooseOrRunOne player $ targetLabels locations (only . MoveTo . move (toSource attrs) iid)

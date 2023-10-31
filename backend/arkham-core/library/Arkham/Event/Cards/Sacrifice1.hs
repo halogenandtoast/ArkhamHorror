@@ -5,7 +5,6 @@ module Arkham.Event.Cards.Sacrifice1 (
 
 import Arkham.Prelude
 
-import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -20,29 +19,22 @@ sacrifice1 = event Sacrifice1 Cards.sacrifice1
 
 instance RunMessage Sacrifice1 where
   runMessage msg e@(Sacrifice1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <-
-        selectListMap AssetTarget
-          $ AssetWithClass Mystic
-          <> DiscardableAsset
-          <> assetControlledBy iid
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      targets <- selectTargets $ #mystic <> DiscardableAsset <> assetControlledBy iid
       player <- getPlayer iid
       pushAll
-        [ chooseOrRunOne
-            player
-            [TargetLabel target [Discard (toSource attrs) target] | target <- targets]
+        [ chooseOrRunOne player $ targetLabels targets $ only . toDiscardBy iid attrs
         , chooseAmounts
             player
             "Number of cards and resources"
             (TotalAmountTarget 3)
             [("Cards", (0, 3)), ("Resources", (0, 3))]
-            (toTarget attrs)
+            attrs
         ]
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
-      let
-        drawAmount = getChoiceAmount "Cards" choices
-        resourcesAmount = getChoiceAmount "Resources" choices
+      let drawAmount = getChoiceAmount "Cards" choices
+      let resourcesAmount = getChoiceAmount "Resources" choices
       drawing <- drawCards iid attrs drawAmount
       pushAll
         $ [drawing | drawAmount > 0]

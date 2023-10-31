@@ -82,7 +82,7 @@ instance RunMessage AssetAttrs where
       pure $ a & tokensL %~ subtractTokens tType n
     CheckDefeated source (isTarget a -> True) -> do
       mDefeated <- defeated a source
-      for_ mDefeated $ \defeatedBy -> do
+      for_ mDefeated \defeatedBy -> do
         (before, _, after) <- frame (Window.AssetDefeated (toId a) defeatedBy)
         pushAll $ [before] <> resolve (AssetDefeated assetId) <> [after]
       -- TODO: Investigator uses AssignDamage target
@@ -93,7 +93,9 @@ instance RunMessage AssetAttrs where
           )
         & (assignedHealthDamageL .~ 0)
         & (assignedSanityDamageL .~ 0)
-    AssetDefeated aid | aid == assetId -> a <$ push (Discard GameSource $ toTarget a)
+    AssetDefeated aid | aid == assetId -> do
+      push $ toDiscardZ GameSource a
+      pure a
     Msg.AssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
       pushAll
         $ [PlaceDamage source (toTarget a) damage | damage > 0]
@@ -144,7 +146,7 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> False
-      when shouldDiscard $ push $ Discard GameSource (AssetTarget assetId)
+      when shouldDiscard $ push $ toDiscardZ GameSource assetId
       pure a
     AddUses aid useType' n | aid == assetId -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do
@@ -156,13 +158,12 @@ instance RunMessage AssetAttrs where
     SpendUses target useType' n | isTarget a target -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do
         let remainingUses = max 0 (m - n)
-        when (remainingUses == 0)
-          $ for_ assetWhenNoUses \case
-            DiscardWhenNoUses -> push $ Discard GameSource $ toTarget a
-            ReturnToHandWhenNoUses ->
-              for_ assetController $ \iid ->
-                push $ ReturnToHand iid $ toTarget a
-            NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
+        when (remainingUses == 0) $ for_ assetWhenNoUses \case
+          DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
+          ReturnToHandWhenNoUses ->
+            for_ assetController \iid ->
+              push $ ReturnToHand iid $ toTarget a
+          NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
         pure $ a & usesL .~ Uses useType' remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
@@ -171,7 +172,7 @@ instance RunMessage AssetAttrs where
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target -> do
       a <$ push (RemoveFromPlay $ toSource a)
-    Discard source target | a `isTarget` target -> do
+    Discard _ source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll $ windows' <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
       pure a

@@ -41,7 +41,7 @@ instance RunMessage SealOfTheSeventhSign5 where
           (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
           [SpendUses (toTarget attrs) Charge 1]
       pure a
-    Discard _ (isTarget attrs -> True) -> do
+    Discard _ _ (isTarget attrs -> True) -> do
       push $ RemoveFromGame (toTarget attrs)
       pure a
     _ -> SealOfTheSeventhSign5 <$> runMessage msg attrs

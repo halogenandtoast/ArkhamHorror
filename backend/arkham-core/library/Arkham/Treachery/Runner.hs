@@ -45,21 +45,24 @@ forcedOnElimination = ForcedAbility . eliminationWindow
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
     Msg.InvestigatorEliminated iid | InvestigatorTarget iid `elem` treacheryAttachedTarget a -> do
-      push (Discard GameSource $ toTarget a)
+      push $ toDiscardZ GameSource a
       pure a
     Msg.InvestigatorEliminated iid | Just iid == treacheryOwner -> do
-      a <$ push (Discard GameSource $ toTarget a)
+      push $ toDiscardZ GameSource a
+      pure a
     PlaceTreachery tid placement | tid == treacheryId -> do
       pure $ a & placementL .~ placement
     PlaceTokens _ (isTarget a -> True) token n -> do
       pure $ a & tokensL %~ addTokens token n
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
-      a <$ push (Discard GameSource $ toTarget a)
+      push $ toDiscardZ GameSource a
+      pure a
     Discarded target _ _ | target `elem` treacheryAttachedTarget a -> do
-      a <$ push (Discard GameSource $ toTarget a)
+      push $ toDiscardZ GameSource a
+      pure a
     After (Revelation iid (isSource a -> True)) -> do
       pushWhen
         (treacheryPlacement == TreacheryLimbo)
-        (Discard (toSource iid) $ toTarget a)
+        (toDiscardBy iid iid a)
       pure $ a & resolvedL %~ insertSet iid
     _ -> pure a

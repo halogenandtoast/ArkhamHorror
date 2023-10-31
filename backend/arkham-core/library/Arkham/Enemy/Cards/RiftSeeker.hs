@@ -6,14 +6,12 @@ module Arkham.Enemy.Cards.RiftSeeker (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype RiftSeeker = RiftSeeker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -28,10 +26,10 @@ instance HasAbilities RiftSeeker where
       a
       [ mkAbility a 1
           $ ForcedAbility
-          $ EnemyAttacks Timing.After You AnyEnemyAttack
+          $ EnemyAttacks #after You AnyEnemyAttack
           $ EnemyWithId (toId a)
       , restrictedAbility a 2 OnSameLocation
-          $ ActionAbility (Just Action.Parley)
+          $ parleyAction
           $ HorrorCost (toSource a) YouTarget 2
           <> DoomCost (toSource a) (AgendaMatcherTarget AnyAgenda) 1
       ]
@@ -58,6 +56,7 @@ instance RunMessage RiftSeeker where
               [PlaceDoom (toAbilitySource attrs 1) target 1 | target <- agendas]
           ]
       pure e
-    UseCardAbility _iid source 2 _ _ | isSource attrs source -> do
-      e <$ push (Discard (toAbilitySource attrs 2) $ toTarget attrs)
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
+      pure e
     _ -> RiftSeeker <$> runMessage msg attrs

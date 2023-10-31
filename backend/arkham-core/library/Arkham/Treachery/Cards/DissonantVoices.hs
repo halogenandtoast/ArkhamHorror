@@ -40,7 +40,7 @@ instance RunMessage DissonantVoices where
     Revelation iid (isSource attrs -> True) -> do
       push $ AttachTreachery (toId t) (InvestigatorTarget iid)
       pure t
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> DissonantVoices <$> runMessage msg attrs

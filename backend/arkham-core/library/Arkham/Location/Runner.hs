@@ -155,7 +155,7 @@ instance RunMessage LocationAttrs where
       pure $ a & inFrontOfL ?~ iid
     PutLocationInCenter lid | lid == locationId -> do
       pure $ a & inFrontOfL .~ Nothing
-    Discard source target | isTarget a target -> do
+    Discard _ source target | isTarget a target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
         $ windows'
@@ -207,7 +207,7 @@ instance RunMessage LocationAttrs where
         getShouldSpawnNonEliteAtConnectingInstead a
       when shouldSpawnNonEliteAtConnectingInstead $ do
         traits' <- field EnemyTraits eid
-        when (Elite `notElem` traits') $ do
+        unless (Elite `elem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
           connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
           availableLocationIds <-
@@ -221,7 +221,7 @@ instance RunMessage LocationAttrs where
                   _ -> False
           withQueue_ $ filter (/= next)
           if null availableLocationIds
-            then push (Discard GameSource (EnemyTarget eid))
+            then push (toDiscardZ GameSource eid)
             else do
               player <- getPlayer activeInvestigatorId
               push

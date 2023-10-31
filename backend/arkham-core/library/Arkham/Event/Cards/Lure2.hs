@@ -42,6 +42,7 @@ instance RunMessage Lure2 where
       push
         $ chooseOne player [targetLabel lid [PlaceEvent iid eid $ AttachedToLocation lid] | lid <- lids]
       pure e
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (Discard (toAbilitySource attrs 1) (toTarget attrs))
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure e
     _ -> Lure2 <$> runMessage msg attrs

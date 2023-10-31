@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype Intrepid = Intrepid AssetAttrs
   deriving anyclass (IsAsset)
@@ -22,24 +20,18 @@ intrepid = asset Intrepid Cards.intrepid
 instance HasModifiersFor Intrepid where
   getModifiersFor (InvestigatorTarget iid) (Intrepid a) =
     pure
-      $ if controlledBy a iid
-        then
-          toModifiers
-            a
-            [ SkillModifier SkillIntellect 1
-            , SkillModifier SkillCombat 1
-            , SkillModifier SkillAgility 1
-            ]
-        else []
+      $ toModifiers a
+      $ guard (controlledBy a iid)
+      *> map (`SkillModifier` 1) [#intellect, #combat, #agility]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Intrepid where
   getAbilities (Intrepid a) =
-    [restrictedAbility a 1 ControlsThis $ ForcedAbility $ RoundEnds Timing.When]
+    [restrictedAbility a 1 ControlsThis $ ForcedAbility $ RoundEnds #when]
 
 instance RunMessage Intrepid where
   runMessage msg a@(Intrepid attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) $ toTarget attrs
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure a
     _ -> Intrepid <$> runMessage msg attrs

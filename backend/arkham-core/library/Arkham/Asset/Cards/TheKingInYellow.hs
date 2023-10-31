@@ -13,7 +13,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
 newtype TheKingInYellow = TheKingInYellow AssetAttrs
@@ -30,21 +29,19 @@ theKingInYellow =
 instance HasAbilities TheKingInYellow where
   getAbilities (TheKingInYellow x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
-          ( SkillTestResult
-              Timing.After
-              (You <> ContributedMatchingIcons (AtLeast $ Static 6))
-              AnySkillTest
-              $ SuccessResult AnyValue
-          )
-          Free
+        $ freeReaction
+        $ SkillTestResult
+          #after
+          (You <> ContributedMatchingIcons (atLeast 6))
+          AnySkillTest
+        $ SuccessResult AnyValue
     ]
 
 instance HasModifiersFor TheKingInYellow where
   getModifiersFor SkillTestTarget (TheKingInYellow attrs) = do
     case assetPlacement attrs of
-      InPlayArea minhId -> do
-        commitedCardsCount <- fieldMap InvestigatorCommittedCards length minhId
+      InPlayArea minh -> do
+        commitedCardsCount <- fieldMap InvestigatorCommittedCards length minh
         pure
           $ toModifiers
             attrs
@@ -59,7 +56,7 @@ instance RunMessage TheKingInYellow where
     Revelation iid (isSource attrs -> True) -> do
       push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
       pure a
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure a
     _ -> TheKingInYellow <$> runMessage msg attrs

@@ -138,7 +138,7 @@ getPreyMatcher a = do
 noSpawn :: HasQueue Message m => EnemyAttrs -> Maybe InvestigatorId -> m ()
 noSpawn attrs miid = do
   pushAll
-    $ Discard GameSource (toTarget attrs)
+    $ toDiscardZ GameSource attrs
     : [ Surge iid (toSource attrs)
       | enemySurgeIfUnableToSpawn attrs
       , iid <- toList miid
@@ -182,7 +182,7 @@ instance RunMessage EnemyAttrs where
       locations' <- select $ IncludeEmptySpace Anywhere
       keywords <- getModifiedKeywords a
       if lid `notElem` locations'
-        then push (Discard GameSource (EnemyTarget eid))
+        then push (toDiscardZ GameSource eid)
         else do
           if Keyword.Aloof `notElem` keywords && Keyword.Massive `notElem` keywords && not enemyExhausted
             then do
@@ -1045,7 +1045,7 @@ instance RunMessage EnemyAttrs where
         defeatMsgs =
           if isJust (victory <|> vengeance)
             then resolve $ RemoveEnemy eid
-            else [Discard GameSource $ toTarget a]
+            else [Discard miid GameSource $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
@@ -1055,7 +1055,7 @@ instance RunMessage EnemyAttrs where
         <> [afterMsg]
         <> defeatMsgs
       pure $ a & keysL .~ mempty
-    Discard source target | a `isTarget` target -> do
+    Discard _ source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
         $ windows'
@@ -1082,7 +1082,7 @@ instance RunMessage EnemyAttrs where
           <$> [Timing.When, Timing.After]
       pushAll
         $ windowMsg
-        : map (Discard GameSource . AssetTarget) enemyAssets
+        : map (toDiscardZ GameSource) enemyAssets
           <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do

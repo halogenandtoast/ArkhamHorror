@@ -30,12 +30,12 @@ instance RunMessage DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       enemyLocation <- field EnemyLocation (toId attrs)
-      for_ enemyLocation $ \loc -> do
+      for_ enemyLocation \loc -> do
         sentinelPeak <- selectJust (LocationWithTitle "Sentinel Peak")
         if loc == sentinelPeak
           then
             pushAll
-              [Discard (toAbilitySource attrs 1) (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
+              [toDiscardZ (toAbilitySource attrs 1) attrs, PlaceDoomOnAgenda, PlaceDoomOnAgenda]
           else do
             lead <- getLeadPlayer
             choices <- selectList $ ClosestPathLocation loc sentinelPeak

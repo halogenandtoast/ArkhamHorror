@@ -70,6 +70,7 @@ import Arkham.Enemy.Enemies (
   ichtacaScionOfYigEffect,
  )
 import Arkham.Event.Events (
+  aChanceEncounterEffect,
   actOfDesperationEffect,
   backstab3Effect,
   banish1Effect,
@@ -246,7 +247,7 @@ allEffects =
     , ("02230", SomeEffect luckyDice2)
     , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
     , ("02246", SomeEffect tenAcreMeadow_246)
-    , ("02270", SomeEffect aChanceEncounter)
+    , ("02270", SomeEffect aChanceEncounterEffect)
     , ("02323", SomeEffect yogSothoth)
     , ("03002", SomeEffect minhThiPhan)
     , ("03005", SomeEffect williamYorick)

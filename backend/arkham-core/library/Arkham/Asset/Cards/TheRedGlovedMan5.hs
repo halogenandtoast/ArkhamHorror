@@ -64,7 +64,7 @@ instance RunMessage TheRedGlovedMan5 where
           pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c]
         Metadata [x] -> pure $ TheRedGlovedMan5 $ attrs `with` Metadata [c, x]
         _ -> error "Only two skills for the red gloved man"
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure a
     _ -> TheRedGlovedMan5 . (`with` metadata) <$> runMessage msg attrs

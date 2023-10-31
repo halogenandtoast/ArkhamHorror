@@ -39,7 +39,7 @@ instance RunMessage TheNecronomicon where
       push $ putCardIntoPlay iid attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushWhen (attrs.horror <= 1) $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      pushWhen (attrs.horror <= 1) $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       push $ MovedHorror (toAbilitySource attrs 1) (toTarget iid) 1
       pure a
     _ -> TheNecronomicon <$> runMessage msg attrs

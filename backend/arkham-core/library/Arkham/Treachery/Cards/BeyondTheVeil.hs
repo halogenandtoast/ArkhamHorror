@@ -37,11 +37,10 @@ instance RunMessage BeyondTheVeil where
       when canAttach
         $ push (AttachTreachery treacheryId (InvestigatorTarget iid))
       pure t
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          t
-            <$ pushAll
-              [ InvestigatorAssignDamage iid source DamageAny 10 0
-              , Discard (toAbilitySource attrs 2) $ toTarget attrs
-              ]
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      pushAll
+        [ assignDamage iid source 10
+        , toDiscardBy iid (toAbilitySource attrs 2) attrs
+        ]
+      pure t
     _ -> BeyondTheVeil <$> runMessage msg attrs

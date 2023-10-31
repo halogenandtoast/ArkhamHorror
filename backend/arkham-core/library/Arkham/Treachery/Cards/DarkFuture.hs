@@ -46,10 +46,10 @@ instance RunMessage DarkFuture where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 5) SetAside
       pure t
-    RequestedChaosTokens source _ tokens | isSource attrs source -> do
+    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
       chaosTokenFaces <- getModifiedChaosTokenFaces tokens
       push $ ResetChaosTokens source
-      when (ElderSign `elem` chaosTokenFaces)
-        $ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+      pushWhen (ElderSign `elem` chaosTokenFaces)
+        $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> DarkFuture <$> runMessage msg attrs

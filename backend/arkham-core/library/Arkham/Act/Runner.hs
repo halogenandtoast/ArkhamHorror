@@ -70,14 +70,13 @@ instance RunMessage ActAttrs where
     AdvanceAct aid _ advanceMode | aid == actId && onSide E a -> do
       pushAll =<< advanceActSideA a advanceMode
       pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) F)
-    AttachTreachery tid (ActTarget aid)
-      | aid == actId ->
-          pure $ a & treacheriesL %~ insertSet tid
-    Discard _ (ActTarget aid) | aid == toId a -> do
+    AttachTreachery tid (ActTarget aid) | aid == actId -> do
+      pure $ a & treacheriesL %~ insertSet tid
+    Discard _ _ (ActTarget aid) | aid == toId a -> do
       pushAll
-        [Discard GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries]
+        [toDiscardZ GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries]
       pure a
-    Discard _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+    Discard _ _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- select UneliminatedInvestigator
       whenMsg <-

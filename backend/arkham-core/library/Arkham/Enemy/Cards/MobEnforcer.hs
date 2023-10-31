@@ -26,7 +26,7 @@ instance HasAbilities MobEnforcer where
 
 instance RunMessage MobEnforcer where
   runMessage msg e@(MobEnforcer attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure e
     _ -> MobEnforcer <$> runMessage msg attrs

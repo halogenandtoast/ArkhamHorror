@@ -51,12 +51,12 @@ instance RunMessage LockpicksEffect where
     SkillTestEnds _ _ -> do
       push $ disable attrs
       pure e
-    PassedThisSkillTestBy _ _ n | n < 2 -> do
+    PassedThisSkillTestBy iid _ n | n < 2 -> do
       let aid = fromJustNote "must be an asset" attrs.source.asset
-      pushAll [Discard attrs.source (AssetTarget aid), disable attrs]
+      pushAll [toDiscardBy iid attrs.source aid, disable attrs]
       pure e
-    FailedThisSkillTestBy _ _ n | n < 2 -> do
+    FailedThisSkillTest iid _ -> do
       let aid = fromJustNote "must be an asset" attrs.source.asset
-      pushAll [Discard attrs.source (AssetTarget aid), disable attrs]
+      pushAll [toDiscardBy iid attrs.source aid, disable attrs]
       pure e
     _ -> LockpicksEffect <$> runMessage msg attrs

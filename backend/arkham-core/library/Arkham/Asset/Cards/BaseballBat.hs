@@ -57,7 +57,7 @@ instance RunMessage BaseballBatEffect where
       case effectSource of
         AbilitySource (AssetSource assetId) 1 ->
           when (chaosTokenFace token `elem` [Skull, AutoFail])
-            $ pushAll [Discard effectSource (toTarget assetId), disable attrs]
+            $ pushAll [toDiscardBy iid effectSource assetId, disable attrs]
         _ -> error "wrong source"
       pure e
     SkillTestEnds _ _ -> e <$ push (disable attrs)

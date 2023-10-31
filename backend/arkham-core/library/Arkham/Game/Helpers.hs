@@ -2989,7 +2989,7 @@ spawnAtOneOf iid eid targetLids = do
   locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
   player <- getPlayer iid
   case setToList (setFromList targetLids `intersection` locations') of
-    [] -> push (Discard GameSource (EnemyTarget eid))
+    [] -> push (toDiscardBy iid GameSource eid)
     [lid] -> do
       windows' <- checkWindows [Window #when (Window.EnemyWouldSpawnAt eid lid) Nothing]
       pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)

@@ -30,16 +30,15 @@ instance HasAbilities DrawingTheSign where
   getAbilities (DrawingTheSign a) =
     [ restrictedAbility a 1 OnSameLocation
         $ ActionAbility Nothing
-        $ ActionCost
-          2
+        $ ActionCost 2
     ]
 
 instance RunMessage DrawingTheSign where
   runMessage msg t@(DrawingTheSign attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ AttachTreachery (toId attrs) (InvestigatorTarget iid)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ attachTreachery attrs iid
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> DrawingTheSign <$> runMessage msg attrs

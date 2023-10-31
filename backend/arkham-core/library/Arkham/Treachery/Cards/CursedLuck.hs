@@ -46,10 +46,8 @@ instance HasAbilities CursedLuck where
 
 instance RunMessage CursedLuck where
   runMessage msg t@(CursedLuck attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) (InvestigatorTarget iid))
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (AttachTreachery (toId attrs) (InvestigatorTarget iid))
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      t <$ push (toDiscardBy iid (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> CursedLuck <$> runMessage msg attrs

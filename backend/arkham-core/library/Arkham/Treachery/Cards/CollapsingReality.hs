@@ -24,19 +24,15 @@ instance RunMessage CollapsingReality where
   runMessage msg t@(CollapsingReality attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
-      let other = InvestigatorAssignDamage iid source DamageAny 2 0
+      let other = assignDamage iid source 2
       case mlid of
         Nothing -> push other
         Just lid -> do
-          isExtradimensional <-
-            fieldP
-              LocationTraits
-              (member Extradimensional)
-              lid
+          isExtradimensional <- fieldP LocationTraits (member Extradimensional) lid
           pushAll
             $ if isExtradimensional
               then
-                [ Discard (toSource attrs) (toTarget lid)
+                [ toDiscardBy iid attrs lid
                 , InvestigatorAssignDamage iid source DamageAny 1 0
                 ]
               else [other]

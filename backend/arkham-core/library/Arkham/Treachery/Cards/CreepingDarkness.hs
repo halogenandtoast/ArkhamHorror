@@ -14,7 +14,6 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -56,11 +55,11 @@ instance RunMessage CreepingDarkness where
         $ chooseOrRunOne player
         $ Label
           "Test {willpower} (3)"
-          [beginSkillTest iid attrs attrs SkillWillpower 3]
-        : [Label "Check supplies" [Discard (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches]
+          [beginSkillTest iid attrs attrs #willpower 3]
+        : [Label "Check supplies" [toDiscardBy iid (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches]
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
-        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+        push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
         pure t
     _ -> CreepingDarkness <$> runMessage msg attrs

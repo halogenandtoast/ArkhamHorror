@@ -35,7 +35,7 @@ instance RunMessage DevoteeOfTheKey where
         if loc == sentinelPeak
           then
             pushAll
-              [toDiscardZ (toAbilitySource attrs 1) attrs, PlaceDoomOnAgenda, PlaceDoomOnAgenda]
+              [toDiscard (toAbilitySource attrs 1) attrs, PlaceDoomOnAgenda, PlaceDoomOnAgenda]
           else do
             lead <- getLeadPlayer
             choices <- selectList $ ClosestPathLocation loc sentinelPeak

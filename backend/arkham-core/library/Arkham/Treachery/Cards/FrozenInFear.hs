@@ -32,12 +32,12 @@ instance HasAbilities FrozenInFear where
 instance RunMessage FrozenInFear where
   runMessage msg t@(FrozenInFear attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) $ InvestigatorTarget iid
+      push $ attachTreachery attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ revelationSkillTest iid (toAbilitySource attrs 1) #willpower 3
       pure t
-    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> FrozenInFear <$> runMessage msg attrs

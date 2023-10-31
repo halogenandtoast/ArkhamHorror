@@ -48,7 +48,7 @@ instance RunMessage EndlessBridge where
         $ chooseOne
           player
           [ Label "Place 1 doom on Endless Bridge" [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
-          , Label "Discard Endless Bridge" [toDiscardZ (toAbilitySource attrs 1) attrs]
+          , Label "Discard Endless Bridge" [toDiscard (toAbilitySource attrs 1) attrs]
           ]
       pure l
     _ -> EndlessBridge <$> runMessage msg attrs

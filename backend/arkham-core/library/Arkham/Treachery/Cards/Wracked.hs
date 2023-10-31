@@ -58,7 +58,7 @@ instance RunMessage Wracked where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 3
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> Wracked <$> runMessage msg attrs

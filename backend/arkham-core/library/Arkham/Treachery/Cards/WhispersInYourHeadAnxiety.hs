@@ -37,7 +37,7 @@ instance RunMessage WhispersInYourHeadAnxiety where
     Revelation iid (isSource attrs -> True) -> do
       push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
       pure t
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> WhispersInYourHeadAnxiety <$> runMessage msg attrs

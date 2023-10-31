@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -24,32 +22,30 @@ lostInTheWilds = treachery LostInTheWilds Cards.lostInTheWilds
 instance HasModifiersFor LostInTheWilds where
   getModifiersFor (InvestigatorTarget iid) (LostInTheWilds attrs) =
     pure
-      $ if treacheryOnInvestigator iid attrs
-        then toModifiers attrs [CannotMove, CannotExplore]
-        else []
+      $ toModifiers attrs
+      $ guard (treacheryOnInvestigator iid attrs)
+      *> [CannotMove, CannotExplore]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LostInTheWilds where
   getAbilities (LostInTheWilds a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ TurnEnds
-          Timing.When
-          You
+        $ TurnEnds #when You
     ]
 
 instance RunMessage LostInTheWilds where
   runMessage msg t@(LostInTheWilds attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillWillpower 3
+      push $ RevelationSkillTest iid source #willpower 3
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n -> do
       pushAll
-        [ InvestigatorAssignDamage iid source DamageAny n 0
-        , AttachTreachery (toId attrs) $ InvestigatorTarget iid
+        [ assignDamage iid source n
+        , attachTreachery attrs iid
         ]
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> LostInTheWilds <$> runMessage msg attrs

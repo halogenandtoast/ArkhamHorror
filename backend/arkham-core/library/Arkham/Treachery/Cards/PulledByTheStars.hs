@@ -9,9 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Source
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -27,8 +25,8 @@ instance HasAbilities PulledByTheStars where
   getAbilities (PulledByTheStars a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ TurnEnds Timing.When (You <> NotInvestigator InvestigatorThatMovedDuringTurn)
-    , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing $ ActionCost 1
+        $ TurnEnds #when (You <> NotInvestigator InvestigatorThatMovedDuringTurn)
+    , restrictedAbility a 2 OnSameLocation actionAbility
     ]
 
 instance HasModifiersFor PulledByTheStars where
@@ -46,15 +44,15 @@ instance HasModifiersFor PulledByTheStars where
 instance RunMessage PulledByTheStars where
   runMessage msg t@(PulledByTheStars attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) (toTarget iid)
+      push $ attachTreachery attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ assignHorror iid (toAbilitySource attrs 1) 2
       pure t
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 2) iid SkillWillpower 3
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #willpower 3
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ Discard (toSource attrs) (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      push $ toDiscardBy iid attrs attrs
       pure t
     _ -> PulledByTheStars <$> runMessage msg attrs

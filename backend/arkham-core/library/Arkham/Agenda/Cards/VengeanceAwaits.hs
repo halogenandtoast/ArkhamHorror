@@ -52,13 +52,13 @@ instance RunMessage VengeanceAwaits where
           ritualSite <- getJustLocationByName "Ritual Site"
           enemies <- selectTargets $ enemyAt ritualSite
           createUmordhoth <- createEnemyAt_ umordhoth ritualSite Nothing
-          pushAll $ map (toDiscardZ attrs) enemies <> [createUmordhoth]
+          pushAll $ map (toDiscard attrs) enemies <> [createUmordhoth]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push R2
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       actIds <- selectList AnyAct
-      pushAll $ map (toDiscardZ GameSource) actIds
+      pushAll $ map (toDiscard GameSource) actIds
       pure a
     _ -> VengeanceAwaits <$> runMessage msg attrs

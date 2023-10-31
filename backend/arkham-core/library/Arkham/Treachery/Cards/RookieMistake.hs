@@ -25,6 +25,6 @@ instance RunMessage RookieMistake where
       assets <- selectList $ assetControlledBy iid <> oneOf [AssetWithDamage, AssetWithHorror]
       if null assets
         then push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-        else pushAll $ map (Discard (toSource attrs) . toTarget) assets
+        else pushAll $ map (toDiscardBy iid attrs) assets
       pure t
     _ -> RookieMistake <$> runMessage msg attrs

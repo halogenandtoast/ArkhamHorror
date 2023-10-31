@@ -55,7 +55,7 @@ instance RunMessage PoisonousSpores where
               | iid <- takesHorror
               ]
             <> gainsPoisonedMessages
-            <> [toDiscardZ (toAbilitySource attrs 1) attrs]
+            <> [toDiscard (toAbilitySource attrs 1) attrs]
           pure t
         _ -> error "invalid attachment of treachery, expected location"
     _ -> PoisonousSpores <$> runMessage msg attrs

@@ -221,7 +221,7 @@ instance RunMessage LocationAttrs where
                   _ -> False
           withQueue_ $ filter (/= next)
           if null availableLocationIds
-            then push (toDiscardZ GameSource eid)
+            then push (toDiscard GameSource eid)
             else do
               player <- getPlayer activeInvestigatorId
               push

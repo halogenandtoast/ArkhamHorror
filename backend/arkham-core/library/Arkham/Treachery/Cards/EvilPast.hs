@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -31,21 +30,19 @@ instance RunMessage EvilPast where
       hasEvilPast <-
         selectAny
           $ treacheryIs Cards.evilPast
-          <> TreacheryInThreatAreaOf
-            (InvestigatorWithId iid)
+          <> Arkham.Matcher.treacheryInThreatAreaOf iid
       push
         $ if hasEvilPast
           then gainSurge attrs
-          else AttachTreachery (toId attrs) (toTarget iid)
+          else attachTreachery attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-        , beginSkillTest iid attrs iid SkillWillpower 3
+        [ assignHorror iid attrs 2
+        , beginSkillTest iid attrs iid #willpower 3
         ]
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
-        pure t
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure t
     _ -> EvilPast <$> runMessage msg attrs

@@ -36,6 +36,6 @@ instance RunMessage CorpseDweller where
         $ chooseOrRunOne player
         $ targetLabels humanoids
         $ only
-        . toDiscardZ attrs
+        . toDiscard attrs
       CorpseDweller <$> runMessage msg attrs
     _ -> CorpseDweller <$> runMessage msg attrs

@@ -10,7 +10,6 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -29,7 +28,7 @@ instance HasModifiersFor ToughCrowd where
 
 instance HasAbilities ToughCrowd where
   getAbilities (ToughCrowd a) =
-    [mkAbility a 1 $ ForcedAbility $ RoundEnds Timing.When]
+    [mkAbility a 1 $ ForcedAbility $ RoundEnds #when]
 
 instance RunMessage ToughCrowd where
   runMessage msg t@(ToughCrowd attrs) = case msg of
@@ -37,6 +36,6 @@ instance RunMessage ToughCrowd where
       push $ PlaceTreachery (toId attrs) TreacheryNextToAgenda
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+      push $ toDiscard (toAbilitySource attrs 1) attrs
       pure t
     _ -> ToughCrowd <$> runMessage msg attrs

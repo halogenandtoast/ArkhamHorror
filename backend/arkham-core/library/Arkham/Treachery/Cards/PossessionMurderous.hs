@@ -23,15 +23,13 @@ possessionMurderous = treachery PossessionMurderous Cards.possessionMurderous
 instance HasAbilities PossessionMurderous where
   getAbilities (PossessionMurderous a) =
     [ restrictedAbility a 1 InYourHand
-        $ ActionAbility
-          Nothing
-          ( ActionCost 1
-              <> InvestigatorDamageCost
-                (toSource a)
-                (InvestigatorAt YourLocation)
-                DamageAny
-                2
-          )
+        $ ActionAbility Nothing
+        $ ActionCost 1
+        <> InvestigatorDamageCost
+          (toSource a)
+          (InvestigatorAt YourLocation)
+          DamageAny
+          2
     ]
 
 instance RunMessage PossessionMurderous where
@@ -39,26 +37,19 @@ instance RunMessage PossessionMurderous where
     Revelation iid source | isSource attrs source -> do
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
-      when (horror > sanity * 2)
-        $ push
-        $ InvestigatorKilled
-          (toSource attrs)
-          iid
-
+      pushWhen (horror > sanity * 2)
+        $ InvestigatorKilled (toSource attrs) iid
       push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
       pure t
     EndCheckWindow {} -> case treacheryPlacement attrs of
       TreacheryInHandOf iid -> do
         horror <- field InvestigatorHorror iid
         sanity <- field InvestigatorSanity iid
-        when (horror > sanity * 2)
-          $ push
-          $ InvestigatorKilled
-            (toSource attrs)
-            iid
+        pushWhen (horror > sanity * 2)
+          $ InvestigatorKilled (toSource attrs) iid
         pure t
       _ -> pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> PossessionMurderous <$> runMessage msg attrs

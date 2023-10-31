@@ -41,7 +41,7 @@ instance HasAbilities NobodysHome where
       [ restrictedAbility
           a
           1
-          (LocationExists $ LocationWithId lid <> LocationWithoutClues)
+          (exists $ LocationWithId lid <> LocationWithoutClues)
           $ ForcedAbility AnyWindow
       ]
     _ -> []
@@ -50,13 +50,13 @@ instance RunMessage NobodysHome where
   runMessage msg t@(NobodysHome attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mLocation <- field InvestigatorLocation iid
-      for_ mLocation $ \lid -> do
+      for_ mLocation \lid -> do
         clueless <- fieldP LocationClues (== 0) lid
         pushAll
-          $ AttachTreachery (toId attrs) (LocationTarget lid)
+          $ attachTreachery attrs lid
           : [gainSurge attrs | clueless]
       pure t
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+      push $ toDiscard (toAbilitySource attrs 1) attrs
+      pure t
     _ -> NobodysHome <$> runMessage msg attrs

@@ -27,12 +27,12 @@ instance HasAbilities Psychosis where
 instance RunMessage Psychosis where
   runMessage msg t@(Psychosis attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) (toTarget iid)
+      push $ attachTreachery attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ directDamage iid (toAbilitySource attrs 1) 1
       pure t
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure t
     _ -> Psychosis <$> runMessage msg attrs

@@ -31,16 +31,16 @@ instance RunMessage LockedDoor where
       locations <-
         selectList $ LocationWithMostClues $ LocationWithoutTreachery $ treacheryIs Cards.lockedDoor
       player <- getPlayer iid
-      pushIfAny locations $
-        chooseOrRunOne player $
-          targetLabels locations (only . AttachTreachery treacheryId . toTarget)
+      pushIfAny locations
+        $ chooseOrRunOne player
+        $ targetLabels locations (only . AttachTreachery treacheryId . toTarget)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (toAbilitySource attrs 1) attrs sType 4]
       player <- getPlayer iid
       push $ chooseOne player $ map chooseSkillTest [#combat, #agility]
       pure t
-    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> LockedDoor <$> runMessage msg attrs

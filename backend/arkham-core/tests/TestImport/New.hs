@@ -60,7 +60,7 @@ import Helpers.Message qualified
 import TestImport.Lifted qualified as Old
 
 discard :: Targetable a => a -> TestAppT ()
-discard = run . Discard GameSource . toTarget
+discard = run . toDiscard GameSource
 
 click :: HasCallStack => String -> TestAppT ()
 click = chooseOnlyOption

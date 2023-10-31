@@ -94,7 +94,7 @@ instance RunMessage AssetAttrs where
         & (assignedHealthDamageL .~ 0)
         & (assignedSanityDamageL .~ 0)
     AssetDefeated aid | aid == assetId -> do
-      push $ toDiscardZ GameSource a
+      push $ toDiscard GameSource a
       pure a
     Msg.AssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
       pushAll
@@ -146,7 +146,7 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> False
-      when shouldDiscard $ push $ toDiscardZ GameSource assetId
+      when shouldDiscard $ push $ toDiscard GameSource assetId
       pure a
     AddUses aid useType' n | aid == assetId -> case assetUses of
       Uses useType'' m | useType' == useType'' -> do

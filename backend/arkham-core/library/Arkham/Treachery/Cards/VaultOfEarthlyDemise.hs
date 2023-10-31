@@ -41,6 +41,6 @@ instance RunMessage VaultOfEarthlyDemise where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       actsRemaining <- selectCount $ RemainingActMatcher AnyAct
       t <$ push (PlaceResources (toAbilitySource attrs 1) (toTarget attrs) actsRemaining)
-    Discard _ (TreacheryTarget tid) | tid == toId attrs -> do
+    Discard _ _ (TreacheryTarget tid) | tid == toId attrs -> do
       error "this cannot leave play"
     _ -> VaultOfEarthlyDemise <$> runMessage msg attrs

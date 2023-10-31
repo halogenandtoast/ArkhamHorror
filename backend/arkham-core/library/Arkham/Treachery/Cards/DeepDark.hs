@@ -58,7 +58,7 @@ instance RunMessage DeepDark where
       push $ PlaceTreachery (toId attrs) TreacheryNextToAgenda
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ toDiscardZ (toAbilitySource attrs 1) attrs
+      push $ toDiscard (toAbilitySource attrs 1) attrs
       pure t
     DiscoverClues iid lid _ _ _ -> do
       let

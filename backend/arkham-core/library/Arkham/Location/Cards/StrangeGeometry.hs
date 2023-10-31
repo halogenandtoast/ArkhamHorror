@@ -60,7 +60,7 @@ instance RunMessage StrangeGeometry where
                 <> [Move $ move attrs enemy lid | enemy <- enemies]
           | notNull investigators || notNull enemies
           ]
-        <> [toDiscardZ attrs attrs]
+        <> [toDiscard attrs attrs]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ Move $ moveToMatch attrs iid $ RevealedLocation <> NotLocation (LocationWithId $ toId attrs)

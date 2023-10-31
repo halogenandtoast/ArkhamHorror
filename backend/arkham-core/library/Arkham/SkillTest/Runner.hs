@@ -156,7 +156,7 @@ instance RunMessage SkillTest where
           }
     SetSkillTestTarget target -> do
       pure $ s {skillTestTarget = target}
-    Discard _ target | target == skillTestTarget -> do
+    Discard _ _ target | target == skillTestTarget -> do
       pushAll
         [ SkillTestEnds skillTestInvestigator skillTestSource
         , Do (SkillTestEnds skillTestInvestigator skillTestSource)

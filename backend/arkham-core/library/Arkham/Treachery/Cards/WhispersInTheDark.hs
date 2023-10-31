@@ -39,6 +39,6 @@ instance RunMessage WhispersInTheDark where
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure t
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+      push $ toDiscard (toAbilitySource attrs 2) (toTarget attrs)
       pure t
     _ -> WhispersInTheDark <$> runMessage msg attrs

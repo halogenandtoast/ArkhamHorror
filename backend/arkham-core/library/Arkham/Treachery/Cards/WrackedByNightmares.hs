@@ -42,12 +42,10 @@ instance RunMessage WrackedByNightmares where
     case msg of
       Revelation iid source | isSource attrs source -> do
         assetIds <- selectList (AssetControlledBy $ InvestigatorWithId iid)
-        t
-          <$ pushAll
-            ( [Exhaust (AssetTarget aid) | aid <- assetIds]
-                <> [AttachTreachery treacheryId $ InvestigatorTarget iid]
-            )
-      UseCardAbility _ (TreacherySource tid) 1 _ _
-        | tid == treacheryId ->
-            t <$ push (Discard (toAbilitySource attrs 1) (TreacheryTarget treacheryId))
+        pushAll
+          $ [Exhaust (AssetTarget aid) | aid <- assetIds]
+          <> [AttachTreachery treacheryId $ InvestigatorTarget iid]
+        pure t
+      UseCardAbility iid (TreacherySource tid) 1 _ _ | tid == treacheryId -> do
+        t <$ push (toDiscardBy iid (toAbilitySource attrs 1) treacheryId)
       _ -> WrackedByNightmares <$> runMessage msg attrs

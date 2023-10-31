@@ -69,6 +69,6 @@ instance RunMessage UnspeakableOathCowardice where
         ]
       pure t
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
-      pushAll [EnemyEvaded iid eid, Discard (toAbilitySource attrs 2) $ toTarget attrs]
+      pushAll [EnemyEvaded iid eid, toDiscardBy iid (toAbilitySource attrs 2) $ toTarget attrs]
       pure t
     _ -> UnspeakableOathCowardice <$> runMessage msg attrs

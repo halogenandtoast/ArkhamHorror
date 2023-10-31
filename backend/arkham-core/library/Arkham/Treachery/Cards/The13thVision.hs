@@ -39,9 +39,9 @@ instance HasAbilities The13thVision where
 instance RunMessage The13thVision where
   runMessage msg t@(The13thVision attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) $ InvestigatorTarget iid
+      push $ attachTreachery attrs iid
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toAbilitySource attrs 2) (toTarget attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure t
     _ -> The13thVision <$> runMessage msg attrs

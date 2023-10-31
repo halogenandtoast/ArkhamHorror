@@ -39,7 +39,7 @@ instance RunMessage WhispersInYourHeadDoubt where
     Revelation iid source | isSource attrs source -> do
       push $ addHiddenToHand iid attrs
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> WhispersInYourHeadDoubt <$> runMessage msg attrs

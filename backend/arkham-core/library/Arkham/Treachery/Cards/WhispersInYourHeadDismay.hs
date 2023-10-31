@@ -38,10 +38,8 @@ instance HasAbilities WhispersInYourHeadDismay where
 
 instance RunMessage WhispersInYourHeadDismay where
   runMessage msg t@(WhispersInYourHeadDismay attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (addHiddenToHand iid attrs)
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (addHiddenToHand iid attrs)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      t <$ push (toDiscardBy iid (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> WhispersInYourHeadDismay <$> runMessage msg attrs

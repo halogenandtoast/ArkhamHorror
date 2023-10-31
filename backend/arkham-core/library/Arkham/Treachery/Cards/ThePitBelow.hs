@@ -50,12 +50,11 @@ instance RunMessage ThePitBelow where
         selectList
           $ InvestigatorAt
           $ LocationWithTreachery
-          $ TreacheryWithId
-            (toId attrs)
+          $ TreacheryWithId (toId attrs)
       pushAll
         $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 3 0
           | iid <- iids
           ]
-        <> [Discard (toAbilitySource attrs 1) $ toTarget attrs]
+        <> [toDiscard (toAbilitySource attrs 1) attrs]
       pure t
     _ -> ThePitBelow <$> runMessage msg attrs

@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -25,29 +23,24 @@ instance HasAbilities RealmOfTorment where
   getAbilities (RealmOfTorment a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ TurnBegins
-          Timing.When
-          You
+        $ TurnBegins #when You
     , restrictedAbility a 2 (InThreatAreaOf You)
         $ ForcedAbility
-        $ TurnEnds
-          Timing.When
-          You
+        $ TurnEnds #when You
     ]
 
 instance RunMessage RealmOfTorment where
   runMessage msg t@(RealmOfTorment attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) (InvestigatorTarget iid)
+      push $ attachTreachery attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       runHauntedAbilities iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 3
+      push $ RevelationSkillTest iid (toAbilitySource attrs 2) #willpower 3
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Discard (toAbilitySource attrs 1) $ toTarget attrs
-        pure t
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure t
     _ -> RealmOfTorment <$> runMessage msg attrs

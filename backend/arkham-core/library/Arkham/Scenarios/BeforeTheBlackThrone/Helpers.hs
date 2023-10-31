@@ -11,7 +11,7 @@ import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Message (toDiscardZ)
+import Arkham.Helpers.Message (toDiscard)
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Location.Types
@@ -76,7 +76,7 @@ commitRitualSuicide (toSource -> source) = do
   doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
   azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
   pure
-    $ map (toDiscardZ source) cultists
+    $ map (toDiscard source) cultists
     <> [PlaceDoom source (toTarget azathoth) doom]
 
 getEmptySpaceCards :: HasGame m => m [Card]

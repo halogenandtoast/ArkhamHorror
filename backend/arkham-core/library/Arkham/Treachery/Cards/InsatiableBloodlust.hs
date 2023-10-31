@@ -7,7 +7,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -33,7 +32,7 @@ instance HasAbilities InsatiableBloodlust where
     [ mkAbility x 1
         $ ForcedAbility
         $ EnemyDealtDamage
-          Timing.After
+          #after
           AnyDamageEffect
           (enemyIs Cards.theRougarou)
           AnySource
@@ -43,13 +42,10 @@ instance RunMessage InsatiableBloodlust where
   runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation _iid source | isSource attrs source -> do
-        mrougarou <- selectOne $ enemyIs Cards.theRougarou
-        case mrougarou of
-          Nothing -> error "can't happen"
-          Just eid -> do
-            push (AttachTreachery treacheryId (EnemyTarget eid))
-        InsatiableBloodlust <$> runMessage msg attrs
-      UseCardAbility _ source 1 _ _
-        | isSource attrs source ->
-            t <$ push (Discard (toAbilitySource attrs 1) $ toTarget attrs)
+        rougarou <- selectJust $ enemyIs Cards.theRougarou
+        push $ attachTreachery treacheryId rougarou
+        pure t
+      UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+        push $ toDiscard (toAbilitySource attrs 1) attrs
+        pure t
       _ -> InsatiableBloodlust <$> runMessage msg attrs

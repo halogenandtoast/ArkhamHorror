@@ -196,7 +196,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetCurrentActDeck n stack@(current : _) -> do
     actIds <- selectList $ Matcher.ActWithDeckId n
     pushAll
-      $ [toDiscardZ GameSource (ActTarget actId) | actId <- actIds]
+      $ [toDiscard GameSource (ActTarget actId) | actId <- actIds]
       <> [AddAct n current]
     pure
       $ a
@@ -205,7 +205,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetCurrentAgendaDeck n stack@(current : _) -> do
     agendaIds <- selectList $ Matcher.AgendaWithDeckId n
     pushAll
-      $ [toDiscardZ GameSource (AgendaTarget agendaId) | agendaId <- agendaIds]
+      $ [toDiscard GameSource (AgendaTarget agendaId) | agendaId <- agendaIds]
       <> [AddAgenda n current]
     pure
       $ a

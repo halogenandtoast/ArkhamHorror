@@ -38,9 +38,9 @@ instance RunMessage PsychopompsSong where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ [targetLabel iid' [AttachTreachery treacheryId $ InvestigatorTarget iid'] | iid' <- investigators]
+        $ [targetLabel iid' [attachTreachery treacheryId iid'] | iid' <- investigators]
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      dealAdditionalDamage iid 2 [Discard (toAbilitySource attrs 1) (toTarget attrs)]
+      dealAdditionalDamage iid 2 [toDiscardBy iid (toAbilitySource attrs 1) attrs]
       pure t
     _ -> PsychopompsSong <$> runMessage msg attrs

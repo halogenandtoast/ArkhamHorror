@@ -49,7 +49,7 @@ instance RunMessage EndsAndMeans where
             mPuzzleBox
 
       pushAll
-        $ map (toDiscardZ GameSource) acts
+        $ map (toDiscard GameSource) acts
         <> [createSummonedBeast]
         <> [RemoveFromGame (toTarget puzzleBox) | puzzleBox <- maybeToList mPuzzleBox]
       pure a

@@ -52,7 +52,7 @@ instance RunMessage PrimordialGateway where
           | sType <- [#intellect, #willpower]
           ]
       pure t
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ Discard (toAbilitySource attrs 1) (toTarget attrs)
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> PrimordialGateway <$> runMessage msg attrs

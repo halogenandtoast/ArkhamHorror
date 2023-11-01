@@ -132,6 +132,7 @@ allPlayerEventCards =
       , firstWatch
       , flare1
       , followed
+      , foolMeOnce1
       , forewarned1
       , fortuitousDiscovery
       , fortuneOrFate2
@@ -1941,7 +1942,7 @@ denyExistence =
     , cdFastWindow =
         Just
           $ OrWindowMatcher
-            [ Discarded #when You source AnyCard
+            [ Discarded #when You source (basic AnyCard)
             , LostResources #when You source
             , LostActions #when You source
             , InvestigatorWouldTakeDamage #when You source
@@ -2174,7 +2175,7 @@ denyExistence5 =
     , cdFastWindow =
         Just
           $ OrWindowMatcher
-            [ Discarded #when You source AnyCard
+            [ Discarded #when You source (basic AnyCard)
             , LostResources #when You source
             , LostActions #when You source
             , InvestigatorWouldTakeDamage #when You source
@@ -2382,6 +2383,19 @@ readTheSigns =
     , cdActions = [#investigate]
     , cdCardTraits = setFromList [Spell]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
+foolMeOnce1 :: CardDef
+foolMeOnce1 =
+  (event "06156" "\"Fool me once...\"" 1 Guardian)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Insight, Tactic]
+    , cdFastWindow =
+        Just
+          $ TreacheryWouldBeDiscarded #when
+          $ TreacheryWithResolvedEffectsBy You
+          <> TreacheryDiscardedBy You
+    , cdLevel = 1
     }
 
 etherealForm :: CardDef

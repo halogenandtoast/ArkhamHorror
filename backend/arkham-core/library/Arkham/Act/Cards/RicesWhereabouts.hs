@@ -40,7 +40,7 @@ instance HasAbilities RicesWhereabouts where
           Timing.When
           You
           AnySource
-          (cardIs Assets.jazzMulligan)
+          (basic $ cardIs Assets.jazzMulligan)
     , mkAbility x 3
         $ Objective
         $ ForcedAbility

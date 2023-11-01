@@ -485,6 +485,8 @@ data TreacheryMatcher
   | TreacheryAt LocationMatcher
   | TreacheryOnEnemy EnemyMatcher
   | TreacheryIsNonWeakness
+  | TreacheryWithResolvedEffectsBy InvestigatorMatcher
+  | TreacheryDiscardedBy InvestigatorMatcher
   | AnyTreachery
   | TreacheryOwnedBy InvestigatorMatcher
   | TreacheryMatches [TreacheryMatcher]
@@ -715,11 +717,12 @@ data WindowMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher
   | WouldRevealChaosToken Timing Who
-  | Discarded Timing Who SourceMatcher CardMatcher
+  | Discarded Timing Who SourceMatcher ExtendedCardMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
   | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
+  | TreacheryWouldBeDiscarded Timing TreacheryMatcher
   | WouldPerformRevelationSkillTest Timing Who
   | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher

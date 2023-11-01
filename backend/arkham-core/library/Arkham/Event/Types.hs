@@ -73,6 +73,7 @@ data EventAttrs = EventAttrs
   , eventBeingPaidFor :: Bool
   , eventPaymentMessages :: [Message]
   , eventSealedChaosTokens :: [ChaosToken]
+  , eventCardsUnderneath :: [Card]
   , eventPlacement :: Placement
   , eventAfterPlay :: AfterPlayStrategy
   , eventPlayedFrom :: Zone
@@ -136,6 +137,7 @@ event f cardDef =
               eventBeingPaidFor = False
             , eventPaymentMessages = []
             , eventSealedChaosTokens = []
+            , eventCardsUnderneath = []
             , eventPlacement = Unplaced
             , eventAfterPlay = DiscardThis
             , eventPlayedFrom = FromHand -- defaults but will be overwritten when needed

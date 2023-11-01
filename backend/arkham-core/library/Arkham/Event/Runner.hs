@@ -46,17 +46,37 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
     push $ toDiscard GameSource eventId
     pure a
-  Discard _ _ target | eventAttachedTarget a == Just target -> do
+  Discard _ source (isTarget a -> True) -> do
+    windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
     pushAll
-      $ [UnsealChaosToken token | token <- eventSealedChaosTokens]
-      <> [toDiscard GameSource a]
+      $ windows'
+      <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
+    pure a
+  RemoveFromPlay source | isSource a source -> do
+    let
+      handleDiscard c = case c of
+        PlayerCard pc -> AddToDiscard (fromJustNote "missing owner" $ toCardOwner c) pc
+        EncounterCard ec -> AddToEncounterDiscard ec
+        VengeanceCard vc -> handleDiscard vc
+
+    windowMsg <-
+      checkWindows
+        ( (`Window.mkWindow` Window.LeavePlay (toTarget a))
+            <$> [#when, #at, #after]
+        )
+    pushAll
+      $ windowMsg
+      : [UnsealChaosToken token | token <- eventSealedChaosTokens]
+        <> map handleDiscard eventCardsUnderneath
+        <> [RemovedFromPlay source]
+    pure a
+  Discard _ _ target | eventAttachedTarget a == Just target -> do
+    push $ toDiscard GameSource a
     pure a
   Discard _ _ (AssetTarget aid) -> do
     case eventPlacement of
       AttachedToAsset aid' _ | aid == aid' -> do
-        pushAll
-          $ [UnsealChaosToken token | token <- eventSealedChaosTokens]
-          <> [toDiscard GameSource a]
+        push $ toDiscard GameSource a
       _ -> pure ()
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
@@ -100,4 +120,14 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure a
   InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
     pure $ a & placementL .~ Limbo
+  PlaceUnderneath (isTarget a -> True) cards -> do
+    pure $ a & cardsUnderneathL <>~ cards
+  AddToDiscard _ c -> do
+    pure $ a & cardsUnderneathL %~ filter (/= toCard c)
+  CommitCard _ card -> do
+    pure $ a & cardsUnderneathL %~ filter (/= card)
+  AddToHand _ cards -> do
+    pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
+  ShuffleCardsIntoDeck _ cards ->
+    pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
   _ -> pure a

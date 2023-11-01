@@ -72,6 +72,11 @@ const abilities = computed(() => {
     }, []);
 })
 
+const cardsUnderneath = computed(() => props.event.cardsUnderneath)
+const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
+
+const showCardsUnderneath = (e: Event) => emits('showCards', e, cardsUnderneath, "Cards Underneath", false)
+
 const choose = (index: number) => emits('choose', index)
 </script>
 
@@ -101,6 +106,8 @@ const choose = (index: number) => emits('choose', index)
       :data-image="image"
       @click="$emit('choose', ability.index)"
       />
+
+    <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
   </div>
 </template>
 

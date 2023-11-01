@@ -46,6 +46,7 @@ import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor)
 import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
 import Arkham.Helpers.Tarot
@@ -1866,7 +1867,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       guardTiming timing $ \case
         Window.Discarded who source' card ->
           andM
-            [ pure $ cardMatch card cardMatcher
+            [ extendedCardMatch card cardMatcher
             , matchWho iid who whoMatcher
             , sourceMatches source' sourceMatcher
             ]
@@ -1876,6 +1877,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (EnemyTarget eid) -> elem eid <$> select enemyMatcher
+      _ -> noMatch
+    Matcher.TreacheryWouldBeDiscarded timing treacheryMatcher -> guardTiming timing $ \case
+      Window.WouldBeDiscarded (TreacheryTarget tid) -> elem tid <$> select treacheryMatcher
       _ -> noMatch
     Matcher.AgendaAdvances timing agendaMatcher -> guardTiming timing $ \case
       Window.AgendaAdvance aid -> agendaMatches aid agendaMatcher

@@ -597,12 +597,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = draw n scenarioEncounterDeck
     pure $ a & encounterDeckL .~ withDeck (<> cards) deck
-  Discard _ _ (TreacheryTarget tid) -> do
-    card <- field TreacheryCard tid
-    handler <- getEncounterDeckHandler $ toCardId card
+  Discarded (TreacheryTarget _) _ card -> do
     case card of
       PlayerCard _ -> pure a
-      EncounterCard ec -> pure $ a & discardLens handler %~ (ec :)
+      EncounterCard ec -> do
+        handler <- getEncounterDeckHandler $ toCardId card
+        pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   InvestigatorDoDrawEncounterCard iid -> do
     handler <- getEncounterDeckHandler iid

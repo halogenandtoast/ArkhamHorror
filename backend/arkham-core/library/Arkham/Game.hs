@@ -926,8 +926,8 @@ getInvestigatorsMatching matcher = do
         . map PlayerCard
         . unDeck
         . attr investigatorDeck
-    InvestigatorWithTrait t -> \i -> fieldMap InvestigatorTraits (member t) (toId i)
-    InvestigatorWithClass t -> \i -> fieldMap InvestigatorClass (== t) (toId i)
+    InvestigatorWithTrait t -> fieldMap InvestigatorTraits (member t) . toId
+    InvestigatorWithClass t -> fieldMap InvestigatorClass (== t) . toId
     InvestigatorWithoutModifier modifierType -> \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'
@@ -1117,6 +1117,13 @@ getTreacheriesMatching matcher = do
   matcherFilter = \case
     AnyTreachery -> pure . const True
     NotTreachery m -> fmap not . matcherFilter m
+    TreacheryWithResolvedEffectsBy investigatorMatcher -> \t -> do
+      iids <- select investigatorMatcher
+      pure $ any (`elem` attr treacheryResolved t) iids
+    TreacheryDiscardedBy investigatorMatcher -> \t -> do
+      let discardee = fromMaybe (attr treacheryDrawnBy t) (attr treacheryDiscardedBy t)
+      iids <- select investigatorMatcher
+      pure $ discardee `elem` iids
     TreacheryIsNonWeakness ->
       fieldMap TreacheryCard (`cardMatch` NonWeaknessTreachery) . toId
     TreacheryWithTitle title -> pure . (`hasTitle` title)
@@ -1271,8 +1278,10 @@ getGameAbilities = do
     concatMap getAbilities
       <$> filterM unblanked (toList $ g ^. entitiesL . investigatorsL)
   inHandEventAbilities <-
-    filter inHandAbility
-      . concatMap getAbilities
+    concatMap
+      ( filter inHandAbility
+          . getAbilities
+      )
       <$> filterM
         unblanked
         (toList $ g ^. inHandEntitiesL . each . eventsL)
@@ -1852,7 +1861,7 @@ getAssetsMatching matcher = do
           concatMapM
             ( fieldMapM
                 InvestigatorHand
-                (filterM (`extendedCardMatch` (extendedCardMatcher <> (BasicCardMatch $ CardWithType AssetType))))
+                (filterM (`extendedCardMatch` (extendedCardMatcher <> BasicCardMatch (CardWithType AssetType))))
             )
             iids
         assets <- filterMatcher as assetMatcher
@@ -2014,11 +2023,10 @@ getSkill sid = do
   missingSkill = "Unknown skill: " <> show sid
 
 getStory :: (HasCallStack, HasGame m) => StoryId -> m Story
-getStory sid = do
-  g <- getGame
-  pure
-    $ fromJustNote missingStory
-    $ preview (entitiesL . storiesL . ix sid) g
+getStory sid =
+  fromJustNote missingStory
+    . preview (entitiesL . storiesL . ix sid)
+    <$> getGame
  where
   missingStory = "Unknown story: " <> show sid
 
@@ -3009,7 +3017,7 @@ instance Query ExtendedCardMatcher where
             let
               onlyCardComittedToTestCommitted =
                 any
-                  (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
+                  (elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef)
                   allCommittedCards
               committedCardTitles = map toTitle allCommittedCards
               skillDifficulty = skillTestDifficulty skillTest
@@ -4666,6 +4674,9 @@ runGameMessage msg g = case msg of
       DoBatch bId' _ -> bId == bId'
       _ -> False
     pure g
+  DoBatch _ msg'@(Discarded {}) -> do
+    push msg'
+    pure g
   CancelEachNext source msgTypes -> do
     push
       =<< checkWindows
@@ -5763,12 +5774,20 @@ runGameMessage msg g = case msg of
           & (actionRemovedEntitiesL . eventsL %~ insertEntity event')
           & (inSearchEntitiesL . eventsL %~ deleteMap eventId)
       _ -> error $ "Unhandled card type: " <> show card
-  Discarded (TreacheryTarget aid) _ _ -> do
-    push $ RemoveTreachery aid
+  Discarded (TreacheryTarget tid) _ card -> do
+    treachery <- getTreachery tid
+    case card of
+      PlayerCard pc -> do
+        let ownerId = fromJustNote "owner was not set" treachery.owner
+        push $ AddToDiscard ownerId pc {pcOwner = Just ownerId}
+      EncounterCard _ -> pure ()
+      VengeanceCard _ -> error "Vengeance card"
+
+    push $ RemoveTreachery tid
     pure g
   Exiled (AssetTarget aid) _ -> do
     runMessage (RemoveAsset aid) g
-  Discard _ _ (EventTarget eid) -> do
+  Discarded (EventTarget eid) _ _ -> do
     mEvent <- getEventMaybe eid
     case mEvent of
       Nothing -> pure g
@@ -5792,24 +5811,15 @@ runGameMessage msg g = case msg of
               EncounterCard _ -> error "Unhandled"
               VengeanceCard _ -> error "Vengeance card"
             pure $ g & entitiesL . eventsL %~ deleteMap eid
-  Discard _ _ (TreacheryTarget tid) -> do
-    treachery <- getTreachery tid
-    case lookupCard (toCardCode treachery) (toCardId treachery) of
-      PlayerCard pc -> do
-        let
-          ownerId =
-            fromJustNote "owner was not set"
-              $ treacheryOwner
-              $ toAttrs
-                treachery
-        push $ AddToDiscard ownerId pc {pcOwner = Just ownerId}
-      EncounterCard _ -> pure ()
-      VengeanceCard _ -> error "Vengeance card"
-    pure
-      $ g
-      & entitiesL
-      . treacheriesL
-      %~ deleteMap tid
+  Discard miid source (TreacheryTarget tid) -> do
+    card <- field TreacheryCard tid
+    iid <- maybe getActiveInvestigatorId pure miid
+    wouldDo
+      (Discarded (TreacheryTarget tid) source card)
+      (Window.WouldBeDiscarded (TreacheryTarget tid))
+      (Window.Discarded iid source card)
+
+    pure g
   UpdateHistory iid historyItem -> do
     let
       turn = isJust $ view turnPlayerInvestigatorIdL g
@@ -5954,27 +5964,28 @@ applyBlank s = do
 
 instance RunMessage Game where
   runMessage msg g = do
-    preloadEntities g
-      >>= runPreGameMessage msg
-      >>= (modeL . here) (runMessage msg)
-      >>= (modeL . there) (runMessage msg)
-      >>= entitiesL (runMessage msg)
-      >>= actionRemovedEntitiesL (runMessage msg)
-      >>= itraverseOf
-        (inHandEntitiesL . itraversed)
-        (\i -> runMessage (InHand i msg))
-      >>= itraverseOf
-        (inDiscardEntitiesL . itraversed)
-        (\i -> runMessage (InDiscard i msg))
-      >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
-      >>= inSearchEntitiesL (runMessage (InSearch msg))
-      >>= (outOfPlayEntitiesL . itraversed) (runMessage (InOutOfPlay msg))
-      >>= (skillTestL . traverse) (runMessage msg)
-      >>= (activeCostL . traverse) (runMessage msg)
-      >>= runGameMessage msg
+    ( preloadEntities g
+        >>= runPreGameMessage msg
+        >>= (modeL . here) (runMessage msg)
+        >>= (modeL . there) (runMessage msg)
+        >>= entitiesL (runMessage msg)
+        >>= actionRemovedEntitiesL (runMessage msg)
+        >>= itraverseOf
+          (inHandEntitiesL . itraversed)
+          (\i -> runMessage (InHand i msg))
+        >>= itraverseOf
+          (inDiscardEntitiesL . itraversed)
+          (\i -> runMessage (InDiscard i msg))
+        >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
+        >>= inSearchEntitiesL (runMessage (InSearch msg))
+        >>= (outOfPlayEntitiesL . itraversed) (runMessage (InOutOfPlay msg))
+        >>= (skillTestL . traverse) (runMessage msg)
+        >>= (activeCostL . traverse) (runMessage msg)
+        >>= runGameMessage msg
+      )
       <&> handleActionDiff g
-      <&> set enemyMovingL Nothing
-      <&> set enemyEvadingL Nothing
+      . set enemyMovingL Nothing
+      . set enemyEvadingL Nothing
 
 handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new

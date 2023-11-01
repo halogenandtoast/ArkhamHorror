@@ -73,6 +73,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDrawnBy :: InvestigatorId
   , treacheryDrawnFrom :: Maybe DeckSignifier
   , treacheryResolved :: Set InvestigatorId -- who resolved effects on this
+  , treacheryDiscardedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
 
@@ -231,6 +232,7 @@ treacheryWith f cardDef g =
             , treacheryCanBeCommitted = False
             , treacheryDrawnFrom = Nothing
             , treacheryResolved = mempty
+            , treacheryDiscardedBy = Nothing
             }
     }
 
@@ -241,6 +243,9 @@ is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
 data Treachery = forall a. IsTreachery a => Treachery a
+
+instance HasField "owner" Treachery (Maybe InvestigatorId) where
+  getField (Treachery a) = attr treacheryOwner a
 
 instance Named Treachery where
   toName (Treachery t) = toName (toAttrs t)

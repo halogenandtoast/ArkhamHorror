@@ -370,7 +370,9 @@ allEvents =
     , --- mystic [sfk]
       SomeEventCard readTheSigns
     , -- A Thousand Shapes of Horror
-      --- mystic [tsh]
+      --- guardian [tsh]
+      SomeEventCard foolMeOnce1
+    , --- mystic [tsh]
       SomeEventCard etherealForm
     , --- survivor [tsh]
       SomeEventCard scroungeForSupplies

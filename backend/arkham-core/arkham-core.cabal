@@ -1245,6 +1245,7 @@ library
       Arkham.Event.Cards.FirstWatch
       Arkham.Event.Cards.Flare1
       Arkham.Event.Cards.Followed
+      Arkham.Event.Cards.FoolMeOnce1
       Arkham.Event.Cards.Forewarned1
       Arkham.Event.Cards.FortuitousDiscovery
       Arkham.Event.Cards.FortuneOrFate2

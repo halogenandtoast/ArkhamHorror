@@ -57,6 +57,8 @@ instance RunMessage TreacheryAttrs where
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a
+    Discard miid _ (TreacheryTarget tid) | tid == treacheryId -> do
+      pure $ a & discardedByL .~ miid
     Discarded target _ _ | target `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a

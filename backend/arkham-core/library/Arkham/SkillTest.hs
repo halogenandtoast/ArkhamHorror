@@ -48,3 +48,7 @@ baseValueL = lens skillTestBaseValue $ \m x -> m {skillTestBaseValue = x}
 valueModifierL :: Lens' SkillTest Int
 valueModifierL =
   lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}
+
+resolveFailureInvestigatorL :: Lens' SkillTest InvestigatorId
+resolveFailureInvestigatorL =
+  lens skillTestResolveFailureInvestigator $ \m x -> m {skillTestResolveFailureInvestigator = x}

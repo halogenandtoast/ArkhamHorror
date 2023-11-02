@@ -275,33 +275,57 @@ instance RunMessage SkillTest where
     FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
-      player <- getPlayer skillTestInvestigator
-      pushAll
-        $ SkillTestResults resultsData
-        : [ Will
-            ( FailedSkillTest
-                skillTestInvestigator
-                skillTestAction
-                skillTestSource
-                target
-                skillTestType
-                difficulty
-            )
-          | target <- skillTestSubscribers
-          ]
-          <> [ Will
+      -- player <- getPlayer skillTestInvestigator
+      investigatorsToResolveFailure <-
+        (`notNullOr` [skillTestInvestigator])
+          <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+
+      let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
+      let
+        handleChoice resolver player =
+          SkillTestResults resultsData
+            : [ Will
                 ( FailedSkillTest
-                    skillTestInvestigator
+                    resolver
                     skillTestAction
                     skillTestSource
-                    (SkillTestInitiatorTarget skillTestTarget)
+                    target
                     skillTestType
                     difficulty
                 )
-             , chooseOne player [SkillTestApplyResultsButton]
-             , SkillTestEnds skillTestInvestigator skillTestSource
-             , Do (SkillTestEnds skillTestInvestigator skillTestSource)
-             ]
+              | target <- skillTestSubscribers
+              ]
+              <> [ Will
+                    ( FailedSkillTest
+                        resolver
+                        skillTestAction
+                        skillTestSource
+                        (SkillTestInitiatorTarget skillTestTarget)
+                        skillTestType
+                        difficulty
+                    )
+                 , chooseOne player [SkillTestApplyResultsButton]
+                 , SkillTestEnds resolver skillTestSource
+                 , Do (SkillTestEnds resolver skillTestSource)
+                 ]
+
+      if needsChoice
+        then do
+          resolversWithPlayers <- traverse (traverseToSnd getPlayer) investigatorsToResolveFailure
+          lead <- getLeadPlayer
+
+          push
+            $ chooseOrRunOne
+              lead
+              [ targetLabel
+                resolver
+                $ SetSkillTestResolveFailureInvestigator resolver
+                : handleChoice resolver player
+              | (resolver, player) <- resolversWithPlayers
+              ]
+        else do
+          player <- getPlayer skillTestResolveFailureInvestigator
+          pushAll $ handleChoice skillTestResolveFailureInvestigator player
       pure $ s & resultL .~ FailedBy Automatic difficulty
     StartSkillTest _ -> do
       windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
@@ -445,11 +469,18 @@ instance RunMessage SkillTest where
                       )
                    ]
             )
-        FailedBy _ n ->
-          pushAll
-            ( [ Will
+        FailedBy _ n -> do
+          investigatorsToResolveFailure <-
+            (`notNullOr` [skillTestInvestigator])
+              <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+
+          let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
+
+          let
+            handleChoice resolver =
+              [ Will
                 ( FailedSkillTest
-                    skillTestInvestigator
+                    resolver
                     skillTestAction
                     skillTestSource
                     target
@@ -460,7 +491,7 @@ instance RunMessage SkillTest where
               ]
                 <> [ Will
                       ( FailedSkillTest
-                          skillTestInvestigator
+                          resolver
                           skillTestAction
                           skillTestSource
                           (SkillTestInitiatorTarget skillTestTarget)
@@ -468,7 +499,17 @@ instance RunMessage SkillTest where
                           n
                       )
                    ]
-            )
+
+          if needsChoice
+            then do
+              lead <- getLeadPlayer
+              push
+                $ chooseOrRunOne
+                  lead
+                  [ targetLabel resolver $ SetSkillTestResolveFailureInvestigator resolver : handleChoice resolver
+                  | resolver <- investigatorsToResolveFailure
+                  ]
+            else pushAll $ handleChoice skillTestResolveFailureInvestigator
         Unrun -> pure ()
       pure s
     SkillTestApplyResultsAfter -> do
@@ -511,11 +552,18 @@ instance RunMessage SkillTest where
                       )
                    ]
             )
-        FailedBy _ n ->
-          pushAll
-            ( [ After
+        FailedBy _ n -> do
+          investigatorsToResolveFailure <-
+            (`notNullOr` [skillTestInvestigator])
+              <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+
+          let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
+
+          let
+            handleChoice resolver =
+              [ After
                 ( FailedSkillTest
-                    skillTestInvestigator
+                    resolver
                     skillTestAction
                     skillTestSource
                     target
@@ -526,7 +574,7 @@ instance RunMessage SkillTest where
               ]
                 <> [ After
                       ( FailedSkillTest
-                          skillTestInvestigator
+                          resolver
                           skillTestAction
                           skillTestSource
                           (SkillTestInitiatorTarget skillTestTarget)
@@ -534,7 +582,22 @@ instance RunMessage SkillTest where
                           n
                       )
                    ]
-            )
+
+          if needsChoice
+            then do
+              lead <- getLeadPlayer
+
+              push
+                $ chooseOrRunOne
+                  lead
+                  [ targetLabel
+                    resolver
+                    $ SetSkillTestResolveFailureInvestigator resolver
+                    : handleChoice resolver
+                  | resolver <- investigatorsToResolveFailure
+                  ]
+            else do
+              pushAll $ handleChoice skillTestResolveFailureInvestigator
         Unrun -> pure ()
       pure s
     SkillTestApplyResults -> do
@@ -574,76 +637,85 @@ instance RunMessage SkillTest where
                       n
                   )
                ]
-            <> ( cycleN
-                  successTimes
-                  ( [ PassedSkillTest
-                      skillTestInvestigator
-                      skillTestAction
-                      skillTestSource
-                      target
-                      skillTestType
-                      n
-                    | target <- skillTestSubscribers
-                    ]
-                      <> [ PassedSkillTest
-                            skillTestInvestigator
-                            skillTestAction
-                            skillTestSource
-                            (SkillTestInitiatorTarget skillTestTarget)
-                            skillTestType
-                            n
-                         ]
-                  )
-               )
-        FailedBy _ n -> do
-          hauntedAbilities <- case (skillTestTarget, skillTestAction) of
-            (LocationTarget lid, Just Action.Investigate) -> selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
-            _ -> pure []
-          player <- getPlayer skillTestInvestigator
-          pushAll
-            $ [ When
-                  ( FailedSkillTest
-                      skillTestInvestigator
-                      skillTestAction
-                      skillTestSource
-                      (SkillTestInitiatorTarget skillTestTarget)
-                      skillTestType
-                      n
-                  )
-              ]
-            <> [ When
-                ( FailedSkillTest
-                    skillTestInvestigator
-                    skillTestAction
-                    skillTestSource
-                    target
-                    skillTestType
-                    n
-                )
-               | target <- skillTestSubscribers
-               ]
-            <> [ FailedSkillTest
-                skillTestInvestigator
-                skillTestAction
-                skillTestSource
-                target
-                skillTestType
-                n
-               | target <- skillTestSubscribers
-               ]
-            <> [ FailedSkillTest
+            <> cycleN
+              successTimes
+              ( [ PassedSkillTest
                   skillTestInvestigator
                   skillTestAction
                   skillTestSource
-                  (SkillTestInitiatorTarget skillTestTarget)
+                  target
                   skillTestType
                   n
-               ]
-            <> [ chooseOneAtATime
-                player
-                [AbilityLabel skillTestInvestigator ab [] [] | ab <- hauntedAbilities]
-               | notNull hauntedAbilities
-               ]
+                | target <- skillTestSubscribers
+                ]
+                  <> [ PassedSkillTest
+                        skillTestInvestigator
+                        skillTestAction
+                        skillTestSource
+                        (SkillTestInitiatorTarget skillTestTarget)
+                        skillTestType
+                        n
+                     ]
+              )
+        FailedBy _ n ->
+          do
+            hauntedAbilities <- case (skillTestTarget, skillTestAction) of
+              (LocationTarget lid, Just Action.Investigate) -> selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
+              _ -> pure []
+
+            investigatorsToResolveFailure <-
+              (`notNullOr` [skillTestInvestigator])
+                <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+
+            let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
+
+            let
+              handleChoice resolver player =
+                [ When
+                    ( FailedSkillTest
+                        resolver
+                        skillTestAction
+                        skillTestSource
+                        (SkillTestInitiatorTarget skillTestTarget)
+                        skillTestType
+                        n
+                    )
+                ]
+                  <> [ When (FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n)
+                     | target <- skillTestSubscribers
+                     ]
+                  <> [ FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
+                     | target <- skillTestSubscribers
+                     ]
+                  <> [ FailedSkillTest
+                        resolver
+                        skillTestAction
+                        skillTestSource
+                        (SkillTestInitiatorTarget skillTestTarget)
+                        skillTestType
+                        n
+                     ]
+                  <> [ chooseOneAtATime player [AbilityLabel resolver ab [] [] | ab <- hauntedAbilities]
+                     | notNull hauntedAbilities
+                     ]
+
+            if needsChoice
+              then do
+                resolversWithPlayers <- traverse (traverseToSnd getPlayer) investigatorsToResolveFailure
+                lead <- getLeadPlayer
+
+                push
+                  $ chooseOrRunOne
+                    lead
+                    [ targetLabel
+                      resolver
+                      $ SetSkillTestResolveFailureInvestigator resolver
+                      : handleChoice resolver player
+                    | (resolver, player) <- resolversWithPlayers
+                    ]
+              else do
+                player <- getPlayer skillTestResolveFailureInvestigator
+                pushAll $ handleChoice skillTestResolveFailureInvestigator player
         Unrun -> pure ()
       pure s
     RerunSkillTest -> case skillTestResult of
@@ -713,4 +785,6 @@ instance RunMessage SkillTest where
         %~ filter ((/= face) . chaosTokenFace)
         & resolvedChaosTokensL
         %~ filter ((/= face) . chaosTokenFace)
+    SetSkillTestResolveFailureInvestigator iid -> do
+      pure $ s & resolveFailureInvestigatorL .~ iid
     _ -> pure s

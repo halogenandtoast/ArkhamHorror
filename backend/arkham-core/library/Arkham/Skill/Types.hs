@@ -19,6 +19,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Trait
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -53,6 +54,9 @@ data SkillAttrs = SkillAttrs
   , skillPlacement :: Placement
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasField "controller" SkillAttrs InvestigatorId where
+  getField = skillOwner
 
 additionalCostL :: Lens' SkillAttrs (Maybe Cost)
 additionalCostL = lens skillAdditionalCost $ \m x -> m {skillAdditionalCost = x}

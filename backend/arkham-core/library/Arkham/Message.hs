@@ -403,6 +403,7 @@ data Message
   | BeginSkillTestWithPreMessages [Message] SkillTest
   | BeginSkillTestAfterFast
   | SetSkillTestTarget Target
+  | SetSkillTestResolveFailureInvestigator InvestigatorId
   | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId
   | Blanked Message

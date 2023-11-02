@@ -380,6 +380,7 @@ allPlayerAssetCards =
       , onYourOwn3
       , onYourOwn3_Exceptional
       , ornateBow3
+      , otherworldlyCodex2
       , otherworldlyCompass2
       , painkillers
       , pantalone
@@ -3685,6 +3686,16 @@ tetsuoMori =
     , cdCardTraits = setFromList [Ally, Police]
     , cdSlots = [#ally]
     , cdUnique = True
+    }
+
+otherworldlyCodex2 :: CardDef
+otherworldlyCodex2 =
+  (asset "06158" "Otherworldly Codex" 3 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 3
+    , cdLevel = 2
     }
 
 versatile2 :: CardDef

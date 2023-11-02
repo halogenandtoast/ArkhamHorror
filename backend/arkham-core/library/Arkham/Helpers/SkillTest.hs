@@ -313,6 +313,7 @@ getIsCommittable investigator card = do
               let
                 passesCommitRestriction = \case
                   CommittableTreachery -> error "unhandled"
+                  OnlyInvestigator matcher -> investigator <=~> matcher
                   OnlyCardCommittedToTest -> pure $ null committedCardTitles
                   MaxOnePerTest -> pure $ toTitle pc `notElem` committedCardTitles
                   OnlyYourTest -> pure True

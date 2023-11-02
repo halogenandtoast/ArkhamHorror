@@ -33,242 +33,244 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 data ModifierType
-  = ActionCostOf ActionTarget Int
-  | PlayableModifierContexts [(CardMatcher, [ModifierType])]
-  | IgnorePlayableModifierContexts
-  | BountiesOnly
-  | CommitCost Cost
-  | AbilityModifier Target Int ModifierType
-  | SkillTestResultValueModifier Int
-  | TraitRestrictedModifier Trait ModifierType
+  = AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
+  | ActionCostOf ActionTarget Int
   | ActionCostSetToModifier Int
+  | ActionDoesNotCauseAttacksOfOpportunity Action
   | ActionSkillModifier {action :: Action, skillType :: SkillType, value :: Int}
   | ActionsAreFree
   | AddKeyword Keyword
-  | AddTrait Trait
-  | RemoveTrait Trait
   | AddSkillIcons [SkillIcon]
-  | RemoveSkillIcons [SkillIcon]
+  | AddSkillToOtherSkill SkillType SkillType
+  | AddSkillValue SkillType
+  | AddTrait Trait
   | AdditionalActions Text Source Int
-  | FewerActions Int
-  | GiveAdditionalAction AdditionalAction
-  | AdditionalStartingUses Int
-  | SetAbilityCost Cost
   | AdditionalCost Cost
-  | CanIgnoreAspect AspectMatcher
-  | SharesSlotWith Int CardMatcher -- card matcher allows us to check more easily from hand
-  | ChangeRevealStrategy RevealStrategy
-  | CannotTriggerAbilityMatching AbilityMatcher
-  | ConnectedToWhen LocationMatcher LocationMatcher
+  | AdditionalStartingUses Int
+  | AdditionalTargets Int
+  | AlternateEvadeField (SomeField Enemy)
+  | AlternateFightField (SomeField Enemy)
   | AlternateSuccessfullEvasion
   | AlternateSuccessfullInvestigation Target
   | AlternativeReady Source
   | AnySkillValue Int
-  | AsIfInHand Card
   | AsIfAt LocationId
+  | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
+  | AsIfInHand Card
   | AsIfUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
   | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BecomesFast
   | Blank
   | Blocked
-  | IsEmptySpace
-  | CanEnterEmptySpace
-  | CannotEnter LocationId
+  | BondedInsteadOfDiscard
+  | BondedInsteadOfShuffle
+  | BountiesOnly
   | CanAssignDamageToAsset AssetId
   | CanAssignHorrorToAsset AssetId
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
   | CanBecomeFastOrReduceCostOf CardMatcher Int -- Used by Chuck Fergus (2), check for notes
-  | RevealChaosTokensBeforeCommittingCards
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
   | CanCommitToSkillTestsAsIfInHand Card
+  | CanEnterEmptySpace
+  | CanIgnoreAspect AspectMatcher
+  | CanIgnoreLimit
+  | CanModify ModifierType
   | CanOnlyBeAttackedByAbilityOn (Set CardCode)
-  | CanOnlyUseCardsInRole ClassSymbol
-  | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
-  | CanPlayTopOfDeck CardMatcher
-  | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
-  | CancelSkills
-  | CannotParleyWith EnemyMatcher
-  | CannotAttack
-  | CannotBeAttacked
-  | CannotBeFlipped
-  | CannotBeDefeated
   | CanOnlyBeDefeatedBy SourceMatcher
   | CanOnlyBeDefeatedByDamage
+  | CanOnlyUseCardsInRole ClassSymbol
+  | CanPlayTopOfDeck CardMatcher
+  | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
+  | CanPlayWithOverride CriteriaOverride
+  | CanReduceCostOf CardMatcher Int
+  | CanRetaliateWhileExhausted
+  | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CancelAttacksByEnemies Card EnemyMatcher
+  | CancelSkills
+  | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+  | CannotAttack
+  | CannotBeAdvancedByDoomThreshold
+  | CannotBeAttacked
+  | CannotBeAttackedBy EnemyMatcher
   | CannotBeDamaged
-  | CannotDealDamage
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
+  | CannotBeDefeated
+  | CannotBeEngaged
+  | CannotBeEngagedBy EnemyMatcher
   | CannotBeEnteredBy EnemyMatcher
   | CannotBeEvaded
+  | CannotBeFlipped
+  | CannotBeMoved
   | CannotBeRevealed
   | CannotCancelHorror
   | CannotCancelOrIgnoreChaosToken ChaosTokenFace
   | CannotCommitCards CardMatcher
   | CannotCommitToOtherInvestigatorsSkillTests
-  | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+  | CannotDealDamage
   | CannotDiscoverClues
+  | CannotDiscoverCluesAt LocationMatcher
+  | CannotDisengageEnemies
   | CannotDrawCards
   | CannotEngage InvestigatorId
-  | CannotBeEngaged
-  | CannotBeEngagedBy EnemyMatcher
-  | CannotBeAttackedBy EnemyMatcher
+  | CannotEnter LocationId
+  | CannotEvade EnemyMatcher
+  | CannotExplore
+  | CannotFight EnemyMatcher
   | CannotGainResources
   | CannotHealHorror
   | CannotHealHorrorOnOtherCards Target
-  | CannotExplore
   | CannotInvestigate
   | CannotInvestigateLocation LocationId
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck
-  | ActionDoesNotCauseAttacksOfOpportunity Action
-  | CannotReady
-  | DoesNotReadyDuringUpkeep
-  | CannotFight EnemyMatcher
-  | CannotEvade EnemyMatcher
   | CannotMove
-  | CannotBeMoved
-  | CannotDisengageEnemies
   | CannotMoveMoreThanOnceEachTurn
-  | Mulligans Int
   | CannotMulligan
-  | CannotReplaceWeaknesses
+  | CannotParleyWith EnemyMatcher
   | CannotPerformSkillTest
   | CannotPlaceClues
+  | CannotPlaceDoomOnThis
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher
+  | CannotReady
+  | CannotReplaceWeaknesses
+  | CannotSpawnIn LocationMatcher
   | CannotSpendClues
-  | EffectsCannotBeCanceled
-  | MaxCluesDiscovered Int
-  | CannotDiscoverCluesAt LocationMatcher
   | CannotTakeAction ActionTarget
-  | MustTakeAction ActionTarget
   | CannotTakeControlOfClues
-  | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
+  | CannotTriggerAbilityMatching AbilityMatcher
   | CannotTriggerFastAbilities
   | CardsCannotLeaveYourDiscardPile
   | ChangeChaosTokenModifier ChaosTokenModifier
+  | ChangeRevealStrategy RevealStrategy
+  | ChaosTokenFaceModifier [ChaosTokenFace]
+  | ChaosTokenValueModifier Int
+  | CommitCost Cost
+  | ConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady
+  | CountAllDoomInPlay
+  | CountsAsInvestigatorForHunterEnemies
   | DamageDealt Int
   | DamageTaken Int
   | Difficulty Int
   | DiscoveredClues Int
+  | DoNotDisengageEvaded
+  | DoNotDrawChaosTokensForSkillChecks
+  | DoNotExhaustEvaded
   | DoNotRemoveDoom
   | DoNotTakeUpSlot SlotType
-  | SlotCanBe SlotType SlotType
-  | CannotPlaceDoomOnThis
-  | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
-  | DoomThresholdModifier Int
+  | DoesNotReadyDuringUpkeep
   | DoomSubtracts
+  | DoomThresholdModifier Int
+  | DoubleBaseSkillValue
   | DoubleDifficulty
   | DoubleNegativeModifiersOnChaosTokens
   | DoubleSkillIcons
   | DoubleSuccess
-  | DoubleBaseSkillValue
   | DuringEnemyPhaseMustMoveToward Target
+  | EffectsCannotBeCanceled
   | EnemyCannotEngage InvestigatorId
   | EnemyEvade Int
-  | EnemyFight Int
+  | EnemyEvadeActionCriteria CriteriaOverride
   | EnemyEvadeWithMin Int (Min Int)
+  | EnemyFight Int
+  | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
-  | AsIfEnemyFight Int
-  | AlternateFightField (SomeField Enemy)
-  | AlternateEvadeField (SomeField Enemy)
-  | CountsAsInvestigatorForHunterEnemies
   | FailTies
+  | FewerActions Int
   | FewerSlots SlotType Int
-  | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
   | ForcePrey PreyMatcher
+  | ForceSpawnLocation LocationMatcher
+  | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
+  | GainVictory Int
+  | GiveAdditionalAction AdditionalAction
   | HandSize Int
-  | IgnoreHandSizeReduction
   | HandSizeCardCount Int
+  | HealHorrorOnThisAsIfInvestigator InvestigatorId
   | HealthModifier Int
   | HealthModifierWithMin Int (Min Int)
-  | HealHorrorOnThisAsIfInvestigator InvestigatorId
   | HorrorDealt Int
   | HunterConnectedTo LocationId
-  | CanRetaliateWhileExhausted
   | IgnoreAllCosts
-  | IgnoreRetaliate
   | IgnoreAloof
-  | IgnoreText
   | IgnoreChaosToken
   | IgnoreChaosTokenEffects
+  | IgnoreHandSizeReduction
+  | IgnoreLimit
+  | IgnorePlayableModifierContexts
+  | IgnoreRetaliate
+  | IgnoreRevelation
+  | IgnoreText
+  | InVictoryDisplayForCountingVengeance
   | IncreaseCostOf CardMatcher Int
+  | IsEmptySpace
   | KilledIfDefeated
+  | LeaveCardWhereItIs
+  | LosePatrol
+  | LoseVictory
+  | MaxCluesDiscovered Int
   | MaxDamageTaken Int
   | MayChooseNotToTakeUpkeepResources
+  | MayIgnoreLocationEffectsAndKeywords
+  | MetaModifier Value
   | ModifierIfSucceededBy Int Modifier
+  | Mulligans Int
+  | MustTakeAction ActionTarget
   | NegativeToPositive
   | NoDamageDealt
+  | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
+  | NoSurge
   | NonDirectHorrorMustBeAssignToThisFirst
+  | Omnipotent
   | PlaceOnBottomOfDeckInsteadOfDiscard
-  | LeaveCardWhereItIs
+  | PlayableModifierContexts [(CardMatcher, [ModifierType])]
   | ReduceCostOf CardMatcher Int
-  | CanReduceCostOf CardMatcher Int
   | RemoveFromGameInsteadOfDiscard
-  | BondedInsteadOfDiscard
-  | BondedInsteadOfShuffle
   | RemoveKeyword Keyword
-  | LosePatrol
+  | RemoveSkillIcons [SkillIcon]
+  | RemoveTrait Trait
+  | ResolvesFailedEffects
   | ReturnToHandAfterTest
+  | RevealAnotherChaosToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
+  | RevealChaosTokensBeforeCommittingCards
   | SanityModifier Int
+  | SearchDepth Int
+  | SetAbilityCost Cost
+  | SetAbilityCriteria CriteriaOverride
+  | SetAfterPlay AfterPlayStrategy
   | SetDifficulty Int
-  | ShroudModifier Int
   | SetShroud Int
-  | SkillModifier {skillType :: SkillType, value :: Int}
-  | AddSkillValue SkillType
+  | SharesSlotWith Int CardMatcher -- card matcher allows us to check more easily from hand
+  | ShroudModifier Int
   | SkillCannotBeIncreased SkillType
+  | SkillModifier {skillType :: SkillType, value :: Int}
+  | SkillModifiersAffectOtherSkill SkillType SkillType
+  | SkillTestAutomaticallySucceeds
+  | SkillTestResultValueModifier Int
   | SkipMythosPhaseStep MythosPhaseStep
+  | SlotCanBe SlotType SlotType
   | SpawnNonEliteAtConnectingInstead
-  | ForceSpawnLocation LocationMatcher
-  | CannotSpawnIn LocationMatcher
+  | StartingClues Int
   | StartingHand Int
   | StartingResources Int
-  | StartingClues Int
-  | ChaosTokenFaceModifier [ChaosTokenFace]
-  | ChaosTokenValueModifier Int
   | TopCardOfDeckIsRevealed
+  | TraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedChaosTokenAs ChaosTokenFace
+  | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | UseSkillInPlaceOf SkillType SkillType -- oh no, why are these similar, this let's you choose
   | UseSkillInsteadOf SkillType SkillType -- this doesn't
-  | SkillModifiersAffectOtherSkill SkillType SkillType
-  | AddSkillToOtherSkill SkillType SkillType
   | XPModifier Int
-  | SkillTestAutomaticallySucceeds
-  | IgnoreRevelation
-  | GainVictory Int
-  | LoseVictory
-  | InVictoryDisplayForCountingVengeance
-  | EnemyFightActionCriteria CriteriaOverride
-  | EnemyEvadeActionCriteria CriteriaOverride
-  | CanPlayWithOverride CriteriaOverride
-  | SetAbilityCriteria CriteriaOverride
-  | RevealAnotherChaosToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated
-  | IgnoreLimit
-  | CanIgnoreLimit
-  | DoNotExhaustEvaded
-  | DoNotDisengageEvaded
-  | CannotBeAdvancedByDoomThreshold
-  | MetaModifier Value
-  | CanModify ModifierType
-  | NoSurge
-  | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
-  | Omnipotent
-  | CountAllDoomInPlay
-  | SetAfterPlay AfterPlayStrategy
-  | SearchDepth Int
-  | AdditionalTargets Int
-  | MayIgnoreLocationEffectsAndKeywords
-  | Ethereal -- only for UI, from Ethereal Form
-  | Explosion -- only for UI, from Dyanamite Blast
+  | -- UI only modifiers
+    Ethereal -- from Ethereal Form
+  | Explosion -- from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data)
 
 _AlternateSuccessfullInvestigation :: Prism' ModifierType Target

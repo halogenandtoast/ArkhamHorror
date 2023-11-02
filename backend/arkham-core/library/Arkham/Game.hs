@@ -3037,6 +3037,7 @@ instance Query ExtendedCardMatcher where
                     let
                       passesCommitRestriction = \case
                         CommittableTreachery -> error "unhandled"
+                        OnlyInvestigator imatcher -> iid <=~> imatcher
                         OnlyCardCommittedToTest -> pure $ null committedCardTitles
                         MaxOnePerTest ->
                           pure $ toTitle card `notElem` committedCardTitles

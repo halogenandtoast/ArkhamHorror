@@ -78,6 +78,7 @@ allPlayerSkillCards =
       , runForYourLife
       , sayYourPrayers
       , sealOfTheElderSign5
+      , selfSacrifice
       , steadfast
       , strokeOfLuck2
       , stunningBlow
@@ -503,6 +504,13 @@ momentum1 =
   (skill "06115" "Momentum" [#wild] Rogue)
     { cdCardTraits = singleton Practiced
     , cdLevel = 1
+    }
+
+selfSacrifice :: CardDef
+selfSacrifice =
+  (skill "06157" "Self-Sacrifice" [] Guardian)
+    { cdCardTraits = singleton Spirit
+    , cdCommitRestrictions = [OnlyInvestigator $ NotYou <> InvestigatorAt YourLocation]
     }
 
 riseToTheOccasion3 :: CardDef

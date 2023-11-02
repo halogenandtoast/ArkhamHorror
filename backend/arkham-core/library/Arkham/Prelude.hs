@@ -336,3 +336,6 @@ instance Foldable Only where
 
 forMaybeM :: Monad m => [a] -> (a -> m (Maybe b)) -> m [b]
 forMaybeM xs f = catMaybes <$> traverse f xs
+
+notNullOr :: [a] -> [a] -> [a]
+notNullOr as bs = if null as then bs else as

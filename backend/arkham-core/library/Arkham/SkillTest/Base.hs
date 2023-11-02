@@ -25,6 +25,7 @@ data SkillTestBaseValue
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
+  , skillTestResolveFailureInvestigator :: InvestigatorId
   , skillTestType :: SkillTestType
   , skillTestBaseValue :: SkillTestBaseValue
   , skillTestDifficulty :: Int
@@ -94,6 +95,7 @@ buildSkillTest
 buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue difficulty =
   SkillTest
     { skillTestInvestigator = iid
+    , skillTestResolveFailureInvestigator = iid
     , skillTestType = stType
     , skillTestBaseValue = bValue
     , skillTestDifficulty = difficulty

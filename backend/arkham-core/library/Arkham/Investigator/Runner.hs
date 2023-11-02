@@ -2082,7 +2082,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       skillDifficulty = skillTestDifficulty skillTest
       onlyCardComittedToTestCommitted =
         any
-          (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
+          (elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef)
           allCommittedCards
       committedCardTitles = map toTitle allCommittedCards
     let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
@@ -2109,6 +2109,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               let
                 passesCommitRestriction = \case
                   CommittableTreachery -> error "unhandled"
+                  OnlyInvestigator matcher -> iid <=~> matcher
                   OnlyCardCommittedToTest -> pure $ null committedCardTitles
                   MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
                   OnlyYourTest -> pure True
@@ -2196,7 +2197,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         skillDifficulty = skillTestDifficulty skillTest
         onlyCardComittedToTestCommitted =
           any
-            ( any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef
+            ( elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef
             )
             allCommittedCards
         committedCardTitles = map toTitle allCommittedCards
@@ -2217,6 +2218,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   passesCommitRestriction = \case
                     CommittableTreachery -> error "unhandled"
                     MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
+                    OnlyInvestigator matcher -> iid <=~> matcher
                     OnlyCardCommittedToTest -> pure $ null committedCardTitles
                     OnlyYourTest -> pure False
                     MustBeCommittedToYourTest -> pure False

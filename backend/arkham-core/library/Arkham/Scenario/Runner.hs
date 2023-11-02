@@ -687,8 +687,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       DrawFound who n -> do
         let
           choices =
-            [ TargetLabel
-              (CardIdTarget $ toCardId card)
+            [ targetLabel
+              (toCardId card)
               [InvestigatorDrewEncounterCard who card]
             | card <- mapMaybe (preview _EncounterCard) targetCards
             ]
@@ -699,8 +699,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       DrawFoundUpTo who n -> do
         let
           choices =
-            [ TargetLabel
-              (CardIdTarget $ toCardId card)
+            [ targetLabel
+              (toCardId card)
               [InvestigatorDrewEncounterCard who card]
             | card <- mapMaybe (preview _EncounterCard) targetCards
             ]

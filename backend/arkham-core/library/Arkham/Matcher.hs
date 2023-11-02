@@ -46,6 +46,9 @@ instance OneOf EventMatcher where
 instance OneOf AssetMatcher where
   oneOf = AssetOneOf
 
+instance OneOf TreacheryMatcher where
+  oneOf = TreacheryOneOf
+
 class WithTrait a where
   withTrait :: Trait -> a
 

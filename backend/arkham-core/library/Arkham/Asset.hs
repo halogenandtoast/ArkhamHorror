@@ -566,6 +566,8 @@ allAssets =
     , -- A Thousand Shapes of Horror
       --- guardian [tsh]
       SomeAssetCard tetsuoMori
+    , --- seeker [tsh]
+      SomeAssetCard otherworldlyCodex2
     , --- neutral [tsh]
       SomeAssetCard versatile2
     , -- Point of No Return

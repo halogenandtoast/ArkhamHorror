@@ -682,6 +682,12 @@ debug f i = do
   atomicWriteIORef ref 1
   f i
 
+debugV :: (Investigator -> TestAppT ()) -> Investigator -> TestAppT ()
+debugV f i = do
+  ref <- gets debugLevel
+  atomicWriteIORef ref 2
+  f i
+
 {- | Run a test with a default investigator.
 We use jenny barnes because she has no direct interaction with the game state
 -}

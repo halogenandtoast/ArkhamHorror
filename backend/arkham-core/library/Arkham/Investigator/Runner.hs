@@ -712,11 +712,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (if shouldDiscard then (discardL %~ (card :)) else id)
       & (slotsL %~ removeFromSlots aid)
-  Discarded _ _ (PlayerCard card) -> do
-    let shouldDiscard = pcOwner card == Just investigatorId && card `notElem` investigatorDiscard
-    if shouldDiscard
-      then pure $ a & discardL %~ (card :) & handL %~ filter (/= PlayerCard card)
-      else pure a
+  -- Discarded _ _ (PlayerCard card) -> do
+  --   let shouldDiscard = pcOwner card == Just investigatorId && card `notElem` investigatorDiscard
+  --   if shouldDiscard
+  --     then pure $ a & discardL %~ (card :) & handL %~ filter (/= PlayerCard card)
+  --     else pure a
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
   Exiled (AssetTarget aid) _ -> do

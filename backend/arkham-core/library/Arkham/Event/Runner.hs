@@ -50,7 +50,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
     pushAll
       $ windows'
-      <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
+      <> [Discarded (toTarget a) source (toCard a), RemoveFromPlay $ toSource a]
     pure a
   RemoveFromPlay source | isSource a source -> do
     let

@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Action
 import Arkham.Action.Additional
+import Arkham.Asset.Uses
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
@@ -90,6 +91,7 @@ data ModifierType
   | CanReduceCostOf CardMatcher Int
   | CanRetaliateWhileExhausted
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
+  | CanSpendUsesAsResourceOnCardFromInvestigator AssetId UseType InvestigatorMatcher CardMatcher
   | CancelAttacksByEnemies Card EnemyMatcher
   | CancelSkills
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage

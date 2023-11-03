@@ -595,6 +595,10 @@ allAssets =
       SomeAssetCard theBlackFan3
     , --- mystic [eote]
       SomeAssetCard dragonPole
+    , --- survivor [eote]
+      SomeAssetCard schoffnersCatalogue
+    , --- guardian/seeker [eote]
+      SomeAssetCard medicalStudent
     , -- The Scarlet Keys
       --- guardian [tsk]
       -- , SomeAssetCard runicAxe

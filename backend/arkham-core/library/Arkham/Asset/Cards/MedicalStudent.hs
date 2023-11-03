@@ -1,53 +1,53 @@
-module Arkham.Asset.Cards.FirstAid3 (
-  firstAid3,
-  FirstAid3 (..),
-) where
+module Arkham.Asset.Cards.MedicalStudent (
+  medicalStudent,
+  MedicalStudent (..),
+)
+where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (allInvestigators)
-import Arkham.Damage
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
-newtype FirstAid3 = FirstAid3 AssetAttrs
+newtype MedicalStudent = MedicalStudent AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-firstAid3 :: AssetCard FirstAid3
-firstAid3 = assetWith FirstAid3 Cards.firstAid3 (whenNoUsesL ?~ DiscardWhenNoUses)
+medicalStudent :: AssetCard MedicalStudent
+medicalStudent = ally MedicalStudent Cards.medicalStudent (1, 1)
 
-instance HasAbilities FirstAid3 where
-  getAbilities (FirstAid3 x) =
+instance HasAbilities MedicalStudent where
+  getAbilities (MedicalStudent x) =
     [ controlledAbility
         x
         1
         ( AnyCriterion
             [ exists
                 $ oneOf
-                  [ HealableInvestigator (toSource x) HorrorType $ InvestigatorAt YourLocation
-                  , HealableInvestigator (toSource x) DamageType $ InvestigatorAt YourLocation
+                  [ HealableInvestigator (toSource x) #horror $ InvestigatorAt YourLocation
+                  , HealableInvestigator (toSource x) #damage $ InvestigatorAt YourLocation
                   ]
             , exists
                 $ oneOf
-                  [ HealableAsset (toSource x) HorrorType
+                  [ HealableAsset (toSource x) #horror
                       $ AssetAt YourLocation
                       <> AssetControlledBy (affectsOthers Anyone)
-                  , HealableAsset (toSource x) DamageType
+                  , HealableAsset (toSource x) #damage
                       $ AssetAt YourLocation
                       <> AssetControlledBy (affectsOthers Anyone)
                   ]
             ]
         )
-        $ actionAbilityWithCost (assetUseCost x Supply 1)
+        $ freeReaction (AssetEntersPlay #when $ AssetWithId (toId x))
     ]
 
-instance RunMessage FirstAid3 where
-  runMessage msg a@(FirstAid3 attrs) = case msg of
+instance RunMessage MedicalStudent where
+  runMessage msg a@(MedicalStudent attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      -- [ALERT] [SAME] MedicalStudent
+      -- [ALERT] [SAME] FirstAid3
       let
         componentLabel component target = case target of
           InvestigatorTarget iid' ->
@@ -60,12 +60,12 @@ instance RunMessage FirstAid3 where
       assetChoices <- do
         horrorAssets <-
           select
-            $ HealableAsset (toSource attrs) HorrorType
+            $ HealableAsset (toSource attrs) #horror
             $ AssetAt (locationWithInvestigator iid)
             <> AssetControlledBy (affectsOthers Anyone)
         damageAssets <-
           select
-            $ HealableAsset (toSource attrs) DamageType
+            $ HealableAsset (toSource attrs) #damage
             $ AssetAt (locationWithInvestigator iid)
             <> AssetControlledBy (affectsOthers Anyone)
         let allAssets = setToList $ horrorAssets <> damageAssets
@@ -91,11 +91,11 @@ instance RunMessage FirstAid3 where
       investigatorChoices <- do
         horrorInvestigators <-
           select
-            $ HealableInvestigator (toSource attrs) HorrorType
+            $ HealableInvestigator (toSource attrs) #horror
             $ colocatedWith iid
         damageInvestigators <-
           select
-            $ HealableInvestigator (toSource attrs) DamageType
+            $ HealableInvestigator (toSource attrs) #damage
             $ colocatedWith iid
         let
           allInvestigators =
@@ -123,4 +123,4 @@ instance RunMessage FirstAid3 where
 
       push $ chooseOne player $ assetChoices <> investigatorChoices
       pure a
-    _ -> FirstAid3 <$> runMessage msg attrs
+    _ -> MedicalStudent <$> runMessage msg attrs

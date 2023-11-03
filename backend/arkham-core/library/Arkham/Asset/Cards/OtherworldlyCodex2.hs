@@ -52,9 +52,10 @@ instance RunMessage OtherworldlyCodex2 where
       player <- getPlayer iid
 
       pushIfAny targets
-        $ chooseOne
-          player
-          [targetLabel target [toDiscardBy iid (toAbilitySource attrs 1) target] | target <- targets]
+        $ chooseOne player
+        $ targetLabels targets
+        $ only
+        . toDiscardBy iid (toAbilitySource attrs 1)
 
       pure a
     _ -> OtherworldlyCodex2 <$> runMessage msg attrs

@@ -78,9 +78,10 @@ const chooseAmountsChoices = computed<AmountChoice[]>(() => {
 const amountSelections = ref<Record<string, number>>({})
 
 const setInitialAmounts = () => {
+    console.log(question.value.amountChoices)
     const labels = question.value?.tag === QuestionType.CHOOSE_AMOUNTS
       ? question.value.amountChoices.map((choice) => choice.label)
-      : Object.keys(props.game.investigators)
+      : paymentAmountsChoices.value.map((choice) => choice.title)
     amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
       previousValue[currentValue] = 0
       return previousValue
@@ -265,12 +266,12 @@ const replaceIcons = function(body: string) {
           <legend>{{paymentAmountsLabel}}</legend>
           <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
             <div v-if="amountChoice.maxBound !== 0">
-              {{investigatorName(amountChoice.investigatorId)}}
+              {{amountChoice.title}}
               <input
                 type="number"
                 :min="amountChoice.minBound"
                 :max="amountChoice.maxBound"
-                v-model.number="amountSelections[amountChoice.investigatorId]"
+                v-model.number="amountSelections[amountChoice.title]"
                 onclick="this.select()"
               />
             </div>

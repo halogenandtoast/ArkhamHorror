@@ -181,12 +181,14 @@ export interface PaymentAmountChoice {
   investigatorId: string
   minBound: number
   maxBound: number
+  title: string
 }
 
 export const paymentAmountChoiceDecoder = JsonDecoder.object<PaymentAmountChoice>({
   investigatorId: JsonDecoder.string,
   minBound: JsonDecoder.number,
   maxBound: JsonDecoder.number,
+  title: JsonDecoder.string,
 }, 'PaymentAmountChoice')
 
 export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmounts>(

@@ -990,8 +990,23 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
             ]
         _ -> pure False
+
+    resourcesFromAssets <-
+      sum <$> for iidsWithModifiers \(iid', modifiers) -> do
+        sum <$> for modifiers \case
+          CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher -> do
+            canContribute <-
+              andM
+                [ liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch c cMatcher)
+                , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+                ]
+            if canContribute
+              then fieldMap AssetUses (useTypeCount uType) assetId
+              else pure 0
+          _ -> pure 0
+
     additionalResources <-
-      sum <$> traverse (field InvestigatorResources . fst) canHelpPay
+      (resourcesFromAssets +) . sum <$> traverse (field InvestigatorResources . fst) canHelpPay
     modifiers <- getModifiers (InvestigatorTarget iid)
     cardModifiers <- getModifiers (toCardId c)
     let title = nameTitle (cdName pcDef)

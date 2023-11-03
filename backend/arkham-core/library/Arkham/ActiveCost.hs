@@ -13,7 +13,7 @@ import Arkham.Ability hiding (PaidCost)
 import Arkham.Action hiding (Ability, TakenAction)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Types (
-  Field (AssetCard, AssetController, AssetSealedChaosTokens, AssetUses),
+  Field (AssetCard, AssetController, AssetName, AssetSealedChaosTokens, AssetUses),
  )
 import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Card
@@ -42,6 +42,7 @@ import Arkham.Matcher hiding (
   PlayCard,
   SkillCard,
  )
+import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Skill.Types (Field (..))
@@ -315,13 +316,14 @@ instance RunMessage ActiveCost where
               availableResources <- getSpendableResources iid
               pure $ min n (availableResources `div` resources)
             _ -> pure n
+          name <- fieldMap InvestigatorName toTitle iid
           when canAfford
             $ push
             $ Ask player
             $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
-              [ PaymentAmountChoice iid 0 maxUpTo
+              [ PaymentAmountChoice iid 0 maxUpTo name
                   $ PayCost acId iid skipAdditionalCosts cost'
               ]
           pure c
@@ -488,12 +490,13 @@ instance RunMessage ActiveCost where
           requiredResources <- getModifiedCardCost iid card
           let minimumHorror = max 1 (requiredResources - availableResources)
           sanity <- field InvestigatorRemainingSanity iid
+          name <- fieldMap InvestigatorName toTitle iid
           push
             $ Ask player
             $ ChoosePaymentAmounts
               "Pay X Horror"
               Nothing
-              [ PaymentAmountChoice iid minimumHorror sanity
+              [ PaymentAmountChoice iid minimumHorror sanity name
                   $ PayCost acId iid skipAdditionalCosts (HorrorCost source' (InvestigatorTarget iid) 1)
               ]
           pure c
@@ -538,41 +541,72 @@ instance RunMessage ActiveCost where
             ForAbility {} -> push $ SpendResources iid x
             ForCost {} -> push $ SpendResources iid x
             ForCard _ card -> do
-              iids <- filter (/= iid) <$> getInvestigatorIds
+              iids <- getInvestigatorIds
               iidsWithModifiers <- for iids $ \iid' -> do
                 modifiers <- getModifiers (InvestigatorTarget iid')
                 pure (iid', modifiers)
-              canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) ->
+              canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) ->
                 do
                   flip anyM modifiers $ \case
                     CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
-                      liftA2
-                        (&&)
-                        (member iid <$> select iMatcher)
-                        (pure $ cardMatch card cMatcher)
+                      andM
+                        [ member iid <$> select iMatcher
+                        , pure $ cardMatch card cMatcher
+                        , pure $ iid /= iid'
+                        ]
                     _ -> pure False
-              if null canHelpPay
+
+              resourcesFromAssets <-
+                concatForM iidsWithModifiers \(iid', modifiers) -> do
+                  forMaybeM modifiers \case
+                    CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher -> do
+                      canContribute <-
+                        andM
+                          [ liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch card cMatcher)
+                          , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+                          ]
+                      if canContribute
+                        then do
+                          total <- fieldMap AssetUses (useTypeCount uType) assetId
+                          name <- fieldMap AssetName toTitle assetId
+                          pure $ guard (total > 0) $> (iid', assetId, uType, name, total)
+                        else pure Nothing
+                    _ -> pure Nothing
+
+              if null canHelpPay && null resourcesFromAssets
                 then push (SpendResources iid x)
                 else do
                   iidsWithResources <-
-                    forToSnd
-                      (iid : map fst canHelpPay)
-                      (getSpendableResources)
+                    for (iid : map fst canHelpPay) \iid' -> do
+                      resources <- getSpendableResources iid'
+                      name <- toTitle <$> field InvestigatorName iid'
+                      pure (iid', name, resources)
+
                   push
-                    ( Ask player
-                        $ ChoosePaymentAmounts
-                          ("Pay " <> tshow x <> " resources")
-                          (Just x)
-                        $ map
-                          ( \(iid', resources) ->
-                              PaymentAmountChoice
-                                iid'
-                                0
-                                resources
-                                (SpendResources iid' 1)
-                          )
-                          iidsWithResources
-                    )
+                    $ Ask player
+                    $ ChoosePaymentAmounts
+                      ("Pay " <> tshow x <> " resources")
+                      (Just x)
+                    $ map
+                      ( \(iid', name, resources) ->
+                          PaymentAmountChoice
+                            iid'
+                            0
+                            resources
+                            name
+                            (SpendResources iid' 1)
+                      )
+                      iidsWithResources
+                    <> map
+                      ( \(iid', assetId, uType, name, total) ->
+                          PaymentAmountChoice
+                            iid'
+                            0
+                            total
+                            (tshow uType <> " from " <> name)
+                            (SpendUses (toTarget assetId) uType 1)
+                      )
+                      resourcesFromAssets
           withPayment $ ResourcePayment x
         AdditionalActionsCost -> do
           actionRemainingCount <- field InvestigatorRemainingActions iid
@@ -650,12 +684,14 @@ instance RunMessage ActiveCost where
             sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
           let maxUses = min uses m
 
+          name <- fieldMap InvestigatorName toTitle iid
+
           push
             $ Ask player
             $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
-              [ PaymentAmountChoice iid n maxUses
+              [ PaymentAmountChoice iid n maxUses name
                   $ PayCost
                     acId
                     iid
@@ -714,21 +750,26 @@ instance RunMessage ActiveCost where
             selectList
               $ InvestigatorAt locationMatcher
               <> InvestigatorWithAnyClues
-          iidsWithClues <-
-            filter ((> 0) . snd)
-              <$> forToSnd iids (getSpendableClueCount . pure)
+          iidsWithClues <- forMaybeM iids \iid' -> do
+            clues <- getSpendableClueCount [iid']
+            if clues > 0
+              then do
+                name <- fieldMap InvestigatorName toTitle iid'
+                pure $ Just (iid', name, clues)
+              else pure Nothing
           case iidsWithClues of
-            [(iid', _)] ->
+            [(iid', _, _)] ->
               c <$ push (PayCost acId iid' True (ClueCost (Static totalClues)))
             _ -> do
               let
                 paymentOptions =
                   map
-                    ( \(iid', clues) ->
+                    ( \(iid', name, clues) ->
                         PaymentAmountChoice
                           iid'
                           0
                           clues
+                          name
                           (PayCost acId iid' True (ClueCost (Static 1)))
                     )
                     iidsWithClues
@@ -793,12 +834,13 @@ instance RunMessage ActiveCost where
                       [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
                 )
                 handCards
+          name <- fieldMap InvestigatorName toTitle iid
           push
             $ Ask player
             $ ChoosePaymentAmounts
               "Number of cards to pay"
               Nothing
-              [ PaymentAmountChoice iid 1 (length cards)
+              [ PaymentAmountChoice iid 1 (length cards) name
                   $ PayCost acId iid skipAdditionalCosts (HandDiscardCost 1 cardMatcher)
               ]
           pure c

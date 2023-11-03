@@ -350,6 +350,7 @@ allPlayerAssetCards =
       , mauserC96
       , mauserC962
       , meatCleaver
+      , medicalStudent
       , medicalTexts
       , medicoDellaPeste
       , miskatonicArchaeologyFunding4
@@ -424,6 +425,7 @@ allPlayerAssetCards =
       , rolands38Special
       , safeguard
       , scavenging
+      , schoffnersCatalogue
       , scientificTheory1
       , scrapper
       , scrapper3
@@ -3806,6 +3808,22 @@ dragonPole =
     { cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSkills = [#combat]
     , cdSlots = [#hand, #hand]
+    }
+
+schoffnersCatalogue :: CardDef
+schoffnersCatalogue =
+  (asset "08072" "Schoffner's Catalogue" 2 Survivor)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdUses = uses Secret 5
+    }
+
+medicalStudent :: CardDef
+medicalStudent =
+  (multiClassAsset "08083" "Medical Student" 2 [Guardian, Seeker])
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ally, Miskatonic, Science]
+    , cdSlots = [#ally]
     }
 
 runicAxe :: CardDef

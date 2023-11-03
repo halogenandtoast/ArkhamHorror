@@ -41,7 +41,7 @@ data QuestionResponse = QuestionResponse
   deriving stock (Show, Generic)
 
 newtype PaymentAmountsResponse = PaymentAmountsResponse
-  {parAmounts :: Map InvestigatorId Int}
+  {parAmounts :: Map Text Int}
   deriving stock (Show, Generic)
 
 newtype AmountsResponse = AmountsResponse
@@ -253,11 +253,11 @@ handleAnswer Game {..} playerId = \case
         let
           costMap =
             Map.fromList
-              $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
+              $ map (\(PaymentAmountChoice _ _ _ name cost) -> (name, cost)) info
         pure
           $ concatMap
-            ( \(iid, n) ->
-                replicate n (Map.findWithDefault Noop iid costMap)
+            ( \(name, n) ->
+                replicate n (Map.findWithDefault Noop name costMap)
             )
           $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"

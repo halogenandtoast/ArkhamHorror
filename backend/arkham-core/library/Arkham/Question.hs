@@ -79,6 +79,7 @@ data PaymentAmountChoice msg = PaymentAmountChoice
   { investigatorId :: InvestigatorId
   , minBound :: Int
   , maxBound :: Int
+  , title :: Text
   , message :: msg
   }
   deriving stock (Show, Eq)

@@ -78,10 +78,9 @@ const chooseAmountsChoices = computed<AmountChoice[]>(() => {
 const amountSelections = ref<Record<string, number>>({})
 
 const setInitialAmounts = () => {
-    console.log(question.value.amountChoices)
     const labels = question.value?.tag === QuestionType.CHOOSE_AMOUNTS
       ? question.value.amountChoices.map((choice) => choice.label)
-      : paymentAmountsChoices.value.map((choice) => choice.title)
+      : (paymentAmountsChoices.value ?? []).map((choice) => choice.title)
     amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
       previousValue[currentValue] = 0
       return previousValue

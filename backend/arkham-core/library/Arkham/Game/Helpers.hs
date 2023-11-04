@@ -50,6 +50,7 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor)
 import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
 import Arkham.Helpers.Tarot
+import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), InvestigatorAttrs (..))
 import Arkham.Keyword qualified as Keyword
@@ -1172,6 +1173,10 @@ passesCriteria iid mcard source windows' = \case
   Criteria.ChaosTokenCountIs tokenMatcher valueMatcher -> do
     n <- selectCount tokenMatcher
     gameValueMatches n valueMatcher
+  Criteria.HasHistory hType iMatcher historyMatcher -> do
+    investigators <- selectList iMatcher
+    histories <- traverse (getHistory hType) investigators
+    anyM (historyMatches historyMatcher) histories
   Criteria.NotYetRecorded key -> do
     recorded <- getHasRecord key
     pure $ not recorded
@@ -3222,3 +3227,8 @@ sourceMatches s = \case
     LocationSource _ -> True
     TreacherySource _ -> True
     _ -> False
+
+historyMatches :: HasGame m => Matcher.HistoryMatcher -> History -> m Bool
+historyMatches = \case
+  Matcher.DefeatedEnemiesWithTotalHealth vMatcher ->
+    (`gameValueMatches` vMatcher) . sum . map defeatedEnemyHealth . historyEnemiesDefeated

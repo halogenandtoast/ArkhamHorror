@@ -372,6 +372,9 @@ allEvents =
     , -- A Thousand Shapes of Horror
       --- guardian [tsh]
       SomeEventCard foolMeOnce1
+    , --- rogue [tsh]
+      SomeEventCard letGodSortThemOut
+    , SomeEventCard swiftReload2
     , --- mystic [tsh]
       SomeEventCard etherealForm
     , --- survivor [tsh]

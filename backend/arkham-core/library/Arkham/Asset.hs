@@ -569,6 +569,10 @@ allAssets =
     , --- seeker [tsh]
       SomeAssetCard otherworldlyCodex2
     , SomeAssetCard dreamEnhancingSerum
+    , --- rogue [tsh]
+      SomeAssetCard gregoryGry
+    , --- mystic [tsh]
+      SomeAssetCard healingWords
     , --- neutral [tsh]
       SomeAssetCard versatile2
     , -- Point of No Return

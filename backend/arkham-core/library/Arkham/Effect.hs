@@ -38,6 +38,7 @@ import Arkham.Asset.Assets (
   clairvoyanceEffect,
   crystalPendulumEffect,
   fence1Effect,
+  gregoryGryEffect,
   grislyTotemSeeker3Effect,
   grislyTotemSurvivor3Effect,
   highRoller2Effect,
@@ -322,6 +323,7 @@ allEffects =
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06114", SomeEffect followedEffect)
+    , ("06162", SomeEffect gregoryGryEffect)
     , ("06279", SomeEffect oldBookOfLore3Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)

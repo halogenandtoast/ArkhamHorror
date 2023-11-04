@@ -257,6 +257,7 @@ allPlayerAssetCards =
       , grannyOrne3
       , gravediggersShovel
       , gravediggersShovel2
+      , gregoryGry
       , greteWagner
       , greteWagner3
       , grimmsFairyTales
@@ -277,6 +278,7 @@ allPlayerAssetCards =
       , hardKnocks
       , hardKnocks2
       , hawkEyeFoldingCamera
+      , healingWords
       , heirloomOfHyperborea
       , hemisphericMap3
       , henryDeveau
@@ -3707,6 +3709,25 @@ dreamEnhancingSerum =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Science]
     , cdSlots = [#arcane]
+    }
+
+gregoryGry :: CardDef
+gregoryGry =
+  (asset "06162" ("Gregory Gry" <:> "Muckracker") 3 Rogue)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Ally, Criminal, Dreamer]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdUses = uses Resource 9
+    }
+
+healingWords :: CardDef
+healingWords =
+  (asset "06163" "Healing Words" 2 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = singleton Spell
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 3
     }
 
 versatile2 :: CardDef

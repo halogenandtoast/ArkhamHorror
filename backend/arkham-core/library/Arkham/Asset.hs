@@ -568,6 +568,7 @@ allAssets =
       SomeAssetCard tetsuoMori
     , --- seeker [tsh]
       SomeAssetCard otherworldlyCodex2
+    , SomeAssetCard dreamEnhancingSerum
     , --- neutral [tsh]
       SomeAssetCard versatile2
     , -- Point of No Return

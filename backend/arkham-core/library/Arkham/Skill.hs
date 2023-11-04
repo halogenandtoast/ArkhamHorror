@@ -88,6 +88,7 @@ allSkills =
     , SomeSkillCard essenceOfTheDream
     , SomeSkillCard momentum1
     , SomeSkillCard selfSacrifice
+    , SomeSkillCard threeAces1
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied
     , SomeSkillCard riseToTheOccasion3

@@ -2644,6 +2644,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           player <- getPlayer iid
           case foundStrategy' of
             DrawOrCommitFound who n -> do
+              -- [TODO] We need this to determine what state the skill test
+              -- is in, if we are committing cards we need to use
+              -- SkillTestCommitCard instead of CommitCard
               committable <- filterM (getIsCommittable who) $ concatMap snd $ mapToList targetCards
               let
                 choices =

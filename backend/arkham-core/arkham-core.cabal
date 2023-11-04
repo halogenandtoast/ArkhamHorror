@@ -434,6 +434,7 @@ library
       Arkham.Asset.Cards.DragonPole
       Arkham.Asset.Cards.DrawingThin
       Arkham.Asset.Cards.DreamDiary
+      Arkham.Asset.Cards.DreamEnhancingSerum
       Arkham.Asset.Cards.DrElliHorowitz
       Arkham.Asset.Cards.DrFrancisMorgan
       Arkham.Asset.Cards.DrHenryArmitage
@@ -1328,6 +1329,7 @@ library
       Arkham.Event.Cards.Persuasion
       Arkham.Event.Cards.Pilfer
       Arkham.Event.Cards.Pilfer3
+      Arkham.Event.Cards.PracticeMakesPerfect
       Arkham.Event.Cards.Premonition
       Arkham.Event.Cards.PreparedForTheWorst
       Arkham.Event.Cards.PreposterousSketches
@@ -2151,6 +2153,7 @@ library
       Arkham.Skill.Cards.TakeHeart
       Arkham.Skill.Cards.TakeTheInitiative
       Arkham.Skill.Cards.TheHomeFront
+      Arkham.Skill.Cards.ThreeAces1
       Arkham.Skill.Cards.TorrentOfPower
       Arkham.Skill.Cards.TrueUnderstanding
       Arkham.Skill.Cards.UnexpectedCourage

@@ -200,6 +200,7 @@ allPlayerAssetCards =
       , drWilliamTMaleson
       , dragonPole
       , drawingThin
+      , dreamEnhancingSerum
       , dreamDiary
       , duke
       , earlSawyer
@@ -3698,6 +3699,14 @@ otherworldlyCodex2 =
     , cdSlots = [#hand]
     , cdUses = uses Secret 3
     , cdLevel = 2
+    }
+
+dreamEnhancingSerum :: CardDef
+dreamEnhancingSerum =
+  (asset "06159" "Dream-Enhancing Serum" 3 Seeker)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Science]
+    , cdSlots = [#arcane]
     }
 
 versatile2 :: CardDef

@@ -509,6 +509,7 @@ instance Monoid TreacheryMatcher where
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | CardIsBeneathInvestigator Who
+  | CardWithCopyInHand Who
   | InHandOf Who
   | InDeckOf Who
   | InDiscardOf Who

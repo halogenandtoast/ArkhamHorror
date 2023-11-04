@@ -212,6 +212,7 @@ allPlayerEventCards =
       , persuasion
       , pilfer
       , pilfer3
+      , practiceMakesPerfect
       , premonition
       , preparedForTheWorst
       , preposterousSketches
@@ -2413,6 +2414,15 @@ scroungeForSupplies =
     , cdCriteria =
         Just
           $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithLevel 0)
+    }
+
+practiceMakesPerfect :: CardDef
+practiceMakesPerfect =
+  (event "06197" "Practice Makes Perfect" 1 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Gambit, Tactic]
+    , cdFastWindow = Just FastPlayerWindow
+    , cdCriteria = Just $ Criteria.DuringSkillTest SkillTestAtYourLocation
     }
 
 dodge2 :: CardDef

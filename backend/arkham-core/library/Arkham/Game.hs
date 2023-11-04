@@ -153,6 +153,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Skill
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner
+import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Story
@@ -3121,11 +3122,15 @@ instance Query ExtendedCardMatcher where
           ( any (`member` skillIcons) (cdSkills (toCardDef c))
               || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
           )
+      CardWithCopyInHand who -> do
+        let name = toName c
+        iids <- selectList who
+        names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
+        pure $ count (== name) names > 1
       InDiscardOf who -> do
         iids <- selectList who
         discards <-
-          concat
-            <$> traverse (fieldMap InvestigatorDiscard (map PlayerCard)) iids
+          concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) iids
         pure $ c `elem` discards
       CardIsBeneathInvestigator who -> do
         iids <- selectList who
@@ -4308,9 +4313,19 @@ runGameMessage msg g = case msg of
       _ -> pure g
   SkillTestResults resultsData -> pure $ g & skillTestResultsL ?~ resultsData
   Do (SkillTestEnds iid _) -> do
+    let result = skillTestResult <$> g ^. skillTestL
+    let
+      resultF =
+        case result of
+          Just SucceededBy {} -> \case
+            IfSuccessfulModifier m -> m
+            other -> other
+          _ -> id
+
     skillPairs <-
       for (mapToList $ g ^. entitiesL . skillsL) $ \(skillId, skill) -> do
-        modifiers' <- getModifiers (SkillTarget skillId)
+        card <- field SkillCard skillId
+        modifiers' <- map resultF <$> liftA2 (<>) (getModifiers skillId) (getModifiers $ toCardId card)
         pure
           $ if ReturnToHandAfterTest `elem` modifiers'
             then

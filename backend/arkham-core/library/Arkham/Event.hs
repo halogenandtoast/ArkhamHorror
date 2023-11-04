@@ -376,6 +376,9 @@ allEvents =
       SomeEventCard etherealForm
     , --- survivor [tsh]
       SomeEventCard scroungeForSupplies
+    , -- Dark Side of the Moon
+      --- seeker [dsm]
+      SomeEventCard practiceMakesPerfect
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard dodge2

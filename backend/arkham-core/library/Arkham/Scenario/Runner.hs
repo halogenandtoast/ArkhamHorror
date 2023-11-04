@@ -682,6 +682,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       foundStrategy' = foldr applyMod foundStrategy mods
 
     case foundStrategy' of
+      CommitFound {} -> error "CommitFound not implemented for EncounterDeck"
       DrawOrCommitFound {} -> error "CommitFound not implemented for EncounterDeck"
       RemoveFoundFromGame _ _ -> error "Unhandled"
       DrawFound who n -> do

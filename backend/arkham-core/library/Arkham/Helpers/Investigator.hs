@@ -22,6 +22,7 @@ import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message (Message (HealHorror))
+import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
@@ -29,6 +30,8 @@ import Arkham.Stats
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Foldable (foldrM)
+import Data.Function (on)
+import Data.List (nubBy)
 import Data.Monoid
 import Data.UUID (nil)
 import Data.UUID qualified as UUID
@@ -117,7 +120,9 @@ getHandSize attrs = do
 
 getInHandCount :: HasGame m => InvestigatorAttrs -> m Int
 getInHandCount attrs = do
-  cards <- field InvestigatorHand (toId attrs)
+  onlyFirstCopies <- hasModifier attrs OnlyFirstCopyCardCountsTowardMaximumHandSize
+  let f = if onlyFirstCopies then nubBy ((==) `on` toName) else id
+  cards <- fieldMap InvestigatorHand f (toId attrs)
   let
     applyModifier n = \case
       HandSizeCardCount m -> m

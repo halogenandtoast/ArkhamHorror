@@ -231,6 +231,7 @@ data ModifierType
   | NoSurge
   | NonDirectHorrorMustBeAssignToThisFirst
   | Omnipotent
+  | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | PlaceOnBottomOfDeckInsteadOfDiscard
   | PlayableModifierContexts [(CardMatcher, [ModifierType])]
   | ReduceCostOf CardMatcher Int
@@ -270,6 +271,7 @@ data ModifierType
   | UseSkillInPlaceOf SkillType SkillType -- oh no, why are these similar, this let's you choose
   | UseSkillInsteadOf SkillType SkillType -- this doesn't
   | XPModifier Int
+  | IfSuccessfulModifier ModifierType
   | -- UI only modifiers
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast

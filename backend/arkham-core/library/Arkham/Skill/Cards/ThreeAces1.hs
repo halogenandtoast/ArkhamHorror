@@ -1,0 +1,37 @@
+module Arkham.Skill.Cards.ThreeAces1 (
+  threeAces1,
+  ThreeAces1 (..),
+)
+where
+
+import Arkham.Prelude
+
+import Arkham.Capability
+import Arkham.Classes
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Skill.Cards qualified as Cards
+import Arkham.Skill.Runner
+
+newtype ThreeAces1 = ThreeAces1 SkillAttrs
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+threeAces1 :: SkillCard ThreeAces1
+threeAces1 = skill ThreeAces1 Cards.threeAces1
+
+instance RunMessage ThreeAces1 where
+  runMessage msg s@(ThreeAces1 attrs) = case msg of
+    InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
+      n <- selectCount $ skillIs Cards.threeAces1 <> skillControlledBy iid
+      mods <- getModifiers SkillTestTarget
+      when (n >= 3 && MetaModifier "ThreeAces1" `notElem` mods) $ do
+        drawing <- drawCards iid attrs 3
+        canDraw <- can.draw.cards iid
+        canGainResources <- can.gain.resources iid
+        pushAll
+          $ [skillTestModifier (toSource attrs) SkillTestTarget (MetaModifier "ThreeAces1"), PassSkillTest]
+          <> [drawing | canDraw]
+          <> [takeResources iid (toSource attrs) 3 | canGainResources]
+      pure s
+    _ -> ThreeAces1 <$> runMessage msg attrs

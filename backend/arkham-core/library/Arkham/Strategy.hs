@@ -36,6 +36,7 @@ data FoundCardsStrategy
   | ReturnCards
   | RemoveFoundFromGame InvestigatorId Int
   | DrawOrCommitFound InvestigatorId Int
+  | CommitFound InvestigatorId Int
   deriving stock (Show, Eq, Ord, Data)
 
 defer :: Target -> FoundCardsStrategy

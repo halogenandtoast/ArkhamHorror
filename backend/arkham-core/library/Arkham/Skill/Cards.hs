@@ -87,6 +87,7 @@ allPlayerSkillCards =
       , takeHeart
       , takeTheInitiative
       , theHomeFront
+      , threeAces1
       , torrentOfPower
       , trueUnderstanding
       , unexpectedCourage
@@ -511,6 +512,13 @@ selfSacrifice =
   (skill "06157" "Self-Sacrifice" [] Guardian)
     { cdCardTraits = singleton Spirit
     , cdCommitRestrictions = [OnlyInvestigator $ NotYou <> InvestigatorAt YourLocation]
+    }
+
+threeAces1 :: CardDef
+threeAces1 =
+  (skill "06199" "Three Aces" [#wild] Rogue)
+    { cdKeywords = singleton Keyword.Myriad
+    , cdCardTraits = setFromList [Fortune, Practiced]
     }
 
 riseToTheOccasion3 :: CardDef

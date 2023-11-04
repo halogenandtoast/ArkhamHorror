@@ -13,6 +13,7 @@ import Arkham.Cost.Status
 import Arkham.Criteria.Override
 import Arkham.Direction
 import Arkham.GameValue
+import Arkham.History.Types
 import Arkham.Matcher
 import {-# SOURCE #-} Arkham.Modifier
 import Arkham.Scenario.Deck
@@ -169,6 +170,7 @@ data Criterion
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
   | CanMoveThis GridDirection
   | NotYetRecorded CampaignLogKey
+  | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

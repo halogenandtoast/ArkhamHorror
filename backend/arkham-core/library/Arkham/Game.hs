@@ -87,6 +87,7 @@ import Arkham.Helpers.Message hiding (
   InvestigatorResigned,
   createEnemy,
  )
+import Arkham.Helpers.Use (toStartingUses)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
@@ -1801,6 +1802,13 @@ getAssetsMatching matcher = do
         atUseLimit NoUses {} = True
        in
         pure $ filter (atUseLimit . attr assetUses) as
+    AssetNotAtUsesX -> do
+      filterM
+        ( \a -> do
+            uses <- toStartingUses =<< field AssetStartingUses (toId a)
+            pure $ useCount (attr assetUses a) < useCount uses
+        )
+        as
     AssetWithUseType uType ->
       filterM
         (fmap ((== Just uType) . useType) . field AssetStartingUses . toId)

@@ -14,6 +14,7 @@ import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
+import Arkham.History.Types
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -167,6 +168,7 @@ allPlayerEventCards =
       , iveHadWorse4
       , knowledgeIsPower
       , lessonLearned2
+      , letGodSortThemOut
       , letMeHandleThis
       , liveAndLearn
       , lodgeDebts
@@ -248,6 +250,7 @@ allPlayerEventCards =
       , stormOfSpirits3
       , sureGamble3
       , swiftReflexes
+      , swiftReload2
       , taunt
       , taunt2
       , taunt3
@@ -2397,6 +2400,25 @@ foolMeOnce1 =
           $ TreacheryWithResolvedEffectsBy You
           <> TreacheryDiscardedBy You
     , cdLevel = 1
+    }
+
+letGodSortThemOut :: CardDef
+letGodSortThemOut =
+  (event "06160" "\"Let God sort them out...\"" 0 Rogue)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Tactic, Fated]
+    , cdCriteria = Just $ Criteria.HasHistory TurnHistory You $ DefeatedEnemiesWithTotalHealth (atLeast 6)
+    }
+
+swiftReload2 :: CardDef
+swiftReload2 =
+  (event "06161" "Swift Reload" 3 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria =
+        Just $ Criteria.AssetExists $ AssetControlledBy You <> AssetWithTrait Firearm <> AssetNotAtUsesX
+    , cdLevel = 2
     }
 
 etherealForm :: CardDef

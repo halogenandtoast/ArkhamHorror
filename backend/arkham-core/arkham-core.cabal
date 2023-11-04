@@ -496,6 +496,7 @@ library
       Arkham.Asset.Cards.GrannyOrne3
       Arkham.Asset.Cards.GravediggersShovel
       Arkham.Asset.Cards.GravediggersShovel2
+      Arkham.Asset.Cards.GregoryGry
       Arkham.Asset.Cards.GreteWagner
       Arkham.Asset.Cards.GreteWagner3
       Arkham.Asset.Cards.GrimmsFairyTales
@@ -517,6 +518,7 @@ library
       Arkham.Asset.Cards.HarlanEarnstone
       Arkham.Asset.Cards.HaroldWalsted
       Arkham.Asset.Cards.HawkEyeFoldingCamera
+      Arkham.Asset.Cards.HealingWords
       Arkham.Asset.Cards.HeirloomOfHyperborea
       Arkham.Asset.Cards.HelplessPassenger
       Arkham.Asset.Cards.HemisphericMap3
@@ -1284,6 +1286,7 @@ library
       Arkham.Event.Cards.IveHadWorse4
       Arkham.Event.Cards.KnowledgeIsPower
       Arkham.Event.Cards.LessonLearned2
+      Arkham.Event.Cards.LetGodSortThemOut
       Arkham.Event.Cards.LetMeHandleThis
       Arkham.Event.Cards.LiveAndLearn
       Arkham.Event.Cards.LodgeDebts
@@ -1365,6 +1368,7 @@ library
       Arkham.Event.Cards.StormOfSpirits3
       Arkham.Event.Cards.SureGamble3
       Arkham.Event.Cards.SwiftReflexes
+      Arkham.Event.Cards.SwiftReload2
       Arkham.Event.Cards.Taunt
       Arkham.Event.Cards.Taunt2
       Arkham.Event.Cards.Taunt3
@@ -1446,6 +1450,7 @@ library
       Arkham.Helpers.Window
       Arkham.Helpers.Xp
       Arkham.History
+      Arkham.History.Types
       Arkham.Id
       Arkham.Investigate
       Arkham.Investigate.Types
@@ -2097,6 +2102,7 @@ library
       Arkham.Skill.Cards.AllIn5
       Arkham.Skill.Cards.AnythingYouCanDoBetter
       Arkham.Skill.Cards.Arrogance
+      Arkham.Skill.Cards.BruteForce1
       Arkham.Skill.Cards.Copycat3
       Arkham.Skill.Cards.Cunning
       Arkham.Skill.Cards.Curiosity

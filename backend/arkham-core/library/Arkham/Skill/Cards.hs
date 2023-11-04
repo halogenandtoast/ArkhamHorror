@@ -31,6 +31,7 @@ allPlayerSkillCards =
       , allIn5
       , anythingYouCanDoBetter
       , arrogance
+      , bruteForce1
       , copycat3
       , cunning
       , curiosity
@@ -512,6 +513,13 @@ selfSacrifice =
   (skill "06157" "Self-Sacrifice" [] Guardian)
     { cdCardTraits = singleton Spirit
     , cdCommitRestrictions = [OnlyInvestigator $ NotYou <> InvestigatorAt YourLocation]
+    }
+
+bruteForce1 :: CardDef
+bruteForce1 =
+  (skill "06166" "Brute Force" [#combat] Survivor)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 threeAces1 :: CardDef

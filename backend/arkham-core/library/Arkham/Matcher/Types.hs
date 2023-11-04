@@ -163,6 +163,7 @@ data AssetMatcher
   | AssetWithModifier ModifierType
   | AssetWithoutModifier ModifierType
   | AssetNotAtUseLimit
+  | AssetNotAtUsesX
   | AssetWithUseType UseType
   | AssetWithUses UseType
   | AssetWithUseCount UseType Int
@@ -1104,6 +1105,9 @@ instance Semigroup StoryMatcher where
 data AspectMatcher = AspectIs Aspect
   deriving stock (Show, Eq, Ord, Data)
 
+data HistoryMatcher = DefeatedEnemiesWithTotalHealth ValueMatcher
+  deriving stock (Show, Eq, Ord, Data)
+
 $( do
     ability <- deriveJSON defaultOptions ''AbilityMatcher
     act <- deriveJSON defaultOptions ''ActMatcher
@@ -1123,6 +1127,7 @@ $( do
     event <- deriveJSON defaultOptions ''EventMatcher
     explore <- deriveJSON defaultOptions ''ExploreMatcher
     extendedCard <- deriveJSON defaultOptions ''ExtendedCardMatcher
+    history <- deriveJSON defaultOptions ''HistoryMatcher
     investigator <- deriveJSON defaultOptions ''InvestigatorMatcher
     location <- deriveJSON defaultOptions ''LocationMatcher
     phase <- deriveJSON defaultOptions ''PhaseMatcher
@@ -1162,6 +1167,7 @@ $( do
         , event
         , explore
         , extendedCard
+        , history
         , investigator
         , location
         , phase

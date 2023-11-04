@@ -1,15 +1,14 @@
-module Arkham.History where
+module Arkham.History (module Arkham.History, module Arkham.History.Types) where
 
 import Arkham.Prelude
 
 import Arkham.Card.CardCode
 import Arkham.Enemy.Types.Attrs
+import Arkham.History.Types
 import Arkham.Id
 import Arkham.SkillType
 import Arkham.Target
 import Data.Map.Strict qualified as Map
-
-data HistoryType = PhaseHistory | RoundHistory | TurnHistory
 
 data DefeatedEnemyAttrs = DefeatedEnemyAttrs
   { defeatedEnemyAttrs :: EnemyAttrs

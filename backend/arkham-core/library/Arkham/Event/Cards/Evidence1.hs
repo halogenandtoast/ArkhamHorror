@@ -27,7 +27,8 @@ instance RunMessage Evidence1 where
   runMessage msg e@(Evidence1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId attrs -> do
       enemiesDefeated <- historyEnemiesDefeated <$> getHistory TurnHistory iid
-      totalPrintedHealth <- sum <$> traverse (getPlayerCountValue . enemyHealth) enemiesDefeated
+      totalPrintedHealth <-
+        sum <$> traverse (getPlayerCountValue . enemyHealth . defeatedEnemyAttrs) enemiesDefeated
       currentLocationId <- getJustLocation iid
       availableClues <- field LocationClues currentLocationId
       let amount = min availableClues (if totalPrintedHealth >= 4 then 2 else 1)

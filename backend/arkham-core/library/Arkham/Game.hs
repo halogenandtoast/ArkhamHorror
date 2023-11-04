@@ -76,6 +76,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators, spawnAt)
+import Arkham.Helpers.Enemy qualified as Enemy
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message hiding (
@@ -1661,7 +1662,7 @@ getLocationsMatching lmatcher = do
           historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
         let
           validLids = flip mapMaybe enemiesDefeated $ \e ->
-            case enemyPlacement e of
+            case enemyPlacement (defeatedEnemyAttrs e) of
               AtLocation x -> Just x
               _ -> Nothing
         pure $ filter ((`elem` validLids) . toId) ls
@@ -4086,12 +4087,18 @@ runGameMessage msg g = case msg of
     -- TODO: This is wrong but history is the way we track if enemies were
     -- defeated for cards like Kerosene (1), we need a history independent of
     -- the iid for cases where we aren't looking at a specific investigator
+    enemyHealth <- Enemy.getModifiedHealth attrs
     let
       iid = fromMaybe lead miid
       placement' = maybe (enemyPlacement attrs) AtLocation mlid
       historyItem =
         mempty
-          { historyEnemiesDefeated = [attrs {enemyPlacement = placement'}]
+          { historyEnemiesDefeated =
+              [ DefeatedEnemyAttrs
+                  { defeatedEnemyAttrs = attrs {enemyPlacement = placement'}
+                  , defeatedEnemyHealth = enemyHealth
+                  }
+              ]
           }
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =

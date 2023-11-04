@@ -11,10 +11,17 @@ import Data.Map.Strict qualified as Map
 
 data HistoryType = PhaseHistory | RoundHistory | TurnHistory
 
+data DefeatedEnemyAttrs = DefeatedEnemyAttrs
+  { defeatedEnemyAttrs :: EnemyAttrs
+  , defeatedEnemyHealth :: Int
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
 data History = History
   { historyTreacheriesDrawn :: [CardCode]
   , historyDealtDamageTo :: [Target]
-  , historyEnemiesDefeated :: [EnemyAttrs]
+  , historyEnemiesDefeated :: [DefeatedEnemyAttrs]
   , historyMoved :: Bool
   , historyLocationsSuccessfullyInvestigated :: Set LocationId
   , historySuccessfulExplore :: Bool

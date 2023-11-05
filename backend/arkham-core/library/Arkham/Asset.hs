@@ -575,6 +575,9 @@ allAssets =
       SomeAssetCard healingWords
     , --- neutral [tsh]
       SomeAssetCard versatile2
+    , -- The Dark Side of the Moon
+      --- guardian [pnr]
+      SomeAssetCard thirtyFiveWinchester
     , -- Point of No Return
       --- mystic [pnr]
       SomeAssetCard empowerSelfStamina2

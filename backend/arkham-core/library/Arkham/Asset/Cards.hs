@@ -513,6 +513,7 @@ allPlayerAssetCards =
       , theTowerXVI
       , theWorldXxi3
       , thermos
+      , thirtyFiveWinchester
       , thirtyTwoColt
       , thirtyTwoColt2
       , timewornBrand5
@@ -3737,6 +3738,15 @@ versatile2 =
       { cdCardTraits = singleton Talent
       , cdLevel = 2
       }
+
+thirtyFiveWinchester :: CardDef
+thirtyFiveWinchester =
+  (asset "06195" ".35 Winchester" 4 Guardian)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSlots = [#hand, #hand]
+    , cdUses = uses Ammo 5
+    }
 
 empowerSelfStamina2 :: CardDef
 empowerSelfStamina2 =

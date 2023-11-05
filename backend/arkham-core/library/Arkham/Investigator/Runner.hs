@@ -1664,6 +1664,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           source = moveSource movement
           iid = investigatorId
+        moveWith <-
+          selectList (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
+            >>= traverse (traverseToSnd getPlayer)
         movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
@@ -1673,7 +1676,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ WhenWillEnterLocation iid lid
              , Do (WhenWillEnterLocation iid lid)
              , EnterLocation iid lid
-             , afterEnterWindow
+             ]
+          <> [ chooseOne
+              player
+              [ Label "Move too" [MoveTo $ move iid' iid' lid]
+              , Label "Skip" []
+              ]
+             | (iid', player) <- moveWith
+             ]
+          <> [ afterEnterWindow
              , afterMoveButBeforeEnemyEngagement
              , CheckEnemyEngagement iid
              ]

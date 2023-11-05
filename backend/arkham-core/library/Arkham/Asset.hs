@@ -578,6 +578,9 @@ allAssets =
     , -- The Dark Side of the Moon
       --- guardian [pnr]
       SomeAssetCard thirtyFiveWinchester
+    , SomeAssetCard safeguard2
+    , --- rogue [pnr]
+      SomeAssetCard burglary2
     , -- Point of No Return
       --- mystic [pnr]
       SomeAssetCard empowerSelfStamina2

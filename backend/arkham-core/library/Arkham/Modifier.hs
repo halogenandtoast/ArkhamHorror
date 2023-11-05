@@ -81,6 +81,7 @@ data ModifierType
   | CanIgnoreAspect AspectMatcher
   | CanIgnoreLimit
   | CanModify ModifierType
+  | CanMoveWith InvestigatorMatcher
   | CanOnlyBeAttackedByAbilityOn (Set CardCode)
   | CanOnlyBeDefeatedBy SourceMatcher
   | CanOnlyBeDefeatedByDamage

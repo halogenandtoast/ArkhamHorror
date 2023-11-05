@@ -382,6 +382,7 @@ allEvents =
     , -- Dark Side of the Moon
       --- seeker [dsm]
       SomeEventCard practiceMakesPerfect
+    , SomeEventCard extensiveResearch1
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard dodge2

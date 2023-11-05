@@ -35,7 +35,7 @@ instance RunMessage SwiftReload2 where
           | firearm <- firearms
           ]
       pure e
-    HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
+    HandleTargetChoice _ (isSource attrs -> True) (AssetTarget aid) -> do
       startingUses <- fmap useCount . toStartingUses =<< field AssetStartingUses aid
       currentUses <- fieldMap AssetUses useCount aid
       let diff = startingUses - currentUses

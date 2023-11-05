@@ -151,6 +151,7 @@ allPlayerAssetCards =
       , brotherXavier1
       , bulletproofVest3
       , burglary
+      , burglary2
       , catBurglar1
       , celaenoFragments
       , chainsaw4
@@ -427,6 +428,7 @@ allPlayerAssetCards =
       , robesOfEndlessNight2
       , rolands38Special
       , safeguard
+      , safeguard2
       , scavenging
       , schoffnersCatalogue
       , scientificTheory1
@@ -3746,6 +3748,22 @@ thirtyFiveWinchester =
     , cdCardTraits = setFromList [Item, Weapon, Firearm]
     , cdSlots = [#hand, #hand]
     , cdUses = uses Ammo 5
+    }
+
+safeguard2 :: CardDef
+safeguard2 =
+  (asset "06196" "Safeguard" 2 Guardian)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = singleton Talent
+    , cdLevel = 2
+    }
+
+burglary2 :: CardDef
+burglary2 =
+  (asset "06200" "Burglary" 1 Rogue)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Talent, Illicit]
+    , cdLevel = 2
     }
 
 empowerSelfStamina2 :: CardDef

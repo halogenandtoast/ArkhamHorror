@@ -386,6 +386,7 @@ library
       Arkham.Asset.Cards.BrotherXavier1
       Arkham.Asset.Cards.BulletproofVest3
       Arkham.Asset.Cards.Burglary
+      Arkham.Asset.Cards.Burglary2
       Arkham.Asset.Cards.CatBurglar1
       Arkham.Asset.Cards.CelaenoFragments
       Arkham.Asset.Cards.Chainsaw4
@@ -677,6 +678,7 @@ library
       Arkham.Asset.Cards.Rolands38Special
       Arkham.Asset.Cards.RunicAxe
       Arkham.Asset.Cards.Safeguard
+      Arkham.Asset.Cards.Safeguard2
       Arkham.Asset.Cards.Scavenging
       Arkham.Asset.Cards.SchoffnersCatalogue
       Arkham.Asset.Cards.ScientificTheory1
@@ -1247,6 +1249,7 @@ library
       Arkham.Event.Cards.ExposeWeakness1
       Arkham.Event.Cards.ExposeWeakness3
       Arkham.Event.Cards.ExtensiveResearch
+      Arkham.Event.Cards.ExtensiveResearch1
       Arkham.Event.Cards.ExtraAmmunition1
       Arkham.Event.Cards.FightOrFlight
       Arkham.Event.Cards.FirstWatch

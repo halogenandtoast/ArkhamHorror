@@ -128,6 +128,7 @@ allPlayerEventCards =
       , exposeWeakness1
       , exposeWeakness3
       , extensiveResearch
+      , extensiveResearch1
       , extraAmmunition1
       , fightOrFlight
       , firstWatch
@@ -2445,6 +2446,23 @@ practiceMakesPerfect =
     , cdCardTraits = setFromList [Gambit, Tactic]
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria = Just $ Criteria.DuringSkillTest SkillTestAtYourLocation
+    }
+
+extensiveResearch1 :: CardDef
+extensiveResearch1 =
+  (event "06198" "Extensive Research" 10 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = singleton Insight
+    , cdCardInHandEffects = True
+    , cdCriteria =
+        Just
+          $ Criteria.Criteria
+            [ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+            , Criteria.InvestigatorExists
+                $ You
+                <> InvestigatorCanDiscoverCluesAt YourLocation
+            ]
+    , cdLevel = 1
     }
 
 dodge2 :: CardDef

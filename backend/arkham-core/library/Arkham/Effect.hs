@@ -59,6 +59,7 @@ import Arkham.Asset.Assets (
   shrivellingEffect,
   sixthSense4Effect,
   sixthSenseEffect,
+  thirtyFiveWinchesterEffect,
   wellConnected3Effect,
   wellConnectedEffect,
   wither4Effect,
@@ -324,6 +325,7 @@ allEffects =
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06114", SomeEffect followedEffect)
     , ("06162", SomeEffect gregoryGryEffect)
+    , ("06195", SomeEffect thirtyFiveWinchesterEffect)
     , ("06279", SomeEffect oldBookOfLore3Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)

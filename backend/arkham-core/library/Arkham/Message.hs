@@ -429,6 +429,7 @@ data Message
   | ChooseEndTurn InvestigatorId
   | ChooseEvadeEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
   | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool -- If we add ChooseEngageEnemy update Tony Morgan
+  | ChooseEngageEnemy InvestigatorId Source (Maybe Target) EnemyMatcher Bool -- If we add ChooseEngageEnemy update Tony Morgan
   | ChooseLeadInvestigator
   | PreScenarioSetup
   | StandaloneSetup
@@ -536,7 +537,7 @@ data Message
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnedAt LocationId EnemyId
-  | EngageEnemy InvestigatorId EnemyId Bool
+  | EngageEnemy InvestigatorId EnemyId (Maybe Target) Bool
   | EvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
   | ExhaustThen Target [Message]
@@ -951,6 +952,7 @@ uiToRun = \case
   SkillLabel _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
   FightLabel _ msgs -> Run msgs
+  EngageLabel _ msgs -> Run msgs
   AbilityLabel iid ab windows msgs -> Run $ UseAbility iid ab windows : msgs
   ComponentLabel _ msgs -> Run msgs
   EndTurnButton _ msgs -> Run msgs

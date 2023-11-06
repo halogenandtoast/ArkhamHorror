@@ -249,7 +249,8 @@ data EnemyMatcher
   | CanEvadeEnemy Source
   | CanFightEnemyWithOverride CriteriaOverride
   | CanEvadeEnemyWithOverride CriteriaOverride
-  | CanEngageEnemy
+  | CanEngageEnemy Source
+  | CanEngageEnemyWithOverride CriteriaOverride
   | ReadyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy

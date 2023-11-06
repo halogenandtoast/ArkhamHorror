@@ -751,7 +751,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         | eid <- enemyIds
         ]
     pure a
-  EngageEnemy iid eid True | iid == investigatorId -> do
+  EngageEnemy iid eid _ True | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #engage)]
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #engage)]
@@ -764,7 +764,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ CheckAttackOfOpportunity iid False
          | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
          ]
-      <> [EngageEnemy iid eid False, afterWindowMsg, FinishAction]
+      <> [EngageEnemy iid eid Nothing False, afterWindowMsg, FinishAction]
     pure a
   FightEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -841,6 +841,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ chooseOne
         player
         [ EvadeLabel eid [EvadeEnemy iid eid source mTarget skillType isAction]
+        | eid <- enemyIds
+        ]
+    pure a
+  ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == investigatorId -> do
+    modifiers <- getModifiers (InvestigatorTarget iid)
+    let
+      isOverride = \case
+        EnemyEngageActionCriteria override -> Just override
+        CanModify (EnemyEngageActionCriteria override) -> Just override
+        _ -> Nothing
+      overrides = mapMaybe isOverride modifiers
+      canEngageMatcher = case overrides of
+        [] -> CanEngageEnemy source
+        [o] -> CanEngageEnemyWithOverride o
+        _ -> error "multiple overrides found"
+    enemyIds <- selectList $ canEngageMatcher <> enemyMatcher
+    player <- getPlayer iid
+    push
+      $ chooseOne
+        player
+        [ EngageLabel eid [EngageEnemy iid eid mTarget isAction]
         | eid <- enemyIds
         ]
     pure a

@@ -62,6 +62,7 @@ data UI msg
   | SkillLabel {skillType :: SkillType, messages :: [msg]}
   | EvadeLabel {enemyId :: EnemyId, messages :: [msg]}
   | FightLabel {enemyId :: EnemyId, messages :: [msg]}
+  | EngageLabel {enemyId :: EnemyId, messages :: [msg]}
   | GridLabel {gridLabel :: Text, messages :: [msg]}
   | TarotLabel {tarotCard :: TarotCard, messages :: [msg]}
   | AbilityLabel

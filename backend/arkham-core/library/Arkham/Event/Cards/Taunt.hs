@@ -27,7 +27,7 @@ instance RunMessage Taunt where
           ( chooseSome
               player
               "Done engaging enemies"
-              [ targetLabel enemyId [EngageEnemy iid enemyId False]
+              [ targetLabel enemyId [EngageEnemy iid enemyId Nothing False]
               | enemyId <- enemyIds
               ]
           )

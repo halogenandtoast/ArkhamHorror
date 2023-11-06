@@ -2411,17 +2411,79 @@ enemyMatcherFilter = \case
                 ]
           )
           (getAbilities enemy)
-  CanEngageEnemy -> \enemy -> do
+  CanEngageEnemy source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    let window = mkWindow #when Window.NonFast
-    anyM
-      ( andM
-          . sequence
-            [ pure . (`abilityIs` Action.Engage)
-            , getCanPerformAbility iid window
-            ]
-      )
-      (getAbilities enemy)
+    modifiers' <- getModifiers (InvestigatorTarget iid)
+    enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
+    sourceModifiers <- case source of
+      AbilitySource abSource idx -> do
+        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+        foldMapM (getModifiers . AbilityTarget iid) abilities
+      _ -> pure []
+    let
+      isOverride = \case
+        EnemyEngageActionCriteria override -> Just override
+        CanModify (EnemyEngageActionCriteria override) -> Just override
+        _ -> Nothing
+      overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
+      enemyFilters =
+        mapMaybe
+          ( \case
+              CannotBeEngagedBy m -> Just m
+              _ -> Nothing
+          )
+          modifiers'
+      window = mkWindow #when (Window.DuringTurn iid)
+      overrideFunc = case overrides of
+        [] -> id
+        [o] -> overrideAbilityCriteria o
+        _ -> error "multiple overrides found"
+    excluded <-
+      member (toId enemy)
+        <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
+    if excluded
+      then pure False
+      else
+        anyM
+          ( andM
+              . sequence
+                [ pure . (`abilityIs` Action.Engage)
+                , getCanPerformAbility iid window
+                    . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+                    . overrideFunc
+                ]
+          )
+          (getAbilities enemy)
+  CanEngageEnemyWithOverride override -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    modifiers' <- getModifiers (EnemyTarget $ toId enemy)
+    let
+      enemyFilters =
+        mapMaybe
+          ( \case
+              CannotBeEngagedBy m -> Just m
+              _ -> Nothing
+          )
+          modifiers'
+      window = mkWindow #when Window.NonFast
+    excluded <-
+      member (toId enemy)
+        <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
+    if excluded
+      then pure False
+      else
+        anyM
+          ( andM
+              . sequence
+                [ pure . (`abilityIs` Action.Engage)
+                , -- Because ChooseEngageEnemy happens after taking a fight action we
+                  -- need to decrement the action cost
+                  getCanPerformAbility iid window
+                    . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+                    . overrideAbilityCriteria override
+                ]
+          )
+          (getAbilities enemy)
   CanParleyEnemy iid -> \enemy -> do
     modifiers' <- getModifiers (InvestigatorTarget iid)
     flip allM modifiers' $ \case
@@ -4747,7 +4809,7 @@ runGameMessage msg g = case msg of
           _ -> pure ()
 
     pure g
-  EngageEnemy iid eid False -> do
+  EngageEnemy iid eid _ False -> do
     push =<< checkWindows [mkWindow #after (Window.EnemyEngaged iid eid)]
     pure g
   EnemyEngageInvestigator eid iid -> do

@@ -30,7 +30,7 @@ instance HasAbilities GuardDog2 where
         1
         ( ControlsThis
             <> EnemyCriteria
-              (EnemyExists $ EnemyAt YourLocation <> CanEngageEnemy)
+              (EnemyExists $ EnemyAt YourLocation <> CanEngageEnemy (toSource x))
         )
         $ FastAbility
         $ ExhaustCost
@@ -57,14 +57,14 @@ instance RunMessage GuardDog2 where
   runMessage msg a@(GuardDog2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <-
-        selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy
+        selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy (toSource attrs)
       player <- getPlayer iid
       push
         $ chooseOrRunOne
           player
           [ targetLabel
             enemy
-            [ EngageEnemy iid enemy False
+            [ EngageEnemy iid enemy Nothing False
             , InitiateEnemyAttack $ enemyAttack enemy attrs iid
             ]
           | enemy <- enemies

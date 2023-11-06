@@ -1091,7 +1091,7 @@ instance RunMessage EnemyAttrs where
       when (Just lid /= enemyLocation) $ push $ EnemyEntered eid lid
       massive <- eid <=~> MassiveEnemy
       pure $ a & (if massive then id else placementL .~ InThreatArea iid)
-    EngageEnemy iid eid False | eid == enemyId -> do
+    EngageEnemy iid eid _ False | eid == enemyId -> do
       massive <- eid <=~> MassiveEnemy
       pure $ a & (if massive then id else placementL .~ InThreatArea iid)
     WhenWillEnterLocation iid lid -> do
@@ -1233,7 +1233,7 @@ instance RunMessage EnemyAttrs where
       push $ EvadeEnemy iid (toId a) (toSource iid) Nothing #agility False
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEngage _ _ -> do
-      push $ EngageEnemy iid (toId a) False
+      push $ EngageEnemy iid (toId a) Nothing False
       pure a
     AssignDamage target | isTarget a target -> do
       let sources = keys enemyAssignedDamage

@@ -19,6 +19,7 @@ export enum MessageType {
   SKILL_TEST_APPLY_RESULTS_BUTTON = 'SkillTestApplyResultsButton',
   FIGHT_LABEL = 'FightLabel',
   EVADE_LABEL = 'EvadeLabel',
+  ENGAGE_LABEL = 'EngageLabel',
   GRID_LABEL = 'GridLabel',
   TAROT_LABEL = 'TarotLabel',
   DONE = 'Done',
@@ -146,6 +147,17 @@ export const evadeLabelDecoder = JsonDecoder.object<EvadeLabel>(
     enemyId: JsonDecoder.string,
   }, 'EvadeLabel')
 
+export interface EngageLabel {
+  tag: MessageType.ENGAGE_LABEL
+  enemyId: string
+}
+
+export const engageLabelDecoder = JsonDecoder.object<EngageLabel>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.ENGAGE_LABEL),
+    enemyId: JsonDecoder.string,
+  }, 'EngageLabel')
+
 export interface GridLabel {
   tag: MessageType.GRID_LABEL
   gridLabel: string
@@ -223,7 +235,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | GridLabel | TarotLabel | Done | TokenGroupChoice | EffectActionButton;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | TokenGroupChoice | EffectActionButton;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -310,6 +322,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     skillTestApplyResultsButtonDecoder,
     fightLabelDecoder,
     evadeLabelDecoder,
+    engageLabelDecoder,
     gridLabelDecoder,
     tarotLabelDecoder,
     doneDecoder,

@@ -45,7 +45,9 @@ instance HasAbilities TonyMorgan where
       $ restrictedAbility
         attrs
         1
-        (Self <> exists (EnemyWithBounty <> oneOf [CanFightEnemy (toSource attrs), CanEngageEnemy]))
+        ( Self
+            <> exists (EnemyWithBounty <> oneOf [CanFightEnemy (toSource attrs), CanEngageEnemy (toSource attrs)])
+        )
       $ ActionAbility Nothing mempty
     | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
     ]
@@ -92,6 +94,14 @@ instance RunMessage TonyMorgan where
       result <-
         runMessage
           (ChooseFightEnemy iid source mTarget skillType (matcherF enemyMatcher) isAction)
+          attrs
+      pure $ TonyMorgan . (`with` Meta False) $ result
+    ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == toId attrs -> do
+      bountiesOnly <- hasModifier iid BountiesOnly
+      let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id
+      result <-
+        runMessage
+          (ChooseEngageEnemy iid source mTarget (matcherF enemyMatcher) isAction)
           attrs
       pure $ TonyMorgan . (`with` Meta False) $ result
     DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do

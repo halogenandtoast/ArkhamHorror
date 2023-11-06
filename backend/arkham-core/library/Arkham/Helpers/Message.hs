@@ -349,6 +349,9 @@ chooseFightEnemyWithTarget iid (toSource -> source) (toTarget -> target) sType =
 chooseEvadeEnemy :: Sourceable source => InvestigatorId -> source -> SkillType -> Message
 chooseEvadeEnemy iid (toSource -> source) sType = ChooseEvadeEnemy iid source Nothing sType mempty False
 
+chooseEngageEnemy :: Sourceable source => InvestigatorId -> source -> Message
+chooseEngageEnemy iid (toSource -> source) = ChooseEngageEnemy iid source Nothing mempty False
+
 chooseEvadeEnemyWithTarget
   :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> SkillType -> Message
 chooseEvadeEnemyWithTarget iid (toSource -> source) (toTarget -> target) sType = ChooseEvadeEnemy iid source (Just target) sType mempty False

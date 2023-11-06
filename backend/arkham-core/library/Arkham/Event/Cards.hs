@@ -2472,6 +2472,8 @@ spectralRazor =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = singleton Spell
     , cdActions = [#fight]
+    , cdCriteria = Just $ Criteria.exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
+    , cdOverrideActionPlayableIfCriteriaMet = True
     }
 
 dodge2 :: CardDef
@@ -2725,7 +2727,7 @@ getOverHere =
           $ Criteria.enemyExists
           $ NonEliteEnemy
           <> EnemyOneOf
-            [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
+            [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy ThisCard, CanFightEnemy ThisCard]
             , EnemyAt $ ConnectedFrom YourLocation
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
@@ -2819,7 +2821,7 @@ getOverHere2 =
           $ Criteria.enemyExists
           $ NonEliteEnemy
           <> EnemyOneOf
-            [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy ThisCard]
+            [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy ThisCard, CanFightEnemy ThisCard]
             , EnemyAt $ ConnectedFrom YourLocation
             , EnemyAt $ LocationWithDistanceFrom 2 YourLocation
             ]

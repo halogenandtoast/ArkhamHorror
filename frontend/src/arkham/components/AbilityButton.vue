@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import type { Cost } from '@/arkham/types/Cost';
-import type { AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Message';
+import type { AbilityLabel, FightLabel, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
 import type { Ability } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
 
 const props = defineProps<{
- ability: AbilityLabel | FightLabel | EvadeLabel
+ ability: AbilityLabel | FightLabel | EvadeLabel | EngageLabel
 }>()
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
@@ -17,6 +17,9 @@ const isAction = (action: string) => {
   }
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
     return action === "Fight"
+  }
+  if (props.ability.tag === MessageType.ENGAGE_LABEL) {
+    return action === "Engage"
   }
 
   if (ability.value) {
@@ -136,6 +139,10 @@ const abilityLabel = computed(() => {
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
     return "Fight"
+  }
+
+  if (props.ability.tag === MessageType.ENGAGE_LABEL) {
+    return "Engage"
   }
 
   if (isForcedAbility.value === true) {

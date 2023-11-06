@@ -27,7 +27,7 @@ instance RunMessage Taunt2 where
         $ chooseSome
           player
           "Done engaging enemies"
-          [ targetLabel enemyId [EngageEnemy iid enemyId False, drawing]
+          [ targetLabel enemyId [EngageEnemy iid enemyId Nothing False, drawing]
           | (enemyId, drawing) <- enemies
           ]
       pure e

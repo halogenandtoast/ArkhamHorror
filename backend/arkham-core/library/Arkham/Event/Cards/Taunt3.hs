@@ -29,7 +29,7 @@ instance RunMessage Taunt3 where
           "Done engaging enemies"
           [ targetLabel
             enemyId
-            [ EngageEnemy iid enemyId False
+            [ EngageEnemy iid enemyId Nothing False
             , InvestigatorDamageEnemy iid enemyId (toSource attrs)
             , drawing
             ]

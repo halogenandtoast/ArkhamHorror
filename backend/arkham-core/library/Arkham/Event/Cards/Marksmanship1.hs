@@ -86,13 +86,7 @@ instance HasModifiersFor Marksmanship1 where
 instance RunMessage Marksmanship1 where
   runMessage msg e@(Marksmanship1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ createCardEffect
-            Cards.marksmanship1
-            Nothing
-            (toSource attrs)
-            (InvestigatorTarget iid)
-        ]
+      pushAll [createCardEffect Cards.marksmanship1 Nothing attrs iid]
       pure e
     _ -> Marksmanship1 <$> runMessage msg attrs
 

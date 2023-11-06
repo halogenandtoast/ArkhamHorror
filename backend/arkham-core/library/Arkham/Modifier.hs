@@ -186,6 +186,7 @@ data ModifierType
   | EnemyFight Int
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
+  | EnemyEngageActionCriteria CriteriaOverride
   | FailTies
   | FewerActions Int
   | FewerSlots SlotType Int

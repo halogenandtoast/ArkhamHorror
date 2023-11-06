@@ -28,7 +28,7 @@ instance RunMessage ImDoneRunnin where
       enemies <- selectList $ EnemyAt (locationWithInvestigator iid)
       pushAll
         $ map (Ready . EnemyTarget) enemies
-        <> [EngageEnemy iid enemy False | enemy <- enemies]
+        <> [EngageEnemy iid enemy Nothing False | enemy <- enemies]
         <> [createCardEffect Cards.imDoneRunnin Nothing (toSource attrs) (InvestigatorTarget iid)]
       pure e
     _ -> ImDoneRunnin <$> runMessage msg attrs

@@ -24,6 +24,23 @@ spectralRazor = event SpectralRazor Cards.spectralRazor
 instance RunMessage SpectralRazor where
   runMessage msg e@(SpectralRazor attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
+      fightableEnemies <- selectList $ CanFightEnemy (toSource attrs)
+      engageableEnemies <- selectList $ CanEngageEnemy (toSource attrs)
+
+      case (fightableEnemies, engageableEnemies) of
+        ([], []) -> error "invalid call"
+        ([], (_ : _)) -> pushAll [chooseEngageEnemy iid attrs, DoStep 1 msg]
+        ((_ : _), []) -> push $ DoStep 1 msg
+        ((_ : _), (_ : _)) -> do
+          player <- getPlayer iid
+          push
+            $ chooseOne
+              player
+              [ Label "Engage an enemy first" [chooseEngageEnemy iid attrs, DoStep 1 msg]
+              , Label "Do not engage an enemy" [DoStep 1 msg]
+              ]
+      pure e
+    DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
       pushAll
         [ skillTestModifier attrs iid (AddSkillValue #willpower)
         , createCardEffect Cards.spectralRazor Nothing attrs iid

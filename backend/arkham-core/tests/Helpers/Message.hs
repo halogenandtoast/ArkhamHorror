@@ -53,7 +53,7 @@ fightEnemy i e =
   FightEnemy (toId i) (toId e) (toSource i) Nothing SkillCombat False
 
 engageEnemy :: Investigator -> Enemy -> Message
-engageEnemy i e = EngageEnemy (toId i) (toId e) False
+engageEnemy i e = EngageEnemy (toId i) (toId e) Nothing False
 
 disengageEnemy :: Investigator -> Enemy -> Message
 disengageEnemy i e = DisengageEnemy (toId i) (toId e)

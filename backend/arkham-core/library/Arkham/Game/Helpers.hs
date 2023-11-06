@@ -286,7 +286,18 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         _ -> error "multiple overrides found"
   Action.Engage -> case abilitySource of
     EnemySource _ -> pure True
-    _ -> notNull <$> select Matcher.CanEngageEnemy
+    _ -> do
+      modifiers <- getModifiers (AbilityTarget iid ab)
+      let
+        isOverride = \case
+          EnemyEngageActionCriteria override -> Just override
+          CanModify (EnemyEngageActionCriteria override) -> Just override
+          _ -> Nothing
+        overrides = mapMaybe isOverride modifiers
+      case overrides of
+        [] -> notNull <$> select (Matcher.CanEngageEnemy $ AbilitySource abilitySource abilityIndex)
+        [o] -> notNull <$> select (Matcher.CanEngageEnemyWithOverride o)
+        _ -> error "multiple overrides found"
   Action.Parley -> case abilitySource of
     EnemySource _ -> pure True
     AssetSource _ -> pure True

@@ -5,7 +5,7 @@ import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game'
-import { AbilityLabel, AbilityMessage, EvadeLabel, FightLabel, Message, MessageType } from '@/arkham/types/Message'
+import { AbilityLabel, AbilityMessage, EvadeLabel, FightLabel, EngageLabel, Message, MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -52,12 +52,16 @@ function isCardAction(c: Message): boolean {
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 
-function isAbility(v: Message): v is AbilityLabel | FightLabel | EvadeLabel {
+function isAbility(v: Message): v is AbilityLabel | FightLabel | EvadeLabel | EngageLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
     return true
   }
 
   if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
+    return true
+  }
+
+  if (v.tag === MessageType.ENGAGE_LABEL && v.enemyId === id.value) {
     return true
   }
 

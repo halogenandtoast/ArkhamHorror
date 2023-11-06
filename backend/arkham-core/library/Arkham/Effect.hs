@@ -89,6 +89,7 @@ import Arkham.Event.Events (
   oneTwoPunchEffect,
   pilfer3Effect,
   slipAwayEffect,
+  spectralRazorEffect,
   stormOfSpirits3Effect,
   stormOfSpiritsEffect,
   telescopicSight3Effect,
@@ -326,6 +327,7 @@ allEffects =
     , ("06114", SomeEffect followedEffect)
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
+    , ("06201", SomeEffect spectralRazorEffect)
     , ("06279", SomeEffect oldBookOfLore3Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)

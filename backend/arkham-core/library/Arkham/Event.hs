@@ -383,6 +383,8 @@ allEvents =
       --- seeker [dsm]
       SomeEventCard practiceMakesPerfect
     , SomeEventCard extensiveResearch1
+    , --- mystic [dsm]
+      SomeEventCard spectralRazor
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard dodge2

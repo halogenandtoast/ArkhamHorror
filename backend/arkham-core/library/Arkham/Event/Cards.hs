@@ -244,6 +244,7 @@ allPlayerEventCards =
       , sneakAttack2
       , sneakBy
       , soothingMelody
+      , spectralRazor
       , standTogether
       , standTogether3
       , stargazing1
@@ -2463,6 +2464,14 @@ extensiveResearch1 =
                 <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdLevel = 1
+    }
+
+spectralRazor :: CardDef
+spectralRazor =
+  (event "06201" "Spectral Razor" 2 Mystic)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = singleton Spell
+    , cdActions = [#fight]
     }
 
 dodge2 :: CardDef

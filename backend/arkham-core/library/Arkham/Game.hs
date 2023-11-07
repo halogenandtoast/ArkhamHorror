@@ -3230,9 +3230,17 @@ instance Query ExtendedCardMatcher where
         discards <-
           concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) iids
         pure $ c `elem` discards
+      InPlayAreaOf who -> do
+        iids <- selectList who
+        cards <- concatForM iids $ \i -> do
+          assets <- selectFields AssetCard (AssetWithPlacement $ InPlayArea i)
+          events <- selectFields EventCard (EventWithPlacement $ InPlayArea i)
+          skills <- selectFields SkillCard (SkillWithPlacement $ InPlayArea i)
+          pure $ assets <> events <> skills
+        pure $ c `elem` cards
       CardIsBeneathInvestigator who -> do
         iids <- selectList who
-        cards <- concat <$> traverse (field InvestigatorCardsUnderneath) iids
+        cards <- concatMapM (field InvestigatorCardsUnderneath) iids
         pure $ c `elem` cards
       ExtendedCardWithOneOf ms -> anyM (matches' c) ms
       ExtendedCardMatches ms -> allM (matches' c) ms

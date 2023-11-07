@@ -25,6 +25,9 @@ affectsOthers matcher =
 class OneOf a where
   oneOf :: [a] -> a
 
+instance OneOf ExtendedCardMatcher where
+  oneOf = ExtendedCardWithOneOf
+
 instance OneOf CardMatcher where
   oneOf = CardWithOneOf
 

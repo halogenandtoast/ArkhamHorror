@@ -204,6 +204,9 @@ allPlayerAssetCards =
       , drawingThin
       , dreamEnhancingSerum
       , dreamDiary
+      , dreamDiaryDreamsOfAChild3
+      , dreamDiaryDreamsOfAMadman3
+      , dreamDiaryDreamsOfAnExplorer3
       , duke
       , earlSawyer
       , eighteenDerringer
@@ -3778,6 +3781,36 @@ moonstone =
     , cdCommitRestrictions = [SelfCanCommitWhen NoOne]
     , cdCardInHandEffects = True
     , cdCardInDiscardEffects = True
+    }
+
+dreamDiaryDreamsOfAnExplorer3 :: CardDef
+dreamDiaryDreamsOfAnExplorer3 =
+  (asset "06236" ("Dream Diary" <:> "Dreams of an Explorer") 2 Seeker)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Item, Tome, Charm]
+    , cdSlots = [#hand]
+    , cdBondedWith = [(1, "06113")]
+    , cdLevel = 3
+    }
+
+dreamDiaryDreamsOfAMadman3 :: CardDef
+dreamDiaryDreamsOfAMadman3 =
+  (asset "06236" ("Dream Diary" <:> "Dreams of a Madman") 2 Seeker)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Item, Tome, Charm]
+    , cdSlots = [#hand]
+    , cdBondedWith = [(1, "06113")]
+    , cdLevel = 3
+    }
+
+dreamDiaryDreamsOfAChild3 :: CardDef
+dreamDiaryDreamsOfAChild3 =
+  (asset "06236" ("Dream Diary" <:> "Dreams of a Child") 2 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Item, Tome, Charm]
+    , cdSlots = [#hand]
+    , cdBondedWith = [(1, "06113")]
+    , cdLevel = 3
     }
 
 empowerSelfStamina2 :: CardDef

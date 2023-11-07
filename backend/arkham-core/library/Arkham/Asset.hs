@@ -584,7 +584,11 @@ allAssets =
     , --- survivor [pnr]
       SomeAssetCard moonstone
     , -- Point of No Return
-      --- mystic [pnr]
+      --- seeker [pnr]
+      SomeAssetCard dreamDiaryDreamsOfAnExplorer3
+    , SomeAssetCard dreamDiaryDreamsOfAMadman3
+    , SomeAssetCard dreamDiaryDreamsOfAChild3
+    , --- mystic [pnr]
       SomeAssetCard empowerSelfStamina2
     , SomeAssetCard empowerSelfAlacrity2
     , SomeAssetCard empowerSelfAcuity2

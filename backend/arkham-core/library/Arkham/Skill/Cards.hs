@@ -81,6 +81,7 @@ allPlayerSkillCards =
       , sayYourPrayers
       , sealOfTheElderSign5
       , selfSacrifice
+      , sharpVision1
       , steadfast
       , strokeOfLuck2
       , stunningBlow
@@ -528,6 +529,13 @@ threeAces1 =
   (skill "06199" "Three Aces" [#wild] Rogue)
     { cdKeywords = singleton Keyword.Myriad
     , cdCardTraits = setFromList [Fortune, Practiced]
+    }
+
+sharpVision1 :: CardDef
+sharpVision1 =
+  (skill "06204" "Sharp Vision" [#intellect] Survivor)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 promiseOfPower :: CardDef

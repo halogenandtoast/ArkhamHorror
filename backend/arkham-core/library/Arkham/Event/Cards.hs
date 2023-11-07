@@ -177,6 +177,7 @@ allPlayerEventCards =
       , logicalReasoning4
       , lookWhatIFound
       , lookWhatIFound2
+      , lucidDreaming2
       , lucky
       , lucky2
       , lucky3
@@ -283,6 +284,7 @@ allPlayerEventCards =
       , willToSurvive
       , willToSurvive3
       , wingingIt
+      , wordOfCommand2
       , workingAHunch
       , youHandleThisOne
       , youOweMeOne
@@ -2479,6 +2481,14 @@ spectralRazor =
 wordOfCommand2 :: CardDef
 wordOfCommand2 =
   (event "06202" "Word of Command" 2 Mystic)
+    { cdCardTraits = setFromList [Spell]
+    , cdLevel = 2
+    , cdCriteria = can.manipulate.deck You
+    }
+
+lucidDreaming2 :: CardDef
+lucidDreaming2 =
+  (event "06205" "Lucid Dreaming" 1 Neutral)
     { cdCardTraits = setFromList [Spell]
     , cdLevel = 2
     , cdCriteria = can.manipulate.deck You

@@ -13,7 +13,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.SkillType
 
 newtype BruteForce1 = BruteForce1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -27,7 +26,7 @@ instance HasModifiersFor BruteForce1 where
     mAction <- getSkillTestAction
     mSource <- getSkillTestSource
     case (mAction, mSource) of
-      (Just Action.Fight, Just (AbilitySource (EnemySource _) AbilityAttack)) -> pure $ toModifiers a [AddSkillIcons [SkillIcon SkillCombat, SkillIcon SkillCombat]]
+      (Just Action.Fight, Just (AbilitySource (EnemySource _) AbilityAttack)) -> pure $ toModifiers a [AddSkillIcons [#combat, #combat]]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

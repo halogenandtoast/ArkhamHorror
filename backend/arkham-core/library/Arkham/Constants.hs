@@ -26,3 +26,8 @@ pattern ResignAbility :: Int
 pattern ResignAbility <- 99
   where
     ResignAbility = 99
+
+pattern AbilityInvestigate :: Int
+pattern AbilityInvestigate <- 101
+  where
+    AbilityInvestigate = 101

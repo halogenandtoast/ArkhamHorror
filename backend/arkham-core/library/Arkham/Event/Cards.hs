@@ -148,6 +148,7 @@ allPlayerEventCards =
       , gritYourTeeth
       , guidance
       , heroicRescue
+      , heroicRescue2
       , hidingSpot
       , hotStreak2
       , hotStreak4
@@ -2492,6 +2493,21 @@ lucidDreaming2 =
     { cdCardTraits = setFromList [Spell]
     , cdLevel = 2
     , cdCriteria = can.manipulate.deck You
+    }
+
+heroicRescue2 :: CardDef
+heroicRescue2 =
+  (event "06234" "Heroic Rescue" 0 Guardian)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spirit, Tactic]
+    , cdFastWindow =
+        Just
+          $ EnemyWouldAttack
+            #when
+            (affectsOthers $ NotYou <> oneOf [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation])
+            AnyEnemyAttack
+            NonEliteEnemy
+    , cdLevel = 2
     }
 
 dodge2 :: CardDef

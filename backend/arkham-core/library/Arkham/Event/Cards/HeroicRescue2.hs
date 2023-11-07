@@ -11,6 +11,9 @@ import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Movement
+import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -24,6 +27,10 @@ heroicRescue2 = event HeroicRescue2 Cards.heroicRescue2
 instance RunMessage HeroicRescue2 where
   runMessage msg e@(HeroicRescue2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [(windowType -> Window.EnemyWouldAttack details')] _ | eid == toId attrs -> do
+      let iid' = fromJustNote "wrong target" $ preview _InvestigatorTarget (attackTarget details')
+      lid <- fieldJust InvestigatorLocation iid'
+      mlid <- field InvestigatorLocation iid
+
       canDealDamage <- withoutModifier iid CannotDealDamage
       popMessageMatching_ \case
         CheckWindow _ windows -> flip
@@ -42,8 +49,9 @@ instance RunMessage HeroicRescue2 where
           _ -> False
         \case
           PerformEnemyAttack details ->
-            EnemyAttack details
-              : [EnemyDamage (attackEnemy details) $ nonAttack attrs 1 | canDealDamage]
+            [Move $ move attrs iid lid | Just lid /= mlid]
+              <> [EnemyAttack (details {attackTarget = toTarget iid})]
+              <> [EnemyDamage (attackEnemy details) $ nonAttack attrs 1 | canDealDamage]
           _ -> error "Mismatched"
       pure e
     _ -> HeroicRescue2 <$> runMessage msg attrs

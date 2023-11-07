@@ -42,7 +42,7 @@ instance RunMessage HeroicRescue where
           _ -> False
         \case
           PerformEnemyAttack details ->
-            EnemyAttack details
+            EnemyAttack (details {attackTarget = toTarget iid})
               : [EnemyDamage (attackEnemy details) $ nonAttack attrs 1 | canDealDamage]
           _ -> error "Mismatched"
       pure e

@@ -388,6 +388,9 @@ allEvents =
     , SomeEventCard wordOfCommand2
     , --- neutral [dsm]
       SomeEventCard lucidDreaming2
+    , -- Point of No Return
+      --- guardian [dsm]
+      SomeEventCard heroicRescue2
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard dodge2

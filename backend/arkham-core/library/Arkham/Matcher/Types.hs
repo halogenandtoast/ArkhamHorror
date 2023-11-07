@@ -514,6 +514,7 @@ data ExtendedCardMatcher
   | CardWithCopyInHand Who
   | InHandOf Who
   | InDeckOf Who
+  | InPlayAreaOf Who
   | InDiscardOf Who
   | TopOfDeckOf Who
   | EligibleForCurrentSkillTest

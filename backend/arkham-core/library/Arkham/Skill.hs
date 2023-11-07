@@ -90,6 +90,7 @@ allSkills =
     , SomeSkillCard selfSacrifice
     , SomeSkillCard bruteForce1
     , SomeSkillCard threeAces1
+    , SomeSkillCard sharpVision1
     , SomeSkillCard promiseOfPower
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied

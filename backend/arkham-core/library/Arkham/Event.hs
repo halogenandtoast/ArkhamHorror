@@ -385,6 +385,9 @@ allEvents =
     , SomeEventCard extensiveResearch1
     , --- mystic [dsm]
       SomeEventCard spectralRazor
+    , SomeEventCard wordOfCommand2
+    , --- neutral [dsm]
+      SomeEventCard lucidDreaming2
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard dodge2

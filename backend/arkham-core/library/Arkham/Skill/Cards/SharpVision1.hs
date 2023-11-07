@@ -32,7 +32,7 @@ instance HasModifiersFor SharpVision1 where
 
 instance RunMessage SharpVision1 where
   runMessage msg s@(SharpVision1 attrs) = case msg of
-    PassedSkillTest {} -> do
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       mAction <- getSkillTestAction
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator

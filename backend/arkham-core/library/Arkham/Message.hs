@@ -472,7 +472,7 @@ data Message
   | DisableEffect EffectId
   | Discard (Maybe InvestigatorId) Source Target
   | DiscardHand InvestigatorId Source
-  | RevealUntilFirst InvestigatorId Source DeckSignifier CardMatcher
+  | RevealUntilFirst InvestigatorId Source DeckSignifier ExtendedCardMatcher
   | RevealedCards InvestigatorId Source DeckSignifier (Maybe Card) [Card]
   | DiscardUntilFirst InvestigatorId Source DeckSignifier ExtendedCardMatcher
   | DiscardUntilN Int InvestigatorId Source Target DeckSignifier ExtendedCardMatcher

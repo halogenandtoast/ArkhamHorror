@@ -36,6 +36,7 @@ allPlayerSkillCards =
       , cunning
       , curiosity
       , daredevil
+      , daredevil2
       , daring
       , deduction
       , deduction2
@@ -56,6 +57,7 @@ allPlayerSkillCards =
       , intrepid
       , lastChance
       , leadership
+      , leadership2
       , manualDexterity
       , manualDexterity2
       , momentum1
@@ -536,6 +538,20 @@ sharpVision1 =
   (skill "06204" "Sharp Vision" [#intellect] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+leadership2 :: CardDef
+leadership2 =
+  (skill "06235" "Leadership" [#wild] Guardian)
+    { cdCardTraits = singleton Practiced
+    , cdLevel = 2
+    }
+
+daredevil2 :: CardDef
+daredevil2 =
+  (skill "06240" "Daredevil" [#wild] Rogue)
+    { cdCardTraits = setFromList [Fortune, Practiced]
+    , cdLevel = 2
     }
 
 promiseOfPower :: CardDef

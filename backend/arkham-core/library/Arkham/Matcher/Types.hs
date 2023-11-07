@@ -606,6 +606,9 @@ instance IsLabel "survivor" CardMatcher where
 instance IsLabel "seeker" CardMatcher where
   fromLabel = CardWithClass Seeker
 
+instance IsLabel "rogue" CardMatcher where
+  fromLabel = CardWithClass Rogue
+
 instance IsLabel "treachery" CardMatcher where
   fromLabel = CardWithType TreacheryType
 

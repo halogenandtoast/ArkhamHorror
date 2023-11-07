@@ -3795,7 +3795,7 @@ dreamDiaryDreamsOfAnExplorer3 =
 
 dreamDiaryDreamsOfAMadman3 :: CardDef
 dreamDiaryDreamsOfAMadman3 =
-  (asset "06236" ("Dream Diary" <:> "Dreams of a Madman") 2 Seeker)
+  (asset "06237" ("Dream Diary" <:> "Dreams of a Madman") 2 Seeker)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Item, Tome, Charm]
     , cdSlots = [#hand]
@@ -3805,7 +3805,7 @@ dreamDiaryDreamsOfAMadman3 =
 
 dreamDiaryDreamsOfAChild3 :: CardDef
 dreamDiaryDreamsOfAChild3 =
-  (asset "06236" ("Dream Diary" <:> "Dreams of a Child") 2 Seeker)
+  (asset "06238" ("Dream Diary" <:> "Dreams of a Child") 2 Seeker)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Item, Tome, Charm]
     , cdSlots = [#hand]

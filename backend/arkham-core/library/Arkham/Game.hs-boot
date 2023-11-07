@@ -66,6 +66,7 @@ instance Projection Agenda
 instance Projection Asset
 instance Projection (DiscardedEntity Asset)
 instance Projection (InHandEntity Asset)
+instance Projection (InDiscardEntity Asset)
 instance Projection Campaign
 instance Projection Effect
 instance Projection Enemy

@@ -614,6 +614,7 @@ library
       Arkham.Asset.Cards.MollyMaxwell
       Arkham.Asset.Cards.MonstrousTransformation
       Arkham.Asset.Cards.MoonPendant2
+      Arkham.Asset.Cards.Moonstone
       Arkham.Asset.Cards.Moxie1
       Arkham.Asset.Cards.MrPeabody
       Arkham.Asset.Cards.MrRook
@@ -1406,6 +1407,7 @@ library
       Arkham.Event.Cards.WillToSurvive
       Arkham.Event.Cards.WillToSurvive3
       Arkham.Event.Cards.WingingIt
+      Arkham.Event.Cards.WordOfCommand2
       Arkham.Event.Cards.WorkingAHunch
       Arkham.Event.Cards.YouHandleThisOne
       Arkham.Event.Cards.YouOweMeOne

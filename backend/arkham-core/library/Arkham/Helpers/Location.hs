@@ -64,6 +64,7 @@ placementLocation = \case
   Limbo -> pure Nothing
   OutOfPlay _ -> pure Nothing
   StillInHand _ -> pure Nothing
+  StillInDiscard _ -> pure Nothing
 
 accessibleLocations :: HasGame m => InvestigatorId -> m [LocationId]
 accessibleLocations iid = selectList $ AccessibleFrom (locationWithInvestigator iid) <> canEnterLocation iid

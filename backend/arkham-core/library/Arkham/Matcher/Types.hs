@@ -525,6 +525,7 @@ data ExtendedCardMatcher
   | ExtendedCardMatches [ExtendedCardMatcher]
   | PlayableCardWithCostReduction Int ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
+  | PlayableCardWithCriteria CriteriaOverride ExtendedCardMatcher
   | CommittableCard InvestigatorId ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
   | CanCancelRevelationEffect ExtendedCardMatcher

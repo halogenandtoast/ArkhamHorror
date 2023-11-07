@@ -581,6 +581,8 @@ allAssets =
     , SomeAssetCard safeguard2
     , --- rogue [pnr]
       SomeAssetCard burglary2
+    , --- survivor [pnr]
+      SomeAssetCard moonstone
     , -- Point of No Return
       --- mystic [pnr]
       SomeAssetCard empowerSelfStamina2

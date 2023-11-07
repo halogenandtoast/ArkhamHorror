@@ -130,7 +130,7 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
     map (PlayerCard . snd)
       $ filter
         (canPlayFromDiscard modifiers)
-        (zip @_ @Int [0 ..] investigatorDiscard)
+        (withIndex investigatorDiscard)
   canPlayFromDiscard modifiers (n, card) =
     cdPlayableFromDiscard (toCardDef card)
       || any (allowsPlayFromDiscard n card) modifiers
@@ -1153,6 +1153,7 @@ onSameLocation iid = \case
   Limbo -> pure False
   OutOfPlay _ -> pure False
   StillInHand _ -> pure False
+  StillInDiscard _ -> pure False
 
 getSpendableResources :: HasGame m => InvestigatorId -> m Int
 getSpendableResources iid = do
@@ -1239,6 +1240,18 @@ passesCriteria iid mcard source windows' = \case
         member tid
           <$> select
             (Matcher.TreacheryInHandOf $ Matcher.InvestigatorWithId iid)
+      _ -> error $ "source not handled for in your hand: " <> show source
+  Criteria.InYourDiscard -> do
+    discard <- fieldMap InvestigatorDiscard (map toCardId) iid
+    case source of
+      AssetSource aid -> do
+        inPlay <- selectAny $ Matcher.AssetWithId aid
+        if inPlay
+          then pure False
+          else do
+            -- todo we should make a cleaner method for this
+            cardId <- field InDiscardAssetCardId aid
+            pure $ cardId `elem` discard
       _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InThreatAreaOf who -> do
     case source of

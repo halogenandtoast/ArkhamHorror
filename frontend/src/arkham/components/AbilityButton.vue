@@ -12,6 +12,10 @@ const props = defineProps<{
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
 const isAction = (action: string) => {
+  if (props.ability.ability.displayAsAction) {
+    return false
+  }
+
   if (props.ability.tag === MessageType.EVADE_LABEL) {
     return action === "Evade"
   }
@@ -133,6 +137,10 @@ const isHaunted = computed(() => ability.value && ability.value.type.tag === "Ha
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
 const abilityLabel = computed(() => {
+  if (props.ability.ability.displayAsAction) {
+    return ""
+  }
+
   if (props.ability.tag === MessageType.EVADE_LABEL) {
     return "Evade"
   }

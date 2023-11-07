@@ -738,6 +738,7 @@ library
       Arkham.Asset.Cards.SurvivalKnife2
       Arkham.Asset.Cards.Switchblade
       Arkham.Asset.Cards.Switchblade2
+      Arkham.Asset.Cards.SwordCane
       Arkham.Asset.Cards.TennesseeSourMash
       Arkham.Asset.Cards.TennesseeSourMashRogue3
       Arkham.Asset.Cards.TennesseeSourMashSurvivor3
@@ -2145,6 +2146,7 @@ library
       Arkham.Skill.Cards.Perception
       Arkham.Skill.Cards.Perception2
       Arkham.Skill.Cards.Prescient
+      Arkham.Skill.Cards.PromiseOfPower
       Arkham.Skill.Cards.Prophesy
       Arkham.Skill.Cards.QuickThinking
       Arkham.Skill.Cards.Reckless

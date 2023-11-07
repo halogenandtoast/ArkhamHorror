@@ -21,9 +21,8 @@ twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
 instance RunMessage TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (RequestChaosTokens source (Just iid) (Reveal 1) SetAside)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (RequestChaosTokens source (Just iid) (Reveal 1) SetAside)
     RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
       let
         msgs =
@@ -57,6 +56,8 @@ instance RunMessage TwistOfFate where
                   Just (InvestigatorAssignDamage iid source DamageAny 0 2)
                 AutoFail ->
                   Just (InvestigatorAssignDamage iid source DamageAny 0 2)
+                CurseToken -> Nothing
+                BlessToken -> Nothing
                 . chaosTokenFace
             )
             tokens

@@ -26,6 +26,7 @@ data Ability = Ability
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
+  , abilityDisplayAsAction :: Bool
   }
   deriving stock (Show, Ord, Data)
 
@@ -64,6 +65,9 @@ abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
 abilityDoesNotProvokeAttacksOfOpportunityL =
   lens abilityDoesNotProvokeAttacksOfOpportunity
     $ \m x -> m {abilityDoesNotProvokeAttacksOfOpportunity = x}
+
+abilityDisplayAsActionL :: Lens' Ability Bool
+abilityDisplayAsActionL = lens abilityDisplayAsAction $ \m x -> m {abilityDisplayAsAction = x}
 
 $(deriveJSON defaultOptions ''AbilityMetadata)
 $(deriveJSON (aesonOptions $ Just "ability") ''Ability)

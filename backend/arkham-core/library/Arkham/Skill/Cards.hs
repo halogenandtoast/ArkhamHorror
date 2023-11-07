@@ -69,6 +69,7 @@ allPlayerSkillCards =
       , perception
       , perception2
       , prescient
+      , promiseOfPower
       , prophesy
       , quickThinking
       , reckless
@@ -527,6 +528,12 @@ threeAces1 =
   (skill "06199" "Three Aces" [#wild] Rogue)
     { cdKeywords = singleton Keyword.Myriad
     , cdCardTraits = setFromList [Fortune, Practiced]
+    }
+
+promiseOfPower :: CardDef
+promiseOfPower =
+  (skill "07032" "Promise of Power" [#wild, #wild, #wild, #wild] Mystic)
+    { cdCardTraits = setFromList [Practiced, Cursed]
     }
 
 riseToTheOccasion3 :: CardDef

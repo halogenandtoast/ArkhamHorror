@@ -19,6 +19,16 @@ getOnlyChaosTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
 getBagChaosTokens :: HasGame m => m [ChaosToken]
 getBagChaosTokens = scenarioFieldMap ScenarioChaosBag allChaosBagChaosTokens
 
+getRemainingCurseTokens :: HasGame m => m Int
+getRemainingCurseTokens = do
+  n <- selectCount $ IncludeSealed $ ChaosTokenFaceIs CurseToken
+  pure $ max 0 $ 10 - n
+
+getRemainingBlessTokens :: HasGame m => m Int
+getRemainingBlessTokens = do
+  n <- selectCount $ IncludeSealed $ ChaosTokenFaceIs BlessToken
+  pure $ max 0 $ 10 - n
+
 getSealedChaosTokens :: HasGame m => m [ChaosToken]
 getSealedChaosTokens =
   concat

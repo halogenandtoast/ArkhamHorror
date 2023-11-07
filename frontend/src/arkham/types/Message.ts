@@ -29,6 +29,7 @@ export enum MessageType {
 
 export interface AbilityMessage {
   contents: AbilityLabel | FightLabel | EvadeLabel
+  displayAsAction: boolean
   index: number
 }
 

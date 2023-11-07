@@ -34,7 +34,7 @@ export interface ActionAbility {
 export const actionAbilityDecoder = JsonDecoder.object<ActionAbility>({
   tag: JsonDecoder.isExactly("ActionAbility"),
   action: JsonDecoder.nullable(actionDecoder),
-  cost: costDecoder
+  cost: costDecoder,
 }, 'ActionAbility')
 
 export interface ActionAbilityWithSkill {
@@ -152,6 +152,7 @@ export interface Ability {
   type: AbilityType
   source: Source
   tooltip: string | null
+  displayAsAction: boolean
 }
 
 export const abilityDecoder = JsonDecoder.object(
@@ -159,4 +160,5 @@ export const abilityDecoder = JsonDecoder.object(
     type: abilityTypeDecoder,
     source: sourceDecoder,
     tooltip: JsonDecoder.nullable(JsonDecoder.string),
+    displayAsAction: JsonDecoder.boolean
   }, 'Ability')

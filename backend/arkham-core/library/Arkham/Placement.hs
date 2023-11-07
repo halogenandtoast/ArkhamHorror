@@ -15,6 +15,7 @@ data Placement
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
   | StillInHand InvestigatorId
+  | StillInDiscard InvestigatorId
   | AttachedToEnemy EnemyId
   | AttachedToAsset AssetId (Maybe Placement) -- Maybe Placement for Dr. Elli Horowitz
   | AttachedToAct ActId
@@ -43,6 +44,7 @@ placementToAttached = \case
   Limbo -> Nothing
   OutOfPlay _ -> Nothing
   StillInHand _ -> Nothing
+  StillInDiscard _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = \case

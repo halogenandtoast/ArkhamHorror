@@ -11,6 +11,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ChaosToken qualified as Token
 import Arkham.ClassSymbol
+import Arkham.CommitRestriction
 import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
 import Arkham.EncounterSet hiding (Dunwich)
@@ -367,6 +368,7 @@ allPlayerAssetCards =
       , mollyMaxwell
       , monstrousTransformation
       , moonPendant2
+      , moonstone
       , moxie1
       , mrRook
       , mysteriousRaven
@@ -3765,6 +3767,17 @@ burglary2 =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Talent, Illicit]
     , cdLevel = 2
+    }
+
+moonstone :: CardDef
+moonstone =
+  (asset "06203" "Moonstone" 3 Survivor)
+    { cdCardTraits = setFromList [Item, Relic, Dreamlands]
+    , cdSlots = [#accessory]
+    , cdCriteria = Just Criteria.Never
+    , cdCommitRestrictions = [SelfCanCommitWhen NoOne]
+    , cdCardInHandEffects = True
+    , cdCardInDiscardEffects = True
     }
 
 empowerSelfStamina2 :: CardDef

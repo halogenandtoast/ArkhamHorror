@@ -140,6 +140,9 @@ data instance Field (DiscardedEntity Asset) :: Type -> Type where
 data instance Field (InHandEntity Asset) :: Type -> Type where
   InHandAssetCardId :: Field (InHandEntity Asset) CardId
 
+data instance Field (InDiscardEntity Asset) :: Type -> Type where
+  InDiscardAssetCardId :: Field (InDiscardEntity Asset) CardId
+
 data instance Field Asset :: Type -> Type where
   AssetTokens :: Field Asset Tokens
   AssetName :: Field Asset Name

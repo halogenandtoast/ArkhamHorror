@@ -2476,6 +2476,14 @@ spectralRazor =
     , cdOverrideActionPlayableIfCriteriaMet = True
     }
 
+wordOfCommand2 :: CardDef
+wordOfCommand2 =
+  (event "06202" "Word of Command" 2 Mystic)
+    { cdCardTraits = setFromList [Spell]
+    , cdLevel = 2
+    , cdCriteria = can.manipulate.deck You
+    }
+
 dodge2 :: CardDef
 dodge2 =
   (event "08026" "Dodge" 0 Guardian)

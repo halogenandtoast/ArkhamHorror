@@ -28,6 +28,15 @@ inHandAbility = inHandCriteria . abilityCriteria
     AnyCriterion xs -> any inHandCriteria xs
     _ -> False
 
+inDiscardAbility :: Ability -> Bool
+inDiscardAbility = inDiscardCriteria . abilityCriteria
+ where
+  inDiscardCriteria = \case
+    InYourDiscard -> True
+    Criteria xs -> any inDiscardCriteria xs
+    AnyCriterion xs -> any inDiscardCriteria xs
+    _ -> False
+
 abilityCost :: Ability -> Cost
 abilityCost = abilityTypeCost . abilityType
 

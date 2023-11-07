@@ -68,6 +68,7 @@ import Arkham.Game.Helpers hiding (
   getSpendableClueCount,
   withModifiers,
  )
+import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Game.Json ()
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
@@ -1288,6 +1289,14 @@ getGameAbilities = do
       <$> filterM
         unblanked
         (toList $ g ^. inHandEntitiesL . each . eventsL)
+  inDiscardAssetAbilities <-
+    concatMap
+      ( filter inDiscardAbility
+          . getAbilities
+      )
+      <$> filterM
+        unblanked
+        (toList $ g ^. inDiscardEntitiesL . each . assetsL)
   concatMapM replaceMatcherSources
     $ enemyAbilities
     <> blankedEnemyAbilities
@@ -1297,6 +1306,7 @@ getGameAbilities = do
     <> treacheryAbilities
     <> eventAbilities
     <> inHandEventAbilities
+    <> inDiscardAssetAbilities
     <> actAbilities
     <> agendaAbilities
     <> effectAbilities
@@ -2722,6 +2732,7 @@ instance Projection Asset where
         Limbo -> pure Nothing
         OutOfPlay _ -> pure Nothing
         StillInHand _ -> pure Nothing
+        StillInDiscard _ -> pure Nothing
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> pure assetSlots
@@ -3078,6 +3089,22 @@ instance Query ExtendedCardMatcher where
             results <- selectList matcher'
             playable <- filterM (getIsPlayable iid GameSource costStatus windows') results
             pure $ c `elem` playable
+      PlayableCardWithCriteria override matcher' -> do
+        mTurnInvestigator <- selectOne TurnInvestigator
+        activeInvestigator <- selectJust ActiveInvestigator
+        let iid = fromMaybe activeInvestigator mTurnInvestigator
+        let windows' = Window.defaultWindows iid
+        results <- selectList matcher'
+        playable <-
+          filterM
+            ( \r -> Helpers.withModifiers
+                (CardIdTarget $ toCardId r)
+                [toModifier GameSource $ CanPlayWithOverride override]
+                $ do
+                  getIsPlayable iid GameSource UnpaidCost windows' r
+            )
+            results
+        pure $ c `elem` playable
       CommittableCard iid matcher' -> do
         mSkillTest <- getSkillTest
         case mSkillTest of
@@ -3467,6 +3494,21 @@ instance Projection (InHandEntity Asset) where
     case f of
       InHandAssetCardId -> pure $ toCardId attrs
 
+instance Projection (InDiscardEntity Asset) where
+  field f aid = do
+    let missingAsset = "No discarded asset: " <> show aid
+    a <-
+      fromJustNote missingAsset
+        . lookup aid
+        . entitiesAssets
+        . mconcat
+        . Map.elems
+        . gameInDiscardEntities
+        <$> getGame
+    let attrs = toAttrs a
+    case f of
+      InDiscardAssetCardId -> pure $ toCardId attrs
+
 instance Projection Scenario where
   field fld _ = do
     s <-
@@ -3745,6 +3787,7 @@ getPlacementLocation = \case
   InPlayArea investigator -> field InvestigatorLocation investigator
   InThreatArea investigator -> field InvestigatorLocation investigator
   StillInHand _ -> pure Nothing
+  StillInDiscard _ -> pure Nothing
   AttachedToEnemy enemy -> field EnemyLocation enemy
   AttachedToAsset asset _ -> field AssetLocation asset
   AttachedToAct _ -> pure Nothing
@@ -5953,6 +5996,28 @@ preloadEntities g = do
                   handEffectCards
              in
               insertMap (toId investigator') handEntities entities
+    preloadDiscardEntities entities investigator' = do
+      let
+        setAssetPlacement :: forall a. Typeable a => a -> a
+        setAssetPlacement a = case eqT @a @Asset of
+          Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInDiscard (toId investigator')}) a
+          Nothing -> a
+        discardEffectCards =
+          map PlayerCard
+            . filter (cdCardInDiscardEffects . toCardDef)
+            $ investigatorDiscard (toAttrs investigator')
+      pure
+        $ if null discardEffectCards
+          then entities
+          else
+            let
+              discardEntities =
+                foldl'
+                  (addCardEntityWith (toId investigator') setAssetPlacement)
+                  defaultEntities
+                  discardEffectCards
+             in
+              insertMap (toId investigator') discardEntities entities
     foundOfElems = concat . Map.elems . view Investigator.foundCardsL . toAttrs
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef)
@@ -5961,10 +6026,12 @@ preloadEntities g = do
   active <- getActiveInvestigatorId
   let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
+  discardEntities <- foldM preloadDiscardEntities mempty investigators
   pure
     $ g
       { gameInHandEntities = handEntities
       , gameInSearchEntities = searchEntities
+      , gameInDiscardEntities = discardEntities
       }
 
 {- | Preloads Modifiers

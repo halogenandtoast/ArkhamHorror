@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Capability
 import Arkham.Cost.Status
 import Arkham.Criteria.Override
 import Arkham.Direction
@@ -110,6 +111,7 @@ data Criterion
   | AgendaExists AgendaMatcher
   | ActExists ActMatcher
   | InYourHand
+  | InYourDiscard
   | DoomCountIs ValueMatcher
   | OnAct Int
   | CardExists CardMatcher
@@ -259,6 +261,11 @@ instance Semigroup UnderZone where
   UnderZones xs <> y = UnderZones $ xs <> [y]
   x <> UnderZones ys = UnderZones $ x : ys
   x <> y = UnderZones [x, y]
+
+instance Capable (InvestigatorMatcher -> Maybe Criterion) where
+  can =
+    let can' = can :: Capabilities InvestigatorMatcher
+     in fmap (\m -> \matcher -> Just $ exists (m <> matcher)) can'
 
 $(deriveJSON defaultOptions ''DiscardSignifier)
 $(deriveJSON defaultOptions ''UnderZone)

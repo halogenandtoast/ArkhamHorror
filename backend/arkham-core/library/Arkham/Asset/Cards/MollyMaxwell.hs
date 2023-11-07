@@ -43,14 +43,14 @@ instance RunMessage MollyMaxwell where
               iid
               (toSource attrs)
               (InvestigatorDeck iid)
-              (NotCard AnyCard)
+              (basic $ NotCard AnyCard)
           )
         : [ ( tshow trait
             , RevealUntilFirst
                 iid
                 (toSource attrs)
                 (InvestigatorDeck iid)
-                (CardWithTrait trait)
+                (basic $ CardWithTrait trait)
             )
           | trait <- deckTraits
           ]

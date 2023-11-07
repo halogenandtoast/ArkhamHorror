@@ -32,7 +32,7 @@ instance HasModifiersFor BruteForce1 where
 
 instance RunMessage BruteForce1 where
   runMessage msg s@(BruteForce1 attrs) = case msg of
-    PassedSkillTest {} -> do
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       mAction <- getSkillTestAction
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator

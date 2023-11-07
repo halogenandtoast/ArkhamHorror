@@ -91,6 +91,8 @@ allSkills =
     , SomeSkillCard bruteForce1
     , SomeSkillCard threeAces1
     , SomeSkillCard sharpVision1
+    , SomeSkillCard leadership2
+    , SomeSkillCard daredevil2
     , SomeSkillCard promiseOfPower
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied

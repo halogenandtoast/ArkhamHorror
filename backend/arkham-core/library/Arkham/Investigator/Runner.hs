@@ -1867,7 +1867,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           & bondedCardsL
           <>~ map toCard essenceOfTheDreams
   RevealUntilFirst iid source (Deck.InvestigatorDeck iid') matcher | iid == investigatorId && iid' == iid -> do
-    let (revealed, remainingDeck) = break (`cardMatch` matcher) (unDeck investigatorDeck)
+    (revealed, remainingDeck) <- breakM ((<=~> matcher) . toCard) (unDeck investigatorDeck)
     case remainingDeck of
       [] -> do
         pushAll

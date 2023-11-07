@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.SkillType
 
 newtype Leadership = Leadership SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -25,7 +24,7 @@ instance HasModifiersFor Leadership where
     mInvestigator <- getSkillTestInvestigator
     pure $ case mInvestigator of
       Just iid | skillOwner attrs /= iid -> do
-        toModifiers attrs [AddSkillIcons [SkillIcon SkillWillpower, WildIcon]]
+        toModifiers attrs [AddSkillIcons [#willpower, #wild]]
       _ -> []
   getModifiersFor _ _ = pure []
 

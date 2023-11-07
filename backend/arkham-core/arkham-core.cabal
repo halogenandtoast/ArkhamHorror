@@ -2120,6 +2120,7 @@ library
       Arkham.Skill.Cards.Cunning
       Arkham.Skill.Cards.Curiosity
       Arkham.Skill.Cards.Daredevil
+      Arkham.Skill.Cards.Daredevil2
       Arkham.Skill.Cards.Daring
       Arkham.Skill.Cards.Deduction
       Arkham.Skill.Cards.Deduction2
@@ -2140,6 +2141,7 @@ library
       Arkham.Skill.Cards.Intrepid
       Arkham.Skill.Cards.LastChance
       Arkham.Skill.Cards.Leadership
+      Arkham.Skill.Cards.Leadership2
       Arkham.Skill.Cards.ManualDexterity
       Arkham.Skill.Cards.ManualDexterity2
       Arkham.Skill.Cards.Momentum1

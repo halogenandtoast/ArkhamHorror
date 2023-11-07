@@ -490,7 +490,9 @@ instance RunMessage ChaosBag where
     ResetChaosTokens _source ->
       pure
         $ c
-        & (chaosTokensL <>~ chaosBagSetAsideChaosTokens)
+        & ( chaosTokensL
+              <>~ filter ((`notElem` [CurseToken, BlessToken]) . chaosTokenFace) chaosBagSetAsideChaosTokens
+          )
         & (setAsideChaosTokensL .~ mempty)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> do
@@ -610,7 +612,7 @@ instance RunMessage ChaosBag where
     ReturnChaosTokens tokens' ->
       pure
         $ c
-        & (chaosTokensL %~ (<> tokens'))
+        & (chaosTokensL %~ (<> filter ((`notElem` [CurseToken, BlessToken]) . chaosTokenFace) tokens'))
         & (setAsideChaosTokensL %~ (\\ tokens'))
         & (choiceL .~ Nothing)
     AddChaosToken chaosTokenFace -> do
@@ -632,7 +634,10 @@ instance RunMessage ChaosBag where
         %~ filter (/= token)
         & revealedChaosTokensL
         %~ filter (/= token)
-    UnsealChaosToken token -> pure $ c & chaosTokensL %~ (token :)
+    UnsealChaosToken token -> do
+      if chaosTokenFace token `elem` [CurseToken, BlessToken]
+        then pure c
+        else pure $ c & chaosTokensL %~ (token :)
     RemoveAllChaosTokens face ->
       pure
         $ c

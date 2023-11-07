@@ -593,6 +593,8 @@ allAssets =
       --- signature [tic]
       SomeAssetCard showmanship
     , SomeAssetCard occultScraps
+    , --- mystic [tic]
+      SomeAssetCard swordCane
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

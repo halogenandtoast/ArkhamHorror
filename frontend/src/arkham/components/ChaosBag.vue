@@ -55,6 +55,10 @@ function imageFor(tokenFace: string) {
       return imgsrc("ct_tablet.png");
     case 'ElderThing':
       return imgsrc("ct_elderthing.png");
+    case 'BlessToken':
+      return imgsrc("ct_bless.png");
+    case 'CurseToken':
+      return imgsrc("ct_curse.png");
     default:
       return imgsrc("ct_blank.png");
   }

@@ -598,7 +598,11 @@ instance HasChaosTokenValue Scenario where
     modifiers' <- getModifiers (ChaosTokenFaceTarget chaosTokenFace)
     if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
       then pure $ ChaosTokenValue chaosTokenFace NoModifier
-      else getChaosTokenValue iid chaosTokenFace s
+      else do
+        case chaosTokenFace of
+          CurseToken -> pure $ ChaosTokenValue chaosTokenFace (NegativeModifier 2)
+          BlessToken -> pure $ ChaosTokenValue chaosTokenFace (PositiveModifier 2)
+          _ -> getChaosTokenValue iid chaosTokenFace s
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario scenarioId =

@@ -7,7 +7,7 @@ export interface ChaosToken {
   modifiers?: Modifier[];
 }
 
-export type TokenFace = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign'
+export type TokenFace = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign' | 'CurseToken' | 'BlessToken'
 
 export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.isExactly('PlusOne'),
@@ -26,6 +26,8 @@ export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.isExactly('ElderThing'),
   JsonDecoder.isExactly('AutoFail'),
   JsonDecoder.isExactly('ElderSign'),
+  JsonDecoder.isExactly('CurseToken'),
+  JsonDecoder.isExactly('BlessToken'),
 ], 'TokenFace');
 
 export const chaosTokenDecoder = JsonDecoder.object<ChaosToken>({

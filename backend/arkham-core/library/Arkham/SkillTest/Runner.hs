@@ -59,7 +59,10 @@ calculateSkillTestResultsData s = do
   chaosTokenValues <-
     sum
       <$> for
-        (skillTestRevealedChaosTokens s <> skillTestResolvedChaosTokens s)
+        ( nub
+            $ skillTestRevealedChaosTokens s
+            <> skillTestResolvedChaosTokens s
+        )
         (getModifiedChaosTokenValue s)
   let
     addResultModifier n (SkillTestResultValueModifier m) = n + m
@@ -85,7 +88,7 @@ autoFailSkillTestResultsData s = do
   chaosTokenValues <-
     sum
       <$> for
-        (skillTestRevealedChaosTokens s <> skillTestResolvedChaosTokens s)
+        (nub $ skillTestRevealedChaosTokens s <> skillTestResolvedChaosTokens s)
         (getModifiedChaosTokenValue s)
   let
     totaledChaosTokenValues = chaosTokenValues + (skillTestValueModifier s)
@@ -744,7 +747,7 @@ instance RunMessage SkillTest where
         chaosTokenValues <-
           sum
             <$> for
-              (skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
+              (nub $ skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
               (getModifiedChaosTokenValue s)
         pure $ s & valueModifierL %~ subtract chaosTokenValues
     RecalculateSkillTestResults -> do
@@ -760,7 +763,7 @@ instance RunMessage SkillTest where
       chaosTokenValues <-
         sum
           <$> for
-            (skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
+            (nub $ skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
             (getModifiedChaosTokenValue s)
       let
         modifiedSkillValue' =

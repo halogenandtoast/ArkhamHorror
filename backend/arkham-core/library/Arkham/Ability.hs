@@ -64,6 +64,9 @@ doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
 doesNotProvokeAttacksOfOpportunity =
   set abilityDoesNotProvokeAttacksOfOpportunityL True
 
+displayAsAction :: Ability -> Ability
+displayAsAction = set abilityDisplayAsActionL True
+
 limitedAbility :: AbilityLimit -> Ability -> Ability
 limitedAbility l a = a & abilityLimitL .~ l
 
@@ -161,6 +164,7 @@ mkAbility entity idx type' =
     , abilityDoesNotProvokeAttacksOfOpportunity = False
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
+    , abilityDisplayAsAction = False
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

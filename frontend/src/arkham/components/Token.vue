@@ -48,6 +48,10 @@ const image = computed(() => {
       return imgsrc("ct_tablet.png");
     case 'ElderThing':
       return imgsrc("ct_elderthing.png");
+    case 'CurseToken':
+      return imgsrc("ct_curse.png");
+    case 'BlessToken':
+      return imgsrc("ct_bless.png");
     default:
       return imgsrc("ct_blank.png");
   }

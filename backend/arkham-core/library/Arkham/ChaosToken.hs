@@ -89,6 +89,8 @@ data ChaosTokenFace
   | ElderThing
   | AutoFail
   | ElderSign
+  | CurseToken
+  | BlessToken
   deriving stock (Bounded, Enum, Show, Eq, Ord, Data)
 
 instance IsLabel "skull" ChaosTokenFace where
@@ -127,6 +129,8 @@ isNumberChaosToken = \case
   ElderThing -> False
   AutoFail -> False
   ElderSign -> False
+  CurseToken -> False
+  BlessToken -> False
 
 isEvenChaosToken :: ChaosTokenFace -> Bool
 isEvenChaosToken = \case
@@ -146,6 +150,8 @@ isEvenChaosToken = \case
   ElderThing -> False
   AutoFail -> False
   ElderSign -> False
+  CurseToken -> False
+  BlessToken -> False
 
 isOddChaosToken :: ChaosTokenFace -> Bool
 isOddChaosToken = \case
@@ -165,6 +171,8 @@ isOddChaosToken = \case
   ElderThing -> False
   AutoFail -> False
   ElderSign -> False
+  CurseToken -> False
+  BlessToken -> False
 
 isSymbolChaosToken :: ChaosTokenFace -> Bool
 isSymbolChaosToken = \case
@@ -184,6 +192,8 @@ isSymbolChaosToken = \case
   ElderThing -> True
   AutoFail -> True
   ElderSign -> True
+  CurseToken -> True
+  BlessToken -> True
 
 isNonNegativeChaosToken :: ChaosTokenFace -> Bool
 isNonNegativeChaosToken = \case
@@ -203,6 +213,8 @@ isNonNegativeChaosToken = \case
   ElderThing -> False
   AutoFail -> False
   ElderSign -> False
+  BlessToken -> False
+  CurseToken -> False
 
 -- only for the printed value and should not be used in scenario
 -- mainly used for the JudgementXX Tarot Card
@@ -224,6 +236,8 @@ chaosTokenToFaceValue = \case
   ElderThing -> 0
   AutoFail -> 0
   ElderSign -> 0
+  CurseToken -> 0
+  BlessToken -> 0
 
 $(deriveJSON defaultOptions ''ChaosTokenModifier)
 $(deriveJSON defaultOptions ''ChaosTokenFace)

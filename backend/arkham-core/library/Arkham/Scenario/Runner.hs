@@ -326,6 +326,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ResolveChaosToken _drawnToken token iid -> do
     ChaosTokenValue _ tokenModifier <- getChaosTokenValue iid token ()
     when (tokenModifier == AutoFailModifier) $ push FailSkillTest
+    pushWhen (token `elem` [CurseToken, BlessToken]) (DrawAnotherChaosToken iid)
     pure a
   EndOfScenario mNextCampaignStep -> do
     clearQueue

@@ -16,6 +16,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.RunMessage
@@ -68,7 +69,10 @@ defaultCampaignRunner msg a = case msg of
         %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
         & decksL
         %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
-  AddChaosToken token -> pure $ updateAttrs a (chaosBagL %~ (token :))
+  AddChaosToken token -> do
+    if token `notElem` [CurseToken, BlessToken]
+      then pure $ updateAttrs a (chaosBagL %~ (token :))
+      else pure a
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid deck -> do
     playerCount <- getPlayerCount

@@ -58,6 +58,8 @@ instance RunMessage CloverClubCardroom where
                 Tablet -> []
                 ElderThing -> []
                 AutoFail -> []
+                CurseToken -> []
+                BlessToken -> []
             )
             chaosTokenFaces
       player <- getPlayer iid

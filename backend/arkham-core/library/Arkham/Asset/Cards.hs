@@ -485,6 +485,7 @@ allPlayerAssetCards =
       , survivalKnife2
       , switchblade
       , switchblade2
+      , swordCane
       , tennesseeSourMash
       , tennesseeSourMashRogue3
       , tennesseeSourMashSurvivor3
@@ -3822,6 +3823,15 @@ occultScraps =
     , cdCriteria = Just Criteria.Never
     , cdCardInHandEffects = True
     , cdCost = Just (StaticCost 0)
+    }
+
+swordCane :: CardDef
+swordCane =
+  (asset "07029" "Sword Cane" 2 Mystic)
+    { cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+    , cdSkills = [#combat]
+    , cdSlots = [#hand]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
 keenEye :: CardDef

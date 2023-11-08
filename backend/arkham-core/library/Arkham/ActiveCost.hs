@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.ActiveCost.Base as X
 
 import Arkham.Ability hiding (PaidCost)
-import Arkham.Action hiding (Ability, TakenAction)
+import Arkham.Action hiding (TakenAction)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Types (
   Field (AssetCard, AssetController, AssetName, AssetSealedChaosTokens, AssetUses),
@@ -57,11 +57,8 @@ import Arkham.Window qualified as Window
 
 activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case activeCostTarget ac of
-  ForAbility a -> if null (abilityActions a) then [Action.Ability] else abilityActions a
-  ForCard isPlayAction c ->
-    if null (cdActions $ toCardDef c)
-      then [Action.Play | isPlayAction == IsPlayAction]
-      else cdActions $ toCardDef c
+  ForAbility a -> Action.Activate : abilityActions a
+  ForCard isPlayAction c -> [Action.Play | isPlayAction == IsPlayAction] <> cdActions (toCardDef c)
   ForCost _ -> []
 
 addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
@@ -161,7 +158,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
       -- for now we assume this will trigger attacks of opportunity
       -- we also skip additional cost checks and abilities of this type
       -- will need to trigger the appropriate check
-      let actions = if null actions' then [Action.Ability] else actions'
+      let actions = Action.Activate : actions'
       pushAll
         $ [ PayCost activeCostId iid True cost
           , TakenActions iid actions
@@ -170,7 +167,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
            | not abilityDoesNotProvokeAttacksOfOpportunity
            ]
     ActionAbilityWithSkill actions' _ cost -> do
-      let actions = if null actions' then [Action.Ability] else actions'
+      let actions = Action.Activate : actions'
       if all (`notElem` [#fight, #evade, #resign, #parley]) actions
         then
           pushAll
@@ -185,7 +182,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
             , TakenActions iid actions
             ]
     ActionAbility actions' cost -> do
-      let actions = if null actions' then [Action.Ability] else actions'
+      let actions = Action.Activate : actions'
       beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
       if all (`notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]) actions
         then
@@ -224,9 +221,7 @@ instance RunMessage ActiveCost where
             modifiersPreventAttackOfOpportunity =
               ActionDoesNotCauseAttacksOfOpportunity Action.Play
                 `elem` modifiers'
-            actions = case cdActions cardDef of
-              [] -> [Action.Play | isPlayAction == IsPlayAction]
-              as -> as
+            actions = [Action.Play | isPlayAction == IsPlayAction] <> cdActions cardDef
             mEffect =
               guard (cdBeforeEffect cardDef) $> createCardEffect cardDef Nothing iid (toCardId card)
           beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
@@ -236,14 +231,13 @@ instance RunMessage ActiveCost where
               ]
             <> maybeToList mEffect
             <> [PayCost acId iid False (activeCostCosts c)]
-            <> [TakenActions iid actions]
             <> [ CheckAttackOfOpportunity iid False
                | not modifiersPreventAttackOfOpportunity
                   && ( DoesNotProvokeAttacksOfOpportunity
-                        `notElem` (cdAttackOfOpportunityModifiers cardDef)
+                        `notElem` cdAttackOfOpportunityModifiers cardDef
                      )
-                  && (isNothing $ cdFastWindow cardDef)
-                  && (any (`notElem` nonAttackOfOpportunityActions) actions)
+                  && isNothing (cdFastWindow cardDef)
+                  && all (`notElem` nonAttackOfOpportunityActions) actions
                ]
             <> [PayCostFinished acId]
           pure c
@@ -1019,7 +1013,7 @@ instance RunMessage ActiveCost where
         ForAbility ability -> do
           let
             isAction = isActionAbility ability
-            actions = if null (abilityActions ability) then [Action.Ability] else abilityActions ability
+            actions = Action.Activate : abilityActions ability
             iid = activeCostInvestigator c
           whenActivateAbilityWindow <-
             checkWindows
@@ -1055,6 +1049,7 @@ instance RunMessage ActiveCost where
               ]
             <> [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
             <> [FinishAction | isPlayAction == IsPlayAction]
+            <> [TakenActions iid [#play] | isPlayAction == IsPlayAction]
         ForCost card ->
           pushAll
             [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]

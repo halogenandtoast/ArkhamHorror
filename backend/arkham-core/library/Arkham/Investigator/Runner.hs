@@ -180,24 +180,6 @@ getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
       xs -> select (AssetOneOf xs)
   pure $ setFromList $ filter (`notMember` excludes) allAssets
 
-canDo :: HasGame m => InvestigatorId -> Action -> m Bool
-canDo iid action = do
-  mods <- getModifiers iid
-  let
-    prevents = \case
-      CannotTakeAction x -> preventsAction x
-      MustTakeAction x -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
-      _ -> pure False
-    preventsAction = \case
-      FirstOneOfPerformed as | action `elem` as -> do
-        fieldP InvestigatorActionsPerformed (\taken -> all (\a -> all (notElem a) taken) as) iid
-      FirstOneOfPerformed {} -> pure False
-      IsAction action' -> pure $ action == action'
-      EnemyAction {} -> pure False
-      IsAnyAction {} -> pure True
-
-  not <$> anyM prevents mods
-
 runWindow
   :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
 runWindow attrs windows actions playableCards = do

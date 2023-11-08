@@ -11,6 +11,7 @@ import Arkham.Field as X
 import Arkham.Id
 
 class Projection a where
+  getAttrs :: (HasCallStack, HasGame m) => EntityId a -> m (EntityAttrs a)
   field :: (HasCallStack, HasGame m) => Field a typ -> EntityId a -> m typ
 
 fieldJust

@@ -29,13 +29,7 @@ haste2 = asset Haste2 Cards.haste2
 instance HasAbilities Haste2 where
   getAbilities (Haste2 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          ( PerformedSameTypeOfAction
-              #after
-              You
-              RepeatableAction
-          )
-          (exhaust a)
+        $ ReactionAbility (PerformedSameTypeOfAction #after You RepeatableAction) (exhaust a)
     ]
 
 getActionTypes :: [Window] -> [Action]
@@ -48,7 +42,6 @@ instance RunMessage Haste2 where
   runMessage msg a@(Haste2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getActionTypes -> as) _ -> do
       a' <- getAttrs @Investigator iid
-      modifiers <- getModifiers iid
       actions <- withModifiers iid (toModifiers attrs [ActionCostModifier (-1)]) $ do
         concatMapM (getActions iid) (defaultWindows iid)
 
@@ -73,7 +66,6 @@ instance RunMessage Haste2 where
         <> [ ComponentLabel (InvestigatorComponent iid ResourceToken)
             $ [TakeResources iid 1 (toSource a') False]
            | canAffordTakeResources
-           , CannotGainResources `notElem` modifiers
            , canTakeResource
            , #resource `elem` as
            ]
@@ -81,7 +73,6 @@ instance RunMessage Haste2 where
            | canAffordDrawCards
            , canDraw
            , #draw `elem` as
-           , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
            ]
         <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing [] False]
            | canPlay

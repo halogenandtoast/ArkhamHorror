@@ -12,10 +12,9 @@ servers:
       - 159.89.182.72
     labels:
       traefik.http.routers.arkham-horror.rule: Host(`arkhamhorror.app`)
-      traefik.http.routers.arkham-horror_secure.entrypoints: websecure
-      traefik.http.routers.arkham-horror_secure.rule: Host(`arkhamhorror.app`)
-      traefik.http.routers.arkham-horror_secure.tls: true
-      traefik.http.routers.arkham-horror_secure.tls.certresolver: letsencrypt
+      traefik.http.routers.arkham-horror.entrypoints: websecure
+      traefik.http.routers.arkham-horror.tls: true
+      traefik.http.routers.arkham-horror.tls.certresolver: letsencrypt
 
 # Credentials for your image host.
 registry:

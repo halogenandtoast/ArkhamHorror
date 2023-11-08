@@ -6,7 +6,7 @@ module Arkham.Enemy.Cards.VictoriaDevereux (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action hiding (Ability)
+import Arkham.Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner

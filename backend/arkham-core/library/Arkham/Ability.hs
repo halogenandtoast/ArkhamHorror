@@ -12,7 +12,7 @@ import Arkham.Ability.Used as X
 import Arkham.Cost as X
 import Arkham.Criteria as X
 
-import Arkham.Action hiding (Ability)
+import Arkham.Action
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier

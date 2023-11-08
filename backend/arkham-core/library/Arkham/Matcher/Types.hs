@@ -970,7 +970,7 @@ data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter 
 instance IsLabel "clue" CounterMatcher where
   fromLabel = ClueCounter
 
-data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher]
+data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher] | RepeatableAction
   deriving stock (Show, Eq, Ord, Data)
 
 data AbilityMatcher

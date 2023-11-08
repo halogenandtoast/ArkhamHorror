@@ -18,7 +18,7 @@ newtype TakenAction = TakenAction {unTakenAction :: Action}
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data Action
-  = Ability
+  = Activate
   | Draw
   | Engage
   | Evade

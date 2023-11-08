@@ -47,12 +47,12 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Card
-import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor)
+import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor, getCanAfford)
 import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
 import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator.Types (Field (..), InvestigatorAttrs (..))
+import Arkham.Investigator.Types (Field (..), Investigator, InvestigatorAttrs (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types hiding (location)
 import Arkham.Matcher qualified as Matcher
@@ -76,7 +76,7 @@ import Arkham.Token (countTokens)
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..), defaultWindows, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (over)
 import Control.Monad.Reader (local)
@@ -307,7 +307,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
     LocationSource _ -> pure True
     _ -> notNull <$> select Matcher.InvestigatableLocation
   -- The below actions may not be handled correctly yet
-  Action.Ability -> pure True
+  Action.Activate -> pure True
   Action.Draw -> pure True
   Action.Move -> pure True
   Action.Play -> pure True
@@ -2134,11 +2134,11 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         _ -> noMatch
     Matcher.PerformAction timing whoMatcher actionMatcher -> guardTiming timing $ \case
       Window.PerformAction iid' action ->
-        andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
+        andM [matchWho iid iid' whoMatcher, actionMatches iid action actionMatcher]
       _ -> noMatch
     Matcher.PerformedSameTypeOfAction timing whoMatcher actionMatcher -> guardTiming timing $ \case
       Window.PerformedSameTypeOfAction iid' actions ->
-        andM [matchWho iid iid' whoMatcher, anyM (`actionMatches` actionMatcher) actions]
+        andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
       _ -> noMatch
     Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
       -- The #when is questionable, but "Would" based timing really is
@@ -2906,7 +2906,7 @@ skillTestMatches iid source st = \case
     sourceMatches (skillTestSource st) sourceMatcher
   Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
   Matcher.SkillTestForAction actionMatcher -> case skillTestAction st of
-    Just action -> action `actionMatches` actionMatcher
+    Just action -> actionMatches iid action actionMatcher
     Nothing -> pure False
   Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
     Just Action.Investigate -> case skillTestTarget st of
@@ -3005,10 +3005,41 @@ deckMatch iid deckSignifier = \case
 agendaMatches :: HasGame m => AgendaId -> Matcher.AgendaMatcher -> m Bool
 agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 
-actionMatches :: Monad m => Action -> Matcher.ActionMatcher -> m Bool
-actionMatches _ Matcher.AnyAction = pure True
-actionMatches a (Matcher.ActionIs a') = pure $ a == a'
-actionMatches a (Matcher.ActionOneOf as) = anyM (actionMatches a) as
+actionMatches :: HasGame m => InvestigatorId -> Action -> Matcher.ActionMatcher -> m Bool
+actionMatches _ _ Matcher.AnyAction = pure True
+actionMatches _ a (Matcher.ActionIs a') = pure $ a == a'
+actionMatches iid a (Matcher.ActionOneOf as) = anyM (actionMatches iid a) as
+actionMatches iid a Matcher.RepeatableAction = do
+  a' <- getAttrs @Investigator iid
+  modifiers <- getModifiers iid
+  actions <- withModifiers iid (toModifiers GameSource [ActionCostModifier (-1)]) $ do
+    concatMapM (getActions iid) (defaultWindows iid)
+
+  playableCards <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
+    filter (`cardMatch` Matcher.NotCard Matcher.FastCard)
+      <$> getPlayableCards a' UnpaidCost (defaultWindows iid)
+
+  canAffordTakeResources <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
+    getCanAfford a' [#resource]
+
+  canAffordDrawCards <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
+    getCanAfford a' [#draw]
+  let available = filter (elem a . abilityActions) actions
+  canDraw <- canDo iid #draw
+  canTakeResource <- canDo iid #resource
+  canPlay <- canDo iid #play
+  pure
+    $ or
+      [ notNull available
+      , canAffordTakeResources
+          && CannotGainResources
+          `notElem` modifiers
+          && canTakeResource
+          && a
+          == #resource
+      , canAffordDrawCards && canDraw && a == #draw
+      , canPlay && notNull playableCards && a == #play
+      ]
 
 skillTypeMatches :: SkillType -> Matcher.SkillTypeMatcher -> Bool
 skillTypeMatches st = \case
@@ -3260,3 +3291,21 @@ historyMatches :: HasGame m => Matcher.HistoryMatcher -> History -> m Bool
 historyMatches = \case
   Matcher.DefeatedEnemiesWithTotalHealth vMatcher ->
     (`gameValueMatches` vMatcher) . sum . map defeatedEnemyHealth . historyEnemiesDefeated
+
+canDo :: HasGame m => InvestigatorId -> Action -> m Bool
+canDo iid action = do
+  mods <- getModifiers iid
+  let
+    prevents = \case
+      CannotTakeAction x -> preventsAction x
+      MustTakeAction x -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
+      _ -> pure False
+    preventsAction = \case
+      FirstOneOfPerformed as | action `elem` as -> do
+        fieldP InvestigatorActionsPerformed (\taken -> all (\a -> all (notElem a) taken) as) iid
+      FirstOneOfPerformed {} -> pure False
+      IsAction action' -> pure $ action == action'
+      EnemyAction {} -> pure False
+      IsAnyAction {} -> pure True
+
+  not <$> anyM prevents mods

@@ -2616,6 +2616,7 @@ getEffect eid =
   missingEffect = "Unknown effect: " <> show eid
 
 instance Projection Location where
+  getAttrs lid = toAttrs <$> getLocation lid
   field f lid = do
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l
@@ -2675,6 +2676,7 @@ instance Projection Location where
       LocationConnectedLocations -> select (ConnectedFrom $ LocationWithId lid)
 
 instance Projection Asset where
+  getAttrs aid = toAttrs <$> getAsset aid
   field f aid = do
     a <- getAsset aid
     let attrs@AssetAttrs {..} = toAttrs a
@@ -2748,6 +2750,16 @@ instance Projection Asset where
       AssetAbilities -> pure $ getAbilities a
 
 instance Projection (DiscardedEntity Asset) where
+  getAttrs aid = do
+    let missingAsset = "Unknown asset: " <> show aid
+    toAttrs
+      . fromJustNote missingAsset
+      . lookup aid
+      . entitiesAssets
+      . mconcat
+      . Map.elems
+      . gameInDiscardEntities
+      <$> getGame
   field f aid = do
     let missingAsset = "Unknown asset: " <> show aid
     a <-
@@ -2763,6 +2775,14 @@ instance Projection (DiscardedEntity Asset) where
       DiscardedAssetTraits -> pure . cdCardTraits $ toCardDef attrs
 
 instance Projection (DiscardedEntity Treachery) where
+  getAttrs tid = do
+    let missingTreachery = "Unknown treachery: " <> show tid
+    toAttrs
+      . fromJustNote missingTreachery
+      . lookup tid
+      . entitiesTreacheries
+      . gameEncounterDiscardEntities
+      <$> getGame
   field f tid = do
     let missingTreachery = "Unknown treachery: " <> show tid
     t <-
@@ -2786,6 +2806,7 @@ instance Projection (DiscardedEntity Treachery) where
         pure $ cdKeywords (toCardDef attrs) <> setFromList additionalKeywords
 
 instance Projection Act where
+  getAttrs aid = toAttrs <$> getAct aid
   field f aid = do
     a <- getAct aid
     let ActAttrs {..} = toAttrs a
@@ -2798,9 +2819,11 @@ instance Projection Act where
       ActUsedWheelOfFortuneX -> pure actUsedWheelOfFortuneX
 
 instance Projection (OutOfPlayEntity Enemy) where
+  getAttrs _ = error "getAttrs: out of play enemy, do not know zone"
   field (OutOfPlayEnemyField outOfPlayZone f) = getEnemyField f <=< getOutOfPlayEnemy outOfPlayZone
 
 instance Projection Enemy where
+  getAttrs eid = toAttrs <$> getEnemy eid
   field f = getEnemyField f <=< getEnemy
 
 getEnemyField :: HasGame m => Field Enemy typ -> Enemy -> m typ
@@ -2865,6 +2888,7 @@ getEnemyField f e = do
       _ -> pure Nothing
 
 instance Projection Investigator where
+  getAttrs iid = toAttrs <$> getInvestigator iid
   field f iid = do
     i <- getInvestigator iid
     let attrs@InvestigatorAttrs {..} = toAttrs i
@@ -3422,6 +3446,7 @@ instance Query ScenarioMatcher where
   select = fmap (setFromList . map toId) . getScenariosMatching
 
 instance Projection Agenda where
+  getAttrs aid = toAttrs <$> getAgenda aid
   field fld aid = do
     a <- getAgenda aid
     let AgendaAttrs {..} = toAttrs a
@@ -3434,6 +3459,7 @@ instance Projection Agenda where
       AgendaUsedWheelOfFortuneX -> pure agendaUsedWheelOfFortuneX
 
 instance Projection Campaign where
+  getAttrs _ = toAttrs . fromJustNote ("should be impossible, was looking campaign attrs") <$> getCampaign
   field fld _ = do
     c <- fromJustNote "impossible" <$> getCampaign
     let CampaignAttrs {..} = toAttrs c
@@ -3444,6 +3470,7 @@ instance Projection Campaign where
       CampaignDecks -> pure campaignDecks
 
 instance Projection Effect where
+  getAttrs eid = toAttrs <$> getEffect eid
   field fld eid = do
     e <- getEffect eid
     case fld of
@@ -3468,11 +3495,22 @@ eventField e fld = do
       pure $ lookupCard eventOriginalCardCode eventCardId
 
 instance Projection Event where
+  getAttrs eid = toAttrs <$> getEvent eid
   field fld eid = do
     e <- getEvent eid
     eventField e fld
 
 instance Projection (InHandEntity Event) where
+  getAttrs eid = do
+    let missingEvent = "Unknown event: " <> show eid
+    toAttrs
+      . fromJustNote missingEvent
+      . lookup eid
+      . entitiesEvents
+      . mconcat
+      . Map.elems
+      . gameInHandEntities
+      <$> getGame
   field f eid = do
     let missingEvent = "Unknown event: " <> show eid
     e <-
@@ -3488,6 +3526,16 @@ instance Projection (InHandEntity Event) where
       InHandEventCardId -> pure $ toCardId attrs
 
 instance Projection (InHandEntity Asset) where
+  getAttrs aid = do
+    let missingAsset = "Unknown asset: " <> show aid
+    toAttrs
+      . fromJustNote missingAsset
+      . lookup aid
+      . entitiesAssets
+      . mconcat
+      . Map.elems
+      . gameInHandEntities
+      <$> getGame
   field f aid = do
     let missingAsset = "Unknown asset: " <> show aid
     a <-
@@ -3503,6 +3551,16 @@ instance Projection (InHandEntity Asset) where
       InHandAssetCardId -> pure $ toCardId attrs
 
 instance Projection (InDiscardEntity Asset) where
+  getAttrs aid = do
+    let missingAsset = "No discarded asset: " <> show aid
+    toAttrs
+      . fromJustNote missingAsset
+      . lookup aid
+      . entitiesAssets
+      . mconcat
+      . Map.elems
+      . gameInDiscardEntities
+      <$> getGame
   field f aid = do
     let missingAsset = "No discarded asset: " <> show aid
     a <-
@@ -3518,6 +3576,7 @@ instance Projection (InDiscardEntity Asset) where
       InDiscardAssetCardId -> pure $ toCardId attrs
 
 instance Projection Scenario where
+  getAttrs _ = toAttrs . fromJustNote ("should be impossible, was looking scenario attrs") <$> getScenario
   field fld _ = do
     s <-
       fromJustNote ("should be impossible, was looking for field: " <> show fld)
@@ -3551,6 +3610,7 @@ instance Projection Scenario where
       ScenarioTarotCards -> pure scenarioTarotCards
 
 instance Projection Skill where
+  getAttrs sid = toAttrs <$> getSkill sid
   field fld sid = do
     s <- getSkill sid
     let
@@ -3562,6 +3622,7 @@ instance Projection Skill where
       SkillOwner -> pure skillOwner
 
 instance Projection Story where
+  getAttrs sid = toAttrs <$> getStory sid
   field fld sid = do
     s <- getStory sid
     let
@@ -3572,6 +3633,7 @@ instance Projection Story where
       StoryOtherSide -> pure storyOtherSide
 
 instance Projection Treachery where
+  getAttrs tid = toAttrs <$> getTreachery tid
   field fld tid = do
     t <- getTreachery tid
     let

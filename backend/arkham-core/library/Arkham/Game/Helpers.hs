@@ -3011,7 +3011,6 @@ actionMatches _ a (Matcher.ActionIs a') = pure $ a == a'
 actionMatches iid a (Matcher.ActionOneOf as) = anyM (actionMatches iid a) as
 actionMatches iid a Matcher.RepeatableAction = do
   a' <- getAttrs @Investigator iid
-  modifiers <- getModifiers iid
   actions <- withModifiers iid (toModifiers GameSource [ActionCostModifier (-1)]) $ do
     concatMapM (getActions iid) (defaultWindows iid)
 
@@ -3031,12 +3030,7 @@ actionMatches iid a Matcher.RepeatableAction = do
   pure
     $ or
       [ notNull available
-      , canAffordTakeResources
-          && CannotGainResources
-          `notElem` modifiers
-          && canTakeResource
-          && a
-          == #resource
+      , canAffordTakeResources && canTakeResource && a == #resource
       , canAffordDrawCards && canDraw && a == #draw
       , canPlay && notNull playableCards && a == #play
       ]
@@ -3299,6 +3293,9 @@ canDo iid action = do
     prevents = \case
       CannotTakeAction x -> preventsAction x
       MustTakeAction x -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
+      CannotDrawCards -> pure $ action == #draw
+      CannotManipulateDeck -> pure $ action == #draw
+      CannotGainResources -> pure $ action == #resource
       _ -> pure False
     preventsAction = \case
       FirstOneOfPerformed as | action `elem` as -> do

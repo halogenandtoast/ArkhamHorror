@@ -1206,7 +1206,7 @@ abilityMatches a@Ability {..} = \case
     StorySource sid' -> member sid' <$> select storyMatcher
     ProxySource (StorySource sid') _ -> member sid' <$> select storyMatcher
     _ -> pure False
-  AbilityIsAction action -> pure $ abilityAction a == Just action
+  AbilityIsAction action -> pure $ action `elem` abilityActions a
   AbilityIsActionAbility -> pure $ abilityIsActionAbility a
   AbilityIsFastAbility -> pure $ abilityIsFastAbility a
   AbilityIsForcedAbility -> pure $ abilityIsForcedAbility a
@@ -4690,11 +4690,7 @@ runGameMessage msg g = case msg of
     pure $ g & activeCostL %~ insertMap (activeCostId activeCost') activeCost'
   PlayCard iid card mtarget windows' False -> do
     investigator' <- getInvestigator iid
-    playableCards <-
-      getPlayableCards
-        (toAttrs investigator')
-        Cost.PaidCost
-        windows'
+    playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'
     case find (== card) playableCards of
       Nothing -> pure g
       Just _ -> do

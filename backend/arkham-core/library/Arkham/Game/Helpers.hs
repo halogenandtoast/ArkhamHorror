@@ -81,6 +81,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (over)
 import Control.Monad.Reader (local)
 import Data.Data.Lens (biplate)
+import Data.List qualified as List
 import Data.List.Extra (nubOrdOn)
 import Data.Set qualified as Set
 
@@ -182,9 +183,9 @@ getCanPerformAbility !iid !window !ability = do
   -- passes restrictions
   abilityModifiers <- getModifiers (AbilityTarget iid ability)
   let
-    mAction = case abilityType ability of
-      ActionAbilityWithBefore _ mBeforeAction _ -> mBeforeAction
-      _ -> abilityAction ability
+    actions = case abilityType ability of
+      ActionAbilityWithBefore _ beforeAction _ -> [beforeAction]
+      _ -> abilityActions ability
     additionalCosts = flip mapMaybe abilityModifiers $ \case
       AdditionalCost x -> Just x
       _ -> Nothing
@@ -195,12 +196,12 @@ getCanPerformAbility !iid !window !ability = do
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
   andM
-    [ getCanAffordCost iid (toSource ability) mAction [window] cost
+    [ getCanAffordCost iid (toSource ability) actions [window] cost
     , meetsActionRestrictions iid window ability
     , windowMatches iid (toSource ability) window (abilityWindow ability)
     , passesCriteria iid Nothing (abilitySource ability) [window] criteria
     , allM
-        (getCanAffordCost iid (abilitySource ability) mAction [window])
+        (getCanAffordCost iid (abilitySource ability) actions [window])
         additionalCosts
     , not <$> preventedByInvestigatorModifiers iid ability
     ]
@@ -217,15 +218,14 @@ preventedByInvestigatorModifiers iid ability = do
     _ -> pure False
   preventsAbility = \case
     IsAnyAction -> pure True
-    FirstOneOfPerformed as -> case abilityAction ability of
-      Just action
-        | action `elem` as ->
-            fieldP InvestigatorActionsTaken (\taken -> all (`notElem` taken) as) iid
-      _ -> pure False
-    IsAction a -> pure $ abilityAction ability == Just a
+    FirstOneOfPerformed as ->
+      if any (`elem` as) (abilityActions ability)
+        then fieldP InvestigatorActionsTaken (\taken -> all (\a -> all (notElem a) taken) as) iid
+        else pure False
+    IsAction a -> pure $ a `elem` abilityActions ability
     EnemyAction a matcher -> case abilitySource ability of
       EnemySource eid ->
-        if abilityAction ability == Just a then eid <=~> matcher else pure False
+        if a `elem` abilityActions ability then eid <=~> matcher else pure False
       _ -> pure False
 
 meetsActionRestrictions
@@ -237,17 +237,17 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     Cosmos -> pure False
     Objective aType -> go aType
     ForcedWhen _ aType -> go aType
-    ActionAbilityWithBefore _ mBeforeAction cost ->
-      go $ ActionAbility mBeforeAction cost
-    ActionAbilityWithSkill mAction _ cost -> go $ ActionAbility mAction cost
-    ActionAbility (Just action) _ -> do
+    ActionAbilityWithBefore _ beforeAction cost ->
+      go $ ActionAbility [beforeAction] cost
+    ActionAbilityWithSkill actions _ cost -> go $ ActionAbility actions cost
+    ActionAbility [] _ -> matchWho iid iid Matcher.TurnInvestigator
+    ActionAbility actions _ -> do
       isTurn <- matchWho iid iid Matcher.TurnInvestigator
       if not isTurn
         then pure False
-        else canDoAction iid ab action
-    ActionAbility Nothing _ -> matchWho iid iid Matcher.TurnInvestigator
-    FastAbility' _ (Just action) -> canDoAction iid ab action
-    FastAbility' _ Nothing -> pure True
+        else anyM (canDoAction iid ab) actions
+    FastAbility' _ [] -> pure True
+    FastAbility' _ actions -> anyM (canDoAction iid ab) actions
     ReactionAbility _ _ -> pure True
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
@@ -338,16 +338,16 @@ getCanAffordAbilityCost iid a@Ability {..} = do
   go f = \case
     Haunted -> pure True
     Cosmos -> pure True
-    ActionAbility mAction cost ->
-      getCanAffordCost iid (toSource a) mAction [] (f cost)
-    ActionAbilityWithSkill mAction _ cost ->
-      getCanAffordCost iid (toSource a) mAction [] (f cost)
-    ActionAbilityWithBefore _ mBeforeAction cost ->
-      getCanAffordCost iid (toSource a) mBeforeAction [] (f cost)
-    ReactionAbility _ cost -> getCanAffordCost iid (toSource a) Nothing [] (f cost)
-    FastAbility' cost mAction -> getCanAffordCost iid (toSource a) mAction [] (f cost)
+    ActionAbility actions cost ->
+      getCanAffordCost iid (toSource a) actions [] (f cost)
+    ActionAbilityWithSkill actions _ cost ->
+      getCanAffordCost iid (toSource a) actions [] (f cost)
+    ActionAbilityWithBefore _ beforeAction cost ->
+      getCanAffordCost iid (toSource a) [beforeAction] [] (f cost)
+    ReactionAbility _ cost -> getCanAffordCost iid (toSource a) [] [] (f cost)
+    FastAbility' cost actions -> getCanAffordCost iid (toSource a) actions [] (f cost)
     ForcedAbilityWithCost _ cost ->
-      getCanAffordCost iid (toSource a) Nothing [] (f cost)
+      getCanAffordCost iid (toSource a) [] [] (f cost)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     AbilityEffect _ -> pure True
@@ -471,11 +471,11 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         pure $ total < n
 
 applyActionCostModifier
-  :: [Action] -> [Action] -> Maybe Action -> ModifierType -> Int -> Int
-applyActionCostModifier _ _ (Just action) (ActionCostOf (IsAction action') m) n
-  | action == action' = n + m
-applyActionCostModifier _ performedActions (Just action) (ActionCostOf (FirstOneOfPerformed as) m) n
-  | action `elem` as && all (`notElem` performedActions) as =
+  :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int
+applyActionCostModifier _ _ actions (ActionCostOf (IsAction action') m) n
+  | action' `elem` actions = n + m
+applyActionCostModifier _ performedActions actions (ActionCostOf (FirstOneOfPerformed as) m) n
+  | notNull (actions `List.intersect` as) && all (\a -> all (notElem a) performedActions) as =
       n + m
 applyActionCostModifier _ _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ _ n = n
@@ -484,11 +484,11 @@ getCanAffordCost
   :: (HasGame m, Sourceable source)
   => InvestigatorId
   -> source
-  -> Maybe Action
+  -> [Action]
   -> [Window]
   -> Cost
   -> m Bool
-getCanAffordCost iid (toSource -> source) mAction windows' = \case
+getCanAffordCost iid (toSource -> source) actions windows' = \case
   Free -> pure True
   UpTo {} -> pure True
   ShuffleIntoDeckCost target -> case target of
@@ -507,9 +507,9 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
   AdditionalActionsCost {} -> pure True
   RevealCost {} -> pure True
   Costs xs ->
-    and <$> traverse (getCanAffordCost iid source mAction windows') xs
+    and <$> traverse (getCanAffordCost iid source actions windows') xs
   OrCost xs ->
-    or <$> traverse (getCanAffordCost iid source mAction windows') xs
+    or <$> traverse (getCanAffordCost iid source actions windows') xs
   ExhaustCost target -> case target of
     AssetTarget aid ->
       member aid <$> select Matcher.AssetReady
@@ -550,12 +550,12 @@ getCanAffordCost iid (toSource -> source) mAction windows' = \case
         performedActions <- field InvestigatorActionsPerformed iid
         let
           modifiedActionCost =
-            foldr (applyActionCostModifier takenActions performedActions mAction) n modifiers
+            foldr (applyActionCostModifier takenActions performedActions actions) n modifiers
         additionalActions <- field InvestigatorAdditionalActions iid
         additionalActionCount <-
           length
             <$> filterM
-              (additionalActionCovers source mAction)
+              (additionalActionCovers source actions)
               additionalActions
         actionCount <- field InvestigatorRemainingActions iid
         pure $ (actionCount + additionalActionCount) >= modifiedActionCost
@@ -1082,7 +1082,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     -- Drake and De Vermis Mysteriis (2) which are non-action situations
     canAffordAdditionalCosts <-
       allM
-        (getCanAffordCost iid (CardSource c) Nothing windows')
+        (getCanAffordCost iid (CardSource c) [] windows')
         $ [ActionCost 1 | not inFastWindow && costStatus /= PaidCost && source /= GameSource]
         <> additionalCosts
         <> sealedChaosTokenCost
@@ -1100,12 +1100,12 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && ((costStatus == PaidCost) || canAffordCost)
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-      && ( Action.Evade
+      && ( #evade
             `notElem` cdActions pcDef
             || canEvade
             || cdOverrideActionPlayableIfCriteriaMet pcDef
          )
-      && ( Action.Fight
+      && ( #fight
             `notElem` cdActions pcDef
             || canFight
             || cdOverrideActionPlayableIfCriteriaMet pcDef
@@ -1543,7 +1543,7 @@ passesCriteria iid mcard source windows' = \case
       any
       actions'
       \ability -> case abilityType ability of
-        ActionAbility (Just Action.Resign) _ -> True
+        ActionAbility [Action.Resign] _ -> True
         _ -> False
   Criteria.Remembered logKey -> do
     elem logKey <$> scenarioFieldMap ScenarioRemembered Set.toList
@@ -2135,6 +2135,10 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.PerformAction timing whoMatcher actionMatcher -> guardTiming timing $ \case
       Window.PerformAction iid' action ->
         andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
+      _ -> noMatch
+    Matcher.PerformedSameTypeOfAction timing whoMatcher actionMatcher -> guardTiming timing $ \case
+      Window.PerformedSameTypeOfAction iid' actions ->
+        andM [matchWho iid iid' whoMatcher, anyM (`actionMatches` actionMatcher) actions]
       _ -> noMatch
     Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
       -- The #when is questionable, but "Would" based timing really is

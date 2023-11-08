@@ -41,7 +41,7 @@ instance HasAbilities MoldyHallsEarlierTonight where
                       <> InvestigatorAt (LocationWithId $ toId a)
                   )
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

@@ -30,7 +30,7 @@ instance HasAbilities FoulSwamp where
   getAbilities (FoulSwamp attrs) =
     withRevealedAbilities attrs
       $ [ restrictedAbility attrs 1 Here
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ Costs [ActionCost 1, UpTo 3 (HorrorCost (toSource attrs) YouTarget 1)]
         ]
 

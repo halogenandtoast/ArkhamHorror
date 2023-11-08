@@ -23,7 +23,7 @@ behindTheCurtain =
 
 instance HasAbilities BehindTheCurtain where
   getAbilities (BehindTheCurtain attrs) =
-    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+    [mkAbility attrs 1 $ ActionAbility [Action.Resign] (ActionCost 1)]
 
 instance RunMessage BehindTheCurtain where
   runMessage msg a@(BehindTheCurtain attrs) = case msg of

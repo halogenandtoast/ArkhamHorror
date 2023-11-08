@@ -31,7 +31,7 @@ theShadowBehindYou =
 
 instance HasAbilities TheShadowBehindYou where
   getAbilities (TheShadowBehindYou (a `With` metadata)) =
-    restrictedAbility a 1 OnSameLocation (ActionAbility Nothing $ ActionCost 1)
+    restrictedAbility a 1 OnSameLocation (ActionAbility [] $ ActionCost 1)
       : [ restrictedAbility
           a
           2

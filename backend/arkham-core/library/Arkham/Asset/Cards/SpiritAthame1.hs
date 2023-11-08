@@ -32,7 +32,7 @@ instance HasAbilities SpiritAthame1 where
         $ ExhaustCost (toTarget x)
     , restrictedAbility x 2 ControlsThis
         $ ActionAbility
-          (Just Action.Fight)
+          ([Action.Fight])
           (Costs [ActionCost 1, ExhaustCost (toTarget x)])
     ]
 

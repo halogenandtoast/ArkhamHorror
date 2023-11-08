@@ -40,7 +40,7 @@ instance HasAbilities Kerosene1 where
                   )
               ]
         )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
         <> UseCost (AssetWithId $ toId a) Supply 1

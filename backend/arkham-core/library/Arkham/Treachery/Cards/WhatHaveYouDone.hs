@@ -25,7 +25,7 @@ instance HasModifiersFor WhatHaveYouDone where
   getModifiersFor (AbilityTarget iid ab) (WhatHaveYouDone attrs) | treacheryOnInvestigator iid attrs = do
     pure
       $ toModifiers attrs
-      $ guard (abilityAction ab == Just Parley)
+      $ guard (Parley `elem` abilityActions ab)
       *> [AdditionalCost DiscardRandomCardCost]
   getModifiersFor _ _ = pure []
 

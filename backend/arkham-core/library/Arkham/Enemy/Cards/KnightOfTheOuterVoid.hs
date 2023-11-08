@@ -31,7 +31,7 @@ instance HasAbilities KnightOfTheOuterVoid where
   getAbilities (KnightOfTheOuterVoid attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 OnSameLocation $ ActionAbility (Just Action.Parley) (ActionCost 1)
+      [ restrictedAbility attrs 1 OnSameLocation $ ActionAbility [Action.Parley] (ActionCost 1)
       ]
 
 instance RunMessage KnightOfTheOuterVoid where

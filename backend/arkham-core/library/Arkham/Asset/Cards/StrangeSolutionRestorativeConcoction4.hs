@@ -33,7 +33,7 @@ instance HasAbilities StrangeSolutionRestorativeConcoction4 where
                   $ InvestigatorAt YourLocation
               )
         )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 

@@ -28,7 +28,7 @@ instance HasAbilities LadyEsprit where
             <> exists
               (oneOf [HealableInvestigator (toSource x) DamageType You, You <> InvestigatorCanGainResources])
         )
-        ( ActionAbility Nothing
+        ( ActionAbility []
             $ Costs
               [ ActionCost 1
               , ExhaustCost (toTarget x)

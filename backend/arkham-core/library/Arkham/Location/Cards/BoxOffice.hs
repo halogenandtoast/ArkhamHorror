@@ -26,7 +26,7 @@ instance HasAbilities BoxOffice where
       attrs
       [ limitedAbility (GroupLimit PerGame 1)
         $ restrictedAbility attrs 1 Here
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
       | locationRevealed attrs
       ]

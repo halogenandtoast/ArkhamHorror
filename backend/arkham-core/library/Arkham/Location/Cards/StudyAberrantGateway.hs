@@ -27,7 +27,7 @@ studyAberrantGateway =
 instance HasAbilities StudyAberrantGateway where
   getAbilities (StudyAberrantGateway attrs) =
     withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
+      $ [ restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 2
         , mkAbility attrs 2 $ ForcedAbility $ EnemyAttemptsToSpawnAt Timing.When AnyEnemy LocationNotInPlay
         ]
 

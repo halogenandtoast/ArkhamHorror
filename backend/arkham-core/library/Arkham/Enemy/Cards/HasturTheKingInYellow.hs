@@ -31,7 +31,7 @@ instance HasAbilities HasturTheKingInYellow where
       $ [ restrictedAbility a 1 (enemyExists $ EnemyWithId (toId a) <> ReadyEnemy)
             $ ForcedAbility
             $ PhaseBegins #when #enemy
-        , mkAbility a 2 $ ActionAbility Nothing $ ActionCost 1
+        , mkAbility a 2 $ ActionAbility [] $ ActionCost 1
         ]
 
 instance RunMessage HasturTheKingInYellow where

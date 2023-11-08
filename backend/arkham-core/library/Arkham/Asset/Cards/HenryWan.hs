@@ -26,7 +26,7 @@ henryWan = ally (HenryWan . (`with` Metadata [])) Cards.henryWan (1, 2)
 instance HasAbilities HenryWan where
   getAbilities (HenryWan (a `With` _)) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> exhaust a
     ]

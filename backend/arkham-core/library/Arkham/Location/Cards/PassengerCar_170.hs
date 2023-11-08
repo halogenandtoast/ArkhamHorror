@@ -56,13 +56,7 @@ instance RunMessage PassengerCar_170 where
   runMessage msg l@(PassengerCar_170 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let cost = SkillIconCost 2 (singleton $ SkillIcon SkillIntellect)
-      hasSkills <-
-        getCanAffordCost
-          iid
-          (toSource attrs)
-          Nothing
-          [mkWindow Timing.When NonFast]
-          cost
+      hasSkills <- getCanAffordCost iid (toAbilitySource attrs 1) [] [mkWhen NonFast] cost
       player <- getPlayer iid
       if hasSkills
         then

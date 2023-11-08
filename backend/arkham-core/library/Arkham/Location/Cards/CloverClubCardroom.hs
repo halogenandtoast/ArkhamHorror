@@ -28,7 +28,7 @@ instance HasAbilities CloverClubCardroom where
     withRevealedAbilities
       attrs
       [ restrictedAbility attrs 1 (OnAct 1 <> Here)
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ Costs [ActionCost 1, ResourceCost 2]
       ]
 

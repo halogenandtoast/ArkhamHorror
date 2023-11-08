@@ -24,7 +24,7 @@ uncoveringTheConspiracy = act (1, A) UncoveringTheConspiracy Cards.uncoveringThe
 instance HasAbilities UncoveringTheConspiracy where
   getAbilities (UncoveringTheConspiracy a) | onSide A a = do
     [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> GroupClueCost (PerPlayer 2) Anywhere
       , mkAbility a 2 (Objective $ ForcedAbility AnyWindow)

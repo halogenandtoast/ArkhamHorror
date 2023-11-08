@@ -22,7 +22,7 @@ feedTheMind3 = asset FeedTheMind3 Cards.feedTheMind3
 instance HasAbilities FeedTheMind3 where
   getAbilities (FeedTheMind3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
         <> UseCost (AssetWithId $ toId a) Secret 1

@@ -23,7 +23,7 @@ instance HasAbilities VictoriaDevereux where
   getAbilities (VictoriaDevereux attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility (Just Parley)
+            $ ActionAbility [Parley]
             $ Costs [ActionCost 1, ResourceCost 5]
         ]
 

@@ -28,7 +28,7 @@ instance HasAbilities EyesInTheDark where
         a
         1
         (LocationExists $ YourLocation <> LocationWithoutClues)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     ]
 

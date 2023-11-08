@@ -28,7 +28,7 @@ instance HasAbilities GreatLibrary where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
           <> ClueCost (PerPlayer 1)
       , restrictedAbility attrs 2 (CluesOnThis $ LessThan $ Static 4)

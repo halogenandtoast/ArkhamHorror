@@ -14,7 +14,7 @@ import Arkham.Source
 
 resignAction :: Sourceable a => a -> Ability
 resignAction a =
-  mkAbility a 99 $ ActionAbility (Just Action.Resign) (ActionCost 1)
+  mkAbility a 99 $ ActionAbility [Action.Resign] (ActionCost 1)
 
 drawCardUnderneathAction :: Sourceable a => a -> Ability
 drawCardUnderneathAction a =

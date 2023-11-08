@@ -40,9 +40,9 @@ instance RunMessage FoyerMurderAtTheExcelsiorHotel where
       mtarget <- getSkillTestTarget
       case mtarget of
         Just (BatchTarget batchId) -> do
-          canMove <- getCanAffordCost iid (toAbilitySource attrs 1) Nothing [] (ActionCost 1)
+          canMove <- getCanAffordCost iid (toAbilitySource attrs 1) [] [] (ActionCost 1)
           if canMove
-            then push $ SpendActions iid (toAbilitySource attrs 1) Nothing 1
+            then push $ SpendActions iid (toAbilitySource attrs 1) [] 1
             else push $ CancelBatch batchId
         _ -> error "invalid target, must be batch"
       pure l

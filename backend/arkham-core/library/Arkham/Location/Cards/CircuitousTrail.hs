@@ -6,7 +6,6 @@ module Arkham.Location.Cards.CircuitousTrail (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.GameValue
@@ -28,12 +27,9 @@ instance HasModifiersFor CircuitousTrail where
   getModifiersFor (AbilityTarget iid ab) (CircuitousTrail attrs) = do
     here <- iid `isAt` attrs
     anyWithCompass <- getAny <$> selectAgg (Any . elem Compass) InvestigatorSupplies (colocatedWith iid)
-    case abilityAction ab of
-      Just Action.Investigate ->
-        pure $ toModifiers attrs [AdditionalCost (ResourceCost 3) | here, not anyWithCompass]
-      Just Action.Explore ->
-        pure $ toModifiers attrs [AdditionalCost (ResourceCost 3) | here, not anyWithCompass]
-      _ -> pure []
+    if any (`elem` [#investigate, #explore]) (abilityActions ab)
+      then pure $ toModifiers attrs [AdditionalCost (ResourceCost 3) | here, not anyWithCompass]
+      else pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage CircuitousTrail where

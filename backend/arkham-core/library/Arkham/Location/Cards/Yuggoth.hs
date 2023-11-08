@@ -28,7 +28,7 @@ instance HasAbilities Yuggoth where
           a
           1
           (Here <> AnyCriterion [CluesOnThis (AtLeast $ Static 1), CanDrawCards])
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

@@ -29,7 +29,7 @@ instance HasAbilities TennesseeSourMash where
         $ ExhaustCost (toTarget a)
         <> UseCost (AssetWithId $ toId a) Supply 1
     , restrictedAbility a 2 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
         <> DiscardCost FromPlay (toTarget a)
     ]

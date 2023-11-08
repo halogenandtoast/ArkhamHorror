@@ -31,7 +31,7 @@ instance HasAbilities PatientConfinementDrearyCell where
   getAbilities (PatientConfinementDrearyCell attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing (ActionCost 1)
+      [ restrictedAbility attrs 1 Here $ ActionAbility [] (ActionCost 1)
       | locationRevealed attrs
       ]
 

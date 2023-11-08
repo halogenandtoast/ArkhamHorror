@@ -262,7 +262,7 @@ locationResignAction :: LocationAttrs -> Ability
 locationResignAction attrs =
   toLocationAbility
     attrs
-    (mkAbility attrs 99 $ ActionAbility (Just Action.Resign) (ActionCost 1))
+    (mkAbility attrs 99 $ ActionAbility [Action.Resign] (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs =

@@ -26,7 +26,7 @@ instance HasAbilities Coyoacan where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 (Here <> ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility (Just Action.Explore)
+        $ ActionAbility [Action.Explore]
         $ ActionCost 1
         <> OrCost
           [ DamageCost (toSource attrs) YouTarget 1

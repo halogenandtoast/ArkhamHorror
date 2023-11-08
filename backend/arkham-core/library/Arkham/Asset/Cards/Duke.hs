@@ -42,7 +42,7 @@ instance HasAbilities Duke where
   getAbilities (Duke a) =
     [ fightAbility a 1 (exhaust a) ControlsThis
     , restrictedAbility a 2 ControlsThis
-        $ ActionAbilityWithBefore (Just #investigate) (Just #move) (ActionCost 1 <> exhaust a)
+        $ ActionAbilityWithBefore [#investigate] #move (ActionCost 1 <> exhaust a)
     ]
 
 instance RunMessage Duke where

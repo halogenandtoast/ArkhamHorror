@@ -23,7 +23,7 @@ instance HasAbilities HermanCollins where
   getAbilities (HermanCollins attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility (Just Parley)
+            $ ActionAbility [Parley]
             $ Costs [ActionCost 1, HandDiscardCost 4 AnyCard]
         ]
 

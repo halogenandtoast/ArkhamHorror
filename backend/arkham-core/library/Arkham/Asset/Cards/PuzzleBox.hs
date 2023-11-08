@@ -41,7 +41,7 @@ instance HasAbilities PuzzleBox where
                 , LocationExists (YourLocation <> LocationWithBrazier Lit)
                 ]
           )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     ]
 

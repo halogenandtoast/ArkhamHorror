@@ -21,7 +21,7 @@ stealth3 = asset Stealth3 Cards.stealth3
 instance HasAbilities Stealth3 where
   getAbilities (Stealth3 attrs) =
     [ restrictedAbility attrs 1 (DuringTurn You <> ControlsThis)
-        $ FastAbility' (exhaust attrs) (Just #evade)
+        $ FastAbility' (exhaust attrs) [#evade]
     ]
 
 instance RunMessage Stealth3 where

@@ -29,7 +29,7 @@ walterGilmansRoom =
 instance HasAbilities WalterGilmansRoom where
   getAbilities (WalterGilmansRoom a) =
     withRevealedAbilities a
-      $ [ restrictedAbility a 1 Here $ ActionAbility Nothing $ ActionCost 1
+      $ [ restrictedAbility a 1 Here $ ActionAbility [] $ ActionCost 1
         , haunted "Discard the top 2 cards of the encounter deck." a 2
         ]
 

@@ -31,7 +31,7 @@ instance HasAbilities InterviewRoomRestrainingChamber where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 Here
-          $ ActionAbility (Just Action.Parley)
+          $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]
 

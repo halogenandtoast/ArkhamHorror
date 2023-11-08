@@ -43,7 +43,7 @@ instance HasAbilities UnvisitedIsleForsakenWoods where
   getAbilities (UnvisitedIsleForsakenWoods attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted
           "You must either search the encounter deck and discard pile for a Whippoorwill and spawn it at this location, or the nearest Whippoorwill attack you."
           attrs

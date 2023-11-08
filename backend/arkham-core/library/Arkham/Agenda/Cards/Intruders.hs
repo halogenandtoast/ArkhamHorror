@@ -27,7 +27,7 @@ intruders = agenda (2, A) Intruders Cards.intruders (Static 9)
 instance HasAbilities Intruders where
   getAbilities (Intruders a) =
     [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility (Just Action.Explore)
+        $ ActionAbility [Action.Explore]
         $ ActionCost 1
     ]
 

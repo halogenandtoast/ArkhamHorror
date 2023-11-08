@@ -41,7 +41,7 @@ instance HasAbilities ScholarFromYith where
           a
           2
           (EnemyCriteria $ EnemyExists $ EnemyIsEngagedWith You <> ReadyEnemy)
-          $ ActionAbility (Just Action.Parley)
+          $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]
 

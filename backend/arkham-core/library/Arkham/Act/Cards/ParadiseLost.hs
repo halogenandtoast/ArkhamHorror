@@ -37,7 +37,7 @@ instance HasAbilities ParadiseLost where
                 <> InvestigatorAt
                   (LocationWithoutClues <> LocationWithTrait Shattered)
             )
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
         , restrictedAbility
             a

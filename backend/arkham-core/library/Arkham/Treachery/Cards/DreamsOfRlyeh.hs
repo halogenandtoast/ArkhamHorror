@@ -29,7 +29,7 @@ instance HasModifiersFor DreamsOfRlyeh where
 
 instance HasAbilities DreamsOfRlyeh where
   getAbilities (DreamsOfRlyeh a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing (ActionCost 1)]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] (ActionCost 1)]
 
 instance RunMessage DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs) = case msg of

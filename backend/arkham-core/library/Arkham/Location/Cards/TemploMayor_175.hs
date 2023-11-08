@@ -42,7 +42,7 @@ instance HasAbilities TemploMayor_175 where
               ( CluesOnThis (AtLeast $ Static 1)
                   <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
               )
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
             <> ShuffleDiscardCost 1 WeaknessCard
         ]

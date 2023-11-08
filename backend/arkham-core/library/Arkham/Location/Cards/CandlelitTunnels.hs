@@ -41,7 +41,7 @@ instance HasAbilities CandlelitTunnels where
         then
           [ limitedAbility (GroupLimit PerGame 1)
               $ restrictedAbility attrs 1 Here
-              $ ActionAbility Nothing (ActionCost 1)
+              $ ActionAbility [] (ActionCost 1)
           , restrictedAbility
               attrs
               2

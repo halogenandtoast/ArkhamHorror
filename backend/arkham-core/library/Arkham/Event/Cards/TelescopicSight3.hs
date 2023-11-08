@@ -33,8 +33,8 @@ instance HasModifiersFor TelescopicSight3 where
   getModifiersFor (AbilityTarget iid ability) (TelescopicSight3 a) =
     case eventPlacement a of
       AttachedToAsset aid _ | AssetSource aid == abilitySource ability -> do
-        case abilityAction ability of
-          Just Action.Fight -> do
+        if #fight `elem` abilityActions ability
+          then do
             mlid <- selectOne $ locationWithInvestigator iid
             case mlid of
               Nothing -> pure []
@@ -60,7 +60,7 @@ instance HasModifiersFor TelescopicSight3 where
                             )
                           <> NotEnemy (enemyEngagedWith $ eventOwner a)
                       ]
-          _ -> pure []
+          else pure []
       _ -> pure []
   getModifiersFor _ _ = pure []
 

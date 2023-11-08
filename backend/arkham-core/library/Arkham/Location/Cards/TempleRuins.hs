@@ -26,7 +26,7 @@ instance HasAbilities TempleRuins where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 Here
-        $ ActionAbility (Just Action.Explore)
+        $ ActionAbility [Action.Explore]
         $ ActionCost 2
       | locationRevealed attrs
       ]

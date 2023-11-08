@@ -23,7 +23,7 @@ theNecronomiconOlausWormiusTranslation =
 
 instance HasAbilities TheNecronomiconOlausWormiusTranslation where
   getAbilities (TheNecronomiconOlausWormiusTranslation a) =
-    [restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ ActionCost 1]
+    [restrictedAbility a 1 ControlsThis $ ActionAbility [] $ ActionCost 1]
 
 instance HasModifiersFor TheNecronomiconOlausWormiusTranslation where
   getModifiersFor (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a) =

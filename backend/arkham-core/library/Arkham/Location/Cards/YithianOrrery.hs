@@ -31,7 +31,7 @@ instance HasAbilities YithianOrrery where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 2
       ]
 

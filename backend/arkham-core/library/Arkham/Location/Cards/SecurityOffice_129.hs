@@ -26,7 +26,7 @@ instance HasAbilities SecurityOffice_129 where
     withBaseAbilities
       x
       [ limitedAbility (PlayerLimit PerTurn 1)
-        $ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
+        $ restrictedAbility x 1 Here (ActionAbility [] $ ActionCost 2)
       | locationRevealed x
       ]
 

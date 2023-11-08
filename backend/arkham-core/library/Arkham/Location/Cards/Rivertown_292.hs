@@ -27,7 +27,7 @@ instance HasAbilities Rivertown_292 where
     withRevealedAbilities
       attrs
       [ restrictedAbility attrs 1 (withBreaches attrs Here)
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
           <> HandDiscardCost 1 AnyCard
       ]

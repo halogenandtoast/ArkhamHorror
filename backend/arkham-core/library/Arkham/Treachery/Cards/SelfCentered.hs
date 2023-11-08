@@ -30,7 +30,7 @@ instance HasModifiersFor SelfCentered where
 instance HasAbilities SelfCentered where
   getAbilities (SelfCentered a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

@@ -29,7 +29,7 @@ instance HasAbilities CongregationalChurch_209 where
     let rest = withDrawCardUnderneathAction attrs
      in rest
           <> [ restrictedAbility attrs 1 Here
-              $ ActionAbility Nothing
+              $ ActionAbility []
               $ Costs
                 [ActionCost 1, HandDiscardCost 1 AnyCard]
              | locationRevealed attrs

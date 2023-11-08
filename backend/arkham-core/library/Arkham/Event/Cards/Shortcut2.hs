@@ -27,7 +27,7 @@ instance HasAbilities Shortcut2 where
           (ProxySource (toSource lid) (toSource a))
           1
           (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
-          (FastAbility' (exhaust a) (Just #move))
+          (FastAbility' (exhaust a) [#move])
       ]
     _ -> []
 

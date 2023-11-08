@@ -23,7 +23,7 @@ instance HasAbilities SouthsideHistoricalSociety where
     withRevealedAbilities x
       $ [ limitedAbility (PlayerLimit PerGame 1)
             $ restrictedAbility x 1 (Here <> CanDrawCards)
-            $ ActionAbility Nothing (ActionCost 1)
+            $ ActionAbility [] (ActionCost 1)
         ]
 
 instance RunMessage SouthsideHistoricalSociety where

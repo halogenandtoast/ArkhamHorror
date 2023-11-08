@@ -47,7 +47,7 @@ instance HasAbilities CourtOfTheGreatOldOnes where
               )
               1
               Here
-              (ActionAbility Nothing $ ActionCost 1)
+              (ActionAbility [] $ ActionCost 1)
         ]
 
 instance RunMessage CourtOfTheGreatOldOnes where

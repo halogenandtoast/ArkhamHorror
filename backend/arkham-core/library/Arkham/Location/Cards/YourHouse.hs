@@ -35,7 +35,7 @@ instance HasAbilities YourHouse where
     withRevealedAbilities x
       $ [ forcedAbility x 1 $ EnemySpawns Timing.When Anywhere $ enemyIs Cards.ghoulPriest
         , limitedAbility (PlayerLimit PerTurn 1)
-            $ restrictedAbility x 2 Here (ActionAbility Nothing $ ActionCost 1)
+            $ restrictedAbility x 2 Here (ActionAbility [] $ ActionCost 1)
         ]
 
 instance RunMessage YourHouse where

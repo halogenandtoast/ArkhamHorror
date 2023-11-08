@@ -20,7 +20,7 @@ scrollOfProphecies = asset ScrollOfProphecies Cards.scrollOfProphecies
 instance HasAbilities ScrollOfProphecies where
   getAbilities (ScrollOfProphecies x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> assetUseCost x Secret 1
     ]

@@ -44,7 +44,7 @@ instance HasAbilities StudentUnion where
                         ]
                     )
               )
-              $ ActionAbility Nothing
+              $ ActionAbility []
               $ ActionCost 2
           ]
         else []

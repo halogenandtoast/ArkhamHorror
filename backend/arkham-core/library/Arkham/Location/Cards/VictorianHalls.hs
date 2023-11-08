@@ -28,7 +28,7 @@ instance HasAbilities VictorianHalls where
       a
       [ limitedAbility (GroupLimit PerGame 1)
           $ restrictedAbility a 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

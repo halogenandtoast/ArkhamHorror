@@ -150,6 +150,7 @@ data WindowType
   | PassInvestigationSkillTest InvestigatorId LocationId Int
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PerformAction InvestigatorId Action
+  | PerformedSameTypeOfAction InvestigatorId [Action]
   | PhaseBegins Phase
   | PhaseEnds Phase
   | PlaceUnderneath Target Card

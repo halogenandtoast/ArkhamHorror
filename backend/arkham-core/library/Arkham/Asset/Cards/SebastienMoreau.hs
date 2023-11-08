@@ -24,7 +24,7 @@ sebastienMoreau = asset SebastienMoreau Cards.sebastienMoreau
 instance HasAbilities SebastienMoreau where
   getAbilities (SebastienMoreau a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     , mkAbility a 2
         $ ForcedAbility

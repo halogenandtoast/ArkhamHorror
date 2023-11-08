@@ -30,7 +30,7 @@ instance HasAbilities SpiritsTorment where
         $ TreacheryWithId
         $ toId a
     , restrictedAbility a 2 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ Costs
           [ActionCost 1, PlaceClueOnLocationCost 1]
     ]

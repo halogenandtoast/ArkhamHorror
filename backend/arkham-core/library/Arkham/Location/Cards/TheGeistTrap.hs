@@ -38,7 +38,7 @@ instance HasAbilities TheGeistTrap where
   getAbilities (TheGeistTrap attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted "Take 1 damage and 1 horror" attrs 2
       ]
 

@@ -30,7 +30,7 @@ instance HasModifiersFor Yaztaroth where
 instance HasAbilities Yaztaroth where
   getAbilities (Yaztaroth a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

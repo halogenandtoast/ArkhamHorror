@@ -84,8 +84,8 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorDecks :: Field Investigator (Map InvestigatorDeckKey [Card])
   InvestigatorDiscard :: Field Investigator [PlayerCard]
   InvestigatorClass :: Field Investigator ClassSymbol
-  InvestigatorActionsTaken :: Field Investigator [Action]
-  InvestigatorActionsPerformed :: Field Investigator [Action]
+  InvestigatorActionsTaken :: Field Investigator [[Action]]
+  InvestigatorActionsPerformed :: Field Investigator [[Action]]
   InvestigatorSlots :: Field Investigator (Map SlotType [Slot])
   InvestigatorUsedAbilities :: Field Investigator [UsedAbility]
   InvestigatorTraits :: Field Investigator (Set Trait)
@@ -122,8 +122,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorAgility :: Int
   , investigatorTokens :: Tokens
   , investigatorLocation :: LocationId
-  , investigatorActionsTaken :: [Action]
-  , investigatorActionsPerformed :: [Action]
+  , investigatorActionsTaken :: [[Action]]
+  , investigatorActionsPerformed :: [[Action]]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
   , investigatorDeck :: Deck PlayerCard
@@ -299,7 +299,7 @@ instance HasAbilities Investigator where
           500
           ( Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a))
           )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
          | notNull (investigatorKeys $ toAttrs a)
          ]

@@ -23,7 +23,7 @@ instance HasAbilities SouthsideMasBoardingHouse where
   getAbilities (SouthsideMasBoardingHouse x) =
     withRevealedAbilities x
       $ [ limitedAbility (PlayerLimit PerGame 1)
-            $ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
+            $ restrictedAbility x 1 Here (ActionAbility [] $ ActionCost 1)
         ]
 
 instance RunMessage SouthsideMasBoardingHouse where

@@ -44,7 +44,7 @@ instance HasModifiersFor Bedeviled where
 
 instance HasAbilities Bedeviled where
   getAbilities (Bedeviled a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost 1]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage Bedeviled where
   runMessage msg t@(Bedeviled attrs) = case msg of

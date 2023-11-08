@@ -34,7 +34,7 @@ instance HasAbilities PnakoticManuscripts5 where
           )
         $ UseCost (AssetWithId $ toId a) Secret 1
     , restrictedAbility a 2 ControlsThis
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> UseCost (AssetWithId $ toId a) Secret 1
     ]

@@ -22,7 +22,7 @@ instance HasAbilities Investments where
         $ FastAbility
         $ ExhaustCost (toTarget a)
     , restrictedAbility a 2 (ControlsThis <> secondRestriction)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
         <> DiscardCost FromPlay (toTarget a)

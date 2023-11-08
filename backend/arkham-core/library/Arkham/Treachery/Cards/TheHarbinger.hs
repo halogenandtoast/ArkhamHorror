@@ -36,7 +36,7 @@ instance HasAbilities TheHarbinger where
           a
           1
           (InvestigatorExists $ You <> InvestigatorWithId iid)
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 2
       ]
     _ -> []

@@ -23,7 +23,7 @@ jakeWilliams = ally JakeWilliams Cards.jakeWilliams (3, 2)
 
 instance HasModifiersFor JakeWilliams where
   getModifiersFor (InvestigatorTarget iid) (JakeWilliams a) | controlledBy a iid = do
-    actions <- field InvestigatorActionsTaken iid
+    actions <- fieldMap InvestigatorActionsTaken concat iid
     pure $ toModifiers a $ do
       action <- [Action.Move, Action.Investigate]
       guard $ action `notElem` actions

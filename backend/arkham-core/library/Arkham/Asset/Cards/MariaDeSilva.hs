@@ -22,7 +22,7 @@ instance HasAbilities MariaDeSilva where
   getAbilities (MariaDeSilva a) =
     [ restrictedAbility a 1 OnSameLocation
         $ ActionAbility
-          (Just Action.Parley)
+          [Action.Parley]
           (ActionCost 1 <> ResourceCost 1)
     ]
 

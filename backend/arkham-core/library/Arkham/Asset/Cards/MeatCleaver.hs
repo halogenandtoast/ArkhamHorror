@@ -24,7 +24,7 @@ meatCleaver = asset MeatCleaver Cards.meatCleaver
 instance HasAbilities MeatCleaver where
   getAbilities (MeatCleaver attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ Costs [ActionCost 1, UpTo 1 (HorrorCost (toSource attrs) YouTarget 1)]
     ]
 

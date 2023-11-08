@@ -48,7 +48,7 @@ instance HasAbilities SacredWoods_184 where
                   <> CluesOnThis (AtLeast $ Static 1)
                   <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
               )
-              $ ActionAbility Nothing
+              $ ActionAbility []
               $ ActionCost 1
           ]
         else []

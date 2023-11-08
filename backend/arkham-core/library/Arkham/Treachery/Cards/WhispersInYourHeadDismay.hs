@@ -34,7 +34,7 @@ instance HasModifiersFor WhispersInYourHeadDismay where
 
 instance HasAbilities WhispersInYourHeadDismay where
   getAbilities (WhispersInYourHeadDismay a) =
-    [restrictedAbility a 1 InYourHand $ ActionAbility Nothing $ ActionCost 2]
+    [restrictedAbility a 1 InYourHand $ ActionAbility [] $ ActionCost 2]
 
 instance RunMessage WhispersInYourHeadDismay where
   runMessage msg t@(WhispersInYourHeadDismay attrs) = case msg of

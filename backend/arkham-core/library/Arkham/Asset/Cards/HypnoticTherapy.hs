@@ -25,7 +25,7 @@ hypnoticTherapy = asset HypnoticTherapy Cards.hypnoticTherapy
 instance HasAbilities HypnoticTherapy where
   getAbilities (HypnoticTherapy a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> exhaust a
     , restrictedAbility a 2 ControlsThis

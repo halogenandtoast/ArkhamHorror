@@ -35,7 +35,7 @@ instance HasAbilities TheLonelyCaverns where
         a
         1
         (LocationExists $ YourLocation <> LocationWithoutClues)
-        $ ActionAbility (Just Action.Explore)
+        $ ActionAbility [Action.Explore]
         $ ActionCost 1
     , mkAbility a 2
         $ ForcedAbility

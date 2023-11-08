@@ -22,7 +22,7 @@ fortyFiveThompsonGuardian3 = asset FortyFiveThompsonGuardian3 Cards.fortyFiveTho
 instance HasAbilities FortyFiveThompsonGuardian3 where
   getAbilities (FortyFiveThompsonGuardian3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
         <> UseCost (AssetWithId $ toId a) Ammo 1
     ]

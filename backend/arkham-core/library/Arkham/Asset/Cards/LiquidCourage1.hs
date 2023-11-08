@@ -20,7 +20,7 @@ liquidCourage1 = asset LiquidCourage1 Cards.liquidCourage1
 
 instance HasAbilities LiquidCourage1 where
   getAbilities (LiquidCourage1 x) =
-    [ withCriteria (mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1 <> assetUseCost x Supply 1)
+    [ withCriteria (mkAbility x 1 $ ActionAbility [] $ ActionCost 1 <> assetUseCost x Supply 1)
         $ ControlsThis
         <> InvestigatorExists
           ( HealableInvestigator (toSource x) HorrorType

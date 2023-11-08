@@ -35,7 +35,7 @@ instance HasAbilities LodgeJailor where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1 $ ForcedAbility $ EnemySpawns Timing.After Anywhere $ EnemyWithId $ toId attrs
-      , restrictedAbility attrs 2 OnSameLocation $ ActionAbility (Just Action.Parley) (ActionCost 1)
+      , restrictedAbility attrs 2 OnSameLocation $ ActionAbility [Action.Parley] (ActionCost 1)
       ]
 
 instance RunMessage LodgeJailor where

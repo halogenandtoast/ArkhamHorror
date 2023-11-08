@@ -26,7 +26,7 @@ instance HasAbilities Atychiphobia where
         $ SkillTestResult Timing.After You AnySkillTest
         $ FailureResult AnyValue
     , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

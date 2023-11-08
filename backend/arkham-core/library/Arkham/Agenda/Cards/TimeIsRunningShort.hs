@@ -22,7 +22,7 @@ timeIsRunningShort =
 
 instance HasAbilities TimeIsRunningShort where
   getAbilities (TimeIsRunningShort a) =
-    [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+    [mkAbility a 1 $ ActionAbility [Action.Resign] (ActionCost 1)]
 
 instance RunMessage TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs) = case msg of

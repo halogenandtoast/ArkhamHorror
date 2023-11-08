@@ -24,7 +24,7 @@ augustLindquist =
 instance HasAbilities AugustLindquist where
   getAbilities (AugustLindquist attrs) =
     [ restrictedAbility attrs 1 OnSameLocation
-        $ ActionAbility (Just Action.Parley)
+        $ ActionAbility [Action.Parley]
         $ ActionCost 1
         <> GroupClueCost (PerPlayer 2) (locationWithAsset $ toId attrs)
     ]

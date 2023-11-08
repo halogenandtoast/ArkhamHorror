@@ -38,7 +38,7 @@ instance HasAbilities DanielChesterfield where
               <> AssetExists
                 (AssetControlledBy You <> assetIs Assets.claspOfBlackOnyx)
           )
-          $ ActionAbility (Just Action.Parley) (ActionCost 1)
+          $ ActionAbility [Action.Parley] (ActionCost 1)
       ]
 
 instance RunMessage DanielChesterfield where

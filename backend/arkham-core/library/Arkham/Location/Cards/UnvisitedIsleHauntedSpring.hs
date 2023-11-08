@@ -41,7 +41,7 @@ instance HasAbilities UnvisitedIsleHauntedSpring where
   getAbilities (UnvisitedIsleHauntedSpring attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted "You must either discard an asset you control, or take 1 damage" attrs 2
       ]
 

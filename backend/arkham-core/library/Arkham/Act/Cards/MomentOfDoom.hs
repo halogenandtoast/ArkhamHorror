@@ -36,7 +36,7 @@ instance HasAbilities MomentOfDoom where
           )
           1
           ControlsThis
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       , mkAbility attrs 2
           $ Objective

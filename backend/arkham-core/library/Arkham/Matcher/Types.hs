@@ -665,6 +665,7 @@ data WindowMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
   | AddedToVictory Timing CardMatcher
   | PerformAction Timing Who ActionMatcher
+  | PerformedSameTypeOfAction Timing Who ActionMatcher
   | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who

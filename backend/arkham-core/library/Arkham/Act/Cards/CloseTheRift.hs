@@ -31,7 +31,7 @@ closeTheRift =
 
 instance HasAbilities CloseTheRift where
   getAbilities (CloseTheRift x) =
-    withBaseAbilities x [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
+    withBaseAbilities x [mkAbility x 1 $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of

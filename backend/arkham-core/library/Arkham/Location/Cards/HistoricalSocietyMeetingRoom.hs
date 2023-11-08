@@ -41,7 +41,7 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
                   <> CanDiscoverCluesAt
                     (LocationWithId $ toId attrs)
               )
-              $ ActionAbility Nothing
+              $ ActionAbility []
               $ Costs [ActionCost 1, ExhaustAssetCost $ AssetWithTrait Ally]
           ]
         else

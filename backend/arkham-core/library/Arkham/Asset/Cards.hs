@@ -282,6 +282,7 @@ allPlayerAssetCards =
       , harlanEarnstone
       , hardKnocks
       , hardKnocks2
+      , haste2
       , hawkEyeFoldingCamera
       , healingWords
       , heirloomOfHyperborea
@@ -3811,6 +3812,16 @@ dreamDiaryDreamsOfAChild3 =
     , cdSlots = [#hand]
     , cdBondedWith = [(1, "06113")]
     , cdLevel = 3
+    }
+
+haste2 :: CardDef
+haste2 =
+  (asset "06239" "Haste" 3 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = singleton Ritual
+    , cdSlots = [#arcane]
+    , cdLevel = 2
+    , cdLimits = [LimitPerInvestigator 1]
     }
 
 empowerSelfStamina2 :: CardDef

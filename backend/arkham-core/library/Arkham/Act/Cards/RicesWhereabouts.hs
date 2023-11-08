@@ -33,7 +33,7 @@ ricesWhereabouts = act (2, A) RicesWhereabouts Cards.ricesWhereabouts Nothing
 
 instance HasAbilities RicesWhereabouts where
   getAbilities (RicesWhereabouts x) =
-    [ mkAbility x 1 $ ActionAbility Nothing $ Costs [ActionCost 1, ClueCost (Static 1)]
+    [ mkAbility x 1 $ ActionAbility [] $ Costs [ActionCost 1, ClueCost (Static 1)]
     , mkAbility x 2
         $ ForcedAbility
         $ Discarded

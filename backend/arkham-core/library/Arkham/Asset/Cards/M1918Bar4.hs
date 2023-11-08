@@ -23,7 +23,7 @@ instance HasAbilities M1918Bar4 where
   getAbilities (M1918Bar4 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility
-          (Just Action.Fight)
+          ([Action.Fight])
         $ ActionCost 1
         <> UseCostUpTo (AssetWithId $ toId a) Ammo 1 5
     ]

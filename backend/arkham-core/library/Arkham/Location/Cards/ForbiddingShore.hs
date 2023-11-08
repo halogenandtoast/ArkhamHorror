@@ -26,7 +26,7 @@ instance HasAbilities ForbiddingShore where
   getAbilities (ForbiddingShore attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
       , haunted "You must either lose 1 action or lose 2 resources" attrs 2
       ]
 

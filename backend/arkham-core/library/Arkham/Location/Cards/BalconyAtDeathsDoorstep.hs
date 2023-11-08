@@ -26,7 +26,7 @@ instance HasAbilities BalconyAtDeathsDoorstep where
       a
       [ limitedAbility (GroupLimit PerGame 1)
           $ restrictedAbility a 1 Here
-          $ ActionAbility (Just Action.Parley)
+          $ ActionAbility [Action.Parley]
           $ ActionCost 1
           <> SkillIconCost 3 (singleton $ SkillIcon SkillIntellect)
       ]

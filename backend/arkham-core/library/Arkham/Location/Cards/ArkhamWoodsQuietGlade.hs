@@ -26,7 +26,7 @@ instance HasAbilities ArkhamWoodsQuietGlade where
   getAbilities (ArkhamWoodsQuietGlade attrs) =
     withRevealedAbilities attrs
       $ [ limitedAbility (PlayerLimit PerTurn 1)
-            $ withCriteria (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
+            $ withCriteria (mkAbility attrs 1 (ActionAbility [] $ ActionCost 1))
             $ Here
             <> InvestigatorExists
               ( AnyInvestigator

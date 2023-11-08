@@ -29,7 +29,7 @@ instance HasAbilities TowersOfPnakotus where
       attrs
       [ limitedAbility (PlayerLimit PerTurn 1)
           $ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

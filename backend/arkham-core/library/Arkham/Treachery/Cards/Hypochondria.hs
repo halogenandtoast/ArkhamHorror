@@ -21,7 +21,7 @@ hypochondria = treachery Hypochondria Cards.hypochondria
 instance HasAbilities Hypochondria where
   getAbilities (Hypochondria a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ DealtDamage #after AnySource You
-    , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing (ActionCost 2)
+    , restrictedAbility a 2 OnSameLocation $ ActionAbility [] (ActionCost 2)
     ]
 
 instance RunMessage Hypochondria where

@@ -40,11 +40,11 @@ inDiscardAbility = inDiscardCriteria . abilityCriteria
 abilityCost :: Ability -> Cost
 abilityCost = abilityTypeCost . abilityType
 
-abilityAction :: Ability -> Maybe Action
-abilityAction = abilityTypeAction . abilityType
+abilityActions :: Ability -> [Action]
+abilityActions = abilityTypeActions . abilityType
 
 abilityIs :: Ability -> Action -> Bool
-abilityIs a = (== abilityAction a) . Just
+abilityIs a = (`elem` abilityActions a)
 
 abilityIsActionAbility :: Ability -> Bool
 abilityIsActionAbility a = case abilityType a of
@@ -111,7 +111,7 @@ fightAbility entity idx cost criteria =
 
 evadeAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
 evadeAbility entity idx cost criteria =
-  (mkAbility entity idx (ActionAbility (Just #evade) cost))
+  (mkAbility entity idx (ActionAbility [#evade] cost))
     { abilityCriteria = criteria
     }
 
@@ -196,27 +196,27 @@ isFastAbility Ability {abilityType} = isFastAbilityType abilityType
 
 isActionAbility :: Ability -> Bool
 isActionAbility Ability {abilityType} =
-  isJust $ abilityTypeAction abilityType
+  notNull $ abilityTypeActions abilityType
 
 isTriggeredAbility :: Ability -> Bool
 isTriggeredAbility =
   or . sequence [isReactionAbility, isFastAbility, isActionAbility]
 
-abilityTypeAction :: AbilityType -> Maybe Action
-abilityTypeAction = \case
-  FastAbility' _ mAction -> mAction
-  ReactionAbility {} -> Nothing
-  ActionAbility mAction _ -> mAction
-  ActionAbilityWithSkill mAction _ _ -> mAction
-  ActionAbilityWithBefore mAction _ _ -> mAction
-  ForcedAbility _ -> Nothing
-  SilentForcedAbility _ -> Nothing
-  ForcedAbilityWithCost _ _ -> Nothing
-  AbilityEffect _ -> Nothing
-  Haunted -> Nothing
-  Cosmos -> Nothing
-  Objective aType -> abilityTypeAction aType
-  ForcedWhen _ aType -> abilityTypeAction aType
+abilityTypeActions :: AbilityType -> [Action]
+abilityTypeActions = \case
+  FastAbility' _ actions -> actions
+  ReactionAbility {} -> []
+  ActionAbility actions _ -> actions
+  ActionAbilityWithSkill actions _ _ -> actions
+  ActionAbilityWithBefore actions _ _ -> actions
+  ForcedAbility _ -> []
+  SilentForcedAbility _ -> []
+  ForcedAbilityWithCost _ _ -> []
+  AbilityEffect _ -> []
+  Haunted -> []
+  Cosmos -> []
+  Objective aType -> abilityTypeActions aType
+  ForcedWhen _ aType -> abilityTypeActions aType
 
 abilityTypeCost :: AbilityType -> Cost
 abilityTypeCost = \case

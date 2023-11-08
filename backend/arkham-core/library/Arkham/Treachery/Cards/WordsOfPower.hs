@@ -50,7 +50,7 @@ instance HasModifiersFor WordsOfPower where
 instance HasAbilities WordsOfPower where
   getAbilities (WordsOfPower a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

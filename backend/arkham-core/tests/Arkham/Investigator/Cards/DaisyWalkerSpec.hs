@@ -12,7 +12,7 @@ spec = describe "Daisy Walker" $ do
     let tomeSource = toAbilitySource (TestSource $ singleton Tome) 1
     let otherSource = toAbilitySource (TestSource mempty) 1
     let canAffordTomeAbilityCost self =
-          getCanAffordCost (toId self) tomeSource Nothing [duringTurnWindow self] (ActionCost 1)
+          getCanAffordCost (toId self) tomeSource [] [duringTurnWindow self] (ActionCost 1)
 
     it "provides an extra Tome action" . gameTestWith daisyWalker $ \self -> do
       run BeginRound
@@ -35,7 +35,7 @@ spec = describe "Daisy Walker" $ do
           _ -> False
         assert $ not <$> canAffordTomeAbilityCost self
         assert
-          $ getCanAffordCost (toId self) otherSource (Just #explore) [duringTurnWindow self] (ActionCost 1)
+          $ getCanAffordCost (toId self) otherSource [#explore] [duringTurnWindow self] (ActionCost 1)
 
   context "elder sign" $ do
     it "forces you to draw one card for each Tome you control" $ gameTestWith daisyWalker $ \self -> do

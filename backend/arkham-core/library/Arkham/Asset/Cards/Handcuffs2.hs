@@ -40,7 +40,7 @@ instance HasAbilities Handcuffs2 where
               <> EnemyCriteria
                 (EnemyExists $ CanEvadeEnemy (toSource a) <> EnemyWithTrait Humanoid)
           )
-          $ ActionAbility (Just Action.Evade)
+          $ ActionAbility [Action.Evade]
           $ ActionCost 1
       ]
 

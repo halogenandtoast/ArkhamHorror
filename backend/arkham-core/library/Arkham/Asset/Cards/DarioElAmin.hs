@@ -37,7 +37,7 @@ instance HasAbilities DarioElAmin where
         attrs
         1
         (ControlsThis <> LocationExists (YourLocation <> LocationWithoutEnemies))
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ExhaustCost
         $ toTarget attrs
     ]

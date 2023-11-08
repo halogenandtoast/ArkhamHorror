@@ -30,7 +30,7 @@ instance HasModifiersFor Haunted where
 instance HasAbilities Haunted where
   getAbilities (Haunted a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

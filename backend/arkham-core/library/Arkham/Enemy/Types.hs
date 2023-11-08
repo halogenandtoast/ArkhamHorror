@@ -11,7 +11,6 @@ module Arkham.Enemy.Types (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
@@ -200,12 +199,12 @@ instance HasAbilities EnemyAttrs where
             <> (EnemyCriteria $ ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
             <> CanAttack
         )
-        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+        $ ActionAbility [#fight] (ActionCost 1)
     , restrictedAbility
         e
         AbilityEvade
         (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You <> EnemyWithEvade))
-        $ ActionAbility (Just Action.Evade) (ActionCost 1)
+        $ ActionAbility [#evade] (ActionCost 1)
     , restrictedAbility
         e
         AbilityEngage
@@ -216,7 +215,7 @@ instance HasAbilities EnemyAttrs where
             <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeEngaged)
             <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotBeEngaged)
         )
-        $ ActionAbility (Just Action.Engage) (ActionCost 1)
+        $ ActionAbility [#engage] (ActionCost 1)
     ]
 
 instance Entity EnemyAttrs where

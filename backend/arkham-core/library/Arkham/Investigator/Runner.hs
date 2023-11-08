@@ -82,6 +82,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, over)
 import Data.Data.Lens (biplate)
+import Data.List qualified as List
 import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.UUID (nil)
@@ -109,10 +110,10 @@ getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard 
   let allModifiers = modifiers' <> modifiers''
   let isFast = isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
   andM
-    [ getCanAffordCost (toId attrs) pc (Just #play) ws (ResourceCost cost)
+    [ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
     , if isFast
         then pure True
-        else getCanAffordCost (toId attrs) pc (Just #play) ws (ActionCost 1)
+        else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
     ]
 getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid ab) = do
   let
@@ -189,7 +190,7 @@ canDo iid action = do
       _ -> pure False
     preventsAction = \case
       FirstOneOfPerformed as | action `elem` as -> do
-        fieldP InvestigatorActionsPerformed (\taken -> all (`notElem` taken) as) iid
+        fieldP InvestigatorActionsPerformed (\taken -> all (\a -> all (notElem a) taken) as) iid
       FirstOneOfPerformed {} -> pure False
       IsAction action' -> pure $ action == action'
       EnemyAction {} -> pure False
@@ -364,7 +365,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then pushAll msgs
       else do
         canPay <-
-          getCanAffordCost iid a Nothing [mkWhen Window.NonFast] (mconcat additionalCosts)
+          getCanAffordCost iid a [] [mkWhen Window.NonFast] (mconcat additionalCosts)
         when canPay
           $ pushAll
           $ [PayForAbility (abilityEffect a $ mconcat additionalCosts) []]
@@ -759,7 +760,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       $ [ BeginAction
         , beforeWindowMsg
-        , TakeAction iid (Just #engage) (ActionCost 1)
+        , TakeActions iid [#engage] (ActionCost 1)
         ]
       <> [ CheckAttackOfOpportunity iid False
          | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
@@ -771,7 +772,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #fight]
     afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #fight]
     let
-      performedActions = setFromList @(Set Action) investigatorActionsPerformed
+      performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
       -- takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyFightCostModifiers :: Cost -> ModifierType -> Cost
       applyFightCostModifiers costToEnter (ActionCostOf actionTarget n) =
@@ -786,7 +787,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       [ BeginAction
       , beforeWindowMsg
-      , TakeAction iid (Just #fight) (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
+      , TakeActions iid [#fight] (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
       , FightEnemy iid eid source mTarget skillType False
       , afterWindowMsg
       , FinishAction
@@ -870,7 +871,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #evade]
     afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #evade]
     let
-      performedActions = setFromList @(Set Action) investigatorActionsPerformed
+      performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
       -- takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
       applyEvadeCostModifiers costToEnter (ActionCostOf actionTarget n) =
@@ -885,7 +886,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       [ BeginAction
       , beforeWindowMsg
-      , TakeAction iid (Just #evade) (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
+      , TakeActions iid [#evade] (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
       , EvadeEnemy iid eid source mTarget skillType False
       , afterWindowMsg
       , FinishAction
@@ -900,7 +901,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       [ BeginAction
       , beforeWindowMsg
-      , TakeAction iid (Just #move) cost
+      , TakeActions iid [#move] cost
       , MoveAction iid lid cost False
       , afterWindowMsg
       , FinishAction
@@ -1329,7 +1330,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       $ [ BeginAction
         , beforeWindowMsg
-        , TakeAction investigatorId (Just #investigate) (ActionCost investigateCost)
+        , TakeActions investigatorId [#investigate] (ActionCost investigateCost)
         ]
       <> [ CheckAttackOfOpportunity investigatorId False
          | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
@@ -1895,7 +1896,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       [ BeginAction
       , beforeWindowMsg
-      , TakeAction iid (Just #draw) (ActionCost 1)
+      , TakeActions iid [#draw] (ActionCost 1)
       , CheckAttackOfOpportunity iid False
       , drawing
       , afterWindowMsg
@@ -2028,7 +2029,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ pushAll
         [ BeginAction
         , beforeWindowMsg
-        , TakeAction iid (Just #resource) (ActionCost 1)
+        , TakeActions iid [#resource] (ActionCost 1)
         , CheckAttackOfOpportunity iid False
         , TakeResources iid n source False
         , afterWindowMsg
@@ -2326,7 +2327,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       filterM
         ( andM
             . sequence
-              [ additionalActionCovers source mAction
+              [ additionalActionCovers source (toList mAction)
               , pure . ((/= AnyAdditionalAction) . additionalActionType)
               ]
         )
@@ -2397,15 +2398,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & remainingActionsL +~ n
   LoseAdditionalAction iid n | iid == investigatorId -> do
     pure $ a & usedAdditionalActionsL %~ (n :)
-  TakeAction iid mAction cost | iid == investigatorId -> do
+  TakeActions iid actions cost | iid == investigatorId -> do
     pushAll
       $ [PayForAbility (abilityEffect a cost) []]
-      <> [TakenAction iid action | action <- maybeToList mAction]
+      <> [TakenActions iid actions | notNull actions]
     pure a
-  TakenAction iid action | iid == investigatorId -> do
-    pure $ a & actionsTakenL %~ (<> [action]) & actionsPerformedL %~ (<> [action])
-  PerformedAction iid action | iid == investigatorId -> do
-    pure $ a & actionsPerformedL %~ (<> [action])
+  TakenActions iid actions | iid == investigatorId -> do
+    let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
+    let duplicated = actions `List.intersect` previous
+    when (notNull duplicated)
+      $ pushM
+      $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
+
+    pure $ a & actionsTakenL %~ (<> [actions]) & actionsPerformedL %~ (<> [actions])
+  PerformedActions iid actions | iid == investigatorId -> do
+    let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
+    let duplicated = actions `List.intersect` previous
+    when (notNull duplicated)
+      $ pushM
+      $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
+    pure $ a & actionsPerformedL %~ (<> [actions])
   PutCardOnTopOfDeck _ (Deck.InvestigatorDeck iid) card | iid == toId a -> do
     case card of
       PlayerCard pc ->

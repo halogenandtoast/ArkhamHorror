@@ -52,12 +52,12 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..), mkWhen, mkWindow)
+import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 
 activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case activeCostTarget ac of
-  ForAbility a -> [fromMaybe Action.Ability (abilityAction a)]
+  ForAbility a -> if null (abilityActions a) then [Action.Ability] else abilityActions a
   ForCard isPlayAction c ->
     if null (cdActions $ toCardDef c)
       then [Action.Play | isPlayAction == IsPlayAction]
@@ -86,9 +86,9 @@ costSealedChaosTokensL =
 activeCostPaid :: ActiveCost -> Bool
 activeCostPaid = (== Free) . activeCostCosts
 
-matchTarget :: [Action] -> [Action] -> ActionTarget -> Action -> Bool
+matchTarget :: [[Action]] -> [[Action]] -> ActionTarget -> Action -> Bool
 matchTarget _takenActions performedActions (FirstOneOfPerformed as) action =
-  action `elem` as && all (`notElem` performedActions) as
+  action `elem` as && all (\a -> all (notElem a) performedActions) as
 matchTarget _ _ (IsAction a) action = action == a
 matchTarget _ _ (EnemyAction a _) action = action == a
 matchTarget _ _ IsAnyAction _ = True
@@ -146,7 +146,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     FastAbility' cost mAction ->
       pushAll
         $ PayCost activeCostId iid False cost
-        : [PerformedAction iid action | action <- toList mAction]
+        : [PerformedActions iid [action] | action <- toList mAction]
     ForcedWhen _ aType ->
       startAbilityPayment
         activeCost
@@ -156,40 +156,44 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
         abilitySource
         abilityDoesNotProvokeAttacksOfOpportunity
     ReactionAbility _ cost -> push (PayCost activeCostId iid False cost)
-    ActionAbilityWithBefore mAction _ cost -> do
+    ActionAbilityWithBefore actions' _ cost -> do
       -- we do not know which ability will be chosen
       -- for now we assume this will trigger attacks of opportunity
       -- we also skip additional cost checks and abilities of this type
       -- will need to trigger the appropriate check
+      let actions = if null actions' then [Action.Ability] else actions'
       pushAll
-        $ PayCost activeCostId iid True cost
-        : [TakenAction iid action | action <- maybeToList mAction]
-          <> [ CheckAttackOfOpportunity iid False
-             | not abilityDoesNotProvokeAttacksOfOpportunity
-             ]
-    ActionAbilityWithSkill mAction _ cost ->
-      if mAction `notElem` map Just [#fight, #evade, #resign, #parley]
+        $ [ PayCost activeCostId iid True cost
+          , TakenActions iid actions
+          ]
+        <> [ CheckAttackOfOpportunity iid False
+           | not abilityDoesNotProvokeAttacksOfOpportunity
+           ]
+    ActionAbilityWithSkill actions' _ cost -> do
+      let actions = if null actions' then [Action.Ability] else actions'
+      if all (`notElem` [#fight, #evade, #resign, #parley]) actions
         then
           pushAll
             $ PayCost activeCostId iid False cost
-            : [TakenAction iid action | action <- maybeToList mAction]
+            : [TakenActions iid actions]
               <> [ CheckAttackOfOpportunity iid False
                  | not abilityDoesNotProvokeAttacksOfOpportunity
                  ]
         else
           pushAll
-            $ PayCost activeCostId iid False cost
-            : [TakenAction iid action | action <- maybeToList mAction]
-    ActionAbility mAction cost -> do
-      let action = fromMaybe Action.Ability $ mAction
-      beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action]
-      if action `notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
+            [ PayCost activeCostId iid False cost
+            , TakenActions iid actions
+            ]
+    ActionAbility actions' cost -> do
+      let actions = if null actions' then [Action.Ability] else actions'
+      beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
+      if all (`notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]) actions
         then
           pushAll
             $ [ BeginAction
               , beforeWindowMsg
               , PayCost activeCostId iid False cost
-              , TakenAction iid action
+              , TakenActions iid actions
               ]
             <> [ CheckAttackOfOpportunity iid False
                | not abilityDoesNotProvokeAttacksOfOpportunity
@@ -199,7 +203,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
             $ [ BeginAction
               , beforeWindowMsg
               , PayCost activeCostId iid False cost
-              , TakenAction iid action
+              , TakenActions iid actions
               ]
 
 nonAttackOfOpportunityActions :: [Action]
@@ -232,7 +236,7 @@ instance RunMessage ActiveCost where
               ]
             <> maybeToList mEffect
             <> [PayCost acId iid False (activeCostCosts c)]
-            <> map (TakenAction iid) actions
+            <> [TakenActions iid actions]
             <> [ CheckAttackOfOpportunity iid False
                | not modifiersPreventAttackOfOpportunity
                   && ( DoesNotProvokeAttacksOfOpportunity
@@ -244,13 +248,12 @@ instance RunMessage ActiveCost where
             <> [PayCostFinished acId]
           pure c
         ForAbility a@Ability {..} -> do
-          modifiers' <- getModifiers (InvestigatorTarget iid)
+          modifiers' <- getModifiers iid
           let
             modifiersPreventAttackOfOpportunity =
-              maybe
-                False
+              any
                 ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity)
-                (abilityAction a)
+                (abilityActions a)
           push $ PayCostFinished acId
           startAbilityPayment
             c
@@ -309,7 +312,7 @@ instance RunMessage ActiveCost where
           canAfford <-
             andM
               $ map
-                (\a -> getCanAffordCost iid source (Just a) [] cost')
+                (\a -> getCanAffordCost iid source [a] [] cost')
                 actions
           maxUpTo <- case cost' of
             ResourceCost resources -> do
@@ -641,13 +644,13 @@ instance RunMessage ActiveCost where
               else getActionCostModifier c
           let
             modifiedActionCost = max 0 (x + costModifier')
-            mAction = case activeCostTarget c of
-              ForAbility a -> abilityAction a
-              _ -> Nothing
+            actions' = case activeCostTarget c of
+              ForAbility a -> abilityActions a
+              _ -> []
             source' = case activeCostTarget c of
               ForAbility a -> AbilitySource (abilitySource a) (abilityIndex a)
               _ -> source
-          push (SpendActions iid source' mAction modifiedActionCost)
+          push (SpendActions iid source' actions' modifiedActionCost)
           withPayment $ ActionPayment x
         UseCost assetMatcher uType n -> do
           assets <- selectList assetMatcher
@@ -1016,20 +1019,19 @@ instance RunMessage ActiveCost where
         ForAbility ability -> do
           let
             isAction = isActionAbility ability
-            action = fromMaybe Action.Ability (abilityAction ability)
+            actions = if null (abilityActions ability) then [Action.Ability] else abilityActions ability
             iid = activeCostInvestigator c
           whenActivateAbilityWindow <-
             checkWindows
-              [mkWindow Timing.When (Window.ActivateAbility iid ability)]
+              [mkWhen (Window.ActivateAbility iid ability)]
           afterActivateAbilityWindow <-
             checkWindows
-              [mkWindow Timing.After (Window.ActivateAbility iid ability)]
+              [mkAfter (Window.ActivateAbility iid ability)]
           afterMsgs <-
             if isAction
               then do
                 afterWindowMsgs <-
-                  checkWindows
-                    [mkWindow Timing.After (Window.PerformAction iid action)]
+                  checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
                 pure [afterWindowMsgs, FinishAction]
               else pure []
           -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport

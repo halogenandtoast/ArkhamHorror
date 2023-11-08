@@ -588,6 +588,8 @@ allAssets =
       SomeAssetCard dreamDiaryDreamsOfAnExplorer3
     , SomeAssetCard dreamDiaryDreamsOfAMadman3
     , SomeAssetCard dreamDiaryDreamsOfAChild3
+    , --- rogue [pnr]
+      SomeAssetCard haste2
     , --- mystic [pnr]
       SomeAssetCard empowerSelfStamina2
     , SomeAssetCard empowerSelfAlacrity2

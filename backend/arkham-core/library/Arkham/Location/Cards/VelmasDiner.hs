@@ -36,7 +36,7 @@ instance HasAbilities VelmasDiner where
       attrs
       [ limitedAbility (PlayerLimit PerGame 1)
           $ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 3
       ]
 

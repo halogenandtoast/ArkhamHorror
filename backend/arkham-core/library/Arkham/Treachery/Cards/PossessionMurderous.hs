@@ -23,7 +23,7 @@ possessionMurderous = treachery PossessionMurderous Cards.possessionMurderous
 instance HasAbilities PossessionMurderous where
   getAbilities (PossessionMurderous a) =
     [ restrictedAbility a 1 InYourHand
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> InvestigatorDamageCost
           (toSource a)

@@ -32,7 +32,7 @@ instance HasAbilities Xochimilco where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 Here
-        $ ActionAbility (Just Action.Explore)
+        $ ActionAbility [Action.Explore]
         $ ActionCost 1
         <> ResourceCost 3
       | locationRevealed attrs

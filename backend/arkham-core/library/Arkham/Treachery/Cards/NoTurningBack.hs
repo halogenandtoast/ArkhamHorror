@@ -45,7 +45,7 @@ instance HasAbilities NoTurningBack where
               , ConnectedTo (LocationWithTreachery (TreacheryWithId $ toId a))
               ]
         )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     ]
 

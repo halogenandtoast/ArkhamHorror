@@ -30,7 +30,7 @@ instance HasAbilities CatacombsDocent where
     withBaseAbilities
       a
       [ restrictedAbility a 1 (LocationExists UnrevealedLocation)
-          $ ActionAbility (Just Action.Parley) (ActionCost 1)
+          $ ActionAbility [Action.Parley] (ActionCost 1)
       ]
 
 instance RunMessage CatacombsDocent where

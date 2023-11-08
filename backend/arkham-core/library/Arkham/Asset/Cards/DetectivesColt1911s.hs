@@ -44,7 +44,7 @@ instance HasModifiersFor DetectivesColt1911s where
 instance HasAbilities DetectivesColt1911s where
   getAbilities (DetectivesColt1911s a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
         <> UseCost (AssetWithId $ toId a) Ammo 1
     ]

@@ -40,7 +40,7 @@ instance HasAbilities LobbyWeveBeenExpectingYou where
           )
           1
           (OnLocation $ LocationWithTitle "Lodge Gates")
-          (ActionAbility Nothing $ ActionCost 1)
+          (ActionAbility [] $ ActionCost 1)
       | unrevealed attrs
       ]
 

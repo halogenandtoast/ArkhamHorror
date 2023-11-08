@@ -23,7 +23,7 @@ instance HasAbilities Shrivelling3 where
   getAbilities (Shrivelling3 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility
-          (Just Action.Fight)
+          ([Action.Fight])
           (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 

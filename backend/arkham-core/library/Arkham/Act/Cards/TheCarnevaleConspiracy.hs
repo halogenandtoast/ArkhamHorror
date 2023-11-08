@@ -33,7 +33,7 @@ instance HasAbilities TheCarnevaleConspiracy where
                 $ AssetWithTitle "Masked Carnevale-Goer"
                 <> AssetWithoutModifier CannotBeRevealed
             )
-            ( ActionAbility Nothing
+            ( ActionAbility []
                 $ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) Anywhere]
             )
         , restrictedAbility

@@ -44,7 +44,7 @@ instance HasAbilities UnvisitedIsleStandingStones where
   getAbilities (UnvisitedIsleStandingStones attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted
           "Until the end of the round, increase the difficulty of each skill test during a _circle_ action by 2."
           attrs

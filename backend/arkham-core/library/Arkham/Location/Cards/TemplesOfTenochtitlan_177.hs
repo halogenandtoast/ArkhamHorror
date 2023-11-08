@@ -49,7 +49,7 @@ instance HasAbilities TemplesOfTenochtitlan_177 where
                 <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
                 <> EnemyCriteria (EnemyExists AnyEnemy)
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

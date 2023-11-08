@@ -29,14 +29,14 @@ instance HasAbilities MetropolitanCathedral where
   getAbilities (MetropolitanCathedral attrs) =
     withRevealedAbilities attrs
       $ [ restrictedAbility attrs 1 Here
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
             <> HorrorCost (toSource attrs) YouTarget 1
         , restrictedAbility
             attrs
             2
             (Here <> InvestigatorExists (You <> HandWith (LengthIs $ AtLeast $ Static 6)))
-            $ ActionAbility (Just Action.Explore) (ActionCost 1)
+            $ ActionAbility [Action.Explore] (ActionCost 1)
         ]
 
 instance RunMessage MetropolitanCathedral where

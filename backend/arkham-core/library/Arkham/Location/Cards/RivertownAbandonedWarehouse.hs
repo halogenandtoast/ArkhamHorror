@@ -33,7 +33,7 @@ instance HasAbilities RivertownAbandonedWarehouse where
       attrs
       $ [ limitedAbility (GroupLimit PerGame 1)
             $ restrictedAbility attrs 1 Here
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ Costs
               [ActionCost 1, HandDiscardCost 1 $ CardWithSkillIcon #willpower]
         ]

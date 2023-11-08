@@ -36,7 +36,7 @@ instance HasAbilities ExpeditionCamp where
               attrs
               2
               (Here <> HasSupply Map)
-              (ActionAbility Nothing $ ActionCost 1)
+              (ActionAbility [] $ ActionCost 1)
           ]
         else []
 

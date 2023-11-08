@@ -25,7 +25,7 @@ instance HasAbilities NathanWickMasterOfInitiation where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 OnSameLocation
-          $ ActionAbility (Just Action.Parley)
+          $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]
 

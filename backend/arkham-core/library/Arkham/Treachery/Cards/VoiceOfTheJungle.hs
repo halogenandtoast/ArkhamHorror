@@ -31,7 +31,7 @@ instance HasAbilities VoiceOfTheJungle where
         $ ForcedAbility
         $ TurnEnds Timing.AtIf You
     , restrictedAbility x 2 (InThreatAreaOf You)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     ]
 

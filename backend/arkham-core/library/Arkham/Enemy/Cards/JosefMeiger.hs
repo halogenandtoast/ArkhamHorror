@@ -40,7 +40,7 @@ instance HasAbilities JosefMeiger where
                     <> NotEnemy (EnemyWithId $ toId a)
                 )
           )
-          $ ActionAbility (Just Action.Parley)
+          $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]
 

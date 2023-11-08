@@ -25,7 +25,7 @@ spectralWeb =
 instance HasAbilities SpectralWeb where
   getAbilities (SpectralWeb attrs) =
     [ controlledAbility attrs 1 (exists $ CanFightEnemy (toSource attrs) <> EnemyWithTrait Geist)
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
         <> GroupClueCostRange (1, 3) YourLocation
     ]

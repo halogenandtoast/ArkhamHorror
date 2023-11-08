@@ -44,13 +44,13 @@ instance HasAbilities TheYithianRelic where
                       , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
                       ]
                 )
-                $ ActionAbility Nothing
+                $ ActionAbility []
                 $ ActionCost 1
             , restrictedAbility
                 a
                 2
                 (AssetExists $ AssetAt (YourLocation <> LocationWithoutClues) <> AssetWithTitle "Relic of Ages")
-                $ ActionAbility Nothing
+                $ ActionAbility []
                 $ ActionCost 1
             , restrictedAbility
                 a

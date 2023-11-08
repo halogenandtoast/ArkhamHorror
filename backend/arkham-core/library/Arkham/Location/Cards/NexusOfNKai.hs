@@ -50,7 +50,7 @@ instance HasAbilities NexusOfNKai where
                 (LocationWithId $ toId attrs)
             ]
       , restrictedAbility attrs 2 (Here <> ScenarioDeckWithCard ExplorationDeck)
-          $ ActionAbility (Just Action.Explore)
+          $ ActionAbility [Action.Explore]
           $ ActionCost 1
       ]
 

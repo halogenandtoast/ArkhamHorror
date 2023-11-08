@@ -25,7 +25,7 @@ instance HasAbilities MerchantDistrict_300 where
     withRevealedAbilities
       attrs
       [ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
           <> OrCost [DiscardTopOfDeckCost n | n <- [5, 10, 15]]
       ]

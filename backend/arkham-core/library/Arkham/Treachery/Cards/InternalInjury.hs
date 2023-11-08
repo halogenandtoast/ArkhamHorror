@@ -24,7 +24,7 @@ instance HasAbilities InternalInjury where
         $ ForcedAbility
         $ TurnEnds #when You
     , restrictedAbility x 2 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

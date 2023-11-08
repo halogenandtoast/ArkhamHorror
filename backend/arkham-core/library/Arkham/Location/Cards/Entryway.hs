@@ -40,7 +40,7 @@ instance HasAbilities Entryway where
         attrs
         1
         (Here <> HasSupply Torches)
-        (ActionAbility Nothing $ ActionCost 1)
+        (ActionAbility [] $ ActionCost 1)
       | locationRevealed attrs
       ]
 

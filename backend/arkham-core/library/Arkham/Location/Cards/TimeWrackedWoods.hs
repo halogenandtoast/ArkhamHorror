@@ -35,7 +35,7 @@ instance HasAbilities TimeWrackedWoods where
                   (CardWithVengeance <> NotCard (CardWithTrait Elite))
                   (AtLeast $ Static 1)
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 2
       ]
 

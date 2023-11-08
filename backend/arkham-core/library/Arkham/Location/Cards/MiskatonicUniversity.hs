@@ -24,7 +24,7 @@ miskatonicUniversity =
 instance HasAbilities MiskatonicUniversity where
   getAbilities (MiskatonicUniversity x) =
     withRevealedAbilities x
-      $ [restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1]
+      $ [restrictedAbility x 1 Here $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = case msg of

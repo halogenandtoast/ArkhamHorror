@@ -27,7 +27,7 @@ instance HasAbilities SalemGaol1692 where
       a
       [ limitedAbility (PlayerLimit PerGame 1)
           $ restrictedAbility a 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       , haunted "Move to Keziah's Room." a 2
       ]

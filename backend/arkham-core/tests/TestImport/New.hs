@@ -17,7 +17,7 @@ import TestImport.Lifted as X hiding (
   spawnAt,
  )
 
-import Arkham.Ability (abilityAction)
+import Arkham.Ability (abilityActions)
 import Arkham.Ability.Type (AbilityType (..))
 import Arkham.Ability.Types
 import Arkham.Action qualified as Action
@@ -804,9 +804,7 @@ resolveAmounts self choices = do
 chooseFight :: TestAppT ()
 chooseFight = do
   chooseOptionMatching "choose fight" \case
-    AbilityLabel _ ability _ _ -> case abilityAction ability of
-      Just Action.Fight -> True
-      _ -> False
+    AbilityLabel _ ability _ _ -> Action.Fight `elem` abilityActions ability
     _ -> False
 
 assertMaxAmountChoice :: HasCallStack => Int -> TestAppT ()

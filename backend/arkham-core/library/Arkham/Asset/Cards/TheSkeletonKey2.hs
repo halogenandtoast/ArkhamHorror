@@ -30,7 +30,7 @@ instance HasModifiersFor TheSkeletonKey2 where
 instance HasAbilities TheSkeletonKey2 where
   getAbilities (TheSkeletonKey2 a) =
     [ restrictedAbility a 1 (ControlsThis <> additionalCriteria)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     ]
    where

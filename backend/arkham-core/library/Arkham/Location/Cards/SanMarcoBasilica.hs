@@ -38,7 +38,7 @@ instance HasAbilities SanMarcoBasilica where
           attrs
           1
           (Here <> exists (AssetControlledBy You <> assetIs Assets.innocentReveler))
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
         | locationRevealed attrs
         ]

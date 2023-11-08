@@ -431,7 +431,7 @@ instance HasAbilities LocationAttrs where
               ( You <> InvestigatorWithoutModifier CannotMove <> InvestigatorWithoutModifier (CannotEnter $ toId l)
               )
         )
-        $ ActionAbility (Just Action.Move) moveCost
+        $ ActionAbility [Action.Move] moveCost
     ]
       <> [ withTooltip ("Take " <> keyName k <> " key")
           $ restrictedAbility l (500 + idx) (OnLocation $ LocationWithId $ toId l)

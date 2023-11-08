@@ -30,7 +30,7 @@ instance HasModifiersFor Overgrowth where
 instance HasAbilities Overgrowth where
   getAbilities (Overgrowth a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     ]
 

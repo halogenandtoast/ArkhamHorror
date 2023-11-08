@@ -36,7 +36,7 @@ instance HasAbilities MouthOfKnYanTheCavernsMaw where
               attrs
               2
               (Here <> HasSupply Compass)
-              (ActionAbility Nothing $ ActionCost 1)
+              (ActionAbility [] $ ActionCost 1)
           ]
         else []
 

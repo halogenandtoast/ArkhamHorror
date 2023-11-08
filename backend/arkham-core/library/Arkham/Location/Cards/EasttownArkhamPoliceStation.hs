@@ -26,7 +26,7 @@ instance HasAbilities EasttownArkhamPoliceStation where
     withRevealedAbilities attrs
       $ [ playerLimit PerGame
             $ restrictedAbility attrs 1 Here
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
         ]
 

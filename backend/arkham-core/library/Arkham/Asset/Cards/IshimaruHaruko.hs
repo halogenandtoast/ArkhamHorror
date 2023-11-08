@@ -30,7 +30,7 @@ instance HasAbilities IshimaruHaruko where
             <> InvestigatorExists
               (You <> HandWith (LengthIs $ AtLeast $ Static 6))
         )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     , mkAbility a 2
         $ ForcedAbility

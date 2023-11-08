@@ -24,7 +24,7 @@ instance HasAbilities OpeningTheMaw where
     if onSide A a
       then
         [ mkAbility a 1
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
             <> GroupClueCost
               (Static 1)

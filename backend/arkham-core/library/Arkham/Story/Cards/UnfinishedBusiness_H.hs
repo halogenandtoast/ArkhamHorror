@@ -37,7 +37,7 @@ instance HasAbilities UnfinishedBusiness_H where
           ( OnSameLocation
               <> LocationExists (YourLocation <> LocationWithTitle "Heretics' Graves" <> LocationWithoutClues)
           )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
     _ -> []

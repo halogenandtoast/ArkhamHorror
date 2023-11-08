@@ -34,7 +34,7 @@ instance HasModifiersFor CreepingDarkness where
 instance HasAbilities CreepingDarkness where
   getAbilities (CreepingDarkness a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost
           2
     ]

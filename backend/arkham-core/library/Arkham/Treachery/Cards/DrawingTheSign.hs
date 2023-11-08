@@ -29,7 +29,7 @@ instance HasModifiersFor DrawingTheSign where
 instance HasAbilities DrawingTheSign where
   getAbilities (DrawingTheSign a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

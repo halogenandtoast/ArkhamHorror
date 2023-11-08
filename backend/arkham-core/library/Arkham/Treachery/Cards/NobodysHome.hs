@@ -28,10 +28,9 @@ instance HasModifiersFor NobodysHome where
   getModifiersFor (AbilityTarget _ ab) (NobodysHome attrs) = do
     case abilitySource ab of
       LocationSource lid | treacheryOnLocation lid attrs -> do
-        case abilityAction ab of
-          Just Action.Investigate ->
-            pure $ toModifiers attrs [AdditionalCost (ActionCost 1)]
-          _ -> pure []
+        if Action.Investigate `elem` abilityActions ab
+          then pure $ toModifiers attrs [AdditionalCost (ActionCost 1)]
+          else pure []
       _ -> pure []
   getModifiersFor _ _ = pure []
 

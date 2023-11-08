@@ -32,7 +32,7 @@ mistsOfRlyeh4 = asset MistsOfRlyeh4 Cards.mistsOfRlyeh4
 instance HasAbilities MistsOfRlyeh4 where
   getAbilities (MistsOfRlyeh4 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Evade)
+        $ ActionAbility [Action.Evade]
         $ ActionCost 1
         <> UseCost (AssetWithId $ toId a) Charge 1
     ]

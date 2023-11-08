@@ -25,7 +25,7 @@ instance HasAbilities Ichtaca where
     withBaseAbilities
       a
       [ restrictedAbility a 1 OnSameLocation
-          $ ActionAbility (Just Action.Parley)
+          $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]
 

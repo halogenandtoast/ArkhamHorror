@@ -35,11 +35,12 @@ instance HasAbilities TheEdgeOfTheUniverse where
   getAbilities (TheEdgeOfTheUniverse attrs) = do
     let actions = getAbilities attrs
     flip map actions $ \action -> case abilityType action of
-      ActionAbility (Just Action.Move) _ ->
-        action
-          & abilityCriteriaL
-          <>~ InvestigatorExists
-            (You <> InvestigatorWithClues (AtLeast $ Static 2))
+      ActionAbility actions' _
+        | Action.Move `elem` actions' ->
+            action
+              & abilityCriteriaL
+              <>~ InvestigatorExists
+                (You <> InvestigatorWithClues (AtLeast $ Static 2))
       _ -> action
 
 instance RunMessage TheEdgeOfTheUniverse where

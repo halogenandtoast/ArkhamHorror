@@ -41,7 +41,7 @@ instance HasAbilities SearchForTheStrangerV1 where
               Enemies.theManInThePallidMask
         )
         $ Objective
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 3
     ]
 

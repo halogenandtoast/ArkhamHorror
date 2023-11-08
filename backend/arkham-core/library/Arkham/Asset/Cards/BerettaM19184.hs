@@ -20,7 +20,7 @@ berettaM19184 = asset BerettaM19184 Cards.berettaM19184
 instance HasAbilities BerettaM19184 where
   getAbilities (BerettaM19184 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
         <> exhaust a
         <> assetUseCost a Ammo 1

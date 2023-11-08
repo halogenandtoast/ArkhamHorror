@@ -41,7 +41,7 @@ instance HasAbilities QuietHalls_135 where
               <> Negate
                 (LocationExists LocationWithAnyClues)
           )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

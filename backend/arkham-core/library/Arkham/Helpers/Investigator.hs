@@ -348,7 +348,7 @@ investigator f cardDef Stats {..} =
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (FirstOneOfPerformed as) action =
-  action `elem` as && all (`notElem` investigatorActionsPerformed attrs) as
+  action `elem` as && all (\a -> all (notElem a) $ investigatorActionsPerformed attrs) as
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 matchTarget _ IsAnyAction _ = True
@@ -388,7 +388,7 @@ getCanAfford a@InvestigatorAttrs {..} as = do
   additionalActions <- getAdditionalActions a
   additionalActionCount <-
     countM
-      (\aa -> anyM (\ac -> additionalActionCovers (toSource a) (Just ac) aa) as)
+      (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as)
       additionalActions
   pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
@@ -521,14 +521,14 @@ getInvestigatorsWithHealHorror a n =
   selectList . affectsOthers >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
 
 additionalActionCovers
-  :: HasGame m => Source -> Maybe Action -> AdditionalAction -> m Bool
-additionalActionCovers source maction (AdditionalAction _ _ aType) = case aType of
+  :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool
+additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType of
   TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
     NoRestriction -> member t <$> sourceTraits source
     AbilitiesOnly -> case source of
       AbilitySource {} -> member t <$> sourceTraits source
       _ -> pure False
-  ActionRestrictedAdditionalAction a -> pure $ maction == Just a
+  ActionRestrictedAdditionalAction a -> pure $ a `elem` actions
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True
   BountyAction -> pure False -- Has to be handled by Tony Morgan

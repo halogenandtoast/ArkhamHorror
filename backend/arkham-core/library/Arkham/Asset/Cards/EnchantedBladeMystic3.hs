@@ -27,7 +27,7 @@ getUsesPaid _ = 0
 instance HasAbilities EnchantedBladeMystic3 where
   getAbilities (EnchantedBladeMystic3 attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ Costs
           [ActionCost 1, UpTo 2 (UseCost (AssetWithId $ toId attrs) Charge 1)]
     ]

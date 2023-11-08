@@ -23,7 +23,7 @@ kukri = asset Kukri Cards.kukri
 instance HasAbilities Kukri where
   getAbilities (Kukri a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight) (ActionCost 1)
+        $ ActionAbility ([Action.Fight]) (ActionCost 1)
     ]
 
 instance RunMessage Kukri where

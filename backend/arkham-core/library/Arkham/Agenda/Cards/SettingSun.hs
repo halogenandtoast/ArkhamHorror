@@ -26,7 +26,7 @@ settingSun = agenda (2, A) SettingSun Cards.settingSun (Static 5)
 instance HasAbilities SettingSun where
   getAbilities (SettingSun a) =
     [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility (Just Action.Explore)
+        $ ActionAbility [Action.Explore]
         $ ActionCost 1
     ]
 

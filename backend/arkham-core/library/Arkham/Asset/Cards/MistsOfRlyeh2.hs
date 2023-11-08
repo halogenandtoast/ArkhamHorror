@@ -33,7 +33,7 @@ instance HasAbilities MistsOfRlyeh2 where
   getAbilities (MistsOfRlyeh2 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility
-          (Just Action.Evade)
+          [Action.Evade]
           (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 

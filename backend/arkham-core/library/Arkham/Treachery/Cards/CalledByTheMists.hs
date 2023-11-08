@@ -26,7 +26,7 @@ instance HasAbilities CalledByTheMists where
         $ ForcedAbility
         $ InitiatedSkillTest Timing.After You AnySkillType (SkillTestGameValue $ AtLeast $ Static 4)
     , restrictedAbility a 2 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

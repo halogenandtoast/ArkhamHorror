@@ -13,7 +13,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 
 newtype Cloister = Cloister LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,22 +26,15 @@ instance HasAbilities Cloister where
     withBaseAbilities
       a
       [ restrictedAbility a 1 (Here <> NoCluesOnThis)
-          $ ActionAbility (Just Action.Parley) Free
+          $ ActionAbility [Action.Parley]
+          $ ActionCost 1
       ]
 
 instance RunMessage Cloister where
   runMessage msg l@(Cloister attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              ( parley
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  SkillWillpower
-                  3
-              )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ parley iid source iid #willpower 3
+      pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> l <$ push (Remember FoundAGuide)
     _ -> Cloister <$> runMessage msg attrs

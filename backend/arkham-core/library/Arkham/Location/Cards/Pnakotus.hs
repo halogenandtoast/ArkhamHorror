@@ -36,7 +36,7 @@ instance HasAbilities Pnakotus where
                   (IncludeSealed $ ChaosTokenFaceIs Tablet)
                   (AtLeast $ Static 3)
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

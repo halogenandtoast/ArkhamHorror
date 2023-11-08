@@ -23,7 +23,7 @@ instance HasAbilities SouthChurch_299 where
   getAbilities (SouthChurch_299 attrs) =
     withRevealedAbilities attrs
       $ [ restrictedAbility attrs 1 (withBreaches attrs Here)
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
             <> DiscardAssetCost AnyAsset
         , withTooltip "You hide through the night." $ locationResignAction attrs

@@ -21,7 +21,7 @@ mrPeabody = ally MrPeabody Cards.mrPeabody (2, 2)
 instance HasAbilities MrPeabody where
   getAbilities (MrPeabody attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ Costs
           [ActionCost 1, ExhaustCost $ toTarget attrs]
     ]

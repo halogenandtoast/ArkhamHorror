@@ -23,7 +23,7 @@ instance HasAbilities Northside where
     withRevealedAbilities x
       $ [ limitedAbility (GroupLimit PerGame 1)
             $ restrictedAbility x 1 Here
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ Costs [ActionCost 1, ResourceCost 5]
         ]
 

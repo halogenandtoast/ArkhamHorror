@@ -27,7 +27,7 @@ instance HasAbilities Nihilism where
           , CancelChaosToken #after You #autofail
           , IgnoreChaosToken #after You #autofail
           ]
-    , restrictedAbility a 2 OnSameLocation (ActionAbility Nothing $ ActionCost 2)
+    , restrictedAbility a 2 OnSameLocation (ActionAbility [] $ ActionCost 2)
     ]
 
 instance RunMessage Nihilism where

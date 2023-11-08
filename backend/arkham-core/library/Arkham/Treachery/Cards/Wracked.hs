@@ -48,7 +48,7 @@ instance HasModifiersFor Wracked where
 
 instance HasAbilities Wracked where
   getAbilities (Wracked a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost 1]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage Wracked where
   runMessage msg t@(Wracked attrs) = case msg of

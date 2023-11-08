@@ -22,7 +22,7 @@ chicagoTypewriter4 = asset ChicagoTypewriter4 Cards.chicagoTypewriter4
 instance HasAbilities ChicagoTypewriter4 where
   getAbilities (ChicagoTypewriter4 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ Costs
           [ActionCost 1, AdditionalActionsCost, UseCost (AssetWithId $ toId a) Ammo 1]
     ]

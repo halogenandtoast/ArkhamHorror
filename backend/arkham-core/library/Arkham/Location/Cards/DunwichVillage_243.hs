@@ -33,7 +33,7 @@ instance HasAbilities DunwichVillage_243 where
             <> EnemyCriteria
               (EnemyExists $ EnemyWithTitle "Brood of Yog-Sothoth")
         )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
       | locationRevealed x
       ]

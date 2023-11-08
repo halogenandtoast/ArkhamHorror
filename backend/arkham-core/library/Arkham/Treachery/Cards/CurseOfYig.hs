@@ -33,7 +33,7 @@ instance HasModifiersFor CurseOfYig where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CurseOfYig where
-  getAbilities (CurseOfYig a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost 1]
+  getAbilities (CurseOfYig a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage CurseOfYig where
   runMessage msg t@(CurseOfYig attrs) = case msg of

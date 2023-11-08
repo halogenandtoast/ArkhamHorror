@@ -32,7 +32,7 @@ instance HasAbilities BrackishWaters where
   getAbilities (BrackishWaters attrs) =
     withRevealedAbilities attrs
       $ [ restrictedAbility attrs 1 (Here <> Negate (exists $ assetIs Assets.fishingNet))
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ Costs
               [ ActionCost 1
               , DiscardFromCost 2 (FromHandOf You <> FromPlayAreaOf You) #asset

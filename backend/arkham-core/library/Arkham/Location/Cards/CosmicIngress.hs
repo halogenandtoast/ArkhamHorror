@@ -47,7 +47,7 @@ instance HasAbilities CosmicIngress where
               )
               1
               Here
-              (ActionAbility Nothing $ ActionCost 1)
+              (ActionAbility [] $ ActionCost 1)
         ]
 
 instance RunMessage CosmicIngress where

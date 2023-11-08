@@ -39,7 +39,7 @@ instance HasAbilities AsylumHallsEasternPatientWing_170 where
             <> EnemyCriteria
               (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Lunatic)
         )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
       | locationRevealed attrs
       ]

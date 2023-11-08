@@ -29,7 +29,7 @@ instance HasAbilities Thermos where
           a
           1
           (exists $ HealableInvestigator (toSource a) DamageType $ InvestigatorAt YourLocation)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
     , withTooltip
@@ -38,7 +38,7 @@ instance HasAbilities Thermos where
           a
           2
           (exists $ HealableInvestigator (toSource a) HorrorType $ InvestigatorAt YourLocation)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
     ]

@@ -24,7 +24,7 @@ instance HasAbilities StMarysHospital where
   getAbilities (StMarysHospital x) =
     withRevealedAbilities x
       $ [ limitedAbility (PlayerLimit PerGame 1)
-            $ withCriteria (mkAbility x 1 (ActionAbility Nothing $ ActionCost 1))
+            $ withCriteria (mkAbility x 1 (ActionAbility [] $ ActionCost 1))
             $ Here
             <> InvestigatorExists (HealableInvestigator (toSource x) DamageType You)
         ]

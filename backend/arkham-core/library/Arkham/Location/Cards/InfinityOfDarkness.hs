@@ -39,7 +39,7 @@ instance HasAbilities InfinityOfDarkness where
       [ cosmos attrs 1
       , groupLimit PerGame
           $ restrictedAbility attrs 2 (Here <> CanMoveThis GridDown)
-          $ ActionAbility Nothing (ActionCost 1 <> ScenarioResourceCost 1)
+          $ ActionAbility [] (ActionCost 1 <> ScenarioResourceCost 1)
       ]
 
 -- withRevealedAbilities attrs []

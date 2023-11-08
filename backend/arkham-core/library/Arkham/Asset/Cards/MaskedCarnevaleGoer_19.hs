@@ -29,7 +29,7 @@ instance HasAbilities MaskedCarnevaleGoer_19 where
         x
         1
         OnSameLocation
-        (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost (Static 1)])
+        (ActionAbility [] $ Costs [ActionCost 1, ClueCost (Static 1)])
     ]
 
 locationOf :: AssetAttrs -> LocationId

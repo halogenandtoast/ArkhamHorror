@@ -43,7 +43,7 @@ instance HasAbilities UnvisitedIsleDecayedWillow where
   getAbilities (UnvisitedIsleDecayedWillow attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted "Choose and discard 1 card from your hand." attrs 2
       ]
 

@@ -29,7 +29,7 @@ instance HasAbilities Obsessive where
           Timing.When
           You
     , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

@@ -23,7 +23,7 @@ instance HasAbilities DowntownFirstBankOfArkham where
     withRevealedAbilities attrs
       $ [ limitedAbility (PlayerLimit PerGame 1)
             $ restrictedAbility attrs 1 (Here <> CanGainResources)
-            $ ActionAbility Nothing (ActionCost 1)
+            $ ActionAbility [] (ActionCost 1)
         ]
 
 instance RunMessage DowntownFirstBankOfArkham where

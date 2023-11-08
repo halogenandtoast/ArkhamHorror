@@ -23,7 +23,7 @@ hiddenEntanglements =
 
 instance HasAbilities HiddenEntanglements where
   getAbilities (HiddenEntanglements attrs) =
-    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+    [mkAbility attrs 1 $ ActionAbility [Action.Resign] (ActionCost 1)]
 
 instance RunMessage HiddenEntanglements where
   runMessage msg a@(HiddenEntanglements attrs) = case msg of

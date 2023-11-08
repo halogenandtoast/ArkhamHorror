@@ -355,7 +355,7 @@ instance RunMessage SkillTest where
             getCanAffordCost
               iid
               (toSource s)
-              Nothing
+              []
               [mkWindow Timing.When Window.NonFast]
               (mconcat additionalCosts)
           iid' <- getActiveInvestigatorId

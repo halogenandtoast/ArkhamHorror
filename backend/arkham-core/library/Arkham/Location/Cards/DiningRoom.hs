@@ -36,7 +36,7 @@ instance HasAbilities DiningRoom where
             <> InvestigatorExists
               (HealableInvestigator (toSource attrs) HorrorType You)
         )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
       | locationRevealed attrs
       ]

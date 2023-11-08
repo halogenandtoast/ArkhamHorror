@@ -36,7 +36,7 @@ instance HasModifiersFor SpectralMist where
 
 instance HasAbilities SpectralMist where
   getAbilities (SpectralMist a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost 1]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage SpectralMist where
   runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of

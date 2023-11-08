@@ -46,7 +46,7 @@ instance HasAbilities BrightCanyon where
             ( CluesOnThis (AtLeast $ Static 1)
                 <> InvestigatorExists (You <> InvestigatorWithSupply Binoculars)
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

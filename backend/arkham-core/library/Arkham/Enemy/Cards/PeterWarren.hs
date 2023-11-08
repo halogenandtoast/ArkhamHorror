@@ -28,7 +28,7 @@ instance HasAbilities PeterWarren where
   getAbilities (PeterWarren attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility (Just Parley)
+            $ ActionAbility [Parley]
             $ Costs [ActionCost 1, ClueCost (Static 2)]
         ]
 

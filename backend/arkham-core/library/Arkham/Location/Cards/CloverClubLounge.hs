@@ -28,7 +28,7 @@ instance HasAbilities CloverClubLounge where
     withBaseAbilities attrs
       $ [ limitedAbility (PlayerLimit PerGame 1)
           $ restrictedAbility attrs 1 (OnAct 1)
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ Costs
             [ ActionCost 1
             , HandDiscardCost 1 $ CardWithType AssetType <> CardWithTrait Ally

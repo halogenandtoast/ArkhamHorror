@@ -47,7 +47,7 @@ instance HasAbilities PathwayIntoVoid where
             ( Here
                 <> AnyCriterion [CanMoveThis GridDown, CanMoveThis GridUp, CanMoveThis GridLeft, CanMoveThis GridRight]
             )
-          $ ActionAbility Nothing (ActionCost 1 <> ScenarioResourceCost 1)
+          $ ActionAbility [] (ActionCost 1 <> ScenarioResourceCost 1)
       ]
 
 instance RunMessage PathwayIntoVoid where

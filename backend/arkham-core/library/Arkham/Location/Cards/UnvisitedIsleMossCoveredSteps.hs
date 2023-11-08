@@ -44,7 +44,7 @@ instance HasAbilities UnvisitedIsleMossCoveredSteps where
   getAbilities (UnvisitedIsleMossCoveredSteps attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted "Your next move action this round costs 1 additional action" attrs 2
       ]
 
@@ -75,7 +75,7 @@ instance HasModifiersFor UnvisitedIsleMossCoveredStepsEffect where
 
 instance RunMessage UnvisitedIsleMossCoveredStepsEffect where
   runMessage msg e@(UnvisitedIsleMossCoveredStepsEffect attrs) = case msg of
-    TakenAction iid Action.Move | toTarget iid == effectTarget attrs -> do
+    TakenActions iid (elem #move -> True) | toTarget iid == effectTarget attrs -> do
       push $ DisableEffect $ toId attrs
       pure e
     EndRound -> do

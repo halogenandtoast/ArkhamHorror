@@ -38,7 +38,7 @@ instance HasAbilities OldHuntingRifle3 where
       (ControlsThis <> jammedRestriction)
       : [ withTooltip "You clear the jam."
           $ restrictedAbility a 2 ControlsThis
-          $ ActionAbility Nothing (ActionCost 1)
+          $ ActionAbility [] (ActionCost 1)
         | rifleStatus == Jammed
         ]
    where

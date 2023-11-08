@@ -41,7 +41,7 @@ instance HasModifiersFor YithianPresence where
 instance HasAbilities YithianPresence where
   getAbilities (YithianPresence a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> HandDiscardCost 2 AnyCard
     ]

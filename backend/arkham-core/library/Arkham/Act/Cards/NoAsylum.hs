@@ -38,7 +38,7 @@ instance HasAbilities NoAsylum where
                   <> Negate
                     (EnemyCriteria $ EnemyExists $ ReadyEnemy <> EnemyAt YourLocation)
               )
-              (ActionAbility (Just Action.Resign) $ ActionCost 1)
+              (ActionAbility [Action.Resign] $ ActionCost 1)
           , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
               $ Objective
               $ ForcedAbility AnyWindow

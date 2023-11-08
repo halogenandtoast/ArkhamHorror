@@ -25,7 +25,7 @@ instance HasAbilities Zocalo where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 Here
-        $ ActionAbility (Just Action.Explore)
+        $ ActionAbility [Action.Explore]
         $ ActionCost 1
         <> DiscardCombinedCost 5
       | locationRevealed attrs

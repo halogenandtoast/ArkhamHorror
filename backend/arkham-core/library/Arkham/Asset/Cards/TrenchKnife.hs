@@ -31,7 +31,7 @@ instance HasModifiersFor TrenchKnife where
 instance HasAbilities TrenchKnife where
   getAbilities (TrenchKnife attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
     ]
 

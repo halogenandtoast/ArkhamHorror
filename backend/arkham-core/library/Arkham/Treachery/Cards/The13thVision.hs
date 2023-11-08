@@ -34,7 +34,7 @@ instance HasModifiersFor The13thVision where
 
 instance HasAbilities The13thVision where
   getAbilities (The13thVision a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost 2]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
 
 instance RunMessage The13thVision where
   runMessage msg t@(The13thVision attrs) = case msg of

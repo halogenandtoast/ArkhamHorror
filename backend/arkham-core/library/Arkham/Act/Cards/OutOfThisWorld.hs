@@ -27,7 +27,7 @@ outOfThisWorld =
 
 instance HasAbilities OutOfThisWorld where
   getAbilities (OutOfThisWorld x) =
-    withBaseAbilities x [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
+    withBaseAbilities x [mkAbility x 1 $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of

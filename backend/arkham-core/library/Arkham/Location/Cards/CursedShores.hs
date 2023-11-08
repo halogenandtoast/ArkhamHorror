@@ -29,7 +29,7 @@ instance HasAbilities CursedShores where
     withBaseAbilities attrs
       $ if locationRevealed attrs
         then
-          [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
+          [ restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1
           , mkAbility attrs 2
               $ ForcedAbility
               $ Leaves Timing.When You

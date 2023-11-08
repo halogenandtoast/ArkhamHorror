@@ -24,7 +24,7 @@ returnToPredatorOrPrey =
 
 instance HasAbilities ReturnToPredatorOrPrey where
   getAbilities (ReturnToPredatorOrPrey attrs) =
-    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+    [mkAbility attrs 1 $ ActionAbility [Action.Resign] (ActionCost 1)]
 
 instance RunMessage ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) =

@@ -41,7 +41,7 @@ instance HasAbilities FloodedSquare where
                         (LocationInDirection RightOf $ LocationWithId $ toId attrs)
                   )
             )
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
         ]
 

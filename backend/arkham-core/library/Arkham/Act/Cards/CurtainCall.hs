@@ -35,7 +35,7 @@ instance HasAbilities CurtainCall where
             <> Negate
               (EnemyCriteria $ EnemyExists $ enemyIs Enemies.theManInThePallidMask)
         )
-        $ ActionAbility (Just Action.Resign)
+        $ ActionAbility [Action.Resign]
         $ ActionCost 1
     , restrictedAbility
         attrs

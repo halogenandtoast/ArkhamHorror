@@ -51,7 +51,7 @@ instance HasAbilities ParlorCar where
                 <> InvestigatorExists
                   (You <> InvestigatorCanDiscoverCluesAt YourLocation)
             )
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ Costs [ActionCost 1, ResourceCost 3]
         ]
 

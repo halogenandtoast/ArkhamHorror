@@ -21,7 +21,7 @@ frenchHill_291 = location FrenchHill_291 Cards.frenchHill_291 4 (Static 0)
 
 instance HasAbilities FrenchHill_291 where
   getAbilities (FrenchHill_291 attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage FrenchHill_291 where
   runMessage msg l@(FrenchHill_291 attrs) = case msg of

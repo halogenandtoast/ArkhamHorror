@@ -28,7 +28,7 @@ instance HasAbilities NorthsideTrainStation where
     withBaseAbilities attrs
       $ [ limitedAbility (PlayerLimit PerGame 1)
           $ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
         | locationRevealed attrs
         ]

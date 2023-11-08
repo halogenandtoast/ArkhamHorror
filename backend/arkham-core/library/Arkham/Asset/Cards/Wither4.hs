@@ -27,7 +27,7 @@ instance HasAbilities Wither4 where
   getAbilities (Wither4 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbilityWithSkill
-          (Just Action.Fight)
+          ([Action.Fight])
           SkillWillpower
           (ActionCost 1)
     ]

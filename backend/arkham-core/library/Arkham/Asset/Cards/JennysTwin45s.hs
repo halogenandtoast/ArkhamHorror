@@ -24,7 +24,7 @@ instance HasAbilities JennysTwin45s where
   getAbilities (JennysTwin45s a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility
-          (Just Action.Fight)
+          ([Action.Fight])
           (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 

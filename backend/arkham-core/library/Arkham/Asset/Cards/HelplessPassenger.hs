@@ -33,7 +33,7 @@ instance HasAbilities HelplessPassenger where
         x
         1
         (Uncontrolled <> OnSameLocation)
-        (ActionAbility (Just Parley) $ ActionCost 1)
+        (ActionAbility [Parley] $ ActionCost 1)
     , mkAbility x 2
         $ ForcedAbility
         $ AssetLeavesPlay Timing.When

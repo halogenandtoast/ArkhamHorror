@@ -34,7 +34,7 @@ instance HasAbilities SiteOfTheSacrifice where
             1
             ( Here <> enemyExists (enemyIs Enemies.nahab <> EnemyWithAnyDoom)
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
           <> GroupClueCost (PerPlayer 1) (LocationWithId $ toId a)
       , restrictedAbility a 2 (CluesOnThis $ LessThan $ PerPlayer 3)

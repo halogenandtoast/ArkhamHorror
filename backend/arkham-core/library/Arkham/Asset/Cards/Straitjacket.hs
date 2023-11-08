@@ -35,7 +35,7 @@ straitjacket =
 instance HasAbilities Straitjacket where
   getAbilities (Straitjacket a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost
           2
     ]

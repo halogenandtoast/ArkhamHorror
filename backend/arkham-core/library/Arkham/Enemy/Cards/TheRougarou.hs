@@ -33,7 +33,7 @@ theRougarou =
 
 isEngage :: Ability -> Bool
 isEngage ability = case abilityType ability of
-  ActionAbility (Just Action.Engage) _ -> True
+  ActionAbility actions _ -> Action.Engage `elem` actions
   _ -> False
 
 instance HasAbilities TheRougarou where
@@ -64,7 +64,7 @@ instance HasAbilities TheRougarou where
                   <> Negate
                     (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
               )
-              $ ActionAbility (Just Action.Engage)
+              $ ActionAbility [Action.Engage]
               $ GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere
               <> ActionCost 1
         forced : filter (not . isEngage) actions' <> [engageAction]

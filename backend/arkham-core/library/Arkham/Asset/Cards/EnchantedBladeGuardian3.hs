@@ -23,7 +23,7 @@ enchantedBladeGuardian3 = asset (EnchantedBladeGuardian3 . (`with` Metadata Fals
 
 instance HasAbilities EnchantedBladeGuardian3 where
   getAbilities (EnchantedBladeGuardian3 (attrs `With` _)) =
-    [restrictedAbility attrs 1 ControlsThis $ ActionAbility (Just Action.Fight) (ActionCost 1)]
+    [restrictedAbility attrs 1 ControlsThis $ ActionAbility ([Action.Fight]) (ActionCost 1)]
 
 instance RunMessage EnchantedBladeGuardian3 where
   runMessage msg a@(EnchantedBladeGuardian3 (attrs `With` meta)) = case msg of

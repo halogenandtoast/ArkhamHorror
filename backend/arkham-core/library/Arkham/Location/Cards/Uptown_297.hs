@@ -21,7 +21,7 @@ uptown_297 = location Uptown_297 Cards.uptown_297 4 (Static 0)
 
 instance HasAbilities Uptown_297 where
   getAbilities (Uptown_297 attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage Uptown_297 where
   runMessage msg l@(Uptown_297 attrs) = case msg of

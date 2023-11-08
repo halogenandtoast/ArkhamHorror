@@ -32,7 +32,7 @@ instance HasModifiersFor WrackedByNightmares where
 instance HasAbilities WrackedByNightmares where
   getAbilities (WrackedByNightmares a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost
           2
     ]

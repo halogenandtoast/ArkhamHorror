@@ -33,7 +33,7 @@ instance HasAbilities Fold where
               (toProxySource x $ AssetMatcherSource $ assetIs Cards.peterClover)
               1
               (Uncontrolled <> OnSameLocation)
-              (ActionAbility (Just Parley) $ ActionCost 1)
+              (ActionAbility [Parley] $ ActionCost 1)
           , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
               $ Objective
               $ ForcedAbility AnyWindow

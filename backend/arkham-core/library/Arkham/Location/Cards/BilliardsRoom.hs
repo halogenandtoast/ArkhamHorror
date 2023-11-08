@@ -26,7 +26,7 @@ instance HasAbilities BilliardsRoom where
       a
       [ limitedAbility (PlayerLimit PerRound 1)
           $ restrictedAbility a 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

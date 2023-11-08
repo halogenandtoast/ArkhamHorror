@@ -23,7 +23,7 @@ ashleighClarke = asset AshleighClarke Cards.ashleighClarke
 instance HasAbilities AshleighClarke where
   getAbilities (AshleighClarke a) =
     [ restrictedAbility a 1 (OnSameLocation <> CanTakeControlOfClues)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     , mkAbility a 2
         $ ForcedAbility

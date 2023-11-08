@@ -34,7 +34,7 @@ instance HasAbilities Valusia where
                   (IncludeSealed $ ChaosTokenFaceIs Cultist)
                   (AtLeast $ Static 3)
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

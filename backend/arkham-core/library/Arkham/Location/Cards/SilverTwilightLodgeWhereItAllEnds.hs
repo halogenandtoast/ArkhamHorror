@@ -23,7 +23,7 @@ silverTwilightLodgeWhereItAllEnds = location SilverTwilightLodgeWhereItAllEnds C
 
 instance HasAbilities SilverTwilightLodgeWhereItAllEnds where
   getAbilities (SilverTwilightLodgeWhereItAllEnds attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage SilverTwilightLodgeWhereItAllEnds where
   runMessage msg l@(SilverTwilightLodgeWhereItAllEnds attrs) = case msg of

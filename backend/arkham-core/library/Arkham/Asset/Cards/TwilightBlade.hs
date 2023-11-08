@@ -45,7 +45,7 @@ instance HasModifiersFor TwilightBlade where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TwilightBlade where
-  getAbilities (TwilightBlade a) = [restrictedAbility a 1 ControlsThis $ ActionAbility (Just Action.Fight) $ ActionCost 1]
+  getAbilities (TwilightBlade a) = [restrictedAbility a 1 ControlsThis $ ActionAbility ([Action.Fight]) $ ActionCost 1]
 
 instance RunMessage TwilightBlade where
   runMessage msg a@(TwilightBlade attrs) = case msg of

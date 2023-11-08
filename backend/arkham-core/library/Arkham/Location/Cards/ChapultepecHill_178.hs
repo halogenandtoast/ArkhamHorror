@@ -44,7 +44,7 @@ instance HasAbilities ChapultepecHill_178 where
                 <> InvestigatorExists
                   (You <> HandWith (LengthIs $ AtLeast $ Static 3))
             )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
           <> DiscardHandCost
       ]

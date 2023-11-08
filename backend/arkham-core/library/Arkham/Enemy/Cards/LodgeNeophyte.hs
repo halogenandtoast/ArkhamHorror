@@ -38,7 +38,7 @@ instance HasAbilities LodgeNeophyte where
           $ EnemyWithId
           $ toId a
       , restrictedAbility a 2 OnSameLocation
-          $ ActionAbility (Just Action.Parley)
+          $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]
 

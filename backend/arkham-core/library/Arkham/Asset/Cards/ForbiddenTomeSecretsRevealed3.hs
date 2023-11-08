@@ -35,7 +35,7 @@ instance HasAbilities ForbiddenTomeSecretsRevealed3 where
         a
         1
         (exists $ oneOf [AccessibleLocation, YourLocation <> LocationWithAnyClues])
-        $ ActionAbility Nothing (ActionCost 4 <> exhaust a)
+        $ ActionAbility [] (ActionCost 4 <> exhaust a)
     ]
 
 instance RunMessage ForbiddenTomeSecretsRevealed3 where

@@ -26,7 +26,7 @@ instance HasAbilities PorteDeLAvancee where
     withBaseAbilities
       a
       [ restrictedAbility a 1 (Here <> AgendaExists AgendaWithAnyDoom)
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 2
       ]
 

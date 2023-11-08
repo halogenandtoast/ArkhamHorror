@@ -26,7 +26,7 @@ instance HasAbilities OsbornsGeneralStore_207 where
   getAbilities (OsbornsGeneralStore_207 attrs) =
     let rest = withDrawCardUnderneathAction attrs
      in [ restrictedAbility attrs 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ Costs
             [ActionCost 1, ResourceCost 1]
         | locationRevealed attrs

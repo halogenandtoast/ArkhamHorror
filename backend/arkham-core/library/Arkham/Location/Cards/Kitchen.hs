@@ -26,7 +26,7 @@ instance HasAbilities Kitchen where
     withBaseAbilities
       attrs
       [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
       | locationRevealed attrs
       ]

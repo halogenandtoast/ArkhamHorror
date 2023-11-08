@@ -31,7 +31,7 @@ instance HasAbilities Umordhoth where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1 $ ForcedAbility $ TurnEnds Timing.After Anyone
-      , withCriteria (mkAbility attrs 2 $ ActionAbility Nothing $ ActionCost 1)
+      , withCriteria (mkAbility attrs 2 $ ActionAbility [] $ ActionCost 1)
           $ OnSameLocation
           <> AssetExists (AssetControlledBy You <> assetIs Cards.litaChantler)
       ]

@@ -2754,7 +2754,7 @@ getOverHere :: CardDef
 getOverHere =
   (event "60114" "\"Get over here!\"" 2 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = [Action.Engage, #fight]
+    , cdActions = [#engage, #fight]
     , cdSkills = [#willpower, #combat]
     , cdCriteria =
         Just
@@ -2847,7 +2847,7 @@ getOverHere2 :: CardDef
 getOverHere2 =
   (event "60123" "\"Get over here!\"" 2 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = [Action.Engage, #fight]
+    , cdActions = [#engage, #fight]
     , cdSkills = [#willpower, #willpower, #combat]
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria =

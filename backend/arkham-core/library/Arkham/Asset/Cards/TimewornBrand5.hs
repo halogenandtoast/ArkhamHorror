@@ -27,12 +27,12 @@ instance HasAbilities TimewornBrand5 where
           a
           1
           (ControlsThis <> AssetExists (AssetWithId (toId a) <> AssetReady))
-        $ ActionAbility Nothing (ActionCost 1)
+        $ ActionAbility [] (ActionCost 1)
     , withTooltip
         "{action} Exhaust Timeworn Brand: _Fight_. Add your {willpower} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)"
         $ limitedAbility (MaxPer Cards.timewornBrand5 PerGame 1)
         $ restrictedAbility a 2 ControlsThis
-        $ ActionAbility (Just Action.Fight) (ActionCost 1 <> exhaust a)
+        $ ActionAbility ([Action.Fight]) (ActionCost 1 <> exhaust a)
     ]
 
 instance RunMessage TimewornBrand5 where

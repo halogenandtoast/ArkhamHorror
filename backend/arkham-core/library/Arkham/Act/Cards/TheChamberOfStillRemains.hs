@@ -28,7 +28,7 @@ instance HasAbilities TheChamberOfStillRemains where
     withBaseAbilities
       a
       [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-          $ ActionAbility (Just Action.Explore)
+          $ ActionAbility [Action.Explore]
           $ ActionCost 1
       ]
 

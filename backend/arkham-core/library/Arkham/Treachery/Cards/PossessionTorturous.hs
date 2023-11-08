@@ -22,7 +22,7 @@ possessionTorturous = treachery PossessionTorturous Cards.possessionTorturous
 instance HasAbilities PossessionTorturous where
   getAbilities (PossessionTorturous a) =
     [ restrictedAbility a 1 InYourHand
-        $ ActionAbility Nothing (ActionCost 1 <> ResourceCost 5)
+        $ ActionAbility [] (ActionCost 1 <> ResourceCost 5)
     ]
 
 instance RunMessage PossessionTorturous where

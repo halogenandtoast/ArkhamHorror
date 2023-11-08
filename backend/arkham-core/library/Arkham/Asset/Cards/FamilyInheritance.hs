@@ -25,7 +25,7 @@ familyInheritance =
 instance HasAbilities FamilyInheritance where
   getAbilities (FamilyInheritance a) =
     [ restrictedAbility a 1 (ControlsThis <> ResourcesOnThis (AtLeast $ Static 1))
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     , restrictedAbility a 2 ControlsThis $ ForcedAbility $ TurnBegins Timing.When You
     ]

@@ -26,7 +26,7 @@ instance HasAbilities Montmartre209 where
       attrs
       [ limitedAbility (GroupLimit PerRound 1)
         $ restrictedAbility attrs 1 Here
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
       | locationRevealed attrs
       ]

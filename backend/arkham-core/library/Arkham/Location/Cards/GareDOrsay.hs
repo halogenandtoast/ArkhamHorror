@@ -26,7 +26,7 @@ instance HasAbilities GareDOrsay where
   getAbilities (GareDOrsay attrs) =
     withBaseAbilities
       attrs
-      [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
+      [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage GareDOrsay where
   runMessage msg l@(GareDOrsay attrs) = case msg of

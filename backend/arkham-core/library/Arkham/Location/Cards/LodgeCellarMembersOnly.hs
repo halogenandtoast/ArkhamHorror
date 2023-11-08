@@ -40,7 +40,7 @@ instance HasAbilities LodgeCellarMembersOnly where
           )
           1
           (OnLocation $ LocationWithTitle "Lodge Gates")
-          ( ActionAbility Nothing
+          ( ActionAbility []
               $ ActionCost 1
               <> GroupClueCost (PerPlayer 1) (LocationWithTitle "Lodge Gates")
           )

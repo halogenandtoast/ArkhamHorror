@@ -46,41 +46,42 @@ marksmanship1 = event Marksmanship1 Cards.marksmanship1
 
 instance HasModifiersFor Marksmanship1 where
   getModifiersFor (AbilityTarget iid ability) (Marksmanship1 a)
-    | eventOwner a == iid = case abilityAction ability of
-        Just Action.Fight -> do
-          traits <- sourceTraits (abilitySource ability)
-          if any (`elem` traits) [Firearm, Ranged]
-            then do
-              mlid <- selectOne $ locationWithInvestigator iid
-              case mlid of
-                Nothing -> pure []
-                Just lid -> do
-                  isPlayable <-
-                    getIsPlayable
-                      iid
-                      (InvestigatorSource iid)
-                      UnpaidCost
-                      [mkWindow Timing.When DoNotCheckWindow]
-                      (toCard a)
-                  pure
-                    $ toModifiers
-                      a
-                      [ CanModify
-                        $ EnemyFightActionCriteria
-                        $ CriteriaOverride
-                        $ EnemyCriteria
-                        $ ThisEnemy
-                        $ EnemyWithoutModifier CannotBeAttacked
-                        <> EnemyAt
-                          ( LocationMatchAny
-                              [ LocationWithId lid
-                              , ConnectedTo $ LocationWithId lid
-                              ]
-                          )
-                      | isPlayable
-                      ]
-            else pure []
-        _ -> pure []
+    | eventOwner a == iid =
+        if Action.Fight `elem` abilityActions ability
+          then do
+            traits <- sourceTraits (abilitySource ability)
+            if any (`elem` traits) [Firearm, Ranged]
+              then do
+                mlid <- selectOne $ locationWithInvestigator iid
+                case mlid of
+                  Nothing -> pure []
+                  Just lid -> do
+                    isPlayable <-
+                      getIsPlayable
+                        iid
+                        (InvestigatorSource iid)
+                        UnpaidCost
+                        [mkWindow Timing.When DoNotCheckWindow]
+                        (toCard a)
+                    pure
+                      $ toModifiers
+                        a
+                        [ CanModify
+                          $ EnemyFightActionCriteria
+                          $ CriteriaOverride
+                          $ EnemyCriteria
+                          $ ThisEnemy
+                          $ EnemyWithoutModifier CannotBeAttacked
+                          <> EnemyAt
+                            ( LocationMatchAny
+                                [ LocationWithId lid
+                                , ConnectedTo $ LocationWithId lid
+                                ]
+                            )
+                        | isPlayable
+                        ]
+              else pure []
+          else pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage Marksmanship1 where

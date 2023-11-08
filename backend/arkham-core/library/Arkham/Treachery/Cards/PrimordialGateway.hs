@@ -30,7 +30,7 @@ instance HasModifiersFor PrimordialGateway where
 
 instance HasAbilities PrimordialGateway where
   getAbilities (PrimordialGateway x) =
-    [restrictedAbility x 1 OnSameLocation $ ActionAbility Nothing $ ActionCost 1]
+    [restrictedAbility x 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage PrimordialGateway where
   runMessage msg t@(PrimordialGateway attrs) = case msg of

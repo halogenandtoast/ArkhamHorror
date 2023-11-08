@@ -42,7 +42,7 @@ instance HasAbilities TheCosmosBeckons where
   getAbilities (TheCosmosBeckons attrs) =
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
             <> ClueCostX
         ]

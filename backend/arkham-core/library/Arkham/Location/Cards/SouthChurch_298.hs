@@ -24,7 +24,7 @@ instance HasAbilities SouthChurch_298 where
     let breachCount = countLocationBreaches attrs
      in withRevealedAbilities attrs
           $ [ restrictedAbility attrs 1 (Here <> mwhen (breachCount > 0) EncounterDeckIsNotEmpty)
-                $ ActionAbility Nothing
+                $ ActionAbility []
                 $ ActionCost 1
             , withTooltip "You hide through the night." $ locationResignAction attrs
             ]

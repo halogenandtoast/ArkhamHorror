@@ -28,7 +28,7 @@ instance HasAbilities SpringfieldM19034 where
         ( ControlsThis
             <> EnemyCriteria (EnemyExists $ CanFightEnemy (toAbilitySource a 1) <> NotEnemy EnemyEngagedWithYou)
         )
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
         <> UseCost (AssetWithId $ toId a) Ammo 1
     ]

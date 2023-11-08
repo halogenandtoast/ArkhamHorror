@@ -15,10 +15,10 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 evadeAction :: Cost -> AbilityType
-evadeAction cost = ActionAbility (Just Evade) (ActionCost 1 <> cost)
+evadeAction cost = ActionAbility [Evade] (ActionCost 1 <> cost)
 
 fightAction :: Cost -> AbilityType
-fightAction cost = ActionAbility (Just Fight) (ActionCost 1 <> cost)
+fightAction cost = ActionAbility [Fight] (ActionCost 1 <> cost)
 
 fightAction_ :: AbilityType
 fightAction_ = fightAction mempty
@@ -27,7 +27,7 @@ instance IsLabel "fight" AbilityType where
   fromLabel = fightAction_
 
 parleyAction :: Cost -> AbilityType
-parleyAction cost = ActionAbility (Just Parley) (ActionCost 1 <> cost)
+parleyAction cost = ActionAbility [Parley] (ActionCost 1 <> cost)
 
 parleyAction_ :: AbilityType
 parleyAction_ = parleyAction mempty
@@ -36,34 +36,34 @@ instance IsLabel "parley" AbilityType where
   fromLabel = parleyAction_
 
 investigateAction :: Cost -> AbilityType
-investigateAction cost = ActionAbility (Just Investigate) (ActionCost 1 <> cost)
+investigateAction cost = ActionAbility [Investigate] (ActionCost 1 <> cost)
 
 investigateAction_ :: AbilityType
 investigateAction_ = investigateAction mempty
 
 actionAbility :: AbilityType
-actionAbility = ActionAbility Nothing (ActionCost 1)
+actionAbility = ActionAbility [] (ActionCost 1)
 
 instance IsLabel "action" AbilityType where
   fromLabel = actionAbility
 
 actionAbilityWithCost :: Cost -> AbilityType
-actionAbilityWithCost cost = ActionAbility Nothing (ActionCost 1 <> cost)
+actionAbilityWithCost cost = ActionAbility [] (ActionCost 1 <> cost)
 
 freeReaction :: WindowMatcher -> AbilityType
 freeReaction window = ReactionAbility window Free
 
 pattern FastAbility :: Cost -> AbilityType
-pattern FastAbility cost <- FastAbility' cost Nothing
+pattern FastAbility cost <- FastAbility' cost []
   where
-    FastAbility cost = FastAbility' cost Nothing
+    FastAbility cost = FastAbility' cost []
 
 data AbilityType
-  = FastAbility' {cost :: Cost, action :: Maybe Action}
+  = FastAbility' {cost :: Cost, actions :: [Action]}
   | ReactionAbility {window :: WindowMatcher, cost :: Cost}
-  | ActionAbility {action :: Maybe Action, cost :: Cost}
-  | ActionAbilityWithSkill {action :: Maybe Action, skillType :: SkillType, cost :: Cost}
-  | ActionAbilityWithBefore {action :: Maybe Action, actionBefore :: Maybe Action, cost :: Cost} -- Action is first type, before is second
+  | ActionAbility {actions :: [Action], cost :: Cost}
+  | ActionAbilityWithSkill {actions :: [Action], skillType :: SkillType, cost :: Cost}
+  | ActionAbilityWithBefore {actions :: [Action], actionBefore :: Action, cost :: Cost} -- Action is first type, before is second
   | SilentForcedAbility {window :: WindowMatcher}
   | ForcedAbility {window :: WindowMatcher}
   | ForcedAbilityWithCost {window :: WindowMatcher, cost :: Cost}

@@ -29,7 +29,7 @@ instance HasAbilities WhatMustBeDone where
   getAbilities (WhatMustBeDone attrs) =
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
             <> ClueCostX
         , restrictedAbility

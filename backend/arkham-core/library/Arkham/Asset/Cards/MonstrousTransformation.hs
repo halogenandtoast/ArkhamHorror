@@ -39,7 +39,7 @@ instance HasAbilities MonstrousTransformation where
   getAbilities (MonstrousTransformation a) =
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbility
-          (Just Action.Fight)
+          ([Action.Fight])
           (Costs [ExhaustCost (toTarget a), ActionCost 1])
     ]
 

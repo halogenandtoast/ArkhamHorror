@@ -24,7 +24,7 @@ instance HasAbilities TheCouncilsCoffer2 where
         $ restrictedAbility a 0 (if useCount (assetUses a) == 0 then NoRestriction else Never)
         $ SilentForcedAbility AnyWindow
     , restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 2
     ]
 

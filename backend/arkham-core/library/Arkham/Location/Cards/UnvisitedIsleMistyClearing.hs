@@ -41,7 +41,7 @@ instance HasAbilities UnvisitedIsleMistyClearing where
   getAbilities (UnvisitedIsleMistyClearing attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility (Just Action.Circle) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted "You must either place 1 doom on this location, or take 1 damage and 1 horror" attrs 2
       ]
 

@@ -24,7 +24,7 @@ constanceDumaine = asset ConstanceDumaine Cards.constanceDumaine
 instance HasAbilities ConstanceDumaine where
   getAbilities (ConstanceDumaine a) =
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost
           1
     , mkAbility a 2

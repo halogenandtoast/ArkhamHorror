@@ -35,7 +35,7 @@ instance HasAbilities Montmartre210 where
                     <> AssetOneOf [AssetWithUses Ammo, AssetWithUses Supply]
                 )
           )
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> ResourceCost 1
       | locationRevealed attrs

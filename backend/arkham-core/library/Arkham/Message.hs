@@ -645,7 +645,7 @@ data Message
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Source Int
   | LoseAllResources InvestigatorId
-  | SpendActions InvestigatorId Source (Maybe Action) Int
+  | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
     Move Movement
   | -- | When bool is True, This triggers the windows for PerformAction, as
@@ -844,7 +844,7 @@ data Message
   | GainSurge Source Target
   | CancelSurge Source
   | Surge InvestigatorId Source
-  | TakeAction InvestigatorId (Maybe Action) Cost
+  | TakeActions InvestigatorId [Action] Cost
   | TakeControlOfAsset InvestigatorId AssetId
   | ReplaceInvestigatorAsset InvestigatorId Card
   | ReplacedInvestigatorAsset InvestigatorId AssetId
@@ -852,8 +852,8 @@ data Message
   | TakeResources InvestigatorId Int Source Bool
   | DrawStartingHand InvestigatorId
   | TakeStartingResources InvestigatorId
-  | TakenAction InvestigatorId Action
-  | PerformedAction InvestigatorId Action
+  | TakenActions InvestigatorId [Action]
+  | PerformedActions InvestigatorId [Action]
   | ChosenEvadeEnemy Source EnemyId
   | TriggerSkillTest InvestigatorId
   | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType

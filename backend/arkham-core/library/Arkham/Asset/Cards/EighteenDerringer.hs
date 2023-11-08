@@ -22,7 +22,7 @@ eighteenDerringer = asset EighteenDerringer Cards.eighteenDerringer
 instance HasAbilities EighteenDerringer where
   getAbilities (EighteenDerringer attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Ammo 1]
     ]
 

@@ -23,7 +23,7 @@ hangmansHillWhereItAllEnds = location HangmansHillWhereItAllEnds Cards.hangmansH
 
 instance HasAbilities HangmansHillWhereItAllEnds where
   getAbilities (HangmansHillWhereItAllEnds attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage HangmansHillWhereItAllEnds where
   runMessage msg l@(HangmansHillWhereItAllEnds attrs) = case msg of

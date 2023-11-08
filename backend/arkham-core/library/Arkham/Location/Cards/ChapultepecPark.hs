@@ -41,7 +41,7 @@ instance HasAbilities ChapultepecPark where
                 (SkillTestWithSkillType SkillWillpower)
                 (FailureResult AnyValue)
           , restrictedAbility attrs 2 Here
-              $ ActionAbility (Just Action.Explore)
+              $ ActionAbility [Action.Explore]
               $ ActionCost 1
           ]
         else []

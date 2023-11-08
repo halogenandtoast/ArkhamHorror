@@ -23,7 +23,7 @@ mauserC962 = asset MauserC962 Cards.mauserC962
 instance HasAbilities MauserC962 where
   getAbilities (MauserC962 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility (Just Action.Fight)
+        $ ActionAbility ([Action.Fight])
         $ ActionCost 1
         <> ExhaustCost (toTarget a)
         <> UseCost (AssetWithId $ toId a) Ammo 1

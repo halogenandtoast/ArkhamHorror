@@ -25,7 +25,7 @@ instance HasAbilities Infirmary where
     withBaseAbilities
       attrs
       [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
+        $ restrictedAbility attrs 1 Here (ActionAbility [] $ ActionCost 1)
       | locationRevealed attrs
       ]
 

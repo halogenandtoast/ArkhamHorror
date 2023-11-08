@@ -24,7 +24,7 @@ instance HasAbilities IntoTheBeyond where
   getAbilities (IntoTheBeyond x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1
+      [ mkAbility x 1 $ ActionAbility [] $ ActionCost 1
       , mkAbility x 2
           $ Objective
           $ ForcedAbility

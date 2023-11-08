@@ -30,7 +30,7 @@ instance HasAbilities TrainTracks where
     withBaseAbilities attrs
       $ [ limitedAbility (PlayerLimit PerGame 1)
             $ restrictedAbility attrs 1 Here
-            $ ActionAbility Nothing
+            $ ActionAbility []
             $ ActionCost 1
             <> ClueCost (Static 1)
         ]

@@ -32,7 +32,7 @@ instance HasAbilities RiverCanyon where
             attrs
             1
             (Here <> InvestigatorExists (HealableInvestigator (toSource attrs) DamageType You))
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

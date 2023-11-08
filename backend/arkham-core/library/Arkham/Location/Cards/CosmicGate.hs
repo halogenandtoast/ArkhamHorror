@@ -44,7 +44,7 @@ instance HasAbilities CosmicGate where
               <> LocationExists (LocationWithTrait Trait.Void <> NotLocation (LocationWithId $ toId attrs))
               <> InvestigatorExists (InvestigatorAt $ LocationWithId (toId attrs))
           )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
           <> ScenarioResourceCost 1
       ]

@@ -33,7 +33,7 @@ instance HasModifiersFor Entombed where
 instance HasAbilities Entombed where
   getAbilities (Entombed (a `With` _)) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
     ]
 

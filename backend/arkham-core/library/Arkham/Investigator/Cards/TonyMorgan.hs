@@ -48,7 +48,7 @@ instance HasAbilities TonyMorgan where
         ( Self
             <> exists (EnemyWithBounty <> oneOf [CanFightEnemy (toSource attrs), CanEngageEnemy (toSource attrs)])
         )
-      $ ActionAbility Nothing mempty
+      $ ActionAbility [] mempty
     | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
     ]
 
@@ -65,7 +65,7 @@ instance RunMessage TonyMorgan where
       -- we should move these to a helper function to reuse between the InvestigatorRunner and here
       actions <- withModifiers attrs (toModifiers attrs [ActionCostModifier (-1), BountiesOnly]) $ do
         map (over biplate (`decreaseActionCost` 1))
-          . filter ((`elem` [Just #fight, Just #engage]) . abilityAction)
+          . filter (any (`elem` [#fight, #engage]) . abilityActions)
           . nub
           <$> concatMapM (getActions iid) windows'
       playableCards <- withModifiers attrs (toModifiers attrs [ActionCostModifier (-1), BountiesOnly]) $ do

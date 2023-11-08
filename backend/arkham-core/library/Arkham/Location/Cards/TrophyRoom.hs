@@ -33,7 +33,7 @@ instance HasAbilities TrophyRoom where
                       [InvestigatorCanGainResources, investigatorWithSpendableResources 2]
                 )
           )
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       ]
 

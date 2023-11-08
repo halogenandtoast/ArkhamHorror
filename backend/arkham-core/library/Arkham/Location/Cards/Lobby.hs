@@ -28,7 +28,7 @@ instance HasAbilities Lobby where
             $ RevealLocation Timing.When Anyone
             $ LocationWithId
             $ toId attrs
-        , restrictedAbility attrs 2 Here $ ActionAbility Nothing $ ActionCost 2
+        , restrictedAbility attrs 2 Here $ ActionAbility [] $ ActionCost 2
         ]
 
 instance RunMessage Lobby where

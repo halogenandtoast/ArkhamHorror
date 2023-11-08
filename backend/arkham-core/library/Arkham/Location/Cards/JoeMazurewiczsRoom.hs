@@ -27,7 +27,7 @@ instance HasAbilities JoeMazurewiczsRoom where
       a
       [ limitedAbility (GroupLimit PerGame 1)
           $ restrictedAbility a 1 Here
-          $ ActionAbility Nothing
+          $ ActionAbility []
           $ ActionCost 1
       , haunted
           "You must either take 1 horror, or choose and discard an asset you control."

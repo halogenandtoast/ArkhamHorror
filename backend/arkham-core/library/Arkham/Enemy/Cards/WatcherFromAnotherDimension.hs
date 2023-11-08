@@ -38,12 +38,12 @@ instance HasAbilities WatcherFromAnotherDimension where
               <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
               <> CanAttack
           )
-          $ ActionAbility (Just #fight) (ActionCost 1)
+          $ ActionAbility [#fight] (ActionCost 1)
       , restrictedAbility
           a
           AbilityEvade
           (exists (You <> InvestigatorWithId iid))
-          $ ActionAbility (Just #evade) (ActionCost 1)
+          $ ActionAbility [#evade] (ActionCost 1)
       , mkAbility a 1 $ ForcedAbility $ Matcher.DeckHasNoCards #when (You <> InvestigatorWithId iid)
       ]
     _ -> getAbilities a

@@ -26,7 +26,7 @@ maskedCarnevaleGoer_20 =
 instance HasAbilities MaskedCarnevaleGoer_20 where
   getAbilities (MaskedCarnevaleGoer_20 x) =
     [ restrictedAbility x 1 OnSameLocation
-        $ ActionAbility Nothing
+        $ ActionAbility []
         $ ActionCost 1
         <> ClueCost (Static 1)
     ]

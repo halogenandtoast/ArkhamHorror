@@ -1252,6 +1252,9 @@ passesCriteria iid mcard source windows' = \case
             -- todo we should make a cleaner method for this
             cardId <- field InDiscardAssetCardId aid
             pure $ cardId `elem` discard
+      InvestigatorSource _ -> case mcard of
+        Just (card, _) -> pure $ toCardId card `elem` discard
+        _ -> error "No card available to check"
       _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InThreatAreaOf who -> do
     case source of

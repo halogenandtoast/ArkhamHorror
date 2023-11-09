@@ -554,6 +554,13 @@ daredevil2 =
     , cdLevel = 2
     }
 
+expeditiousRetreat1 :: CardDef
+expeditiousRetreat1 =
+  (skill "06246" "Expeditious Retreat" [#agility] Survivor)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
 promiseOfPower :: CardDef
 promiseOfPower =
   (skill "07032" "Promise of Power" [#wild, #wild, #wild, #wild] Mystic)

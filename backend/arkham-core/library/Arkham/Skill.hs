@@ -93,6 +93,7 @@ allSkills =
     , SomeSkillCard sharpVision1
     , SomeSkillCard leadership2
     , SomeSkillCard daredevil2
+    , SomeSkillCard expeditiousRetreat1
     , SomeSkillCard promiseOfPower
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied

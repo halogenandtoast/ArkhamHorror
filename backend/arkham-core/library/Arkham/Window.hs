@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Ability.Types
 import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
+import Arkham.Asset.Uses
 import Arkham.Attack
 import Arkham.Card (Card)
 import Arkham.ChaosToken (ChaosToken)
@@ -187,6 +188,7 @@ data WindowType
   | RevealChaosTokenAssetAbilityEffect InvestigatorId [ChaosToken] AssetId
   | RevealChaosTokenWithNegativeModifier InvestigatorId ChaosToken
   | WouldPerformRevelationSkillTest InvestigatorId
+  | SpentUses InvestigatorId AssetId UseType Int
   | SkillTest SkillTestType
   | SkillTestEnded SkillTest
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int

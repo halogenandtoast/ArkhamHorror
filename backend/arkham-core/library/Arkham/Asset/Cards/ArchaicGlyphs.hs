@@ -38,7 +38,7 @@ instance HasAbilities ArchaicGlyphs where
         then Never
         else
           exists
-            (AssetWithId (toId attrs) <> AssetWithUseCount Secret 3)
+            (AssetWithId (toId attrs) <> AssetWithUseCount Secret (atLeast 3))
 
 instance RunMessage ArchaicGlyphs where
   runMessage msg a@(ArchaicGlyphs (attrs `With` meta)) = case msg of

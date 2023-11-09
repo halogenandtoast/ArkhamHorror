@@ -30,7 +30,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 
 defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
@@ -164,6 +164,8 @@ instance RunMessage AssetAttrs where
             for_ assetController \iid ->
               push $ ReturnToHand iid $ toTarget a
           NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
+        for_ assetController $ \controller ->
+          pushM $ checkWindows [mkAfter $ Window.SpentUses controller (toId a) useType' n]
         pure $ a & usesL .~ Uses useType' remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of

@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosBagStepState
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 
@@ -25,20 +24,24 @@ grotesqueStatue2 =
 instance HasAbilities GrotesqueStatue2 where
   getAbilities (GrotesqueStatue2 x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility (WouldRevealChaosToken Timing.When You)
-        $ UseCost (AssetWithId $ toId x) Charge 1
+        $ ReactionAbility (WouldRevealChaosToken #when You)
+        $ assetUseCost x Charge 1
     ]
+
+toDrawSource :: [Window] -> Source
+toDrawSource [] = error "missing draw source"
+toDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
+toDrawSource (_ : rest) = toDrawSource rest
 
 instance RunMessage GrotesqueStatue2 where
   runMessage msg a@(GrotesqueStatue2 attrs) = case msg of
-    UseCardAbility iid source 1 [Window Timing.When (Window.WouldRevealChaosToken drawSource _) _] _
-      | isSource attrs source -> do
-          ignoreWindow <-
-            checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect source)]
-          pushAll
-            [ ReplaceCurrentDraw drawSource iid
-                $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] []
-            , ignoreWindow
-            ]
-          pure a
+    UseCardAbility iid (isSource attrs -> True) 1 (toDrawSource -> drawSource) _ -> do
+      ignoreWindow <-
+        checkWindows [mkWindow #after (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
+      pushAll
+        [ ReplaceCurrentDraw drawSource iid
+            $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] []
+        , ignoreWindow
+        ]
+      pure a
     _ -> GrotesqueStatue2 <$> runMessage msg attrs

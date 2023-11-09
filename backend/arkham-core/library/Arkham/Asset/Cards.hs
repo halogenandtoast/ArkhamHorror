@@ -215,6 +215,7 @@ allPlayerAssetCards =
       , empowerSelfAcuity2
       , empowerSelfAlacrity2
       , empowerSelfStamina2
+      , emptyVessel4
       , enchantedBlade
       , enchantedBladeGuardian3
       , enchantedBladeMystic3
@@ -548,6 +549,7 @@ allPlayerAssetCards =
       , wendysAmulet
       , whittonGreene
       , whittonGreene2
+      , wishEater
       , wither
       , wither4
       , yaotl1
@@ -3863,6 +3865,29 @@ twilaKatherinePrice3 =
     , cdSlots = [#ally]
     , cdLevel = 3
     , cdUnique = True
+    }
+
+emptyVessel4 :: CardDef
+emptyVessel4 =
+  (asset "06276" ("Empty Vessel" <:> "Abandoned by the Gods") 1 Guardian)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Item, Relic, Blessed]
+    , cdSlots = [#accessory]
+    , cdLevel = 4
+    , cdUnique = True
+    , cdUses = uses Charge 0
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdBondedWith = [(1, "06277")]
+    }
+
+wishEater :: CardDef
+wishEater =
+  (asset "06277" ("Wish Eater" <:> "Jewel of the Gods") 0 Guardian)
+    { cdCardTraits = setFromList [Item, Relic, Blessed]
+    , cdSlots = [#accessory]
+    , cdUnique = True
+    , cdKeywords = singleton (Keyword.Bonded 1 "06277")
+    , cdCost = Nothing
     }
 
 oldBookOfLore3 :: CardDef

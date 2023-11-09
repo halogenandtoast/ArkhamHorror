@@ -452,6 +452,7 @@ library
       Arkham.Asset.Cards.EmpowerSelfAcuity2
       Arkham.Asset.Cards.EmpowerSelfAlacrity2
       Arkham.Asset.Cards.EmpowerSelfStamina2
+      Arkham.Asset.Cards.EmptyVessel4
       Arkham.Asset.Cards.EnchantedBlade
       Arkham.Asset.Cards.EnchantedBladeGuardian3
       Arkham.Asset.Cards.EnchantedBladeMystic3
@@ -802,6 +803,7 @@ library
       Arkham.Asset.Cards.WendysAmulet
       Arkham.Asset.Cards.WhittonGreene
       Arkham.Asset.Cards.WhittonGreene2
+      Arkham.Asset.Cards.WishEater
       Arkham.Asset.Cards.Wither
       Arkham.Asset.Cards.Wither4
       Arkham.Asset.Cards.Yaotl1
@@ -2610,6 +2612,7 @@ test-suite spec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
       Arkham.Asset.Cards.FortyOneDerringerSpec
       Arkham.Asset.Cards.GateBoxSpec
+      Arkham.Asset.Cards.GrotesqueStatue2Spec
       Arkham.Asset.Cards.GrotesqueStatue4Spec
       Arkham.Asset.Cards.GuardDogSpec
       Arkham.Asset.Cards.HardKnocks2Spec

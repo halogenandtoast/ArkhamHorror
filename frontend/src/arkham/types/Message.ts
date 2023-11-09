@@ -23,7 +23,7 @@ export enum MessageType {
   GRID_LABEL = 'GridLabel',
   TAROT_LABEL = 'TarotLabel',
   DONE = 'Done',
-  TOKEN_GROUP_CHOICE = 'TokenGroupChoice',
+  TOKEN_GROUP_CHOICE = 'ChaosTokenGroupChoice',
   EFFECT_ACTION_BUTTON = 'EffectActionButton'
 }
 
@@ -236,7 +236,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | TokenGroupChoice | EffectActionButton;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -281,18 +281,18 @@ export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
     investigatorId: JsonDecoder.string,
   }, 'EndTurnButton')
 
-export interface TokenGroupChoice {
+export interface ChaosTokenGroupChoice {
   tag: MessageType.TOKEN_GROUP_CHOICE
   investigatorId: string
   step: ChaosBagStep
 }
 
-export const tokenGroupChoiceDecoder = JsonDecoder.object<TokenGroupChoice>(
+export const chaosTokenGroupChoiceDecoder = JsonDecoder.object<ChaosTokenGroupChoice>(
   {
     tag: JsonDecoder.isExactly(MessageType.TOKEN_GROUP_CHOICE),
     investigatorId: JsonDecoder.string,
     step: chaosBagStepDecoder
-  }, 'TokenGroupChoice')
+  }, 'ChaosTokenGroupChoice')
 
 export interface EffectActionButton {
   tag: MessageType.EFFECT_ACTION_BUTTON
@@ -327,7 +327,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     gridLabelDecoder,
     tarotLabelDecoder,
     doneDecoder,
-    tokenGroupChoiceDecoder,
+    chaosTokenGroupChoiceDecoder,
     effectActionButtonDecoder,
     JsonDecoder.succeed.chain((f) => {
       return JsonDecoder.fail(f)

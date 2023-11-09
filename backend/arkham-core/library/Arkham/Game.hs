@@ -1823,11 +1823,12 @@ getAssetsMatching matcher = do
       filterM
         (fmap ((== Just uType) . useType) . field AssetStartingUses . toId)
         as
-    AssetWithUseCount uType n ->
+    AssetWithUseCount uType valueMatcher ->
       filterM
-        ( fmap (and . sequence [(== Just uType) . useType, (== n) . useCount])
-            . field AssetUses
-            . toId
+        ( ( andM
+              . sequence [pure . (== Just uType) . useType, (`gameValueMatches` valueMatcher) . useCount]
+          )
+            <=< (field AssetUses . toId)
         )
         as
     AssetWithFewestClues assetMatcher -> do

@@ -15,6 +15,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.ChaosToken
+import Arkham.ChaosToken qualified as ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Cost.Status
 import Arkham.Criteria.Override
@@ -166,7 +167,7 @@ data AssetMatcher
   | AssetNotAtUsesX
   | AssetWithUseType UseType
   | AssetWithUses UseType
-  | AssetWithUseCount UseType Int
+  | AssetWithUseCount UseType ValueMatcher
   | AssetWithDoom ValueMatcher
   | AssetWithClues ValueMatcher
   | AssetWithTokens ValueMatcher Token
@@ -927,6 +928,18 @@ data ChaosTokenMatcher
   | IncludeSealed ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "skull" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs Skull
+
+instance IsLabel "cultist" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs ChaosToken.Cultist
+
+instance IsLabel "tablet" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs Tablet
+
+instance IsLabel "elderthing" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs ElderThing
 
 instance IsLabel "eldersign" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs ElderSign

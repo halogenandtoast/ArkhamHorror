@@ -1699,6 +1699,14 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   case mtchr of
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.SpentUses timing whoMatcher uType assetMatcher valueMatcher -> guardTiming timing $ \case
+      Window.SpentUses who assetId uType' n | uType == uType' -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , assetId <=~> assetMatcher
+          , gameValueMatches n valueMatcher
+          ]
+      _ -> noMatch
     Matcher.WouldSearchDeck timing whoMatcher deckMatcher -> guardTiming timing $ \case
       Window.WouldSearchDeck who deck -> do
         andM

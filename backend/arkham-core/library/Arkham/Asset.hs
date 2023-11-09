@@ -596,7 +596,10 @@ allAssets =
     , SomeAssetCard empowerSelfAcuity2
     , SomeAssetCard twilaKatherinePrice3
     , -- Where the Gods Dwell
-      --- seeker [sfk]
+      --- guardian [sfk]
+      SomeAssetCard emptyVessel4
+    , SomeAssetCard wishEater
+    , --- seeker [sfk]
       SomeAssetCard oldBookOfLore3
     , -- The Innsmouth Conspiracy
       --- signature [tic]

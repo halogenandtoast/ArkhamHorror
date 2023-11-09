@@ -65,7 +65,7 @@ const revealedTokenAction = computed(() => {
   }
 
   return choices.value.findIndex((c) => {
-    if (c.tag === "TokenGroupChoice") {
+    if (c.tag === "ChaosTokenGroupChoice") {
       if (c.step.tag === 'Draw') {
         return false
       }

@@ -12,7 +12,7 @@ const props = defineProps<{
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
 const isAction = (action: string) => {
-  if (props.ability.ability.displayAsAction) {
+  if (props.ability?.ability?.displayAsAction ?? false) {
     return false
   }
 
@@ -31,8 +31,8 @@ const isAction = (action: string) => {
     if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
       return false
     }
-    const maction = ability.value.type.action
-    return maction === action
+    const actions = ability.value.type.actions
+    return actions.indexOf(action) !== -1
   }
 
   return false
@@ -137,7 +137,7 @@ const isHaunted = computed(() => ability.value && ability.value.type.tag === "Ha
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
 const abilityLabel = computed(() => {
-  if (props.ability.ability.displayAsAction) {
+  if (props.ability?.ability?.displayAsAction ?? false) {
     return ""
   }
 
@@ -166,9 +166,9 @@ const abilityLabel = computed(() => {
   }
 
   if (ability.value && (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill")) {
-    const { action } = ability.value.type
-    if (action) {
-      return action
+    const { actions } = ability.value.type
+    if (actions.length === 1) {
+      return actions[0]
     }
   }
 

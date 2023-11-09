@@ -35,7 +35,7 @@ getSpellAsset (_ : ws) = getSpellAsset ws
 
 instance RunMessage TwilaKatherinePrice3 where
   runMessage msg a@(TwilaKatherinePrice3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getSpellAsset -> aid) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getSpellAsset -> aid) _ -> do
       push $ AddUses aid Charge 1
       pure a
     _ -> TwilaKatherinePrice3 <$> runMessage msg attrs

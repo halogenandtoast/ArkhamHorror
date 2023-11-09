@@ -535,6 +535,7 @@ allPlayerAssetCards =
       , trueGrit
       , tryAndTryAgain1
       , tryAndTryAgain3
+      , twilaKatherinePrice3
       , twilightBlade
       , untilTheEndOfTime
       , valentinoRivas
@@ -3852,6 +3853,16 @@ empowerSelfAcuity2 =
     , cdSlots = [#arcane]
     , cdLevel = 2
     , cdKeywords = singleton Keyword.Myriad
+    }
+
+twilaKatherinePrice3 :: CardDef
+twilaKatherinePrice3 =
+  (asset "06244" ("Twila Katherine Price" <:> "Lost in a Dream") 3 Mystic)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Ally, Artist, Dreamer]
+    , cdSlots = [#ally]
+    , cdLevel = 3
+    , cdUnique = True
     }
 
 oldBookOfLore3 :: CardDef

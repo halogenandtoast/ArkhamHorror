@@ -662,6 +662,7 @@ type ToWhere = Where
 
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
+  | SpentUses Timing Who UseType AssetMatcher ValueMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
   | AddedToVictory Timing CardMatcher
   | PerformAction Timing Who ActionMatcher

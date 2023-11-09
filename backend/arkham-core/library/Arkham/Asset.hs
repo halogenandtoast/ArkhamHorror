@@ -594,6 +594,7 @@ allAssets =
       SomeAssetCard empowerSelfStamina2
     , SomeAssetCard empowerSelfAlacrity2
     , SomeAssetCard empowerSelfAcuity2
+    , SomeAssetCard twilaKatherinePrice3
     , -- Where the Gods Dwell
       --- seeker [sfk]
       SomeAssetCard oldBookOfLore3

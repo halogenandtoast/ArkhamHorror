@@ -35,11 +35,14 @@ export const tarotSourceDecoder: JsonDecoder.Decoder<TarotSource> = JsonDecoder.
   contents: tarotCardDecoder
 }, 'TarotSource')
 
-export const otherSourceDecoder = JsonDecoder.object<OtherSource>(
+export const otherSourceDecoder: JsonDecoder.Decoder<OtherSource> = JsonDecoder.object<OtherSource>(
   {
     sourceTag: JsonDecoder.constant("OtherSource"),
     tag: JsonDecoder.string,
-    contents: JsonDecoder.optional(JsonDecoder.string),
+    contents: JsonDecoder.lazy<string>(() => JsonDecoder.oneOf(
+      [ JsonDecoder.tuple([sourceDecoder, JsonDecoder.number], 'proxySource').map(([source, _]) => source.contents)
+      , JsonDecoder.optional(JsonDecoder.string)
+      ], 'OtherSource.contents'))
   },
   'OtherSource'
 )

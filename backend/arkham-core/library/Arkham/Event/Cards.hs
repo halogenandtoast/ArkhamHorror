@@ -40,6 +40,7 @@ allPlayerEventCards =
       toCardCodePairs
       [ aChanceEncounter
       , aChanceEncounter2
+      , aGlimmerOfHope
       , aTestOfWill
       , aTestOfWill1
       , aTestOfWill2
@@ -2508,6 +2509,16 @@ heroicRescue2 =
             AnyEnemyAttack
             NonEliteEnemy
     , cdLevel = 2
+    }
+
+aGlimmerOfHope :: CardDef
+aGlimmerOfHope =
+  (event "06245" "A Glimmer of Hope" 1 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Blessed, Fortune]
+    , cdKeywords = singleton Keyword.Myriad
+    , cdCriteria = Just Criteria.InYourDiscard
+    , cdPlayableFromDiscard = True
     }
 
 dodge2 :: CardDef

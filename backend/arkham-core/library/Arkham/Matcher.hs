@@ -227,6 +227,9 @@ cardIs = CardWithCardCode . toCardCode
 inHandOf :: InvestigatorId -> ExtendedCardMatcher
 inHandOf = InHandOf . InvestigatorWithId
 
+inDiscardOf :: InvestigatorId -> ExtendedCardMatcher
+inDiscardOf = InDiscardOf . InvestigatorWithId
+
 basic :: CardMatcher -> ExtendedCardMatcher
 basic = BasicCardMatch
 

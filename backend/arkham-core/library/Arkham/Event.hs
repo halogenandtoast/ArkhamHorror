@@ -389,8 +389,10 @@ allEvents =
     , --- neutral [dsm]
       SomeEventCard lucidDreaming2
     , -- Point of No Return
-      --- guardian [dsm]
+      --- guardian [pnr]
       SomeEventCard heroicRescue2
+    , --- survivor [pnr]
+      SomeEventCard aGlimmerOfHope
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard dodge2

@@ -40,7 +40,9 @@ export const otherSourceDecoder: JsonDecoder.Decoder<OtherSource> = JsonDecoder.
     sourceTag: JsonDecoder.constant("OtherSource"),
     tag: JsonDecoder.string,
     contents: JsonDecoder.lazy<string>(() => JsonDecoder.oneOf(
-      [ JsonDecoder.tuple([sourceDecoder, JsonDecoder.number], 'proxySource').map(([source, _]) => source.contents)
+      [ JsonDecoder.
+          tuple([sourceDecoder, JsonDecoder.number], 'proxySource').
+          chain(([source,]) => "contents" in source ? JsonDecoder.succeed : JsonDecoder.fail("missing contents"))
       , JsonDecoder.optional(JsonDecoder.string)
       ], 'OtherSource.contents'))
   },

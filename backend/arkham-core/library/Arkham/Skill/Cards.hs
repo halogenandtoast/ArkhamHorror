@@ -47,6 +47,7 @@ allPlayerSkillCards =
       , enraptured
       , essenceOfTheDream
       , eureka
+      , expeditiousRetreat1
       , fearless
       , fearless2
       , guts

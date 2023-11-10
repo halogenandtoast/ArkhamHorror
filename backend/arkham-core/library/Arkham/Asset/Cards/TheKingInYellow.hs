@@ -48,7 +48,7 @@ instance HasModifiersFor TheKingInYellow where
             [ CannotPerformSkillTest
             | commitedCardsCount == 1 || commitedCardsCount == 2
             ]
-      _ -> error "not owned"
+      _ -> pure [] -- if drawn during a skill test, it will have a small moment where it can't modify
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheKingInYellow where

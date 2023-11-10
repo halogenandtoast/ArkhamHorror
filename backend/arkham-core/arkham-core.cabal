@@ -686,6 +686,7 @@ library
       Arkham.Asset.Cards.Safeguard
       Arkham.Asset.Cards.Safeguard2
       Arkham.Asset.Cards.Scavenging
+      Arkham.Asset.Cards.Scavenging2
       Arkham.Asset.Cards.SchoffnersCatalogue
       Arkham.Asset.Cards.ScientificTheory1
       Arkham.Asset.Cards.Scrapper
@@ -2177,6 +2178,7 @@ library
       Arkham.Skill.Cards.Steadfast
       Arkham.Skill.Cards.StrokeOfLuck2
       Arkham.Skill.Cards.StunningBlow
+      Arkham.Skill.Cards.SurprisingFind1
       Arkham.Skill.Cards.SurvivalInstinct
       Arkham.Skill.Cards.SurvivalInstinct2
       Arkham.Skill.Cards.TakeHeart

@@ -437,6 +437,7 @@ allPlayerAssetCards =
       , safeguard
       , safeguard2
       , scavenging
+      , scavenging2
       , schoffnersCatalogue
       , scientificTheory1
       , scrapper
@@ -3899,6 +3900,14 @@ oldBookOfLore3 =
     , cdAlternateCardCodes = ["01686"]
     , cdUses = uses Secret 2
     , cdLevel = 3
+    }
+
+scavenging2 :: CardDef
+scavenging2 =
+  (asset "06332" "Scavenging" 1 Survivor)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Talent]
+    , cdLevel = 2
     }
 
 showmanship :: CardDef

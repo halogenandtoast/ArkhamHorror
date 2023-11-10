@@ -226,6 +226,7 @@ data ModifierType
   | MetaModifier Value
   | ModifierIfSucceededBy Int Modifier
   | Mulligans Int
+  | MustBeCommitted
   | MustTakeAction ActionTarget
   | NegativeToPositive
   | NoDamageDealt

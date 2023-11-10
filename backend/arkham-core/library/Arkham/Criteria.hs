@@ -110,6 +110,7 @@ data Criterion
   | ExcludeWindowAssetExists AssetMatcher
   | AgendaExists AgendaMatcher
   | ActExists ActMatcher
+  | SkillExists SkillMatcher
   | InYourHand
   | InYourDiscard
   | DoomCountIs ValueMatcher
@@ -195,6 +196,9 @@ atYourLocation matcher = exists (AtYourLocation <> matcher)
 
 class Exists a where
   exists :: a -> Criterion
+
+instance Exists SkillMatcher where
+  exists = SkillExists
 
 instance Exists AgendaMatcher where
   exists = AgendaExists

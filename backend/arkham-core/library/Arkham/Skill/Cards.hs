@@ -87,6 +87,7 @@ allPlayerSkillCards =
       , steadfast
       , strokeOfLuck2
       , stunningBlow
+      , surprisingFind1
       , survivalInstinct
       , survivalInstinct2
       , takeHeart
@@ -524,6 +525,7 @@ bruteForce1 =
   (skill "06166" "Brute Force" [#combat] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = 1
     }
 
 threeAces1 :: CardDef
@@ -531,6 +533,7 @@ threeAces1 =
   (skill "06199" "Three Aces" [#wild] Rogue)
     { cdKeywords = singleton Keyword.Myriad
     , cdCardTraits = setFromList [Fortune, Practiced]
+    , cdLevel = 1
     }
 
 sharpVision1 :: CardDef
@@ -538,6 +541,7 @@ sharpVision1 =
   (skill "06204" "Sharp Vision" [#intellect] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = 1
     }
 
 leadership2 :: CardDef
@@ -559,6 +563,16 @@ expeditiousRetreat1 =
   (skill "06246" "Expeditious Retreat" [#agility] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = 1
+    }
+
+surprisingFind1 :: CardDef
+surprisingFind1 =
+  (skill "06278" "Surprising Find" [#wild] Seeker)
+    { cdCardTraits = setFromList [Fortune, Research]
+    , cdKeywords = singleton Keyword.Myriad
+    , cdLevel = 1
+    , cdCardInSearchEffects = True
     }
 
 promiseOfPower :: CardDef

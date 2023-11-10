@@ -27,7 +27,7 @@ import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
 import Arkham.Location
 import Arkham.Scenario ()
-import Arkham.Skill ()
+import Arkham.Skill (createSkill)
 import Arkham.Skill.Types (Skill)
 import Arkham.Story
 import Arkham.Target
@@ -156,6 +156,12 @@ addCardEntityWith i f e card = case card of
         asset = f $ createAsset card assetId
        in
         e & assetsL %~ insertMap (toId asset) asset
+    SkillType -> do
+      let
+        skillId = SkillId uuid
+        skill = f $ createSkill card i skillId
+       in
+        e & skillsL %~ insertMap (toId skill) skill
     PlayerTreacheryType -> do
       let
         treacheryId = TreacheryId uuid

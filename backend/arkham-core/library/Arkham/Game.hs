@@ -406,6 +406,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     additionalActions <- getAdditionalActions (toAttrs investigator')
     engagedEnemies <- selectList (enemyEngagedWith $ toId investigator')
     assets <- selectList (assetControlledBy $ toId investigator')
+    skills <- selectList (SkillWithPlacement $ InPlayArea $ toId investigator')
     events <-
       selectList
         ( eventControlledBy (toId investigator')
@@ -420,6 +421,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           , "engagedEnemies" .= engagedEnemies
           , "assets" .= assets
           , "events" .= events
+          , "skills" .= skills
           , "treacheries" .= treacheries
           ]
     case mLocation of
@@ -2027,10 +2029,20 @@ getSkillsMatching matcher = do
     SkillIs cardCode ->
       pure $ filter ((== cardCode) . toCardCode) as
     SkillMatches ms -> foldM filterMatcher as ms
+    NotSkill m -> do
+      matches' <- filterMatcher as m
+      pure $ filter (`notElem` matches') as
     AnySkill -> pure as
     YourSkill -> do
       iid <- view activeInvestigatorIdL <$> getGame
       pure $ filter ((== iid) . attr skillOwner) as
+    EligibleSkill -> do
+      skillIcons <- traceShowId <$> getSkillTestMatchingSkillIcons
+      pure
+        $ filter
+          ( \a -> any (`member` skillIcons) (cdSkills (toCardDef a)) || null (cdSkills $ toCardDef a)
+          )
+          as
 
 getSkill :: (HasCallStack, HasGame m) => SkillId -> m Skill
 getSkill sid = do
@@ -2040,6 +2052,7 @@ getSkill sid = do
     $ preview (entitiesL . skillsL . ix sid) g
     <|> getInDiscardEntity skillsL sid g
     <|> getRemovedEntity skillsL sid g
+    <|> preview (inSearchEntitiesL . skillsL . ix sid) g
  where
   missingSkill = "Unknown skill: " <> show sid
 
@@ -3621,6 +3634,7 @@ instance Projection Skill where
       SkillTraits -> pure $ cdCardTraits cdef
       SkillCard -> pure $ lookupCard skillCardCode skillCardId
       SkillOwner -> pure skillOwner
+      SkillPlacement -> pure skillPlacement
 
 instance Projection Story where
   getAttrs sid = toAttrs <$> getStory sid
@@ -4513,38 +4527,39 @@ runGameMessage msg g = case msg of
             other -> other
           _ -> id
 
-    skillPairs <-
-      for (mapToList $ g ^. entitiesL . skillsL) $ \(skillId, skill) -> do
-        card <- field SkillCard skillId
-        modifiers' <- map resultF <$> liftA2 (<>) (getModifiers skillId) (getModifiers $ toCardId card)
-        pure
-          $ if ReturnToHandAfterTest `elem` modifiers'
-            then
-              ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
-              , Nothing
-              )
-            else
-              if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
-                then
-                  ( PutCardOnBottomOfDeck
+    skills' <- filterMapM (fieldMap SkillPlacement (== Limbo) . toId) $ g ^. entitiesL . skillsL
+
+    skillPairs <- for (mapToList skills') $ \(skillId, skill) -> do
+      card <- field SkillCard skillId
+      modifiers' <- map resultF <$> liftA2 (<>) (getModifiers skillId) (getModifiers $ toCardId card)
+      pure
+        $ if ReturnToHandAfterTest `elem` modifiers'
+          then
+            ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
+            , Nothing
+            )
+          else
+            if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
+              then
+                ( PutCardOnBottomOfDeck
+                    (skillOwner $ toAttrs skill)
+                    (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
+                    (toCard skill)
+                , Just skillId
+                )
+              else case skillAfterPlay (toAttrs skill) of
+                DiscardThis ->
+                  ( AddToDiscard
                       (skillOwner $ toAttrs skill)
-                      (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
-                      (toCard skill)
+                      (lookupPlayerCard (toCardDef skill) (toCardId skill))
                   , Just skillId
                   )
-                else case skillAfterPlay (toAttrs skill) of
-                  DiscardThis ->
-                    ( AddToDiscard
-                        (skillOwner $ toAttrs skill)
-                        (lookupPlayerCard (toCardDef skill) (toCardId skill))
-                    , Just skillId
-                    )
-                  RemoveThisFromGame ->
-                    (RemoveFromGame (SkillTarget skillId), Nothing)
-                  ShuffleThisBackIntoDeck ->
-                    ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
-                    , Just skillId
-                    )
+                RemoveThisFromGame ->
+                  (RemoveFromGame (SkillTarget skillId), Nothing)
+                ShuffleThisBackIntoDeck ->
+                  ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
+                  , Just skillId
+                  )
 
     pushAll $ map fst skillPairs
 
@@ -5509,6 +5524,14 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
   RemoveStory storyId -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
+  CreateSkill skillId card investigatorId placement -> do
+    let skill = createSkill card investigatorId skillId
+    pure
+      $ g
+      & entitiesL
+      . skillsL
+      . at skillId
+      ?~ overAttrs (\a -> a {skillPlacement = placement}) skill
   CreateAssetAt assetId card placement -> do
     let asset = createAsset card assetId
     iid <- getActiveInvestigatorId

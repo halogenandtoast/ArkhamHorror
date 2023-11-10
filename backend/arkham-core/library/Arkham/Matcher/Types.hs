@@ -458,8 +458,10 @@ data SkillMatcher
   | SkillWithPlacement Placement
   | SkillMatches [SkillMatcher]
   | SkillIs CardCode
+  | EligibleSkill
   | YourSkill
   | AnySkill
+  | NotSkill SkillMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup SkillMatcher where

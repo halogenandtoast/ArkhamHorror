@@ -14,6 +14,7 @@ import Location from '@/arkham/components/Location.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
+import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import Card from '@/arkham/components/Card.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
@@ -171,6 +172,7 @@ const locations = computed(() => Object.values(props.game.locations).
 
 const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
+const skills = computed(() => props.investigator.skills.map((e) => props.game.skills[e]).filter(e => e))
 const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
 
 const slotImg = (slot: Arkham.Slot) => {
@@ -297,6 +299,16 @@ function onLeave(el, done) {
             <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="choose(tarotCardAbility(tarotCard))"/>
           </div>
         </template>
+        <Skill
+          v-for="skill in skills"
+          :skill="skill"
+          :game="game"
+          :playerId="playerId"
+          :key="skill.id"
+          :data-index="skill.cardId"
+          @choose="$emit('choose', $event)"
+          @showCards="doShowCards"
+        />
         <Event
           v-for="event in events"
           :event="event"

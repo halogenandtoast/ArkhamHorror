@@ -305,6 +305,9 @@ instance (Ord a, Num a) => Monoid (Max0 a) where
 ala :: (Coercible a b, Coercible a' b') => (b -> a) -> ((b -> a) -> c -> a') -> c -> b'
 ala _ hof = coerce . hof coerce
 
+filterMapM :: (Ord k, Monad m) => (v -> m Bool) -> Map k v -> m (Map k v)
+filterMapM f = fmap mapFromList . filterM (f . snd) . mapToList
+
 filterBy :: [a -> Bool] -> [a] -> [a]
 filterBy fs = filter (and . sequence fs)
 

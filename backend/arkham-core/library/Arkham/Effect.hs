@@ -115,6 +115,7 @@ import Arkham.Skill.Skills (
   defianceEffect,
   hatchetManEffect,
   prescientEffect,
+  surprisingFind1Effect,
  )
 import Arkham.Story.Stories (
   gavriellasFateEffect,
@@ -328,6 +329,7 @@ allEffects =
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
     , ("06201", SomeEffect spectralRazorEffect)
+    , ("06278", SomeEffect surprisingFind1Effect)
     , ("06279", SomeEffect oldBookOfLore3Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)

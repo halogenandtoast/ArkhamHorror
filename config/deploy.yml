@@ -6,10 +6,8 @@ image: halogenandtoast/arkham-horror
 
 # Deploy to these servers.
 servers:
-  web:
-    hosts:
-      - 159.89.182.110
-      - 159.89.182.72
+  - 159.89.182.110
+  - 159.89.182.72
 
 # Credentials for your image host.
 registry:

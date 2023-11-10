@@ -601,6 +601,8 @@ allAssets =
     , SomeAssetCard wishEater
     , --- seeker [wgd]
       SomeAssetCard oldBookOfLore3
+    , --- rogue [wgd]
+      SomeAssetCard garroteWire2
     , -- Weaver of the Cosmos
       --- survivor [sfk]
       SomeAssetCard scavenging2

@@ -256,6 +256,7 @@ allPlayerAssetCards =
       , fortyOneDerringer
       , fortyOneDerringer2
       , fourOfCups1
+      , garroteWire2
       , gateBox
       , gavriellaMizrah
       , gildedVolto
@@ -3900,6 +3901,15 @@ oldBookOfLore3 =
     , cdAlternateCardCodes = ["01686"]
     , cdUses = uses Secret 2
     , cdLevel = 3
+    }
+
+garroteWire2 :: CardDef
+garroteWire2 =
+  (asset "06280" "Garrote Wire" 2 Rogue)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon]
+    , cdSlots = [#accessory]
+    , cdLevel = 2
     }
 
 scavenging2 :: CardDef

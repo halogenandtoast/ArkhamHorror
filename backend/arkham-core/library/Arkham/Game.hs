@@ -2037,7 +2037,7 @@ getSkillsMatching matcher = do
       iid <- view activeInvestigatorIdL <$> getGame
       pure $ filter ((== iid) . attr skillOwner) as
     EligibleSkill -> do
-      skillIcons <- traceShowId <$> getSkillTestMatchingSkillIcons
+      skillIcons <- getSkillTestMatchingSkillIcons
       pure
         $ filter
           ( \a -> any (`member` skillIcons) (cdSkills (toCardDef a)) || null (cdSkills $ toCardDef a)
@@ -2265,6 +2265,7 @@ enemyMatcherFilter = \case
   EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
     matches' <- getEnemiesMatching enemyMatcher
     elem enemy . maxes <$> forToSnd matches' (field EnemyRemainingHealth . toId)
+  EnemyWithRemainingHealth valueMatcher -> fieldMapM EnemyRemainingHealth (`gameValueMatches` valueMatcher) . toId
   EnemyWithoutModifier modifier ->
     \enemy -> notElem modifier <$> getModifiers (toTarget enemy)
   EnemyWithModifier modifier ->

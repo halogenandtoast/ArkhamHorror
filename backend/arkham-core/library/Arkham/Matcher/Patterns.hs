@@ -409,6 +409,9 @@ atLeast n = AtLeast (Static n)
 lessThan :: Int -> ValueMatcher
 lessThan n = LessThan (Static n)
 
+static :: Int -> ValueMatcher
+static n = EqualTo (Static n)
+
 pattern AtLeast :: GameValue -> ValueMatcher
 pattern AtLeast n <- GreaterThanOrEqualTo n
   where

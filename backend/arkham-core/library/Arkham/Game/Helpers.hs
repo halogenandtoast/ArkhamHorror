@@ -1305,6 +1305,9 @@ passesCriteria iid mcard source windows' = \case
     EventSource eid ->
       member eid
         <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
+    SkillSource sid ->
+      member sid
+        <$> select (Matcher.SkillControlledBy $ Matcher.InvestigatorWithId iid)
     _ -> pure False
   Criteria.DuringSkillTest skillTestMatcher -> do
     mSkillTest <- getSkillTest
@@ -1486,6 +1489,7 @@ passesCriteria iid mcard source windows' = \case
     actId <- selectJust Matcher.AnyAct
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
   Criteria.AgendaExists matcher -> selectAny matcher
+  Criteria.SkillExists matcher -> selectAny $ traceShowId matcher
   Criteria.ActExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do
     selectAny (Matcher.resolveAssetMatcher iid matcher)

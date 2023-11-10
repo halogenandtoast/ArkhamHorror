@@ -2097,6 +2097,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let iid = skillTestInvestigator skillTest
     modifiers' <- getModifiers (toTarget a)
     committedCards <- field InvestigatorCommittedCards iid
+    mustBeCommited <- filterM (`hasModifier` MustBeCommitted) committedCards
     allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
     let
       skillDifficulty = skillTestDifficulty skillTest
@@ -2188,9 +2189,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ map
             (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
             committableCards
-          <> map
-            (\card -> targetLabel (toCardId card) [SkillTestUncommitCard iid card, beginMessage])
-            committedCards
+          <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, beginMessage]
+             | card <- committedCards
+             , card `notElem` mustBeCommited
+             ]
           <> map
             (\action -> AbilityLabel iid action [window] [beginMessage])
             actions
@@ -2669,6 +2671,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
           player <- getPlayer iid
           case foundStrategy' of
+            DrawOrPlayFound who n -> do
+              let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
+              playableCards <- concatForM (mapToList targetCards) $ \(_, cards) ->
+                filterM (getIsPlayable who source UnpaidCost windows') cards
+              let
+                choices =
+                  [ targetLabel
+                    (toCardId card)
+                    [ if card `elem` playableCards
+                        then
+                          chooseOne
+                            player
+                            [ Label "Add to hand" [addFoundToHand]
+                            , Label "Play Card" [addFoundToHand, PayCardCost iid card windows']
+                            ]
+                        else addFoundToHand
+                    ]
+                  | (zone, cards) <- mapToList targetCards
+                  , card <- cards
+                  , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseN player (min n (length choices)) choices
             DrawOrCommitFound who n -> do
               -- [TODO] We need this to determine what state the skill test
               -- is in, if we are committing cards we need to use

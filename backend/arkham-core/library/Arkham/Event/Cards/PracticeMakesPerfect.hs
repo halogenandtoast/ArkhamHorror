@@ -40,10 +40,10 @@ instance RunMessage PracticeMakesPerfect where
         choices =
           [ targetLabel
             (toCardId card)
-            [ skillTestModifier
-                (toSource attrs)
-                (CardIdTarget $ toCardId card)
-                (IfSuccessfulModifier ReturnToHandAfterTest)
+            [ skillTestModifiers
+                attrs
+                (toCardId card)
+                [IfSuccessfulModifier ReturnToHandAfterTest, MustBeCommitted]
             , SkillTestCommitCard iid card
             ]
           | card <- committable

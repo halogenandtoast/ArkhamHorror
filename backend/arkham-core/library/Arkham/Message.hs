@@ -444,6 +444,7 @@ data Message
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | ObtainCard Card
   | CreateEnemy (EnemyCreation Message)
+  | CreateSkill SkillId Card InvestigatorId Placement
   | CreatedEnemyAt EnemyId LocationId Target
   | -- new payment bs
     PayForAbility Ability [Window]
@@ -460,6 +461,7 @@ data Message
   | PlaceAsset AssetId Placement
   | PlaceEvent InvestigatorId EventId Placement
   | PlaceTreachery TreacheryId TreacheryPlacement
+  | PlaceSkill SkillId Placement
   | PlaceKey Target ArkhamKey
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateChaosTokenValueEffect Int Source Target

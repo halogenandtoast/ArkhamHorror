@@ -27,4 +27,6 @@ instance RunMessage SkillAttrs where
       pure $ a {skillAdditionalPayment = Just payment}
     InvestigatorCommittedSkill _ skillId | skillId == toId a -> do
       pure $ a {skillPlacement = Limbo}
+    PlaceSkill sid placement | sid == toId a -> do
+      pure $ a {skillPlacement = placement}
     _ -> pure a

@@ -42,6 +42,7 @@ data instance Field Skill :: Type -> Type where
   SkillTraits :: Field Skill (Set Trait)
   SkillCard :: Field Skill Card
   SkillOwner :: Field Skill InvestigatorId
+  SkillPlacement :: Field Skill Placement
 
 data SkillAttrs = SkillAttrs
   { skillCardCode :: CardCode

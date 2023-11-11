@@ -606,6 +606,8 @@ allAssets =
     , SomeAssetCard delilahORourke3
     , --- mystic [wgd]
       SomeAssetCard summonedHound1
+    , --- neutral [wgd]
+      SomeAssetCard theBlackCat5
     , -- Weaver of the Cosmos
       --- mystic [woc]
       SomeAssetCard mindsEye2

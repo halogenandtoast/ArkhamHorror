@@ -4137,6 +4137,24 @@ runGameMessage msg g = case msg of
   InvestigatorsMulligan ->
     g <$ pushAll [InvestigatorMulligan iid | iid <- g ^. playerOrderL]
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
+  Will msg'@(ResolveChaosToken token tokenFace iid) -> do
+    mods <- getModifiers iid
+    let
+      resolutionChoices =
+        flip mapMaybe mods \case
+          CanResolveToken tokenFace' target | tokenFace == tokenFace' -> Just target
+          _ -> Nothing
+    if null resolutionChoices
+      then push msg'
+      else do
+        player <- getPlayer iid
+        push
+          $ chooseOne player
+          $ [ targetLabel target [TargetResolveChaosToken target token tokenFace iid]
+            | target <- resolutionChoices
+            ]
+          <> [Label "Resolve Normally" [msg']]
+    pure g
   Will (MoveFrom _ iid lid) -> do
     window <- checkWindows [mkWindow #when (Window.Leaving iid lid)]
     g <$ push window

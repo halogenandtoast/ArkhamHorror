@@ -504,6 +504,7 @@ allPlayerAssetCards =
       , tennesseeSourMashSurvivor3
       , tetsuoMori
       , theBlackBook
+      , theBlackCat5
       , theBlackFan3
       , theChthonianStone
       , theChthonianStone3
@@ -3934,6 +3935,16 @@ summonedHound1 =
     , cdAdditionalCost = Just (ShuffleBondedCost 1 "06283")
     , cdLevel = 1
     , cdBondedWith = [(1, "06283")]
+    }
+
+theBlackCat5 :: CardDef
+theBlackCat5 =
+  (asset "06285" ("The Black Cat" <:> "A Liar, or a Prophet, or Both") 2 Neutral)
+    { cdSkills = [#wild, #wild]
+    , cdCardTraits = setFromList [Ally, Avatar, Dreamlands]
+    , cdSlots = [#ally]
+    , cdLevel = 5
+    , cdUnique = True
     }
 
 mindsEye2 :: CardDef

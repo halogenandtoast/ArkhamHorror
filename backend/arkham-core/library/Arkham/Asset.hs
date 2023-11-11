@@ -611,6 +611,8 @@ allAssets =
     , -- Weaver of the Cosmos
       --- guardian [woc]
       SomeAssetCard spiritualResolve5
+    , --- seeker [woc]
+      SomeAssetCard abigailForeman4
     , --- rogue [woc]
       SomeAssetCard joeyTheRatVigil3
     , SomeAssetCard sawedOffShotgun5
@@ -627,6 +629,8 @@ allAssets =
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye
+    , --- mystic [def]
+      SomeAssetCard abyssalTome2
     , -- The Lair of Dagon
       --- rogue [lod]
       SomeAssetCard hardKnocks4

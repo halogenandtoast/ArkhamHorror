@@ -1580,7 +1580,7 @@ passesCriteria iid mcard source windows' = \case
 
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
-getWindowAsset ((windowType -> Window.ActivateAbility _ ability) : xs) = case abilitySource ability of
+getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case abilitySource ability of
   AssetSource aid -> Just aid
   _ -> getWindowAsset xs
 getWindowAsset (_ : xs) = getWindowAsset xs
@@ -1857,7 +1857,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           ]
       _ -> noMatch
     Matcher.ActivateAbility timing whoMatcher abilityMatcher -> guardTiming timing $ \case
-      Window.ActivateAbility who ability ->
+      Window.ActivateAbility who _ ability ->
         andM
           [ matchWho iid who whoMatcher
           , member ability <$> select abilityMatcher

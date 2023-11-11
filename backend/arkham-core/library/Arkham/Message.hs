@@ -785,6 +785,7 @@ data Message
   | RecalculateSkillTestResults
   | RemoveFromBearersDeckOrDiscard PlayerCard
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
+  | FinishedSearch
   | Search
       SearchType
       InvestigatorId

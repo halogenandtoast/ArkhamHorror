@@ -76,7 +76,7 @@ revealedChaosTokens (_ : rest) = revealedChaosTokens rest
 
 data WindowType
   = ActAdvance ActId
-  | ActivateAbility InvestigatorId Ability
+  | ActivateAbility InvestigatorId [Window] Ability
   | AddedToVictory Card
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId

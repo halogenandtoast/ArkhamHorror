@@ -31,7 +31,7 @@ eatLead = event (EatLead . (`With` Metadata Nothing)) Cards.eatLead
 
 instance RunMessage EatLead where
   runMessage msg (EatLead (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ ability)] _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ _ ability)] _ | eid == toId attrs -> do
       case abilitySource ability of
         AssetSource aid -> do
           ignoreWindow <-

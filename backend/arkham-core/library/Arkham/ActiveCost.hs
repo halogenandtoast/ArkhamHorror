@@ -1046,10 +1046,10 @@ instance RunMessage ActiveCost where
             iid = activeCostInvestigator c
           whenActivateAbilityWindow <-
             checkWindows
-              [mkWhen (Window.ActivateAbility iid ability)]
+              [mkWhen (Window.ActivateAbility iid (activeCostWindows c) ability)]
           afterActivateAbilityWindow <-
             checkWindows
-              [mkAfter (Window.ActivateAbility iid ability)]
+              [mkAfter (Window.ActivateAbility iid (activeCostWindows c) ability)]
           afterMsgs <-
             if isAction
               then do

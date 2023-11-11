@@ -405,7 +405,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' -> do
     additionalActions <- getAdditionalActions (toAttrs investigator')
     engagedEnemies <- selectList (enemyEngagedWith $ toId investigator')
-    assets <- selectList (assetControlledBy $ toId investigator')
+    assets <- selectList (AssetWithPlacement $ InPlayArea $ toId investigator')
     skills <- selectList (SkillWithPlacement $ InPlayArea $ toId investigator')
     events <-
       selectList
@@ -1185,6 +1185,10 @@ getScenariosMatching matcher = do
 
 abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 abilityMatches a@Ability {..} = \case
+  PerformableAbility modifiers' -> do
+    let ab = applyAbilityModifiers a modifiers'
+    iid <- view activeInvestigatorIdL <$> getGame
+    anyM (\w -> getCanPerformAbility iid w ab) (Window.defaultWindows iid)
   AnyAbility -> pure True
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
@@ -4604,6 +4608,12 @@ runGameMessage msg g = case msg of
       & (skillTestResultsL .~ Nothing)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
+  Do msg'@(Search {}) -> do
+    inSearch <- fromQueue (elem FinishedSearch)
+    if inSearch
+      then insertAfterMatching [msg', FinishedSearch] (== FinishedSearch)
+      else pushAll [msg', FinishedSearch]
+    pure g
   EndSearch iid _ EncounterDeckTarget cardSources -> do
     let
       foundKey = \case

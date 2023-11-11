@@ -33,7 +33,7 @@ eatLead2 = event (EatLead2 . (`With` Metadata Nothing)) Cards.eatLead2
 
 instance RunMessage EatLead2 where
   runMessage msg e@(EatLead2 (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ ability)] _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ _ ability)] _ | eid == toId attrs -> do
       case abilitySource ability of
         AssetSource aid -> do
           uses <- fieldMap AssetUses useCount aid

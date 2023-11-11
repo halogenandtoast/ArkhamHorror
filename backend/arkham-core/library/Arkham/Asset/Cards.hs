@@ -441,6 +441,7 @@ allPlayerAssetCards =
       , rolands38Special
       , safeguard
       , safeguard2
+      , sawedOffShotgun5
       , scavenging
       , scavenging2
       , schoffnersCatalogue
@@ -3967,6 +3968,16 @@ joeyTheRatVigil3 =
     , cdUnique = True
     , cdSlots = [#ally]
     , cdLevel = 3
+    }
+
+sawedOffShotgun5 :: CardDef
+sawedOffShotgun5 =
+  (asset "06327" "Sawed-Off Shotgun" 3 Rogue)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+    , cdLevel = 5
+    , cdUses = uses Ammo 2
+    , cdSlots = [#hand]
     }
 
 mindsEye2 :: CardDef

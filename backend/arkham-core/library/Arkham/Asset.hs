@@ -613,6 +613,7 @@ allAssets =
       SomeAssetCard spiritualResolve5
     , --- rogue [woc]
       SomeAssetCard joeyTheRatVigil3
+    , SomeAssetCard sawedOffShotgun5
     , --- mystic [woc]
       SomeAssetCard mindsEye2
     , --- survivor [woc]

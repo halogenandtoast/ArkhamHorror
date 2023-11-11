@@ -95,6 +95,7 @@ allSkills =
     , SomeSkillCard daredevil2
     , SomeSkillCard expeditiousRetreat1
     , SomeSkillCard surprisingFind1
+    , SomeSkillCard theEyeOfTruth5
     , SomeSkillCard promiseOfPower
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied

@@ -48,6 +48,7 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Skill.Types qualified as Field
 import Arkham.Story.Types (Field (..))
 import Arkham.Tarot
 import Arkham.Timing qualified as Timing
@@ -450,6 +451,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (encounterDeckL %~ withDeck (filter (/= ec)))
       & (victoryDisplayL %~ filter (/= EncounterCard ec))
       & (setAsideCardsL %~ filter (/= EncounterCard ec))
+  AddToVictory (SkillTarget sid) -> do
+    card <- field Field.SkillCard sid
+    pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (EventTarget eid) -> do
     card <- field EventCard eid
     pure $ a & (victoryDisplayL %~ (card :))

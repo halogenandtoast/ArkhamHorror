@@ -12,12 +12,12 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['show'])
-const reference = computed(() => ref(props.victoryDisplay))
+const reference = ref(props.victoryDisplay)
 const topOfVictoryDisplay = computed(() => props.victoryDisplay[0])
 
 const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Card${props.victoryDisplay.length === 1 ? '' : 's'}`)
 
-const showVictoryDisplay = (e: Event) => emit('show', e, reference.value, 'Victory Display', true)
+const showVictoryDisplay = () => emit('show', reference, 'Victory Display', true)
 </script>
 
 <template>

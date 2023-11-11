@@ -254,7 +254,7 @@ instance RunMessage SkillTest where
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
       pushAll
-        [ ResolveChaosToken drawnChaosToken chaosTokenFace iid
+        [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)
         | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
         ]
       pure

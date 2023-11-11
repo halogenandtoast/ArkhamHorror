@@ -193,6 +193,21 @@ instance RunMessage AssetAttrs where
       pure a
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & (keysL %~ insertSet k)
+    HealAllDamage (isTarget a -> True) source | assetDamage a > 0 -> do
+      afterWindow <- checkWindows [mkAfter $ Window.Healed #damage (toTarget a) source (assetDamage a)]
+      push afterWindow
+      pure $ a & tokensL %~ removeAllTokens Token.Damage
+    HealAllHorror (isTarget a -> True) source | assetHorror a > 0 -> do
+      afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source (assetHorror a)]
+      push afterWindow
+      pure $ a & tokensL %~ removeAllTokens Token.Horror
+    HealAllDamageAndHorror (isTarget a -> True) source | assetDamage a > 0 || assetHorror a > 0 -> do
+      afterWindow <-
+        checkWindows
+          $ [mkAfter $ Window.Healed #damage (toTarget a) source (assetDamage a) | assetDamage a > 0]
+          <> [mkAfter $ Window.Healed #horror (toTarget a) source (assetHorror a) | assetHorror a > 0]
+      push afterWindow
+      pure $ a & tokensL %~ removeAllTokens Token.Horror
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow

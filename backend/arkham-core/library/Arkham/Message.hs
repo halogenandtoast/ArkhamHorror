@@ -566,6 +566,8 @@ data Message
   | GameOver
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | HealAllDamage Target Source
+  | HealAllHorror Target Source
+  | HealAllDamageAndHorror Target Source
   | HealDamage Target Source Int
   | HealHorror Target Source Int
   | MovedHorror Source Target Int
@@ -765,6 +767,7 @@ data Message
   | ResolveEventChoice InvestigatorId EventId Int (Maybe Target) [Window]
   | ResolveSkill SkillId
   | ResolveChaosToken ChaosToken ChaosTokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
+  | TargetResolveChaosToken Target ChaosToken ChaosTokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
   | ReturnSkillTestRevealedChaosTokens
   | ReturnChaosTokens [ChaosToken]
   | RevealCard CardId

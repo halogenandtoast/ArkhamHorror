@@ -66,6 +66,7 @@ instance RunMessage TheCodexOfAges where
           popMessageMatching_ $ \case
             RunSkillTest {} -> True
             _ -> False
-          pushAll [ResolveChaosToken token ElderSign iid, toDiscardBy iid (toAbilitySource attrs 1) attrs]
+          pushAll
+            [Will (ResolveChaosToken token ElderSign iid), toDiscardBy iid (toAbilitySource attrs 1) attrs]
           pure a
     _ -> TheCodexOfAges <$> runMessage msg attrs

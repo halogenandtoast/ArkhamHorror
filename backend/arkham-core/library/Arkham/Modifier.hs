@@ -90,6 +90,7 @@ data ModifierType
   | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
   | CanPlayWithOverride CriteriaOverride
   | CanReduceCostOf CardMatcher Int
+  | CanResolveToken ChaosTokenFace Target
   | CanRetaliateWhileExhausted
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CanSpendUsesAsResourceOnCardFromInvestigator AssetId UseType InvestigatorMatcher CardMatcher

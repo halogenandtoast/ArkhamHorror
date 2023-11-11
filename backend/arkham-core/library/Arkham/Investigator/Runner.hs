@@ -620,9 +620,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   DiscardCard iid source cardId | iid == investigatorId -> do
     let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) investigatorHand
+    inMulligan <- getInMulligan
     beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded iid source card)]
     afterWindowMsg <- checkWindows [mkAfter (Window.Discarded iid source card)]
-    pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
+    if inMulligan
+      then push (Do msg)
+      else pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (DiscardCard iid _source cardId) | iid == investigatorId -> do
     let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) investigatorHand

@@ -89,6 +89,8 @@ allPlayerAssetCards =
     $ concatMap
       toCardCodePairs
       [ abbessAllegriaDiBiase
+      , abigailForeman4
+      , abyssalTome2
       , aceOfRods1
       , aceOfSwords1
       , adaptable1
@@ -3960,6 +3962,16 @@ spiritualResolve5 =
     , cdLevel = 5
     }
 
+abigailForeman4 :: CardDef
+abigailForeman4 =
+  (asset "06324" ("Abigail Foreman" <:> "Library Intern") 3 Seeker)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdLevel = 4
+    }
+
 joeyTheRatVigil3 :: CardDef
 joeyTheRatVigil3 =
   (asset "06326" ("Joey \"The Rat\" Vigil" <:> "Lookin' Out for #1") 2 Rogue)
@@ -4029,6 +4041,15 @@ keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
     { cdCardTraits = setFromList [Talent]
     , cdSkills = [#intellect, #combat]
+    }
+
+abyssalTome2 :: CardDef
+abyssalTome2 =
+  (asset "07159" "Abyssal Tome" 2 Mystic)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdLevel = 2
     }
 
 hardKnocks4 :: CardDef

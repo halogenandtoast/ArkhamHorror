@@ -115,7 +115,7 @@ getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard 
         then pure True
         else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
     ]
-getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid ab) = do
+getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid _ ab) = do
   let
     excludeOne [] = []
     excludeOne (uab : xs) | ab == usedAbility uab = do

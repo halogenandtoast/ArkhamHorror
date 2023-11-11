@@ -365,7 +365,7 @@ search
   -> CardMatcher
   -> FoundCardsStrategy
   -> Message
-search iid (toSource -> source) (toTarget -> target) = Search Searching iid source target
+search iid (toSource -> source) (toTarget -> target) zones matcher strategy = Do (Search Searching iid source target zones matcher strategy)
 
 lookAt
   :: (Targetable target, Sourceable source)

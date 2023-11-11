@@ -205,8 +205,11 @@ instance IsString AssetMatcher where
 instance IsLabel "ally" AssetMatcher where
   fromLabel = AssetWithTrait Ally
 
+instance IsLabel "tome" AssetMatcher where
+  fromLabel = AssetWithTrait Tome
+
 instance IsLabel "item" AssetMatcher where
-  fromLabel = AssetWithTrait Ally
+  fromLabel = AssetWithTrait Item
 
 instance IsLabel "mystic" AssetMatcher where
   fromLabel = AssetWithClass Mystic
@@ -600,6 +603,9 @@ data CardMatcher
 
 instance IsString CardMatcher where
   fromString = CardWithTitle . fromString
+
+instance IsLabel "tome" CardMatcher where
+  fromLabel = CardWithTrait Tome
 
 instance IsLabel "spell" CardMatcher where
   fromLabel = CardWithTrait Spell
@@ -1010,6 +1016,7 @@ data AbilityMatcher
   | AbilityOnCardControlledBy InvestigatorId
   | AssetAbility AssetMatcher
   | HauntedAbility
+  | PerformableAbility [ModifierType]
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup AbilityMatcher where

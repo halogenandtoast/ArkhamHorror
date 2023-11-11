@@ -28,9 +28,9 @@ knowledgeIsPower = event KnowledgeIsPower Cards.knowledgeIsPower
 
 cardMatcher :: ExtendedCardMatcher
 cardMatcher =
-  BasicCardMatch
-    ( CardWithOneOf [CardWithTrait Tome, CardWithTrait Spell]
-        <> CardWithType AssetType
+  basic
+    ( oneOf [#tome, #spell]
+        <> #asset
     )
     <> CardWithPerformableAbility
       (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])

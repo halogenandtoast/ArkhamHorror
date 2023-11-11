@@ -11,6 +11,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Damage
 import Arkham.GameValue
@@ -21,7 +22,7 @@ import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message (Message (HealHorror))
+import Arkham.Message (Message (HealHorror, InvestigatorMulligan))
 import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillType
@@ -595,3 +596,10 @@ guardAffectsOthers iid matcher = do
 
 guardAffectsColocated :: HasGame m => InvestigatorId -> m InvestigatorMatcher
 guardAffectsColocated iid = guardAffectsOthers iid (colocatedWith iid)
+
+getInMulligan :: HasQueue Message m => m Bool
+getInMulligan = fromQueue (any isMulligan)
+ where
+  isMulligan = \case
+    InvestigatorMulligan {} -> True
+    _ -> False

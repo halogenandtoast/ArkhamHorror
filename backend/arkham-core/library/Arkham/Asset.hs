@@ -604,8 +604,12 @@ allAssets =
     , --- rogue [wgd]
       SomeAssetCard garroteWire2
     , SomeAssetCard delilahORourke3
+    , --- mystic [wgd]
+      SomeAssetCard summonedHound1
     , -- Weaver of the Cosmos
-      --- survivor [sfk]
+      --- mystic [woc]
+      SomeAssetCard mindsEye2
+    , --- survivor [woc]
       SomeAssetCard scavenging2
     , -- The Innsmouth Conspiracy
       --- signature [tic]

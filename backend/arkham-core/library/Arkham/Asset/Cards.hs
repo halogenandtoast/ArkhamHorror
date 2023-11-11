@@ -366,6 +366,7 @@ allPlayerAssetCards =
       , medicalStudent
       , medicalTexts
       , medicoDellaPeste
+      , mindsEye2
       , miskatonicArchaeologyFunding4
       , missDoyle1
       , mistsOfRlyeh
@@ -492,6 +493,7 @@ allPlayerAssetCards =
       , strayCat
       , suggestion1
       , suggestion4
+      , summonedHound1
       , survivalKnife
       , survivalKnife2
       , switchblade
@@ -3921,6 +3923,27 @@ delilahORourke3 =
     , cdCardTraits = setFromList [Ally, Criminal, Syndicate]
     , cdSlots = [#ally]
     , cdLevel = 3
+    }
+
+summonedHound1 :: CardDef
+summonedHound1 =
+  (asset "06282" "Summoned Hound" 3 Mystic)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Ally, Summon]
+    , cdSlots = [#ally, #arcane]
+    , cdAdditionalCost = Just (ShuffleBondedCost 1 "06283")
+    , cdLevel = 1
+    , cdBondedWith = [(1, "06283")]
+    }
+
+mindsEye2 :: CardDef
+mindsEye2 =
+  (asset "06328" "Mind's Eye" 3 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ritual]
+    , cdUses = uses Secret 3
+    , cdSlots = [#arcane, #arcane]
+    , cdLevel = 2
     }
 
 scavenging2 :: CardDef

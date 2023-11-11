@@ -1096,6 +1096,7 @@ data SkillTypeMatcher
   = AnySkillType
   | NotSkillType SkillType
   | IsSkillType SkillType
+  | SkillTypeOneOf [SkillType]
   deriving stock (Show, Eq, Ord, Data)
 
 data RemoveDoomMatchers = RemoveDoomMatchers

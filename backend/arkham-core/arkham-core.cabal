@@ -612,6 +612,7 @@ library
       Arkham.Asset.Cards.MedicalStudent
       Arkham.Asset.Cards.MedicalTexts
       Arkham.Asset.Cards.MedicoDellaPeste
+      Arkham.Asset.Cards.MindsEye2
       Arkham.Asset.Cards.MiskatonicArchaeologyFunding4
       Arkham.Asset.Cards.MissDoyle1
       Arkham.Asset.Cards.MistsOfRlyeh
@@ -744,6 +745,7 @@ library
       Arkham.Asset.Cards.Studious3
       Arkham.Asset.Cards.Suggestion1
       Arkham.Asset.Cards.Suggestion4
+      Arkham.Asset.Cards.SummonedHound1
       Arkham.Asset.Cards.SurvivalKnife
       Arkham.Asset.Cards.SurvivalKnife2
       Arkham.Asset.Cards.Switchblade
@@ -1142,6 +1144,7 @@ library
       Arkham.Enemy.Cards.TommyMalloy
       Arkham.Enemy.Cards.TonysQuarry
       Arkham.Enemy.Cards.Umordhoth
+      Arkham.Enemy.Cards.UnboundBeast
       Arkham.Enemy.Cards.ValentinoRivas
       Arkham.Enemy.Cards.VengefulSpecter
       Arkham.Enemy.Cards.VengefulWitch

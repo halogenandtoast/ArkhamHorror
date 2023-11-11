@@ -703,7 +703,7 @@ getActionsWith iid window f = do
             _ -> Nothing
         )
         modifiersForFilter
-  unfilteredActions <- map f . nub <$> getAllAbilities
+  unfilteredActions <- map f <$> getAllAbilities
   actions' <-
     if null abilityFilters
       then pure unfilteredActions
@@ -798,7 +798,7 @@ getActionsWith iid window f = do
       )
       actions''
   forcedActions <- filterM (isForcedAbility iid) actions'''
-  pure $ if null forcedActions then actions''' else forcedActions
+  pure $ nub $ if null forcedActions then actions''' else forcedActions
 
 getPlayerCountValue :: HasGame m => GameValue -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
@@ -3063,6 +3063,7 @@ skillTypeMatches st = \case
   Matcher.AnySkillType -> True
   Matcher.NotSkillType st' -> st /= st'
   Matcher.IsSkillType st' -> st == st'
+  Matcher.SkillTypeOneOf ss -> st `elem` ss
 
 enemyAttackMatches :: HasGame m => EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
 enemyAttackMatches details@EnemyAttackDetails {..} = \case

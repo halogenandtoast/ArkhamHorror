@@ -393,6 +393,9 @@ allEvents =
       SomeEventCard heroicRescue2
     , --- survivor [pnr]
       SomeEventCard aGlimmerOfHope
+    , -- Where the Gods Dwell
+      --- survivor [wgd]
+      SomeEventCard nothingLeftToLose3
     , -- The Innsmouth Conspiracy
       --- rogue [tic]
       SomeEventCard faustianBargain

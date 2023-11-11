@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype HardKnocks4 = HardKnocks4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -33,8 +32,8 @@ instance RunMessage HardKnocks4 where
       push
         $ chooseOne
           player
-          [ Label "Choose Combat" [ skillTestModifier attrs iid (SkillModifier #combat 1) ]
-          , Label "Choose Agility" [ skillTestModifier attrs iid (SkillModifier #agility 1) ]
+          [ Label "Choose Combat" [skillTestModifier attrs iid (SkillModifier #combat 1)]
+          , Label "Choose Agility" [skillTestModifier attrs iid (SkillModifier #agility 1)]
           ]
       pure a
     _ -> HardKnocks4 <$> runMessage msg attrs

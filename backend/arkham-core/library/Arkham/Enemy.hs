@@ -294,6 +294,9 @@ allEnemies =
       SomeEnemyCard guardianOfTheCrystallizer
     , -- basic weakness
       SomeEnemyCard yourWorstNightmare
+    , --- Where the Gods Dwell
+      -- mystic
+      SomeEnemyCard unboundBeast
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

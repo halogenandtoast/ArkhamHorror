@@ -58,6 +58,7 @@ allPlayerEnemyCards =
       , watcherFromAnotherDimension
       , guardianOfTheCrystallizer
       , yourWorstNightmare
+      , unboundBeast
       , tommyMalloy
       ]
 
@@ -1528,6 +1529,13 @@ yourWorstNightmare =
     { cdCardTraits = singleton Monster
     , cdKeywords = singleton Keyword.Hunter
     , cdDeckRestrictions = [MultiplayerOnly]
+    }
+
+unboundBeast :: CardDef
+unboundBeast =
+  (weakness "06283" "Unbound Beast")
+    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 corpseHungryGhoul :: CardDef

@@ -1716,7 +1716,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ RefillSlots iid
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource a . slotSource)
   RefillSlots iid | iid == investigatorId -> do
-    assetIds <- selectList $ assetControlledBy (toId a)
+    assetIds <- selectList $ AssetWithPlacement (InPlayArea iid)
 
     requirements <- concatForM assetIds $ \assetId -> do
       assetCard <- field AssetCard assetId
@@ -1738,37 +1738,39 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       go [] _ = pure []
       go rs [] = pure $ map (\(_, _, sType) -> sType) rs
       go ((aid, card, slotType) : rs) slots = do
-        availableSlots1 <- filterByM [canPutIntoSlot card . snd, pure . (== slotType) . fst] slots
+        (availableSlots1, unused1) <-
+          partitionByM [canPutIntoSlot card . snd, pure . (== slotType) . fst] slots
         case sort availableSlots1 of
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> (slotType :) <$> go rs slots
             [other] -> do
-              availableSlots2 <- filterByM [canPutIntoSlot card . snd, pure . (== other) . fst] slots
+              (availableSlots2, unused2) <-
+                partitionByM [canPutIntoSlot card . snd, pure . (== other) . fst] slots
               case sort availableSlots2 of
                 [] -> (slotType :) <$> go rs slots
-                ((st, x) : rest) -> go rs ((st, putIntoSlot aid x) : rest)
+                ((st, x) : rest) -> go rs ((st, putIntoSlot aid x) : rest <> unused2)
             _ -> error "not designed to work with more than one yet"
-          ((st, x) : rest) -> go rs ((st, putIntoSlot aid x) : rest)
+          ((st, x) : rest) -> go rs ((st, putIntoSlot aid x) : rest <> unused1)
 
     let
       fill :: HasGame m => [(AssetId, Card, SlotType)] -> Map SlotType [Slot] -> m (Map SlotType [Slot])
       fill [] slots = pure slots
       fill ((aid, card, slotType) : rs) slots = do
-        availableSlots1 <- filterM (canPutIntoSlot card) (slots ^. at slotType . non [])
+        (availableSlots1, unused1) <- partitionM (canPutIntoSlot card) (slots ^. at slotType . non [])
         case nonEmptySlotsFirst (sort availableSlots1) of
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> error "can't be filled 1"
             [other] -> do
-              availableSlots2 <- filterM (canPutIntoSlot card) (slots ^. at other . non [])
+              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
               case nonEmptySlotsFirst (sort availableSlots2) of
                 [] -> error "can't be filled 2"
                 _ -> do
                   slots' <- placeInAvailableSlot aid card (slots ^. at other . non [])
-                  fill rs (slots & ix other .~ slots')
+                  fill rs (slots & ix other .~ slots' <> unused2)
             _ -> error "not designed to work with more than one yet"
           _ -> do
             slots' <- placeInAvailableSlot aid card (slots ^. at slotType . non [])
-            fill rs (slots & ix slotType .~ slots')
+            fill rs (slots & ix slotType .~ slots' <> unused1)
 
     failedSlotTypes <- nub <$> go requirements allSlots
 

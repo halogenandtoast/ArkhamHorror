@@ -33,9 +33,7 @@ instance HasModifiersFor DrElliHorowitz where
       Just iid -> do
         placement <- field AssetPlacement aid
         pure case placement of
-          AttachedToAsset aid' _
-            | aid' == toId a ->
-                toModifiers a [AsIfUnderControlOf iid]
+          AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
           _ -> []
   getModifiersFor _ _ = pure []
 

@@ -22,7 +22,9 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Message
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
+import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
+import Arkham.Skill.Types as Field
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
@@ -392,6 +394,9 @@ instance RunMessage SkillTest where
         & (revealedChaosTokensL .~ mempty)
         & (resolvedChaosTokensL .~ mempty)
         & (valueModifierL .~ 0)
+    AddToVictory (SkillTarget sid) -> do
+      card <- field Field.SkillCard sid
+      pure $ s & committedCardsL . each %~ filter (/= card)
     Do (SkillTestEnds _ _) -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.

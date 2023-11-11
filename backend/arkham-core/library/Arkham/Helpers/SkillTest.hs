@@ -233,8 +233,14 @@ getCurrentSkillValue st = do
 
 skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
+  mods <- getModifiers SkillTestTarget
+  let
+    addedIcons = filter matches $ flip concatMap mods \case
+      AddSkillIcons icons -> icons
+      _ -> []
   totalIcons <-
-    count matches
+    (+ length addedIcons)
+      <$> count matches
       <$> concatMapM
         iconsForCard
         (concat $ toList skillTestCommittedCards)

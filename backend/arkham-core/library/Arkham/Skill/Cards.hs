@@ -93,6 +93,7 @@ allPlayerSkillCards =
       , survivalInstinct2
       , takeHeart
       , takeTheInitiative
+      , theEyeOfTruth5
       , theHomeFront
       , threeAces1
       , torrentOfPower
@@ -574,6 +575,13 @@ surprisingFind1 =
     , cdKeywords = singleton Keyword.Myriad
     , cdLevel = 1
     , cdCardInSearchEffects = True
+    }
+
+theEyeOfTruth5 :: CardDef
+theEyeOfTruth5 =
+  (skill "06325" "The Eye of Truth" [#wild, #wild, #wild, #wild] Seeker)
+    { cdCardTraits = setFromList [Spell, Practiced]
+    , cdLevel = 5
     }
 
 promiseOfPower :: CardDef

@@ -5197,6 +5197,11 @@ runGameMessage msg g = case msg of
     windowMsgs <- windows [Window.AddedToVictory card]
     pushAll windowMsgs
     pure g
+  AddToVictory (SkillTarget sid) -> do
+    card <- field SkillCard sid
+    windowMsgs <- windows [Window.AddedToVictory card]
+    pushAll windowMsgs
+    pure $ g & (entitiesL . skillsL %~ deleteMap sid) -- we might not want to remove here?
   AddToVictory (EventTarget eid) -> do
     card <- field EventCard eid
     windowMsgs <- windows [Window.AddedToVictory card]

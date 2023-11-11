@@ -23,7 +23,7 @@ import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.DefeatedBy
 import Arkham.Helpers.Use
-import Arkham.Matcher (AssetMatcher (AnyAsset))
+import Arkham.Matcher (AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId))
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
@@ -176,11 +176,14 @@ instance RunMessage AssetAttrs where
       a <$ push (RemoveFromPlay $ toSource a)
     Discard _ source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
-      pushAll $ windows' <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
+      pushAll
+        $ windows'
+        <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) source (toCard a)]
       pure a
     Exile target | a `isTarget` target -> do
       a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
     RemoveFromPlay source | isSource a source -> do
+      attachedAssets <- selectList $ AssetAttachedToAsset $ AssetWithId (toId a)
       windowMsg <-
         checkWindows
           ( (`mkWindow` Window.LeavePlay (toTarget a))
@@ -189,6 +192,7 @@ instance RunMessage AssetAttrs where
       pushAll
         $ windowMsg
         : [UnsealChaosToken token | token <- assetSealedChaosTokens]
+          <> [Discard Nothing GameSource (toTarget a') | a' <- attachedAssets]
           <> [RemovedFromPlay source]
       pure a
     PlaceKey (isTarget a -> True) k -> do

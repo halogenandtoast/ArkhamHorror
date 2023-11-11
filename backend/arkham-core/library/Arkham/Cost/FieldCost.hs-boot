@@ -12,3 +12,12 @@ instance FromJSON FieldCost
 instance Show FieldCost
 instance Eq FieldCost
 instance Ord FieldCost
+
+data MaybeFieldCost
+
+instance Data MaybeFieldCost
+instance ToJSON MaybeFieldCost
+instance FromJSON MaybeFieldCost
+instance Show MaybeFieldCost
+instance Eq MaybeFieldCost
+instance Ord MaybeFieldCost

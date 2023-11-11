@@ -603,6 +603,7 @@ allAssets =
       SomeAssetCard oldBookOfLore3
     , --- rogue [wgd]
       SomeAssetCard garroteWire2
+    , SomeAssetCard delilahORourke3
     , -- Weaver of the Cosmos
       --- survivor [sfk]
       SomeAssetCard scavenging2
@@ -615,6 +616,9 @@ allAssets =
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye
+    , -- The Lair of Dagon
+      --- rogue [lod]
+      SomeAssetCard hardKnocks4
     , -- Into the Maelstrom
       --- seeker [itm]
       SomeAssetCard ancestralKnowledge3

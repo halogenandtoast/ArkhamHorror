@@ -393,6 +393,9 @@ allEvents =
       SomeEventCard heroicRescue2
     , --- survivor [pnr]
       SomeEventCard aGlimmerOfHope
+    , -- The Innsmouth Conspiracy
+      --- rogue [tic]
+      SomeEventCard faustianBargain
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard dodge2

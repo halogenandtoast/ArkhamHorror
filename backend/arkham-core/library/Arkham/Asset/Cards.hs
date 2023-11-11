@@ -187,6 +187,7 @@ allPlayerAssetCards =
       , decoratedSkull
       , decoratedSkull3
       , dejaVu5
+      , delilahORourke3
       , dendromorphosis
       , detectivesColt1911s
       , deVermisMysteriis2
@@ -284,6 +285,7 @@ allPlayerAssetCards =
       , harlanEarnstone
       , hardKnocks
       , hardKnocks2
+      , hardKnocks4
       , haste2
       , hawkEyeFoldingCamera
       , healingWords
@@ -3912,6 +3914,15 @@ garroteWire2 =
     , cdLevel = 2
     }
 
+delilahORourke3 :: CardDef
+delilahORourke3 =
+  (asset "06281" ("Delilah O'Rourke" <:> "Syndicate Assassin") 3 Rogue)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Ally, Criminal, Syndicate]
+    , cdSlots = [#ally]
+    , cdLevel = 3
+    }
+
 scavenging2 :: CardDef
 scavenging2 =
   (asset "06332" "Scavenging" 1 Survivor)
@@ -3951,6 +3962,15 @@ keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
     { cdCardTraits = setFromList [Talent]
     , cdSkills = [#intellect, #combat]
+    }
+
+hardKnocks4 :: CardDef
+hardKnocks4 =
+  (asset "07266" "Hard Knocks" 2 Rogue)
+    { cdSkills = [#combat, #combat, #agility, #agility]
+    , cdCardTraits = setFromList [Talent]
+    , cdUses = uses Resource 2
+    , cdLevel = 4
     }
 
 ancestralKnowledge3 :: CardDef

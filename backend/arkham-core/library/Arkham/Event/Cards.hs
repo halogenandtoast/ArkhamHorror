@@ -131,6 +131,7 @@ allPlayerEventCards =
       , extensiveResearch
       , extensiveResearch1
       , extraAmmunition1
+      , faustianBargain
       , fightOrFlight
       , firstWatch
       , flare1
@@ -2519,6 +2520,16 @@ aGlimmerOfHope =
     , cdKeywords = singleton Keyword.Myriad
     , cdCriteria = Just Criteria.InYourDiscard
     , cdPlayableFromDiscard = True
+    }
+
+faustianBargain :: CardDef
+faustianBargain =
+  (event "07028" "Faustian Bargain" 0 Rogue)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Pact, Cursed]
+    , cdAdditionalCost = Just $ AddCurseTokenCost 2
+    , cdCriteria =
+        Just $ Criteria.exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
     }
 
 dodge2 :: CardDef

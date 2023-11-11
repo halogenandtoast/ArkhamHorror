@@ -1,17 +1,10 @@
 module Arkham.Cost.FieldCost where
 
--- This module is a hot mess because we need to bring A LOT into scope in order
--- for this to be valid. Additionally we can't avoid the entity types being in
--- scope because hs-boot files can not have associated type families. In order
--- to circumvent this we have to have the Cost in an hs-boot file, but
--- unfortunately this causes a recompilation of Message, when it uses
--- TemplateHaskell, which has the worse compilation performance so Message
--- needed to be changed to Generic, which has exponential memory usage
-
 import Arkham.Prelude
 
 import Arkham.Classes.Entity
 import Arkham.Classes.Query
+import Arkham.Enemy.Types
 import Arkham.Field
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Location.Types
@@ -81,4 +74,67 @@ instance FromJSON FieldCost where
 
 -- we do not care about this instance really
 instance Ord FieldCost where
+  compare f1 f2 = compare (show f1) (show f2)
+
+data MaybeFieldCost where
+  MaybeFieldCost
+    :: forall matcher rec fld
+     . ( fld ~ Field rec (Maybe Int)
+       , QueryElement matcher ~ EntityId rec
+       , Typeable matcher
+       , Typeable rec
+       , Typeable fld
+       , Show matcher
+       , Show fld
+       , ToJSON matcher
+       , ToJSON fld
+       , Ord fld
+       , Ord matcher
+       , FromJSON (SomeField rec)
+       , Projection rec
+       , Query matcher
+       )
+    => matcher
+    -> fld
+    -> MaybeFieldCost
+
+deriving stock instance Show MaybeFieldCost
+
+instance Data MaybeFieldCost where
+  gunfold _ _ _ = error "gunfold(MaybeFieldCost)"
+  toConstr _ = error "toConstr(MaybeFieldCost)"
+  dataTypeOf _ = error "dataTypeOf(MaybeFieldCost)"
+
+instance Eq MaybeFieldCost where
+  MaybeFieldCost (m1 :: m1) (f1 :: f1) == MaybeFieldCost (m2 :: m2) (f2 :: f2) = case eqT @m1 @m2 of
+    Just Refl -> case eqT @f1 @f2 of
+      Just Refl -> m1 == m2 && f1 == f2
+      Nothing -> False
+    Nothing -> False
+
+instance ToJSON MaybeFieldCost where
+  toJSON (MaybeFieldCost matcher (fld :: Field rec typ)) =
+    object
+      [ "matcher" .= matcher
+      , "field" .= fld
+      , "entity" .= show (typeRep $ Proxy @rec)
+      ]
+
+instance FromJSON MaybeFieldCost where
+  parseJSON = withObject "MaybeFieldCost" $ \v -> do
+    entityType :: Text <- v .: "entity"
+    case entityType of
+      "Enemy" -> do
+        sfld :: SomeField Enemy <- v .: "field"
+        case sfld of
+          SomeField (fld :: Field Enemy typ) ->
+            case eqT @typ @(Maybe Int) of
+              Just Refl -> do
+                mtchr :: EnemyMatcher <- v .: "matcher"
+                pure $ MaybeFieldCost mtchr fld
+              _ -> error "Must be a Maybe Int"
+      _ -> error "Unhandled"
+
+-- we do not care about this instance really
+instance Ord MaybeFieldCost where
   compare f1 f2 = compare (show f1) (show f2)

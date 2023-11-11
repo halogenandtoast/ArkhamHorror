@@ -95,12 +95,47 @@ watch(
 
 const unmetAmountRequirements = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    const requiredTotal = question.value.paymentAmountTargetValue
-    if (requiredTotal) {
-      const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-      return total !== requiredTotal
+    const target = question.value.paymentAmountTargetValue
+    if (target) {
+      switch(target.tag) {
+        case 'MaxAmountTarget':
+          {
+            const maxBound = target.contents
+            if (maxBound) {
+              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+              return total > maxBound
+            }
+            break
+          }
+        case 'MinAmountTarget':
+          {
+            const minBound = target.contents
+            if (minBound) {
+              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+              return total < minBound
+            }
+            break
+          }
+        case 'TotalAmountTarget':
+          {
+            const requiredTotal = target.contents
+            if (requiredTotal) {
+              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+              return total !== requiredTotal
+            }
+            break
+          }
+        case 'AmountOneOf':
+          {
+            const totals = target.contents
+            if (totals.length > 0) {
+              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+              return totals.indexOf(total) === -1
+            }
+            break
+          }
+      }
     }
-
     return false
   } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
     switch(question.value.amountTargetValue.tag) {
@@ -128,6 +163,15 @@ const unmetAmountRequirements = computed(() => {
           if (requiredTotal) {
             const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
             return total !== requiredTotal
+          }
+          break
+        }
+      case 'AmountOneOf':
+        {
+          const totals = question.value.amountTargetValue.contents
+          if (totals.length > 0) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return totals.indexOf(total) === -1
           }
           break
         }
@@ -161,6 +205,15 @@ const unmetAmountRequirements = computed(() => {
           if (requiredTotal) {
             const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
             return total !== requiredTotal
+          }
+          break
+        }
+      case 'AmountOneOf':
+        {
+          const totals = question.value.amountTargetValue.contents
+          if (totals.length > 0) {
+            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+            return totals.indexOf(total) === -1
           }
           break
         }

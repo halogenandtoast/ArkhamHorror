@@ -527,12 +527,41 @@ instance RunMessage ActiveCost where
               ]
           withPayment $ InvestigatorDamagePayment x
         FieldResourceCost (FieldCost mtchr fld) -> do
-          n <- getSum <$> selectAgg Sum fld mtchr
-          push $ PayCost acId iid skipAdditionalCosts (ResourceCost n)
+          ns <- nub <$> selectFields fld mtchr
+          case ns of
+            [] -> pure ()
+            [n] -> push $ PayCost acId iid True (ResourceCost n)
+            _ -> do
+              resources <- getSpendableResources iid
+              name <- fieldMap InvestigatorName toTitle iid
+              push
+                $ Ask player
+                $ ChoosePaymentAmounts
+                  ("Pay X resources")
+                  (Just $ AmountOneOf ns)
+                  [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
+          pure c
+        MaybeFieldResourceCost (MaybeFieldCost mtchr fld) -> do
+          ns <- nub . catMaybes <$> selectFields fld mtchr
+          case ns of
+            [] -> pure ()
+            [n] -> push $ PayCost acId iid True (ResourceCost n)
+            _ -> do
+              resources <- getSpendableResources iid
+              name <- fieldMap InvestigatorName toTitle iid
+              push
+                $ Ask player
+                $ ChoosePaymentAmounts
+                  ("Pay X resources")
+                  (Just $ AmountOneOf ns)
+                  [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
           pure c
         ScenarioResourceCost n -> do
           push $ RemoveTokens (activeCostSource c) ScenarioTarget Token.Resource n
           withPayment $ ResourcePayment n
+        AddCurseTokenCost n -> do
+          pushAll $ replicate n $ AddChaosToken CurseToken
+          pure c
         ResourceCost x -> do
           case activeCostTarget c of
             ForAbility {} -> push $ SpendResources iid x
@@ -583,7 +612,7 @@ instance RunMessage ActiveCost where
                     $ Ask player
                     $ ChoosePaymentAmounts
                       ("Pay " <> tshow x <> " resources")
-                      (Just x)
+                      (Just $ TotalAmountTarget x)
                     $ map
                       ( \(iid', name, resources) ->
                           PaymentAmountChoice
@@ -775,7 +804,7 @@ instance RunMessage ActiveCost where
                 $ Ask lead
                 $ ChoosePaymentAmounts
                   (displayCostType cost)
-                  (Just totalClues)
+                  (Just $ TotalAmountTarget totalClues)
                   paymentOptions
               pure c
         -- push (SpendClues totalClues iids)

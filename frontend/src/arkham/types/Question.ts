@@ -128,11 +128,15 @@ export interface ChooseOneAtATime {
 export interface ChoosePaymentAmounts {
   tag: QuestionType.CHOOSE_PAYMENT_AMOUNTS
   label: string
-  paymentAmountTargetValue: number | null
+  paymentAmountTargetValue: AmountTarget | null
   paymentAmountChoices: PaymentAmountChoice[]
 }
 
-export type AmountTarget = { tag: 'MaxAmountTarget', contents: number } | { tag: 'TotalAmountTarget', contents: number } | { tag: "MinAmountTarget", contents: number }
+export type AmountTarget
+  = { tag: 'MaxAmountTarget', contents: number }
+  | { tag: 'TotalAmountTarget', contents: number }
+  | { tag: "MinAmountTarget", contents: number }
+  | { tag: 'AmountOneOf', contents: number[] }
 
 export interface ChooseAmounts {
   tag: QuestionType.CHOOSE_AMOUNTS
@@ -165,6 +169,7 @@ export const amountTargetDecoder = JsonDecoder.oneOf<AmountTarget>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly('MaxAmountTarget'), contents: JsonDecoder.number}, 'MaxAmountTarget')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('MinAmountTarget'), contents: JsonDecoder.number}, 'MinAmountTarget')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TotalAmountTarget'), contents: JsonDecoder.number}, 'TotalAmountTarget')
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly('AmountOneOf'), contents: JsonDecoder.array(JsonDecoder.number, 'number[]')}, 'AmountOneOf')
   ]
 , 'AmountTarget')
 
@@ -195,7 +200,7 @@ export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmoun
   {
     tag: JsonDecoder.isExactly(QuestionType.CHOOSE_PAYMENT_AMOUNTS),
     label: JsonDecoder.string,
-    paymentAmountTargetValue: JsonDecoder.nullable(JsonDecoder.number),
+    paymentAmountTargetValue: JsonDecoder.nullable(amountTargetDecoder),
     paymentAmountChoices: JsonDecoder.array(paymentAmountChoiceDecoder, 'PaymentAmountChoice[]'),
   }, 'ChoosePaymentAmounts',
 );

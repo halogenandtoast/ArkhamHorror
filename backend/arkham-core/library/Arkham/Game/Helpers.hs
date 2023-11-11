@@ -47,6 +47,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Card
+import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor, getCanAfford)
 import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
 import Arkham.Helpers.Tarot
@@ -491,6 +492,9 @@ getCanAffordCost
 getCanAffordCost iid (toSource -> source) actions windows' = \case
   Free -> pure True
   UpTo {} -> pure True
+  AddCurseTokenCost n -> do
+    x <- getRemainingCurseTokens
+    pure $ x >= n
   ShuffleIntoDeckCost target -> case target of
     TreacheryTarget tid ->
       andM
@@ -666,9 +670,13 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
       AssetSource aid -> fieldMap AssetSealedChaosTokens (elem t) aid
       _ -> error "Unhandled release token cost source"
   FieldResourceCost (FieldCost mtchr fld) -> do
-    n <- getSum <$> selectAgg Sum fld mtchr
+    ns <- selectFields fld mtchr
     resources <- getSpendableResources iid
-    pure $ resources >= n
+    pure $ any (resources >=) ns
+  MaybeFieldResourceCost (MaybeFieldCost mtchr fld) -> do
+    ns <- catMaybes <$> selectFields fld mtchr
+    resources <- getSpendableResources iid
+    pure $ any (resources >=) ns
   SupplyCost locationMatcher supply ->
     iid
       <=~> ( Matcher.InvestigatorWithSupply supply

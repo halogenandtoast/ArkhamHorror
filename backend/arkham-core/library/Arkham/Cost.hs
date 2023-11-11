@@ -136,11 +136,13 @@ data Cost
   | ScenarioResourceCost Int
   | ResourceCost Int
   | FieldResourceCost FieldCost
+  | MaybeFieldResourceCost MaybeFieldCost
   | UseCost AssetMatcher UseType Int
   | DynamicUseCost AssetMatcher UseType DynamicUseCostValue
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | UpTo Int Cost
   | SealCost ChaosTokenMatcher
+  | AddCurseTokenCost Int
   | ReleaseChaosTokenCost ChaosToken
   | ReleaseChaosTokensCost Int
   | SealChaosTokenCost ChaosToken -- internal to track sealed token
@@ -167,6 +169,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  AddCurseTokenCost n -> "Add " <> tshow n <> " curse " <> pluralize n "token" <> "to the chaos bag"
   ShuffleIntoDeckCost _ -> "Shuffle into deck"
   ShuffleBondedCost n cCode -> case lookupCardDef cCode of
     Just def ->
@@ -301,6 +304,7 @@ displayCostType = \case
   ReleaseChaosTokensCost 1 -> "Release a chaos token sealed here"
   ReleaseChaosTokensCost _ -> "Release chaos tokens sealed here"
   FieldResourceCost {} -> "X"
+  MaybeFieldResourceCost {} -> "X"
   SupplyCost _ supply ->
     "An investigator crosses off " <> tshow supply <> " from their supplies"
   IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n

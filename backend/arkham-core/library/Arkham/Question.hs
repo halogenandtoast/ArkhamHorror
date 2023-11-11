@@ -92,7 +92,7 @@ data AmountChoice = AmountChoice
   }
   deriving stock (Show, Eq)
 
-data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarget Int
+data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarget Int | AmountOneOf [Int]
   deriving stock (Show, Eq)
 
 data Question msg
@@ -110,7 +110,7 @@ data Question msg
     -- the specific investigator
     ChoosePaymentAmounts
       { label :: Text
-      , paymentAmountTargetValue :: Maybe Int
+      , paymentAmountTargetValue :: Maybe AmountTarget
       , paymentAmountChoices :: [PaymentAmountChoice msg]
       }
   | ChooseAmounts

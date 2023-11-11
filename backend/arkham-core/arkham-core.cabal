@@ -424,6 +424,7 @@ library
       Arkham.Asset.Cards.DecoratedSkull
       Arkham.Asset.Cards.DecoratedSkull3
       Arkham.Asset.Cards.DejaVu5
+      Arkham.Asset.Cards.DelilahORourke3
       Arkham.Asset.Cards.Dendromorphosis
       Arkham.Asset.Cards.DetectivesColt1911s
       Arkham.Asset.Cards.DeVermisMysteriis2
@@ -521,6 +522,7 @@ library
       Arkham.Asset.Cards.Handcuffs2
       Arkham.Asset.Cards.HardKnocks
       Arkham.Asset.Cards.HardKnocks2
+      Arkham.Asset.Cards.HardKnocks4
       Arkham.Asset.Cards.HarlanEarnstone
       Arkham.Asset.Cards.HaroldWalsted
       Arkham.Asset.Cards.Haste2
@@ -1263,6 +1265,7 @@ library
       Arkham.Event.Cards.ExtensiveResearch
       Arkham.Event.Cards.ExtensiveResearch1
       Arkham.Event.Cards.ExtraAmmunition1
+      Arkham.Event.Cards.FaustianBargain
       Arkham.Event.Cards.FightOrFlight
       Arkham.Event.Cards.FirstWatch
       Arkham.Event.Cards.Flare1

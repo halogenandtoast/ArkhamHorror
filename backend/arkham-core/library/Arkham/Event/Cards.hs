@@ -203,6 +203,7 @@ allPlayerEventCards =
       , narrowEscape
       , noStoneUnturned
       , noStoneUnturned5
+      , nothingLeftToLose3
       , occultEvidence
       , occultInvocation
       , oneTwoPunch
@@ -2520,6 +2521,18 @@ aGlimmerOfHope =
     , cdKeywords = singleton Keyword.Myriad
     , cdCriteria = Just Criteria.InYourDiscard
     , cdPlayableFromDiscard = True
+    }
+
+nothingLeftToLose3 :: CardDef
+nothingLeftToLose3 =
+  (event "06284" "Nothing Left to Lose" 0 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = singleton Spirit
+    , cdCriteria =
+        Just
+          $ Criteria.exists
+            (You <> oneOf [InvestigatorWithResources (lessThan 5), HandWith (LengthIs $ lessThan 5)])
+    , cdLevel = 3
     }
 
 faustianBargain :: CardDef

@@ -609,7 +609,11 @@ allAssets =
     , --- neutral [wgd]
       SomeAssetCard theBlackCat5
     , -- Weaver of the Cosmos
-      --- mystic [woc]
+      --- guardian [woc]
+      SomeAssetCard spiritualResolve5
+    , --- rogue [woc]
+      SomeAssetCard joeyTheRatVigil3
+    , --- mystic [woc]
       SomeAssetCard mindsEye2
     , --- survivor [woc]
       SomeAssetCard scavenging2

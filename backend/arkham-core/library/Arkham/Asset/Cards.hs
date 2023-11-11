@@ -316,6 +316,7 @@ allPlayerAssetCards =
       , jewelOfAureolus3
       , jimsTrumpet
       , joeyTheRatVigil
+      , joeyTheRatVigil3
       , keenEye
       , keenEye3
       , kerosene1
@@ -483,6 +484,7 @@ allPlayerAssetCards =
       , studious3
       , songOfTheDead2
       , spiritSpeaker
+      , spiritualResolve5
       , springfieldM19034
       , stHubertsKey
       , strangeSolution
@@ -3945,6 +3947,26 @@ theBlackCat5 =
     , cdSlots = [#ally]
     , cdLevel = 5
     , cdUnique = True
+    }
+
+spiritualResolve5 :: CardDef
+spiritualResolve5 =
+  (asset "06323" "Spiritual Resolve" 3 Guardian)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ritual]
+    , cdKeywords = singleton Keyword.Myriad
+    , cdSlots = [#arcane]
+    , cdLevel = 5
+    }
+
+joeyTheRatVigil3 :: CardDef
+joeyTheRatVigil3 =
+  (asset "06326" ("Joey \"The Rat\" Vigil" <:> "Lookin' Out for #1") 2 Rogue)
+    { cdCardTraits = setFromList [Ally, Criminal]
+    , cdSkills = [#intellect, #agility]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdLevel = 3
     }
 
 mindsEye2 :: CardDef

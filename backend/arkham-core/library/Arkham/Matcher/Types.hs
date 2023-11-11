@@ -551,6 +551,9 @@ instance IsLabel "ally" ExtendedCardMatcher where
 instance IsLabel "spell" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #spell
 
+instance IsLabel "item" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #item
+
 instance IsLabel "asset" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #asset
 

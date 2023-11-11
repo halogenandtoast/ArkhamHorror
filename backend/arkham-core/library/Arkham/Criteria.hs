@@ -268,8 +268,13 @@ instance Semigroup UnderZone where
 
 instance Capable (InvestigatorMatcher -> Maybe Criterion) where
   can =
+    let can' = can :: Capabilities (InvestigatorMatcher -> Criterion)
+     in fmap (fmap Just) can'
+
+instance Capable (InvestigatorMatcher -> Criterion) where
+  can =
     let can' = can :: Capabilities InvestigatorMatcher
-     in fmap (\m -> \matcher -> Just $ exists (m <> matcher)) can'
+     in fmap (\m matcher -> exists (m <> matcher)) can'
 
 $(deriveJSON defaultOptions ''DiscardSignifier)
 $(deriveJSON defaultOptions ''UnderZone)

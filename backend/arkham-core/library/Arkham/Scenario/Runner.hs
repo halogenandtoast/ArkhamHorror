@@ -684,6 +684,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
 
     case foundStrategy' of
       DrawOrCommitFound {} -> error "CommitFound not implemented for EncounterDeck"
+      DrawOrPlayFound {} -> error "DrawOrPlayFound not implemented for EncounterDeck"
       RemoveFoundFromGame _ _ -> error "Unhandled"
       DrawFound who n -> do
         let

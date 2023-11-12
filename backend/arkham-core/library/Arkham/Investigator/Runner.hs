@@ -110,7 +110,8 @@ getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard 
   let allModifiers = modifiers' <> modifiers''
   let isFast = isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
   andM
-    [ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
+    [ withAlteredGame withoutCanModifiers
+        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
     , if isFast
         then pure True
         else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
@@ -127,6 +128,19 @@ getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid _ ab) = do
     [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
     , withAlteredGame withoutCanModifiers
         $ passesCriteria iid Nothing (abilitySource ab) [w] (abilityCriteria ab)
+    ]
+getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@(PlayerCard pc)) | iid == toId attrs = do
+  modifiers' <- getModifiers (toCardId card)
+  modifiers'' <- getModifiers (CardTarget card)
+  cost <- getModifiedCardCost iid card
+  let allModifiers = modifiers' <> modifiers''
+  let isFast = isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
+  andM
+    [ withAlteredGame withoutCanModifiers
+        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
+    , if isFast
+        then pure True
+        else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
     ]
 getWindowSkippable _ _ _ = pure True
 

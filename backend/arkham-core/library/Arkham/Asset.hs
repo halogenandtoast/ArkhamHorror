@@ -618,6 +618,7 @@ allAssets =
     , SomeAssetCard sawedOffShotgun5
     , --- mystic [woc]
       SomeAssetCard mindsEye2
+    , SomeAssetCard shiningTrapezohedron5
     , --- survivor [woc]
       SomeAssetCard scavenging2
     , -- The Innsmouth Conspiracy

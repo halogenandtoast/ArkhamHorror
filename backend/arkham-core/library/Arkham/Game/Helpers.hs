@@ -858,6 +858,7 @@ targetToSource = \case
   AbilityTarget _ _ -> error "can not convert"
   BothTarget t1 t2 -> BothSource (targetToSource t1) (targetToSource t2)
   BatchTarget bId -> BatchSource bId
+  ActiveCostTarget acId -> ActiveCostSource acId
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -902,6 +903,7 @@ sourceToTarget = \case
   CardCostSource _ -> error "not converted"
   BothSource s1 s2 -> BothTarget (sourceToTarget s1) (sourceToTarget s2)
   BatchSource bId -> BatchTarget bId
+  ActiveCostSource acId -> ActiveCostTarget acId
 
 hasFightActions
   :: HasGame m
@@ -1714,6 +1716,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   case mtchr of
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.WouldPayCardCost timing whomatcher cardMatcher -> guardTiming timing \case
+      Window.WouldPayCardCost who _ _ card -> do
+        andM
+          [ matchWho iid who whomatcher
+          , pure $ card `cardMatch` cardMatcher
+          ]
+      _ -> noMatch
     Matcher.SpentUses timing whoMatcher uType assetMatcher valueMatcher -> guardTiming timing $ \case
       Window.SpentUses who assetId uType' n | uType == uType' -> do
         andM

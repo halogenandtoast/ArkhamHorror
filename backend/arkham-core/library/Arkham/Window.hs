@@ -175,6 +175,7 @@ data WindowType
   | RemovedBreach Target
   | WouldRemoveBreaches Target
   | WouldRemoveBreach Target -- END Breaches
+  | WouldPayCardCost InvestigatorId ActiveCostId BatchId Card
   | PlayCard InvestigatorId Card
   | PlayEventDiscarding InvestigatorId EventId
   | PutLocationIntoPlay InvestigatorId LocationId

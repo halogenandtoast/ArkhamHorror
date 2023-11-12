@@ -36,6 +36,7 @@ spec = describe "The Hungering Blade (1)" do
       theHungeringBladeCard <- genCard Assets.theHungeringBlade1
       withProp @"bonded" bloodlusts self
       withProp @"combat" 0 self
+      withProp @"resources" 3 self
       withProp @"hand" [theHungeringBladeCard] self
       enemy <- testEnemy & prop @"health" 3 & prop @"fight" 0
       location <- testLocation

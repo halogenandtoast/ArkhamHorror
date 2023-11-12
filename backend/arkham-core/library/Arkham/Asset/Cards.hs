@@ -462,6 +462,7 @@ allPlayerAssetCards =
       , sergeantMonroe
       , shardsOfTheVoid3
       , sharpshooter3
+      , shiningTrapezohedron5
       , shotgun4
       , showmanship
       , shrewdAnalysis
@@ -4000,6 +4001,16 @@ mindsEye2 =
     , cdUses = uses Secret 3
     , cdSlots = [#arcane, #arcane]
     , cdLevel = 2
+    }
+
+shiningTrapezohedron5 :: CardDef
+shiningTrapezohedron5 =
+  (asset "06329" "Shining Trapezohedron" 1 Mystic)
+    { cdSkills = [#willpower, #intellect, #agility]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdSlots = [#accessory]
+    , cdLevel = 5
+    , cdUnique = True
     }
 
 scavenging2 :: CardDef

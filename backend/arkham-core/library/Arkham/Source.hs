@@ -21,6 +21,7 @@ import GHC.Records
 
 data Source
   = AbilitySource Source Int
+  | ActiveCostSource ActiveCostId
   | ActDeckSource
   | ActSource ActId
   | AfterSkillTestSource

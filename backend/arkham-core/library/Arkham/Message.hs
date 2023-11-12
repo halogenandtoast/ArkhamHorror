@@ -449,6 +449,9 @@ data Message
   | -- new payment bs
     PayForAbility Ability [Window]
   | CreatedCost ActiveCostId
+  | CancelCost ActiveCostId
+  | SetCost ActiveCostId Cost
+  | PayCosts ActiveCostId
   | PayCost ActiveCostId InvestigatorId Bool Cost
   | PayCostFinished ActiveCostId
   | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment

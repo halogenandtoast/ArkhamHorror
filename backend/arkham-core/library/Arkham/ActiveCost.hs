@@ -138,11 +138,11 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     SilentForcedAbility _ -> pure ()
     Haunted -> pure ()
     Cosmos -> pure ()
-    ForcedAbilityWithCost _ cost -> push (PayCost activeCostId iid False cost)
-    AbilityEffect cost -> push (PayCost activeCostId iid False cost)
-    FastAbility' cost mAction ->
+    ForcedAbilityWithCost {} -> push (PayCosts activeCostId)
+    AbilityEffect {} -> push (PayCosts activeCostId)
+    FastAbility' _ mAction ->
       pushAll
-        $ PayCost activeCostId iid False cost
+        $ PayCosts activeCostId
         : [PerformedActions iid [action] | action <- toList mAction]
     ForcedWhen _ aType ->
       startAbilityPayment
@@ -152,13 +152,14 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
         aType
         abilitySource
         abilityDoesNotProvokeAttacksOfOpportunity
-    ReactionAbility _ cost -> push (PayCost activeCostId iid False cost)
+    ReactionAbility {} -> push (PayCosts activeCostId)
     ActionAbilityWithBefore actions' _ cost -> do
       -- we do not know which ability will be chosen
       -- for now we assume this will trigger attacks of opportunity
       -- we also skip additional cost checks and abilities of this type
       -- will need to trigger the appropriate check
       let actions = Action.Activate : actions'
+      -- TODO: move to PayCosts
       pushAll
         $ [ PayCost activeCostId iid True cost
           , TakenActions iid actions
@@ -166,22 +167,22 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
         <> [ CheckAttackOfOpportunity iid False
            | not abilityDoesNotProvokeAttacksOfOpportunity
            ]
-    ActionAbilityWithSkill actions' _ cost -> do
+    ActionAbilityWithSkill actions' _ _ -> do
       let actions = Action.Activate : actions'
       if all (`notElem` [#fight, #evade, #resign, #parley]) actions
         then
           pushAll
-            $ PayCost activeCostId iid False cost
+            $ PayCosts activeCostId
             : [TakenActions iid actions]
               <> [ CheckAttackOfOpportunity iid False
                  | not abilityDoesNotProvokeAttacksOfOpportunity
                  ]
         else
           pushAll
-            [ PayCost activeCostId iid False cost
+            [ PayCosts activeCostId
             , TakenActions iid actions
             ]
-    ActionAbility actions' cost -> do
+    ActionAbility actions' _ -> do
       let actions = Action.Activate : actions'
       beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
       if all (`notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]) actions
@@ -189,7 +190,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
           pushAll
             $ [ BeginAction
               , beforeWindowMsg
-              , PayCost activeCostId iid False cost
+              , PayCosts activeCostId
               , TakenActions iid actions
               ]
             <> [ CheckAttackOfOpportunity iid False
@@ -199,20 +200,811 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
           pushAll
             $ [ BeginAction
               , beforeWindowMsg
-              , PayCost activeCostId iid False cost
+              , PayCosts activeCostId
               , TakenActions iid actions
               ]
 
 nonAttackOfOpportunityActions :: [Action]
 nonAttackOfOpportunityActions = [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
 
+payCost
+  :: (HasGame m, HasQueue Message m)
+  => Message
+  -> ActiveCost
+  -> InvestigatorId
+  -> Bool
+  -> Cost
+  -> m ActiveCost
+payCost msg c iid skipAdditionalCosts cost = do
+  let acId = activeCostId c
+  let withPayment payment = pure $ c & costPaymentsL <>~ payment
+  let source = activeCostSource c
+  let
+    actions =
+      case activeCostActions c of
+        [] -> error "action expected"
+        as -> as
+  player <- getPlayer iid
+  case cost of
+    ShuffleIntoDeckCost target -> do
+      push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) target
+      pure c
+    ShuffleBondedCost n cCode -> do
+      bondedCards <- fieldMap InvestigatorBondedCards (take n . filter ((== cCode) . toCardCode)) iid
+      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) bondedCards
+      pure c
+    ResolveEachHauntedAbility lid -> do
+      hauntedAbilities <-
+        selectList
+          $ HauntedAbility
+          <> AbilityOnLocation
+            (LocationWithId lid)
+      when (notNull hauntedAbilities)
+        $ push
+        $ chooseOneAtATime
+          player
+          [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+      -- No need to record payment... yet
+      pure c
+    OrCost xs -> do
+      push
+        $ chooseOne player
+        $ map
+          ( \x ->
+              Label
+                (displayCostType x)
+                [PayCost acId iid skipAdditionalCosts x]
+          )
+          xs
+      pure c
+    Costs xs ->
+      c <$ pushAll [PayCost acId iid skipAdditionalCosts x | x <- xs]
+    UpTo 0 _ -> pure c
+    UpTo n cost' -> do
+      canAfford <-
+        andM
+          $ map
+            (\a -> getCanAffordCost iid source [a] [] cost')
+            actions
+      maxUpTo <- case cost' of
+        ResourceCost resources -> do
+          availableResources <- getSpendableResources iid
+          pure $ min n (availableResources `div` resources)
+        _ -> pure n
+      name <- fieldMap InvestigatorName toTitle iid
+      when canAfford
+        $ push
+        $ Ask player
+        $ ChoosePaymentAmounts
+          ("Pay " <> displayCostType cost)
+          Nothing
+          [ PaymentAmountChoice iid 0 maxUpTo name
+              $ PayCost acId iid skipAdditionalCosts cost'
+          ]
+      pure c
+    DiscardTopOfDeckCost n -> do
+      cards <-
+        fieldMap
+          InvestigatorDeck
+          (map PlayerCard . take n . unDeck)
+          iid
+      push $ DiscardTopOfDeck iid n source Nothing
+      withPayment $ DiscardCardPayment cards
+    IncreaseCostOfThis cardId n -> do
+      push
+        $ CreateWindowModifierEffect
+          (EffectCardCostWindow cardId)
+          (EffectModifiers $ toModifiers source [IncreaseCostOf (CardWithId cardId) n])
+          source
+          (toTarget cardId)
+      pure c
+    ExhaustCost target -> do
+      push (Exhaust target)
+      withPayment $ ExhaustPayment [target]
+    ExhaustAssetCost matcher -> do
+      targets <- map AssetTarget <$> selectList (matcher <> AssetReady)
+      c
+        <$ push
+          ( chooseOne
+              player
+              [ TargetLabel
+                target
+                [PayCost acId iid skipAdditionalCosts (ExhaustCost target)]
+              | target <- targets
+              ]
+          )
+    SealCost matcher -> do
+      targets <-
+        filterM (\t -> matchChaosToken iid t matcher)
+          =<< scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+      pushAll
+        [ FocusChaosTokens targets
+        , chooseOne
+            player
+            [ TargetLabel
+              (ChaosTokenTarget target)
+              [PayCost acId iid skipAdditionalCosts (SealChaosTokenCost target)]
+            | target <- targets
+            ]
+        , UnfocusChaosTokens
+        ]
+      pure c
+    SealChaosTokenCost token -> do
+      push $ SealChaosToken token
+      pure
+        $ c
+        & costPaymentsL
+        <>~ SealChaosTokenPayment token
+        & costSealedChaosTokensL
+        %~ (token :)
+    ReleaseChaosTokensCost n -> do
+      case source of
+        AssetSource aid -> do
+          tokens <- field AssetSealedChaosTokens aid
+          pushAll
+            $ [ FocusChaosTokens tokens
+              , chooseN
+                  player
+                  n
+                  [ TargetLabel
+                    (ChaosTokenTarget t)
+                    [ PayCost
+                        acId
+                        iid
+                        skipAdditionalCosts
+                        (ReleaseChaosTokenCost t)
+                    ]
+                  | t <- tokens
+                  ]
+              , UnfocusChaosTokens
+              ]
+        _ -> error "Unhandled source for releasing tokens cost"
+      pure c
+    ReleaseChaosTokenCost t -> do
+      push $ UnsealChaosToken t
+      pure $ c & (costPaymentsL <>~ ReleaseChaosTokenPayment t)
+    SupplyCost matcher supply -> do
+      iid' <-
+        selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
+      push $ UseSupply iid' supply
+      withPayment $ SupplyPayment supply
+    DiscardCost zone target -> do
+      card <- targetToCard target
+      pushAll [DiscardedCost target, toDiscardBy iid (activeCostSource c) target]
+      withPayment $ DiscardPayment [(zone, card)]
+    DiscardAssetCost matcher -> do
+      targets <- map AssetTarget <$> selectList (matcher <> AssetReady)
+      push
+        ( chooseOne
+            player
+            [ TargetLabel
+              target
+              [PayCost acId iid skipAdditionalCosts (DiscardCost FromPlay target)]
+            | target <- targets
+            ]
+        )
+      pure c
+    DiscardRandomCardCost -> do
+      push $ toMessage $ randomDiscard iid (activeCostSource c)
+      pure c
+    DiscardCardCost card -> do
+      push $ toMessage $ discardCard iid (activeCostSource c) card
+      withPayment $ DiscardCardPayment [card]
+    DiscardDrawnCardCost -> do
+      let
+        getDrawnCard [] = error "can not find drawn card in windows"
+        getDrawnCard (x : xs) = case x of
+          (windowType -> Window.DrawCard _ card' _) -> card'
+          _ -> getDrawnCard xs
+        card = getDrawnCard (activeCostWindows c)
+      push $ toMessage $ discardCard iid (activeCostSource c) card
+      withPayment $ DiscardCardPayment [card]
+    ExileCost target -> do
+      push (Exile target)
+      withPayment $ ExilePayment [target]
+    RemoveCost target -> do
+      push (RemoveFromGame target)
+      withPayment $ RemovePayment [target]
+    RevealCost cardId -> do
+      push $ RevealCard cardId
+      pure c
+    EnemyDoomCost x matcher -> do
+      enemies <- selectListMap EnemyTarget matcher
+      push
+        $ chooseOrRunOne
+          player
+          [TargetLabel target [PlaceDoom source target x] | target <- enemies]
+      withPayment $ DoomPayment x
+    DoomCost _ (AgendaMatcherTarget matcher) x -> do
+      agendas <- selectListMap AgendaTarget matcher
+      pushAll [PlaceDoom source target x | target <- agendas]
+      withPayment $ DoomPayment (x * length agendas)
+    DoomCost _ target x -> do
+      push (PlaceDoom source target x)
+      withPayment $ DoomPayment x
+    HorrorCost _ target x -> case target of
+      InvestigatorTarget iid' | iid' == iid -> do
+        push (InvestigatorAssignDamage iid source DamageAny 0 x)
+        withPayment $ HorrorPayment x
+      YouTarget -> do
+        push (InvestigatorAssignDamage iid source DamageAny 0 x)
+        withPayment $ HorrorPayment x
+      AssetTarget aid -> do
+        push $ AssetDamage aid source 0 x
+        withPayment $ HorrorPayment x
+      _ -> error "can't target for horror cost"
+    HorrorCostX source' -> do
+      -- see: The Black Book as that is the only card that uses this
+      let
+        getPlayedCard [] = error "can not find played card in windows"
+        getPlayedCard (x : xs) = case x of
+          (windowType -> Window.PlayCard _ card') -> card'
+          _ -> getPlayedCard xs
+        card = getPlayedCard (activeCostWindows c)
+      availableResources <- getSpendableResources iid
+      requiredResources <- getModifiedCardCost iid card
+      let minimumHorror = max 1 (requiredResources - availableResources)
+      sanity <- field InvestigatorRemainingSanity iid
+      name <- fieldMap InvestigatorName toTitle iid
+      push
+        $ Ask player
+        $ ChoosePaymentAmounts
+          "Pay X Horror"
+          Nothing
+          [ PaymentAmountChoice iid minimumHorror sanity name
+              $ PayCost acId iid skipAdditionalCosts (HorrorCost source' (InvestigatorTarget iid) 1)
+          ]
+      pure c
+    DamageCost _ target x -> case target of
+      InvestigatorTarget iid' | iid' == iid -> do
+        push (InvestigatorAssignDamage iid source DamageAny x 0)
+        withPayment $ DamagePayment x
+      YouTarget -> do
+        push (InvestigatorAssignDamage iid source DamageAny x 0)
+        withPayment $ DamagePayment x
+      AssetTarget aid -> do
+        push $ AssetDamage aid source x 0
+        withPayment $ DamagePayment x
+      _ -> error "can't target for damage cost"
+    DirectDamageCost _ investigatorMatcher x -> do
+      investigators <- selectList investigatorMatcher
+      case investigators of
+        [iid'] -> do
+          push $ InvestigatorDirectDamage iid' source x 0
+          withPayment $ DirectDamagePayment x
+        _ -> error "exactly one investigator expected for direct damage"
+    InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
+      investigators <- selectList investigatorMatcher
+      push
+        $ chooseOrRunOne
+          player
+          [ targetLabel
+            iid'
+            [InvestigatorAssignDamage iid' source' damageStrategy x 0]
+          | iid' <- investigators
+          ]
+      withPayment $ InvestigatorDamagePayment x
+    FieldResourceCost (FieldCost mtchr fld) -> do
+      ns <- nub <$> selectFields fld mtchr
+      case ns of
+        [] -> pure ()
+        [n] -> push $ PayCost acId iid True (ResourceCost n)
+        _ -> do
+          resources <- getSpendableResources iid
+          name <- fieldMap InvestigatorName toTitle iid
+          push
+            $ Ask player
+            $ ChoosePaymentAmounts
+              ("Pay X resources")
+              (Just $ AmountOneOf ns)
+              [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
+      pure c
+    MaybeFieldResourceCost (MaybeFieldCost mtchr fld) -> do
+      ns <- nub . catMaybes <$> selectFields fld mtchr
+      case ns of
+        [] -> pure ()
+        [n] -> push $ PayCost acId iid True (ResourceCost n)
+        _ -> do
+          resources <- getSpendableResources iid
+          name <- fieldMap InvestigatorName toTitle iid
+          push
+            $ Ask player
+            $ ChoosePaymentAmounts
+              ("Pay X resources")
+              (Just $ AmountOneOf ns)
+              [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
+      pure c
+    ScenarioResourceCost n -> do
+      push $ RemoveTokens (activeCostSource c) ScenarioTarget Token.Resource n
+      withPayment $ ResourcePayment n
+    AddCurseTokenCost n -> do
+      pushAll $ replicate n $ AddChaosToken CurseToken
+      pure c
+    ResourceCost x -> do
+      case activeCostTarget c of
+        ForAbility {} -> push $ SpendResources iid x
+        ForCost {} -> push $ SpendResources iid x
+        ForCard _ card -> do
+          iids <- getInvestigatorIds
+          iidsWithModifiers <- for iids $ \iid' -> do
+            modifiers <- getModifiers (InvestigatorTarget iid')
+            pure (iid', modifiers)
+          canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) ->
+            do
+              flip anyM modifiers $ \case
+                CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
+                  andM
+                    [ member iid <$> select iMatcher
+                    , pure $ cardMatch card cMatcher
+                    , pure $ iid /= iid'
+                    ]
+                _ -> pure False
+
+          resourcesFromAssets <-
+            concatForM iidsWithModifiers \(iid', modifiers) -> do
+              forMaybeM modifiers \case
+                CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher -> do
+                  canContribute <-
+                    andM
+                      [ liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch card cMatcher)
+                      , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+                      ]
+                  if canContribute
+                    then do
+                      total <- fieldMap AssetUses (useTypeCount uType) assetId
+                      name <- fieldMap AssetName toTitle assetId
+                      pure $ guard (total > 0) $> (iid', assetId, uType, name, total)
+                    else pure Nothing
+                _ -> pure Nothing
+
+          if null canHelpPay && null resourcesFromAssets
+            then push (SpendResources iid x)
+            else do
+              iidsWithResources <-
+                for (iid : map fst canHelpPay) \iid' -> do
+                  resources <- getSpendableResources iid'
+                  name <- toTitle <$> field InvestigatorName iid'
+                  pure (iid', name, resources)
+
+              push
+                $ Ask player
+                $ ChoosePaymentAmounts
+                  ("Pay " <> tshow x <> " resources")
+                  (Just $ TotalAmountTarget x)
+                $ map
+                  ( \(iid', name, resources) ->
+                      PaymentAmountChoice
+                        iid'
+                        0
+                        resources
+                        name
+                        (SpendResources iid' 1)
+                  )
+                  iidsWithResources
+                <> map
+                  ( \(iid', assetId, uType, name, total) ->
+                      PaymentAmountChoice
+                        iid'
+                        0
+                        total
+                        (tshow uType <> " from " <> name)
+                        (SpendUses (toTarget assetId) uType 1)
+                  )
+                  resourcesFromAssets
+      withPayment $ ResourcePayment x
+    AdditionalActionsCost -> do
+      actionRemainingCount <- field InvestigatorRemainingActions iid
+      let
+        currentlyPaid =
+          countAdditionalActionPayments (activeCostPayments c)
+      c
+        <$ if actionRemainingCount == 0
+          then pure ()
+          else
+            push
+              ( chooseOne
+                  player
+                  [ Label
+                      "Spend 1 additional action"
+                      [ PayCost acId iid skipAdditionalCosts (ActionCost 1)
+                      , PaidAbilityCost iid Nothing AdditionalActionPayment
+                      , msg
+                      ]
+                  , Label
+                      ( "Done spending additional actions ("
+                          <> tshow currentlyPaid
+                          <> " spent so far)"
+                      )
+                      []
+                  ]
+              )
+    ActionCost x -> do
+      costModifier' <-
+        if skipAdditionalCosts
+          then pure 0
+          else getActionCostModifier c
+      let
+        modifiedActionCost = max 0 (x + costModifier')
+        actions' = case activeCostTarget c of
+          ForAbility a -> abilityActions a
+          _ -> []
+        source' = case activeCostTarget c of
+          ForAbility a -> AbilitySource (abilitySource a) (abilityIndex a)
+          _ -> source
+      push (SpendActions iid source' actions' modifiedActionCost)
+      withPayment $ ActionPayment x
+    UseCost assetMatcher uType n -> do
+      assets <- selectList assetMatcher
+      push
+        $ chooseOrRunOne
+          player
+          [ TargetLabel
+            (AssetTarget aid)
+            [SpendUses (AssetTarget aid) uType n]
+          | aid <- assets
+          ]
+      withPayment $ UsesPayment n
+    DynamicUseCost assetMatcher uType costValue -> case costValue of
+      DrawnCardsValue -> do
+        let
+          getDrawnCards [] = error "can not find drawn card in windows"
+          getDrawnCards (x : xs) = case x of
+            (windowType -> Window.DrawCards _ cards) -> length cards
+            _ -> getDrawnCards xs
+          n = getDrawnCards (activeCostWindows c)
+        assets <- selectList assetMatcher
+        push
+          $ chooseOrRunOne
+            player
+            [ TargetLabel
+              (AssetTarget aid)
+              [SpendUses (AssetTarget aid) uType n]
+            | aid <- assets
+            ]
+        withPayment $ UsesPayment n
+    UseCostUpTo assetMatcher uType n m -> do
+      assets <- selectList assetMatcher
+      uses <-
+        sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
+      let maxUses = min uses m
+
+      name <- fieldMap InvestigatorName toTitle iid
+
+      push
+        $ Ask player
+        $ ChoosePaymentAmounts
+          ("Pay " <> displayCostType cost)
+          Nothing
+          [ PaymentAmountChoice iid n maxUses name
+              $ PayCost
+                acId
+                iid
+                skipAdditionalCosts
+                (UseCost assetMatcher uType 1)
+          ]
+      pure c
+    AssetClueCost _ aMatcher gv -> do
+      totalClues <- getPlayerCountValue gv
+      assets <- selectList $ aMatcher <> AssetWithAnyClues
+      let
+        source' =
+          case activeCostTarget c of
+            ForAbility a -> AbilitySource (abilitySource a) (abilityIndex a)
+            _ -> source
+      case assets of
+        [] -> error "can not pay cost"
+        [x] -> do
+          push $ RemoveClues source' (toTarget x) totalClues
+          withPayment $ CluePayment iid totalClues
+        _ -> error "unhandled assumed to be from a single asset"
+    ClueCost gv -> do
+      totalClues <- getPlayerCountValue gv
+      push $ InvestigatorSpendClues iid totalClues
+      withPayment $ CluePayment iid totalClues
+    ClueCostX -> do
+      mVal <- getSpendableClueCount [iid]
+      if mVal == 1
+        then push $ PayCost acId iid skipAdditionalCosts (ClueCost (Static 1))
+        else
+          push
+            $ questionLabel ("Spend 1-" <> tshow mVal <> " clues, as a group") player
+            $ DropDown
+              [ (tshow n, PayCost acId iid skipAdditionalCosts (ClueCost (Static n)))
+              | n <- [1 .. mVal]
+              ]
+      pure c
+    PlaceClueOnLocationCost x -> do
+      push $ InvestigatorPlaceCluesOnLocation iid source x
+      withPayment $ CluePayment iid x
+    GroupClueCostRange (sVal, eVal) locationMatcher -> do
+      mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt locationMatcher)
+      if mVal == sVal
+        then push $ PayCost acId iid skipAdditionalCosts (GroupClueCost (Static sVal) locationMatcher)
+        else
+          push
+            $ questionLabel ("Spend " <> tshow sVal <> "-" <> tshow mVal <> " clues, as a group") player
+            $ DropDown
+              [ (tshow n, PayCost acId iid skipAdditionalCosts (GroupClueCost (Static n) locationMatcher))
+              | n <- [sVal .. mVal]
+              ]
+      pure c
+    GroupClueCost x locationMatcher -> do
+      totalClues <- getPlayerCountValue x
+      iids <-
+        selectList
+          $ InvestigatorAt locationMatcher
+          <> InvestigatorWithAnyClues
+      iidsWithClues <- forMaybeM iids \iid' -> do
+        clues <- getSpendableClueCount [iid']
+        if clues > 0
+          then do
+            name <- fieldMap InvestigatorName toTitle iid'
+            pure $ Just (iid', name, clues)
+          else pure Nothing
+      case iidsWithClues of
+        [(iid', _, _)] ->
+          c <$ push (PayCost acId iid' True (ClueCost (Static totalClues)))
+        _ -> do
+          let
+            paymentOptions =
+              map
+                ( \(iid', name, clues) ->
+                    PaymentAmountChoice
+                      iid'
+                      0
+                      clues
+                      name
+                      (PayCost acId iid' True (ClueCost (Static 1)))
+                )
+                iidsWithClues
+          lead <- getLeadPlayer
+          push
+            $ Ask lead
+            $ ChoosePaymentAmounts
+              (displayCostType cost)
+              (Just $ TotalAmountTarget totalClues)
+              paymentOptions
+          pure c
+    -- push (SpendClues totalClues iids)
+    -- withPayment $ CluePayment totalClues
+    HandDiscardCost x cardMatcher -> do
+      handCards <-
+        fieldMap
+          InvestigatorHand
+          (mapMaybe (preview _PlayerCard))
+          iid
+      let
+        notCostCard = case activeCostTarget c of
+          ForAbility {} -> const True
+          ForCard _ card' -> (/= card')
+          ForCost card' -> (/= card')
+        cards =
+          filter
+            ( and
+                . sequence
+                  [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
+            )
+            handCards
+      push
+        $ chooseN
+          player
+          x
+          [ targetLabel
+            (toCardId card)
+            [ PayCost
+                acId
+                iid
+                skipAdditionalCosts
+                (DiscardCardCost $ PlayerCard card)
+            ]
+          | card <- cards
+          ]
+      pure c
+    HandDiscardAnyNumberCost cardMatcher -> do
+      handCards <-
+        fieldMap
+          InvestigatorHand
+          (mapMaybe (preview _PlayerCard))
+          iid
+      let
+        notCostCard = case activeCostTarget c of
+          ForAbility {} -> const True
+          ForCard _ card' -> (/= card')
+          ForCost card' -> (/= card')
+        cards =
+          filter
+            ( and
+                . sequence
+                  [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
+            )
+            handCards
+      name <- fieldMap InvestigatorName toTitle iid
+      push
+        $ Ask player
+        $ ChoosePaymentAmounts
+          "Number of cards to pay"
+          Nothing
+          [ PaymentAmountChoice iid 1 (length cards) name
+              $ PayCost acId iid skipAdditionalCosts (HandDiscardCost 1 cardMatcher)
+          ]
+      pure c
+    ReturnMatchingAssetToHandCost assetMatcher -> do
+      assets <- selectList assetMatcher
+      push
+        $ chooseOne
+          player
+          [ targetLabel
+            asset
+            [ PayCost
+                acId
+                iid
+                skipAdditionalCosts
+                (ReturnAssetToHandCost asset)
+            ]
+          | asset <- assets
+          ]
+      pure c
+    ReturnAssetToHandCost assetId -> do
+      card <- field AssetCard assetId
+      controller <-
+        fieldMap
+          AssetController
+          (fromJustNote "Missing controller")
+          assetId
+      push $ ReturnToHand controller $ AssetTarget assetId
+      withPayment $ ReturnToHandPayment card
+    DiscardHandCost -> do
+      handCards <-
+        fieldMap
+          InvestigatorHand
+          (mapMaybe (preview _PlayerCard))
+          iid
+      push $ DiscardHand iid (activeCostSource c)
+      withPayment $ DiscardCardPayment $ map PlayerCard handCards
+    DiscardFromCost x zone cardMatcher -> do
+      let
+        getCards = \case
+          FromHandOf whoMatcher ->
+            selectListMap
+              (FromHand,)
+              (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
+          FromPlayAreaOf whoMatcher -> do
+            assets <- selectList $ AssetControlledBy whoMatcher
+            map (FromPlay,)
+              . filter (`cardMatch` cardMatcher)
+              <$> traverse (field AssetCard) assets
+          CostZones zs -> concatMapM getCards zs
+      cards <- getCards zone
+      c
+        <$ push
+          ( chooseN
+              player
+              x
+              [ targetLabel
+                (toCardId card)
+                [ PayCost
+                    acId
+                    iid
+                    skipAdditionalCosts
+                    (DiscardCost zone' $ CardTarget card)
+                ]
+              | (zone', card) <- cards
+              ]
+          )
+    SkillIconCost x skillTypes -> do
+      handCards <-
+        fieldMap
+          InvestigatorHand
+          (mapMaybe (preview _PlayerCard))
+          iid
+      let
+        cards =
+          filter ((> 0) . fst)
+            $ map
+              ( toFst
+                  ( count (`member` insertSet WildIcon skillTypes)
+                      . cdSkills
+                      . toCardDef
+                  )
+              )
+              handCards
+        cardMsgs =
+          map
+            ( \(n, card) ->
+                if n >= x
+                  then
+                    targetLabel
+                      (toCardId card)
+                      [ toMessage $ discardCard iid (activeCostSource c) card
+                      , PaidAbilityCost
+                          iid
+                          Nothing
+                          (SkillIconPayment $ cdSkills $ toCardDef card)
+                      ]
+                  else
+                    targetLabel
+                      (toCardId card)
+                      [ toMessage $ discardCard iid (activeCostSource c) card
+                      , PaidAbilityCost
+                          iid
+                          Nothing
+                          (SkillIconPayment $ cdSkills $ toCardDef card)
+                      , PayCost
+                          acId
+                          iid
+                          skipAdditionalCosts
+                          (SkillIconCost (x - n) skillTypes)
+                      ]
+            )
+            cards
+      c <$ push (chooseOne player cardMsgs)
+    DiscardCombinedCost x -> do
+      handCards <-
+        fieldMap
+          InvestigatorHand
+          (mapMaybe (preview _PlayerCard) . filter (`cardMatch` NonWeakness))
+          iid
+      let
+        cards =
+          map (toFst (maybe 0 toPrintedCost . cdCost . toCardDef)) handCards
+        cardMsgs =
+          map
+            ( \(n, card) ->
+                if n >= x
+                  then
+                    targetLabel
+                      (toCardId card)
+                      [ toMessage $ discardCard iid (activeCostSource c) card
+                      , PaidAbilityCost iid Nothing
+                          $ DiscardCardPayment [PlayerCard card]
+                      ]
+                  else
+                    targetLabel
+                      (toCardId card)
+                      [ toMessage $ discardCard iid (activeCostSource c) card
+                      , PaidAbilityCost iid Nothing
+                          $ DiscardCardPayment [PlayerCard card]
+                      , PayCost acId iid skipAdditionalCosts
+                          $ DiscardCombinedCost (x - n)
+                      ]
+            )
+            cards
+      c <$ push (chooseOne player cardMsgs)
+    ShuffleDiscardCost 0 _ -> pure c
+    ShuffleDiscardCost n cardMatcher -> do
+      cards <-
+        fieldMap
+          InvestigatorDiscard
+          (map PlayerCard . filter (`cardMatch` cardMatcher))
+          iid
+      let
+        cardMsgs =
+          map
+            ( \card ->
+                targetLabel
+                  (toCardId card)
+                  [ RemoveFromDiscard iid (toCardId card)
+                  , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+                  , PaidAbilityCost iid Nothing $ CardPayment card
+                  , PayCost acId iid skipAdditionalCosts
+                      $ ShuffleDiscardCost (n - 1) cardMatcher
+                  ]
+            )
+            cards
+      c <$ pushAll [FocusCards cards, chooseOne player cardMsgs, UnfocusCards]
+    Free -> pure c
+
 instance RunMessage ActiveCost where
   runMessage msg c = case msg of
+    PayCosts acId | acId == activeCostId c -> do
+      let iid = activeCostInvestigator c
+      push $ PayCost acId iid False (activeCostCosts c)
+      pure c
     CreatedCost acId | acId == activeCostId c -> do
       let iid = activeCostInvestigator c
       case activeCostTarget c of
         ForCost _ -> do
-          pushAll [PayCost acId iid False (activeCostCosts c), PayCostFinished acId]
+          pushAll [PayCosts acId, PayCostFinished acId]
           pure c
         ForCard isPlayAction card -> do
           modifiers' <- getModifiers (InvestigatorTarget iid)
@@ -224,22 +1016,29 @@ instance RunMessage ActiveCost where
             actions = [Action.Play | isPlayAction == IsPlayAction] <> cdActions cardDef
             mEffect =
               guard (cdBeforeEffect cardDef) $> createCardEffect cardDef Nothing iid (toCardId card)
+          batchId <- getRandom
           beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
+          wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
           pushAll
             $ [ BeginAction
               , beforeWindowMsg
               ]
             <> maybeToList mEffect
-            <> [PayCost acId iid False (activeCostCosts c)]
-            <> [ CheckAttackOfOpportunity iid False
-               | not modifiersPreventAttackOfOpportunity
-                  && ( DoesNotProvokeAttacksOfOpportunity
-                        `notElem` cdAttackOfOpportunityModifiers cardDef
-                     )
-                  && isNothing (cdFastWindow cardDef)
-                  && all (`notElem` nonAttackOfOpportunityActions) actions
+            <> [ wouldPayWindowMsg
+               , Would
+                  batchId
+                  ( [PayCosts acId]
+                      <> [ CheckAttackOfOpportunity iid False
+                         | not modifiersPreventAttackOfOpportunity
+                            && ( DoesNotProvokeAttacksOfOpportunity
+                                  `notElem` cdAttackOfOpportunityModifiers cardDef
+                               )
+                            && isNothing (cdFastWindow cardDef)
+                            && all (`notElem` nonAttackOfOpportunityActions) actions
+                         ]
+                      <> [PayCostFinished acId]
+                  )
                ]
-            <> [PayCostFinished acId]
           pure c
         ForAbility a@Ability {..} -> do
           modifiers' <- getModifiers iid
@@ -261,780 +1060,17 @@ instance RunMessage ActiveCost where
           pure c
     PayCost acId iid skipAdditionalCosts cost | acId == activeCostId c -> do
       let
-        withPayment payment = pure $ c & costPaymentsL <>~ payment
         source = activeCostSource c
         actions = case activeCostActions c of
           [] -> error "action expected"
           as -> as
-      player <- getPlayer iid
-      case cost of
-        ShuffleIntoDeckCost target -> do
-          push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) target
-          pure c
-        ShuffleBondedCost n cCode -> do
-          bondedCards <- fieldMap InvestigatorBondedCards (take n . filter ((== cCode) . toCardCode)) iid
-          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) bondedCards
-          pure c
-        ResolveEachHauntedAbility lid -> do
-          hauntedAbilities <-
-            selectList
-              $ HauntedAbility
-              <> AbilityOnLocation
-                (LocationWithId lid)
-          when (notNull hauntedAbilities)
-            $ push
-            $ chooseOneAtATime
-              player
-              [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
-          -- No need to record payment... yet
-          pure c
-        OrCost xs -> do
-          push
-            $ chooseOne player
-            $ map
-              ( \x ->
-                  Label
-                    (displayCostType x)
-                    [PayCost acId iid skipAdditionalCosts x]
-              )
-              xs
-          pure c
-        Costs xs ->
-          c <$ pushAll [PayCost acId iid skipAdditionalCosts x | x <- xs]
-        UpTo 0 _ -> pure c
-        UpTo n cost' -> do
-          canAfford <-
-            andM
-              $ map
-                (\a -> getCanAffordCost iid source [a] [] cost')
-                actions
-          maxUpTo <- case cost' of
-            ResourceCost resources -> do
-              availableResources <- getSpendableResources iid
-              pure $ min n (availableResources `div` resources)
-            _ -> pure n
-          name <- fieldMap InvestigatorName toTitle iid
-          when canAfford
-            $ push
-            $ Ask player
-            $ ChoosePaymentAmounts
-              ("Pay " <> displayCostType cost)
-              Nothing
-              [ PaymentAmountChoice iid 0 maxUpTo name
-                  $ PayCost acId iid skipAdditionalCosts cost'
-              ]
-          pure c
-        DiscardTopOfDeckCost n -> do
-          cards <-
-            fieldMap
-              InvestigatorDeck
-              (map PlayerCard . take n . unDeck)
-              iid
-          push $ DiscardTopOfDeck iid n source Nothing
-          withPayment $ DiscardCardPayment cards
-        IncreaseCostOfThis cardId n -> do
-          push
-            $ CreateWindowModifierEffect
-              (EffectCardCostWindow cardId)
-              (EffectModifiers $ toModifiers source [IncreaseCostOf (CardWithId cardId) n])
-              source
-              (toTarget cardId)
-          pure c
-        ExhaustCost target -> do
-          push (Exhaust target)
-          withPayment $ ExhaustPayment [target]
-        ExhaustAssetCost matcher -> do
-          targets <- map AssetTarget <$> selectList (matcher <> AssetReady)
-          c
-            <$ push
-              ( chooseOne
-                  player
-                  [ TargetLabel
-                    target
-                    [PayCost acId iid skipAdditionalCosts (ExhaustCost target)]
-                  | target <- targets
-                  ]
-              )
-        SealCost matcher -> do
-          targets <-
-            filterM (\t -> matchChaosToken iid t matcher)
-              =<< scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
-          pushAll
-            [ FocusChaosTokens targets
-            , chooseOne
-                player
-                [ TargetLabel
-                  (ChaosTokenTarget target)
-                  [PayCost acId iid skipAdditionalCosts (SealChaosTokenCost target)]
-                | target <- targets
-                ]
-            , UnfocusChaosTokens
-            ]
-          pure c
-        SealChaosTokenCost token -> do
-          push $ SealChaosToken token
-          pure
-            $ c
-            & costPaymentsL
-            <>~ SealChaosTokenPayment token
-            & costSealedChaosTokensL
-            %~ (token :)
-        ReleaseChaosTokensCost n -> do
-          case source of
-            AssetSource aid -> do
-              tokens <- field AssetSealedChaosTokens aid
-              pushAll
-                $ [ FocusChaosTokens tokens
-                  , chooseN
-                      player
-                      n
-                      [ TargetLabel
-                        (ChaosTokenTarget t)
-                        [ PayCost
-                            acId
-                            iid
-                            skipAdditionalCosts
-                            (ReleaseChaosTokenCost t)
-                        ]
-                      | t <- tokens
-                      ]
-                  , UnfocusChaosTokens
-                  ]
-            _ -> error "Unhandled source for releasing tokens cost"
-          pure c
-        ReleaseChaosTokenCost t -> do
-          push $ UnsealChaosToken t
-          pure $ c & (costPaymentsL <>~ ReleaseChaosTokenPayment t)
-        SupplyCost matcher supply -> do
-          iid' <-
-            selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
-          push $ UseSupply iid' supply
-          withPayment $ SupplyPayment supply
-        DiscardCost zone target -> do
-          card <- targetToCard target
-          pushAll [DiscardedCost target, toDiscardBy iid (activeCostSource c) target]
-          withPayment $ DiscardPayment [(zone, card)]
-        DiscardAssetCost matcher -> do
-          targets <- map AssetTarget <$> selectList (matcher <> AssetReady)
-          push
-            ( chooseOne
-                player
-                [ TargetLabel
-                  target
-                  [PayCost acId iid skipAdditionalCosts (DiscardCost FromPlay target)]
-                | target <- targets
-                ]
-            )
-          pure c
-        DiscardRandomCardCost -> do
-          push $ toMessage $ randomDiscard iid (activeCostSource c)
-          pure c
-        DiscardCardCost card -> do
-          push $ toMessage $ discardCard iid (activeCostSource c) card
-          withPayment $ DiscardCardPayment [card]
-        DiscardDrawnCardCost -> do
-          let
-            getDrawnCard [] = error "can not find drawn card in windows"
-            getDrawnCard (x : xs) = case x of
-              (windowType -> Window.DrawCard _ card' _) -> card'
-              _ -> getDrawnCard xs
-            card = getDrawnCard (activeCostWindows c)
-          push $ toMessage $ discardCard iid (activeCostSource c) card
-          withPayment $ DiscardCardPayment [card]
-        ExileCost target -> do
-          push (Exile target)
-          withPayment $ ExilePayment [target]
-        RemoveCost target -> do
-          push (RemoveFromGame target)
-          withPayment $ RemovePayment [target]
-        RevealCost cardId -> do
-          push $ RevealCard cardId
-          pure c
-        EnemyDoomCost x matcher -> do
-          enemies <- selectListMap EnemyTarget matcher
-          push
-            $ chooseOrRunOne
-              player
-              [TargetLabel target [PlaceDoom source target x] | target <- enemies]
-          withPayment $ DoomPayment x
-        DoomCost _ (AgendaMatcherTarget matcher) x -> do
-          agendas <- selectListMap AgendaTarget matcher
-          pushAll [PlaceDoom source target x | target <- agendas]
-          withPayment $ DoomPayment (x * length agendas)
-        DoomCost _ target x -> do
-          push (PlaceDoom source target x)
-          withPayment $ DoomPayment x
-        HorrorCost _ target x -> case target of
-          InvestigatorTarget iid' | iid' == iid -> do
-            push (InvestigatorAssignDamage iid source DamageAny 0 x)
-            withPayment $ HorrorPayment x
-          YouTarget -> do
-            push (InvestigatorAssignDamage iid source DamageAny 0 x)
-            withPayment $ HorrorPayment x
-          AssetTarget aid -> do
-            push $ AssetDamage aid source 0 x
-            withPayment $ HorrorPayment x
-          _ -> error "can't target for horror cost"
-        HorrorCostX source' -> do
-          -- see: The Black Book as that is the only card that uses this
-          let
-            getPlayedCard [] = error "can not find played card in windows"
-            getPlayedCard (x : xs) = case x of
-              (windowType -> Window.PlayCard _ card') -> card'
-              _ -> getPlayedCard xs
-            card = getPlayedCard (activeCostWindows c)
-          availableResources <- getSpendableResources iid
-          requiredResources <- getModifiedCardCost iid card
-          let minimumHorror = max 1 (requiredResources - availableResources)
-          sanity <- field InvestigatorRemainingSanity iid
-          name <- fieldMap InvestigatorName toTitle iid
-          push
-            $ Ask player
-            $ ChoosePaymentAmounts
-              "Pay X Horror"
-              Nothing
-              [ PaymentAmountChoice iid minimumHorror sanity name
-                  $ PayCost acId iid skipAdditionalCosts (HorrorCost source' (InvestigatorTarget iid) 1)
-              ]
-          pure c
-        DamageCost _ target x -> case target of
-          InvestigatorTarget iid' | iid' == iid -> do
-            push (InvestigatorAssignDamage iid source DamageAny x 0)
-            withPayment $ DamagePayment x
-          YouTarget -> do
-            push (InvestigatorAssignDamage iid source DamageAny x 0)
-            withPayment $ DamagePayment x
-          AssetTarget aid -> do
-            push $ AssetDamage aid source x 0
-            withPayment $ DamagePayment x
-          _ -> error "can't target for damage cost"
-        DirectDamageCost _ investigatorMatcher x -> do
-          investigators <- selectList investigatorMatcher
-          case investigators of
-            [iid'] -> do
-              push $ InvestigatorDirectDamage iid' source x 0
-              withPayment $ DirectDamagePayment x
-            _ -> error "exactly one investigator expected for direct damage"
-        InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
-          investigators <- selectList investigatorMatcher
-          push
-            $ chooseOrRunOne
-              player
-              [ targetLabel
-                iid'
-                [InvestigatorAssignDamage iid' source' damageStrategy x 0]
-              | iid' <- investigators
-              ]
-          withPayment $ InvestigatorDamagePayment x
-        FieldResourceCost (FieldCost mtchr fld) -> do
-          ns <- nub <$> selectFields fld mtchr
-          case ns of
-            [] -> pure ()
-            [n] -> push $ PayCost acId iid True (ResourceCost n)
-            _ -> do
-              resources <- getSpendableResources iid
-              name <- fieldMap InvestigatorName toTitle iid
-              push
-                $ Ask player
-                $ ChoosePaymentAmounts
-                  ("Pay X resources")
-                  (Just $ AmountOneOf ns)
-                  [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
-          pure c
-        MaybeFieldResourceCost (MaybeFieldCost mtchr fld) -> do
-          ns <- nub . catMaybes <$> selectFields fld mtchr
-          case ns of
-            [] -> pure ()
-            [n] -> push $ PayCost acId iid True (ResourceCost n)
-            _ -> do
-              resources <- getSpendableResources iid
-              name <- fieldMap InvestigatorName toTitle iid
-              push
-                $ Ask player
-                $ ChoosePaymentAmounts
-                  ("Pay X resources")
-                  (Just $ AmountOneOf ns)
-                  [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
-          pure c
-        ScenarioResourceCost n -> do
-          push $ RemoveTokens (activeCostSource c) ScenarioTarget Token.Resource n
-          withPayment $ ResourcePayment n
-        AddCurseTokenCost n -> do
-          pushAll $ replicate n $ AddChaosToken CurseToken
-          pure c
-        ResourceCost x -> do
-          case activeCostTarget c of
-            ForAbility {} -> push $ SpendResources iid x
-            ForCost {} -> push $ SpendResources iid x
-            ForCard _ card -> do
-              iids <- getInvestigatorIds
-              iidsWithModifiers <- for iids $ \iid' -> do
-                modifiers <- getModifiers (InvestigatorTarget iid')
-                pure (iid', modifiers)
-              canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) ->
-                do
-                  flip anyM modifiers $ \case
-                    CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
-                      andM
-                        [ member iid <$> select iMatcher
-                        , pure $ cardMatch card cMatcher
-                        , pure $ iid /= iid'
-                        ]
-                    _ -> pure False
 
-              resourcesFromAssets <-
-                concatForM iidsWithModifiers \(iid', modifiers) -> do
-                  forMaybeM modifiers \case
-                    CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher -> do
-                      canContribute <-
-                        andM
-                          [ liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch card cMatcher)
-                          , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
-                          ]
-                      if canContribute
-                        then do
-                          total <- fieldMap AssetUses (useTypeCount uType) assetId
-                          name <- fieldMap AssetName toTitle assetId
-                          pure $ guard (total > 0) $> (iid', assetId, uType, name, total)
-                        else pure Nothing
-                    _ -> pure Nothing
-
-              if null canHelpPay && null resourcesFromAssets
-                then push (SpendResources iid x)
-                else do
-                  iidsWithResources <-
-                    for (iid : map fst canHelpPay) \iid' -> do
-                      resources <- getSpendableResources iid'
-                      name <- toTitle <$> field InvestigatorName iid'
-                      pure (iid', name, resources)
-
-                  push
-                    $ Ask player
-                    $ ChoosePaymentAmounts
-                      ("Pay " <> tshow x <> " resources")
-                      (Just $ TotalAmountTarget x)
-                    $ map
-                      ( \(iid', name, resources) ->
-                          PaymentAmountChoice
-                            iid'
-                            0
-                            resources
-                            name
-                            (SpendResources iid' 1)
-                      )
-                      iidsWithResources
-                    <> map
-                      ( \(iid', assetId, uType, name, total) ->
-                          PaymentAmountChoice
-                            iid'
-                            0
-                            total
-                            (tshow uType <> " from " <> name)
-                            (SpendUses (toTarget assetId) uType 1)
-                      )
-                      resourcesFromAssets
-          withPayment $ ResourcePayment x
-        AdditionalActionsCost -> do
-          actionRemainingCount <- field InvestigatorRemainingActions iid
-          let
-            currentlyPaid =
-              countAdditionalActionPayments (activeCostPayments c)
-          c
-            <$ if actionRemainingCount == 0
-              then pure ()
-              else
-                push
-                  ( chooseOne
-                      player
-                      [ Label
-                          "Spend 1 additional action"
-                          [ PayCost acId iid skipAdditionalCosts (ActionCost 1)
-                          , PaidAbilityCost iid Nothing AdditionalActionPayment
-                          , msg
-                          ]
-                      , Label
-                          ( "Done spending additional actions ("
-                              <> tshow currentlyPaid
-                              <> " spent so far)"
-                          )
-                          []
-                      ]
-                  )
-        ActionCost x -> do
-          costModifier' <-
-            if skipAdditionalCosts
-              then pure 0
-              else getActionCostModifier c
-          let
-            modifiedActionCost = max 0 (x + costModifier')
-            actions' = case activeCostTarget c of
-              ForAbility a -> abilityActions a
-              _ -> []
-            source' = case activeCostTarget c of
-              ForAbility a -> AbilitySource (abilitySource a) (abilityIndex a)
-              _ -> source
-          push (SpendActions iid source' actions' modifiedActionCost)
-          withPayment $ ActionPayment x
-        UseCost assetMatcher uType n -> do
-          assets <- selectList assetMatcher
-          push
-            $ chooseOrRunOne
-              player
-              [ TargetLabel
-                (AssetTarget aid)
-                [SpendUses (AssetTarget aid) uType n]
-              | aid <- assets
-              ]
-          withPayment $ UsesPayment n
-        DynamicUseCost assetMatcher uType costValue -> case costValue of
-          DrawnCardsValue -> do
-            let
-              getDrawnCards [] = error "can not find drawn card in windows"
-              getDrawnCards (x : xs) = case x of
-                (windowType -> Window.DrawCards _ cards) -> length cards
-                _ -> getDrawnCards xs
-              n = getDrawnCards (activeCostWindows c)
-            assets <- selectList assetMatcher
-            push
-              $ chooseOrRunOne
-                player
-                [ TargetLabel
-                  (AssetTarget aid)
-                  [SpendUses (AssetTarget aid) uType n]
-                | aid <- assets
-                ]
-            withPayment $ UsesPayment n
-        UseCostUpTo assetMatcher uType n m -> do
-          assets <- selectList assetMatcher
-          uses <-
-            sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
-          let maxUses = min uses m
-
-          name <- fieldMap InvestigatorName toTitle iid
-
-          push
-            $ Ask player
-            $ ChoosePaymentAmounts
-              ("Pay " <> displayCostType cost)
-              Nothing
-              [ PaymentAmountChoice iid n maxUses name
-                  $ PayCost
-                    acId
-                    iid
-                    skipAdditionalCosts
-                    (UseCost assetMatcher uType 1)
-              ]
-          pure c
-        AssetClueCost _ aMatcher gv -> do
-          totalClues <- getPlayerCountValue gv
-          assets <- selectList $ aMatcher <> AssetWithAnyClues
-          let
-            source' =
-              case activeCostTarget c of
-                ForAbility a -> AbilitySource (abilitySource a) (abilityIndex a)
-                _ -> source
-          case assets of
-            [] -> error "can not pay cost"
-            [x] -> do
-              push $ RemoveClues source' (toTarget x) totalClues
-              withPayment $ CluePayment iid totalClues
-            _ -> error "unhandled assumed to be from a single asset"
-        ClueCost gv -> do
-          totalClues <- getPlayerCountValue gv
-          push $ InvestigatorSpendClues iid totalClues
-          withPayment $ CluePayment iid totalClues
-        ClueCostX -> do
-          mVal <- getSpendableClueCount [iid]
-          if mVal == 1
-            then push $ PayCost acId iid skipAdditionalCosts (ClueCost (Static 1))
-            else
-              push
-                $ questionLabel ("Spend 1-" <> tshow mVal <> " clues, as a group") player
-                $ DropDown
-                  [ (tshow n, PayCost acId iid skipAdditionalCosts (ClueCost (Static n)))
-                  | n <- [1 .. mVal]
-                  ]
-          pure c
-        PlaceClueOnLocationCost x -> do
-          push $ InvestigatorPlaceCluesOnLocation iid source x
-          withPayment $ CluePayment iid x
-        GroupClueCostRange (sVal, eVal) locationMatcher -> do
-          mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt locationMatcher)
-          if mVal == sVal
-            then push $ PayCost acId iid skipAdditionalCosts (GroupClueCost (Static sVal) locationMatcher)
-            else
-              push
-                $ questionLabel ("Spend " <> tshow sVal <> "-" <> tshow mVal <> " clues, as a group") player
-                $ DropDown
-                  [ (tshow n, PayCost acId iid skipAdditionalCosts (GroupClueCost (Static n) locationMatcher))
-                  | n <- [sVal .. mVal]
-                  ]
-          pure c
-        GroupClueCost x locationMatcher -> do
-          totalClues <- getPlayerCountValue x
-          iids <-
-            selectList
-              $ InvestigatorAt locationMatcher
-              <> InvestigatorWithAnyClues
-          iidsWithClues <- forMaybeM iids \iid' -> do
-            clues <- getSpendableClueCount [iid']
-            if clues > 0
-              then do
-                name <- fieldMap InvestigatorName toTitle iid'
-                pure $ Just (iid', name, clues)
-              else pure Nothing
-          case iidsWithClues of
-            [(iid', _, _)] ->
-              c <$ push (PayCost acId iid' True (ClueCost (Static totalClues)))
-            _ -> do
-              let
-                paymentOptions =
-                  map
-                    ( \(iid', name, clues) ->
-                        PaymentAmountChoice
-                          iid'
-                          0
-                          clues
-                          name
-                          (PayCost acId iid' True (ClueCost (Static 1)))
-                    )
-                    iidsWithClues
-              lead <- getLeadPlayer
-              push
-                $ Ask lead
-                $ ChoosePaymentAmounts
-                  (displayCostType cost)
-                  (Just $ TotalAmountTarget totalClues)
-                  paymentOptions
-              pure c
-        -- push (SpendClues totalClues iids)
-        -- withPayment $ CluePayment totalClues
-        HandDiscardCost x cardMatcher -> do
-          handCards <-
-            fieldMap
-              InvestigatorHand
-              (mapMaybe (preview _PlayerCard))
-              iid
-          let
-            notCostCard = case activeCostTarget c of
-              ForAbility {} -> const True
-              ForCard _ card' -> (/= card')
-              ForCost card' -> (/= card')
-            cards =
-              filter
-                ( and
-                    . sequence
-                      [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
-                )
-                handCards
-          push
-            $ chooseN
-              player
-              x
-              [ targetLabel
-                (toCardId card)
-                [ PayCost
-                    acId
-                    iid
-                    skipAdditionalCosts
-                    (DiscardCardCost $ PlayerCard card)
-                ]
-              | card <- cards
-              ]
-          pure c
-        HandDiscardAnyNumberCost cardMatcher -> do
-          handCards <-
-            fieldMap
-              InvestigatorHand
-              (mapMaybe (preview _PlayerCard))
-              iid
-          let
-            notCostCard = case activeCostTarget c of
-              ForAbility {} -> const True
-              ForCard _ card' -> (/= card')
-              ForCost card' -> (/= card')
-            cards =
-              filter
-                ( and
-                    . sequence
-                      [(`cardMatch` cardMatcher), notCostCard . PlayerCard]
-                )
-                handCards
-          name <- fieldMap InvestigatorName toTitle iid
-          push
-            $ Ask player
-            $ ChoosePaymentAmounts
-              "Number of cards to pay"
-              Nothing
-              [ PaymentAmountChoice iid 1 (length cards) name
-                  $ PayCost acId iid skipAdditionalCosts (HandDiscardCost 1 cardMatcher)
-              ]
-          pure c
-        ReturnMatchingAssetToHandCost assetMatcher -> do
-          assets <- selectList assetMatcher
-          push
-            $ chooseOne
-              player
-              [ targetLabel
-                asset
-                [ PayCost
-                    acId
-                    iid
-                    skipAdditionalCosts
-                    (ReturnAssetToHandCost asset)
-                ]
-              | asset <- assets
-              ]
-          pure c
-        ReturnAssetToHandCost assetId -> do
-          card <- field AssetCard assetId
-          controller <-
-            fieldMap
-              AssetController
-              (fromJustNote "Missing controller")
-              assetId
-          push $ ReturnToHand controller $ AssetTarget assetId
-          withPayment $ ReturnToHandPayment card
-        DiscardHandCost -> do
-          handCards <-
-            fieldMap
-              InvestigatorHand
-              (mapMaybe (preview _PlayerCard))
-              iid
-          push $ DiscardHand iid (activeCostSource c)
-          withPayment $ DiscardCardPayment $ map PlayerCard handCards
-        DiscardFromCost x zone cardMatcher -> do
-          let
-            getCards = \case
-              FromHandOf whoMatcher ->
-                selectListMap
-                  (FromHand,)
-                  (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
-              FromPlayAreaOf whoMatcher -> do
-                assets <- selectList $ AssetControlledBy whoMatcher
-                map (FromPlay,)
-                  . filter (`cardMatch` cardMatcher)
-                  <$> traverse (field AssetCard) assets
-              CostZones zs -> concatMapM getCards zs
-          cards <- getCards zone
-          c
-            <$ push
-              ( chooseN
-                  player
-                  x
-                  [ targetLabel
-                    (toCardId card)
-                    [ PayCost
-                        acId
-                        iid
-                        skipAdditionalCosts
-                        (DiscardCost zone' $ CardTarget card)
-                    ]
-                  | (zone', card) <- cards
-                  ]
-              )
-        SkillIconCost x skillTypes -> do
-          handCards <-
-            fieldMap
-              InvestigatorHand
-              (mapMaybe (preview _PlayerCard))
-              iid
-          let
-            cards =
-              filter ((> 0) . fst)
-                $ map
-                  ( toFst
-                      ( count (`member` insertSet WildIcon skillTypes)
-                          . cdSkills
-                          . toCardDef
-                      )
-                  )
-                  handCards
-            cardMsgs =
-              map
-                ( \(n, card) ->
-                    if n >= x
-                      then
-                        targetLabel
-                          (toCardId card)
-                          [ toMessage $ discardCard iid (activeCostSource c) card
-                          , PaidAbilityCost
-                              iid
-                              Nothing
-                              (SkillIconPayment $ cdSkills $ toCardDef card)
-                          ]
-                      else
-                        targetLabel
-                          (toCardId card)
-                          [ toMessage $ discardCard iid (activeCostSource c) card
-                          , PaidAbilityCost
-                              iid
-                              Nothing
-                              (SkillIconPayment $ cdSkills $ toCardDef card)
-                          , PayCost
-                              acId
-                              iid
-                              skipAdditionalCosts
-                              (SkillIconCost (x - n) skillTypes)
-                          ]
-                )
-                cards
-          c <$ push (chooseOne player cardMsgs)
-        DiscardCombinedCost x -> do
-          handCards <-
-            fieldMap
-              InvestigatorHand
-              (mapMaybe (preview _PlayerCard) . filter (`cardMatch` NonWeakness))
-              iid
-          let
-            cards =
-              map (toFst (maybe 0 toPrintedCost . cdCost . toCardDef)) handCards
-            cardMsgs =
-              map
-                ( \(n, card) ->
-                    if n >= x
-                      then
-                        targetLabel
-                          (toCardId card)
-                          [ toMessage $ discardCard iid (activeCostSource c) card
-                          , PaidAbilityCost iid Nothing
-                              $ DiscardCardPayment [PlayerCard card]
-                          ]
-                      else
-                        targetLabel
-                          (toCardId card)
-                          [ toMessage $ discardCard iid (activeCostSource c) card
-                          , PaidAbilityCost iid Nothing
-                              $ DiscardCardPayment [PlayerCard card]
-                          , PayCost acId iid skipAdditionalCosts
-                              $ DiscardCombinedCost (x - n)
-                          ]
-                )
-                cards
-          c <$ push (chooseOne player cardMsgs)
-        ShuffleDiscardCost 0 _ -> pure c
-        ShuffleDiscardCost n cardMatcher -> do
-          cards <-
-            fieldMap
-              InvestigatorDiscard
-              (map PlayerCard . filter (`cardMatch` cardMatcher))
-              iid
-          let
-            cardMsgs =
-              map
-                ( \card ->
-                    targetLabel
-                      (toCardId card)
-                      [ RemoveFromDiscard iid (toCardId card)
-                      , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
-                      , PaidAbilityCost iid Nothing $ CardPayment card
-                      , PayCost acId iid skipAdditionalCosts
-                          $ ShuffleDiscardCost (n - 1) cardMatcher
-                      ]
-                )
-                cards
-          c <$ pushAll [FocusCards cards, chooseOne player cardMsgs, UnfocusCards]
-        Free -> pure c
+      canStillAfford <- getCanAffordCost iid source actions (activeCostWindows c) cost
+      if canStillAfford
+        then payCost msg c iid skipAdditionalCosts cost
+        else pure c
+    SetCost acId cost | acId == activeCostId c -> do
+      pure $ c {activeCostCosts = cost}
     PaidCost acId _ _ payment | acId == activeCostId c -> do
       pure $ c & costPaymentsL <>~ payment
     PayCostFinished acId | acId == activeCostId c -> do

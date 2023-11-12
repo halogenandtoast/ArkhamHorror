@@ -798,6 +798,13 @@ resolveAmounts self choices = do
     MaxAmountTarget n -> when (total > n) $ expectationFailure $ "expected " <> show total <> " to be <= " <> show n
     TotalAmountTarget n -> when (total /= n) $ expectationFailure $ "expected " <> show total <> " to be == " <> show n
     MinAmountTarget n -> when (total < n) $ expectationFailure $ "expected " <> show total <> " to be == " <> show n
+    AmountOneOf ns ->
+      when (total `notElem` ns)
+        $ expectationFailure
+        $ "expected "
+        <> show total
+        <> " to be in "
+        <> show ns
 
   run $ ResolveAmounts (toId self) choices target
 
@@ -820,6 +827,7 @@ assertMaxAmountChoice n = do
     MaxAmountTarget n' -> n' `shouldBe` n
     MinAmountTarget _ -> expectationFailure "expected MaxAmountTarget"
     TotalAmountTarget _ -> expectationFailure "expected MaxAmountTarget"
+    AmountOneOf _ -> expectationFailure "expected MaxAmountTarget"
 
 beginsWithInPlay :: CardDef -> CardDef -> SpecWith ()
 beginsWithInPlay investigator card = it ("begins with " <> T.unpack (toTitle card) <> " in play") . gameTestWith investigator $ \self -> do

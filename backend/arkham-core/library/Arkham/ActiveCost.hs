@@ -13,7 +13,14 @@ import Arkham.Ability hiding (PaidCost)
 import Arkham.Action hiding (TakenAction)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Types (
-  Field (AssetCard, AssetController, AssetName, AssetSealedChaosTokens, AssetUses),
+  Field (
+    AssetCard,
+    AssetCardsUnderneath,
+    AssetController,
+    AssetName,
+    AssetSealedChaosTokens,
+    AssetUses
+  ),
  )
 import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Card
@@ -226,6 +233,15 @@ payCost msg c iid skipAdditionalCosts cost = do
         as -> as
   player <- getPlayer iid
   case cost of
+    ShuffleAttachedCardIntoDeckCost target cardMatcher -> do
+      case target of
+        AssetTarget aid -> do
+          cards <- field AssetCardsUnderneath aid
+          case cards of
+            [] -> error "no cards underneath"
+            (x : _) -> push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [x]
+        _ -> error "Unhandle target type"
+      pure c
     ShuffleIntoDeckCost target -> do
       push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) target
       pure c

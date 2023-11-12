@@ -44,6 +44,7 @@ allPlayerSkillCards =
       , defiance2
       , desperateSearch
       , doubleOrNothing
+      , dreamParasite
       , enraptured
       , essenceOfTheDream
       , eureka
@@ -582,6 +583,15 @@ theEyeOfTruth5 =
   (skill "06325" "The Eye of Truth" [#wild, #wild, #wild, #wild] Seeker)
     { cdCardTraits = setFromList [Spell, Practiced]
     , cdLevel = 5
+    }
+
+dreamParasite :: CardDef
+dreamParasite =
+  (skill "06331" "Dream Parasite" [#wildMinus, #wildMinus] Neutral)
+    { cdCardTraits = singleton Curse
+    , cdCardSubType = Just Weakness
+    , cdCommitRestrictions = [MustBeCommittedToYourTest]
+    , cdKeywords = singleton (Keyword.Bonded 3 "06330")
     }
 
 promiseOfPower :: CardDef

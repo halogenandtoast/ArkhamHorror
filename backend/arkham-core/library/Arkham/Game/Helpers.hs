@@ -495,6 +495,10 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
     pure $ x >= n
+  ShuffleAttachedCardIntoDeckCost target cardMatcher -> do
+    case target of
+      AssetTarget aid -> fieldMap AssetCardsUnderneath (any (`cardMatch` cardMatcher)) aid
+      _ -> error "Unhandled shuffle attached card into deck cost"
   ShuffleIntoDeckCost target -> case target of
     TreacheryTarget tid ->
       andM

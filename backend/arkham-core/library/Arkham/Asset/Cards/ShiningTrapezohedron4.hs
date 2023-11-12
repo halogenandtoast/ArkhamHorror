@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.ShiningTrapezohedron5 (
-  shiningTrapezohedron5,
-  ShiningTrapezohedron5 (..),
+module Arkham.Asset.Cards.ShiningTrapezohedron4 (
+  shiningTrapezohedron4,
+  ShiningTrapezohedron4 (..),
 )
 where
 
@@ -18,20 +18,20 @@ import Arkham.Name
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
-newtype ShiningTrapezohedron5 = ShiningTrapezohedron5 AssetAttrs
+newtype ShiningTrapezohedron4 = ShiningTrapezohedron4 AssetAttrs
   deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-shiningTrapezohedron5 :: AssetCard ShiningTrapezohedron5
-shiningTrapezohedron5 = asset ShiningTrapezohedron5 Cards.shiningTrapezohedron5
+shiningTrapezohedron4 :: AssetCard ShiningTrapezohedron4
+shiningTrapezohedron4 = asset ShiningTrapezohedron4 Cards.shiningTrapezohedron4
 
-instance HasAbilities ShiningTrapezohedron5 where
-  getAbilities (ShiningTrapezohedron5 a) =
+instance HasAbilities ShiningTrapezohedron4 where
+  getAbilities (ShiningTrapezohedron4 a) =
     [ restrictedAbility a 1 ControlsThis $ ReactionAbility (WouldPayCardCost #when You #spell) (exhaust a)
     ]
 
-instance HasModifiersFor ShiningTrapezohedron5 where
-  getModifiersFor (InvestigatorTarget iid) (ShiningTrapezohedron5 attrs) | attrs `controlledBy` iid = do
+instance HasModifiersFor ShiningTrapezohedron4 where
+  getModifiersFor (InvestigatorTarget iid) (ShiningTrapezohedron4 attrs) | attrs `controlledBy` iid = do
     pure $ toModifiers attrs [CanModify $ AlternateResourceCost #spell Free | not attrs.exhausted]
   getModifiersFor _ _ = pure []
 
@@ -40,8 +40,8 @@ getWindowCard [] = error "No window card"
 getWindowCard ((windowType -> Window.WouldPayCardCost _ acId batchId card) : _) = (acId, batchId, card)
 getWindowCard (_ : rest) = getWindowCard rest
 
-instance RunMessage ShiningTrapezohedron5 where
-  runMessage msg a@(ShiningTrapezohedron5 attrs) = case msg of
+instance RunMessage ShiningTrapezohedron4 where
+  runMessage msg a@(ShiningTrapezohedron4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getWindowCard -> (acId, _batchId, card)) _ -> do
       resources <- getModifiedCardCost iid card
       push $ beginSkillTest iid (toAbilitySource attrs 1) (ActiveCostTarget acId) #willpower resources
@@ -79,4 +79,4 @@ instance RunMessage ShiningTrapezohedron5 where
         _ -> error "invalid target"
 
       pure a
-    _ -> ShiningTrapezohedron5 <$> runMessage msg attrs
+    _ -> ShiningTrapezohedron4 <$> runMessage msg attrs

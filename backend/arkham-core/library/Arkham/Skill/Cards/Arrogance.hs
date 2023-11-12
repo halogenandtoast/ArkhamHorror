@@ -16,8 +16,7 @@ newtype Arrogance = Arrogance SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arrogance :: SkillCard Arrogance
-arrogance =
-  skill Arrogance Cards.arrogance
+arrogance = skill Arrogance Cards.arrogance
 
 instance RunMessage Arrogance where
   runMessage msg s@(Arrogance attrs) = case msg of

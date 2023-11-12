@@ -618,9 +618,10 @@ allAssets =
     , SomeAssetCard sawedOffShotgun5
     , --- mystic [woc]
       SomeAssetCard mindsEye2
-    , SomeAssetCard shiningTrapezohedron5
+    , SomeAssetCard shiningTrapezohedron4
     , --- survivor [woc]
-      SomeAssetCard scavenging2
+      SomeAssetCard nightmareBauble3
+    , SomeAssetCard scavenging2
     , -- The Innsmouth Conspiracy
       --- signature [tic]
       SomeAssetCard showmanship

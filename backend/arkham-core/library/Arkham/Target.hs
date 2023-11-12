@@ -66,6 +66,7 @@ data Target
   | BothTarget Target Target
   | TarotTarget TarotCard
   | BatchTarget BatchId
+  | ActiveCostTarget ActiveCostId
   deriving stock (Show, Eq, Ord, Data)
 
 investigatorTarget :: Target -> Maybe InvestigatorId

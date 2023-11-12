@@ -244,6 +244,9 @@ instance Is AssetAttrs AssetId where
 instance Be AssetAttrs AssetMatcher where
   be = AssetWithId . assetId
 
+instance HasField "exhausted" AssetAttrs Bool where
+  getField = assetExhausted
+
 instance HasField "horror" AssetAttrs Int where
   getField = assetHorror
 

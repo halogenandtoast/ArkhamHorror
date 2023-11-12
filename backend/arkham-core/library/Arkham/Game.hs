@@ -4183,6 +4183,8 @@ runGameMessage msg g = case msg of
     -- _ <- error "This is broken because it also plays the card, rethink cards that call this"
     push $ CreatedCost (activeCostId activeCost)
     pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
+  CancelCost acId -> do
+    pure $ g & activeCostL %~ deleteMap acId
   PayForAbility ability windows' -> do
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator

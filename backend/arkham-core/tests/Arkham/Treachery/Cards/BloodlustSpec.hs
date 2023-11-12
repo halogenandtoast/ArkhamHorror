@@ -16,6 +16,7 @@ spec = describe "Bloodlust" do
       bloodlusts <- replicateM 3 $ genCard Treacheries.bloodlust
       theHungeringBladeCard <- genCard Assets.theHungeringBlade1
       withProp @"bonded" bloodlusts self
+      withProp @"resources" 3 self
       withProp @"hand" [theHungeringBladeCard] self
       duringTurn self do
         self `playCard` theHungeringBladeCard
@@ -30,6 +31,7 @@ spec = describe "Bloodlust" do
       bloodlusts <- replicateM 3 $ genCard Treacheries.bloodlust
       theHungeringBladeCard <- genCard Assets.theHungeringBlade1
       withProp @"bonded" bloodlusts self
+      withProp @"resources" 3 self
       withProp @"hand" [theHungeringBladeCard] self
       duringTurn self do
         self `playCard` theHungeringBladeCard
@@ -46,6 +48,7 @@ spec = describe "Bloodlust" do
         bloodlusts <- replicateM 3 $ genCard Treacheries.bloodlust
         theHungeringBladeCard <- genCard Assets.theHungeringBlade1
         withProp @"bonded" bloodlusts self
+        withProp @"resources" 3 self
         withProp @"combat" 0 self
         withProp @"hand" [theHungeringBladeCard] self
         enemy <- testEnemy & prop @"health" 4 & prop @"fight" 0

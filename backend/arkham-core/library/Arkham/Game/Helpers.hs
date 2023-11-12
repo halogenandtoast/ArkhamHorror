@@ -1043,6 +1043,17 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
 
     let
+      alternateResourceCost = \case
+        AlternateResourceCost cardMatcher cost | c `cardMatch` cardMatcher -> Just cost
+        CanModify (AlternateResourceCost cardMatcher cost) | c `cardMatch` cardMatcher -> Just cost
+        _ -> Nothing
+      alternateResourceCosts = mapMaybe alternateResourceCost modifiers
+
+    canAffordAlternateResourceCost <- case alternateResourceCosts of
+      [] -> pure False
+      _ -> anyM (getCanAffordCost iid source (cdActions $ toCardDef c) windows') alternateResourceCosts
+
+    let
       canAffordCost = modifiedCardCost <= (availableResources + additionalResources)
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
@@ -1107,7 +1118,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
 
     pure
       $ (cdCardType pcDef /= SkillType)
-      && ((costStatus == PaidCost) || canAffordCost)
+      && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
       && ( #evade
@@ -2751,6 +2762,7 @@ targetTraits = \case
   AbilityTarget _ _ -> pure mempty
   BothTarget _ _ -> error "won't make sense, or need to determine later"
   BatchTarget {} -> pure mempty
+  ActiveCostTarget {} -> pure mempty
 
 targetMatches :: HasGame m => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case

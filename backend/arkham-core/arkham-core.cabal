@@ -834,6 +834,7 @@ library
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.TheCircleUndone
+      Arkham.Campaign.Campaigns.TheDreamEaters
       Arkham.Campaign.Campaigns.TheDunwichLegacy
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.ThePathToCarcosa
@@ -852,6 +853,7 @@ library
       Arkham.Campaigns.TheCircleUndone.Helpers
       Arkham.Campaigns.TheCircleUndone.Import
       Arkham.Campaigns.TheCircleUndone.Memento
+      Arkham.Campaigns.TheDreamEaters.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag
       Arkham.Campaigns.TheDunwichLegacy.FlavorText

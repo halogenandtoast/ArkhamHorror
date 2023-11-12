@@ -31,6 +31,7 @@ import Data.Map.Strict qualified as Map
 defaultCampaignRunner :: IsCampaign a => Runner a
 defaultCampaignRunner msg a = case msg of
   StartCampaign -> do
+    -- [ALERT] StartCampaign
     players <- allPlayers
     lead <- getActivePlayer
     pushAll
@@ -40,6 +41,7 @@ defaultCampaignRunner msg a = case msg of
     pure a
   CampaignStep (ScenarioStep sid) -> do
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]
+    -- [ALERT] Update TheDreamEaters if this alters a
     pure a
   CampaignStep (UpgradeDeckStep _) -> do
     players <- allPlayers

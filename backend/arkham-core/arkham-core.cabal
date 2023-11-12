@@ -633,6 +633,7 @@ library
       Arkham.Asset.Cards.MysteriousRaven
       Arkham.Asset.Cards.Newspaper
       Arkham.Asset.Cards.Newspaper2
+      Arkham.Asset.Cards.NightmareBauble3
       Arkham.Asset.Cards.NineOfRods3
       Arkham.Asset.Cards.Observed4
       Arkham.Asset.Cards.OccultLexicon
@@ -712,7 +713,7 @@ library
       Arkham.Asset.Cards.SergeantMonroe
       Arkham.Asset.Cards.ShardsOfTheVoid3
       Arkham.Asset.Cards.Sharpshooter3
-      Arkham.Asset.Cards.ShiningTrapezohedron5
+      Arkham.Asset.Cards.ShiningTrapezohedron4
       Arkham.Asset.Cards.Shotgun4
       Arkham.Asset.Cards.Showmanship
       Arkham.Asset.Cards.ShrewdAnalysis
@@ -2149,6 +2150,7 @@ library
       Arkham.Skill.Cards.Defiance2
       Arkham.Skill.Cards.DesperateSearch
       Arkham.Skill.Cards.DoubleOrNothing
+      Arkham.Skill.Cards.DreamParasite
       Arkham.Skill.Cards.Enraptured
       Arkham.Skill.Cards.EssenceOfTheDream
       Arkham.Skill.Cards.Eureka

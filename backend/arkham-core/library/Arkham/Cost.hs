@@ -150,6 +150,7 @@ data Cost
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
   | ShuffleBondedCost Int CardCode
   | ShuffleIntoDeckCost Target
+  | ShuffleAttachedCardIntoDeckCost Target CardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost

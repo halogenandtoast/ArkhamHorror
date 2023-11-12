@@ -386,6 +386,7 @@ allPlayerAssetCards =
       , mysteriousRaven
       , newspaper
       , newspaper2
+      , nightmareBauble3
       , nineOfRods3
       , observed4
       , occultLexicon
@@ -462,7 +463,7 @@ allPlayerAssetCards =
       , sergeantMonroe
       , shardsOfTheVoid3
       , sharpshooter3
-      , shiningTrapezohedron5
+      , shiningTrapezohedron4
       , shotgun4
       , showmanship
       , shrewdAnalysis
@@ -4003,14 +4004,24 @@ mindsEye2 =
     , cdLevel = 2
     }
 
-shiningTrapezohedron5 :: CardDef
-shiningTrapezohedron5 =
+shiningTrapezohedron4 :: CardDef
+shiningTrapezohedron4 =
   (asset "06329" "Shining Trapezohedron" 1 Mystic)
     { cdSkills = [#willpower, #intellect, #agility]
     , cdCardTraits = setFromList [Item, Relic]
     , cdSlots = [#accessory]
-    , cdLevel = 5
+    , cdLevel = 4
     , cdUnique = True
+    }
+
+nightmareBauble3 :: CardDef
+nightmareBauble3 =
+  (asset "06330" "Nightmare Bauble" 1 Survivor)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Item, Charm, Cursed]
+    , cdSlots = [#accessory]
+    , cdLevel = 3
+    , cdBondedWith = [(3, "06331")]
     }
 
 scavenging2 :: CardDef

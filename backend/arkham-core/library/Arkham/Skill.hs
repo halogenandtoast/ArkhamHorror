@@ -96,6 +96,7 @@ allSkills =
     , SomeSkillCard expeditiousRetreat1
     , SomeSkillCard surprisingFind1
     , SomeSkillCard theEyeOfTruth5
+    , SomeSkillCard dreamParasite
     , SomeSkillCard promiseOfPower
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied

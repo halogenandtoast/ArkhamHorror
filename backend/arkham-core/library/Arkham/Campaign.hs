@@ -36,5 +36,6 @@ allCampaigns =
     , ("03", SomeCampaign thePathToCarcosa)
     , ("04", SomeCampaign theForgottenAge)
     , ("05", SomeCampaign theCircleUndone)
+    , ("06", SomeCampaign theDreamEaters)
     , ("50", SomeCampaign returnToNightOfTheZealot)
     ]

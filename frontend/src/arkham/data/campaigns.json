@@ -950,5 +950,6 @@
       "scenarioId": "05325",
       "settings": []
     }
-  ]}
+  ]},
+  { "id": "06", "name": "The Dream-Eaters", "beta": true }
 ]

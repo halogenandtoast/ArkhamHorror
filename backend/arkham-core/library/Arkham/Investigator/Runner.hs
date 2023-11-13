@@ -441,6 +441,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
           5
           modifiers'
+      additionalStartingCards = concat $ mapMaybe (preview _AdditionalStartingCards) modifiers'
     -- investigatorHand is dangerous, but we want to use it here because we're
     -- only affecting cards actually in hand [I think]
     (discard, hand, deck) <-
@@ -448,7 +449,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         then pure (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
         else drawOpeningHand a (startingHandAmount - length investigatorHand)
     window <- checkWindows [mkAfter (Window.DrawingStartingHand iid)]
-    additionalHandCards <- traverse genCard investigatorStartsWithInHand
+    additionalHandCards <-
+      (additionalStartingCards <>) <$> traverse genCard investigatorStartsWithInHand
 
     -- if we have any cards with revelations on them, we need to trigger them
     let revelationCards = filter (hasRevelation . toCardDef) (additionalHandCards <> hand)

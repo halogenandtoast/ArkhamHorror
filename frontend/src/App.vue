@@ -67,6 +67,41 @@ body {
   background: #26283D;
 }
 
+.guardian-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0051";
+  }
+}
+
+.seeker-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0045";
+  }
+}
+
+.rogue-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0054";
+  }
+}
+
+.mystic-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0057";
+  }
+}
+
+.survivor-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0052";
+  }
+}
+
 .action-icon {
   &:before {
     font-family: "arkham";

@@ -2092,6 +2092,7 @@ library
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
       Arkham.Scenarios.BeforeTheBlackThrone.Story
+      Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
       Arkham.Scenarios.BlackStarsRise.Story
       Arkham.Scenarios.BloodOnTheAltar.Story
       Arkham.Scenarios.CarnevaleOfHorrors.FlavorText

@@ -131,7 +131,12 @@ const replaceIcons = function(body: string) {
     replace('{intellect}', '<span class="intellect-icon"></span>').
     replace('{combat}', '<span class="combat-icon"></span>').
     replace('{agility}', '<span class="agility-icon"></span>').
-    replace('{wild}', '<span class="wild-icon"></span>')
+    replace('{wild}', '<span class="wild-icon"></span>').
+    replace('{guardian}', '<span class="guardian-icon"></span>').
+    replace('{seeker}', '<span class="seeker-icon"></span>').
+    replace('{rogue}', '<span class="rogue-icon"></span>').
+    replace('{mystic}', '<span class="mystic-icon"></span>').
+    replace('{survivor}', '<span class="survivor-icon"></span>')
 }
 
 const label = function(body: string) {
@@ -142,7 +147,7 @@ const label = function(body: string) {
 
 <template>
   <Draggable v-if="title" class="modal" :class="{ hide }">
-    <template #handle><h2>{{title}}</h2></template>
+    <template #handle><h2 v-html="label(title)"></h2></template>
     <section class="status-bar">
       <div v-if="skillTestResults" class="skill-test-results">
         <CommittedSkills

@@ -4,7 +4,6 @@ module Arkham.Treachery.Cards.RexsCurseSpec (
 
 import TestImport.Lifted
 
-import Arkham.Investigator.Types
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 import Arkham.Treachery.Cards qualified as Cards
@@ -15,8 +14,8 @@ spec = describe "Rex's Curse" $ do
     rexsCurse <- genPlayerCard Cards.rexsCurse
     drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll [loadDeck investigator [rexsCurse], drawing]
-    assert $
-      selectAny
+    assert
+      $ selectAny
         ( TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
             <> treacheryIs Cards.rexsCurse
         )
@@ -32,8 +31,8 @@ spec = describe "Rex's Curse" $ do
       [ SetChaosTokens [PlusOne]
       , loadDeck investigator [rexsCurse]
       , drawing
-      , BeginSkillTest $
-          initSkillTest
+      , BeginSkillTest
+          $ initSkillTest
             (toId investigator)
             (TestSource mempty)
             TestTarget
@@ -43,8 +42,8 @@ spec = describe "Rex's Curse" $ do
     chooseOnlyOption "start skill test"
     chooseOnlyOption "trigger rex's curse"
     chooseOnlyOption "apply results"
-    assert $
-      selectAny
+    assert
+      $ selectAny
         ( TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
             <> treacheryIs Cards.rexsCurse
         )
@@ -62,12 +61,12 @@ spec = describe "Rex's Curse" $ do
       ]
     chooseOnlyOption "start skill test"
     -- we sneak in this modifier to cause the next test (with the same token) to fail instead
-    pushAndRun $
-      skillTestModifier (TestSource mempty) (toTarget investigator) (SkillModifier SkillIntellect (-1))
+    pushAndRun
+      $ skillTestModifier (TestSource mempty) (toTarget investigator) (SkillModifier SkillIntellect (-1))
     chooseOnlyOption "trigger rex's curse"
     chooseOnlyOption "apply results"
-    assert $
-      selectNone $
-        TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
-          <> treacheryIs Cards.rexsCurse
+    assert
+      $ selectNone
+      $ TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+      <> treacheryIs Cards.rexsCurse
     fieldAssert InvestigatorDeck ((== 1) . length) investigator

@@ -6,7 +6,6 @@ import TestImport.Lifted
 
 import Arkham.Action qualified as Action
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types as Location
 import Arkham.Projection
 import Arkham.SkillTest.Base
@@ -43,8 +42,8 @@ spec = describe "Rex Murphy" $ do
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
         , loadDeck rexMurphy cards
-        , BeginSkillTest $
-            initSkillTest
+        , BeginSkillTest
+            $ initSkillTest
               (toId rexMurphy)
               (TestSource mempty)
               TestTarget
@@ -71,8 +70,8 @@ spec = describe "Rex Murphy" $ do
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
         , loadDeck rexMurphy cards
-        , BeginSkillTest $
-            initSkillTest
+        , BeginSkillTest
+            $ initSkillTest
               (toId rexMurphy)
               (TestSource mempty)
               TestTarget

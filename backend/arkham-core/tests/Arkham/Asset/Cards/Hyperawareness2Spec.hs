@@ -6,7 +6,6 @@ import TestImport
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Token
 
 spec :: Spec
@@ -42,8 +41,8 @@ spec = describe "Hyperawareness (2)" $ do
     didPassTest `refShouldBe` True
 
   it "Adds 1 to agility check for each resource spent" $ gameTest $ \investigator -> do
-    updateInvestigator investigator $
-      \attrs -> attrs {investigatorAgility = 1, investigatorTokens = setTokens Resource 2 mempty}
+    updateInvestigator investigator
+      $ \attrs -> attrs {investigatorAgility = 1, investigatorTokens = setTokens Resource 2 mempty}
     putCardIntoPlay investigator Assets.hyperawareness2
 
     didPassTest <- didPassSkillTestBy investigator SkillAgility 0

@@ -6,7 +6,6 @@ import TestImport.Lifted
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

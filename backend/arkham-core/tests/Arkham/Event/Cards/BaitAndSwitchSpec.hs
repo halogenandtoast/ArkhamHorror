@@ -7,7 +7,6 @@ import TestImport.Lifted
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as EnemyAttrs
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Projection
 
 spec :: Spec

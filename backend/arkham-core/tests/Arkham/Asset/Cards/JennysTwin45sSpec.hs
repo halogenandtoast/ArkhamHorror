@@ -10,7 +10,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Uses (useCount)
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Matcher (AbilityMatcher (..), assetIs)
 import Arkham.Projection
 import Arkham.Token
@@ -26,9 +25,9 @@ spec = describe "Jenny's Twin .45s" $ do
         }
     pushAndRun $ playCard investigator (PlayerCard jennysTwin45s)
     activeCost <- getActiveCost
-    pushAndRunAll $
-      replicate 5 $
-        PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
+    pushAndRunAll
+      $ replicate 5
+      $ PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
     assetId <- selectJust $ assetIs Cards.jennysTwin45s
     assert $ fieldP AssetUses ((== 5) . useCount) assetId
 

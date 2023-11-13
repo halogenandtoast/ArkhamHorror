@@ -130,10 +130,15 @@ instance HasChaosTokenValue BeyondTheGatesOfSleep where
 
 instance RunMessage BeyondTheGatesOfSleep where
   runMessage msg s@(BeyondTheGatesOfSleep attrs) = case msg of
+    DrawStartingHands -> do
+      void $ runMessage msg attrs
+      iids <- allInvestigators
+      pushAll $ map (`ForInvestigator` Setup) iids
+      pure s
     ForInvestigator i Setup -> do
       let
         usedDreams = case fromJSON (scenarioMeta attrs) of
-          Error e -> error $ "failed to parse drams: " <> e
+          Error e -> error $ "failed to parse dreams: " <> e
           Success result -> result
       investigatorClass <- field InvestigatorClass i
       traits <- field InvestigatorTraits i
@@ -155,8 +160,6 @@ instance RunMessage BeyondTheGatesOfSleep where
       push $ chooseOne player $ map chooseDream availableDreams
       pure s
     Setup -> do
-      investigators <- allInvestigators
       push $ EndOfGame Nothing
-      pushAll $ map (`ForInvestigator` Setup) investigators
       pure s
     _ -> BeyondTheGatesOfSleep <$> runMessage msg attrs

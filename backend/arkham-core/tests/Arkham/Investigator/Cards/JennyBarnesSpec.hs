@@ -6,7 +6,6 @@ import TestImport.Lifted
 
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..), tokensL)
 import Arkham.Token
 
 spec :: Spec

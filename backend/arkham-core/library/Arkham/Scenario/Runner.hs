@@ -54,7 +54,7 @@ import Arkham.Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
@@ -1072,7 +1072,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure a
   SetupInvestigators -> do
     iids <- allInvestigatorIds
-    pushAll $ map SetupInvestigator iids
+    pushAll $ map SetupInvestigator iids <> [DrawStartingHands]
+    pure a
+  DrawStartingHands -> do
+    iids <- allInvestigatorIds
+    for_ (reverse iids) \iid -> do
+      beforeDrawingStartingHand <- checkWindows [mkWhen (Window.DrawingStartingHand iid)]
+      pushAll [beforeDrawingStartingHand, DrawStartingHand iid]
     pure a
   SetScenarioMeta v -> do
     pure $ a & metaL .~ v

@@ -8,7 +8,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
-import Arkham.Investigator.Types (Field (..), InvestigatorAttrs (..))
 import Arkham.Location.Types (LocationAttrs (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection

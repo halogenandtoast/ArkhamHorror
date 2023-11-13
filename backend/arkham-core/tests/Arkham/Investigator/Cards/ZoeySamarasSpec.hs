@@ -9,7 +9,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Game ()
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
 
 spec :: Spec
 spec = do

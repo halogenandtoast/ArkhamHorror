@@ -295,7 +295,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ([], investigatorDeck)
         investigatorStartsWith
     let (permanentCards, deck'') = partition (cdPermanent . toCardDef) (unDeck deck')
-    beforeDrawingStartingHand <- checkWindows [mkWhen (Window.DrawingStartingHand investigatorId)]
     let deck''' = filter ((`notElem` investigatorStartsWithInHand) . toCardDef) deck''
 
     let bonded = nub $ concatMap (cdBondedWith . toCardDef) (unDeck investigatorDeck)
@@ -312,10 +311,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing (Window.defaultWindows investigatorId)
          | card <- permanentCards
          ]
-      <> [ beforeDrawingStartingHand
-         , DrawStartingHand investigatorId
-         , TakeStartingResources investigatorId
-         ]
+      <> [TakeStartingResources investigatorId]
     pure $ a & (deckL .~ Deck deck''') & bondedCardsL .~ bondedCards
   DrawStartingHand iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)

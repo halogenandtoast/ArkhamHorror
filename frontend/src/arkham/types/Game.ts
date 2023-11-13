@@ -47,6 +47,7 @@ export interface Game {
   enemiesInVoid: Record<string, Enemy>;
   gameState: GameState;
   investigators: Record<string, Investigator>;
+  otherInvestigators: Record<string, Investigator>;
   leadInvestigatorId: string;
   activePlayerId: string;
   locations: Record<string, Location>;
@@ -153,6 +154,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     enemiesInVoid: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameState: gameStateDecoder,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
+    otherInvestigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     leadInvestigatorId: JsonDecoder.string,
     activePlayerId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),

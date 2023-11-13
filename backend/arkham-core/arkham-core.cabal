@@ -2033,12 +2033,15 @@ library
       Arkham.Scenario.Scenarios
       Arkham.Scenario.Scenarios.APhantomOfTruth
       Arkham.Scenario.Scenarios.AtDeathsDoorstep
+      Arkham.Scenario.Scenarios.AThousandShapesOfHorror
       Arkham.Scenario.Scenarios.BeforeTheBlackThrone
+      Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep
       Arkham.Scenario.Scenarios.BlackStarsRise
       Arkham.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Scenario.Scenarios.CurtainCall
+      Arkham.Scenario.Scenarios.DarkSideOfTheMoon
       Arkham.Scenario.Scenarios.DimCarcosa
       Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate
       Arkham.Scenario.Scenarios.EchoesOfThePast
@@ -2048,6 +2051,7 @@ library
       Arkham.Scenario.Scenarios.InTheClutchesOfChaos
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
+      Arkham.Scenario.Scenarios.PointOfNoReturn
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
@@ -2064,6 +2068,7 @@ library
       Arkham.Scenario.Scenarios.TheMidnightMasks
       Arkham.Scenario.Scenarios.TheMiskatonicMuseum
       Arkham.Scenario.Scenarios.ThePallidMask
+      Arkham.Scenario.Scenarios.TheSearchForKadath
       Arkham.Scenario.Scenarios.TheSecretName
       Arkham.Scenario.Scenarios.TheUnspeakableOath
       Arkham.Scenario.Scenarios.TheUntamedWilds
@@ -2073,7 +2078,10 @@ library
       Arkham.Scenario.Scenarios.TurnBackTime
       Arkham.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Scenario.Scenarios.UnionAndDisillusion
+      Arkham.Scenario.Scenarios.WakingNightmare
+      Arkham.Scenario.Scenarios.WeaverOfTheCosmos
       Arkham.Scenario.Scenarios.WhereDoomAwaits
+      Arkham.Scenario.Scenarios.WhereTheGodsDwell
       Arkham.Scenario.Types
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers

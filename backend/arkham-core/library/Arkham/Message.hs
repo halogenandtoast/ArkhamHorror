@@ -47,6 +47,7 @@ import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigate.Types
+import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Key
 import {-# SOURCE #-} Arkham.Location.Types
 import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated, RevealChaosToken)
@@ -294,6 +295,7 @@ pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source 
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | SetInvestigator PlayerId Investigator
   | ResolvedAbility Ability -- INTERNAL, Set Arbiter of Fates
   | -- Story Card Messages
     ReadStory InvestigatorId Card StoryMode (Maybe Target)

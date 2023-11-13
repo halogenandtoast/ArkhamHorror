@@ -236,7 +236,7 @@ payCost msg c iid skipAdditionalCosts cost = do
     ShuffleAttachedCardIntoDeckCost target cardMatcher -> do
       case target of
         AssetTarget aid -> do
-          cards <- field AssetCardsUnderneath aid
+          cards <- fieldMap AssetCardsUnderneath (filter (`cardMatch` cardMatcher)) aid
           case cards of
             [] -> error "no cards underneath"
             (x : _) -> push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [x]

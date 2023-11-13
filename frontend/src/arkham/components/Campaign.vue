@@ -24,8 +24,26 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
+const questionLabel = computed(() => {
+  const question = props.game.question[props.playerId]
+  return question.tag === 'QuestionLabel' ? question.label : null
+})
+
 const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
-const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === 'ChooseDeck')
+const chooseDeck = computed(() => {
+  const question = props.game.question[props.playerId]
+  const { tag } = question
+
+  if (tag === 'ChooseDeck') {
+    return true
+  }
+
+  if (tag === 'QuestionLabel') {
+    return question.question.tag === 'ChooseDeck'
+  }
+
+  return false
+})
 </script>
 
 <template>
@@ -33,6 +51,7 @@ const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === '
     <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" />
   </div>
   <div v-else-if="chooseDeck" id="game" class="game">
+    <h2 v-if="questionLabel" class="question-label">{{ questionLabel }}</h2>
     <ChooseDeck :game="game" :key="playerId" :playerId="playerId" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
@@ -147,5 +166,9 @@ const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === '
     opacity: .85;
     mix-blend-mode: saturation;
   }
+}
+
+.question-label {
+  text-align: center;
 }
 </style>

@@ -2,6 +2,7 @@
 
 module Arkham.Investigator (
   module Arkham.Investigator,
+  module Arkham.Investigator.Types,
 ) where
 
 import Arkham.Prelude
@@ -12,6 +13,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner hiding (allInvestigators)
+import Arkham.Investigator.Types
 import Data.Aeson (Result (..))
 import Data.Typeable
 

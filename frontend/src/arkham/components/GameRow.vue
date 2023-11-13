@@ -61,14 +61,27 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
           <a href="#delete" @click.prevent="$emit('delete')"><font-awesome-icon icon="trash" /></a>
         </div>
       </div>
-      <div class="investigators">
-        <div
-          v-for="investigator in game.investigators"
-          :key="investigator.id"
-          class="investigator"
-        >
-          <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
-            <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+      <div class="game-subdetails">
+        <div class="investigators">
+          <div
+            v-for="investigator in game.investigators"
+            :key="investigator.id"
+            class="investigator"
+          >
+            <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
+              <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+            </div>
+          </div>
+        </div>
+        <div v-if="Object.keys(game.otherInvestigators).length > 0" class="other-investigators">
+          <div
+            v-for="investigator in game.otherInvestigators"
+            :key="investigator.id"
+            class="investigator"
+          >
+            <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
+              <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+            </div>
           </div>
         </div>
         <div class="game-difficulty">{{difficulty}}</div>
@@ -197,10 +210,21 @@ h2 {
   margin: -18px;
 }
 
-.investigators {
+.game-subdetails {
   display: flex;
   background: rgba(255,255,255,0.02);
   padding: 10px;
+  flex-grow: 1;
+  position: relative;
+  gap: 10px;
+}
+
+.investigators {
+  border-radius: 10px;
+  display: flex;
+  background: rgba(255,255,255,0.02);
+  padding: 10px;
+  flex: 1;
 }
 
 .game-title {
@@ -246,10 +270,19 @@ h2 {
   }
 }
 
+.other-investigators {
+  border-radius: 10px;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.5);
+  flex: 1;
+  padding: 10px;
+  opacity: 0.5;
+}
+
 .game-difficulty {
-  margin-left: auto;
-  align-self: flex-end;
-  justify-self: flex-end;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
   padding: 5px 15px;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 10px;

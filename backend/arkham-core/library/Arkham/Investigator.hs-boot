@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Investigator where
+module Arkham.Investigator (module Arkham.Investigator, module Arkham.Investigator.Types) where
 
 import Arkham.Prelude
 
-import Arkham.Investigator.Types
+import {-# SOURCE #-} Arkham.Investigator.Types
 
 instance FromJSON Investigator

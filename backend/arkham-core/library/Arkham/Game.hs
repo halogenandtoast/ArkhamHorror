@@ -189,6 +189,7 @@ import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Aeson.Types (parse)
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal (getMonoidalMap)
 import Data.Map.Monoidal qualified as MonoidalMap
@@ -533,6 +534,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
                 g
             )
+      , "otherInvestigators" .= toJSON otherInvestigators
       , "enemies"
           .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
       , "enemiesInVoid"
@@ -590,6 +592,36 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "question" .= toJSON gameQuestion
       , "cards" .= toJSON gameCards
       ]
+   where
+    emptyAdditionalData =
+      object
+        [ "additionalActions" .= ([] :: [()])
+        , "engagedEnemies" .= ([] :: [()])
+        , "assets" .= ([] :: [()])
+        , "events" .= ([] :: [()])
+        , "skills" .= ([] :: [()])
+        , "treacheries" .= ([] :: [()])
+        ]
+    otherInvestigators = case gameMode of
+      This (Campaign c) -> campaignOtherInvestigators (toJSON c)
+      That _ -> mempty
+      These (Campaign c) _ -> campaignOtherInvestigators (toJSON c)
+    campaignOtherInvestigators j = case parse (withObject "" \o -> o .: "otherCampaignAttrs") j of
+      Error _ -> mempty
+      Success attrs ->
+        Map.fromList
+          . map
+            ( \iid ->
+                ( iid
+                , ( (`with` emptyAdditionalData)
+                      . (`with` ConnectionData [])
+                      . (`with` ModifierData [])
+                      . WithDeckSize
+                      $ lookupInvestigator iid (PlayerId nil)
+                  )
+                )
+            )
+          $ Map.keys (campaignDecks attrs)
 
 getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator
 getPlayerInvestigator pid = do
@@ -3991,6 +4023,27 @@ runGameMessage msg g = case msg of
     let investigator = lookupInvestigator iid' playerId
     let iid = toId investigator
     push $ InitDeck iid (Deck deck)
+    let activeInvestigatorF =
+          if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
+        turnPlayerInvestigatorF =
+          if gameTurnPlayerInvestigatorId g `elem` map Just replaceIds
+            then set turnPlayerInvestigatorIdL (Just iid)
+            else id
+    pure
+      $ g
+      & ( entitiesL
+            . investigatorsL
+            %~ insertEntity investigator
+            . Map.filter ((/= playerId) . attr investigatorPlayerId)
+        )
+      & activeInvestigatorF
+      & turnPlayerInvestigatorF
+  SetInvestigator playerId investigator -> do
+    -- if the player is changing decks during the game (i.e. prologue investigators) we need to replace the old investigator
+    let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
+        replaceIds = InvestigatorId "00000" : toList mOldId
+
+    let iid = toId investigator
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =

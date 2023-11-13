@@ -170,6 +170,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddCurseTokenCost n -> "Add " <> tshow n <> " curse " <> pluralize n "token" <> "to the chaos bag"
   ShuffleIntoDeckCost _ -> "Shuffle into deck"
   ShuffleBondedCost n cCode -> case lookupCardDef cCode of

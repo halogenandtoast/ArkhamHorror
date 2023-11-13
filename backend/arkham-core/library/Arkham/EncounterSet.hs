@@ -101,6 +101,14 @@ data EncounterSet
   | MusicOfTheDamned
   | SecretsOfTheUniverse
   | BeforeTheBlackThrone
+  | BeyondTheGatesOfSleep
+  | WakingNightmare
+  | TheSearchForKadath
+  | AThousandShapesOfHorror
+  | DarkSideOfTheMoon
+  | PointOfNoReturn
+  | WhereTheGodsDwell
+  | WeaverOfTheCosmos
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

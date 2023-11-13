@@ -14,6 +14,9 @@ import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Id
+import Arkham.Investigator (Investigator, lookupInvestigator)
+import Arkham.Investigator.Types (InvestigatorAttrs)
+import Arkham.Projection
 
 data CampaignPart = TheDreamQuest | TheWebOfDreams
   deriving stock (Show, Eq, Generic)
@@ -27,6 +30,8 @@ data Metadata = Metadata
   { campaignMode :: CampaignMode
   , currentCampaignMode :: Maybe CampaignPart
   , otherCampaignAttrs :: Maybe CampaignAttrs
+  , currentCampaignPlayers :: Map PlayerId InvestigatorAttrs
+  , otherCampaignPlayers :: Map PlayerId InvestigatorAttrs
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -37,7 +42,7 @@ newtype TheDreamEaters = TheDreamEaters (CampaignAttrs `With` Metadata)
 theDreamEaters :: Difficulty -> TheDreamEaters
 theDreamEaters difficulty =
   campaign
-    (TheDreamEaters . (`with` Metadata FullMode Nothing Nothing))
+    (TheDreamEaters . (`with` Metadata FullMode Nothing Nothing mempty mempty))
     (CampaignId "06")
     "The Dream-Eaters"
     difficulty
@@ -250,52 +255,144 @@ instance RunMessage TheDreamEaters where
       pure c
     CampaignStep (PrologueStepPart 2) -> do
       players <- allPlayers
-      pushAll $ map chooseDeck players
+      pushAll
+        $ map chooseDeck players
+        <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
       pure
         $ TheDreamEaters
         $ attrs {campaignChaosBag = initChaosBag TheDreamQuest (campaignDifficulty attrs)}
-        `with` Metadata (PartialMode TheDreamQuest) Nothing Nothing
+        `with` meta {campaignMode = PartialMode TheDreamQuest}
     CampaignStep (PrologueStepPart 3) -> do
       players <- allPlayers
-      pushAll $ map chooseDeck players
+      pushAll
+        $ map chooseDeck players
+        <> [NextCampaignStep (Just WakingNightmare)]
       pure
         $ TheDreamEaters
         $ attrs {campaignChaosBag = initChaosBag TheWebOfDreams (campaignDifficulty attrs)}
-        `with` Metadata (PartialMode TheWebOfDreams) Nothing Nothing
+        `with` meta {campaignMode = PartialMode TheWebOfDreams}
     CampaignStep (PrologueStepPart 11) -> do
       players <- allPlayers
-      pushAll $ map chooseDeck players <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
+      pushAll
+        $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+        <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
+      let difficulty = campaignDifficulty attrs
       pure
         $ TheDreamEaters
-        $ attrs {campaignChaosBag = initChaosBag TheDreamQuest (campaignDifficulty attrs)}
-        `with` Metadata FullMode (Just TheDreamQuest) (Just attrs)
+        $ attrs {campaignChaosBag = initChaosBag TheDreamQuest difficulty}
+        `with` meta
+          { currentCampaignMode = Just TheDreamQuest
+          , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheWebOfDreams difficulty})
+          }
     CampaignStep (PrologueStepPart 12) -> do
       players <- allPlayers
-      pushAll $ map chooseDeck players <> [NextCampaignStep (Just WakingNightmare)]
+      pushAll
+        $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+        <> [NextCampaignStep (Just WakingNightmare)]
+      let difficulty = campaignDifficulty attrs
       pure
         $ TheDreamEaters
-        $ attrs {campaignChaosBag = initChaosBag TheWebOfDreams (campaignDifficulty attrs)}
-        `with` Metadata FullMode (Just TheWebOfDreams) (Just attrs)
+        $ attrs {campaignChaosBag = initChaosBag TheWebOfDreams difficulty}
+        `with` meta
+          { currentCampaignMode = Just TheWebOfDreams
+          , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheDreamQuest difficulty})
+          }
     CampaignStep s@(ScenarioStep _) -> do
       void $ defaultCampaignRunner msg c
       case s of
         _ | s `elem` theDreamQuestSteps -> do
-          pure
-            $ if currentCampaignMode meta == Just TheWebOfDreams
-              then
-                TheDreamEaters
-                  ( fromJustNote "not full campaign" (otherCampaignAttrs meta)
-                      `with` Metadata (campaignMode meta) (Just TheDreamQuest) (Just attrs)
+          if currentCampaignMode meta == Just TheWebOfDreams
+            then do
+              investigators <- allInvestigators
+              currentPlayers <- for investigators \i -> do
+                player <- getPlayer i
+                iattrs <- getAttrs @Investigator i
+                pure (player, iattrs)
+
+              if (s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs)
+                then do
+                  players <- allPlayers
+                  pushAll $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+                else do
+                  for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+                    let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+                    push $ SetInvestigator pid i
+              let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+              pure
+                $ TheDreamEaters
+                  ( newAttrs
+                      { campaignCompletedSteps = campaignCompletedSteps attrs
+                      , campaignStep = s
+                      , campaignLog = campaignLog attrs
+                      , campaignResolutions = campaignResolutions attrs
+                      , campaignModifiers = campaignModifiers attrs
+                      }
+                      `with` meta
+                        { currentCampaignMode = Just TheDreamQuest
+                        , otherCampaignAttrs = Just attrs
+                        , currentCampaignPlayers = otherCampaignPlayers meta
+                        , otherCampaignPlayers = mapFromList currentPlayers
+                        }
                   )
-              else TheDreamEaters (attrs `with` meta)
+            else pure $ TheDreamEaters (attrs `with` meta)
         _ | s `elem` theWebOfDreamsSteps -> do
-          pure
-            $ if currentCampaignMode meta == Just TheDreamQuest
-              then
-                TheDreamEaters
-                  ( fromJustNote "not full campaign" (otherCampaignAttrs meta)
-                      `with` Metadata (campaignMode meta) (Just TheWebOfDreams) (Just attrs)
+          if currentCampaignMode meta == Just TheDreamQuest
+            then do
+              investigators <- allInvestigators
+              currentPlayers <- for investigators \i -> do
+                player <- getPlayer i
+                iattrs <- getAttrs @Investigator i
+                pure (player, iattrs)
+              if (s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs)
+                then do
+                  players <- allPlayers
+                  pushAll $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+                else do
+                  for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+                    let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+                    push $ SetInvestigator pid i
+              let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+              pure
+                $ TheDreamEaters
+                  ( newAttrs
+                      { campaignCompletedSteps = campaignCompletedSteps attrs
+                      , campaignStep = s
+                      , campaignLog = campaignLog attrs
+                      , campaignResolutions = campaignResolutions attrs
+                      , campaignModifiers = campaignModifiers attrs
+                      }
+                      `with` meta
+                        { currentCampaignMode = Just TheWebOfDreams
+                        , otherCampaignAttrs = Just attrs
+                        , currentCampaignPlayers = otherCampaignPlayers meta
+                        , otherCampaignPlayers = mapFromList currentPlayers
+                        }
                   )
-              else TheDreamEaters (attrs `with` meta)
+            else pure $ TheDreamEaters (attrs `with` meta)
         _ -> error $ "Unknown scenario: " <> show s
+    CampaignStep (InterludeStep 1 _) -> do
+      case campaignMode meta of
+        PartialMode TheWebOfDreams -> push $ CampaignStep (InterludeStepPart 1 Nothing 3)
+        _ -> push $ CampaignStep (InterludeStepPart 1 Nothing 1)
+      pure c
+    CampaignStep (InterludeStepPart 1 _ 1) -> do
+      case campaignMode meta of
+        FullMode -> push $ CampaignStep (InterludeStepPart 1 Nothing 2)
+        _ -> push $ NextCampaignStep (Just TheSearchForKadath)
+      pure c
+    CampaignStep (InterludeStepPart 1 _ 2) -> do
+      push $ CampaignStep (InterludeStepPart 1 Nothing 3)
+      pure c
+    CampaignStep (InterludeStepPart 1 _ 3) -> do
+      case campaignMode meta of
+        FullMode -> do
+          lead <- getLeadPlayer
+          push
+            $ questionLabel "Proceed to which scenario" lead
+            $ ChooseOne
+              [ Label "The Search for Kadath" [NextCampaignStep (Just TheSearchForKadath)]
+              , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
+              ]
+        _ -> push $ NextCampaignStep (Just AThousandShapesOfHorror)
+      pure c
     _ -> defaultCampaignRunner msg c

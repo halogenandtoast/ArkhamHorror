@@ -67,6 +67,7 @@ data Target
   | TarotTarget TarotCard
   | BatchTarget BatchId
   | ActiveCostTarget ActiveCostId
+  | LabeledTarget Text Target -- Use with caution, this is not a real target
   deriving stock (Show, Eq, Ord, Data)
 
 investigatorTarget :: Target -> Maybe InvestigatorId

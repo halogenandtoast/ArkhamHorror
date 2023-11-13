@@ -592,6 +592,7 @@ data CardMatcher
   | NonWeakness
   | NonSignature
   | WeaknessCard
+  | BasicWeaknessCard
   | NonExceptional
   | AnyCard
   | CardWithVengeance

@@ -5,22 +5,44 @@ module Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep (
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes
+import Arkham.Classes.HasGame
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
 import Arkham.Trait (
-  Trait (Assistant, Criminal, Drifter, Hunter, Medic, Miskatonic, Scholar, Veteran, Wayfarer),
+  Trait (
+    Assistant,
+    Criminal,
+    Drifter,
+    Hunter,
+    Illicit,
+    Medic,
+    Miskatonic,
+    Relic,
+    Scholar,
+    Supply,
+    Tactic,
+    Tome,
+    Veteran,
+    Wayfarer,
+    Weapon
+  ),
  )
 import Data.Aeson (Result (..))
+import Data.List.NonEmpty qualified as NE
 
 newtype BeyondTheGatesOfSleep = BeyondTheGatesOfSleep ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -72,10 +94,68 @@ dreamLabel = \case
   NeutralDream1 -> "Neutral Dream 1"
   NeutralDream2 -> "Neutral Dream 2"
 
-dreamEffect :: InvestigatorId -> Dream -> [Message]
+dreamEffect :: HasGame m => InvestigatorId -> Dream -> m Message
 dreamEffect iid = \case
-  MysticDream -> [search iid GameSource iid [fromDeck] (CardWithClass Mystic) (PlayFound iid 1)]
-  _ -> []
+  GuardianDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Guardian) (PlayFound iid 1)
+  SeekerDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Seeker) (PlayFound iid 1)
+  RogueDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Rogue) (PlayFound iid 1)
+  MysticDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Mystic) (PlayFound iid 1)
+  SurvivorDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Survivor) (PlayFound iid 1)
+  CriminalDream ->
+    pure
+      $ search
+        iid
+        GameSource
+        iid
+        [fromDeck]
+        (oneOf [CardWithTrait Criminal, CardWithTrait Illicit])
+        (PlayFound iid 1)
+  DrifterDream ->
+    pure
+      $ search
+        iid
+        GameSource
+        iid
+        [fromDeck]
+        BasicWeaknessCard
+        (DeferSearchedToTarget $ LabeledTarget "Drifter" ScenarioTarget)
+  HunterDream -> pure $ search iid GameSource iid [fromDeck] (CardWithTrait Weapon) (PlayFound iid 1)
+  MedicOrAssistantDream -> do
+    otherInvestigators <- selectList $ NotInvestigator $ InvestigatorWithId iid
+    player <- getPlayer iid
+    pure
+      $ chooseOne
+        player
+        [ targetLabel
+          investigator
+          [ takeResources investigator ScenarioSource 2
+          , setupModifier ScenarioSource investigator $ StartingHand 1
+          ]
+        | investigator <- otherInvestigators
+        ]
+  MiskatonicOrScholarDream -> pure $ search iid GameSource iid [fromDeck] (CardWithTrait Tome) (PlayFound iid 1)
+  VeteranDream ->
+    pure
+      $ search
+        iid
+        GameSource
+        iid
+        [fromDeck]
+        (oneOf [CardWithTrait Tactic, CardWithTrait Supply])
+        (DeferSearchedToTarget $ LabeledTarget "Veteran" ScenarioTarget)
+  WayfarerDream ->
+    pure
+      $ search
+        iid
+        GameSource
+        iid
+        [fromDeck]
+        (oneOf [CardWithTrait Wayfarer, CardWithTrait Relic])
+        (PlayFound iid 1)
+  NeutralDream1 -> do
+    pure $ takeResources iid ScenarioSource 2
+  NeutralDream2 -> do
+    pure $ setupModifier ScenarioSource iid $ StartingHand 1
 
 dreamsMap :: Map Dream FlavorText
 dreamsMap =
@@ -152,14 +232,75 @@ instance RunMessage BeyondTheGatesOfSleep where
         chooseDream dream =
           Label
             (dreamLabel dream)
-            $ [ story players $ findWithDefault (error "missing dream") dream dreamsMap
-              , SetScenarioMeta $ toJSON $ dream : usedDreams
-              ]
-            <> dreamEffect i dream
+            . ( [ story players $ findWithDefault (error "missing dream") dream dreamsMap
+                , SetScenarioMeta $ toJSON $ dream : usedDreams
+                ]
+                  <>
+              )
+            . pure
+            <$> dreamEffect i dream
 
-      push $ chooseOne player $ map chooseDream availableDreams
+      choices <- traverse chooseDream availableDreams
+
+      push $ chooseOne player choices
       pure s
     Setup -> do
-      push $ EndOfGame Nothing
+      pure s
+    SearchFound iid (LabeledTarget "Drifter" ScenarioTarget) _ cards | notNull cards -> do
+      player <- getPlayer iid
+      playerCount <- getPlayerCount
+      let
+        weaknessFilter =
+          if playerCount < 2
+            then notElem MultiplayerOnly . cdDeckRestrictions
+            else const True
+      newWeakness <- genCard =<< sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses)
+      pushAll
+        [ FocusCards cards
+        , questionLabel "Replace basic weakness with random and take 1 trauma of your choice?" player
+            $ ChooseOne
+            $ Label "Do not replace" [UnfocusCards]
+            : [ targetLabel
+                (toCardId card)
+                [ UnfocusCards
+                , RemoveCardFromSearch iid (toCardId card)
+                , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [newWeakness]
+                , chooseOne
+                    player
+                    [ Label "Take 1 Physical trauma" [SufferTrauma iid 1 0]
+                    , Label "Take 1 Mental trauma" [SufferTrauma iid 0 1]
+                    ]
+                ]
+              | card <- cards
+              ]
+        ]
+      pure s
+    SearchFound _ (LabeledTarget "Veteran" ScenarioTarget) _ _ -> do
+      push $ DoStep 2 msg
+      pure s
+    DoStep n (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck cards) | notNull cards -> do
+      player <- getPlayer iid
+      pushAll
+        [ FocusCards cards
+        , questionLabel
+            ( "Choose up to "
+                <> tshow n
+                <> " Tactic and/or Supply cards and begin this scenario with them as additional cards in your opening hand."
+            )
+            player
+            $ ChooseOne
+            $ Label "Do not take any" [UnfocusCards]
+            : [ targetLabel
+                (toCardId card)
+                $ [ UnfocusCards
+                  , RemoveCardFromSearch iid (toCardId card)
+                  , setupModifier ScenarioSource iid (AdditionalStartingCards [card])
+                  ]
+                <> [ DoStep 1 (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck (deleteFirst card cards))
+                   | n > 1
+                   ]
+              | card <- cards
+              ]
+        ]
       pure s
     _ -> BeyondTheGatesOfSleep <$> runMessage msg attrs

@@ -49,6 +49,7 @@ data ModifierType
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
   | AdditionalStartingUses Int
+  | AdditionalStartingCards [Card]
   | AdditionalTargets Int
   | AlternateEvadeField (SomeField Enemy)
   | AlternateFightField (SomeField Enemy)
@@ -281,6 +282,11 @@ data ModifierType
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data)
+
+_AdditionalStartingCards :: Prism' ModifierType [Card]
+_AdditionalStartingCards = prism' AdditionalStartingCards $ \case
+  AdditionalStartingCards n -> Just n
+  _ -> Nothing
 
 _AlternateSuccessfullInvestigation :: Prism' ModifierType Target
 _AlternateSuccessfullInvestigation = prism' AlternateSuccessfullInvestigation $ \case

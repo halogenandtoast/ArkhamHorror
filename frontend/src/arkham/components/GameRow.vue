@@ -275,6 +275,7 @@ h2 {
   text-transform: uppercase;
   background: rgba(0, 0, 0, 0.5);
   flex: 1;
+  display: flex;
   padding: 10px;
   opacity: 0.5;
 }

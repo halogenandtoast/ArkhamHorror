@@ -854,6 +854,8 @@ library
       Arkham.Campaigns.TheCircleUndone.Import
       Arkham.Campaigns.TheCircleUndone.Memento
       Arkham.Campaigns.TheDreamEaters.CampaignSteps
+      Arkham.Campaigns.TheDreamEaters.FlavorText
+      Arkham.Campaigns.TheDreamEaters.Import
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag
       Arkham.Campaigns.TheDunwichLegacy.FlavorText

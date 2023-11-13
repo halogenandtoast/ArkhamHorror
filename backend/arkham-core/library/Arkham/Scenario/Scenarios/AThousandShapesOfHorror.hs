@@ -33,5 +33,8 @@ instance HasChaosTokenValue AThousandShapesOfHorror where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage AThousandShapesOfHorror where
-  runMessage msg (AThousandShapesOfHorror attrs) =
-    AThousandShapesOfHorror <$> runMessage msg attrs
+  runMessage msg s@(AThousandShapesOfHorror attrs) = case msg of
+    Setup -> do
+      push $ EndOfGame Nothing
+      pure s
+    _ -> AThousandShapesOfHorror <$> runMessage msg attrs

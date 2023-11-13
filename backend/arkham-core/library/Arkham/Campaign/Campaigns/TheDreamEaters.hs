@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Campaign.Runner
 import Arkham.CampaignStep
-import Arkham.Campaigns.TheDreamEaters.CampaignSteps
+import Arkham.Campaigns.TheDreamEaters.Import
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
@@ -52,19 +52,86 @@ instance IsCampaign TheDreamEaters where
   nextStep a@(TheDreamEaters (_ `With` meta)) = case campaignStep (toAttrs a) of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     BeyondTheGatesOfSleep ->
-      case campaignMode meta of
-        FullMode ->
-          if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
-            then Just $ InterludeStep 1 Nothing
-            else Just (UpgradeDeckStep WakingNightmare)
-        PartialMode _ -> Just $ InterludeStep 1 Nothing
+      Just
+        ( UpgradeDeckStep
+            $ case campaignMode meta of
+              FullMode ->
+                if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
+                  then InterludeStep 1 Nothing
+                  else WakingNightmare
+              PartialMode _ -> InterludeStep 1 Nothing
+        )
     WakingNightmare ->
-      case campaignMode meta of
-        FullMode ->
-          if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
-            then Just $ InterludeStep 1 Nothing
-            else Just (UpgradeDeckStep BeyondTheGatesOfSleep)
-        PartialMode _ -> Just $ InterludeStep 1 Nothing
+      Just
+        ( UpgradeDeckStep
+            $ case campaignMode meta of
+              FullMode ->
+                if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
+                  then InterludeStep 1 Nothing
+                  else BeyondTheGatesOfSleep
+              PartialMode _ -> InterludeStep 1 Nothing
+        )
+    InterludeStep 1 _ -> error $ "Unhandled campaign step: " <> show a
+    TheSearchForKadath ->
+      Just
+        ( UpgradeDeckStep
+            $ case campaignMode meta of
+              FullMode ->
+                if AThousandShapesOfHorror `elem` campaignCompletedSteps (toAttrs a)
+                  then InterludeStep 2 Nothing
+                  else AThousandShapesOfHorror
+              PartialMode _ -> DarkSideOfTheMoon
+        )
+    AThousandShapesOfHorror ->
+      Just
+        ( UpgradeDeckStep
+            $ case campaignMode meta of
+              FullMode ->
+                if TheSearchForKadath `elem` campaignCompletedSteps (toAttrs a)
+                  then InterludeStep 2 Nothing
+                  else TheSearchForKadath
+              PartialMode _ -> PointOfNoReturn
+        )
+    InterludeStep 2 _ -> error $ "Unhandled campaign step: " <> show a
+    DarkSideOfTheMoon ->
+      Just
+        ( UpgradeDeckStep
+            $ case campaignMode meta of
+              FullMode ->
+                if PointOfNoReturn `elem` campaignCompletedSteps (toAttrs a)
+                  then InterludeStep 3 Nothing
+                  else PointOfNoReturn
+              PartialMode _ -> WhereTheGodsDwell
+        )
+    PointOfNoReturn ->
+      Just
+        ( UpgradeDeckStep
+            $ case campaignMode meta of
+              FullMode ->
+                if DarkSideOfTheMoon `elem` campaignCompletedSteps (toAttrs a)
+                  then InterludeStep 3 Nothing
+                  else DarkSideOfTheMoon
+              PartialMode _ -> WeaverOfTheCosmos
+        )
+    InterludeStep 3 _ -> error $ "Unhandled campaign step: " <> show a
+    WhereTheGodsDwell ->
+      Just
+        ( case campaignMode meta of
+            FullMode ->
+              if WeaverOfTheCosmos `elem` campaignCompletedSteps (toAttrs a)
+                then EpilogueStep
+                else WeaverOfTheCosmos
+            PartialMode _ -> EpilogueStep
+        )
+    WeaverOfTheCosmos ->
+      Just
+        ( case campaignMode meta of
+            FullMode ->
+              if WhereTheGodsDwell `elem` campaignCompletedSteps (toAttrs a)
+                then EpilogueStep
+                else WhereTheGodsDwell
+            PartialMode _ -> EpilogueStep
+        )
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -236,13 +303,16 @@ instance RunMessage TheDreamEaters where
       pure c
     CampaignStep PrologueStep -> do
       lead <- getActivePlayer
-      push
-        $ questionLabel "Which mode would you like to play" lead
-        $ ChooseOne
-          [ Label "Full Campaign" [CampaignStep (PrologueStepPart 1)]
-          , Label "The Dream-Quest" [CampaignStep (PrologueStepPart 2)]
-          , Label "The Web of Dreams" [CampaignStep (PrologueStepPart 3)]
-          ]
+      players <- allPlayers
+      pushAll
+        [ story players prologue
+        , questionLabel "Which mode would you like to play" lead
+            $ ChooseOne
+              [ Label "Full Campaign" [CampaignStep (PrologueStepPart 1)]
+              , Label "The Dream-Quest" [CampaignStep (PrologueStepPart 2)]
+              , Label "The Web of Dreams" [CampaignStep (PrologueStepPart 3)]
+              ]
+        ]
       pure c
     CampaignStep (PrologueStepPart 1) -> do
       lead <- getActivePlayer
@@ -394,5 +464,23 @@ instance RunMessage TheDreamEaters where
               , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
               ]
         _ -> push $ NextCampaignStep (Just AThousandShapesOfHorror)
+      pure c
+    CampaignStep (InterludeStep 2 _) -> do
+      lead <- getLeadPlayer
+      push
+        $ questionLabel "Proceed to which scenario" lead
+        $ ChooseOne
+          [ Label "Dark Side of the Moon" [NextCampaignStep (Just DarkSideOfTheMoon)]
+          , Label "Point of No Return" [NextCampaignStep (Just PointOfNoReturn)]
+          ]
+      pure c
+    CampaignStep (InterludeStep 3 _) -> do
+      lead <- getLeadPlayer
+      push
+        $ questionLabel "Proceed to which scenario" lead
+        $ ChooseOne
+          [ Label "Where the Gods Dwell" [NextCampaignStep (Just WhereTheGodsDwell)]
+          , Label "Weaver of the Cosmos" [NextCampaignStep (Just WeaverOfTheCosmos)]
+          ]
       pure c
     _ -> defaultCampaignRunner msg c

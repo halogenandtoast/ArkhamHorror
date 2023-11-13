@@ -33,5 +33,8 @@ instance HasChaosTokenValue WhereTheGodsDwell where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WhereTheGodsDwell where
-  runMessage msg (WhereTheGodsDwell attrs) =
-    WhereTheGodsDwell <$> runMessage msg attrs
+  runMessage msg s@(WhereTheGodsDwell attrs) = case msg of
+    Setup -> do
+      push $ EndOfGame Nothing
+      pure s
+    _ -> WhereTheGodsDwell <$> runMessage msg attrs

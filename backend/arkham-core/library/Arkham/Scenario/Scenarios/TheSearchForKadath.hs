@@ -33,5 +33,8 @@ instance HasChaosTokenValue TheSearchForKadath where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheSearchForKadath where
-  runMessage msg (TheSearchForKadath attrs) =
-    TheSearchForKadath <$> runMessage msg attrs
+  runMessage msg s@(TheSearchForKadath attrs) = case msg of
+    Setup -> do
+      push $ EndOfGame Nothing
+      pure s
+    _ -> TheSearchForKadath <$> runMessage msg attrs

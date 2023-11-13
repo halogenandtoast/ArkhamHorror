@@ -861,6 +861,7 @@ data Message
   | ReplacedInvestigatorAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId Card
   | TakeResources InvestigatorId Int Source Bool
+  | DrawStartingHands
   | DrawStartingHand InvestigatorId
   | TakeStartingResources InvestigatorId
   | TakenActions InvestigatorId [Action]

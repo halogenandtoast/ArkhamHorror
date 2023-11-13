@@ -27,7 +27,13 @@ import Arkham.GameValue as X
 import Arkham.Helpers as X
 import Arkham.Helpers.Message as X hiding (createEnemy, putCardIntoPlay)
 import Arkham.Id as X
-import Arkham.Investigator as X hiding (allInvestigators)
+import Arkham.Investigator as X hiding (
+  InvestigatorDamage,
+  InvestigatorDefeated,
+  InvestigatorResigned,
+  allInvestigators,
+  foundCardsL,
+ )
 import Arkham.Location as X
 import Arkham.Scenario as X
 import Arkham.SkillType as X

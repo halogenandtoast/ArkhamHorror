@@ -7,21 +7,21 @@ import TestImport hiding (EnemyDamage)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
 import Arkham.Token
 
 spec :: Spec
 spec = describe "Fire Axe" $ do
-  it "gives +1 damage if you have no resources" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorTokens = setTokens Resource 0 mempty, investigatorCombat = 3}
+  it "gives +1 damage if you have no resources"
+    $ gameTest
+    $ \investigator -> do
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorTokens = setTokens Resource 0 mempty, investigatorCombat = 3}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemyWith $
-        \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+      enemy <- testEnemyWith
+        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location
@@ -33,14 +33,15 @@ spec = describe "Fire Axe" $ do
       chooseOnlyOption "Apply Results"
       fieldAssert EnemyDamage (== 2) enemy
 
-  it "allows you to spend 1 resource to get +2 combat" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorTokens = setTokens Resource 2 mempty, investigatorCombat = 1}
+  it "allows you to spend 1 resource to get +2 combat"
+    $ gameTest
+    $ \investigator -> do
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorTokens = setTokens Resource 2 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemyWith $
-        \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+      enemy <- testEnemyWith
+        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location
@@ -75,14 +76,15 @@ spec = describe "Fire Axe" $ do
       chooseOnlyOption "Apply Results"
       fieldAssert EnemyDamage (== 1) enemy
 
-  it "if you spend your resources before tokens, you still get +1 damage" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorTokens = setTokens Resource 1 mempty, investigatorCombat = 1}
+  it "if you spend your resources before tokens, you still get +1 damage"
+    $ gameTest
+    $ \investigator -> do
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorTokens = setTokens Resource 1 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemyWith $
-        \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+      enemy <- testEnemyWith
+        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocationWith id
 
       pushAndRun $ SetChaosTokens [Zero]
@@ -106,14 +108,15 @@ spec = describe "Fire Axe" $ do
       chooseOnlyOption "Apply Results"
       fieldAssert EnemyDamage (== 2) enemy
 
-  it "limit of 3 resources can be spent" $
-    gameTest $ \investigator -> do
-      updateInvestigator investigator $
-        \attrs -> attrs {investigatorTokens = setTokens Resource 4 mempty, investigatorCombat = 1}
+  it "limit of 3 resources can be spent"
+    $ gameTest
+    $ \investigator -> do
+      updateInvestigator investigator
+        $ \attrs -> attrs {investigatorTokens = setTokens Resource 4 mempty, investigatorCombat = 1}
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
-      enemy <- testEnemyWith $
-        \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+      enemy <- testEnemyWith
+        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location

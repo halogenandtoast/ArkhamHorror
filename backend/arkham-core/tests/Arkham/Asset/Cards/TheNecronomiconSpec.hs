@@ -1,7 +1,6 @@
 module Arkham.Asset.Cards.TheNecronomiconSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (AssetMatcher (..), assetIs)
 import Arkham.Window (WindowType (DealtHorror))
 import TestImport.New

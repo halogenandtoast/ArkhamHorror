@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Investigator (module Arkham.Investigator, module Arkham.Investigator.Types) where
+module Arkham.Investigator (module Arkham.Investigator.Types) where
 
 import Arkham.Prelude
 

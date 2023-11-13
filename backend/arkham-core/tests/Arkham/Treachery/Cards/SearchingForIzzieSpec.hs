@@ -4,7 +4,6 @@ module Arkham.Treachery.Cards.SearchingForIzzieSpec (
 
 import TestImport.Lifted
 
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
@@ -23,10 +22,10 @@ spec = describe "Searching for Izzie" $ do
       , moveTo investigator location1
       , drawing
       ]
-    assert $
-      selectAny $
-        TreacheryAt (LocationWithId $ toId location2)
-          <> treacheryIs Cards.searchingForIzzie
+    assert
+      $ selectAny
+      $ TreacheryAt (LocationWithId $ toId location2)
+      <> treacheryIs Cards.searchingForIzzie
 
   it "takes 2 actions and is discarded on a successful investigation" $ gameTest $ \investigator -> do
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
@@ -40,8 +39,8 @@ spec = describe "Searching for Izzie" $ do
       , moveTo investigator location
       ]
     searchingForIzzieId <-
-      selectJust $
-        treacheryIs Cards.searchingForIzzie
+      selectJust
+        $ treacheryIs Cards.searchingForIzzie
     [searchingForIzzieAction, _] <-
       field
         TreacheryAbilities
@@ -49,10 +48,10 @@ spec = describe "Searching for Izzie" $ do
     pushAndRun $ UseAbility (toId investigator) searchingForIzzieAction []
     chooseOnlyOption "start skill test"
     chooseOnlyOption "apply results"
-    assert $
-      selectNone $
-        treacheryAt (toId location)
-          <> treacheryIs Cards.searchingForIzzie
+    assert
+      $ selectNone
+      $ treacheryAt (toId location)
+      <> treacheryIs Cards.searchingForIzzie
     fieldAssert InvestigatorDiscard (== [searchingForIzzie]) investigator
     fieldAssert InvestigatorRemainingActions (== 1) investigator
     fieldAssert InvestigatorMentalTrauma (== 0) investigator

@@ -6,7 +6,6 @@ import TestImport.Lifted
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Types qualified as Asset
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetExhausted)
 import Arkham.Placement
 import Arkham.Projection
@@ -29,10 +28,10 @@ spec = describe "Wracked by Nightmares" $ do
       , drawing
       , ReadyExhausted
       ]
-    assert $
-      selectAny $
-        TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
-          <> treacheryIs Cards.wrackedByNightmares
+    assert
+      $ selectAny
+      $ TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+      <> treacheryIs Cards.wrackedByNightmares
     fieldAssert AssetExhausted (== True) asset
 
   it "trigger actions removes restriction and takes two actions" $ gameTest $ \investigator -> do
@@ -52,10 +51,10 @@ spec = describe "Wracked by Nightmares" $ do
       [ UseAbility (toId investigator) discardWrackedByNightmares []
       , ReadyExhausted
       ]
-    assert $
-      selectNone $
-        TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
-          <> treacheryIs Cards.wrackedByNightmares
+    assert
+      $ selectNone
+      $ TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+      <> treacheryIs Cards.wrackedByNightmares
     fieldAssert AssetExhausted (== False) asset
     fieldAssert
       InvestigatorDiscard

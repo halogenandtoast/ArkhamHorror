@@ -38,7 +38,6 @@ import Arkham.GameEnv
 import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Investigate.Types
-import Arkham.Investigator.Types
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types

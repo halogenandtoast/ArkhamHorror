@@ -262,7 +262,6 @@ i {
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   position: relative;
-
 }
 
 i.iconSkull {

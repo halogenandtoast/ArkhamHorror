@@ -33,5 +33,8 @@ instance HasChaosTokenValue WeaverOfTheCosmos where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WeaverOfTheCosmos where
-  runMessage msg (WeaverOfTheCosmos attrs) =
-    WeaverOfTheCosmos <$> runMessage msg attrs
+  runMessage msg s@(WeaverOfTheCosmos attrs) = case msg of
+    Setup -> do
+      push $ EndOfGame Nothing
+      pure s
+    _ -> WeaverOfTheCosmos <$> runMessage msg attrs

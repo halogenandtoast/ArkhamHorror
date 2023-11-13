@@ -14,6 +14,10 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 
+const format = function(body: string) {
+  return body.replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+}
+
 const readChoices = props.question.readChoices.reduce<{ label: string, index: number}[]>((acc, v, i) => {
   if ("label" in v) {
     return [...acc, { label: v.label, index: i }]
@@ -31,7 +35,8 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
       <p
         v-for="(paragraph, index) in question.flavorText.body"
         :key="index"
-      >{{paragraph}}</p>
+        v-html="format(paragraph)"
+        ></p>
     </div>
     <div class="options">
       <button
@@ -76,6 +81,19 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
   p {
     margin: 10px;
     font-style: italic;
+  }
+}
+
+p {
+  font-family: "ArkhamFlavor";
+  :deep(i) {
+    font-family: "ArkhamCursive";
+    display: block;
+    font-size: 1.3em;
+    line-height: 0.3em;
+    &:last-child {
+      padding-bottom: 1.3em;
+    }
   }
 }
 

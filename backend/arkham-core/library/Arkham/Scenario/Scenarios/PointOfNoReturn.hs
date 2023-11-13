@@ -33,5 +33,8 @@ instance HasChaosTokenValue PointOfNoReturn where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage PointOfNoReturn where
-  runMessage msg (PointOfNoReturn attrs) =
-    PointOfNoReturn <$> runMessage msg attrs
+  runMessage msg s@(PointOfNoReturn attrs) = case msg of
+    Setup -> do
+      push $ EndOfGame Nothing
+      pure s
+    _ -> PointOfNoReturn <$> runMessage msg attrs

@@ -33,5 +33,8 @@ instance HasChaosTokenValue DarkSideOfTheMoon where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DarkSideOfTheMoon where
-  runMessage msg (DarkSideOfTheMoon attrs) =
-    DarkSideOfTheMoon <$> runMessage msg attrs
+  runMessage msg s@(DarkSideOfTheMoon attrs) = case msg of
+    Setup -> do
+      push $ EndOfGame Nothing
+      pure s
+    _ -> DarkSideOfTheMoon <$> runMessage msg attrs

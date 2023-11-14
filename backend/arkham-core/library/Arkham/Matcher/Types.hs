@@ -121,6 +121,7 @@ data InvestigatorMatcher
   | InvestigatorWithKey ArkhamKey
   | InvestigatorWithBondedCard CardMatcher
   | InvestigatorIfThen InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher
+  | InvestigatorCanTarget Target
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher

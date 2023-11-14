@@ -354,6 +354,8 @@ allTreacheries =
     , -- weaknesses
       SomeTreacheryCard selfCentered
     , SomeTreacheryCard narcolepsy
+    , -- Beyond the Gates of Sleep
+      SomeTreacheryCard lostInTheWoods
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

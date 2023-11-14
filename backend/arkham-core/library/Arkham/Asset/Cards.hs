@@ -14,7 +14,7 @@ import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
-import Arkham.EncounterSet hiding (Dunwich)
+import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -427,6 +427,7 @@ allPlayerAssetCards =
       , rabbitsFoot
       , rabbitsFoot3
       , randallCho
+      , randolphCarterExpertDreamer
       , recallTheFuture2
       , relentless
       , relicHunter3
@@ -3681,6 +3682,14 @@ kleptomania =
     , cdDeckRestrictions = [MultiplayerOnly]
     , cdCost = Nothing
     , cdRevelation = IsRevelation
+    }
+
+randolphCarterExpertDreamer :: CardDef
+randolphCarterExpertDreamer =
+  (storyAsset "06059" ("Randolph Carter" <:> "Expert Dreamer") 3 BeyondTheGatesOfSleep)
+    { cdSkills = [#combat, #agility, #wild]
+    , cdCardTraits = setFromList [Ally, Dreamer]
+    , cdSlots = [#ally]
     }
 
 dreamDiary :: CardDef

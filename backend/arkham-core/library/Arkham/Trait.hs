@@ -168,6 +168,7 @@ data Trait
   | Spell
   | Spirit
   | Staff
+  | Steps
   | Summon
   | Supply
   | Syndicate
@@ -199,6 +200,7 @@ data Trait
   | Woods
   | Yithian
   | Yoth
+  | Zoog
   deriving stock (Show, Eq, Generic, Ord, Enum, Bounded, Read, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

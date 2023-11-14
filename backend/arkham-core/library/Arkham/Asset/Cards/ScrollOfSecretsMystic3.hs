@@ -22,7 +22,10 @@ scrollOfSecretsMystic3 = asset ScrollOfSecretsMystic3 Cards.scrollOfSecretsMysti
 
 instance HasAbilities ScrollOfSecretsMystic3 where
   getAbilities (ScrollOfSecretsMystic3 a) =
-    [ controlledAbility a 1 (exists $ affectsOthers can.manipulate.deck)
+    [ controlledAbility
+        a
+        1
+        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
         $ actionAbilityWithCost
         $ exhaust a
         <> assetUseCost a Secret 1
@@ -32,6 +35,7 @@ instance RunMessage ScrollOfSecretsMystic3 where
   runMessage msg a@(ScrollOfSecretsMystic3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <- selectTargets $ affectsOthers can.manipulate.deck
+      hasEncounterDeck <- can.target.encounterDeck iid
       let
         doSearch target x =
           lookAt
@@ -53,7 +57,7 @@ instance RunMessage ScrollOfSecretsMystic3 where
                 , Label "Look at bottom" [doSearch target fromBottomOfDeck]
                 ]
             ]
-          | target <- EncounterDeckTarget : targets
+          | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
           ]
       pure a
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do

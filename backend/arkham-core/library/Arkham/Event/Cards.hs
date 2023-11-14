@@ -483,6 +483,7 @@ drawnToTheFlame =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Insight]
     , cdAlternateCardCodes = ["01564"]
+    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
     }
 
 wardOfProtection :: CardDef
@@ -583,6 +584,7 @@ closeCall2 =
     , cdFastWindow =
         Just
           $ EnemyEvaded #after Anyone (EnemyAt YourLocation <> NonWeaknessEnemy <> NonEliteEnemy)
+    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
     , cdLevel = 2
     , cdAlternateCardCodes = ["01583"]
     }
@@ -754,6 +756,7 @@ delveTooDeep =
   (event "02111" "Delve Too Deep" 1 Mystic)
     { cdCardTraits = setFromList [Insight]
     , cdVictoryPoints = Just 1
+    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
     }
 
 oops :: CardDef
@@ -1590,6 +1593,7 @@ dumbLuck =
   (event "04034" "Dumb Luck" 2 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Fortune
+    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
     , cdFastWindow =
         Just
           $ SkillTestResult #after You (WhileEvadingAnEnemy NonEliteEnemy)
@@ -1638,10 +1642,12 @@ persuasion =
     , cdCardTraits = setFromList [Insight, Trick]
     , cdCriteria =
         Just
-          $ Criteria.enemyExists
-          $ NonWeaknessEnemy
-          <> EnemyWithTrait Humanoid
-          <> EnemyAt YourLocation
+          $ Criteria.exists
+            ( NonWeaknessEnemy
+                <> EnemyWithTrait Humanoid
+                <> EnemyAt YourLocation
+            )
+          <> Criteria.exists (You <> can.target.encounterDeck)
     , cdActions = [Action.Parley]
     }
 
@@ -2376,6 +2382,7 @@ firstWatch =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Tactic]
     , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
+    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
     }
 
 followed :: CardDef
@@ -2592,6 +2599,8 @@ parallelFates2 =
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = singleton Augury
     , cdLevel = 2
+    , cdCriteria =
+        Just $ Criteria.exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
     }
 
 dynamiteBlast2 :: CardDef
@@ -3115,6 +3124,8 @@ parallelFates =
   (event "60415" "Parallel Fates" 0 Mystic)
     { cdSkills = [#wild]
     , cdCardTraits = singleton Augury
+    , cdCriteria =
+        Just $ Criteria.exists $ You <> can.target.encounterDeck
     }
 
 voiceOfRa :: CardDef
@@ -3233,10 +3244,10 @@ lookWhatIFound2 =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.LocationExists
+            [ Criteria.exists
                 $ LocationMatchAny [YourLocation, ConnectedLocation]
                 <> LocationWithAnyClues
-            , Criteria.InvestigatorExists
+            , Criteria.exists
                 $ You
                 <> InvestigatorCanDiscoverCluesAt
                   (LocationMatchAny [YourLocation, ConnectedLocation])
@@ -3259,6 +3270,7 @@ dumbLuck2 =
           $ FailureResult
           $ lessThan 4
     , cdLevel = 2
+    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
     }
 
 lucky3 :: CardDef

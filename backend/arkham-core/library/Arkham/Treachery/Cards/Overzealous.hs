@@ -5,6 +5,7 @@ module Arkham.Treachery.Cards.Overzealous (
 
 import Arkham.Prelude
 
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Treachery.Cards qualified as Cards
@@ -19,9 +20,10 @@ overzealous = treachery Overzealous Cards.overzealous
 
 instance RunMessage Overzealous where
   runMessage msg t@(Overzealous attrs) = case msg of
-    Revelation _iid source
-      | isSource attrs source ->
-          t <$ push (DrawEncounterCards (toTarget attrs) 1)
+    Revelation iid source | isSource attrs source -> do
+      hasEncounterDeck <- can.target.encounterDeck iid
+      pushWhen hasEncounterDeck $ DrawEncounterCards (toTarget attrs) 1
+      pure t
     RequestedEncounterCards target [card] | isTarget attrs target ->
       withTreacheryOwner
         attrs

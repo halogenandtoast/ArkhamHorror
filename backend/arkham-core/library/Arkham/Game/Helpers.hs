@@ -863,6 +863,7 @@ targetToSource = \case
   BothTarget t1 t2 -> BothSource (targetToSource t1) (targetToSource t2)
   BatchTarget bId -> BatchSource bId
   ActiveCostTarget acId -> ActiveCostSource acId
+  LabeledTarget _ target -> targetToSource target
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -2757,6 +2758,7 @@ targetTraits = \case
   BothTarget _ _ -> error "won't make sense, or need to determine later"
   BatchTarget {} -> pure mempty
   ActiveCostTarget {} -> pure mempty
+  LabeledTarget _ t -> targetTraits t
 
 targetMatches :: HasGame m => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case

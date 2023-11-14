@@ -5,6 +5,8 @@ module Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep (
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
@@ -12,14 +14,17 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
+import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
+import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
 import Arkham.Trait (
@@ -55,7 +60,7 @@ beyondTheGatesOfSleep difficulty =
     "06039"
     "Beyond the Gates of Sleep"
     difficulty
-    []
+    ["seventySteps .", ". theCavernOfFlame"]
     $ metaL
     .~ toJSON ([] :: [Dream])
 
@@ -245,7 +250,39 @@ instance RunMessage BeyondTheGatesOfSleep where
       push $ chooseOne player choices
       pure s
     Setup -> do
-      pure s
+      _encounterDeck <-
+        buildEncounterDeck
+          [ EncounterSet.BeyondTheGatesOfSleep
+          , EncounterSet.AgentsOfNyarlathotep
+          , EncounterSet.Zoogs
+          , EncounterSet.DreamersCurse
+          , EncounterSet.Dreamlands
+          , EncounterSet.ChillingCold
+          ]
+
+      (seventySteps, placeSeventySteps) <- placeLocationCard Locations.seventySteps
+      placeTheCavernOfFlame <- placeLocationCard_ Locations.theCavernOfFlame
+
+      pushAll
+        $ [ SetAgendaDeck
+          , SetActDeck
+          , placeSeventySteps
+          , placeTheCavernOfFlame
+          , MoveAllTo (toSource attrs) seventySteps
+          ]
+
+      agendas <- genCards [Agendas.journeyThroughTheGates]
+      acts <-
+        genCards
+          [Acts.enteringTheDreamlands, Acts.theTrialOfNashtAndKamanThah, Acts.theFinalDescent, Acts.thePath]
+
+      BeyondTheGatesOfSleep
+        <$> runMessage
+          msg
+          ( attrs
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+          )
     SearchFound iid (LabeledTarget "Drifter" ScenarioTarget) _ cards | notNull cards -> do
       player <- getPlayer iid
       playerCount <- getPlayerCount

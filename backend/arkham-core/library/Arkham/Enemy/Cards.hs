@@ -6,7 +6,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
-import Arkham.EncounterSet hiding (Byakhee)
+import Arkham.EncounterSet hiding (Byakhee, Dreamlands)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -72,6 +72,7 @@ allEncounterEnemyCards =
       , agentOfTheKing
       , alejandroVela
       , almaHill
+      , ancientZoog
       , anetteMason
       , anetteMasonReincarnatedEvil
       , apexStrangleweed
@@ -156,10 +157,12 @@ allEncounterEnemyCards =
       , jeromeDavids
       , jordanPerry
       , josefMeiger
+      , kamanThah
       , keeperOfSecrets
       , keeperOfTheGreatLibrary
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
+      , laboringGug
       , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
@@ -174,6 +177,7 @@ allEncounterEnemyCards =
       , mobster
       , nahab
       , narogath
+      , nasht
       , nathanWickMasterOfIndoctrination
       , nathanWickMasterOfInitiation
       , netherMist
@@ -1498,6 +1502,7 @@ azathoth :: CardDef
 azathoth =
   (enemy "05346" ("Azathoth" <:> "The Primal Chaos") BeforeTheBlackThrone 1)
     { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdUnique = True
     }
 
 tonysQuarry :: CardDef
@@ -1505,6 +1510,39 @@ tonysQuarry =
   (weakness "06012" "Tony's Quarry")
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Aloof]
+    }
+
+kamanThah :: CardDef
+kamanThah =
+  (enemy "06057" ("Kaman-Thah" <:> "Priest of the Dreamlands") BeyondTheGatesOfSleep 1)
+    { cdCardTraits = setFromList [Dreamlands, Warden, Elite]
+    , cdUnique = True
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
+    , cdDoubleSided = True
+    }
+
+nasht :: CardDef
+nasht =
+  (enemy "06058" ("Nasht" <:> "Priest of the Dreamlands") BeyondTheGatesOfSleep 1)
+    { cdCardTraits = setFromList [Dreamlands, Warden, Elite]
+    , cdUnique = True
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
+    , cdDoubleSided = True
+    }
+
+laboringGug :: CardDef
+laboringGug =
+  (enemy "06060" "Laboring Gug" BeyondTheGatesOfSleep 1)
+    { cdCardTraits = setFromList [Monster, Gug]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 1
+    }
+
+ancientZoog :: CardDef
+ancientZoog =
+  (enemy "06061" "Ancient Zoog" BeyondTheGatesOfSleep 1)
+    { cdCardTraits = setFromList [Creature, Zoog, Elite]
+    , cdKeywords = singleton Keyword.Aloof
     }
 
 watcherFromAnotherDimension :: CardDef

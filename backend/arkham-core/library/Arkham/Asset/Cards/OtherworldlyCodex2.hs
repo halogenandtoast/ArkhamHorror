@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Matcher
 import Arkham.Trait (Trait (Elite))
@@ -22,7 +23,7 @@ otherworldlyCodex2 = asset OtherworldlyCodex2 Cards.otherworldlyCodex2
 
 instance HasAbilities OtherworldlyCodex2 where
   getAbilities (OtherworldlyCodex2 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ controlledAbility attrs 1 (exists $ You <> can.target.encounterDeck)
         $ actionAbilityWithCost
         $ exhaust attrs
         <> assetUseCost attrs Secret 1

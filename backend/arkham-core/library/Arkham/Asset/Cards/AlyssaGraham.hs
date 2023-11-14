@@ -20,7 +20,14 @@ alyssaGraham :: AssetCard AlyssaGraham
 alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
 instance HasAbilities AlyssaGraham where
-  getAbilities (AlyssaGraham a) = [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
+  getAbilities (AlyssaGraham a) =
+    [ controlledAbility
+        a
+        1
+        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
+        $ FastAbility
+        $ exhaust a
+    ]
 
 instance HasModifiersFor AlyssaGraham where
   getModifiersFor (InvestigatorTarget iid) (AlyssaGraham a) =

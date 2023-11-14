@@ -185,6 +185,9 @@ allAgendas =
       SomeAgendaCard wheelOfFortuneX
     , SomeAgendaCard itAwaits
     , SomeAgendaCard theFinalCountdown
+    , -- The Dream-Eaters
+      -- Beyond the Gates of Sleep
+      SomeAgendaCard journeyThroughTheGates
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

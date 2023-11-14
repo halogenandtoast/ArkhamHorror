@@ -220,6 +220,12 @@ allActs =
       SomeActCard theCosmosBeckons
     , SomeActCard inAzathothsDomain
     , SomeActCard whatMustBeDone
+    , -- The Dream-Eaters
+      --- Beyond the Gates of Sleep
+      SomeActCard enteringTheDreamlands
+    , SomeActCard theTrialOfNashtAndKamanThah
+    , SomeActCard theFinalDescent
+    , SomeActCard thePath
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

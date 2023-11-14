@@ -22,7 +22,10 @@ scrying3 = asset Scrying3 Cards.scrying3
 
 instance HasAbilities Scrying3 where
   getAbilities (Scrying3 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ controlledAbility
+        a
+        1
+        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
         $ FastAbility
         $ Costs
           [UseCost (AssetWithId $ toId a) Charge 1, ExhaustCost $ toTarget a]
@@ -32,6 +35,7 @@ instance RunMessage Scrying3 where
   runMessage msg a@(Scrying3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <- selectTargets =<< guardAffectsOthers iid can.manipulate.deck
+      hasEncounterDeck <- can.target.encounterDeck iid
       player <- getPlayer iid
       push
         $ chooseOne
@@ -46,7 +50,7 @@ instance RunMessage Scrying3 where
                 AnyCard
                 (DeferSearchedToTarget $ toTarget attrs)
             ]
-          | target <- EncounterDeckTarget : targets
+          | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
           ]
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do

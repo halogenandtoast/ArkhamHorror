@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.SmiteTheWicked where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -34,9 +35,11 @@ instance HasAbilities SmiteTheWicked where
 instance RunMessage SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      key <- getEncounterDeckKey iid
-      push
-        $ DiscardUntilFirst iid source (Deck.EncounterDeckByKey key) (BasicCardMatch $ CardWithType EnemyType)
+      hasEncounterDeck <- can.target.encounterDeck iid
+      when hasEncounterDeck $ do
+        key <- getEncounterDeckKey iid
+        push
+          $ DiscardUntilFirst iid source (Deck.EncounterDeckByKey key) (BasicCardMatch $ CardWithType EnemyType)
       pure t
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       for_ mcard $ \card -> do

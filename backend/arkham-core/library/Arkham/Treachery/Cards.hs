@@ -1666,6 +1666,13 @@ narcolepsy =
     , cdDeckRestrictions = [MultiplayerOnly]
     }
 
+lostInTheWoods :: CardDef
+lostInTheWoods =
+  (treachery "06062" "Lost in the Woods" BeyondTheGatesOfSleep 2)
+    { cdCardTraits = singleton Blunder
+    , cdKeywords = singleton Keyword.Surge
+    }
+
 theHarbinger :: CardDef
 theHarbinger =
   (weakness "08006" "The Harbinger")

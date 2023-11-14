@@ -18,6 +18,7 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -344,5 +345,25 @@ instance RunMessage BeyondTheGatesOfSleep where
               | card <- cards
               ]
         ]
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
+      when (isEasyStandard attrs) $ do
+        mtarget <- getSkillTestTarget
+        maction <- getSkillTestAction
+        case (maction, mtarget) of
+          (Just action, Just (EnemyTarget eid)) | action `elem` [#fight, #evade] -> do
+            isSwarming <- eid <=~> SwarmingEnemy
+            pushWhen isSwarming $ PlaceSwarmCards iid eid 1
+          _ -> pure ()
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      when (isHardExpert attrs) $ do
+        mtarget <- getSkillTestTarget
+        maction <- getSkillTestAction
+        case (maction, mtarget) of
+          (Just action, Just (EnemyTarget eid)) | action `elem` [#fight, #evade] -> do
+            isSwarming <- eid <=~> SwarmingEnemy
+            pushWhen isSwarming $ PlaceSwarmCards iid eid 1
+          _ -> pure ()
       pure s
     _ -> BeyondTheGatesOfSleep <$> runMessage msg attrs

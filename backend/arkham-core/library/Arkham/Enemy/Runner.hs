@@ -186,9 +186,8 @@ instance RunMessage EnemyAttrs where
       pure a
     SetBearer (EnemyTarget eid) iid | eid == enemyId -> do
       pure $ a & bearerL ?~ iid
-    PlaceSwarmCards eid cards | eid == enemyId -> do
-      let currentCard = toCard a
-      for_ cards $ \card -> case currentCard of
+    PlacedSwarmCard eid card | eid == enemyId -> do
+      case toCard a of
         EncounterCard ec ->
           pushM $ createEnemyWithPlacement_ (EncounterCard $ ec {ecId = toCardId card}) (AsSwarm eid card)
         PlayerCard pc ->
@@ -209,8 +208,7 @@ instance RunMessage EnemyAttrs where
               n <- getGameValue x
               active <- selectJust ActiveInvestigator
               let swarmInvestigator = fromMaybe active miid
-              cards <- fieldMap InvestigatorDeck (map toCard . take n . unDeck) swarmInvestigator
-              push $ PlaceSwarmCards eid cards
+              push $ PlaceSwarmCards swarmInvestigator eid n
             _ -> error "more than one swarming value"
 
           if Keyword.Aloof `notElem` keywords && Keyword.Massive `notElem` keywords && not enemyExhausted

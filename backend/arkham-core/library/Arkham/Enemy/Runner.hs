@@ -71,7 +71,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Data.List.Extra (firstJust)
 import Data.Monoid (First (..))
@@ -990,101 +990,126 @@ instance RunMessage EnemyAttrs where
             %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source (isTarget a -> True) -> do
-      do
-        let mDamageAssignment = lookup source enemyAssignedDamage
-        case mDamageAssignment of
-          Nothing -> pure a
-          Just da -> do
-            hasSwarm <- selectAny $ SwarmOf (toId a)
-            canBeDefeated <- withoutModifier a CannotBeDefeated
-            modifiers' <- getModifiers (toTarget a)
-            let
-              eid = toId a
-              amount' = damageAssignmentAmount da
-              damageEffect = damageAssignmentDamageEffect da
-              canOnlyBeDefeatedByModifier = \case
-                CanOnlyBeDefeatedBy source' -> First (Just source')
-                _ -> First Nothing
-              mOnlyBeDefeatedByModifier =
-                getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-            validDefeat <-
-              ( ( canBeDefeated
-                    && not hasSwarm
-                )
-                  &&
-                )
-                <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
-            when validDefeat $ do
-              modifiedHealth <- getModifiedHealth a
-              when (enemyDamage a + amount' >= modifiedHealth) $ do
-                let excess = (enemyDamage a + amount') - modifiedHealth
-                let
-                  mSwarmOf = case enemyPlacement of
-                    AsSwarm eid' _ -> Just eid'
-                    _ -> Nothing
-                controller <- maybe getLeadPlayer getPlayer =<< getSourceController source
+      let mDamageAssignment = lookup source enemyAssignedDamage
+      case mDamageAssignment of
+        Nothing -> do
+          hasSwarm <- selectAny $ SwarmOf (toId a)
+          canBeDefeated <- withoutModifier a CannotBeDefeated
+          modifiers' <- getModifiers (toTarget a)
+          let
+            eid = toId a
+            canOnlyBeDefeatedByModifier = \case
+              CanOnlyBeDefeatedBy source' -> First (Just source')
+              _ -> First Nothing
+            mOnlyBeDefeatedByModifier =
+              getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+          let validDefeat = canBeDefeated && not hasSwarm && isNothing mOnlyBeDefeatedByModifier
+          when validDefeat $ do
+            modifiedHealth <- getModifiedHealth a
+            when (enemyDamage a >= modifiedHealth) $ do
+              whenMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
+              afterMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
+              pushAll
+                $ [ whenMsg
+                  , afterMsg
+                  , EnemyDefeated
+                      eid
+                      (toCardId a)
+                      source
+                      (setToList $ toTraits a)
+                  ]
+          pure a
+        Just da -> do
+          hasSwarm <- selectAny $ SwarmOf (toId a)
+          canBeDefeated <- withoutModifier a CannotBeDefeated
+          modifiers' <- getModifiers (toTarget a)
+          let
+            eid = toId a
+            amount' = damageAssignmentAmount da
+            damageEffect = damageAssignmentDamageEffect da
+            canOnlyBeDefeatedByModifier = \case
+              CanOnlyBeDefeatedBy source' -> First (Just source')
+              _ -> First Nothing
+            mOnlyBeDefeatedByModifier =
+              getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+          validDefeat <-
+            ( ( canBeDefeated
+                  && not hasSwarm
+              )
+                &&
+              )
+              <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
+          when validDefeat $ do
+            modifiedHealth <- getModifiedHealth a
+            when (enemyDamage a + amount' >= modifiedHealth) $ do
+              let excess = (enemyDamage a + amount') - modifiedHealth
+              let
+                mSwarmOf = case enemyPlacement of
+                  AsSwarm eid' _ -> Just eid'
+                  _ -> Nothing
+              controller <- maybe getLeadPlayer getPlayer =<< getSourceController source
 
-                excessDamageTargets <- case mSwarmOf of
-                  Nothing -> pure []
-                  Just eid' -> (eid' :) <$> selectList (NotEnemy (EnemyWithId $ toId a) <> SwarmOf eid')
+              excessDamageTargets <- case mSwarmOf of
+                Nothing -> pure []
+                Just eid' -> (eid' :) <$> selectList (NotEnemy (EnemyWithId $ toId a) <> SwarmOf eid')
 
-                whenMsg <-
-                  checkWindows
-                    [mkWindow Timing.When (Window.EnemyWouldBeDefeated eid)]
-                afterMsg <-
-                  checkWindows
-                    [mkWindow Timing.After (Window.EnemyWouldBeDefeated eid)]
-                whenExcessMsg <-
-                  checkWindows
-                    [ mkWindow
-                      Timing.When
-                      ( Window.DealtExcessDamage
-                          source
-                          damageEffect
-                          (EnemyTarget eid)
-                          excess
-                      )
-                    | excess > 0
-                    ]
-                afterExcessMsg <-
-                  checkWindows
-                    [ mkWindow
-                      Timing.After
-                      ( Window.DealtExcessDamage
-                          source
-                          damageEffect
-                          (EnemyTarget eid)
-                          excess
-                      )
-                    | excess > 0
-                    ]
-                pushAll
-                  $ [ whenExcessMsg
-                    , afterExcessMsg
-                    , whenMsg
-                    , afterMsg
-                    , EnemyDefeated
-                        eid
-                        (toCardId a)
+              whenMsg <-
+                checkWindows
+                  [mkWindow Timing.When (Window.EnemyWouldBeDefeated eid)]
+              afterMsg <-
+                checkWindows
+                  [mkWindow Timing.After (Window.EnemyWouldBeDefeated eid)]
+              whenExcessMsg <-
+                checkWindows
+                  [ mkWindow
+                    Timing.When
+                    ( Window.DealtExcessDamage
                         source
-                        (setToList $ toTraits a)
-                    ]
-                  <> ( guard (notNull excessDamageTargets && excess > 0)
-                        *> [ chooseOne
-                              controller
-                              [ Label
-                                  "Deal Excess Damage to Host or Swarm?"
-                                  [ chooseOrRunOne
-                                      controller
-                                      [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
-                                      | other <- excessDamageTargets
-                                      ]
-                                  ]
-                              , Label "Do not deal excess damage" []
-                              ]
-                           ]
-                     )
-            pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
+                        damageEffect
+                        (EnemyTarget eid)
+                        excess
+                    )
+                  | excess > 0
+                  ]
+              afterExcessMsg <-
+                checkWindows
+                  [ mkWindow
+                    Timing.After
+                    ( Window.DealtExcessDamage
+                        source
+                        damageEffect
+                        (EnemyTarget eid)
+                        excess
+                    )
+                  | excess > 0
+                  ]
+              pushAll
+                $ [ whenExcessMsg
+                  , afterExcessMsg
+                  , whenMsg
+                  , afterMsg
+                  , EnemyDefeated
+                      eid
+                      (toCardId a)
+                      source
+                      (setToList $ toTraits a)
+                  ]
+                <> ( guard (notNull excessDamageTargets && excess > 0)
+                      *> [ chooseOne
+                            controller
+                            [ Label
+                                "Deal Excess Damage to Host or Swarm?"
+                                [ chooseOrRunOne
+                                    controller
+                                    [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
+                                    | other <- excessDamageTargets
+                                    ]
+                                ]
+                            , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
+                            ]
+                         ]
+                   )
+          pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
       modifiedHealth <- getModifiedHealth a

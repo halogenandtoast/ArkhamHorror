@@ -61,7 +61,7 @@ function isCardAction(c: Message): boolean {
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && c.ability.type.action === "Move" && c.ability.source.contents === id.value
+    return c.ability.type.tag === "ActionAbility" && c.ability.type.actions.includes("Move") && c.ability.source.contents === id.value
   }
 
   return false

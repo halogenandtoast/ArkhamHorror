@@ -280,6 +280,7 @@ data EnemyMatcher
   | EnemyWithPlacement Placement
   | EnemyWithBounty -- Tony Morgan
   | PatrolEnemy
+  | SwarmOf EnemyId
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyMatcher where

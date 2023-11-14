@@ -409,6 +409,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ chooseOne player
       $ [targetLabel iid' [TakeResources iid' 1 source False, SpendResources iid 1] | iid' <- iids]
     pure a
+  PlaceSwarmCards _ cards -> do
+    pure $ a & (deckL %~ filter ((`notElem` cards) . PlayerCard))
   SetRole iid role | iid == investigatorId -> do
     pure $ a {investigatorClass = role}
   AllRandomDiscard source matcher | not (a ^. defeatedL || a ^. resignedL) -> do

@@ -52,6 +52,10 @@ function isCardAction(c: Message): boolean {
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 
+const swarmEnemies = computed(() =>
+  Object.values(props.game.enemies).filter((e) => e.placement.tag === 'AsSwarm' && e.placement.swarmHost === props.enemy.id)
+)
+
 function isAbility(v: Message): v is AbilityLabel | FightLabel | EvadeLabel | EngageLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
     return true
@@ -206,6 +210,16 @@ watch(abilities, (abilities) => {
       :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
+    <Enemy
+      v-for="enemy in swarmEnemies"
+      :key="enemy.id"
+      :enemy="enemy"
+      :game="game"
+      :playerId="playerId"
+      :atLocation="true"
+      @choose="$emit('choose', $event)"
+      class="swarm"
+    />
     <template v-if="debug.active">
       <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
     </template>
@@ -226,6 +240,9 @@ watch(abilities, (abilities) => {
 .enemy {
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
 }
 
 .button{
@@ -277,6 +294,7 @@ watch(abilities, (abilities) => {
 }
 
 .card-frame {
+  z-index: 10;
   isolation: isolate;
   position: relative;
   display: flex;
@@ -294,5 +312,11 @@ watch(abilities, (abilities) => {
   bottom:100%;
   left: 0;
   z-index: 20000000000;
+}
+
+.swarm {
+  position: absolute;
+  left: 20px;
+  z-index: -10000px;
 }
 </style>

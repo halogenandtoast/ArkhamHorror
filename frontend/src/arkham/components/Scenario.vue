@@ -282,6 +282,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :playerId="playerId"
             @choose="choose"
             style="grid-area: encounterDeck"
+            v-if="props.scenario.hasEncounterDeck"
           />
 
           <div v-if="topOfSpectralDiscard" class="discard" style="grid-area: spectralDiscard"

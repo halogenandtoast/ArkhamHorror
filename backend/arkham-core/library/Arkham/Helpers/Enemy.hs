@@ -220,5 +220,6 @@ enemyEngagedInvestigators eid = do
     AtLocation lid -> do
       isMassive <- fieldMap EnemyKeywords (elem Keyword.Massive) eid
       if isMassive then selectList (investigatorAt lid) else pure []
+    AsSwarm eid' _ -> enemyEngagedInvestigators eid'
     _ -> pure []
   pure . nub $ asIfEngaged <> others

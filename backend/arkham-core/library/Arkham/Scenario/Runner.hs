@@ -46,6 +46,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier qualified as Modifier
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Skill.Types qualified as Field
@@ -480,11 +481,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & (victoryDisplayL %~ (card :))
   Discarded (EnemyTarget eid) _ _ -> do
     card <- field EnemyCard eid
-    handler <- getEncounterDeckHandler $ toCardId card
-    case card of
-      PlayerCard _ -> pure a
-      EncounterCard ec -> pure $ a & discardLens handler %~ (ec :)
-      VengeanceCard _ -> error "vengeance card"
+    placement <- field EnemyPlacement eid
+    case placement of
+      AsSwarm {} -> pure a
+      _ -> do
+        handler <- getEncounterDeckHandler $ toCardId card
+        case card of
+          PlayerCard _ -> pure a
+          EncounterCard ec -> pure $ a & discardLens handler %~ (ec :)
+          VengeanceCard _ -> error "vengeance card"
   Discarded (LocationTarget lid) _ _ -> do
     card <- convertToCard lid
     handler <- getEncounterDeckHandler $ toCardId card

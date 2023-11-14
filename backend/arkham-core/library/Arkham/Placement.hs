@@ -4,6 +4,7 @@ module Arkham.Placement where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Id
 import Arkham.Target
 import Arkham.Zone
@@ -21,6 +22,7 @@ data Placement
   | AttachedToAct ActId
   | AttachedToAgenda AgendaId
   | AttachedToInvestigator InvestigatorId
+  | AsSwarm {swarmHost :: EnemyId, swarmCard :: Card}
   | Unplaced
   | Limbo
   | Global
@@ -45,6 +47,7 @@ placementToAttached = \case
   OutOfPlay _ -> Nothing
   StillInHand _ -> Nothing
   StillInDiscard _ -> Nothing
+  AsSwarm _ _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = \case

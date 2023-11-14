@@ -1037,7 +1037,7 @@ getInvestigatorsMatching matcher = do
       toId i <=~> (if youMatch then m2 else m3)
     InvestigatorCanTarget t -> \_i -> do
       case t of
-        EncounterDeckTarget -> scenarioFieldMap ScenarioEncounterDeck (not . null)
+        EncounterDeckTarget -> scenarioField ScenarioHasEncounterDeck
         _ -> pure True
 
 isHighestAmongst
@@ -2159,6 +2159,12 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  SwarmOf eid -> \enemy -> do
+    let
+      isSwarmOf = \case
+        AsSwarm eid' _ -> eid == eid'
+        _ -> False
+    fieldMap EnemyPlacement isSwarmOf (toId enemy)
   EnemyWithEqualFields p q -> \enemy -> do
     x <- field p (toId enemy)
     y <- field q (toId enemy)
@@ -2790,6 +2796,7 @@ instance Projection Asset where
         OutOfPlay _ -> pure Nothing
         StillInHand _ -> pure Nothing
         StillInDiscard _ -> pure Nothing
+        AsSwarm {} -> error "AssetLocation: AsSwarm"
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> pure assetSlots
@@ -2940,6 +2947,7 @@ getEnemyField f e = do
     EnemyLocation -> case enemyPlacement of
       AtLocation lid -> pure $ Just lid
       InThreatArea iid -> field InvestigatorLocation iid
+      AsSwarm eid' _ -> field EnemyLocation eid'
       _ -> pure Nothing
 
 instance Projection Investigator where
@@ -3663,6 +3671,7 @@ instance Projection Scenario where
         pure scenarioCardsUnderScenarioReference
       ScenarioPlayerDecks -> pure scenarioPlayerDecks
       ScenarioTarotCards -> pure scenarioTarotCards
+      ScenarioHasEncounterDeck -> pure scenarioHasEncounterDeck
 
 instance Projection Skill where
   getAttrs sid = toAttrs <$> getSkill sid
@@ -3923,6 +3932,7 @@ getPlacementLocation = \case
   Limbo -> pure Nothing
   Global -> pure Nothing
   OutOfPlay _ -> pure Nothing
+  AsSwarm eid _ -> field EnemyLocation eid
 
 getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator =
@@ -5218,14 +5228,17 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . agendasL %~ Map.filterWithKey (\k _ -> k /= aid)
   Discarded (EnemyTarget eid) source _ -> do
     enemy <- getEnemy eid
-    case toCard (toAttrs enemy) of
-      PlayerCard pc -> do
-        case enemyBearer (toAttrs enemy) of
+    case attr enemyPlacement enemy of
+      AsSwarm _ c -> case toCardOwner c of
+        Nothing -> error "must be owned"
+        Just iid' -> push $ PutCardOnBottomOfDeck iid' (Deck.InvestigatorDeck iid') c
+      _ -> case toCard (toAttrs enemy) of
+        PlayerCard pc -> case enemyBearer (toAttrs enemy) of
           Nothing -> push (RemoveFromGame $ EnemyTarget eid)
           -- The Man in the Pallid Mask has not bearer in Curtain Call
           Just iid' -> push (AddToDiscard iid' pc)
-      EncounterCard _ -> pure ()
-      VengeanceCard _ -> error "Vengeance card"
+        EncounterCard _ -> pure ()
+        VengeanceCard _ -> error "Vengeance card"
 
     miid <- getSourceController source
     mLocation <- field EnemyLocation eid
@@ -5445,6 +5458,7 @@ runGameMessage msg g = case msg of
     pushAllEnd [BeginRound, Begin MythosPhase]
     pure $ g & (roundHistoryL .~ mempty)
   Begin MythosPhase {} -> do
+    hasEncounterDeck <- scenarioField ScenarioHasEncounterDeck
     phaseBeginsWindow <-
       checkWindows
         [ mkWindow #when Window.AnyPhaseBegins
@@ -5466,9 +5480,11 @@ runGameMessage msg g = case msg of
       : [ phaseStep PlaceDoomOnAgendaStep [PlaceDoomOnAgenda]
         | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
         ]
-        <> [ phaseStep CheckDoomThresholdStep [AdvanceAgendaIfThresholdSatisfied, afterCheckDoomThreshold]
-           , phaseStep EachInvestigatorDrawsEncounterCardStep [allDrawWindow, AllDrawEncounterCard]
-           , phaseStep MythosPhaseWindow [fastWindow]
+        <> [phaseStep CheckDoomThresholdStep [AdvanceAgendaIfThresholdSatisfied, afterCheckDoomThreshold]]
+        <> [ phaseStep EachInvestigatorDrawsEncounterCardStep [allDrawWindow, AllDrawEncounterCard]
+           | hasEncounterDeck
+           ]
+        <> [ phaseStep MythosPhaseWindow [fastWindow]
            , phaseStep MythosPhaseEndsStep [EndMythos]
            ]
     pure $ g & phaseL .~ MythosPhase & phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep

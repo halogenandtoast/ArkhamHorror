@@ -8,6 +8,7 @@ import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.EncounterSet hiding (Byakhee, Dreamlands)
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
@@ -122,6 +123,7 @@ allEncounterEnemyCards =
       , fangOfYig
       , fleshEater
       , formlessSpawn
+      , furtiveZoog
       , gavriellaMizrah
       , ghoulFromTheDepths
       , ghoulMinion
@@ -1512,6 +1514,30 @@ tonysQuarry =
     , cdKeywords = setFromList [Keyword.Aloof]
     }
 
+watcherFromAnotherDimension :: CardDef
+watcherFromAnotherDimension =
+  unique
+    $ (weakness "06017" "Watcher from Another Dimension")
+      { cdCardTraits = setFromList [Monster, Extradimensional]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdRevelation = IsRevelation
+      }
+
+guardianOfTheCrystallizer :: CardDef
+guardianOfTheCrystallizer =
+  (weakness "06025" "Guardian of the Crystallizer")
+    { cdCardTraits = singleton Monster
+    , cdKeywords = setFromList [Keyword.Bonded 1 "06024", Keyword.Hunter]
+    }
+
+yourWorstNightmare :: CardDef
+yourWorstNightmare =
+  (basicWeakness "06038" "Your Worst Nightmare")
+    { cdCardTraits = singleton Monster
+    , cdKeywords = singleton Keyword.Hunter
+    , cdDeckRestrictions = [MultiplayerOnly]
+    }
+
 kamanThah :: CardDef
 kamanThah =
   (enemy "06057" ("Kaman-Thah" <:> "Priest of the Dreamlands") BeyondTheGatesOfSleep 1)
@@ -1545,28 +1571,11 @@ ancientZoog =
     , cdKeywords = singleton Keyword.Aloof
     }
 
-watcherFromAnotherDimension :: CardDef
-watcherFromAnotherDimension =
-  unique
-    $ (weakness "06017" "Watcher from Another Dimension")
-      { cdCardTraits = setFromList [Monster, Extradimensional]
-      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
-      , cdRevelation = IsRevelation
-      }
-
-guardianOfTheCrystallizer :: CardDef
-guardianOfTheCrystallizer =
-  (weakness "06025" "Guardian of the Crystallizer")
-    { cdCardTraits = singleton Monster
-    , cdKeywords = setFromList [Keyword.Bonded 1 "06024", Keyword.Hunter]
-    }
-
-yourWorstNightmare :: CardDef
-yourWorstNightmare =
-  (basicWeakness "06038" "Your Worst Nightmare")
-    { cdCardTraits = singleton Monster
-    , cdKeywords = singleton Keyword.Hunter
-    , cdDeckRestrictions = [MultiplayerOnly]
+furtiveZoog :: CardDef
+furtiveZoog =
+  (enemy "06106" "Furtive Zoog" Zoogs 2)
+    { cdCardTraits = setFromList [Creature, Zoog]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Swarming (Static 1)]
     }
 
 unboundBeast :: CardDef

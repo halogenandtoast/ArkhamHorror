@@ -3,7 +3,7 @@ import { JsonDecoder } from "ts.data.json";
 export type TarotScope = { tag: 'GlobalTarot' } | { tag: 'InvestigatorTarot', contents: string };
 
 export const tarotScopeDecoder = JsonDecoder.oneOf<TarotScope>([
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('GlobalTarot') }),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('GlobalTarot') }, 'GlobalTarot'),
   JsonDecoder.object<TarotScope>({ tag: JsonDecoder.isExactly('InvestigatorTarot'), contents: JsonDecoder.string }, 'InvestigatorTarot'),
 ], 'TarotScope');
 

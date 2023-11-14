@@ -302,6 +302,8 @@ allEnemies =
     , SomeEnemyCard nasht
     , SomeEnemyCard laboringGug
     , SomeEnemyCard ancientZoog
+    , --- Zoogs
+      SomeEnemyCard furtiveZoog
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

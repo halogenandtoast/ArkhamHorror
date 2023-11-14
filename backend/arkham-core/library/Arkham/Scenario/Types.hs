@@ -53,6 +53,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioCardsUnderScenarioReference :: Field Scenario [Card]
   ScenarioDiscard :: Field Scenario [EncounterCard]
   ScenarioEncounterDeck :: Field Scenario (Deck EncounterCard)
+  ScenarioHasEncounterDeck :: Field Scenario Bool
   ScenarioDifficulty :: Field Scenario Difficulty
   ScenarioDecks :: Field Scenario (Map ScenarioDeckKey [Card])
   ScenarioVictoryDisplay :: Field Scenario [Card]
@@ -101,6 +102,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioVictoryDisplay :: [Card]
   , scenarioChaosBag :: ChaosBag
   , scenarioEncounterDeck :: Deck EncounterCard
+  , scenarioHasEncounterDeck :: Bool
   , scenarioDiscard :: [EncounterCard]
   , scenarioEncounterDecks :: Map ScenarioEncounterDeckKey (Deck EncounterCard, [EncounterCard])
   , scenarioActiveEncounterDeck :: ScenarioEncounterDeckKey
@@ -173,6 +175,7 @@ scenario f cardCode name difficulty layout =
       , scenarioChaosBag = emptyChaosBag
       , scenarioEncounterDeck = mempty
       , scenarioEncounterDecks = mempty
+      , scenarioHasEncounterDeck = True
       , scenarioActiveEncounterDeck = RegularEncounterDeck
       , scenarioDiscard = mempty
       , scenarioResignedCardCodes = mempty

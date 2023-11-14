@@ -11,7 +11,7 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import type { LogContents } from '@/arkham/types/Campaign';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
-import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
+import { TarotScope, TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
 
 export interface ScenarioName {
   title: string;
@@ -54,6 +54,7 @@ export interface Scenario {
   tokens: Tokens;
   counts: Record<string, number>; // eslint-disable-line
   encounterDecks: Record<string, [CardContents[], CardContents[]]>;
+  hasEncounterDeck: boolean;
   tarotCards: TarotCard[];
 }
 
@@ -83,12 +84,13 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   standaloneCampaignLog: logContentsDecoder,
   tokens: tokensDecoder,
+  hasEncounterDeck: JsonDecoder.boolean,
   // tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
-  tarotCards: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder)], '[string, number]'), '[string, number][]').map<TarotCard[]>(res => {
-    return res.reduce<TarorCard[]>((acc, [k, vs]) => {
-      return [...acc, ... vs.map(v => ({ ...v, scope: k }))]
-    }, [])
-  }),
+  tarotCards: JsonDecoder.
+    array(
+      JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder, 'TarotCard[]')], '[TarotScope, TarotCard[]]'),
+      '[TarotScope, TarotCard[]][]'
+    ).map(res => res.reduce<TarotCard[]>((acc, [k, vs]) => [...acc, ...vs.map(v => ({ ...v, scope: k }))], [])),
   counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]').map<Record<string, number>>(res => {
     return res.reduce<Record<string, number>>((acc, [k, v]) => {
       acc[k] = v

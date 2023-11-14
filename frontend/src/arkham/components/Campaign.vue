@@ -32,6 +32,10 @@ const questionLabel = computed(() => {
 const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
 const chooseDeck = computed(() => {
   const question = props.game.question[props.playerId]
+  if (question === null || question == undefined) {
+    return false
+  }
+
   const { tag } = question
 
   if (tag === 'ChooseDeck') {

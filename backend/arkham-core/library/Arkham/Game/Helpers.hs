@@ -807,6 +807,9 @@ getActionsWith iid window f = do
 getPlayerCountValue :: HasGame m => GameValue -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
+getGameValue :: HasGame m => GameValue -> m Int
+getGameValue = getPlayerCountValue
+
 perPlayer :: HasGame m => Int -> m Int
 perPlayer = getPlayerCountValue . PerPlayer
 

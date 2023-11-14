@@ -933,6 +933,8 @@ data Message
   | UnfocusTarotCards
   | RotateTarot TarotCard
   | Incursion LocationId
+  | -- The Dream Eaters
+    PlaceSwarmCards EnemyId [Card]
   | UpdateLocation LocationId (Update Location)
   | If WindowType [Message]
   | SendMessage Target Message

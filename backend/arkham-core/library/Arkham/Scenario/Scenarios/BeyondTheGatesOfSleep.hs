@@ -43,7 +43,8 @@ import Arkham.Trait (
     Tome,
     Veteran,
     Wayfarer,
-    Weapon
+    Weapon,
+    Woods
   ),
  )
 import Data.Aeson (Result (..))
@@ -61,8 +62,8 @@ beyondTheGatesOfSleep difficulty =
     "Beyond the Gates of Sleep"
     difficulty
     ["seventySteps .", ". theCavernOfFlame"]
-    $ metaL
-    .~ toJSON ([] :: [Dream])
+    $ (metaL .~ toJSON ([] :: [Dream]))
+    . (hasEncounterDeckL .~ False)
 
 data Dream
   = GuardianDream
@@ -207,10 +208,14 @@ traitsDreams = nub . concatMap traitDreams
 
 instance HasChaosTokenValue BeyondTheGatesOfSleep where
   getChaosTokenValue iid tokenFace (BeyondTheGatesOfSleep attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      cards <- fieldMap InvestigatorHand length iid
+      pure $ toChaosTokenValue attrs Skull (ceiling @Double $ fromIntegral cards / 2.0) cards
+    Cultist -> do
+      easyStandard <- selectCount $ LocationWithTitle "Enchanted Woods"
+      hardExpert <- selectCount $ LocationWithTrait Woods
+      pure $ toChaosTokenValue attrs Cultist easyStandard hardExpert
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage BeyondTheGatesOfSleep where

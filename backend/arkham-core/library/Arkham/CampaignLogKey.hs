@@ -208,6 +208,8 @@ data CampaignLogKey
   | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
   | AzathothSlumbersForNow
   | TheInvestigatorsSignedTheBlackBookOfAzathoth
+  | -- | The Circle Undone
+    TheDreamersStrayedFromThePath
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

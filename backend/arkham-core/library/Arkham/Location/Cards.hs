@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
-import Arkham.EncounterSet hiding (Dunwich)
+import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol
 import Arkham.Name
@@ -108,6 +108,7 @@ allLocationCards =
       , balconySpectral
       , ballroom
       , baseOfTheHill
+      , baseOfTheSteps
       , basement
       , basementHall
       , bathroom
@@ -211,6 +212,13 @@ allLocationCards =
       , easttown
       , easttownArkhamPoliceStation
       , eerieGlade
+      , enchantedWoodsFungalForest
+      , enchantedWoodsGreatStoneCircle
+      , enchantedWoodsLostWoods
+      , enchantedWoodsMysticalForest
+      , enchantedWoodsStoneTrapdoor
+      , enchantedWoodsTheMoonTree
+      , enchantedWoodsVillageOfZoogs
       , endlessBridge
       , engineCar_175
       , engineCar_176
@@ -418,6 +426,8 @@ allLocationCards =
       , securityOffice_129
       , sentinelPeak
       , serpentsHaven
+      , sevenHundredSteps
+      , seventySteps
       , shiveringPools
       , shoresOfHali
       , shoresOfRlyeh
@@ -454,7 +464,9 @@ allLocationCards =
       , tenAcreMeadow_246
       , tenAcreMeadow_247
       , theBlackThrone
+      , theCavernOfFlame
       , theEdgeOfTheUniverse
+      , theEnchantedPath
       , theGateToHell
       , theGeistTrap
       , theGuardian
@@ -4903,6 +4915,161 @@ dreamGatePointlessReality =
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
     }
+
+seventySteps :: CardDef
+seventySteps =
+  location
+    "06045"
+    ("Seventy Steps" <:> "Of Lighter Slumber")
+    [Steps]
+    Heart
+    [Hourglass]
+    BeyondTheGatesOfSleep
+
+theCavernOfFlame :: CardDef
+theCavernOfFlame =
+  location
+    "06046"
+    "The Cavern of Flame"
+    [Cave, Steps]
+    Hourglass
+    [Heart, Equals]
+    BeyondTheGatesOfSleep
+
+sevenHundredSteps :: CardDef
+sevenHundredSteps =
+  location
+    "06047"
+    ("Seven Hundred Steps" <:> "Of Deeper Slumber")
+    [Steps]
+    Equals
+    [Hourglass, T]
+    BeyondTheGatesOfSleep
+
+baseOfTheSteps :: CardDef
+baseOfTheSteps =
+  location
+    "06048"
+    "Base of the Steps"
+    [Steps, Woods]
+    T
+    [Equals, Squiggle]
+    BeyondTheGatesOfSleep
+
+theEnchantedPath :: CardDef
+theEnchantedPath =
+  location
+    "06049"
+    "The Enchanted Path"
+    [Woods]
+    Squiggle
+    [T, Moon]
+    BeyondTheGatesOfSleep
+
+enchantedWoodsMysticalForest :: CardDef
+enchantedWoodsMysticalForest =
+  victory 2
+    $ locationWithUnrevealed
+      "06050"
+      "Enchanted Woods"
+      [Woods]
+      Moon
+      [Squiggle]
+      ("Enchanted Woods" <:> "Mystical Forest")
+      [Woods]
+      Circle
+      [Squiggle, Star, Plus]
+      BeyondTheGatesOfSleep
+
+enchantedWoodsVillageOfZoogs :: CardDef
+enchantedWoodsVillageOfZoogs =
+  victory 2
+    $ locationWithUnrevealed
+      "06051"
+      "Enchanted Woods"
+      [Woods]
+      Moon
+      [Squiggle]
+      ("Enchanted Woods" <:> "Village of Zoogs")
+      [Woods]
+      Circle
+      [Squiggle, Star, Plus]
+      BeyondTheGatesOfSleep
+
+enchantedWoodsGreatStoneCircle :: CardDef
+enchantedWoodsGreatStoneCircle =
+  victory 1
+    $ locationWithUnrevealed
+      "06052"
+      "Enchanted Woods"
+      [Woods]
+      Moon
+      [Squiggle]
+      ("Enchanted Woods" <:> "Great Stone Circle")
+      [Woods]
+      Triangle
+      [Squiggle, Plus, Square]
+      BeyondTheGatesOfSleep
+
+enchantedWoodsStoneTrapdoor :: CardDef
+enchantedWoodsStoneTrapdoor =
+  victory 2
+    $ locationWithUnrevealed
+      "06053"
+      "Enchanted Woods"
+      [Woods]
+      Moon
+      [Squiggle]
+      ("Enchanted Woods" <:> "Stone Trapdoor")
+      [Woods]
+      Square
+      [Squiggle, Triangle, Diamond]
+      BeyondTheGatesOfSleep
+
+enchantedWoodsTheMoonTree :: CardDef
+enchantedWoodsTheMoonTree =
+  victory 2
+    $ locationWithUnrevealed
+      "06054"
+      "Enchanted Woods"
+      [Woods]
+      Moon
+      [Squiggle]
+      ("Enchanted Woods" <:> "The Moon-Tree")
+      [Woods]
+      Star
+      [Squiggle, Diamond, Circle]
+      BeyondTheGatesOfSleep
+
+enchantedWoodsFungalForest :: CardDef
+enchantedWoodsFungalForest =
+  victory 2
+    $ locationWithUnrevealed
+      "06055"
+      "Enchanted Woods"
+      [Woods]
+      Moon
+      [Squiggle]
+      ("Enchanted Woods" <:> "Fungal Forest")
+      [Woods]
+      Plus
+      [Squiggle, Circle, Triangle]
+      BeyondTheGatesOfSleep
+
+enchantedWoodsLostWoods :: CardDef
+enchantedWoodsLostWoods =
+  victory 2
+    $ locationWithUnrevealed
+      "06056"
+      "Enchanted Woods"
+      [Woods]
+      Moon
+      [Squiggle]
+      ("Enchanted Woods" <:> "Lost Woods")
+      [Woods]
+      Droplet
+      [Squiggle]
+      BeyondTheGatesOfSleep
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

@@ -297,6 +297,11 @@ allEnemies =
     , --- Where the Gods Dwell
       -- mystic
       SomeEnemyCard unboundBeast
+    , --- Beyond the Gates of Sleep
+      SomeEnemyCard kamanThah
+    , SomeEnemyCard nasht
+    , SomeEnemyCard laboringGug
+    , SomeEnemyCard ancientZoog
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

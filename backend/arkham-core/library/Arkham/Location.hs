@@ -492,6 +492,19 @@ allLocations =
       -- signature
       SomeLocationCard dreamGateWondrousJourney
     , SomeLocationCard dreamGatePointlessReality
+    , -- Beyond the Gates of Sleep
+      SomeLocationCard seventySteps
+    , SomeLocationCard theCavernOfFlame
+    , SomeLocationCard sevenHundredSteps
+    , SomeLocationCard baseOfTheSteps
+    , SomeLocationCard theEnchantedPath
+    , SomeLocationCard enchantedWoodsMysticalForest
+    , SomeLocationCard enchantedWoodsVillageOfZoogs
+    , SomeLocationCard enchantedWoodsGreatStoneCircle
+    , SomeLocationCard enchantedWoodsStoneTrapdoor
+    , SomeLocationCard enchantedWoodsTheMoonTree
+    , SomeLocationCard enchantedWoodsFungalForest
+    , SomeLocationCard enchantedWoodsLostWoods
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

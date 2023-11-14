@@ -103,6 +103,16 @@ data EncounterSet
   | BeforeTheBlackThrone
   | BeyondTheGatesOfSleep
   | WakingNightmare
+  | AgentsOfAtlachNacha
+  | AgentsOfNyarlathotep
+  | WhispersOfHypnos
+  | CreaturesOfTheUnderworld
+  | DreamersCurse
+  | Dreamlands
+  | MergingRealities
+  | Spiders
+  | Corsairs
+  | Zoogs
   | TheSearchForKadath
   | AThousandShapesOfHorror
   | DarkSideOfTheMoon

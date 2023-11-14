@@ -1035,6 +1035,10 @@ getInvestigatorsMatching matcher = do
       you <- view activeInvestigatorIdL <$> getGame
       youMatch <- you <=~> m1
       toId i <=~> (if youMatch then m2 else m3)
+    InvestigatorCanTarget t -> \_i -> do
+      case t of
+        EncounterDeckTarget -> scenarioFieldMap ScenarioEncounterDeck (not . null)
+        _ -> pure True
 
 isHighestAmongst
   :: HasGame m

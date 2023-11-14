@@ -54,6 +54,7 @@ allActCards =
       , descentIntoDark
       , discoveringTheTruth
       , disruptingTheRitual
+      , enteringTheDreamlands
       , escapeTheCage
       , escapeTheRuins
       , exploringPnakotus
@@ -160,6 +161,7 @@ allActCards =
       , theStrangerACityAflame
       , theStrangerThePathIsMine
       , theStrangerTheShoresOfHali
+      , theTrialOfNashtAndKamanThah
       , theUnvisitedIsle
       , theWayOut
       , theYithianRelic
@@ -627,6 +629,18 @@ inAzathothsDomain = act "05330" "In Azathoth's Domain" 2 BeforeTheBlackThrone
 
 whatMustBeDone :: CardDef
 whatMustBeDone = act "05331" "What Must Be Done" 3 BeforeTheBlackThrone
+
+enteringTheDreamlands :: CardDef
+enteringTheDreamlands = act "06041" "Entering the Dreamlands" 1 BeyondTheGatesOfSleep
+
+theTrialOfNashtAndKamanThah :: CardDef
+theTrialOfNashtAndKamanThah = act "06042" "The Trial of Nasht and Kaman-Thah" 2 BeyondTheGatesOfSleep
+
+theFinalDescent :: CardDef
+theFinalDescent = act "06043" "The Final Descent" 3 BeyondTheGatesOfSleep
+
+thePath :: CardDef
+thePath = act "06044" "The Final Descent" 4 BeyondTheGatesOfSleep
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

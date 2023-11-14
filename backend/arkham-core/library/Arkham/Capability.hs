@@ -7,6 +7,7 @@ import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
 import Arkham.Prelude
+import Arkham.Target
 
 class Capable a where
   can :: Capabilities a
@@ -32,6 +33,7 @@ instance Capable InvestigatorMatcher where
             { otherPlayers = InvestigatorWithoutModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
             }
       , move = InvestigatorWithoutModifier CannotMove
+      , target = TargetCapabilities {encounterDeck = InvestigatorCanTarget EncounterDeckTarget}
       }
 
 data Capabilities a = Capabilities
@@ -41,6 +43,7 @@ data Capabilities a = Capabilities
   , gain :: GainCapabilities a
   , have :: HaveCapabilities a
   , affect :: AffectCapabilities a
+  , target :: TargetCapabilities a
   , move :: a
   }
   deriving stock (Functor)
@@ -77,5 +80,10 @@ data HaveCapabilities a = HaveCapabilities
 
 data HaveCardsCapabilities a = HaveCardsCapabilities
   { leaveDiscard :: a
+  }
+  deriving stock (Functor)
+
+data TargetCapabilities a = TargetCapabilities
+  { encounterDeck :: a
   }
   deriving stock (Functor)

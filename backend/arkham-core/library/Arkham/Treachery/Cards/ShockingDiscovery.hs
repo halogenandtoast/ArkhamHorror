@@ -7,6 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -34,9 +35,10 @@ instance RunMessage ShockingDiscovery where
   runMessage msg t@(ShockingDiscovery attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       canShuffleDeck <- getCanShuffleDeck iid
+      hasEncounterDeck <- can.target.encounterDeck iid
       if canShuffleDeck
         then push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-        else push $ InvestigatorDrawEncounterCard iid
+        else pushWhen hasEncounterDeck $ InvestigatorDrawEncounterCard iid
       pure t
     InSearch (UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _) -> do
       let card = fromJustNote "is player card" $ preview _PlayerCard (toCard attrs)

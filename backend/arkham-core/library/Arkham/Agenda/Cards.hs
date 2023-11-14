@@ -56,6 +56,7 @@ allAgendaCards =
       , intruders
       , inEveryShadow
       , itAwaits
+      , journeyThroughTheGates
       , judgementXX
       , justiceXI
       , letTheStormRageTheFloodBelow
@@ -473,6 +474,9 @@ itAwaits = agenda "05327" "It Awaits" 2 BeforeTheBlackThrone
 
 theFinalCountdown :: CardDef
 theFinalCountdown = agenda "05328" "The Final Countdown" 3 BeforeTheBlackThrone
+
+journeyThroughTheGates :: CardDef
+journeyThroughTheGates = agenda "06040" "Journey through the Gates" 1 BeyondTheGatesOfSleep
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

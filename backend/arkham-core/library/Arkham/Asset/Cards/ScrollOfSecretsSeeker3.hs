@@ -23,7 +23,10 @@ scrollOfSecretsSeeker3 =
 
 instance HasAbilities ScrollOfSecretsSeeker3 where
   getAbilities (ScrollOfSecretsSeeker3 a) =
-    [ controlledAbility a 1 (exists $ affectsOthers can.manipulate.deck)
+    [ controlledAbility
+        a
+        1
+        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
         $ actionAbilityWithCost
         $ exhaust a
         <> assetUseCost a Secret 1
@@ -33,12 +36,13 @@ instance RunMessage ScrollOfSecretsSeeker3 where
   runMessage msg a@(ScrollOfSecretsSeeker3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <- selectTargets $ affectsOthers can.manipulate.deck
+      hasEncounterDeck <- can.target.encounterDeck iid
       player <- getPlayer iid
       push
         $ chooseOne player
         $ [ targetLabel target
             $ [lookAt iid attrs target [fromBottomOfDeck 3] AnyCard (DeferSearchedToTarget $ toTarget attrs)]
-          | target <- EncounterDeckTarget : targets
+          | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
           ]
       pure a
     SearchFound _ (isTarget attrs -> True) _ cards | notNull cards -> do

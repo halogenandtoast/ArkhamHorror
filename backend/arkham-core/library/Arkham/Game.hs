@@ -4489,6 +4489,15 @@ runGameMessage msg g = case msg of
       EnemyDefeated eid' _ _ _ -> eid == eid'
       _ -> False
     enemy <- getEnemy eid
+    swarms <- selectList $ SwarmOf eid
+
+    case attr enemyPlacement enemy of
+      AsSwarm _ c -> case toCardOwner c of
+        Just owner -> push $ PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) c
+        Nothing -> error "Missing owner"
+      _ -> do
+        pushAll $ map RemoveEnemy swarms
+
     pure
       $ g
       & entitiesL
@@ -5229,9 +5238,7 @@ runGameMessage msg g = case msg of
   Discarded (EnemyTarget eid) source _ -> do
     enemy <- getEnemy eid
     case attr enemyPlacement enemy of
-      AsSwarm _ c -> case toCardOwner c of
-        Nothing -> error "must be owned"
-        Just iid' -> push $ PutCardOnBottomOfDeck iid' (Deck.InvestigatorDeck iid') c
+      AsSwarm {} -> pure () -- will be handled when leaves play
       _ -> case toCard (toAttrs enemy) of
         PlayerCard pc -> case enemyBearer (toAttrs enemy) of
           Nothing -> push (RemoveFromGame $ EnemyTarget eid)

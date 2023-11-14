@@ -758,12 +758,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck & discardL .~ discard
   ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
-    card <- field EnemyCard eid
+    placement <- field EnemyPlacement eid
+    card <- case placement of
+      AsSwarm _ c -> pure c
+      _ -> field EnemyCard eid
+    push $ RemoveEnemy eid
+
     case card of
       EncounterCard card' -> do
-        push $ RemoveEnemy eid
         encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
         pure $ a & encounterDeckL .~ encounterDeck
+      PlayerCard card' -> do
+        case toCardOwner card' of
+          Just iid -> do
+            push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+            pure a
+          Nothing -> error "must be owned"
       _ -> error "must be encounter card"
   ShuffleBackIntoEncounterDeck (LocationTarget lid) -> do
     card <- field LocationCard lid

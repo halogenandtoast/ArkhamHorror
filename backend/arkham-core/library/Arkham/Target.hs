@@ -70,6 +70,14 @@ data Target
   | LabeledTarget Text Target -- Use with caution, this is not a real target
   deriving stock (Show, Eq, Ord, Data)
 
+actualTarget :: Target -> Target
+actualTarget = \case
+  LabeledTarget _ t -> actualTarget t
+  ProxyTarget t _ -> actualTarget t
+  SkillTestInitiatorTarget t -> actualTarget t
+  BothTarget t1 t2 -> BothTarget (actualTarget t1) (actualTarget t2)
+  other -> other
+
 investigatorTarget :: Target -> Maybe InvestigatorId
 investigatorTarget (InvestigatorTarget iid) = Just iid
 investigatorTarget _ = Nothing

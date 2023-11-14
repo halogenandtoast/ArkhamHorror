@@ -107,6 +107,7 @@ import Arkham.Investigator.Types (
   investigatorSanityDamage,
  )
 import Arkham.Investigator.Types qualified as Investigator
+import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
@@ -2159,6 +2160,10 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  SwarmingEnemy -> \enemy -> do
+    modifiers <- getModifiers (toTarget enemy)
+    keywords <- field EnemyKeywords (toId enemy)
+    pure $ Blank `notElem` modifiers && any (isJust . preview _Swarming) keywords
   SwarmOf eid -> \enemy -> do
     let
       isSwarmOf = \case

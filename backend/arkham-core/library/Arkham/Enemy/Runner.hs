@@ -39,11 +39,9 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator hiding (getModifiedHealth)
 import Arkham.Id
-import Arkham.Investigator.Types (Field (InvestigatorDeck))
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (

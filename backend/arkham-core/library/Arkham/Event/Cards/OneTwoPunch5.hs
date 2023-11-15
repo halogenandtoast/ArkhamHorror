@@ -17,7 +17,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
-import Arkham.SkillType
 
 newtype Metadata = Metadata {isFirst :: Bool}
   deriving stock (Show, Eq, Generic)

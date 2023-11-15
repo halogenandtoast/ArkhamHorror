@@ -480,7 +480,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     card <- field EnemyCard eid
     pure $ a & (victoryDisplayL %~ (card :))
   Discarded (EnemyTarget eid) _ _ -> do
-    card <- field EnemyCard eid
+    card <- convertToCard eid
     placement <- field EnemyPlacement eid
     case placement of
       AsSwarm {} -> pure a

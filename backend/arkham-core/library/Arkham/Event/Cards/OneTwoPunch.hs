@@ -17,7 +17,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
-import Arkham.SkillType
 
 newtype Metadata = Metadata {isFirst :: Bool}
   deriving stock (Show, Eq, Generic)
@@ -32,30 +31,34 @@ oneTwoPunch = event (OneTwoPunch . (`with` Metadata True)) Cards.oneTwoPunch
 
 instance RunMessage OneTwoPunch where
   runMessage msg e@(OneTwoPunch (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       pushAll
-        [ skillTestModifier
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            (SkillModifier SkillCombat 1)
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
+        [ skillTestModifier attrs iid (SkillModifier #combat 1)
+        , chooseFightEnemy iid attrs #combat
         ]
       pure e
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source && isFirst metadata -> do
-          push $ CreateEffect "60117" Nothing source (InvestigatorTarget iid)
-          pure . OneTwoPunch $ attrs `with` Metadata False
+    PassedThisSkillTest iid (isSource attrs -> True) | isFirst metadata -> do
+      push $ createCardEffect Cards.oneTwoPunch Nothing attrs iid
+      pure . OneTwoPunch $ attrs `with` Metadata False
     _ -> OneTwoPunch . (`with` metadata) <$> runMessage msg attrs
 
 newtype OneTwoPunchEffect = OneTwoPunchEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oneTwoPunchEffect :: EffectArgs -> OneTwoPunchEffect
-oneTwoPunchEffect = OneTwoPunchEffect . uncurry4 (baseAttrs "60117")
+oneTwoPunchEffect = cardEffect OneTwoPunchEffect Cards.oneTwoPunch
+
+instance HasModifiersFor OneTwoPunchEffect where
+  getModifiersFor target (OneTwoPunchEffect attrs) | attrs.target == target && effectFinished attrs = do
+    pure $ toModifiers attrs [SkillModifier #combat 2, DamageDealt 1]
+  getModifiersFor _ _ = pure []
 
 instance RunMessage OneTwoPunchEffect where
-  runMessage msg (OneTwoPunchEffect attrs@EffectAttrs {..}) = case msg of
+  runMessage msg e@(OneTwoPunchEffect attrs@EffectAttrs {..}) = case msg of
+    SkillTestEnds _ _ | effectFinished -> do
+      push $ disable attrs
+      pure e
     SkillTestEnds _ _ | not effectFinished -> do
       mSkillTest <- getSkillTest
       case (mSkillTest, effectTarget) of
@@ -66,27 +69,10 @@ instance RunMessage OneTwoPunchEffect where
               player <- getPlayer iid
               push
                 $ chooseOrRunOne player
-                $ [ Label
-                    "Fight that enemy again"
-                    [ skillTestModifiers
-                        (toSource attrs)
-                        (InvestigatorTarget iid)
-                        [SkillModifier SkillCombat 2, DamageDealt 1]
-                    , ChooseFightEnemy
-                        iid
-                        (toSource attrs)
-                        Nothing
-                        SkillCombat
-                        mempty
-                        False
-                    , DisableEffect (toId attrs)
-                    ]
+                $ [ Label "Fight that enemy again" [FightEnemy iid eid attrs.source Nothing #combat False]
                   | isStillAlive
                   ]
-                <> [ Label
-                      "Do not fight that enemy again"
-                      [DisableEffect (toId attrs)]
-                   ]
+                <> [Label "Do not fight that enemy again" [disable attrs]]
             _ -> pure ()
         (_, _) -> error "invalid call"
       pure . OneTwoPunchEffect $ attrs & finishedL .~ True

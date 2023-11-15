@@ -178,7 +178,7 @@ import Arkham.Treachery.Types (
   treacheryDoom,
   treacheryResources,
  )
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..), mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Exception (throw)
@@ -5438,90 +5438,85 @@ runGameMessage msg g = case msg of
       =<< checkWindows [mkWindow #when (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
   BeginSkillTestWithPreMessages pre skillTest -> do
-    windows' <- windows [Window.InitiatedSkillTest skillTest]
-    let defaultCase = windows' <> [BeginSkillTestAfterFast]
-
-    performRevelationSkillTestWindow <-
-      checkWindows
-        [ mkWindow
-            #when
-            ( Window.WouldPerformRevelationSkillTest
-                (skillTestInvestigator skillTest)
-            )
-        ]
-
-    msgs <- case skillTestType skillTest of
-      ResourceSkillTest -> pure defaultCase
-      SkillSkillTest skillType -> do
-        availableSkills <-
-          getAvailableSkillsFor
-            skillType
-            (skillTestInvestigator skillTest)
-        player <- getPlayer (skillTestInvestigator skillTest)
-        pure
-          $ if Set.size availableSkills < 2
-            then defaultCase
-            else
-              [ chooseOne
-                  player
-                  $ SkillLabel skillType []
-                  : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType skillType) (ToSkillType skillType')]
-                    | skillType' <- setToList availableSkills
-                    ]
-              ]
-                <> windows'
-                <> [BeginSkillTestAfterFast]
-      AndSkillTest types -> do
-        availableSkills <- for types $ traverseToSnd \skillType ->
-          getAvailableSkillsFor skillType (skillTestInvestigator skillTest)
-        -- (base, other choices)
-        let skillsWithChoice = filter ((> 1) . Set.size . snd) availableSkills
-        if null skillsWithChoice
-          then pure defaultCase
-          else do
-            -- if we have base skills with other choices we need to choose for each one
-            -- if we choose a type it should replace for example if we have int+agi+wil+com and we use mind over matter
-            -- we should be asked for agi and com and end up with int+int+wil+int
-            -- Easiest way might be to let the skill test handle the replacement so we don't have to nest
-            player <- getPlayer (skillTestInvestigator skillTest)
-            pure
-              $ map
-                ( \(base, setToList -> skillsTypes) ->
-                    chooseOne player
-                      $ SkillLabel base []
-                      : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType base) (ToSkillType skillType')]
-                        | skillType' <- skillsTypes
-                        ]
-                )
-                skillsWithChoice
-              <> windows'
-              <> [BeginSkillTestAfterFast]
-
-    msgs' <-
-      if skillTestIsRevelation skillTest
-        then do
-          mAfterRevelation1 <- popMessageMatching $ \case
-            After (Revelation _ source) -> source == skillTestSource skillTest
-            _ -> False
-          mAfterRevelation2 <- popMessageMatching $ \case
-            AfterRevelation _ tid ->
-              TreacherySource tid == skillTestSource skillTest
-            _ -> False
-          pure
-            $ performRevelationSkillTestWindow
-            : msgs
-              <> maybeToList mAfterRevelation1
-              <> maybeToList mAfterRevelation2
-        else pure msgs
     inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
 
     if inSkillTestWindow
-      then
+      then do
         if gameInAction g
-          then insertAfterMatching (pre <> msgs') (== FinishAction)
-          else insertAfterMatching (pre <> msgs') (== EndSkillTestWindow)
-      else pushAll (pre <> msgs')
-    pure $ g & (skillTestL ?~ skillTest)
+          then insertAfterMatching [msg] (== FinishAction)
+          else insertAfterMatching [msg] (== EndSkillTestWindow)
+        pure g
+      else do
+        let iid = skillTestInvestigator skillTest
+        windows' <- windows [Window.InitiatedSkillTest skillTest]
+        let defaultCase = windows' <> [BeginSkillTestAfterFast]
+
+        performRevelationSkillTestWindow <-
+          checkWindows [mkWhen $ Window.WouldPerformRevelationSkillTest iid]
+
+        msgs <- case skillTestType skillTest of
+          ResourceSkillTest -> pure defaultCase
+          SkillSkillTest skillType -> do
+            availableSkills <- getAvailableSkillsFor skillType iid
+            player <- getPlayer iid
+            pure
+              $ if Set.size availableSkills < 2
+                then defaultCase
+                else
+                  [ chooseOne
+                      player
+                      $ SkillLabel skillType []
+                      : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType skillType) (ToSkillType skillType')]
+                        | skillType' <- setToList availableSkills
+                        ]
+                  ]
+                    <> windows'
+                    <> [BeginSkillTestAfterFast]
+          AndSkillTest types -> do
+            availableSkills <- for types $ traverseToSnd \skillType ->
+              getAvailableSkillsFor skillType iid
+            -- (base, other choices)
+            let skillsWithChoice = filter ((> 1) . Set.size . snd) availableSkills
+            if null skillsWithChoice
+              then pure defaultCase
+              else do
+                -- if we have base skills with other choices we need to choose for each one
+                -- if we choose a type it should replace for example if we have int+agi+wil+com and we use mind over matter
+                -- we should be asked for agi and com and end up with int+int+wil+int
+                -- Easiest way might be to let the skill test handle the replacement so we don't have to nest
+                player <- getPlayer (skillTestInvestigator skillTest)
+                pure
+                  $ map
+                    ( \(base, setToList -> skillsTypes) ->
+                        chooseOne player
+                          $ SkillLabel base []
+                          : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType base) (ToSkillType skillType')]
+                            | skillType' <- skillsTypes
+                            ]
+                    )
+                    skillsWithChoice
+                  <> windows'
+                  <> [BeginSkillTestAfterFast]
+
+        msgs' <-
+          if skillTestIsRevelation skillTest
+            then do
+              mAfterRevelation1 <- popMessageMatching $ \case
+                After (Revelation _ source) -> source == skillTestSource skillTest
+                _ -> False
+              mAfterRevelation2 <- popMessageMatching $ \case
+                AfterRevelation _ tid ->
+                  TreacherySource tid == skillTestSource skillTest
+                _ -> False
+              pure
+                $ performRevelationSkillTestWindow
+                : msgs
+                  <> maybeToList mAfterRevelation1
+                  <> maybeToList mAfterRevelation2
+            else pure msgs
+
+        pushAll (pre <> msgs')
+        pure $ g & (skillTestL ?~ skillTest)
   BeforeSkillTest skillTest ->
     pure $ g & activeInvestigatorIdL .~ skillTestInvestigator skillTest
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do

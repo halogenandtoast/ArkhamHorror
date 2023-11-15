@@ -15,6 +15,7 @@ import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -269,6 +270,14 @@ instance RunMessage BeyondTheGatesOfSleep where
       (seventySteps, placeSeventySteps) <- placeLocationCard Locations.seventySteps
       placeTheCavernOfFlame <- placeLocationCard_ Locations.theCavernOfFlame
 
+      setAsideCards <-
+        genCards
+          [ Enemies.nasht
+          , Enemies.kamanThah
+          , Locations.sevenHundredSteps
+          , Locations.theEnchantedPath
+          ]
+
       pushAll
         $ [ SetAgendaDeck
           , SetActDeck
@@ -286,6 +295,7 @@ instance RunMessage BeyondTheGatesOfSleep where
         <$> runMessage
           msg
           ( attrs
+              & (setAsideCardsL .~ setAsideCards)
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )

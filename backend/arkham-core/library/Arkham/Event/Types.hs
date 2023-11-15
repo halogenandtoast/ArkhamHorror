@@ -91,6 +91,9 @@ instance Is EventAttrs EventId where
 instance HasField "placement" EventAttrs Placement where
   getField = eventPlacement
 
+instance HasField "owner" EventAttrs InvestigatorId where
+  getField = eventOwner
+
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
 

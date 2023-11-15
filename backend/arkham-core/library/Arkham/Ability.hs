@@ -234,27 +234,30 @@ abilityTypeCost = \case
   Objective aType -> abilityTypeCost aType
   ForcedWhen _ aType -> abilityTypeCost aType
 
-applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
-applyAbilityTypeModifiers aType modifiers = case aType of
-  FastAbility' cost mAction -> FastAbility' (applyCostModifiers cost modifiers) mAction
+modifyCost :: (Cost -> Cost) -> AbilityType -> AbilityType
+modifyCost f = \case
+  FastAbility' cost mAction -> FastAbility' (f cost) mAction
   ReactionAbility window cost ->
-    ReactionAbility window $ applyCostModifiers cost modifiers
+    ReactionAbility window $ f cost
   ActionAbility mAction cost ->
-    ActionAbility mAction $ applyCostModifiers cost modifiers
+    ActionAbility mAction $ f cost
   ActionAbilityWithSkill mAction skill cost ->
-    ActionAbilityWithSkill mAction skill $ applyCostModifiers cost modifiers
+    ActionAbilityWithSkill mAction skill $ f cost
   ActionAbilityWithBefore mAction mBeforeAction cost ->
     ActionAbilityWithBefore mAction mBeforeAction
-      $ applyCostModifiers cost modifiers
+      $ f cost
   ForcedAbility window -> ForcedAbility window
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
-    ForcedAbilityWithCost window $ applyCostModifiers cost modifiers
+    ForcedAbilityWithCost window $ f cost
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
   Haunted -> Haunted
   Cosmos -> Cosmos
-  Objective aType' -> Objective $ applyAbilityTypeModifiers aType' modifiers
-  ForcedWhen c aType' -> ForcedWhen c $ applyAbilityTypeModifiers aType' modifiers
+  Objective aType' -> Objective $ modifyCost f aType'
+  ForcedWhen c aType' -> ForcedWhen c $ modifyCost f aType'
+
+applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
+applyAbilityTypeModifiers aType modifiers = modifyCost (`applyCostModifiers` modifiers) aType
 
 applyCostModifiers :: Cost -> [ModifierType] -> Cost
 applyCostModifiers = foldl' applyCostModifier
@@ -362,3 +365,7 @@ defaultAbilityLimit = \case
   Haunted -> NoLimit
   Cosmos -> NoLimit
   ForcedWhen _ aType -> defaultAbilityLimit aType
+
+decreaseAbilityActionCost :: Ability -> Int -> Ability
+decreaseAbilityActionCost ab n =
+  ab {abilityType = modifyCost (`decreaseActionCost` n) (abilityType ab)}

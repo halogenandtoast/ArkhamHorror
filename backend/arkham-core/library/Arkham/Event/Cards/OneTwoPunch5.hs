@@ -31,10 +31,8 @@ oneTwoPunch5 :: EventCard OneTwoPunch5
 oneTwoPunch5 = event (OneTwoPunch5 . (`with` Metadata True)) Cards.oneTwoPunch5
 
 instance HasModifiersFor OneTwoPunch5 where
-  getModifiersFor (InvestigatorTarget iid) (OneTwoPunch5 (a `With` metadata))
-    | eventOwner a == iid && isFirst metadata =
-        pure
-          $ toModifiers a [SkillTestAutomaticallySucceeds]
+  getModifiersFor (InvestigatorTarget iid) (OneTwoPunch5 (a `With` meta)) | a.owner == iid && isFirst meta = do
+    pure $ toModifiers a [SkillTestAutomaticallySucceeds]
   getModifiersFor _ _ = pure []
 
 -- TODO: Also need to handle the repeat being tied to success in order to handle
@@ -44,29 +42,33 @@ instance RunMessage OneTwoPunch5 where
   runMessage msg e@(OneTwoPunch5 (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
-        [ skillTestModifier
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            (DamageDealt 1)
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
+        [ skillTestModifier attrs iid (DamageDealt 1)
+        , chooseFightEnemy iid attrs #combat
         ]
       pure e
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source && isFirst metadata -> do
-          push $ CreateEffect "60132" Nothing source (InvestigatorTarget iid)
-          pure . OneTwoPunch5 $ attrs `with` Metadata False
+    PassedThisSkillTest iid (isSource attrs -> True) | isFirst metadata -> do
+      push $ createCardEffect Cards.oneTwoPunch5 Nothing attrs iid
+      pure . OneTwoPunch5 $ attrs `with` Metadata False
     _ -> OneTwoPunch5 . (`with` metadata) <$> runMessage msg attrs
 
 newtype OneTwoPunch5Effect = OneTwoPunch5Effect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oneTwoPunch5Effect :: EffectArgs -> OneTwoPunch5Effect
-oneTwoPunch5Effect = OneTwoPunch5Effect . uncurry4 (baseAttrs "60132")
+oneTwoPunch5Effect = cardEffect OneTwoPunch5Effect Cards.oneTwoPunch5
+
+instance HasModifiersFor OneTwoPunch5Effect where
+  getModifiersFor target (OneTwoPunch5Effect attrs) | attrs.target == target && attrs.finished = do
+    pure $ toModifiers attrs [SkillModifier #combat 3, DamageDealt 2]
+  getModifiersFor _ _ = pure []
 
 instance RunMessage OneTwoPunch5Effect where
-  runMessage msg (OneTwoPunch5Effect attrs@EffectAttrs {..}) = case msg of
-    SkillTestEnds _ _ | not effectFinished -> do
+  runMessage msg e@(OneTwoPunch5Effect attrs@EffectAttrs {..}) = case msg of
+    SkillTestEnds _ _ | attrs.finished -> do
+      push $ disable attrs
+      pure e
+    SkillTestEnds _ _ | not attrs.finished -> do
       mSkillTest <- getSkillTest
       case (mSkillTest, effectTarget) of
         (Just skillTest, InvestigatorTarget iid) -> do
@@ -76,27 +78,10 @@ instance RunMessage OneTwoPunch5Effect where
               player <- getPlayer iid
               push
                 $ chooseOrRunOne player
-                $ [ Label
-                    "Fight that enemy again"
-                    [ skillTestModifiers
-                        (toSource attrs)
-                        (InvestigatorTarget iid)
-                        [SkillModifier SkillCombat 3, DamageDealt 2]
-                    , ChooseFightEnemy
-                        iid
-                        (toSource attrs)
-                        Nothing
-                        SkillCombat
-                        mempty
-                        False
-                    , DisableEffect (toId attrs)
-                    ]
+                $ [ Label "Fight that enemy again" [FightEnemy iid eid attrs.source Nothing #combat False]
                   | isStillAlive
                   ]
-                <> [ Label
-                      "Do not fight that enemy again"
-                      [DisableEffect (toId attrs)]
-                   ]
+                <> [Label "Do not fight that enemy again" [disable attrs]]
             _ -> pure ()
         (_, _) -> error "invalid call"
       pure . OneTwoPunch5Effect $ attrs & finishedL .~ True

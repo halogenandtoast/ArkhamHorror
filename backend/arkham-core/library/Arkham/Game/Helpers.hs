@@ -916,9 +916,8 @@ hasFightActions
   -> [Window]
   -> m Bool
 hasFightActions iid window windows' =
-  anyM (\a -> anyM (\w -> getCanPerformAbility iid w a) windows')
-    =<< selectList
-      (Matcher.AbilityIsAction Action.Fight <> Matcher.AbilityWindow window)
+  anyM (\a -> anyM (\w -> getCanPerformAbility iid w $ decreaseAbilityActionCost a 1) windows')
+    =<< selectList (Matcher.AbilityIsAction #fight <> Matcher.AbilityWindow window)
 
 hasEvadeActions
   :: HasGame m
@@ -1082,16 +1081,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (pure False)
         (cardInFastWindows iid source c windows')
         (cdFastWindow pcDef <|> canBecomeFastWindow)
-    canEvade <-
-      hasEvadeActions
-        iid
-        (Matcher.DuringTurn Matcher.You)
-        windows'
-    canFight <-
-      hasFightActions
-        iid
-        (Matcher.DuringTurn Matcher.You)
-        windows'
+    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You) windows'
+    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You) windows'
     passesLimits <- allM passesLimit (cdLimits pcDef)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
@@ -1130,8 +1121,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             || canEvade
             || cdOverrideActionPlayableIfCriteriaMet pcDef
          )
-      && ( #fight
-            `notElem` cdActions pcDef
+      && ( (#fight `notElem` cdActions pcDef)
             || canFight
             || cdOverrideActionPlayableIfCriteriaMet pcDef
          )

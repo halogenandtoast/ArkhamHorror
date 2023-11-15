@@ -64,6 +64,9 @@ data EffectAttrs = EffectAttrs
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
 
+instance HasField "finished" EffectAttrs Bool where
+  getField = effectFinished
+
 instance HasField "target" EffectAttrs Target where
   getField = effectTarget
 

@@ -296,7 +296,7 @@ function onLeave(el, done) {
 
         <template v-if="tarotCards.length > 0">
           <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana">
-            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="choose(tarotCardAbility(tarotCard))"/>
+            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
           </div>
         </template>
         <Skill
@@ -690,6 +690,12 @@ function onLeave(el, done) {
   img {
     width: calc($card-width / 2);
     filter: invert(75%);
+  }
+}
+
+.tarot-card {
+  &.can-interact {
+    border: 2px solid $select;
   }
 }
 </style>

@@ -24,27 +24,11 @@ CREATE SCHEMA sqitch;
 
 
 --
--- Name: SCHEMA sqitch; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON SCHEMA sqitch IS 'Sqitch database deployment metadata v1.1.';
-
-
---
 -- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
-
---
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
-
-
-SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
@@ -133,30 +117,11 @@ ALTER SEQUENCE public.arkham_log_entries_id_seq OWNED BY public.arkham_log_entri
 --
 
 CREATE TABLE public.arkham_players (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     arkham_game_id uuid NOT NULL,
     user_id bigint NOT NULL,
-    investigator_id text NOT NULL
+    investigator_id text NOT NULL,
+    id uuid DEFAULT public.uuid_generate_v4()
 );
-
-
---
--- Name: arkham_players_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arkham_players_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arkham_players_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arkham_players_id_seq OWNED BY public.arkham_players.id;
 
 
 --
@@ -273,90 +238,6 @@ CREATE TABLE sqitch.changes (
 
 
 --
--- Name: TABLE changes; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON TABLE sqitch.changes IS 'Tracks the changes currently deployed to the database.';
-
-
---
--- Name: COLUMN changes.change_id; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.change_id IS 'Change primary key.';
-
-
---
--- Name: COLUMN changes.script_hash; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.script_hash IS 'Deploy script SHA-1 hash.';
-
-
---
--- Name: COLUMN changes.change; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.change IS 'Name of a deployed change.';
-
-
---
--- Name: COLUMN changes.project; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.project IS 'Name of the Sqitch project to which the change belongs.';
-
-
---
--- Name: COLUMN changes.note; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.note IS 'Description of the change.';
-
-
---
--- Name: COLUMN changes.committed_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.committed_at IS 'Date the change was deployed.';
-
-
---
--- Name: COLUMN changes.committer_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.committer_name IS 'Name of the user who deployed the change.';
-
-
---
--- Name: COLUMN changes.committer_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.committer_email IS 'Email address of the user who deployed the change.';
-
-
---
--- Name: COLUMN changes.planned_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.planned_at IS 'Date the change was added to the plan.';
-
-
---
--- Name: COLUMN changes.planner_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.planner_name IS 'Name of the user who planed the change.';
-
-
---
--- Name: COLUMN changes.planner_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.changes.planner_email IS 'Email address of the user who planned the change.';
-
-
---
 -- Name: dependencies; Type: TABLE; Schema: sqitch; Owner: -
 --
 
@@ -367,41 +248,6 @@ CREATE TABLE sqitch.dependencies (
     dependency_id text,
     CONSTRAINT dependencies_check CHECK ((((type = 'require'::text) AND (dependency_id IS NOT NULL)) OR ((type = 'conflict'::text) AND (dependency_id IS NULL))))
 );
-
-
---
--- Name: TABLE dependencies; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON TABLE sqitch.dependencies IS 'Tracks the currently satisfied dependencies.';
-
-
---
--- Name: COLUMN dependencies.change_id; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.dependencies.change_id IS 'ID of the depending change.';
-
-
---
--- Name: COLUMN dependencies.type; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.dependencies.type IS 'Type of dependency.';
-
-
---
--- Name: COLUMN dependencies.dependency; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.dependencies.dependency IS 'Dependency name.';
-
-
---
--- Name: COLUMN dependencies.dependency_id; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.dependencies.dependency_id IS 'Change ID the dependency resolves to.';
 
 
 --
@@ -428,111 +274,6 @@ CREATE TABLE sqitch.events (
 
 
 --
--- Name: TABLE events; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON TABLE sqitch.events IS 'Contains full history of all deployment events.';
-
-
---
--- Name: COLUMN events.event; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.event IS 'Type of event.';
-
-
---
--- Name: COLUMN events.change_id; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.change_id IS 'Change ID.';
-
-
---
--- Name: COLUMN events.change; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.change IS 'Change name.';
-
-
---
--- Name: COLUMN events.project; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.project IS 'Name of the Sqitch project to which the change belongs.';
-
-
---
--- Name: COLUMN events.note; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.note IS 'Description of the change.';
-
-
---
--- Name: COLUMN events.requires; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.requires IS 'Array of the names of required changes.';
-
-
---
--- Name: COLUMN events.conflicts; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.conflicts IS 'Array of the names of conflicting changes.';
-
-
---
--- Name: COLUMN events.tags; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.tags IS 'Tags associated with the change.';
-
-
---
--- Name: COLUMN events.committed_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.committed_at IS 'Date the event was committed.';
-
-
---
--- Name: COLUMN events.committer_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.committer_name IS 'Name of the user who committed the event.';
-
-
---
--- Name: COLUMN events.committer_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.committer_email IS 'Email address of the user who committed the event.';
-
-
---
--- Name: COLUMN events.planned_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.planned_at IS 'Date the event was added to the plan.';
-
-
---
--- Name: COLUMN events.planner_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.planner_name IS 'Name of the user who planed the change.';
-
-
---
--- Name: COLUMN events.planner_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.events.planner_email IS 'Email address of the user who plan planned the change.';
-
-
---
 -- Name: projects; Type: TABLE; Schema: sqitch; Owner: -
 --
 
@@ -546,48 +287,6 @@ CREATE TABLE sqitch.projects (
 
 
 --
--- Name: TABLE projects; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON TABLE sqitch.projects IS 'Sqitch projects deployed to this database.';
-
-
---
--- Name: COLUMN projects.project; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.projects.project IS 'Unique Name of a project.';
-
-
---
--- Name: COLUMN projects.uri; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.projects.uri IS 'Optional project URI';
-
-
---
--- Name: COLUMN projects.created_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.projects.created_at IS 'Date the project was added to the database.';
-
-
---
--- Name: COLUMN projects.creator_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.projects.creator_name IS 'Name of the user who added the project.';
-
-
---
--- Name: COLUMN projects.creator_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.projects.creator_email IS 'Email address of the user who added the project.';
-
-
---
 -- Name: releases; Type: TABLE; Schema: sqitch; Owner: -
 --
 
@@ -597,41 +296,6 @@ CREATE TABLE sqitch.releases (
     installer_name text NOT NULL,
     installer_email text NOT NULL
 );
-
-
---
--- Name: TABLE releases; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON TABLE sqitch.releases IS 'Sqitch registry releases.';
-
-
---
--- Name: COLUMN releases.version; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.releases.version IS 'Version of the Sqitch registry.';
-
-
---
--- Name: COLUMN releases.installed_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.releases.installed_at IS 'Date the registry release was installed.';
-
-
---
--- Name: COLUMN releases.installer_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.releases.installer_name IS 'Name of the user who installed the registry release.';
-
-
---
--- Name: COLUMN releases.installer_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.releases.installer_email IS 'Email address of the user who installed the registry release.';
 
 
 --
@@ -654,90 +318,6 @@ CREATE TABLE sqitch.tags (
 
 
 --
--- Name: TABLE tags; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON TABLE sqitch.tags IS 'Tracks the tags currently applied to the database.';
-
-
---
--- Name: COLUMN tags.tag_id; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.tag_id IS 'Tag primary key.';
-
-
---
--- Name: COLUMN tags.tag; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.tag IS 'Project-unique tag name.';
-
-
---
--- Name: COLUMN tags.project; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.project IS 'Name of the Sqitch project to which the tag belongs.';
-
-
---
--- Name: COLUMN tags.change_id; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.change_id IS 'ID of last change deployed before the tag was applied.';
-
-
---
--- Name: COLUMN tags.note; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.note IS 'Description of the tag.';
-
-
---
--- Name: COLUMN tags.committed_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.committed_at IS 'Date the tag was applied to the database.';
-
-
---
--- Name: COLUMN tags.committer_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.committer_name IS 'Name of the user who applied the tag.';
-
-
---
--- Name: COLUMN tags.committer_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.committer_email IS 'Email address of the user who applied the tag.';
-
-
---
--- Name: COLUMN tags.planned_at; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.planned_at IS 'Date the tag was added to the plan.';
-
-
---
--- Name: COLUMN tags.planner_name; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.planner_name IS 'Name of the user who planed the tag.';
-
-
---
--- Name: COLUMN tags.planner_email; Type: COMMENT; Schema: sqitch; Owner: -
---
-
-COMMENT ON COLUMN sqitch.tags.planner_email IS 'Email address of the user who planned the tag.';
-
-
---
 -- Name: arkham_decks user_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -749,13 +329,6 @@ ALTER TABLE ONLY public.arkham_decks ALTER COLUMN user_id SET DEFAULT nextval('p
 --
 
 ALTER TABLE ONLY public.arkham_log_entries ALTER COLUMN id SET DEFAULT nextval('public.arkham_log_entries_id_seq'::regclass);
-
-
---
--- Name: arkham_players id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arkham_players ALTER COLUMN id SET DEFAULT nextval('public.arkham_players_id_seq'::regclass);
 
 
 --
@@ -801,14 +374,6 @@ ALTER TABLE ONLY public.arkham_games
 
 ALTER TABLE ONLY public.arkham_log_entries
     ADD CONSTRAINT arkham_log_entries_pkey PRIMARY KEY (id);
-
-
---
--- Name: arkham_players arkham_players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arkham_players
-    ADD CONSTRAINT arkham_players_pkey PRIMARY KEY (id);
 
 
 --
@@ -1028,3 +593,4 @@ ALTER TABLE ONLY sqitch.tags
 --
 -- PostgreSQL database dump complete
 --
+

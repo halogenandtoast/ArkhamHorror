@@ -15,6 +15,9 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window
 
+checkWindow :: HasGame m => Window -> m Message
+checkWindow = checkWindows . pure
+
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
   mBatchId <- getCurrentBatchId

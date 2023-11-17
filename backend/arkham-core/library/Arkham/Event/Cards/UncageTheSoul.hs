@@ -12,9 +12,8 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 
 newtype UncageTheSoul = UncageTheSoul EventAttrs
@@ -27,27 +26,12 @@ uncageTheSoul = event UncageTheSoul Cards.uncageTheSoul
 instance RunMessage UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      let
-        windows'' =
-          nub
-            $ windows'
-            <> map
-              (mkWindow Timing.When)
-              [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
+      let windows'' = nub $ windows' <> map mkWhen [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
       availableResources <- getSpendableResources iid
-      results <-
-        selectList
-          $ InHandOf You
-          <> BasicCardMatch (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
+      results <- selectList $ InHandOf You <> basic (oneOf [CardWithTrait Spell, CardWithTrait Ritual])
       cards <-
         filterM
-          ( getIsPlayableWithResources
-              iid
-              (InvestigatorSource iid)
-              (availableResources + 3)
-              UnpaidCost
-              windows''
-          )
+          (getIsPlayableWithResources iid GameSource (availableResources + 3) UnpaidCost windows'')
           results
       player <- getPlayer iid
       pushAll
@@ -55,11 +39,7 @@ instance RunMessage UncageTheSoul where
             player
             [ targetLabel
               (toCardId c)
-              [ CreateEffect
-                  (toCardCode attrs)
-                  Nothing
-                  (toSource attrs)
-                  (CardIdTarget $ toCardId c)
+              [ CreateEffect (toCardCode attrs) Nothing (toSource attrs) (CardIdTarget $ toCardId c)
               , PayCardCost iid c windows''
               ]
             | c <- cards

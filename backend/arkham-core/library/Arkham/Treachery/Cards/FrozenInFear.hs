@@ -35,7 +35,7 @@ instance RunMessage FrozenInFear where
       push $ attachTreachery attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ revelationSkillTest iid (toAbilitySource attrs 1) #willpower 3
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower 3
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

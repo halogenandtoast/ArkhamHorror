@@ -30,8 +30,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
-import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
+import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
 spawned :: EnemyAttrs -> Bool
@@ -203,12 +202,8 @@ getEnemyIsInPlay = selectAny . enemyIs
 
 defeatEnemy :: (HasGame m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m [Message]
 defeatEnemy enemyId investigatorId (toSource -> source) = do
-  whenMsg <-
-    checkWindows
-      [mkWindow Timing.When (Window.EnemyWouldBeDefeated enemyId)]
-  afterMsg <-
-    checkWindows
-      [mkWindow Timing.After (Window.EnemyWouldBeDefeated enemyId)]
+  whenMsg <- checkWindow $ mkWhen $ Window.EnemyWouldBeDefeated enemyId
+  afterMsg <- checkWindow $ mkAfter $ Window.EnemyWouldBeDefeated enemyId
   pure [whenMsg, afterMsg, DefeatEnemy enemyId investigatorId source]
 
 enemyEngagedInvestigators :: HasGame m => EnemyId -> m [InvestigatorId]

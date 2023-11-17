@@ -1066,12 +1066,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       handleCriteriaReplacement m _ = m
       duringTurnWindow = mkWindow #when (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
-      canBecomeFast =
-        CannotPlay Matcher.FastCard
-          `notElem` modifiers
-          && foldr applyModifier False modifiers
-      canBecomeFastWindow =
-        if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
+      canBecomeFast = CannotPlay Matcher.FastCard `notElem` modifiers && foldr applyModifier False modifiers
+      canBecomeFastWindow = guard canBecomeFast $> Matcher.DuringTurn Matcher.You
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
       applyModifier (CanBecomeFastOrReduceCostOf cardMatcher _) _ = canAffordCost && cardMatch c cardMatcher
       applyModifier _ val = val
@@ -1420,14 +1416,9 @@ passesCriteria iid mcard source windows' = \case
           nub $ mkWindow #when (Window.DuringTurn tIid) : windows'
     availableResources <- getSpendableResources iid
     results <- selectList cardMatcher
+    -- GameSource is important because it allows us to skip the action cost
     anyM
-      ( getIsPlayableWithResources
-          iid
-          source
-          (availableResources + n)
-          UnpaidCost
-          updatedWindows
-      )
+      (getIsPlayableWithResources iid GameSource (availableResources + n) UnpaidCost updatedWindows)
       results
   Criteria.PlayableCardExists costStatus cardMatcher -> do
     mTurnInvestigator <- selectOne Matcher.TurnInvestigator

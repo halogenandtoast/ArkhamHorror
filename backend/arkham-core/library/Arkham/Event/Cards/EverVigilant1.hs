@@ -49,7 +49,7 @@ instance RunMessage EverVigilant1 where
           iid
       playableCards <-
         filterM
-          (getIsPlayable iid (toSource attrs) UnpaidCost windows'')
+          (getIsPlayable iid GameSource UnpaidCost windows'')
           cards
       player <- getPlayer iid
       when (notNull playableCards)

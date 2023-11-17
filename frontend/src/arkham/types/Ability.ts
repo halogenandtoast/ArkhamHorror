@@ -39,14 +39,14 @@ export const actionAbilityDecoder = JsonDecoder.object<ActionAbility>({
 
 export interface ActionAbilityWithSkill {
   tag: "ActionAbilityWithSkill"
-  action: Action | null
+  actions: [Action]
   skillType: SkillType
   cost: Cost
 }
 
 export const actionAbilityWithSkillDecoder = JsonDecoder.object<ActionAbilityWithSkill>({
   tag: JsonDecoder.isExactly("ActionAbilityWithSkill"),
-  action: JsonDecoder.nullable(actionDecoder),
+  actions: JsonDecoder.array(actionDecoder, 'Actions[]'),
   skillType: skillTypeDecoder,
   cost: costDecoder
 }, 'ActionAbility')

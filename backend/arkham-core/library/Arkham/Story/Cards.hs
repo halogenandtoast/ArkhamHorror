@@ -57,6 +57,8 @@ allStoryCards =
       , jeromesFate
       , pennysFate
       , valentinosFate
+      , theTrialOfKamanThah
+      , theTrialOfNasht
       ]
 
 sickeningReality_65 :: CardDef
@@ -167,3 +169,9 @@ pennysFate = story "05264" "Penny's Fate" UnionAndDisillusion
 
 valentinosFate :: CardDef
 valentinosFate = story "05265" "Valentino's Fate" UnionAndDisillusion
+
+theTrialOfKamanThah :: CardDef
+theTrialOfKamanThah = story "06057b" "The Trial of Kaman-Thah" BeyondTheGatesOfSleep
+
+theTrialOfNasht :: CardDef
+theTrialOfNasht = story "06058b" "The Trial of Nasht" BeyondTheGatesOfSleep

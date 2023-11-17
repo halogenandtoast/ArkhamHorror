@@ -4493,6 +4493,9 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       EnemyDefeated eid' _ _ _ -> eid == eid'
       _ -> False
+    popMessageMatching_ $ \case
+      Discard _ _ (EnemyTarget eid') -> eid == eid'
+      _ -> False
     enemy <- getEnemy eid
     swarms <- selectList $ SwarmOf eid
 

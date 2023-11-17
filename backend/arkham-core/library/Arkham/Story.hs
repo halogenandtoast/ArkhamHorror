@@ -73,4 +73,6 @@ allStories =
     , SomeStoryCard jeromesFate
     , SomeStoryCard pennysFate
     , SomeStoryCard valentinosFate
+    , SomeStoryCard theTrialOfKamanThah
+    , SomeStoryCard theTrialOfNasht
     ]

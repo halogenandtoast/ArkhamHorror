@@ -1081,8 +1081,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (pure False)
         (cardInFastWindows iid source c windows')
         (cdFastWindow pcDef <|> canBecomeFastWindow)
-    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You) windows'
-    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You) windows'
+    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
     passesLimits <- allM passesLimit (cdLimits pcDef)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
@@ -1111,20 +1111,24 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           possibleSlots <- getPotentialSlots c iid
           pure $ null $ cdSlots pcDef \\ possibleSlots
 
+    let debug = if toCardCode pcDef == "60112" && iid == "60101" then traceShowId else id
+
     pure
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
-      && none prevents modifiers
+      && (none prevents modifiers)
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-      && ( #evade
-            `notElem` cdActions pcDef
+      && debug
+        ( #evade
+            `notElem` traceShowId (cdActions pcDef)
             || canEvade
             || cdOverrideActionPlayableIfCriteriaMet pcDef
-         )
-      && ( (#fight `notElem` cdActions pcDef)
+        )
+      && debug
+        ( (#fight `notElem` cdActions pcDef)
             || canFight
             || cdOverrideActionPlayableIfCriteriaMet pcDef
-         )
+        )
       && passesCriterias
       && passesLimits
       && passesUnique

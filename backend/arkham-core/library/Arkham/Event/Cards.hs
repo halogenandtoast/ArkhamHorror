@@ -2786,9 +2786,7 @@ counterpunch =
     { cdCardTraits = setFromList [Spirit, Tactic]
     , cdActions = [#fight]
     , cdSkills = [#combat, #agility]
-    , cdFastWindow =
-        Just
-          $ EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy
+    , cdFastWindow = Just $ EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy
     }
 
 -- We need to override the action check for this card because of multiple actions,

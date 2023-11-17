@@ -245,5 +245,50 @@ scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"
 
+instance FromJSON ScenarioAttrs where
+  parseJSON = withObject "ScenarioAttrs" $ \o -> do
+    scenarioId <- o .: "id"
+    scenarioReference <- o .: "reference"
+    scenarioName <- o .: "name"
+    scenarioDifficulty <- o .: "difficulty"
+    scenarioCompletedAgendaStack <- o .: "completedAgendaStack"
+    scenarioCompletedActStack <- o .: "completedActStack"
+    scenarioAgendaStack <- o .: "agendaStack"
+    scenarioActStack <- o .: "actStack"
+    scenarioCardsUnderAgendaDeck <- o .: "cardsUnderAgendaDeck"
+    scenarioCardsUnderActDeck <- o .: "cardsUnderActDeck"
+    scenarioCardsNextToActDeck <- o .: "cardsNextToActDeck"
+    scenarioCardsNextToAgendaDeck <- o .: "cardsNextToAgendaDeck"
+    scenarioLocationLayout <- o .: "locationLayout"
+    scenarioDecks <- o .: "decks"
+    scenarioLog <- o .: "log"
+    scenarioCounts <- o .: "counts"
+    scenarioSetAsideCards <- o .: "setAsideCards"
+    scenarioStandaloneCampaignLog <- o .: "standaloneCampaignLog"
+    scenarioCardsUnderScenarioReference <- o .: "cardsUnderScenarioReference"
+    scenarioInResolution <- o .: "inResolution"
+    scenarioNoRemainingInvestigatorsHandler <- o .: "noRemainingInvestigatorsHandler"
+    scenarioVictoryDisplay <- o .: "victoryDisplay"
+    scenarioChaosBag <- o .: "chaosBag"
+    scenarioEncounterDeck <- o .: "encounterDeck"
+    scenarioEncounterDecks <- o .: "encounterDecks"
+    scenarioHasEncounterDeck <- o .:? "hasEncounterDeck" .!= True
+    scenarioActiveEncounterDeck <- o .: "activeEncounterDeck"
+    scenarioDiscard <- o .: "discard"
+    scenarioResignedCardCodes <- o .: "resignedCardCodes"
+    scenarioResolvedStories <- o .: "resolvedStories"
+    scenarioDecksLayout <- o .: "decksLayout"
+    scenarioSetAsideKeys <- o .: "setAsideKeys"
+    scenarioMeta <- o .: "meta"
+    scenarioUsesGrid <- o .: "usesGrid"
+    scenarioTokens <- o .: "tokens"
+    scenarioStoryCards <- o .: "storyCards"
+    scenarioPlayerDecks <- o .: "playerDecks"
+    scenarioTarotCards <- o .: "tarotCards"
+    scenarioTarotDeck <- o .: "tarotDeck"
+    scenarioTurn <- o .: "turn"
+    scenarioTimesPlayed <- o .: "timesPlayed"
+    pure ScenarioAttrs {..}
+
 makeLensesWith suffixedFields ''ScenarioAttrs
-$(deriveJSON (aesonOptions $ Just "scenario") ''ScenarioAttrs)
+$(deriveToJSON (aesonOptions $ Just "scenario") ''ScenarioAttrs)

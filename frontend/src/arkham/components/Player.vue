@@ -36,7 +36,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
+const investigatorId = computed(() => props.investigator.id)
 
 const stories = computed(() =>
   Object.
@@ -45,7 +45,9 @@ const stories = computed(() =>
 )
 
 const engagedEnemies = computed(() =>
-  props.investigator.engagedEnemies.map((e) => props.game.enemies[e]).filter((e) => e.placement.tag === "InThreatArea" && e.placement.contents === investigatorId.value)
+  props.investigator.engagedEnemies.map((e) => props.game.enemies[e]).filter((e) =>
+    e.placement.tag === "InThreatArea" && e.placement.contents === investigatorId.value
+  )
 )
 
 const inHandEnemies = computed(() =>

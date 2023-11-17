@@ -22,16 +22,16 @@ riseOfTheGhouls :: AgendaCard RiseOfTheGhouls
 riseOfTheGhouls = agenda (2, A) RiseOfTheGhouls Cards.riseOfTheGhouls (Static 7)
 
 instance RunMessage RiseOfTheGhouls where
-  runMessage msg a@(RiseOfTheGhouls attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
+  runMessage msg a@(RiseOfTheGhouls attrs) = case msg of
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       lead <- getLead
       pushAll
         [ ShuffleEncounterDiscardBackIn
         , DiscardUntilFirst lead (AgendaSource aid) Deck.EncounterDeck
-            $ BasicCardMatch (#enemy <> withTrait Ghoul)
+            $ basic (#enemy <> withTrait Ghoul)
         ]
       pure a
-    RequestedEncounterCard (AgendaSource aid) _ mcard | aid == agendaId -> do
+    RequestedEncounterCard (AgendaSource aid) _ mcard | aid == toId attrs -> do
       case mcard of
         Nothing -> push $ advanceAgendaDeck attrs
         Just card -> do

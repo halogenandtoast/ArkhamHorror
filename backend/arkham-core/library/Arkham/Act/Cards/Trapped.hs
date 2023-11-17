@@ -13,8 +13,7 @@ newtype Trapped = Trapped ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 trapped :: ActCard Trapped
-trapped =
-  act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+trapped = act (1, A) Trapped Cards.trapped (groupClueCost $ PerPlayer 2)
 
 instance RunMessage Trapped where
   runMessage msg a@(Trapped attrs) = case msg of

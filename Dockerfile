@@ -79,7 +79,6 @@ RUN \
 
 FROM base as dependencies
 
-
 RUN mkdir -p \
   /opt/arkham/bin \
   /opt/arkham/src/backend/arkham-api \
@@ -95,9 +94,7 @@ COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.ya
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
 RUN --mount=type=cache,id=stack,target=/root/.stack stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 
-FROM base as api
-
-# COPY --from=dependencies /root/.stack /root/.stack
+FROM dependencies as api
 
 RUN mkdir -p \
   /opt/arkham/src/backend \
@@ -107,8 +104,6 @@ COPY ./backend /opt/arkham/src/backend
 
 WORKDIR /opt/arkham/src/backend/cards-discover
 RUN --mount=type=cache,id=stack,target=/root/.stack stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
-
-RUN export GIT_SHA1=$(cat .git/$(cat .git/HEAD | cut -d' ' -f2))
 
 WORKDIR /opt/arkham/src/backend/arkham-api
 RUN --mount=type=cache,id=stack,target=/root/.stack stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'

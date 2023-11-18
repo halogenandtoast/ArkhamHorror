@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -27,14 +26,13 @@ instance RunMessage TheZealotsSeal where
         handCardCount <- fieldMap InvestigatorHand length iid'
         push
           $ if handCardCount <= 3
-            then InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1
-            else RevelationSkillTest iid' source SkillWillpower 2
+            then assignDamageAndHorror iid' attrs 1 1
+            else revelationSkillTest iid' source #willpower 2
       pure t
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ _
-      | tid == treacheryId -> do
-          pushAll
-            [ toMessage $ randomDiscard iid attrs
-            , toMessage $ randomDiscard iid attrs
-            ]
-          pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      pushAll
+        [ toMessage $ randomDiscard iid attrs
+        , toMessage $ randomDiscard iid attrs
+        ]
+      pure t
     _ -> TheZealotsSeal <$> runMessage msg attrs

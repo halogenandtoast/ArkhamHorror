@@ -1111,24 +1111,20 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           possibleSlots <- getPotentialSlots c iid
           pure $ null $ cdSlots pcDef \\ possibleSlots
 
-    let debug = if toCardCode pcDef == "60112" && iid == "60101" then traceShowId else id
-
     pure
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
       && (none prevents modifiers)
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-      && debug
-        ( #evade
-            `notElem` traceShowId (cdActions pcDef)
+      && ( #evade
+            `notElem` cdActions pcDef
             || canEvade
             || cdOverrideActionPlayableIfCriteriaMet pcDef
-        )
-      && debug
-        ( (#fight `notElem` cdActions pcDef)
+         )
+      && ( (#fight `notElem` cdActions pcDef)
             || canFight
             || cdOverrideActionPlayableIfCriteriaMet pcDef
-        )
+         )
       && passesCriterias
       && passesLimits
       && passesUnique

@@ -345,3 +345,12 @@ forMaybeM xs f = catMaybes <$> traverse f xs
 
 notNullOr :: [a] -> [a] -> [a]
 notNullOr as bs = if null as then bs else as
+
+toSentence :: Show a => [a] -> Text
+toSentence = go False
+ where
+  go _ [] = ""
+  go _ [a] = tshow a
+  go True [a, b] = tshow a <> ", and " <> tshow b
+  go False [a, b] = tshow a <> " and " <> tshow b
+  go _ (a : as) = tshow a <> ", " <> go True as

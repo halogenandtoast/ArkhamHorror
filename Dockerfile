@@ -108,6 +108,8 @@ COPY ./backend /opt/arkham/src/backend
 WORKDIR /opt/arkham/src/backend/cards-discover
 RUN --mount=type=cache,id=stack,target=/root/.stack stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
 
+RUN export GIT_SHA1=$(cat .git/$(cat .git/HEAD | cut -d' ' -f2))
+
 WORKDIR /opt/arkham/src/backend/arkham-api
 RUN --mount=type=cache,id=stack,target=/root/.stack stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 RUN --mount=type=cache,id=stack,target=/root/.stack stack --no-terminal --local-bin-path /opt/arkham/bin install

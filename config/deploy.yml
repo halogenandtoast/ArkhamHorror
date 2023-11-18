@@ -29,6 +29,7 @@ env:
     - DATABASE_URL
     - ASSET_HOST
     - PORT
+    - GIT_SHA1
 # Inject ENV variables into containers (secrets come from .env).
 # env:
 #   clear:

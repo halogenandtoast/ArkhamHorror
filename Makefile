@@ -26,18 +26,9 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 .PHONY: help
 
-## Migrate production
-prod-migrate:
-	cd migrations && heroku config:get DATABASE_URL | sed -e 's/postgres://' | xargs -I {} sqitch deploy db:pg:{}
-.PHONY: prod-migrate
-
 ## Deploy production (will migrate database)
-deploy: prod-migrate
-	DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t arkham .
-	docker tag arkham:latest 834069176314.dkr.ecr.us-east-1.amazonaws.com/arkham:latest
-	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 834069176314.dkr.ecr.us-east-1.amazonaws.com
-	docker push 834069176314.dkr.ecr.us-east-1.amazonaws.com/arkham:latest
-	aws ecs update-service --cluster arkham --service arkham-service --force-new-deployment
+deploy:
+	kamal deploy
 .PHONY: deploy
 
 ## Sync local images to s3 bucket

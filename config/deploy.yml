@@ -9,6 +9,10 @@ servers:
   - 159.89.182.110
   - 159.89.182.72
 
+builder:
+  cache:
+    type: gha
+
 # Credentials for your image host.
 registry:
   # Specify the registry server, if you're not using Docker Hub

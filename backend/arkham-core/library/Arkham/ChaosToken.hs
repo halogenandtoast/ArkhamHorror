@@ -239,6 +239,27 @@ chaosTokenToFaceValue = \case
   CurseToken -> 0
   BlessToken -> 0
 
+chaosTokenLabel :: ChaosTokenFace -> Text
+chaosTokenLabel = \case
+  PlusOne -> "+1"
+  Zero -> "0"
+  MinusOne -> "-1"
+  MinusTwo -> "-2"
+  MinusThree -> "-3"
+  MinusFour -> "-4"
+  MinusFive -> "-5"
+  MinusSix -> "-6"
+  MinusSeven -> "-7"
+  MinusEight -> "-8"
+  Skull -> "Skull"
+  Cultist -> "Cultist"
+  Tablet -> "Tablet"
+  ElderThing -> "Elder Thing"
+  AutoFail -> "Auto Fail"
+  ElderSign -> "Elder Sign"
+  CurseToken -> "Curse"
+  BlessToken -> "Bless"
+
 $(deriveJSON defaultOptions ''ChaosTokenModifier)
 $(deriveJSON defaultOptions ''ChaosTokenFace)
 $(deriveJSON defaultOptions ''ChaosToken)

@@ -5588,19 +5588,7 @@ runGameMessage msg g = case msg of
 
         msgs' <-
           if skillTestIsRevelation skillTest
-            then do
-              mAfterRevelation1 <- popMessageMatching $ \case
-                After (Revelation _ source) -> source == skillTestSource skillTest
-                _ -> False
-              mAfterRevelation2 <- popMessageMatching $ \case
-                AfterRevelation _ tid ->
-                  TreacherySource tid == skillTestSource skillTest
-                _ -> False
-              pure
-                $ performRevelationSkillTestWindow
-                : msgs
-                  <> maybeToList mAfterRevelation1
-                  <> maybeToList mAfterRevelation2
+            then pure $ performRevelationSkillTestWindow : msgs
             else pure msgs
 
         pushAll (pre <> msgs')

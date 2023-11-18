@@ -7,12 +7,14 @@ export type TreacheryPlacement =
   | { tag: "TreacheryInHandOf", contents: string }
   | { tag: "TreacheryNextToAgenda" }
   | { tag: "TreacheryLimbo" }
+  | { tag: "TreacheryInSkillTest" }
 
 export const treacheryPlacementDecoder = JsonDecoder.oneOf<TreacheryPlacement>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryAttachedTo'), contents: targetDecoder }, 'TreacheryAttachedTo')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryInHandOf'), contents: JsonDecoder.string }, 'TreacheryInHandOf')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryNextToAgenda') }, 'TreacheryNextToAgenda')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryLimbo') }, 'TreacheryLimbo')
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryInSkillTest') }, 'TreacheryInSkillTest')
   ], 'TreacheryPlacement')
 
 export interface Treachery {

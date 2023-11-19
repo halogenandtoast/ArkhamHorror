@@ -654,7 +654,7 @@ reckless =
   (skill "60304" "Reckless" [] Neutral)
     { cdCardTraits = singleton Flaw
     , cdCardSubType = Just Weakness
-    , cdCommitRestrictions = [OnlyCardCommittedToTest]
+    , cdCommitRestrictions = [OnlyYourTest, OnlyCardCommittedToTest]
     , cdCardInHandEffects = True
     }
 

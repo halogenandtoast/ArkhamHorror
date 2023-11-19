@@ -224,7 +224,7 @@ runWindow attrs windows actions playableCards = do
         push
           $ chooseOne player
           $ [ targetLabel (toCardId c)
-              $ [ InitiatePlayCard iid c Nothing windows False
+              $ [ InitiatePlayCard iid c Nothing windows True
                 , RunWindow iid windows
                 ]
             | c <- playableCards

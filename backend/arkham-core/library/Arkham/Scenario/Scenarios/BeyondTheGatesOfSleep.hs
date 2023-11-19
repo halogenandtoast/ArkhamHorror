@@ -63,7 +63,12 @@ beyondTheGatesOfSleep difficulty =
     "06039"
     "Beyond the Gates of Sleep"
     difficulty
-    ["seventySteps .", ". theCavernOfFlame"]
+    [ "seventySteps     .                ."
+    , ".                theCavernOfFlame ."
+    , ".                .                sevenHundredSteps"
+    , ".                baseOfTheSteps   ."
+    , "theEnchantedPath .                ."
+    ]
     $ (metaL .~ toJSON ([] :: [Dream]))
     . (hasEncounterDeckL .~ False)
 
@@ -275,6 +280,7 @@ instance RunMessage BeyondTheGatesOfSleep where
           [ Enemies.nasht
           , Enemies.kamanThah
           , Locations.sevenHundredSteps
+          , Locations.baseOfTheSteps
           , Locations.theEnchantedPath
           ]
 

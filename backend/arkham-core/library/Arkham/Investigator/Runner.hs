@@ -99,8 +99,7 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
 -- No valid targets. For example Marksmanship
 -- Can't afford card. For example On Your Own
 getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> m Bool
-getAllAbilitiesSkippable attrs windows =
-  allM (getWindowSkippable attrs windows) windows
+getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
 
 getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
 getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard pc)) | iid == toId attrs = do

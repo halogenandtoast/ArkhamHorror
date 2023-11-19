@@ -3099,13 +3099,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ]
     pure a
   UseAbility iid ability windows | iid == investigatorId -> do
+    activeInvestigator <- getActiveInvestigatorId
     mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
     let
       mayIgnore =
         case abilitySource ability of
           LocationSource _ -> mayIgnoreLocationEffectsAndKeywords
           _ -> False
-      resolveAbility = [PayForAbility ability windows, ResolvedAbility ability]
+      resolveAbility =
+        [SetActiveInvestigator iid | iid /= activeInvestigator]
+          <> [PayForAbility ability windows, ResolvedAbility ability]
+          <> [SetActiveInvestigator activeInvestigator | iid /= activeInvestigator]
     player <- getPlayer iid
 
     if mayIgnore

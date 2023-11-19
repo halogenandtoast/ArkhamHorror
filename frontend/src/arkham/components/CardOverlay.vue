@@ -4,6 +4,7 @@ import { imgsrc } from '@/arkham/helpers'
 
 const card = ref<string | null>(null);
 const reversed = ref<boolean>(false);
+const sideways = ref<boolean>(false);
 const cardOverlay = ref<HTMLElement | null>(null);
 
 const getReversed = (el: HTMLElement) => {
@@ -142,7 +143,7 @@ document.addEventListener('mouseover', (event) => {
 
 <template>
   <div class="card-overlay" ref="cardOverlay">
-    <img v-if="card" :src="card" :class="{ reversed }" />
+    <img v-if="card" :src="card" :class="{ reversed, sideways }" />
   </div>
 </template>
 
@@ -150,7 +151,8 @@ document.addEventListener('mouseover', (event) => {
 .card-overlay {
   position: absolute;
   z-index: 1000;
-  width: 300px;
+  max-width: 420px;
+  max-height: 420px;
   height: fit-content;
   display: flex;
   img {
@@ -161,7 +163,12 @@ document.addEventListener('mouseover', (event) => {
     max-width: 100%;
     max-height: 100%;
   }
+
+  .sideways {
+    width: calc(300px * 7/5);
+  }
 }
+
 
 .reversed {
   transform: rotateZ(180deg);

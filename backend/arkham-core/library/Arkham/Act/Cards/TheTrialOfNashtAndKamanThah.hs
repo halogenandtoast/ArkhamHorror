@@ -40,9 +40,15 @@ instance RunMessage TheTrialOfNashtAndKamanThah where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       investigators <- getInvestigators
       placeSevenHundredSteps <- placeSetAsideLocation_ Locations.sevenHundredSteps
+      placeBaseOfTheSteps <- placeSetAsideLocation_ Locations.baseOfTheSteps
       placeTheEnchantedPath <- placeSetAsideLocation_ Locations.theEnchantedPath
       pushAll
         $ map (RemoveAllClues (toSource attrs) . toTarget) investigators
-        <> [placeSevenHundredSteps, placeTheEnchantedPath, AddChaosToken Skull, advanceActDeck attrs]
+        <> [ placeSevenHundredSteps
+           , placeBaseOfTheSteps
+           , placeTheEnchantedPath
+           , AddChaosToken Skull
+           , advanceActDeck attrs
+           ]
       pure a
     _ -> TheTrialOfNashtAndKamanThah <$> runMessage msg attrs

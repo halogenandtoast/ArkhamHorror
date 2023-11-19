@@ -7,7 +7,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -32,13 +31,13 @@ instance HasAbilities DissonantVoices where
   getAbilities (DissonantVoices a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ ForcedAbility
-        $ RoundEnds Timing.When
+        $ RoundEnds #when
     ]
 
 instance RunMessage DissonantVoices where
   runMessage msg t@(DissonantVoices attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId t) (InvestigatorTarget iid)
+      push $ attachTreachery attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

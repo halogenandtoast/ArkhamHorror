@@ -1272,7 +1272,7 @@ passesCriteria iid mcard source windows' = \case
         Just (card, _) -> pure $ toCardId card `elem` discard
         _ -> error "No card available to check"
       _ -> error $ "source not handled for in your hand: " <> show source
-  Criteria.InThreatAreaOf who -> do
+  Criteria.InThreatAreaOf (Matcher.replaceYouMatcher iid -> who) -> do
     case source of
       TreacherySource tid ->
         member tid <$> select (Matcher.TreacheryInThreatAreaOf who)
@@ -1399,7 +1399,7 @@ passesCriteria iid mcard source windows' = \case
     ProxySource (AssetSource aid) _ ->
       liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
     _ -> error $ "missing OnSameLocation check for source: " <> show source
-  Criteria.DuringTurn who -> selectAny (Matcher.TurnInvestigator <> who)
+  Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher -> selectAny cardMatcher
   Criteria.CommitedCardsMatch cardListMatcher -> do

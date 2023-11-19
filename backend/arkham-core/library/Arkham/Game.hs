@@ -111,6 +111,7 @@ import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
+import Arkham.Location.Runner (getModifiedShroudValueFor)
 import Arkham.Location.Types (
   Field (..),
   LocationAttrs (..),
@@ -2695,7 +2696,7 @@ instance Projection Location where
       LocationResources -> pure $ locationResources attrs
       LocationHorror -> pure $ locationHorror attrs
       LocationDoom -> pure $ locationDoom attrs
-      LocationShroud -> pure locationShroud
+      LocationShroud -> getModifiedShroudValueFor attrs
       LocationBrazier -> pure locationBrazier
       LocationBreaches -> pure locationBreaches
       LocationTraits -> do

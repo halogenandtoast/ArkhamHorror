@@ -78,7 +78,7 @@ import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators, spawnAt)
 import Arkham.Helpers.Enemy qualified as Enemy
-import Arkham.Helpers.Investigator hiding (investigator)
+import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message hiding (
   AssetDamage,
@@ -3954,9 +3954,13 @@ createActiveCostForCard
   -> m ActiveCost
 createActiveCostForCard iid card isPlayAction windows' = do
   acId <- getRandom
-  modifiers' <- getModifiers (CardIdTarget $ toCardId card)
-  modifiers'' <- getModifiers (CardTarget card)
-  let allModifiers = modifiers' <> modifiers''
+  allModifiers <-
+    mconcat
+      <$> sequence
+        [ getModifiers (toCardId card)
+        , getModifiers (CardTarget card)
+        , getModifiers iid
+        ]
   resources <- getModifiedCardCost iid card
   investigator' <- getInvestigator iid
   let
@@ -3970,13 +3974,21 @@ createActiveCostForCard iid card isPlayAction windows' = do
                 (Cost.ResourceCost 1)
             else Cost.Free
         else Cost.ResourceCost resources
-    additionalCosts = flip mapMaybe allModifiers $ \case
-      AdditionalCost c -> Just c
-      _ -> Nothing
     sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
         Keyword.Seal matcher -> Just $ Cost.SealCost matcher
         _ -> Nothing
+
+  additionalCosts <- flip mapMaybeM allModifiers $ \case
+    AdditionalCost c -> pure $ Just c
+    ActionCostOf match n -> do
+      performedActions <- field InvestigatorActionsPerformed iid
+      takenActions <- field InvestigatorActionsTaken iid
+      pure
+        $ if any (matchTarget takenActions performedActions match) (cdActions $ toCardDef card)
+          then Just (ActionCost n)
+          else Nothing
+    _ -> pure Nothing
 
   let
     cost =
@@ -4855,11 +4867,15 @@ runGameMessage msg g = case msg of
     push $ ShuffleCardsIntoDeck deck [card]
     pure $ g & entitiesL . locationsL %~ deleteMap locationId
   PlayCard iid card _mtarget windows' True -> do
-    modifiers' <- getModifiers (CardIdTarget $ toCardId card)
-    modifiers'' <- getModifiers (CardTarget card)
+    allModifiers <-
+      mconcat
+        <$> sequence
+          [ getModifiers (toCardId card)
+          , getModifiers (CardTarget card)
+          , getModifiers iid
+          ]
     investigator' <- getInvestigator iid
     let
-      allModifiers = modifiers' <> modifiers''
       isFast = case card of
         PlayerCard pc ->
           isJust (cdFastWindow $ toCardDef pc)

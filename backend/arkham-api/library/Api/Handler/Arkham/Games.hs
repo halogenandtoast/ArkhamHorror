@@ -19,6 +19,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Difficulty
 import Arkham.Game
 import Arkham.Game.Diff
+import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Message
 import Conduit
@@ -191,7 +192,7 @@ putApiV1ArkhamGameR gameId = do
 
 updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
 updateGame response gameId userId writeChannel = do
-  (Entity pid _, ArkhamGame {..}) <-
+  (Entity _ _, ArkhamGame {..}) <-
     runDB
       $ (,)
       <$> getBy404 (UniquePlayer userId gameId)
@@ -199,12 +200,12 @@ updateGame response gameId userId writeChannel = do
   mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   let
     gameJson@Game {..} = arkhamGameCurrentData
-    playerId =
-      fromMaybe
-        (coerce pid)
-        (answerPlayer response)
     currentQueue =
       maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+
+  activePlayer <- runReaderT getActivePlayer gameJson
+
+  let playerId = fromMaybe activePlayer (answerPlayer response)
 
   messages <- handleAnswer gameJson playerId response
   gameRef <- newIORef gameJson

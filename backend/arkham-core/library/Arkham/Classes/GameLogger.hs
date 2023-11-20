@@ -1,5 +1,6 @@
 module Arkham.Classes.GameLogger where
 
+import Arkham.Id
 import Arkham.Prelude
 
 class MonadIO m => HasGameLogger m where
@@ -13,7 +14,10 @@ instance HasGameLogger m => HasGameLogger (ReaderT e m) where
 class ToGameLoggerFormat a where
   format :: a -> Text
 
-data ClientMessage = ClientText Text | ClientCard Text Value | ClientTarot Value
+data ClientMessage
+  = ClientText Text
+  | ClientCard Text Value
+  | ClientTarot Value
 
 send :: HasGameLogger m => Text -> m ()
 send msg = do

@@ -989,7 +989,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   When (EnemySpawn _ _ enemyId) -> do
     card <- field EnemyCard enemyId
     pure $ a & (victoryDisplayL %~ delete card)
-  SetEncounterDeck encounterDeck -> pure $ a & encounterDeckL .~ encounterDeck
+  SetEncounterDeck encounterDeck -> do
+    pure $ a & encounterDeckL .~ encounterDeck & hasEncounterDeckL .~ True
   RemoveAllCopiesOfCardFromGame _ cCode ->
     pure
       $ a

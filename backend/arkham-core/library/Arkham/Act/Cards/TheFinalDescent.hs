@@ -10,7 +10,10 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
+import Arkham.Scenario.Helpers
 import Arkham.Trait (Trait (Steps))
 
 newtype TheFinalDescent = TheFinalDescent ActAttrs
@@ -40,11 +43,24 @@ instance RunMessage TheFinalDescent where
           . take 6
           =<< shuffleM
           =<< getSetAsideCardsMatching "Enchanted Woods"
+
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          [Enemies.laboringGug]
+          [ EncounterSet.BeyondTheGatesOfSleep
+          , EncounterSet.AgentsOfNyarlathotep
+          , EncounterSet.Zoogs
+          , EncounterSet.DreamersCurse
+          , EncounterSet.Dreamlands
+          , EncounterSet.ChillingCold
+          ]
+
       pushAll
         $ map (RemoveAllClues (toSource attrs) . toTarget) investigators
         <> [AddChaosToken Skull]
         <> [RemoveLocation step | step <- steps]
         <> placeEnchantedWoods
+        <> [SetEncounterDeck encounterDeck]
         <> [advanceActDeck attrs]
       pure a
     _ -> TheFinalDescent <$> runMessage msg attrs

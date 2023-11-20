@@ -14,7 +14,6 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -265,16 +264,6 @@ instance RunMessage BeyondTheGatesOfSleep where
       push $ chooseOne player choices
       pure s
     Setup -> do
-      _encounterDeck <-
-        buildEncounterDeck
-          [ EncounterSet.BeyondTheGatesOfSleep
-          , EncounterSet.AgentsOfNyarlathotep
-          , EncounterSet.Zoogs
-          , EncounterSet.DreamersCurse
-          , EncounterSet.Dreamlands
-          , EncounterSet.ChillingCold
-          ]
-
       (seventySteps, placeSeventySteps) <- placeLocationCard Locations.seventySteps
       placeTheCavernOfFlame <- placeLocationCard_ Locations.theCavernOfFlame
 

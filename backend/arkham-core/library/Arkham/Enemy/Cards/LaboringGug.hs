@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.LaboringGug
-  ( laboringGug
-  , LaboringGug(..)
-  )
+module Arkham.Enemy.Cards.LaboringGug (
+  laboringGug,
+  LaboringGug (..),
+)
 where
 
 import Arkham.Prelude

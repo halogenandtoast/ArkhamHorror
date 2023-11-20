@@ -217,6 +217,7 @@ allEncounterTreacheryCards =
       , lockedDoor
       , lostHumanity
       , lostInTheWilds
+      , lostInTheWoods
       , lostInTime
       , lostInVenice
       , lowOnSupplies

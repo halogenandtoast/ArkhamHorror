@@ -3110,11 +3110,12 @@ somethingWorthFightingFor =
 
 signMagick :: CardDef
 signMagick =
-  (asset "05112" "Sign Magick" 3 Mystic)
-    { cdSkills = [#willpower]
-    , cdCardTraits = setFromList [Ritual, Talent]
-    , cdSlots = [#hand]
-    }
+  fast
+    (asset "05112" "Sign Magick" 3 Mystic)
+      { cdSkills = [#willpower]
+      , cdCardTraits = setFromList [Ritual, Talent]
+      , cdSlots = [#hand]
+      }
 
 meatCleaver :: CardDef
 meatCleaver =
@@ -4516,12 +4517,13 @@ theHierophantV3 =
 
 signMagick3 :: CardDef
 signMagick3 =
-  (asset "54008" "Sign Magick" 3 Mystic)
-    { cdSkills = [#willpower, #intellect]
-    , cdCardTraits = setFromList [Ritual, Talent]
-    , cdSlots = [#hand]
-    , cdLevel = 3
-    }
+  fast
+    (asset "54008" "Sign Magick" 3 Mystic)
+      { cdSkills = [#willpower, #intellect]
+      , cdCardTraits = setFromList [Ritual, Talent]
+      , cdSlots = [#hand]
+      , cdLevel = 3
+      }
 
 nineOfRods3 :: CardDef
 nineOfRods3 =

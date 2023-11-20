@@ -1038,10 +1038,16 @@ instance RunMessage ActiveCost where
           batchId <- getRandom
           beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
           wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
+          -- We only need to check attacks of opportunity if we spend actions,
+          -- indepdent of the card being fast (for example the card you would
+          -- play off of Uncage the Soul)
+          let totalActions = totalActionCost (activeCostCosts c)
           pushAll
-            $ [ BeginAction
-              , beforeWindowMsg
-              ]
+            $ ( guard (notNull actions)
+                  *> [ BeginAction
+                     , beforeWindowMsg
+                     ]
+              )
             <> maybeToList mEffect
             <> [ wouldPayWindowMsg
                , Would
@@ -1054,6 +1060,8 @@ instance RunMessage ActiveCost where
                                )
                             && isNothing (cdFastWindow cardDef)
                             && all (`notElem` nonAttackOfOpportunityActions) actions
+                            && totalActions
+                            > 0
                          ]
                       <> [PayCostFinished acId]
                   )
@@ -1127,16 +1135,15 @@ instance RunMessage ActiveCost where
             <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do
           let iid = activeCostInvestigator c
+          let actions = [Action.Play | isPlayAction == IsPlayAction] <> cdActions (toCardDef card)
           pushAll
             $ [ PlayCard iid card Nothing (activeCostWindows c) False
               , PaidForCardCost iid card (activeCostPayments c)
               ]
             <> [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
-            <> [FinishAction | isPlayAction == IsPlayAction]
-            <> [TakenActions iid [#play] | isPlayAction == IsPlayAction]
-        ForCost card ->
-          pushAll
-            [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
+            <> [FinishAction | notNull actions]
+            <> [TakenActions iid actions | notNull actions]
+        ForCost card -> pushAll [SealedChaosToken token card | token <- activeCostSealedChaosTokens c]
       push PaidAllCosts
       pure c
     _ -> pure c

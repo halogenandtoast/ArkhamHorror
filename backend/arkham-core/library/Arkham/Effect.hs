@@ -93,6 +93,7 @@ import Arkham.Event.Events (
   stormOfSpirits3Effect,
   stormOfSpiritsEffect,
   telescopicSight3Effect,
+  uncageTheSoulEffect,
   vantagePointEffect,
   willToSurviveEffect,
  )
@@ -263,7 +264,7 @@ allEffects =
     , ("03029", SomeEffect sleightOfHand)
     , ("03031", SomeEffect lockpicks1Effect)
     , ("03032", SomeEffect alchemicalTransmutationEffect)
-    , ("03033", SomeEffect uncageTheSoul)
+    , ("03033", SomeEffect uncageTheSoulEffect)
     , ("03047a", SomeEffect theStrangerACityAflame)
     , ("03047b", SomeEffect theStrangerThePathIsMine)
     , ("03047c", SomeEffect theStrangerTheShoresOfHali)

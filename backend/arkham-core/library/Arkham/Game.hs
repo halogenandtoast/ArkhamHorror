@@ -2937,8 +2937,7 @@ getEnemyField f e = do
           _ -> ks
       pure $ setFromList traits'
     EnemyKeywords -> do
-      modifiers' <-
-        traceShowId <$> foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
+      modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
         printedKeywords = toList $ cdKeywords (toCardDef attrs)
         keywords' = foldl' applyRemoves (foldl' applyModifier printedKeywords modifiers') modifiers'
@@ -2952,7 +2951,7 @@ getEnemyField f e = do
           RemoveKeyword k -> filter (/= k) ks
           LosePatrol -> filter (not . isPatrol) ks
           _ -> ks
-      pure $ setFromList (traceShowId keywords')
+      pure $ setFromList keywords'
     EnemyAbilities -> pure $ getAbilities e
     EnemyCard -> pure $ case lookupCard enemyOriginalCardCode enemyCardId of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = enemyBearer}

@@ -20,7 +20,7 @@ piperOfAzathoth :: EnemyCard PiperOfAzathoth
 piperOfAzathoth = enemy PiperOfAzathoth Cards.piperOfAzathoth (5, Static 7, 2) (0, 2)
 
 instance HasAbilities PiperOfAzathoth where
-  getAbilities (PiperOfAzathoth a) = [mkAbility a 1 $ ForcedAbility $ PhaseEnds #when #enemy]
+  getAbilities (PiperOfAzathoth a) = withBaseAbilities a [mkAbility a 1 $ ForcedAbility $ PhaseEnds #when #enemy]
 
 instance RunMessage PiperOfAzathoth where
   runMessage msg e@(PiperOfAzathoth attrs) = case msg of

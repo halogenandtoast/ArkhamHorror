@@ -24,7 +24,9 @@ dimensionalShambler = enemy DimensionalShambler Cards.dimensionalShambler (4, Pe
 
 instance HasAbilities DimensionalShambler where
   getAbilities (DimensionalShambler attrs) =
-    [mkAbility attrs 1 $ ForcedAbility $ InvestigatorTakeDamage #after You $ SourceIs $ toSource attrs]
+    withBaseAbilities
+      attrs
+      [mkAbility attrs 1 $ ForcedAbility $ InvestigatorTakeDamage #after You $ SourceIs $ toSource attrs]
 
 instance RunMessage DimensionalShambler where
   runMessage msg e@(DimensionalShambler attrs) = case msg of

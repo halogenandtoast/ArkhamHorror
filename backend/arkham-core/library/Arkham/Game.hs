@@ -2937,13 +2937,22 @@ getEnemyField f e = do
           _ -> ks
       pure $ setFromList traits'
     EnemyKeywords -> do
-      modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
+      modifiers' <-
+        traceShowId <$> foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
-        additionalKeywords = foldl' applyModifier [] modifiers'
+        printedKeywords = toList $ cdKeywords (toCardDef attrs)
+        keywords' = foldl' applyRemoves (foldl' applyModifier printedKeywords modifiers') modifiers'
+        isPatrol = \case
+          Keyword.Patrol _ -> True
+          _ -> False
         applyModifier ks = \case
           AddKeyword k -> k : ks
           _ -> ks
-      pure $ cdKeywords (toCardDef attrs) <> setFromList additionalKeywords
+        applyRemoves ks = \case
+          RemoveKeyword k -> filter (/= k) ks
+          LosePatrol -> filter (not . isPatrol) ks
+          _ -> ks
+      pure $ setFromList (traceShowId keywords')
     EnemyAbilities -> pure $ getAbilities e
     EnemyCard -> pure $ case lookupCard enemyOriginalCardCode enemyCardId of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = enemyBearer}

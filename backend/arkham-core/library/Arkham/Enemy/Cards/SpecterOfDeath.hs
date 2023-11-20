@@ -29,14 +29,16 @@ specterOfDeath =
 
 instance HasAbilities SpecterOfDeath where
   getAbilities (SpecterOfDeath a) =
-    [ mkAbility a 1
-        $ ForcedAbility
-        $ SkillTestResult
-          Timing.After
-          You
-          (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-          (FailureResult AnyValue)
-    ]
+    withbaseAbilities
+      a
+      [ mkAbility a 1
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
+            (FailureResult AnyValue)
+      ]
 
 instance RunMessage SpecterOfDeath where
   runMessage msg e@(SpecterOfDeath attrs) = case msg of

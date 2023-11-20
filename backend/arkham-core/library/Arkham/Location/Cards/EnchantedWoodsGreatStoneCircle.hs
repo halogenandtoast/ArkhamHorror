@@ -1,14 +1,16 @@
-module Arkham.Location.Cards.EnchantedWoodsGreatStoneCircle
-  ( enchantedWoodsGreatStoneCircle
-  , EnchantedWoodsGreatStoneCircle(..)
-  )
+module Arkham.Location.Cards.EnchantedWoodsGreatStoneCircle (
+  enchantedWoodsGreatStoneCircle,
+  EnchantedWoodsGreatStoneCircle (..),
+)
 where
 
 import Arkham.Prelude
 
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
 
 newtype EnchantedWoodsGreatStoneCircle = EnchantedWoodsGreatStoneCircle LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +21,14 @@ enchantedWoodsGreatStoneCircle = location EnchantedWoodsGreatStoneCircle Cards.e
 
 instance HasAbilities EnchantedWoodsGreatStoneCircle where
   getAbilities (EnchantedWoodsGreatStoneCircle attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [mkAbility attrs 1 $ ForcedAbility $ RevealLocation #after Anyone $ LocationWithId $ toId attrs]
 
 instance RunMessage EnchantedWoodsGreatStoneCircle where
-  runMessage msg (EnchantedWoodsGreatStoneCircle attrs) =
-    EnchantedWoodsGreatStoneCircle <$> runMessage msg attrs
+  runMessage msg l@(EnchantedWoodsGreatStoneCircle attrs) = case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      laboringGug <- getSetAsideCard Enemies.laboringGug
+      pushM $ createEnemyAt_ laboringGug (toId attrs) Nothing
+      pure l
+    _ -> EnchantedWoodsGreatStoneCircle <$> runMessage msg attrs

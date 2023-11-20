@@ -2395,6 +2395,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
             pure a'
       else pure a'
+  SetActions iid _ 0 | iid == investigatorId -> do
+    additionalActions <- getAdditionalActions a
+    pure $ a & remainingActionsL .~ 0 & usedAdditionalActionsL .~ additionalActions
   SetActions iid _ n | iid == investigatorId -> do
     pure $ a & remainingActionsL .~ n
   GainActions iid _ n | iid == investigatorId -> do

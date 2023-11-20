@@ -392,7 +392,7 @@ data LocationMatcher
   | LocationWithDefeatedEnemyThisRound
   | HighestShroud LocationMatcher
   | -- | start destination / end destination
-    LocationWithLowerShroudThan LocationMatcher
+    LocationWithLowerPrintedShroudThan LocationMatcher
   | BlockedLocation
   | -- | only useful for windows
     ThisLocation

@@ -30,11 +30,7 @@ instance HasAbilities LitaChantler where
   getAbilities (LitaChantler a) =
     [ restrictedAbility a 1 ControlsThis
         $ freeReaction
-        $ SkillTestResult
-          #when
-          (InvestigatorAt YourLocation)
-          (WhileAttackingAnEnemy $ withTrait Monster)
-          (SuccessResult AnyValue)
+        $ EnemyAttackedSuccessfully #when (InvestigatorAt YourLocation) (withTrait Monster)
     ]
 
 getEnemyId :: [Window] -> EnemyId

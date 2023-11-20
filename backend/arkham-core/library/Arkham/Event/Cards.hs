@@ -1941,7 +1941,7 @@ connectTheDots =
     , cdCriteria =
         Just
           $ Criteria.LocationExists
-          $ LocationWithLowerShroudThan YourLocation
+          $ LocationWithLowerPrintedShroudThan YourLocation
           <> LocationWithDiscoverableCluesBy You
     }
 

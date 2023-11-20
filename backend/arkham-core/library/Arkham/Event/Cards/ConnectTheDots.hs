@@ -24,7 +24,7 @@ instance RunMessage ConnectTheDots where
       lid <- getJustLocation iid
       locations <-
         selectList
-          $ LocationWithLowerShroudThan (LocationWithId lid)
+          $ LocationWithLowerPrintedShroudThan (LocationWithId lid)
           <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       player <- getPlayer iid
       push

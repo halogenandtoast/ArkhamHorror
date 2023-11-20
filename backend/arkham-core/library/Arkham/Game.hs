@@ -1428,14 +1428,13 @@ getLocationsMatching lmatcher = do
             IchtacasDestination (Labeled _ lid) -> Just lid
             _ -> Nothing
         pure $ filter ((`elem` destinations) . toId) ls
-      LocationWithLowerShroudThan higherShroudMatcher -> do
+      LocationWithLowerPrintedShroudThan higherShroudMatcher -> do
         ls' <- getLocationsMatching higherShroudMatcher
         if null ls'
           then pure []
           else do
-            lowestShroud <-
-              getMin <$> foldMapM (fieldMap LocationShroud Min . toId) ls'
-            filterM (fieldMap LocationShroud (< lowestShroud) . toId) ls'
+            let lowestShroud = getMin $ foldMap (Min . attr locationShroud) ls'
+            pure $ filter ((< lowestShroud) . attr locationShroud) ls'
       LocationWithDiscoverableCluesBy whoMatcher -> do
         filterM
           ( selectAny

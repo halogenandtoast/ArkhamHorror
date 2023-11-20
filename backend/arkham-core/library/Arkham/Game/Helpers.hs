@@ -2249,11 +2249,19 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , enemyMatches enemyId enemyMatcher
                         ]
                     _ -> noMatch
-                  Window.FailSkillTest who n ->
-                    andM
-                      [ matchWho iid who whoMatcher
-                      , gameValueMatches n gameValueMatcher
-                      ]
+                  Window.FailSkillTest who n -> do
+                    let unhandled = case skillMatcher of
+                          Matcher.WhileAttackingAnEnemy _ -> False
+                          Matcher.WhileEvadingAnEnemy _ -> False
+                          Matcher.WhileInvestigating _ -> False
+                          _ -> True
+                    if unhandled
+                      then
+                        andM
+                          [ matchWho iid who whoMatcher
+                          , gameValueMatches n gameValueMatcher
+                          ]
+                      else noMatch
                   _ -> noMatch
                 Matcher.SuccessResult gameValueMatcher -> guardTiming timing $ \case
                   Window.PassInvestigationSkillTest who lid n -> case skillMatcher of
@@ -2280,11 +2288,19 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                         , enemyMatches enemyId enemyMatcher
                         ]
                     _ -> noMatch
-                  Window.PassSkillTest _ _ who n ->
-                    andM
-                      [ matchWho iid who whoMatcher
-                      , gameValueMatches n gameValueMatcher
-                      ]
+                  Window.PassSkillTest _ _ who n -> do
+                    let unhandled = case skillMatcher of
+                          Matcher.WhileAttackingAnEnemy _ -> False
+                          Matcher.WhileEvadingAnEnemy _ -> False
+                          Matcher.WhileInvestigating _ -> False
+                          _ -> True
+                    if unhandled
+                      then
+                        andM
+                          [ matchWho iid who whoMatcher
+                          , gameValueMatches n gameValueMatcher
+                          ]
+                      else noMatch
                   _ -> noMatch
                 Matcher.AnyResult -> guardTiming timing $ \case
                   Window.FailSkillTest who _ -> matchWho iid who whoMatcher
@@ -2837,7 +2853,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
 
     -- normal cases
-    Matcher.LocationWithLowerShroudThan _ -> locationId <=~> matcher
+    Matcher.LocationWithLowerPrintedShroudThan _ -> locationId <=~> matcher
     Matcher.LocationNotInPlay -> locationId <=~> matcher
     Matcher.LocationWithLabel _ -> locationId <=~> matcher
     Matcher.LocationWithTitle _ -> locationId <=~> matcher

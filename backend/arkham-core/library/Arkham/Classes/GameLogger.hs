@@ -1,6 +1,5 @@
 module Arkham.Classes.GameLogger where
 
-import Arkham.Id
 import Arkham.Prelude
 
 class MonadIO m => HasGameLogger m where

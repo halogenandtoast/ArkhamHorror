@@ -63,11 +63,14 @@ beyondTheGatesOfSleep difficulty =
     "06039"
     "Beyond the Gates of Sleep"
     difficulty
-    [ "seventySteps     .                ."
-    , ".                theCavernOfFlame ."
-    , ".                .                sevenHundredSteps"
-    , ".                baseOfTheSteps   ."
-    , "theEnchantedPath .                ."
+    [ ".               .               .               seventySteps     .                ."
+    , ".               .               .               .                theCavernOfFlame ."
+    , ".               .               .               .                .                sevenHundredSteps"
+    , ".               .               .               .                baseOfTheSteps   ."
+    , ".               .               .               theEnchantedPath .                ."
+    , ".               enchantedWoods1 .               .                .                enchantedWoods2"
+    , ".               enchantedWoods3 .               .                .                enchantedWoods4"
+    , ".               .               enchantedWoods5 .                enchantedWoods6  ."
     ]
     $ (metaL .~ toJSON ([] :: [Dream]))
     . (hasEncounterDeckL .~ False)
@@ -282,6 +285,13 @@ instance RunMessage BeyondTheGatesOfSleep where
           , Locations.sevenHundredSteps
           , Locations.baseOfTheSteps
           , Locations.theEnchantedPath
+          , Locations.enchantedWoodsMysticalForest
+          , Locations.enchantedWoodsVillageOfZoogs
+          , Locations.enchantedWoodsGreatStoneCircle
+          , Locations.enchantedWoodsStoneTrapdoor
+          , Locations.enchantedWoodsTheMoonTree
+          , Locations.enchantedWoodsFungalForest
+          , Locations.enchantedWoodsLostWoods
           ]
 
       pushAll

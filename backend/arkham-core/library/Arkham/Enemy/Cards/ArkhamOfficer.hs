@@ -23,11 +23,13 @@ arkhamOfficer = enemy ArkhamOfficer Cards.arkhamOfficer (3, Static 3, 2) (1, 0)
 
 instance HasAbilities ArkhamOfficer where
   getAbilities (ArkhamOfficer attrs) =
-    [ restrictedAbility attrs 1 (exists $ locationWithEnemy (toId attrs) <> LocationWithAnyClues)
-        $ ForcedAbility
-        $ PhaseEnds #when #enemy
-    , restrictedAbility attrs 2 OnSameLocation parleyAction_
-    ]
+    withBaseAbilities
+      attrs
+      [ restrictedAbility attrs 1 (exists $ locationWithEnemy (toId attrs) <> LocationWithAnyClues)
+          $ ForcedAbility
+          $ PhaseEnds #when #enemy
+      , restrictedAbility attrs 2 OnSameLocation parleyAction_
+      ]
 
 instance RunMessage ArkhamOfficer where
   runMessage msg e@(ArkhamOfficer attrs) = case msg of

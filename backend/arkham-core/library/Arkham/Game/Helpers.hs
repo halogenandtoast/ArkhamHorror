@@ -300,10 +300,10 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         [o] -> notNull <$> select (Matcher.CanEngageEnemyWithOverride o)
         _ -> error "multiple overrides found"
   Action.Parley -> case abilitySource of
-    EnemySource _ -> pure True
+    EnemySource eid -> eid <=~> Matcher.CanParleyEnemy iid
     AssetSource _ -> pure True
     LocationSource _ -> pure True
-    _ -> notNull <$> select (Matcher.CanParleyEnemy iid)
+    _ -> selectAny (Matcher.CanParleyEnemy iid)
   Action.Investigate -> case abilitySource of
     LocationSource _ -> pure True
     _ -> notNull <$> select Matcher.InvestigatableLocation

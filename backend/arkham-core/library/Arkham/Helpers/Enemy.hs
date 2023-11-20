@@ -137,16 +137,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps _ n = n
 
 getModifiedKeywords :: HasGame m => EnemyAttrs -> m (Set Keyword)
-getModifiedKeywords e@EnemyAttrs {..} = do
-  modifiers' <- getModifiers (EnemyTarget enemyId)
-  pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
- where
-  applyModifier (Modifier.AddKeyword k) n = insertSet k n
-  applyModifier Modifier.LosePatrol n = filterSet (not . isPatrol) n
-  applyModifier _ n = n
-  isPatrol = \case
-    Keyword.Patrol _ -> True
-    _ -> False
+getModifiedKeywords e = field EnemyKeywords (enemyId e)
 
 canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do

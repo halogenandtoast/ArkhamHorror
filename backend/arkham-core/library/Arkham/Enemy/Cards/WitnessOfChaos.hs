@@ -28,11 +28,13 @@ witnessOfChaos =
 
 instance HasAbilities WitnessOfChaos where
   getAbilities (WitnessOfChaos attrs) =
-    [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemyEnters Timing.When Anywhere
-        $ EnemyWithId (toId attrs)
-    ]
+    withBaseAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemyEnters Timing.When Anywhere
+          $ EnemyWithId (toId attrs)
+      ]
 
 instance RunMessage WitnessOfChaos where
   runMessage msg e@(WitnessOfChaos attrs) = case msg of

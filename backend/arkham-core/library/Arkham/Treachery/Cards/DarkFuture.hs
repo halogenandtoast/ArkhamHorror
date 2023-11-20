@@ -51,5 +51,7 @@ instance RunMessage DarkFuture where
       push $ ResetChaosTokens source
       pushWhen (ElderSign `elem` chaosTokenFaces)
         $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      player <- getPlayer iid
+      push $ chooseOne player [Label "Continue" []]
       pure t
     _ -> DarkFuture <$> runMessage msg attrs

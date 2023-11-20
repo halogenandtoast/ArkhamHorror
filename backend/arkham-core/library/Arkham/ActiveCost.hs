@@ -758,29 +758,32 @@ payCost msg c iid skipAdditionalCosts cost = do
             pure $ Just (iid', name, clues)
           else pure Nothing
       case iidsWithClues of
-        [(iid', _, _)] ->
-          c <$ push (PayCost acId iid' True (ClueCost (Static totalClues)))
-        _ -> do
-          let
-            paymentOptions =
-              map
-                ( \(iid', name, clues) ->
-                    PaymentAmountChoice
-                      iid'
-                      0
-                      clues
-                      name
-                      (PayCost acId iid' True (ClueCost (Static 1)))
-                )
-                iidsWithClues
-          lead <- getLeadPlayer
-          push
-            $ Ask lead
-            $ ChoosePaymentAmounts
-              (displayCostType cost)
-              (Just $ TotalAmountTarget totalClues)
-              paymentOptions
-          pure c
+        [(iid', _, _)] -> push (PayCost acId iid' True (ClueCost (Static totalClues)))
+        xs -> do
+          if (sum (map (\(_, _, x') -> x') xs) == totalClues)
+            then do
+              for_ xs \(iid', _, cCount) -> push (PayCost acId iid' True (ClueCost (Static cCount)))
+            else do
+              let
+                paymentOptions =
+                  map
+                    ( \(iid', name, clues) ->
+                        PaymentAmountChoice
+                          iid'
+                          0
+                          clues
+                          name
+                          (PayCost acId iid' True (ClueCost (Static 1)))
+                    )
+                    iidsWithClues
+              lead <- getLeadPlayer
+              push
+                $ Ask lead
+                $ ChoosePaymentAmounts
+                  (displayCostType cost)
+                  (Just $ TotalAmountTarget totalClues)
+                  paymentOptions
+      pure c
     -- push (SpendClues totalClues iids)
     -- withPayment $ CluePayment totalClues
     HandDiscardCost x cardMatcher -> do

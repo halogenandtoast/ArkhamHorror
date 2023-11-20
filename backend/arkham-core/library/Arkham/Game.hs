@@ -5436,8 +5436,9 @@ runGameMessage msg g = case msg of
           ]
     pure $ g & phaseL .~ InvestigationPhase
   BeginTurn x -> do
+    player <- getPlayer x
     pushM $ checkWindows [mkWindow #when (Window.TurnBegins x), mkWindow #after (Window.TurnBegins x)]
-    pure $ g & activeInvestigatorIdL .~ x & turnPlayerInvestigatorIdL ?~ x
+    pure $ g & activeInvestigatorIdL .~ x & activePlayerIdL .~ player & turnPlayerInvestigatorIdL ?~ x
   ChoosePlayerOrder [x] [] -> do
     pure $ g & playerOrderL .~ [x]
   ChoosePlayerOrder [] (x : xs) -> do

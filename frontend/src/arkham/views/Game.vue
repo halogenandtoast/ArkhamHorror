@@ -131,7 +131,7 @@ const handleResult = (result) => {
                 if (Object.keys(game.value.question).length == 1) {
                   playerId.value = Object.keys(game.value.question)[0]
                 } else if (game.value.activePlayerId !== playerId.value) {
-                  playerId.value = Object.keys(game.value.question)[0]
+                  playerId.value = game.value.activePlayerId
                 }
               }
             })

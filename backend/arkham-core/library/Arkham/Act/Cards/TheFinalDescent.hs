@@ -36,13 +36,15 @@ instance RunMessage TheFinalDescent where
       investigators <- getInvestigators
       steps <- selectList $ LocationWithTrait Steps
       placeEnchantedWoods <-
-        traverse placeLocation_ . take 6 =<< shuffleM =<< getSetAsideCardsMatching "The Enchanted Woods"
+        placeLabeledLocations_ "enchantedWoods"
+          . take 6
+          =<< shuffleM
+          =<< getSetAsideCardsMatching "Enchanted Woods"
       pushAll
         $ map (RemoveAllClues (toSource attrs) . toTarget) investigators
         <> [AddChaosToken Skull]
         <> [RemoveLocation step | step <- steps]
         <> placeEnchantedWoods
-        <> [ advanceActDeck attrs
-           ]
+        <> [advanceActDeck attrs]
       pure a
     _ -> TheFinalDescent <$> runMessage msg attrs

@@ -119,7 +119,7 @@ instance RunMessage TheDevourerBelow where
           , randomSet
           ]
 
-      placeWoods <- placeLabeledLocations_ "woods" woodsLocations
+      placeWoods <- placeLabeledLocationCards_ "woods" woodsLocations
 
       pushAll
         $ [ SetEncounterDeck encounterDeck

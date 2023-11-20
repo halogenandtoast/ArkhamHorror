@@ -105,23 +105,16 @@ cancelChaosToken token = withQueue_ $ \queue ->
     queue
 
 getPlayableCards
-  :: (HasCallStack, HasGame m)
-  => InvestigatorAttrs
-  -> CostStatus
-  -> [Window]
-  -> m [Card]
+  :: (HasCallStack, HasGame m) => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
 getPlayableCards a costStatus windows' = do
   asIfInHandCards <- getAsIfInHandCards (toId a)
   playableDiscards <- getPlayableDiscards a costStatus windows'
   hand <- field InvestigatorHand (toId a)
   playableHandCards <-
-    filterM
-      (getIsPlayable (toId a) (toSource a) costStatus windows')
-      (hand <> asIfInHandCards)
+    filterM (getIsPlayable (toId a) (toSource a) costStatus windows') (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards
 
-getPlayableDiscards
-  :: HasGame m => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
+getPlayableDiscards :: HasGame m => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
 getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
   modifiers <- getModifiers (toTarget attrs)
   filterM
@@ -935,13 +928,7 @@ hasEvadeActions iid window windows' =
       (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
 getIsPlayable
-  :: (HasCallStack, HasGame m)
-  => InvestigatorId
-  -> Source
-  -> CostStatus
-  -> [Window]
-  -> Card
-  -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> Source -> CostStatus -> [Window] -> Card -> m Bool
 getIsPlayable iid source costStatus windows' c = do
   availableResources <- getSpendableResources iid
   getIsPlayableWithResources iid source availableResources costStatus windows' c
@@ -990,11 +977,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
   passesLimit :: forall n. HasGame n => CardLimit -> n Bool
   passesLimit (LimitPerInvestigator m) = case toCardType c of
     AssetType -> do
-      n <-
-        selectCount
-          ( Matcher.AssetControlledBy (Matcher.InvestigatorWithId iid)
-              <> Matcher.AssetWithTitle (nameTitle $ toName c)
-          )
+      n <- selectCount $ Matcher.assetControlledBy iid <> Matcher.AssetWithTitle (nameTitle $ toName c)
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
   passesLimit (LimitPerTrait t m) = case toCardType c of
@@ -1008,14 +991,13 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
   go :: forall n. HasGame n => n Bool
   go = withDepthGuard 3 False $ do
     iids <- filter (/= iid) <$> getInvestigatorIds
-    iidsWithModifiers <- for iids $ \iid' -> do
-      modifiers <- getModifiers (InvestigatorTarget iid')
-      pure (iid', modifiers)
+    iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'
     canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) -> do
       flip anyM modifiers $ \case
         CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
           andM
-            [ liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch c cMatcher)
+            [ iid <=~> iMatcher
+            , pure $ cardMatch c cMatcher
             , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
             ]
         _ -> pure False
@@ -1026,7 +1008,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher -> do
             canContribute <-
               andM
-                [ liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch c cMatcher)
+                [ iid <=~> iMatcher
+                , pure $ cardMatch c cMatcher
                 , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
                 ]
             if canContribute

@@ -281,8 +281,8 @@ findEncounterCard
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
   FindEncounterCard iid target zones cardMatcher
 
-placeLabeledLocations_ :: (HasGame m, CardGen m) => Text -> [CardDef] -> m [Message]
-placeLabeledLocations_ lbl cards = do
+placeLabeledLocationCards_ :: (HasGame m, CardGen m) => Text -> [CardDef] -> m [Message]
+placeLabeledLocationCards_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
     (location, placement) <- placeLocationCard card
@@ -292,11 +292,31 @@ placeLabeledLocations_ lbl cards = do
     alreadyTaken <- selectAny $ LocationWithLabel (mkLabel $ lbl <> tshow n)
     if alreadyTaken then getStartIndex (n + 1) else pure n
 
-placeLabeledLocations :: (HasGame m, CardGen m) => Text -> [CardDef] -> m ([LocationId], [Message])
-placeLabeledLocations lbl cards = fmap fold
+placeLabeledLocationCards
+  :: (HasGame m, CardGen m) => Text -> [CardDef] -> m ([LocationId], [Message])
+placeLabeledLocationCards lbl cards = fmap fold
   . concatForM (withIndex1 cards)
   $ \(idx, card) -> do
     (location, placement) <- placeLocationCard card
+    pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
+
+placeLabeledLocations_ :: (HasGame m, CardGen m) => Text -> [Card] -> m [Message]
+placeLabeledLocations_ lbl cards = do
+  startIndex <- getStartIndex 1
+  concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
+    (location, placement) <- placeLocation card
+    pure [placement, SetLocationLabel location (lbl <> tshow idx)]
+ where
+  getStartIndex n = do
+    alreadyTaken <- selectAny $ LocationWithLabel (mkLabel $ lbl <> tshow n)
+    if alreadyTaken then getStartIndex (n + 1) else pure n
+
+placeLabeledLocations
+  :: (HasGame m, CardGen m) => Text -> [Card] -> m ([LocationId], [Message])
+placeLabeledLocations lbl cards = fmap fold
+  . concatForM (withIndex1 cards)
+  $ \(idx, card) -> do
+    (location, placement) <- placeLocation card
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message

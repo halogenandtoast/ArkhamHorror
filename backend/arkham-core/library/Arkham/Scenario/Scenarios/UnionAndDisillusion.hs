@@ -186,7 +186,8 @@ instance RunMessage UnionAndDisillusion where
 
       (miskatonicRiver, placeMiskatonicRiver) <- placeLocationCard Locations.miskatonicRiver
       (forbiddingShore, placeForbiddingShore) <- placeLocationCard Locations.forbiddingShore
-      (unvisitedIsles, placeUnvisitedIsles) <- placeLabeledLocations "unvisitedIsle" unvisitedIsleCards
+      (unvisitedIsles, placeUnvisitedIsles) <-
+        placeLabeledLocationCards "unvisitedIsle" unvisitedIsleCards
 
       theWatcher <- genCard Enemies.theSpectralWatcher
       placeTheWatcher <- createEnemyWithPlacement_ theWatcher (OutOfPlay SetAsideZone)

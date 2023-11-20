@@ -27,10 +27,21 @@ instance HasModifiersFor TheCavernOfFlame where
 
 instance HasAbilities TheCavernOfFlame where
   getAbilities (TheCavernOfFlame attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [ restrictedAbility attrs 1 (exists $ investigatorAt (toId attrs))
+          $ ForcedAbility
+          $ PhaseEnds #when #mythos
+      ]
 
 instance RunMessage TheCavernOfFlame where
-  runMessage msg (TheCavernOfFlame attrs) =
-    TheCavernOfFlame <$> runMessage msg attrs
+  runMessage msg l@(TheCavernOfFlame attrs) = case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      investigators <- selectList $ investigatorAt (toId attrs)
+      lead <- getLeadPlayer
+      push
+        $ chooseOrRunOneAtATime
+          lead
+          [targetLabel iid [assignDamage iid (toAbilitySource attrs 1) 1] | iid <- investigators]
+      pure l
+    _ -> TheCavernOfFlame <$> runMessage msg attrs

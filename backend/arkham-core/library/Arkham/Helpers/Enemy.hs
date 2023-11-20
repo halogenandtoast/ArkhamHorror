@@ -8,8 +8,6 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
-import Arkham.Enemy.Types qualified as Field
-import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Message (
@@ -35,18 +33,6 @@ import Arkham.Window qualified as Window
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
-
-getModifiedHealth :: HasGame m => EnemyAttrs -> m Int
-getModifiedHealth EnemyAttrs {..} = do
-  playerCount <- getPlayerCount
-  modifiers' <- getModifiers (EnemyTarget enemyId)
-  let value = fromGameValue enemyHealth playerCount
-  pure $ foldr applyModifier (foldr applyPreModifier value modifiers') modifiers'
- where
-  applyModifier (Modifier.HealthModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
-  applyPreModifier (Modifier.HealthModifierWithMin m (Min minVal)) n = max (min n minVal) (n + m)
-  applyPreModifier _ n = n
 
 emptyLocationMap :: Map LocationId [LocationId]
 emptyLocationMap = mempty
@@ -92,38 +78,6 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
         : windows'
           <> resolve
             (EnemySpawnAtLocationMatching Nothing (LocationWithId locationId) eid)
-
-modifiedEnemyFight :: HasGame m => InvestigatorId -> EnemyAttrs -> m Int
-modifiedEnemyFight iid EnemyAttrs {..} = do
-  investigatorModifiers <- getModifiers iid
-  modifiers' <- getModifiers (EnemyTarget enemyId)
-  let
-    fieldValue = foldr applyBefore enemyFight investigatorModifiers
-    initialFight = foldr applyModifier (foldr applyPreModifier fieldValue modifiers') modifiers'
-  pure $ foldr applyAfterModifier initialFight modifiers'
- where
-  applyBefore (Modifier.AlternateFightField someField) original = case someField of
-    SomeField Field.EnemyEvade -> fromMaybe original enemyEvade
-    _ -> original
-  applyBefore _ n = n
-  applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
-  applyModifier _ n = n
-  applyPreModifier (Modifier.EnemyFightWithMin m (Min minVal)) n = max (min n minVal) (n + m)
-  applyPreModifier _ n = n
-  applyAfterModifier (Modifier.AsIfEnemyFight m) _ = m
-  applyAfterModifier _ n = n
-
-modifiedEnemyEvade :: HasGame m => EnemyAttrs -> m (Maybe Int)
-modifiedEnemyEvade EnemyAttrs {..} = case enemyEvade of
-  Just x -> do
-    modifiers' <- getModifiers (EnemyTarget enemyId)
-    pure . Just $ foldr applyModifier (foldr applyPreModifier x modifiers') modifiers'
-  Nothing -> pure Nothing
- where
-  applyModifier (Modifier.EnemyEvade m) n = max 0 (n + m)
-  applyModifier _ n = n
-  applyPreModifier (Modifier.EnemyEvadeWithMin m (Min minVal)) n = max (min n minVal) (n + m)
-  applyPreModifier _ n = n
 
 getModifiedDamageAmount :: HasGame m => EnemyAttrs -> Bool -> Int -> m Int
 getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do

@@ -18,7 +18,7 @@ theZealotsSeal :: TreacheryCard TheZealotsSeal
 theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
 
 instance RunMessage TheZealotsSeal where
-  runMessage msg t@(TheZealotsSeal attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(TheZealotsSeal attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       -- we must unshift this first for other effects happen before

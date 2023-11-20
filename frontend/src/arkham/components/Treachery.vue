@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import { TokenType } from '@/arkham/types/Token';
@@ -18,6 +19,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
 
+const debug = useDebug()
 const image = computed(() => {
   return imgsrc(`cards/${props.treachery.cardCode.replace('c', '')}.jpg`)
 })
@@ -106,6 +108,10 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
         :amount="doom"
       />
     </div>
+
+    <template v-if="debug.active">
+      <button @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'TreacheryTarget', contents: id}]})">Discard</button>
+    </template>
   </div>
 </template>
 

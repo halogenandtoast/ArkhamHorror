@@ -77,7 +77,6 @@ import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators, spawnAt)
-import Arkham.Helpers.Enemy qualified as Enemy
 import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message hiding (
@@ -2713,7 +2712,18 @@ instance Projection Location where
             RemoveTrait t -> filter (/= t) ks
             _ -> ks
         pure $ setFromList traits'
-      LocationKeywords -> pure . cdKeywords $ toCardDef attrs
+      LocationKeywords -> do
+        modifiers <- withDepthGuard 3 [] $ getModifiers (toTarget attrs)
+        let
+          printedKeywords = toList $ cdKeywords $ toCardDef attrs
+          keywords' = foldl' applyRemoves (foldl' applyModifiers printedKeywords modifiers) modifiers
+          applyModifiers ks = \case
+            AddKeyword t -> t : ks
+            _ -> ks
+          applyRemoves ks = \case
+            RemoveKeyword t -> filter (/= t) ks
+            _ -> ks
+        pure $ setFromList keywords'
       LocationUnrevealedName -> pure $ toName (Unrevealed l)
       LocationName -> pure $ toName l
       LocationConnectedMatchers -> do
@@ -2914,16 +2924,62 @@ getEnemyField f e = do
       if countAllDoom
         then getDoomCount
         else pure $ enemyDoom attrs
-    EnemyEvade -> pure enemyEvade
-    EnemyFight -> pure enemyFight
+    EnemyEvade -> do
+      let
+        applyModifier (Helpers.EnemyEvade m) n = max 0 (n + m)
+        applyModifier _ n = n
+        applyPreModifier (Helpers.EnemyEvadeWithMin m (Min minVal)) n = max (min n minVal) (n + m)
+        applyPreModifier _ n = n
+      case enemyEvade of
+        Just x -> do
+          modifiers' <- getModifiers (EnemyTarget enemyId)
+          pure . Just $ foldr applyModifier (foldr applyPreModifier x modifiers') modifiers'
+        Nothing -> pure Nothing
+    EnemyFight -> do
+      iid <- toId <$> getActiveInvestigator
+      let
+        applyBefore (Helpers.AlternateFightField someField) original = case someField of
+          SomeField EnemyEvade -> fromMaybe original enemyEvade
+          _ -> original
+        applyBefore _ n = n
+        applyModifier (Helpers.EnemyFight m) n = max 0 (n + m)
+        applyModifier _ n = n
+        applyPreModifier (Helpers.EnemyFightWithMin m (Min minVal)) n = max (min n minVal) (n + m)
+        applyPreModifier _ n = n
+        applyAfterModifier (Helpers.AsIfEnemyFight m) _ = m
+        applyAfterModifier _ n = n
+      investigatorModifiers <- getModifiers iid
+      modifiers' <- getModifiers (EnemyTarget enemyId)
+      let
+        fieldValue = foldr applyBefore enemyFight investigatorModifiers
+        initialFight = foldr applyModifier (foldr applyPreModifier fieldValue modifiers') modifiers'
+      pure $ foldr applyAfterModifier initialFight modifiers'
     EnemyClues -> pure $ enemyClues attrs
     EnemyDamage -> pure $ enemyDamage attrs
     EnemyRemainingHealth -> do
-      totalHealth <- getPlayerCountValue enemyHealth
+      totalHealth <- field EnemyHealth (toId e)
       pure (totalHealth - enemyDamage attrs)
-    EnemyHealth -> getPlayerCountValue enemyHealth
-    EnemyHealthDamage -> pure enemyHealthDamage
-    EnemySanityDamage -> pure enemySanityDamage
+    EnemyHealth -> do
+      let
+        applyModifier (Helpers.HealthModifier m) n = max 0 (n + m)
+        applyModifier _ n = n
+        applyPreModifier (Helpers.HealthModifierWithMin m (Min minVal)) n = max (min n minVal) (n + m)
+        applyPreModifier _ n = n
+      modifiers' <- getModifiers (EnemyTarget enemyId)
+      value <- getPlayerCountValue enemyHealth
+      pure $ foldr applyModifier (foldr applyPreModifier value modifiers') modifiers'
+    EnemyHealthDamage -> do
+      let
+        applyModifier (Helpers.DamageDealt m) n = max 0 (n + m)
+        applyModifier _ n = n
+      modifiers' <- getModifiers enemyId
+      pure $ foldr applyModifier enemyHealthDamage modifiers'
+    EnemySanityDamage -> do
+      let
+        applyModifier (Helpers.HorrorDealt m) n = max 0 (n + m)
+        applyModifier _ n = n
+      modifiers' <- getModifiers enemyId
+      pure $ foldr applyModifier enemySanityDamage modifiers'
     EnemyTraits -> do
       modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
@@ -2976,12 +3032,23 @@ instance Projection Investigator where
       InvestigatorName -> pure investigatorName
       InvestigatorRemainingActions -> pure investigatorRemainingActions
       InvestigatorAdditionalActions -> getAdditionalActions attrs
-      InvestigatorSanity -> getModifiedSanity attrs
+      InvestigatorHealth -> do
+        let
+          applyModifier (HealthModifier m) n = max 0 (n + m)
+          applyModifier _ n = n
+
+        foldr applyModifier investigatorHealth <$> getModifiers attrs
+      InvestigatorSanity -> do
+        let
+          applyModifier (SanityModifier m) n = max 0 (n + m)
+          applyModifier _ n = n
+
+        foldr applyModifier investigatorSanity <$> getModifiers attrs
       InvestigatorRemainingSanity -> do
-        sanity <- getModifiedSanity attrs
+        sanity <- field InvestigatorSanity (toId attrs)
         pure (sanity - investigatorSanityDamage attrs)
       InvestigatorRemainingHealth -> do
-        health <- getModifiedHealth attrs
+        health <- field InvestigatorHealth (toId attrs)
         pure (health - investigatorHealthDamage attrs)
       InvestigatorLocation -> do
         mods <- getModifiers iid
@@ -4403,7 +4470,7 @@ runGameMessage msg g = case msg of
     -- TODO: This is wrong but history is the way we track if enemies were
     -- defeated for cards like Kerosene (1), we need a history independent of
     -- the iid for cases where we aren't looking at a specific investigator
-    enemyHealth <- Enemy.getModifiedHealth attrs
+    enemyHealth <- field EnemyHealth eid
     let
       iid = fromMaybe lead miid
       placement' = maybe (enemyPlacement attrs) AtLocation mlid

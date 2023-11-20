@@ -40,7 +40,7 @@ import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
-import Arkham.Helpers.Investigator hiding (getModifiedHealth)
+import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
@@ -653,7 +653,7 @@ instance RunMessage EnemyAttrs where
             iids
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
-      enemyFight' <- modifiedEnemyFight iid a
+      enemyFight' <- field EnemyFight eid
       push
         $ fight
           iid
@@ -763,7 +763,7 @@ instance RunMessage EnemyAttrs where
           pushAll [Exhaust (toTarget other) | other <- others]
       pure $ a & exhaustedL .~ True
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
-      mEnemyEvade' <- modifiedEnemyEvade a
+      mEnemyEvade' <- field EnemyEvade eid
       case mEnemyEvade' of
         Just n ->
           push
@@ -862,6 +862,9 @@ instance RunMessage EnemyAttrs where
             , EffectsCannotBeCanceled `notElem` sourceModifiers && attackCanBeCanceled details
             ]
 
+      healthDamage <- field EnemyHealthDamage (toId a)
+      sanityDamage <- field EnemySanityDamage (toId a)
+
       case attackTarget details of
         InvestigatorTarget iid ->
           pushAll
@@ -869,8 +872,8 @@ instance RunMessage EnemyAttrs where
                 iid
                 (EnemyAttackSource enemyId)
                 (attackDamageStrategy details)
-                enemyHealthDamage
-                enemySanityDamage
+                healthDamage
+                sanityDamage
               | allowAttack
               ]
             <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
@@ -1001,7 +1004,7 @@ instance RunMessage EnemyAttrs where
               getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
           let validDefeat = canBeDefeated && not hasSwarm && isNothing mOnlyBeDefeatedByModifier
           when validDefeat $ do
-            modifiedHealth <- getModifiedHealth a
+            modifiedHealth <- field EnemyHealth (toId a)
             when (enemyDamage a >= modifiedHealth) $ do
               whenMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
               afterMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
@@ -1036,7 +1039,7 @@ instance RunMessage EnemyAttrs where
               )
               <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
           when validDefeat $ do
-            modifiedHealth <- getModifiedHealth a
+            modifiedHealth <- field EnemyHealth (toId a)
             when (enemyDamage a + amount' >= modifiedHealth) $ do
               let excess = (enemyDamage a + amount') - modifiedHealth
               let
@@ -1108,7 +1111,7 @@ instance RunMessage EnemyAttrs where
           pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
-      modifiedHealth <- getModifiedHealth a
+      modifiedHealth <- field EnemyHealth (toId a)
       canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
       modifiers' <- getModifiers (toTarget a)
       let
@@ -1134,7 +1137,7 @@ instance RunMessage EnemyAttrs where
           (setToList $ toTraits a)
       pure a
     EnemyDefeated eid _ source _ | eid == toId a -> do
-      modifiedHealth <- getModifiedHealth a
+      modifiedHealth <- field EnemyHealth (toId a)
       let
         defeatedByDamage = enemyDamage a >= modifiedHealth
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source

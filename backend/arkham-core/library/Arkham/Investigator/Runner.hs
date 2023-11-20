@@ -2890,7 +2890,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         case mTarget of
           Just (LocationTarget lid) ->
             [ mkWhen $ Window.FailInvestigationSkillTest iid lid n
-            , mkWhen $ Window.FailInvestigationSkillTest iid lid n
+            , mkAfter $ Window.FailInvestigationSkillTest iid lid n
             ]
           _ -> case mCurrentLocation of
             Just currentLocation ->

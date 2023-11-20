@@ -511,8 +511,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   InvestigatorIsDefeated source iid | iid == investigatorId -> do
     isLead <- (== iid) <$> getLeadInvestigatorId
-    modifiedHealth <- getModifiedHealth a
-    modifiedSanity <- getModifiedSanity a
+    modifiedHealth <- field InvestigatorHealth (toId a)
+    modifiedSanity <- field InvestigatorSanity (toId a)
     let
       defeatedByHorror = investigatorSanityDamage a >= modifiedSanity
       defeatedByDamage = investigatorHealthDamage a >= modifiedHealth
@@ -1553,8 +1553,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     facingDefeat <- getFacingDefeat a
     if facingDefeat
       then do
-        modifiedHealth <- getModifiedHealth a
-        modifiedSanity <- getModifiedSanity a
+        modifiedHealth <- field InvestigatorHealth (toId a)
+        modifiedSanity <- field InvestigatorSanity (toId a)
         let
           defeatedByHorror =
             investigatorSanityDamage a
@@ -1652,8 +1652,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- USE ONLY WHEN NO CALLBACKS
     pure $ a & tokensL %~ subtractTokens Token.Damage amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
-    modifiedHealth <- getModifiedHealth a
-    modifiedSanity <- getModifiedSanity a
+    modifiedHealth <- field InvestigatorHealth (toId a)
+    modifiedSanity <- field InvestigatorSanity (toId a)
     let
       defeatedByHorror = investigatorSanityDamage a >= modifiedSanity
       defeatedByDamage = investigatorHealthDamage a >= modifiedHealth
@@ -3157,8 +3157,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
   canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
-  modifiedHealth <- getModifiedHealth a
-  modifiedSanity <- getModifiedSanity a
+  modifiedHealth <- field InvestigatorHealth (toId a)
+  modifiedSanity <- field InvestigatorSanity (toId a)
   pure
     $ or
       [ investigatorHealthDamage a + investigatorAssignedHealthDamage >= modifiedHealth

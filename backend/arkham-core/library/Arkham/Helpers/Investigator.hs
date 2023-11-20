@@ -551,20 +551,6 @@ getCanShuffleDeck iid =
     , fieldMap InvestigatorDeck notNull iid
     ]
 
-getModifiedHealth :: HasGame m => InvestigatorAttrs -> m Int
-getModifiedHealth attrs@InvestigatorAttrs {..} = do
-  foldr applyModifier investigatorHealth <$> getModifiers attrs
- where
-  applyModifier (HealthModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
-
-getModifiedSanity :: HasGame m => InvestigatorAttrs -> m Int
-getModifiedSanity attrs@InvestigatorAttrs {..} = do
-  foldr applyModifier investigatorSanity <$> getModifiers attrs
- where
-  applyModifier (SanityModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
-
 check :: (EntityId a ~ InvestigatorId, Entity a, HasGame m) => a -> InvestigatorMatcher -> m Bool
 check (toId -> iid) capability = iid <=~> capability
 

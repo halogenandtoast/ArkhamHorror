@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 
 newtype VastPassages = VastPassages LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 vastPassages :: LocationCard VastPassages
 vastPassages = location VastPassages Cards.vastPassages 2 (PerPlayer 1)
@@ -26,9 +26,6 @@ instance HasModifiersFor VastPassages where
     withBinoculars <- getHasSupply iid Binoculars
     pure $ toModifiers attrs [ActionCostOf (IsAction Action.Explore) 1 | here, not withBinoculars]
   getModifiersFor _ _ = pure []
-
-instance HasAbilities VastPassages where
-  getAbilities (VastPassages attrs) = getAbilities attrs
 
 instance RunMessage VastPassages where
   runMessage msg (VastPassages attrs) = VastPassages <$> runMessage msg attrs

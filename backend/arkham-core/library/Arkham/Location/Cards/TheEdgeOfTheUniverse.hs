@@ -31,6 +31,7 @@ instance HasModifiersFor TheEdgeOfTheUniverse where
     pure $ toModifiers attrs [CannotDrawCards | here, phase == UpkeepPhase]
   getModifiersFor _ _ = pure []
 
+-- TODO: This should be some sort of restriction encoded in attrs
 instance HasAbilities TheEdgeOfTheUniverse where
   getAbilities (TheEdgeOfTheUniverse attrs) = do
     let actions = getAbilities attrs

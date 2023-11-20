@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype AsylumHallsWesternPatientWing_169 = AsylumHallsWesternPatientWing_169 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 asylumHallsWesternPatientWing_169
   :: LocationCard AsylumHallsWesternPatientWing_169
@@ -23,9 +23,6 @@ asylumHallsWesternPatientWing_169 =
     Cards.asylumHallsWesternPatientWing_169
     3
     (PerPlayer 1)
-
-instance HasAbilities AsylumHallsWesternPatientWing_169 where
-  getAbilities (AsylumHallsWesternPatientWing_169 attrs) = getAbilities attrs
 
 instance HasModifiersFor AsylumHallsWesternPatientWing_169 where
   getModifiersFor (EnemyTarget eid) (AsylumHallsWesternPatientWing_169 attrs) = do

@@ -15,14 +15,11 @@ import Arkham.Trait
 
 newtype GardensOfLuxembourg = GardensOfLuxembourg LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 gardensOfLuxembourg :: LocationCard GardensOfLuxembourg
 gardensOfLuxembourg =
   location GardensOfLuxembourg Cards.gardensOfLuxembourg 3 (PerPlayer 1)
-
-instance HasAbilities GardensOfLuxembourg where
-  getAbilities (GardensOfLuxembourg attrs) = getAbilities attrs
 
 instance HasModifiersFor GardensOfLuxembourg where
   getModifiersFor (LocationTarget lid) (GardensOfLuxembourg attrs)

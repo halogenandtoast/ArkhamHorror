@@ -29,7 +29,7 @@ specterOfDeath =
 
 instance HasAbilities SpecterOfDeath where
   getAbilities (SpecterOfDeath a) =
-    withbaseAbilities
+    withBaseAbilities
       a
       [ mkAbility a 1
           $ ForcedAbility

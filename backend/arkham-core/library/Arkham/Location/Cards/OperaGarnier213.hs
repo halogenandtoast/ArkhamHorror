@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 
 newtype OperaGarnier213 = OperaGarnier213 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 operaGarnier213 :: LocationCard OperaGarnier213
 operaGarnier213 =
@@ -31,9 +31,6 @@ instance HasModifiersFor OperaGarnier213 where
               pure $ toModifiers attrs [DoubleBaseSkillValue]
         _ -> pure []
   getModifiersFor _ _ = pure []
-
-instance HasAbilities OperaGarnier213 where
-  getAbilities (OperaGarnier213 attrs) = getAbilities attrs
 
 instance RunMessage OperaGarnier213 where
   runMessage msg (OperaGarnier213 attrs) =

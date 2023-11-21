@@ -5,7 +5,6 @@ module Arkham.Event.Cards.StandTogether3 (
 
 import Arkham.Prelude
 
-import Arkham.Capability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -23,7 +22,6 @@ instance RunMessage StandTogether3 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       investigators <- selectList $ notInvestigator iid <> colocatedWith iid
       player <- getPlayer iid
-      canAffectOthers <- can.affect.otherPlayers iid
       choices <- for investigators $ \iid' -> do
         otherDrawing <- drawCardsIfCan iid' (toSource attrs) 2
         gainResources <- gainResourcesIfCan iid' (toSource attrs) 2
@@ -35,7 +33,7 @@ instance RunMessage StandTogether3 where
       pushAll
         $ [ chooseOrRunOne
             player
-            [targetLabel iid' $ (guard canAffectOthers *> msgs) <> catMaybes [youDrawing, youGainResources]]
+            [targetLabel iid' $ msgs <> catMaybes [youDrawing, youGainResources]]
           | (iid', msgs) <- choices
           ]
       pure e

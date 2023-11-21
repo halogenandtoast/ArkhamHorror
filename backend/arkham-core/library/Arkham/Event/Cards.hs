@@ -791,7 +791,7 @@ standTogether3 =
     , cdCardTraits = singleton Spirit
     , cdCriteria =
         Just
-          $ Criteria.exists (InvestigatorAt YourLocation <> NotYou)
+          $ Criteria.exists (affectsOthers $ InvestigatorAt YourLocation <> NotYou)
           <> Criteria.exists
             (affectsOthers $ InvestigatorAt YourLocation <> oneOf [can.gain.resources, can.draw.cards])
     , cdLevel = 3
@@ -2841,7 +2841,8 @@ standTogether =
     , cdCriteria =
         Just
           $ Criteria.exists
-            ( NotYou
+            ( affectsOthers
+                $ NotYou
                 <> InvestigatorAt YourLocation
             )
           <> Criteria.exists (affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)

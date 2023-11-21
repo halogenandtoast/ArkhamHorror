@@ -25,7 +25,7 @@ instance RunMessage MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let controllerId = getController attrs
-      investigators <- selectList $ colocatedWith controllerId
+      investigators <- selectList $ affectsOthers $ colocatedWith controllerId
       player <- getPlayer iid
       push
         $ chooseOne player

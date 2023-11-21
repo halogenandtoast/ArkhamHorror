@@ -1064,8 +1064,21 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (pure False)
         (cardInFastWindows iid source c windows')
         (cdFastWindow pcDef <|> canBecomeFastWindow)
-    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
-    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+
+    canEvade <-
+      if inFastWindow
+        then
+          asIfTurn iid
+            $ hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+        else hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+
+    canFight <-
+      if inFastWindow
+        then
+          asIfTurn iid
+            $ hasFightActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+        else hasFightActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+
     passesLimits <- allM passesLimit (cdLimits pcDef)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case

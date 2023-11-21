@@ -86,6 +86,7 @@ instance HasChaosTokenValue ()
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game
 abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
+asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
 
 instance HasDistance Game
 instance HasAbilities Game

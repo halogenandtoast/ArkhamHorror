@@ -4020,6 +4020,11 @@ getTurnInvestigator =
     >>= maybe (pure Nothing) (fmap Just . getInvestigator)
     . gameTurnPlayerInvestigatorId
 
+asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
+asIfTurn iid body = do
+  g <- getGame
+  runReaderT body (g {gameTurnPlayerInvestigatorId = Just iid})
+
 createActiveCostForCard
   :: (MonadRandom m, HasGame m)
   => InvestigatorId

@@ -50,7 +50,7 @@ function isAbility(v: Message): v is AbilityLabel {
     if("contents" in source.source) {
       return source.source.contents === id.value
     }
-  } else if (source.tag === 'EventSource') {
+  } else if (source.tag === 'SkillSource') {
     return source.contents === id.value
   }
 

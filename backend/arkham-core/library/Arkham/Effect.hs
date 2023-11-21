@@ -100,6 +100,7 @@ import Arkham.Event.Events (
 import Arkham.Investigator.Investigators (
   dexterDrakeEffect,
   fatherMateoElderSignEffect,
+  nathanielChoEffect,
   pennyWhiteEffect,
   ritaYoungElderSignEffect,
   winifredHabbamockEffect,
@@ -255,7 +256,6 @@ allEffects =
     , ("02246", SomeEffect tenAcreMeadow_246)
     , ("02270", SomeEffect aChanceEncounterEffect)
     , ("02323", SomeEffect yogSothoth)
-    , ("03002", SomeEffect minhThiPhan)
     , ("03005", SomeEffect williamYorick)
     , ("03012", SomeEffect thePaintedWorld)
     , ("03018", SomeEffect improvisation)
@@ -342,7 +342,7 @@ allEffects =
     , ("52008", SomeEffect stormOfSpirits3Effect)
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
     , ("54006", SomeEffect wellConnected3Effect)
-    , ("60101", SomeEffect nathanielCho)
+    , ("60101", SomeEffect nathanielChoEffect)
     , ("60103", SomeEffect tommyMalloy)
     , ("60117", SomeEffect oneTwoPunchEffect)
     , ("60132", SomeEffect oneTwoPunch5Effect)

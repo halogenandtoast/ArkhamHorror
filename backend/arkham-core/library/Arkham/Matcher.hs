@@ -16,6 +16,12 @@ import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
 
 affectsOthers :: InvestigatorMatcher -> InvestigatorMatcher
+affectsOthers You = You
+affectsOthers NotYou =
+  InvestigatorIfThen
+    (InvestigatorWithModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage)
+    NoOne
+    NotYou
 affectsOthers matcher =
   InvestigatorIfThen
     (InvestigatorWithModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage)
@@ -87,15 +93,21 @@ investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId
 investigatorAt :: LocationId -> InvestigatorMatcher
 investigatorAt = InvestigatorAt . LocationWithId
 
-replaceYouMatcher :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
-replaceYouMatcher iid = replaceInvestigatorMatcher iid You
-
-replaceInvestigatorMatcher
-  :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher -> InvestigatorMatcher
-replaceInvestigatorMatcher iid n = transform go
+replaceYouMatcher :: Data a => InvestigatorId -> a -> a
+replaceYouMatcher iid = replaceInvestigatorMatcher (transform replace)
  where
-  go m | m == n = InvestigatorWithId iid
-  go m = m
+  replace You = InvestigatorWithId iid
+  replace NotYou = NotInvestigator (InvestigatorWithId iid)
+  replace m = m
+
+replaceThatInvestigator :: Data a => InvestigatorId -> a -> a
+replaceThatInvestigator iid = replaceInvestigatorMatcher (transform replace)
+ where
+  replace ThatInvestigator = InvestigatorWithId iid
+  replace m = m
+
+replaceInvestigatorMatcher :: Data a => (InvestigatorMatcher -> InvestigatorMatcher) -> a -> a
+replaceInvestigatorMatcher = over biplate
 
 handWith :: HasCardCode a => a -> InvestigatorMatcher
 handWith = HandWith . hasCard
@@ -239,15 +251,6 @@ hasCard :: HasCardCode a => a -> CardListMatcher
 hasCard = HasCard . cardIs
 
 -- ** Replacements
-
-resolveEventMatcher :: InvestigatorId -> EventMatcher -> EventMatcher
-resolveEventMatcher iid = over biplate (replaceYouMatcher iid)
-
-resolveAssetMatcher :: InvestigatorId -> AssetMatcher -> AssetMatcher
-resolveAssetMatcher iid = over biplate (replaceYouMatcher iid)
-
-replaceYourLocation :: InvestigatorId -> LocationMatcher -> LocationMatcher
-replaceYourLocation iid = over biplate (replaceYouMatcher iid)
 
 replaceLocationMatcher :: Data a => LocationId -> LocationMatcher -> a -> a
 replaceLocationMatcher lid m = over biplate (transform go)

@@ -30,7 +30,7 @@ instance HasAbilities Safeguard where
               (affectsOthers NotYou)
               AnySource
               YourLocation
-              (ConnectedFrom YourLocation <> CanEnterLocation You)
+              (AccessibleFrom YourLocation <> CanEnterLocation You)
           )
         $ exhaust a
     ]

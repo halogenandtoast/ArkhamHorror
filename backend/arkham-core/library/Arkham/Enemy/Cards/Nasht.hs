@@ -39,7 +39,7 @@ instance RunMessage Nasht where
           [ SkillLabel
             sType
             [beginSkillTest iid (toAbilitySource attrs 1) iid sType (2 + n)]
-          | sType <- [#willpower, #intellect]
+          | sType <- [#combat, #agility]
           ]
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

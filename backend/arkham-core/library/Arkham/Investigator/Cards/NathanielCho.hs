@@ -25,7 +25,8 @@ nathanielCho =
 
 instance HasAbilities NathanielCho where
   getAbilities (NathanielCho x) =
-    [ restrictedAbility x 1 Self
+    [ playerLimit PerPhase
+        $ restrictedAbility x 1 Self
         $ ReactionAbility
           ( EnemyDealtDamage Timing.When AnyDamageEffect AnyEnemy (SourceOwnedBy You <> SourceIsType EventType)
           )

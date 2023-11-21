@@ -25,7 +25,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
-import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
 import Arkham.Trait (

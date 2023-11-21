@@ -79,9 +79,7 @@ import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), defaultWindows, mkWindow)
 import Arkham.Window qualified as Window
-import Control.Lens (over)
 import Control.Monad.Reader (local)
-import Data.Data.Lens (biplate)
 import Data.List qualified as List
 import Data.List.Extra (nubOrdOn)
 import Data.Set qualified as Set
@@ -175,6 +173,7 @@ getCanPerformAbility !iid !window !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window
   -- passes restrictions
+  --
   abilityModifiers <- getModifiers (AbilityTarget iid ability)
   let
     actions = case abilityType ability of
@@ -1499,15 +1498,15 @@ passesCriteria iid mcard source windows' = \case
   Criteria.SkillExists matcher -> selectAny matcher
   Criteria.ActExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do
-    selectAny (Matcher.resolveAssetMatcher iid matcher)
+    selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.EventExists matcher -> do
-    selectAny (Matcher.resolveEventMatcher iid matcher)
+    selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of
     Nothing -> pure False
     Just aid -> do
       selectAny
         $ Matcher.NotAsset (Matcher.AssetWithId aid)
-        <> Matcher.resolveAssetMatcher iid matcher
+        <> Matcher.replaceYouMatcher iid matcher
   Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
@@ -1524,19 +1523,19 @@ passesCriteria iid mcard source windows' = \case
   Criteria.Criteria rs -> allM (passesCriteria iid mcard source windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source windows') rs
   Criteria.LocationExists matcher -> do
-    selectAny (Matcher.replaceYourLocation iid matcher)
+    selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.LocationCount n matcher -> do
-    (== n) <$> selectCount (Matcher.replaceYourLocation iid matcher)
+    (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.AssetCount n matcher -> do
-    (== n) <$> selectCount (Matcher.resolveAssetMatcher iid matcher)
+    (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.EventCount valueMatcher matcher -> do
-    n <- selectCount (Matcher.resolveEventMatcher iid matcher)
+    n <- selectCount (Matcher.replaceYouMatcher iid matcher)
     gameValueMatches n valueMatcher
   Criteria.ExtendedCardCount n matcher ->
     (== n) <$> selectCount matcher
   Criteria.AllLocationsMatch targetMatcher locationMatcher -> do
-    targets <- select (Matcher.replaceYourLocation iid targetMatcher)
-    actual <- select (Matcher.replaceYourLocation iid locationMatcher)
+    targets <- select (Matcher.replaceYouMatcher iid targetMatcher)
+    actual <- select (Matcher.replaceYouMatcher iid locationMatcher)
     pure $ all (`member` actual) targets
   Criteria.InvestigatorIsAlone ->
     (== 1) <$> selectCount (Matcher.colocatedWith iid)
@@ -1733,7 +1732,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         andM
           [ matchWho iid who whoMatcher
           , deckMatch who deck
-              $ over biplate (Matcher.replaceInvestigatorMatcher who Matcher.ThatInvestigator) deckMatcher
+              $ Matcher.replaceThatInvestigator who deckMatcher
           ]
       _ -> noMatch
     Matcher.SearchedDeck timing whoMatcher deckMatcher -> guardTiming timing $ \case
@@ -1741,7 +1740,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         andM
           [ matchWho iid who whoMatcher
           , deckMatch iid deck
-              $ over biplate (Matcher.replaceInvestigatorMatcher who Matcher.ThatInvestigator) deckMatcher
+              $ Matcher.replaceThatInvestigator who deckMatcher
           ]
       _ -> noMatch
     Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
@@ -2140,7 +2139,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.Moves timing whoMatcher sourceMatcher fromMatcher toMatcher ->
       guardTiming timing $ \case
-        Window.Moves iid' source' mFromLid toLid ->
+        Window.Moves iid' source' mFromLid toLid -> do
           andM
             [ matchWho iid iid' whoMatcher
             , sourceMatches source' sourceMatcher
@@ -2676,13 +2675,14 @@ matchWho iid who Matcher.You = pure $ iid == who
 matchWho iid who Matcher.NotYou = pure $ iid /= who
 matchWho _ _ Matcher.Anyone = pure True
 matchWho iid who (Matcher.InvestigatorAt matcher) = do
-  who <=~> Matcher.InvestigatorAt (Matcher.replaceYourLocation iid matcher)
-matchWho iid who matcher =
-  member who <$> (select =<< replaceMatchWhoLocations iid matcher)
+  who <=~> Matcher.InvestigatorAt (Matcher.replaceYouMatcher iid matcher)
+matchWho iid who matcher = do
+  matcher' <- replaceMatchWhoLocations iid (Matcher.replaceYouMatcher iid matcher)
+  who <=~> matcher'
  where
   replaceMatchWhoLocations iid' = \case
     Matcher.InvestigatorAt matcher' -> do
-      pure $ Matcher.InvestigatorAt $ Matcher.replaceYourLocation iid matcher'
+      pure $ Matcher.InvestigatorAt $ Matcher.replaceYouMatcher iid matcher'
     Matcher.HealableInvestigator source damageType inner -> do
       Matcher.HealableInvestigator source damageType
         <$> replaceMatchWhoLocations iid' inner
@@ -2823,7 +2823,7 @@ locationMatches
   -> Matcher.LocationMatcher
   -> m Bool
 locationMatches investigatorId source window locationId matcher' = do
-  let matcher = Matcher.replaceYourLocation investigatorId matcher'
+  let matcher = Matcher.replaceYouMatcher investigatorId matcher'
   case matcher of
     -- special cases
     Matcher.NotLocation m -> not <$> locationMatches investigatorId source window locationId m

@@ -55,7 +55,7 @@ import Arkham.Matcher (
   investigatorEngagedWith,
   locationWithInvestigator,
   preyWith,
-  replaceYourLocation,
+  replaceYouMatcher,
   pattern InvestigatorCanDisengage,
   pattern MassiveEnemy,
  )
@@ -1275,7 +1275,7 @@ instance RunMessage EnemyAttrs where
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId
-      lids <- selectList $ replaceYourLocation activeInvestigatorId locationMatcher
+      lids <- selectList $ replaceYouMatcher activeInvestigatorId locationMatcher
       leadInvestigatorId <- getLeadInvestigatorId
       case lids of
         [] -> noSpawn a miid

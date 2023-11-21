@@ -2,13 +2,15 @@
 import { computed, ref, inject } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
+import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Deck'
+import Investigator from '@/arkham/components/Investigator.vue';
 
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
 const deckId = ref<string | null>(null)
 
-defineProps<{
+const props = defineProps<{
   game: Game
   playerId: string
 }>()
@@ -20,7 +22,42 @@ const emit = defineEmits<{
   choose: [idx: number]
 }>()
 
-const disabled = computed(() => !deckId.value)
+const error = computed(() => {
+  if(!deckId.value) {
+    return null
+  }
+
+  const deck = decks.value.find((d) => d.id === deckId.value)
+  if (!deck) {
+    return null
+  }
+
+  const alreadyTaken = Object.values(props.game.investigators).some((i) => {
+    return i.id === deck.list.investigator_code
+  })
+
+  if (alreadyTaken) {
+    return 'This investigator is already taken'
+  }
+
+  return null
+})
+
+const disabled = computed(() => {
+  if(!deckId.value) {
+    return true
+  }
+
+  return error.value !== null
+})
+
+const investigators = computed(() => props.game.investigators)
+const chosenPlayerCount = computed(() => {
+  return Object.values(investigators.value).length
+})
+const empties = computed(() => {
+  return Array(props.game.playerCount - chosenPlayerCount.value).fill(0)
+})
 
 fetchDecks().then((result) => {
   decks.value = result;
@@ -28,20 +65,45 @@ fetchDecks().then((result) => {
 })
 
 async function choose() {
-  if (deckId.value) {
-    await chooseDeck(deckId.value)
+  if (deckId.value && error.value === null) {
+    if (chooseDeck) {
+      await chooseDeck(deckId.value)
+    }
   }
+}
+
+function portraitImage(investigator) {
+  return imgsrc(`portraits/${investigator.cardCode.replace('c', '')}.jpg`)
 }
 </script>
 
 <template>
   <div class="container">
+    <div class="investigators">
+      <h2>Chosen Players</h2>
+      <div class="portraits">
+        <img
+          v-for="investigator in investigators"
+          :key="investigator.id"
+          :src="portraitImage(investigator)"
+          class="portrait"
+        />
+        <div class="portrait portrait-empty"
+          v-for="(item,index) in empties"
+          :key="chosenPlayerCount - index">
+          <img
+            :src="imgsrc('slots/ally.png')"
+          />
+        </div>
+      </div>
+    </div>
     <form id="choose-deck" @submit.prevent="choose">
       <p>Choose a Deck</p>
       <select v-model="deckId">
         <option disabled :value="null">-- Select a Deck--</option>
         <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
       </select>
+      <p class="error" v-if="error">{{error}}</p>
       <button type="submit" :disabled="disabled">Choose</button>
     </form>
   </div>
@@ -49,6 +111,32 @@ async function choose() {
 
 
 <style lang="scss" scoped>
+.investigators {
+  box-sizing: border-box;
+  width: 100%;
+  color: #FFF;
+  background-color: #15192C;
+  padding: 10px;
+  border-radius: 3px;
+  max-width: 800px;
+  margin-inline: auto;
+  margin-top: 20px;
+
+  h2 {
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+    color: white;
+  }
+}
+
+.portraits {
+  --gap: 10px;
+  --columns: 4;
+  display: flex;
+  gap: var(--gap);
+}
+
 #choose-deck {
   box-sizing: border-box;
   width: 100%;
@@ -290,5 +378,34 @@ form {
   max-width: 800px;
   margin-inline: auto;
   margin-top: 20px;
+}
+
+#choose-deck {
+  p.error {
+    color: white;
+    background-color: darkred;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 10px;
+    display: block;
+  }
+}
+
+.portrait {
+  width: calc((100% / var(--columns)) - var(--gap) + (var(--gap) / var(--columns)));
+  border-radius: 5px;
+}
+
+.portrait-empty {
+  aspect-ratio: 63/97;
+  background: rgba(100, 100, 100, 0.5);
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+  img {
+    width: 80%;
+  }
 }
 </style>

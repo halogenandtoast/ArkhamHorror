@@ -189,7 +189,7 @@ enemyExists :: EnemyMatcher -> Criterion
 enemyExists = EnemyCriteria . EnemyExists
 
 anyInvestigatorExists :: [InvestigatorMatcher] -> Criterion
-anyInvestigatorExists = exists . oneOf
+anyInvestigatorExists = exists . AnyInvestigator
 
 atYourLocation :: InvestigatorMatcher -> Criterion
 atYourLocation matcher = exists (AtYourLocation <> matcher)

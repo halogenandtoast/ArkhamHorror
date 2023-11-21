@@ -1,16 +1,15 @@
-module Arkham.Investigator.Cards.NathanielCho where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.NathanielCho (NathanielCho, nathanielChoEffect, nathanielCho) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Card.CardType
+import Arkham.Card
+import Arkham.Effect.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.SkillTest
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -27,10 +26,8 @@ instance HasAbilities NathanielCho where
   getAbilities (NathanielCho x) =
     [ playerLimit PerPhase
         $ restrictedAbility x 1 Self
-        $ ReactionAbility
-          ( EnemyDealtDamage Timing.When AnyDamageEffect AnyEnemy (SourceOwnedBy You <> SourceIsType EventType)
-          )
-          Free
+        $ freeReaction
+        $ EnemyDealtDamage #when AnyDamageEffect AnyEnemy (SourceOwnedBy You <> SourceIsType EventType)
     ]
 
 instance HasChaosTokenValue NathanielCho where
@@ -46,11 +43,59 @@ getEnemyId = \case
 instance RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (getEnemyId -> eid) _ -> do
-      push $ CreateEffect "60101" Nothing (toSource attrs) (EnemyTarget eid)
+      push $ createCardEffect Cards.nathanielCho Nothing attrs eid
       pure a
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mAction <- getSkillTestAction
-      pushWhen (mAction == Just Action.Fight)
-        $ CreateEffect "60101" Nothing (toSource attrs) (toTarget attrs)
+      pushWhen (mAction == Just #fight)
+        $ createCardEffect Cards.nathanielCho Nothing attrs attrs
       pure a
     _ -> NathanielCho <$> runMessage msg attrs
+
+newtype NathanielChoEffect = NathanielChoEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+nathanielChoEffect :: EffectArgs -> NathanielChoEffect
+nathanielChoEffect = cardEffect NathanielChoEffect Cards.nathanielCho
+
+instance HasModifiersFor NathanielChoEffect where
+  getModifiersFor target@(EnemyTarget _) (NathanielChoEffect attrs) | attrs.target == target = do
+    pure $ toModifiers attrs [DamageTaken 1]
+  getModifiersFor _ _ = pure []
+
+isTakeDamage :: EffectAttrs -> Window -> Bool
+isTakeDamage attrs window = case effectTarget attrs of
+  EnemyTarget eid -> go eid
+  _ -> False
+ where
+  go eid = case windowType window of
+    Window.TakeDamage _ _ (EnemyTarget eid') _ ->
+      eid == eid' && windowTiming window == #after
+    _ -> False
+
+instance RunMessage NathanielChoEffect where
+  runMessage msg e@(NathanielChoEffect attrs) = case msg of
+    PassedSkillTest iid _ _ _ _ _ | effectTarget attrs == InvestigatorTarget iid -> do
+      discardedCards <- field InvestigatorDiscard iid
+      let events = filter ((== EventType) . toCardType) discardedCards
+      if null events
+        then push $ disable attrs
+        else do
+          player <- getPlayer iid
+          pushAll
+            [ chooseOne
+                player
+                [ targetLabel (toCardId event) [ReturnToHand iid (CardTarget $ PlayerCard event)]
+                | event <- events
+                ]
+            , disable attrs
+            ]
+      pure e
+    CheckWindow _ windows' | any (isTakeDamage attrs) windows' -> do
+      push $ disable attrs
+      pure e
+    SkillTestEnds _ _ -> do
+      push $ disable attrs
+      pure e
+    _ -> NathanielChoEffect <$> runMessage msg attrs

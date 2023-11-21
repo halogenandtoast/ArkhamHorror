@@ -299,8 +299,9 @@ instance RunMessage LocationAttrs where
       let currentClues = countTokens Clue locationTokens
 
       pushAll
-        $ [whenWindowMsg, afterWindowMsg]
+        $ [whenWindowMsg]
         <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
+        <> [afterWindowMsg]
       pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount + currentClues == 0)
     LookAtRevealed iid source target | isTarget a target -> do
       player <- getPlayer iid

@@ -38,7 +38,7 @@ instance RunMessage Nasht where
           player
           [ SkillLabel
             sType
-            [beginSkillTest iid (toAbilitySource attrs 1) iid sType (2 + n)]
+            [parley iid (toAbilitySource attrs 1) iid sType (2 + n)]
           | sType <- [#combat, #agility]
           ]
       pure e

@@ -2085,24 +2085,26 @@ getSkillsMatching matcher = do
           as
 
 getSkill :: (HasCallStack, HasGame m) => SkillId -> m Skill
-getSkill sid = do
+getSkill sid = fromJustNote missingSkill <$> maybeSkill sid
+ where
+  missingSkill = "Unknown skill: " <> show sid
+
+maybeSkill :: HasGame m => SkillId -> m (Maybe Skill)
+maybeSkill sid = do
   g <- getGame
   pure
-    $ fromJustNote missingSkill
     $ preview (entitiesL . skillsL . ix sid) g
     <|> getInDiscardEntity skillsL sid g
     <|> getRemovedEntity skillsL sid g
     <|> preview (inSearchEntitiesL . skillsL . ix sid) g
- where
-  missingSkill = "Unknown skill: " <> show sid
 
 getStory :: (HasCallStack, HasGame m) => StoryId -> m Story
-getStory sid =
-  fromJustNote missingStory
-    . preview (entitiesL . storiesL . ix sid)
-    <$> getGame
+getStory sid = fromJustNote missingStory <$> maybeStory sid
  where
   missingStory = "Unknown story: " <> show sid
+
+maybeStory :: HasGame m => StoryId -> m (Maybe Story)
+maybeStory sid = preview (entitiesL . storiesL . ix sid) <$> getGame
 
 getStoriesMatching :: HasGame m => StoryMatcher -> m [Story]
 getStoriesMatching matcher = do
@@ -2116,15 +2118,17 @@ getStoriesMatching matcher = do
       pure $ filter ((== placement) . attr storyPlacement) as
 
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
-getEnemy eid = do
+getEnemy eid = fromJustNote missingEnemy <$> maybeEnemy eid
+ where
+  missingEnemy = "Unknown enemy: " <> show eid
+
+maybeEnemy :: HasGame m => EnemyId -> m (Maybe Enemy)
+maybeEnemy eid = do
   g <- getGame
   pure
-    $ fromJustNote missingEnemy
     $ preview (entitiesL . enemiesL . ix eid) g
     <|> getInDiscardEntity enemiesL eid g
     <|> getRemovedEntity enemiesL eid g
- where
-  missingEnemy = "Unknown enemy: " <> show eid
 
 getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
 getOutOfPlayEnemy outOfPlayZone eid =
@@ -2585,11 +2589,14 @@ getAct aid =
 
 getAgenda :: HasGame m => AgendaId -> m Agenda
 getAgenda aid =
-  fromJustNote missingAgenda
-    . preview (entitiesL . agendasL . ix aid)
-    <$> getGame
+  fromJustNote missingAgenda <$> maybeAgenda aid
  where
   missingAgenda = "Unknown agenda: " <> show aid
+
+maybeAgenda :: HasGame m => AgendaId -> m (Maybe Agenda)
+maybeAgenda aid =
+  preview (entitiesL . agendasL . ix aid)
+    <$> getGame
 
 newtype MissingEntity = MissingEntity Text
   deriving stock (Show)
@@ -2673,15 +2680,17 @@ getEventMaybe eid = do
     <|> getRemovedEntity eventsL eid g
 
 getEffect :: HasGame m => EffectId -> m Effect
-getEffect eid =
-  fromJustNote missingEffect
-    . preview (entitiesL . effectsL . ix eid)
-    <$> getGame
+getEffect eid = fromJustNote missingEffect <$> maybeEffect eid
  where
   missingEffect = "Unknown effect: " <> show eid
 
+maybeEffect :: HasGame m => EffectId -> m (Maybe Effect)
+maybeEffect eid =
+  preview (entitiesL . effectsL . ix eid) <$> getGame
+
 instance Projection Location where
   getAttrs lid = toAttrs <$> getLocation lid
+  project lid = preview (entitiesL . locationsL . ix lid) <$> getGame
   field f lid = do
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l
@@ -2753,6 +2762,7 @@ instance Projection Location where
 
 instance Projection Asset where
   getAttrs aid = toAttrs <$> getAsset aid
+  project = maybeAsset
   field f aid = do
     a <- getAsset aid
     let attrs@AssetAttrs {..} = toAttrs a
@@ -2829,8 +2839,9 @@ instance Projection Asset where
 instance Projection (DiscardedEntity Asset) where
   getAttrs aid = do
     let missingAsset = "Unknown asset: " <> show aid
-    toAttrs
-      . fromJustNote missingAsset
+    toAttrs . fromJustNote missingAsset <$> project @(DiscardedEntity Asset) aid
+  project aid =
+    fmap DiscardedEntity
       . lookup aid
       . entitiesAssets
       . mconcat
@@ -2839,14 +2850,7 @@ instance Projection (DiscardedEntity Asset) where
       <$> getGame
   field f aid = do
     let missingAsset = "Unknown asset: " <> show aid
-    a <-
-      fromJustNote missingAsset
-        . lookup aid
-        . entitiesAssets
-        . mconcat
-        . Map.elems
-        . gameInDiscardEntities
-        <$> getGame
+    a <- fromJustNote missingAsset <$> project @(DiscardedEntity Asset) aid
     let attrs = toAttrs a
     case f of
       DiscardedAssetTraits -> pure . cdCardTraits $ toCardDef attrs
@@ -2854,20 +2858,16 @@ instance Projection (DiscardedEntity Asset) where
 instance Projection (DiscardedEntity Treachery) where
   getAttrs tid = do
     let missingTreachery = "Unknown treachery: " <> show tid
-    toAttrs
-      . fromJustNote missingTreachery
+    toAttrs . fromJustNote missingTreachery <$> project @(DiscardedEntity Treachery) tid
+  project tid =
+    fmap DiscardedEntity
       . lookup tid
       . entitiesTreacheries
       . gameEncounterDiscardEntities
       <$> getGame
   field f tid = do
     let missingTreachery = "Unknown treachery: " <> show tid
-    t <-
-      fromJustNote missingTreachery
-        . lookup tid
-        . entitiesTreacheries
-        . gameEncounterDiscardEntities
-        <$> getGame
+    DiscardedEntity t <- fromJustNote missingTreachery <$> project @(DiscardedEntity Treachery) tid
     let attrs = toAttrs t
     case f of
       DiscardedTreacheryKeywords -> do
@@ -2884,6 +2884,7 @@ instance Projection (DiscardedEntity Treachery) where
 
 instance Projection Act where
   getAttrs aid = toAttrs <$> getAct aid
+  project aid = preview (entitiesL . actsL . ix aid) <$> getGame
   field f aid = do
     a <- getAct aid
     let ActAttrs {..} = toAttrs a
@@ -2897,10 +2898,12 @@ instance Projection Act where
 
 instance Projection (OutOfPlayEntity Enemy) where
   getAttrs _ = error "getAttrs: out of play enemy, do not know zone"
+  project _ = error "project: out of play enemy, do not know zone"
   field (OutOfPlayEnemyField outOfPlayZone f) = getEnemyField f <=< getOutOfPlayEnemy outOfPlayZone
 
 instance Projection Enemy where
   getAttrs eid = toAttrs <$> getEnemy eid
+  project = maybeEnemy
   field f = getEnemyField f <=< getEnemy
 
 getEnemyField :: HasGame m => Field Enemy typ -> Enemy -> m typ
@@ -3021,6 +3024,7 @@ getEnemyField f e = do
 
 instance Projection Investigator where
   getAttrs iid = toAttrs <$> getInvestigator iid
+  project iid = preview (entitiesL . investigatorsL . ix iid) <$> getGame
   field f iid = do
     i <- getInvestigator iid
     let attrs@InvestigatorAttrs {..} = toAttrs i
@@ -3590,6 +3594,7 @@ instance Query ScenarioMatcher where
 
 instance Projection Agenda where
   getAttrs aid = toAttrs <$> getAgenda aid
+  project = maybeAgenda
   field fld aid = do
     a <- getAgenda aid
     let AgendaAttrs {..} = toAttrs a
@@ -3603,6 +3608,7 @@ instance Projection Agenda where
 
 instance Projection Campaign where
   getAttrs _ = toAttrs . fromJustNote ("should be impossible, was looking campaign attrs") <$> getCampaign
+  project _ = getCampaign
   field fld _ = do
     c <- fromJustNote "impossible" <$> getCampaign
     let CampaignAttrs {..} = toAttrs c
@@ -3614,6 +3620,7 @@ instance Projection Campaign where
 
 instance Projection Effect where
   getAttrs eid = toAttrs <$> getEffect eid
+  project = maybeEffect
   field fld eid = do
     e <- getEffect eid
     case fld of
@@ -3639,6 +3646,7 @@ eventField e fld = do
 
 instance Projection Event where
   getAttrs eid = toAttrs <$> getEvent eid
+  project = getEventMaybe
   field fld eid = do
     e <- getEvent eid
     eventField e fld
@@ -3646,8 +3654,9 @@ instance Projection Event where
 instance Projection (InHandEntity Event) where
   getAttrs eid = do
     let missingEvent = "Unknown event: " <> show eid
-    toAttrs
-      . fromJustNote missingEvent
+    toAttrs . fromJustNote missingEvent <$> project @(InHandEntity Event) eid
+  project eid =
+    fmap InHandEntity
       . lookup eid
       . entitiesEvents
       . mconcat
@@ -3656,14 +3665,7 @@ instance Projection (InHandEntity Event) where
       <$> getGame
   field f eid = do
     let missingEvent = "Unknown event: " <> show eid
-    e <-
-      fromJustNote missingEvent
-        . lookup eid
-        . entitiesEvents
-        . mconcat
-        . Map.elems
-        . gameInHandEntities
-        <$> getGame
+    e <- fromJustNote missingEvent <$> project @(InHandEntity Event) eid
     let attrs = toAttrs e
     case f of
       InHandEventCardId -> pure $ toCardId attrs
@@ -3671,8 +3673,9 @@ instance Projection (InHandEntity Event) where
 instance Projection (InHandEntity Asset) where
   getAttrs aid = do
     let missingAsset = "Unknown asset: " <> show aid
-    toAttrs
-      . fromJustNote missingAsset
+    toAttrs . fromJustNote missingAsset <$> project @(InHandEntity Asset) aid
+  project aid =
+    fmap InHandEntity
       . lookup aid
       . entitiesAssets
       . mconcat
@@ -3681,14 +3684,7 @@ instance Projection (InHandEntity Asset) where
       <$> getGame
   field f aid = do
     let missingAsset = "Unknown asset: " <> show aid
-    a <-
-      fromJustNote missingAsset
-        . lookup aid
-        . entitiesAssets
-        . mconcat
-        . Map.elems
-        . gameInHandEntities
-        <$> getGame
+    a <- fromJustNote missingAsset <$> project @(InHandEntity Asset) aid
     let attrs = toAttrs a
     case f of
       InHandAssetCardId -> pure $ toCardId attrs
@@ -3696,8 +3692,9 @@ instance Projection (InHandEntity Asset) where
 instance Projection (InDiscardEntity Asset) where
   getAttrs aid = do
     let missingAsset = "No discarded asset: " <> show aid
-    toAttrs
-      . fromJustNote missingAsset
+    toAttrs . fromJustNote missingAsset <$> project @(InDiscardEntity Asset) aid
+  project aid =
+    fmap InDiscardEntity
       . lookup aid
       . entitiesAssets
       . mconcat
@@ -3706,20 +3703,14 @@ instance Projection (InDiscardEntity Asset) where
       <$> getGame
   field f aid = do
     let missingAsset = "No discarded asset: " <> show aid
-    a <-
-      fromJustNote missingAsset
-        . lookup aid
-        . entitiesAssets
-        . mconcat
-        . Map.elems
-        . gameInDiscardEntities
-        <$> getGame
+    a <- fromJustNote missingAsset <$> project @(InDiscardEntity Asset) aid
     let attrs = toAttrs a
     case f of
       InDiscardAssetCardId -> pure $ toCardId attrs
 
 instance Projection Scenario where
   getAttrs _ = toAttrs . fromJustNote ("should be impossible, was looking scenario attrs") <$> getScenario
+  project _ = getScenario
   field fld _ = do
     s <-
       fromJustNote ("should be impossible, was looking for field: " <> show fld)
@@ -3755,6 +3746,7 @@ instance Projection Scenario where
 
 instance Projection Skill where
   getAttrs sid = toAttrs <$> getSkill sid
+  project = maybeSkill
   field fld sid = do
     s <- getSkill sid
     let
@@ -3768,6 +3760,7 @@ instance Projection Skill where
 
 instance Projection Story where
   getAttrs sid = toAttrs <$> getStory sid
+  project = maybeStory
   field fld sid = do
     s <- getStory sid
     let
@@ -3779,6 +3772,7 @@ instance Projection Story where
 
 instance Projection Treachery where
   getAttrs tid = toAttrs <$> getTreachery tid
+  project = maybeTreachery
   field fld tid = do
     t <- getTreachery tid
     let
@@ -5622,12 +5616,12 @@ runGameMessage msg g = case msg of
       . (: [EndPhase, After EndPhase])
       =<< checkWindows [mkWindow #when (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
-  BeginSkillTestWithPreMessages pre skillTest -> do
+  BeginSkillTestWithPreMessages isSameAction pre skillTest -> do
     inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
 
     if inSkillTestWindow
       then do
-        if gameInAction g
+        if gameInAction g && not isSameAction
           then insertAfterMatching [msg] (== FinishAction)
           else insertAfterMatching [msg] (== EndSkillTestWindow)
         pure g

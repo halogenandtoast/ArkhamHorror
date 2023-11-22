@@ -32,7 +32,7 @@ instance HasAbilities JacquelineFine where
 
 instance HasChaosTokenValue JacquelineFine where
   getChaosTokenValue iid ElderSign (JacquelineFine attrs) | attrs `is` iid = do
-    pure $ ChaosTokenValue ElderSign NoModifier
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 getDrawSource :: [Window] -> Source

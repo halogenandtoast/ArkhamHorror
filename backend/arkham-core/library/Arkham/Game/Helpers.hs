@@ -3331,6 +3331,24 @@ sourceMatches s = \case
     LocationSource _ -> True
     TreacherySource _ -> True
     _ -> False
+  Matcher.SourceWithCard cardMatcher -> do
+    let
+      getCardSource = \case
+        AbilitySource source' _ -> getCardSource source'
+        AssetSource aid -> fieldMay AssetCard aid
+        EventSource eid -> fieldMay EventCard eid
+        SkillSource sid -> fieldMay SkillCard sid
+        EnemySource eid -> fieldMay EnemyCard eid
+        TreacherySource tid -> fieldMay TreacheryCard tid
+        LocationSource lid -> fieldMay LocationCard lid
+        StorySource sid -> fieldMay StoryCard sid
+        InvestigatorSource _ -> pure Nothing
+        CardSource c -> pure $ Just c
+        _ -> pure Nothing
+    mCard <- getCardSource s
+    pure $ case mCard of
+      Just c -> c `cardMatch` cardMatcher
+      Nothing -> False
 
 historyMatches :: HasGame m => Matcher.HistoryMatcher -> History -> m Bool
 historyMatches = \case

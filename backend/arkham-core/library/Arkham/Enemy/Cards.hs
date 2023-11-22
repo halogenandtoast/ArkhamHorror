@@ -225,6 +225,7 @@ allEncounterEnemyCards =
       , swarmOfRats
       , swiftByakhee
       , temporalDevourer
+      , theCrawlingMist
       , theExperiment
       , theMaskedHunter
       , theOrganistDrapedInMystery
@@ -1569,6 +1570,16 @@ ancientZoog =
   (enemy "06061" "Ancient Zoog" BeyondTheGatesOfSleep 1)
     { cdCardTraits = setFromList [Creature, Zoog, Elite]
     , cdKeywords = singleton Keyword.Aloof
+    }
+
+theCrawlingMist :: CardDef
+theCrawlingMist =
+  ( enemy "06086" "The Crawling Mist" AgentsOfNyarlathotep 1
+  )
+    { cdCardTraits = setFromList [Monster, Avatar]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
     }
 
 furtiveZoog :: CardDef

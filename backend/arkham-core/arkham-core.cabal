@@ -1150,6 +1150,7 @@ library
       Arkham.Enemy.Cards.SwarmOfRats
       Arkham.Enemy.Cards.SwiftByakhee
       Arkham.Enemy.Cards.TemporalDevourer
+      Arkham.Enemy.Cards.TheCrawlingMist
       Arkham.Enemy.Cards.TheExperiment
       Arkham.Enemy.Cards.TheManInThePallidMask
       Arkham.Enemy.Cards.TheMaskedHunter
@@ -2422,6 +2423,9 @@ library
       Arkham.Treachery.Cards.InsatiableBloodlust
       Arkham.Treachery.Cards.InternalInjury
       Arkham.Treachery.Cards.Kidnapped
+      Arkham.Treachery.Cards.LawOfYgirothChaos
+      Arkham.Treachery.Cards.LawOfYgirothDiscord
+      Arkham.Treachery.Cards.LawOfYgirothPandemonium
       Arkham.Treachery.Cards.LedAstray
       Arkham.Treachery.Cards.LightlessShadow
       Arkham.Treachery.Cards.LightOfAforgomon

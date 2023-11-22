@@ -356,6 +356,10 @@ allTreacheries =
     , SomeTreacheryCard narcolepsy
     , -- Beyond the Gates of Sleep
       SomeTreacheryCard lostInTheWoods
+    , -- Agents of Nyarlathotep
+      SomeTreacheryCard lawOfYgirothChaos
+    , SomeTreacheryCard lawOfYgirothDiscord
+    , SomeTreacheryCard lawOfYgirothPandemonium
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

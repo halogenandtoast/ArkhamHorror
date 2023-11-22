@@ -158,20 +158,20 @@ instance IsCard TreacheryAttrs where
   toCardId = treacheryCardId
   toCardOwner = treacheryOwner
 
-treacheryOn :: Target -> TreacheryAttrs -> Bool
-treacheryOn t = elem t . treacheryAttachedTarget
+treacheryOn :: Targetable target => target -> TreacheryAttrs -> Bool
+treacheryOn t = elem (toTarget t) . treacheryAttachedTarget
 
 treacheryOnInvestigator :: InvestigatorId -> TreacheryAttrs -> Bool
-treacheryOnInvestigator = treacheryOn . InvestigatorTarget
+treacheryOnInvestigator = treacheryOn
 
 treacheryOnEnemy :: EnemyId -> TreacheryAttrs -> Bool
-treacheryOnEnemy = treacheryOn . EnemyTarget
+treacheryOnEnemy = treacheryOn
 
 treacheryOnLocation :: LocationId -> TreacheryAttrs -> Bool
-treacheryOnLocation = treacheryOn . LocationTarget
+treacheryOnLocation = treacheryOn
 
 treacheryOnAgenda :: AgendaId -> TreacheryAttrs -> Bool
-treacheryOnAgenda = treacheryOn . AgendaTarget
+treacheryOnAgenda = treacheryOn
 
 withTreacheryEnemy :: TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of

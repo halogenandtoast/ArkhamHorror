@@ -269,6 +269,7 @@ data ModifierType
   | StartingClues Int
   | StartingHand Int
   | StartingResources Int
+  | UpkeepResources Int
   | TopCardOfDeckIsRevealed
   | TraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
@@ -282,6 +283,11 @@ data ModifierType
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data)
+
+_UpkeepResources :: Prism' ModifierType Int
+_UpkeepResources = prism' UpkeepResources $ \case
+  UpkeepResources n -> Just n
+  _ -> Nothing
 
 _AdditionalStartingCards :: Prism' ModifierType [Card]
 _AdditionalStartingCards = prism' AdditionalStartingCards $ \case

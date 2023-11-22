@@ -110,6 +110,14 @@ pushAndRunAll msgs = pushAll msgs >> runMessages
 runAll :: [Message] -> TestAppT ()
 runAll = pushAndRunAll
 
+shouldContainM
+  :: (HasCallStack, Show a, MonadIO m, Eq a) => m [a] -> [a] -> m ()
+x `shouldContainM` y = liftIO . (`shouldContain` y) =<< x
+
+shouldNotContainM
+  :: (HasCallStack, Show a, MonadIO m, Eq a) => m [a] -> [a] -> m ()
+x `shouldNotContainM` y = liftIO . (`shouldNotContain` y) =<< x
+
 shouldSatisfyM
   :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()
 x `shouldSatisfyM` y = liftIO . (`shouldSatisfy` y) =<< x

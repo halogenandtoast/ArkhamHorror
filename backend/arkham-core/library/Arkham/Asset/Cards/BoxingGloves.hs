@@ -4,14 +4,10 @@ module Arkham.Asset.Cards.BoxingGloves (
 ) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyDefeated)
-import Arkham.Card.CardType
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype BoxingGloves = BoxingGloves AssetAttrs

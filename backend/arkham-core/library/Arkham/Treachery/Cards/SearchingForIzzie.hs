@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.SearchingForIzzie (
-  SearchingForIzzie (..),
-  searchingForIzzie,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SearchingForIzzie (SearchingForIzzie (..), searchingForIzzie) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -28,11 +24,9 @@ instance HasAbilities SearchingForIzzie where
 instance RunMessage SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      targets <- selectTargets $ FarthestLocationFromYou Anywhere
+      targets <- selectTargets $ FarthestLocationFromInvestigator (InvestigatorWithId iid) Anywhere
       player <- getPlayer iid
-      pushIfAny targets
-        $ chooseOrRunOne player
-        $ targetLabels targets (only . AttachTreachery (toId attrs))
+      pushIfAny targets $ chooseOrRunOne player $ targetLabels targets (only . attachTreachery attrs)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withTreacheryLocation attrs $ \locationId -> do

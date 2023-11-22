@@ -3173,14 +3173,15 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
 
 takeUpkeepResources :: InvestigatorAttrs -> Runnable InvestigatorAttrs
 takeUpkeepResources a = do
-  mayChooseNotToTakeResources <- hasModifier a MayChooseNotToTakeUpkeepResources
-  if mayChooseNotToTakeResources
+  mods <- getModifiers a
+  let amount = foldr (+) 1 [n | UpkeepResources n <- mods]
+  if MayChooseNotToTakeUpkeepResources `elem` mods
     then do
       player <- getPlayer (toId a)
       push
         $ chooseOne player
         $ [ Label "Do not take resource(s)" []
-          , Label "Take resource(s)" [TakeResources (toId a) 1 (toSource a) False]
+          , Label "Take resource(s)" [TakeResources (toId a) amount (toSource a) False]
           ]
       pure a
-    else pure $ a & tokensL %~ incrementTokens Resource
+    else pure $ a & tokensL %~ addTokens Resource amount

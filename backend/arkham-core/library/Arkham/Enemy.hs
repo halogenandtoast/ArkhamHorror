@@ -304,6 +304,8 @@ allEnemies =
     , SomeEnemyCard ancientZoog
     , --- Zoogs
       SomeEnemyCard furtiveZoog
+    , --- Agents of Nyarlathotep
+      SomeEnemyCard theCrawlingMist
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

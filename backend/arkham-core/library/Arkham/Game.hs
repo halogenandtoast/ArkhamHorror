@@ -1265,6 +1265,7 @@ abilityMatches a@Ability {..} = \case
     result <- abilityMatches a x
     if result then pure True else abilityMatches a (AbilityOneOf xs)
   AbilityOnEncounterCard -> abilitySource `sourceMatches` M.EncounterCardSource
+  AbilityOnCard cardMatcher -> sourceMatches abilitySource (M.SourceWithCard cardMatcher)
 
 getAbilitiesMatching :: (HasCallStack, HasGame m) => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
@@ -2318,6 +2319,11 @@ enemyMatcherFilter = \case
   AnyEnemy -> pure . const True
   EnemyIs cardCode -> pure . (== cardCode) . toCardCode
   NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef
+  EnemyInHandOf investigatorMatcher -> \enemy -> do
+    iids <- select investigatorMatcher
+    pure $ case enemyPlacement (toAttrs enemy) of
+      Placement.StillInHand iid -> iid `member` iids
+      _ -> False
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
     iids <- select investigatorMatcher
     engagedInvestigators <- enemyEngagedInvestigators (toId enemy)

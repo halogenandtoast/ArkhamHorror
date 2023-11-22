@@ -122,6 +122,12 @@ isCard (toCardCode -> a) (toCardCode -> b) = a == b
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True
+  CardWithOddCost -> odd $ maybe 0 toPrintedCost (cdCost $ toCardDef a)
+  CardWithEvenCost -> even $ maybe 0 toPrintedCost (cdCost $ toCardDef a)
+  CardWithOddSkillIcons -> odd $ length (cdSkills $ toCardDef a)
+  CardWithEvenSkillIcons -> even $ length (cdSkills $ toCardDef a)
+  CardWithOddNumberOfWordsInTitle -> odd $ length $ words (toTitle $ toCardDef a)
+  CardWithEvenNumberOfWordsInTitle -> even $ length $ words (toTitle $ toCardDef a)
   CardFromEncounterSet encounterSet ->
     cdEncounterSet (toCardDef a) == Just encounterSet
   IsEncounterCard -> toCardType a `elem` encounterCardTypes

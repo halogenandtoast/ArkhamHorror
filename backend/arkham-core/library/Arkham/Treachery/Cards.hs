@@ -211,6 +211,9 @@ allEncounterTreacheryCards =
       , incriminatingEvidence
       , insatiableBloodlust
       , kidnapped
+      , lawOfYgirothChaos
+      , lawOfYgirothDiscord
+      , lawOfYgirothPandemonium
       , ledAstray
       , lightlessShadow
       , lightOfAforgomon
@@ -1672,6 +1675,27 @@ lostInTheWoods =
   (treachery "06062" "Lost in the Woods" BeyondTheGatesOfSleep 2)
     { cdCardTraits = singleton Blunder
     , cdKeywords = singleton Keyword.Surge
+    }
+
+lawOfYgirothChaos :: CardDef
+lawOfYgirothChaos =
+  (treachery "06087" ("Law of 'Ygiroth" <:> "Chaos") AgentsOfNyarlathotep 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+lawOfYgirothDiscord :: CardDef
+lawOfYgirothDiscord =
+  (treachery "06088" ("Law of 'Ygiroth" <:> "Discord") AgentsOfNyarlathotep 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+lawOfYgirothPandemonium :: CardDef
+lawOfYgirothPandemonium =
+  (treachery "06089" ("Law of 'Ygiroth" <:> "Pandemonium") AgentsOfNyarlathotep 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     }
 
 theHarbinger :: CardDef

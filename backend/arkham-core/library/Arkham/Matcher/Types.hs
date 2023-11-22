@@ -260,6 +260,7 @@ data EnemyMatcher
   | ReadyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
+  | EnemyInHandOf InvestigatorMatcher
   | CanParleyEnemy InvestigatorId
   | EnemyMatchAll [EnemyMatcher]
   | EnemyOneOf [EnemyMatcher]
@@ -604,6 +605,12 @@ data CardMatcher
   | DiscardableCard
   | CardOwnedBy InvestigatorId
   | CardFromEncounterSet EncounterSet
+  | CardWithOddCost
+  | CardWithEvenCost
+  | CardWithOddSkillIcons
+  | CardWithEvenSkillIcons
+  | CardWithOddNumberOfWordsInTitle
+  | CardWithEvenNumberOfWordsInTitle
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsString CardMatcher where
@@ -868,6 +875,7 @@ data SourceMatcher
   | SourceMatches [SourceMatcher]
   | NotSource SourceMatcher
   | SourceIs Source
+  | SourceWithCard CardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "investigator" SourceMatcher where
@@ -1019,6 +1027,7 @@ data AbilityMatcher
   | AbilityIs Source Int
   | AnyAbility
   | AbilityOnEncounterCard
+  | AbilityOnCard CardMatcher
   | AbilityOnCardControlledBy InvestigatorId
   | AssetAbility AssetMatcher
   | HauntedAbility

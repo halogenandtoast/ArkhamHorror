@@ -1,13 +1,11 @@
 module Arkham.Investigator.Cards.ZoeySamaras where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -21,7 +19,8 @@ zoeySamaras =
 instance HasAbilities ZoeySamaras where
   getAbilities (ZoeySamaras x) =
     [ restrictedAbility x 1 (Self <> CanGainResources)
-        $ freeReaction (EnemyEngaged Timing.After You AnyEnemy)
+        $ freeReaction
+        $ EnemyEngaged #after You AnyEnemy
     ]
 
 instance HasChaosTokenValue ZoeySamaras where

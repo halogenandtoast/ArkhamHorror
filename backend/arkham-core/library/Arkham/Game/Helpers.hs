@@ -3262,8 +3262,8 @@ sourceMatches s = \case
             Just controllerId -> member controllerId <$> select whoMatcher
             Nothing -> do
               -- event may have been discarded already
-              mOwner <- join . fmap toCardOwner . traceShowId <$> fieldMay EventCard eid
-              case traceShowId mOwner of
+              mOwner <- join . fmap toCardOwner <$> fieldMay EventCard eid
+              case mOwner of
                 Just owner -> member owner <$> select whoMatcher
                 Nothing -> pure False
         SkillSource sid -> do

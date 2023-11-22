@@ -112,6 +112,18 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestIsRevelation = False
     }
 
+resetSkillTest :: SkillTest -> SkillTest
+resetSkillTest skillTest =
+  skillTest
+    { skillTestSetAsideChaosTokens = mempty
+    , skillTestRevealedChaosTokens = mempty
+    , skillTestResolvedChaosTokens = mempty
+    , skillTestValueModifier = 0
+    , skillTestResult = Unrun
+    , skillTestCommittedCards = mempty
+    , skillTestSubscribers = [toTarget $ skillTestInvestigator skillTest]
+    }
+
 $(deriveJSON defaultOptions ''SkillTestBaseValue)
 $(deriveJSON defaultOptions ''SkillTestResultsData)
 $(deriveJSON (aesonOptions $ Just "skillTest") ''SkillTest)

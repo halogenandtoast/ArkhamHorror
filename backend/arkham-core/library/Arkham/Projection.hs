@@ -13,6 +13,12 @@ import Arkham.Id
 class Projection a where
   getAttrs :: (HasCallStack, HasGame m) => EntityId a -> m (EntityAttrs a)
   field :: (HasCallStack, HasGame m) => Field a typ -> EntityId a -> m typ
+  project :: (HasCallStack, HasGame m) => EntityId a -> m (Maybe a)
+
+fieldMay :: forall a typ m. (HasGame m, Projection a) => Field a typ -> EntityId a -> m (Maybe typ)
+fieldMay fld eid = do
+  hasEntity <- isJust <$> project @a eid
+  if hasEntity then fieldMap fld Just eid else pure Nothing
 
 fieldJust
   :: (HasCallStack, Projection a, HasGame m, Show (Field a (Maybe typ)), AsId b, IdOf b ~ EntityId a)

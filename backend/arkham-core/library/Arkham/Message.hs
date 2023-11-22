@@ -284,14 +284,16 @@ newtype ToSkillType = ToSkillType SkillType
   deriving anyclass (ToJSON, FromJSON)
 
 pattern BeginSkillTest :: SkillTest -> Message
-pattern BeginSkillTest skillTest <- BeginSkillTestWithPreMessages [] skillTest
+pattern BeginSkillTest skillTest <- BeginSkillTestWithPreMessages False [] skillTest
   where
-    BeginSkillTest skillTest = BeginSkillTestWithPreMessages [] skillTest
+    BeginSkillTest skillTest = BeginSkillTestWithPreMessages False [] skillTest
 
 pattern AssetDamage :: AssetId -> Source -> Int -> Int -> Message
 pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source damage horror True
   where
     AssetDamage aid source damage horror = AssetDamageWithCheck aid source damage horror True
+
+type IsSameAction = Bool
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -402,7 +404,7 @@ data Message
   | PhaseStep PhaseStep [Message]
   | BeginRound
   | ReplaceSkillTestSkill FromSkillType ToSkillType
-  | BeginSkillTestWithPreMessages [Message] SkillTest
+  | BeginSkillTestWithPreMessages IsSameAction [Message] SkillTest
   | BeginSkillTestAfterFast
   | SetSkillTestTarget Target
   | SetSkillTestResolveFailureInvestigator InvestigatorId

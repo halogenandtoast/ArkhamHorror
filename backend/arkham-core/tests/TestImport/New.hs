@@ -67,6 +67,9 @@ click = chooseOnlyOption
 loadDeck :: Investigator -> [CardDef] -> TestAppT ()
 loadDeck i cs = run . LoadDeck (toId i) . Deck =<< traverse genPlayerCard cs
 
+loadDeckCards :: Investigator -> [PlayerCard] -> TestAppT ()
+loadDeckCards i = run . LoadDeck (toId i) . Deck
+
 drawCards :: Investigator -> Int -> TestAppT ()
 drawCards i n = do
   drawing <- Helpers.drawCards (toId i) i n
@@ -89,6 +92,11 @@ loseActions i n = run $ LoseActions (toId i) (TestSource mempty) n
 
 useAbility :: Investigator -> Ability -> TestAppT ()
 useAbility i a = run $ UseAbility (toId i) a []
+
+clickLabel :: Text -> TestAppT ()
+clickLabel txt = chooseOptionMatching (T.unpack txt) \case
+  Label label _ -> label == txt
+  _ -> False
 
 useReaction :: HasCallStack => TestAppT ()
 useReaction = chooseOptionMatching "use reaction ability" \case

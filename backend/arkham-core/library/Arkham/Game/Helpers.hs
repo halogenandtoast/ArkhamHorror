@@ -173,7 +173,7 @@ getCanPerformAbility !iid !window !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window
   -- passes restrictions
-  --
+
   abilityModifiers <- getModifiers (AbilityTarget iid ability)
   let
     actions = case abilityType ability of
@@ -193,9 +193,7 @@ getCanPerformAbility !iid !window !ability = do
     , meetsActionRestrictions iid window ability
     , windowMatches iid (toSource ability) window (abilityWindow ability)
     , passesCriteria iid Nothing (abilitySource ability) [window] criteria
-    , allM
-        (getCanAffordCost iid (abilitySource ability) actions [window])
-        additionalCosts
+    , allM (getCanAffordCost iid (abilitySource ability) actions [window]) additionalCosts
     , not <$> preventedByInvestigatorModifiers iid ability
     ]
 
@@ -3262,7 +3260,12 @@ sourceMatches s = \case
           mControllerId <- selectEventController eid
           case mControllerId of
             Just controllerId -> member controllerId <$> select whoMatcher
-            Nothing -> pure False
+            Nothing -> do
+              -- event may have been discarded already
+              mOwner <- join . fmap toCardOwner . traceShowId <$> fieldMay EventCard eid
+              case traceShowId mOwner of
+                Just owner -> member owner <$> select whoMatcher
+                Nothing -> pure False
         SkillSource sid -> do
           mControllerId <- selectSkillController sid
           case mControllerId of

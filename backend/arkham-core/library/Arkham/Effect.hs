@@ -85,8 +85,6 @@ import Arkham.Event.Events (
   marksmanship1Effect,
   mindOverMatter2Effect,
   mystifyingSongEffect,
-  oneTwoPunch5Effect,
-  oneTwoPunchEffect,
   pilfer3Effect,
   slipAwayEffect,
   spectralRazorEffect,
@@ -344,8 +342,6 @@ allEffects =
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielChoEffect)
     , ("60103", SomeEffect tommyMalloy)
-    , ("60117", SomeEffect oneTwoPunchEffect)
-    , ("60132", SomeEffect oneTwoPunch5Effect)
     , ("60220", SomeEffect libraryDocent1Effect)
     , ("60226", SomeEffect mindOverMatter2Effect)
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)

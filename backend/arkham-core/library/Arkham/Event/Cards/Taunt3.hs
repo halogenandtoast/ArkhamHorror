@@ -1,14 +1,10 @@
-module Arkham.Event.Cards.Taunt3 (
-  taunt3,
-  Taunt3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.Taunt3 (taunt3, Taunt3 (..)) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Prelude
 
 newtype Taunt3 = Taunt3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,8 +14,8 @@ taunt3 :: EventCard Taunt3
 taunt3 = event Taunt3 Cards.taunt3
 
 instance RunMessage Taunt3 where
-  runMessage msg e@(Taunt3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(Taunt3 attrs) = case msg of
+    PlayThisEvent iid eid | eid == toId attrs -> do
       enemyIds <- selectList $ enemiesColocatedWith iid
       enemies <- forToSnd enemyIds $ \_ -> drawCards iid attrs 1
       player <- getPlayer iid

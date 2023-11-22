@@ -1,14 +1,16 @@
-module Arkham.Location.Cards.EnchantedWoodsVillageOfZoogs
-  ( enchantedWoodsVillageOfZoogs
-  , EnchantedWoodsVillageOfZoogs(..)
-  )
+module Arkham.Location.Cards.EnchantedWoodsVillageOfZoogs (
+  enchantedWoodsVillageOfZoogs,
+  EnchantedWoodsVillageOfZoogs (..),
+)
 where
 
-import Arkham.Prelude
-
 import Arkham.GameValue
+import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Trait (Trait (Zoog))
 
 newtype EnchantedWoodsVillageOfZoogs = EnchantedWoodsVillageOfZoogs LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +21,20 @@ enchantedWoodsVillageOfZoogs = location EnchantedWoodsVillageOfZoogs Cards.encha
 
 instance HasAbilities EnchantedWoodsVillageOfZoogs where
   getAbilities (EnchantedWoodsVillageOfZoogs attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ ForcedAbility
+          $ EnemySpawns
+            #after
+            (LocationWithId $ toId attrs)
+            (EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm)
+      ]
 
 instance RunMessage EnchantedWoodsVillageOfZoogs where
-  runMessage msg (EnchantedWoodsVillageOfZoogs attrs) =
-    EnchantedWoodsVillageOfZoogs <$> runMessage msg attrs
+  runMessage msg l@(EnchantedWoodsVillageOfZoogs attrs) = case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (spawnedEnemy -> enemy) _ -> do
+      lead <- getLead
+      push $ PlaceSwarmCards lead enemy 1
+      pure l
+    _ -> EnchantedWoodsVillageOfZoogs <$> runMessage msg attrs

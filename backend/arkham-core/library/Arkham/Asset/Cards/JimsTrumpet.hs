@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.JimsTrumpet (
-  JimsTrumpet (..),
-  jimsTrumpet,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.JimsTrumpet (JimsTrumpet (..), jimsTrumpet) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +7,7 @@ import Arkham.ChaosToken
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,9 +25,7 @@ instance HasAbilities JimsTrumpet where
             $ HealableInvestigator (toSource x) #horror
             $ oneOf [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
         )
-        $ ReactionAbility
-          (RevealChaosToken #when Anyone (ChaosTokenFaceIs Skull))
-          (exhaust x)
+        $ ReactionAbility (RevealChaosToken #when Anyone (ChaosTokenFaceIs Skull)) (exhaust x)
     ]
 
 instance RunMessage JimsTrumpet where

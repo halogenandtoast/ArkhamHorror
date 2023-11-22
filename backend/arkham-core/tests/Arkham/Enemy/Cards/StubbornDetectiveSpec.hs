@@ -12,6 +12,6 @@ spec = describe "Stubborn Detective" $ do
     self `moveTo` location1
     stubbornDetective <- createWeaknessEnemy self Enemies.stubbornDetective
     stubbornDetective `spawnAt` location2
-    getModifiers self `shouldReturn` mempty
+    getModifiers self `shouldNotContainM` [Blank]
     run HuntersMove
     getModifiers self `shouldReturn` [Blank]

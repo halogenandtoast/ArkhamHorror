@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.RexsCurse (
-  RexsCurse (..),
-  rexsCurse,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.RexsCurse (RexsCurse (..), rexsCurse) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -26,48 +21,25 @@ rexsCurse = treachery (RexsCurse . (`with` Metadata False)) Cards.rexsCurse
 
 instance HasAbilities RexsCurse where
   getAbilities (RexsCurse (x `With` _)) =
-    [ restrictedAbility
-        x
-        1
-        (InThreatAreaOf You)
-        ( ForcedAbility
-            $ WouldHaveSkillTestResult Timing.When You AnySkillTest
-            $ SuccessResult AnyValue
-        )
-        & abilityLimitL
-        .~ PlayerLimit PerTestOrAbility 1
+    [ playerLimit PerTestOrAbility
+        $ restrictedAbility x 1 (InThreatAreaOf You)
+        $ ForcedAbility
+        $ WouldHaveSkillTestResult #when You AnySkillTest
+        $ SuccessResult AnyValue
     ]
 
 instance RunMessage RexsCurse where
-  runMessage msg t@(RexsCurse (attrs@TreacheryAttrs {..} `With` metadata)) =
+  runMessage msg t@(RexsCurse (attrs `With` meta)) =
     case msg of
-      Revelation iid source | isSource attrs source -> do
-        t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
-      UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-        player <- getPlayer iid
-        retainedMessages <- withQueue $ \queue ->
-          let
-            (remainingWillPass, queue') = flip span queue $ \case
-              Will PassedSkillTest {} -> True
-              _ -> False
-            (before, after) = flip break queue' $ \case
-              Ask pid' (ChooseOne [SkillTestApplyResultsButton]) | player == pid' -> True
-              _ -> False
-            remaining = case after of
-              [] -> []
-              (_ : xs) -> xs
-           in
-            (before <> remaining, remainingWillPass)
-        pushAll
-          $ retainedMessages
-          <> [ReturnSkillTestRevealedChaosTokens, DrawAnotherChaosToken iid]
+      Revelation iid (isSource attrs -> True) -> do
+        push $ attachTreachery attrs iid
+        pure t
+      UseThisAbility iid (isSource attrs -> True) 1 -> do
+        pushAll [ReturnSkillTestRevealedChaosTokens, DrawAnotherChaosToken iid, RerunSkillTest]
         pure $ RexsCurse (attrs `with` Metadata True)
       FailedSkillTest iid _ _ _ _ _ | treacheryOnInvestigator iid attrs -> do
-        when (active metadata)
-          $ push
-          $ ShuffleIntoDeck
-            (Deck.InvestigatorDeck iid)
-            (toTarget attrs)
+        pushWhen (active meta)
+          $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
         pure $ RexsCurse (attrs `With` Metadata False)
       SkillTestEnds _ _ -> pure $ RexsCurse (attrs `With` Metadata False)
-      _ -> RexsCurse . (`with` metadata) <$> runMessage msg attrs
+      _ -> RexsCurse . (`with` meta) <$> runMessage msg attrs

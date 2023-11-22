@@ -18,8 +18,9 @@ finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 
 instance RunMessage FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (RequestChaosTokens source (Just iid) (Reveal 5) SetAside)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 5) SetAside
+      pure t
     RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
       let damageCount = count ((`elem` [Skull, AutoFail]) . chaosTokenFace) tokens
       player <- getPlayer iid

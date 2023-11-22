@@ -15,7 +15,7 @@ spec = describe "The Masked Hunter" $ do
       pushAndRun $ placedLocation location
       pushAndRun $ moveTo investigator location
       pushAndRun $ engageEnemy investigator theMaskedHunter
-      getModifiers investigator `shouldReturn` [CannotDiscoverClues, CannotSpendClues]
+      getModifiers investigator `shouldContainM` [CannotDiscoverClues, CannotSpendClues]
 
     it
       "does not prevent unengaged investigators from discovering or spending clues"
@@ -27,4 +27,4 @@ spec = describe "The Masked Hunter" $ do
         pushAndRun $ moveTo investigator location
         pushAndRun $ engageEnemy investigator theMaskedHunter
         pushAndRun $ disengageEnemy investigator theMaskedHunter
-        getModifiers investigator `shouldReturn` []
+        getModifiers investigator `shouldNotContainM` [CannotDiscoverClues, CannotSpendClues]

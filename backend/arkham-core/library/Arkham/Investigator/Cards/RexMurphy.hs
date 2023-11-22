@@ -1,11 +1,11 @@
 module Arkham.Investigator.Cards.RexMurphy (RexMurphy (..), rexMurphy) where
 
 import Arkham.Ability
+import Arkham.Discover
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Projection
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)

@@ -179,7 +179,7 @@ import Arkham.Treachery.Types (
   treacheryDoom,
   treacheryResources,
  )
-import Arkham.Window (Window (..), mkWhen, mkWindow)
+import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Exception (throw)
@@ -6048,20 +6048,18 @@ runGameMessage msg g = case msg of
                 %~ Map.map
                   (filter ((/= Just card) . preview _EncounterCard))
             )
+
+    whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
+    afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
+    -- [ALERT]: If you extend this make sure to update LetMeHandleThis
     case toCardType card of
       EnemyType -> do
         investigator <- getInvestigator iid
         sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
         enemyId <- getRandom
         let enemy = createEnemy card enemyId
-        checkWindowMessage <-
-          checkWindows
-            [ mkWindow
-                #when
-                (Window.DrawCard iid (toCard card) Deck.EncounterDeck)
-            ]
         pushAll
-          $ [checkWindowMessage, InvestigatorDrawEnemy iid enemyId]
+          $ [whenDraw, afterDraw, InvestigatorDrawEnemy iid enemyId]
           <> [Revelation iid (EnemySource enemyId) | hasRevelation card]
           <> [UnsetActiveCard]
         pure
@@ -6070,6 +6068,7 @@ runGameMessage msg g = case msg of
           & (activeCardL ?~ toCard card)
       TreacheryType -> do
         sendRevelation (toJSON $ toCard card)
+        -- handles draw windows
         push $ DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)
         pure g
       EncounterAssetType -> do
@@ -6077,7 +6076,7 @@ runGameMessage msg g = case msg of
         assetId <- getRandom
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ resolve $ Revelation iid (AssetSource assetId)
+        pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterEventType -> do
         sendRevelation (toJSON $ toCard card)
@@ -6085,14 +6084,17 @@ runGameMessage msg g = case msg of
         let owner = fromMaybe iid (toCardOwner card)
         let event' = createEvent card owner eventId
         -- Event is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ resolve $ Revelation iid (EventSource eventId)
+        pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ EventSource eventId)
         pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
         sendRevelation (toJSON $ toCard card)
         locationId <- getRandom
         let location = createLocation card locationId
+
         pushAll
-          $ PlacedLocation (toName location) (toCardCode card) locationId
+          $ whenDraw
+          : afterDraw
+          : PlacedLocation (toName location) (toCardCode card) locationId
           : resolve (Revelation iid (LocationSource locationId))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
       _ ->
@@ -6126,10 +6128,17 @@ runGameMessage msg g = case msg of
       & setTurnHistory
   ResolveTreachery iid treacheryId -> do
     treachery <- getTreachery treacheryId
-    checkWindowMessage <-
+    whenDraw <-
       checkWindows
         [ mkWindow
             #when
+            (Window.DrawCard iid (toCard treachery) Deck.EncounterDeck)
+        ]
+
+    afterDraw <-
+      checkWindows
+        [ mkWindow
+            #after
             (Window.DrawCard iid (toCard treachery) Deck.EncounterDeck)
         ]
 
@@ -6137,7 +6146,8 @@ runGameMessage msg g = case msg of
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
 
     pushAll
-      $ checkWindowMessage
+      $ whenDraw
+      : afterDraw
       : if ignoreRevelation
         then [toDiscardBy iid GameSource (TreacheryTarget treacheryId)]
         else

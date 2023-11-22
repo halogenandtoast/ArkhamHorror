@@ -136,3 +136,8 @@ cardPlayed :: [Window] -> Card
 cardPlayed [] = error "missing play card window"
 cardPlayed ((windowType -> Window.PlayCard _ c) : _) = c
 cardPlayed (_ : xs) = cardPlayed xs
+
+cardDrawn :: [Window] -> Card
+cardDrawn [] = error "missing play card window"
+cardDrawn ((windowType -> Window.DrawCard _ c _) : _) = c
+cardDrawn (_ : xs) = cardDrawn xs

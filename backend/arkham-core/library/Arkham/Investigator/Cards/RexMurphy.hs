@@ -1,16 +1,11 @@
-module Arkham.Investigator.Cards.RexMurphy (
-  RexMurphy (..),
-  rexMurphy,
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.RexMurphy (RexMurphy (..), rexMurphy) where
 
 import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -25,7 +20,7 @@ instance HasAbilities RexMurphy where
   getAbilities (RexMurphy x) =
     [ (restrictedAbility x 1)
         (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
-        (freeReaction $ SuccessfulInvestigationResult Timing.After You Anywhere (atLeast 2))
+        (freeReaction $ SuccessfulInvestigationResult #after You Anywhere (atLeast 2))
     ]
 
 instance HasChaosTokenValue RexMurphy where
@@ -35,9 +30,8 @@ instance HasChaosTokenValue RexMurphy where
 
 instance RunMessage RexMurphy where
   runMessage msg i@(RexMurphy attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      location <- fieldJust InvestigatorLocation iid
-      push $ InvestigatorDiscoverClues iid location (toAbilitySource attrs 1) 1 Nothing
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 3

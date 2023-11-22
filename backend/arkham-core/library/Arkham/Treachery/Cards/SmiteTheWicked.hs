@@ -1,16 +1,13 @@
 module Arkham.Treachery.Cards.SmiteTheWicked where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Capability
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -23,35 +20,28 @@ smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
 instance HasAbilities SmiteTheWicked where
   getAbilities (SmiteTheWicked a) =
-    [ mkAbility a 1
-      $ ForcedAbility
-      $ OrWindowMatcher
-        [ GameEnds Timing.When
-        , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
-        ]
-    | iid <- maybeToList (treacheryOwner a)
-    ]
+    [mkAbility a 1 $ forcedOnElimination iid | iid <- maybeToList (treacheryOwner a)]
 
 instance RunMessage SmiteTheWicked where
-  runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(SmiteTheWicked attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
       hasEncounterDeck <- can.target.encounterDeck iid
       when hasEncounterDeck $ do
         key <- getEncounterDeckKey iid
-        push
-          $ DiscardUntilFirst iid source (Deck.EncounterDeckByKey key) (BasicCardMatch $ CardWithType EnemyType)
+        push $ DiscardUntilFirst iid (toSource attrs) (Deck.EncounterDeckByKey key) #enemy
       pure t
-    RequestedEncounterCard source _ mcard | isSource attrs source -> do
+    RequestedEncounterCard (isSource attrs -> True) _ mcard -> do
       for_ mcard $ \card -> do
-        let ownerId = fromJustNote "has to be set" treacheryOwner
-        enemyCreation <- createEnemy (EncounterCard card) (FarthestLocationFromYou Anywhere)
+        let ownerId = fromJustNote "has to be set" attrs.owner
+        enemyCreation <-
+          createEnemy card $ FarthestLocationFromInvestigator (InvestigatorWithId ownerId) Anywhere
         pushAll
           [ toMessage $ enemyCreation {enemyCreationInvestigator = Just ownerId}
-          , AttachTreachery treacheryId (toTarget $ enemyCreationEnemyId enemyCreation)
+          , attachTreachery attrs (enemyCreationEnemyId enemyCreation)
           ]
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      let investigator = fromJustNote "missing investigator" treacheryOwner
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      let investigator = fromJustNote "missing investigator" attrs.owner
       push $ SufferTrauma investigator 0 1
       pure t
     _ -> SmiteTheWicked <$> runMessage msg attrs

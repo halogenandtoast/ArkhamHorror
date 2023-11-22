@@ -31,7 +31,7 @@ instance HasModifiersFor OneTwoPunch5 where
 
 instance RunMessage OneTwoPunch5 where
   runMessage msg e@(OneTwoPunch5 (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       pushAll
         [ skillTestModifier attrs iid (DamageDealt 1)
         , chooseFightEnemy iid attrs #combat

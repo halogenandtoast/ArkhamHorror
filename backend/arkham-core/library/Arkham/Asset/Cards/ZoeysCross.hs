@@ -1,16 +1,11 @@
-module Arkham.Asset.Cards.ZoeysCross (
-  ZoeysCross (..),
-  zoeysCross,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ZoeysCross (ZoeysCross (..), zoeysCross) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -24,8 +19,8 @@ zoeysCross = asset ZoeysCross Cards.zoeysCross
 instance HasAbilities ZoeysCross where
   getAbilities (ZoeysCross x) =
     [ restrictedAbility x 1 (ControlsThis <> CanDealDamage)
-        $ ReactionAbility (EnemyEngaged Timing.After You AnyEnemy)
-        $ Costs [ExhaustCost (toTarget x), ResourceCost 1]
+        $ ReactionAbility (EnemyEngaged #after You AnyEnemy)
+        $ Costs [exhaust x, ResourceCost 1]
     ]
 
 instance RunMessage ZoeysCross where

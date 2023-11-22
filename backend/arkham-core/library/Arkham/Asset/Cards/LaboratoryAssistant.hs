@@ -1,15 +1,10 @@
-module Arkham.Asset.Cards.LaboratoryAssistant (
-  LaboratoryAssistant (..),
-  laboratoryAssistant,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.LaboratoryAssistant (LaboratoryAssistant (..), laboratoryAssistant) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
   deriving anyclass (IsAsset)
@@ -26,14 +21,13 @@ instance HasModifiersFor LaboratoryAssistant where
 instance HasAbilities LaboratoryAssistant where
   getAbilities (LaboratoryAssistant x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
-          (AssetEntersPlay Timing.When (AssetWithId $ toId x))
-          Free
+        $ freeReaction
+        $ AssetEntersPlay #when (AssetWithId $ toId x)
     ]
 
 instance RunMessage LaboratoryAssistant where
   runMessage msg a@(LaboratoryAssistant attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushM $ drawCards iid (toAbilitySource attrs 1) 2
       pure a
     _ -> LaboratoryAssistant <$> runMessage msg attrs

@@ -104,6 +104,7 @@ import Arkham.Investigator.Investigators (
   winifredHabbamockEffect,
  )
 import Arkham.Location.Locations (
+  enchantedWoodsLostWoodsEffect,
   hereticsGravesSpectral_171Effect,
   restaurantEffect,
   unvisitedIsleMossCoveredStepsEffect,
@@ -325,6 +326,7 @@ allEffects =
     , ("05265", SomeEffect valentinosFateEffect)
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
+    , ("06056", SomeEffect enchantedWoodsLostWoodsEffect)
     , ("06114", SomeEffect followedEffect)
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)

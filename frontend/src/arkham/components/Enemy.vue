@@ -210,16 +210,18 @@ watch(abilities, (abilities) => {
       :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
-    <Enemy
-      v-for="enemy in swarmEnemies"
-      :key="enemy.id"
-      :enemy="enemy"
-      :game="game"
-      :playerId="playerId"
-      :atLocation="true"
-      @choose="$emit('choose', $event)"
-      class="swarm"
-    />
+    <div class="swarm" v-if="swarmEnemies.length > 0">
+      <Enemy
+        v-for="enemy in swarmEnemies"
+        :key="enemy.id"
+        :enemy="enemy"
+        :game="game"
+        :playerId="playerId"
+        :atLocation="true"
+        @choose="$emit('choose', $event)"
+        class="enemy--swarming"
+      />
+    </div>
     <template v-if="debug.active">
       <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
     </template>
@@ -316,7 +318,14 @@ watch(abilities, (abilities) => {
 
 .swarm {
   position: absolute;
-  left: 20px;
+  left: 100%;
   z-index: -10000px;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-evenly;
+}
+
+.enemy--swarming {
+  margin-left: -30px;
 }
 </style>

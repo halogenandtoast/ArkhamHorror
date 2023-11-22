@@ -126,6 +126,12 @@ evadedEnemy =
     (windowType -> Window.EnemyEvaded _ eid) -> Just eid
     _ -> Nothing
 
+spawnedEnemy :: [Window] -> EnemyId
+spawnedEnemy =
+  fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.EnemySpawns eid _) -> Just eid
+    _ -> Nothing
+
 cardPlayed :: [Window] -> Card
 cardPlayed [] = error "missing play card window"
 cardPlayed ((windowType -> Window.PlayCard _ c) : _) = c

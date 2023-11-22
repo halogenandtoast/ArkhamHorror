@@ -41,6 +41,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyBearer :: Maybe InvestigatorId
   , enemySealedChaosTokens :: [ChaosToken]
   , enemyKeys :: Set ArkhamKey
+  , enemySpawnedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
 

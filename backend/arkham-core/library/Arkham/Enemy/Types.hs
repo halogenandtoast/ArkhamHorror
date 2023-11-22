@@ -76,6 +76,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyPlacement :: Field Enemy Placement
   EnemySealedChaosTokens :: Field Enemy [ChaosToken]
   EnemyKeys :: Field Enemy (Set ArkhamKey)
+  EnemySpawnedBy :: Field Enemy (Maybe InvestigatorId)
 
 deriving stock instance Show (Field Enemy typ)
 deriving stock instance Ord (Field Enemy typ)
@@ -183,6 +184,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyBearer = Nothing
             , enemySealedChaosTokens = []
             , enemyKeys = mempty
+            , enemySpawnedBy = Nothing
             }
     }
 

@@ -281,6 +281,7 @@ data EnemyMatcher
   | EnemyWithBounty -- Tony Morgan
   | PatrolEnemy
   | SwarmOf EnemyId
+  | IsSwarm
   | SwarmingEnemy
   deriving stock (Show, Eq, Ord, Data)
 

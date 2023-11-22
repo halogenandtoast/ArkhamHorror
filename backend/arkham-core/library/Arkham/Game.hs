@@ -2173,6 +2173,12 @@ enemyMatcherFilter = \case
         AsSwarm eid' _ -> eid == eid'
         _ -> False
     fieldMap EnemyPlacement isSwarmOf (toId enemy)
+  IsSwarm -> \enemy -> do
+    let
+      isSwarm = \case
+        AsSwarm {} -> True
+        _ -> False
+    fieldMap EnemyPlacement isSwarm (toId enemy)
   EnemyWithEqualFields p q -> \enemy -> do
     x <- field p (toId enemy)
     y <- field q (toId enemy)
@@ -2920,6 +2926,7 @@ getEnemyField f e = do
     EnemyPlacement -> pure enemyPlacement
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
+    EnemySpawnedBy -> pure enemySpawnedBy
     EnemyTokens -> pure enemyTokens
     EnemyDoom -> do
       countAllDoom <- attrs `hasModifier` CountAllDoomInPlay
@@ -5824,9 +5831,10 @@ runGameMessage msg g = case msg of
 
     let
       enemy' =
-        if enemyCreationExhausted enemyCreation
-          then overAttrs (\attrs -> attrs {enemyExhausted = True}) enemy''
-          else enemy''
+        overAttrs (\attrs -> attrs {enemySpawnedBy = enemyCreationInvestigator enemyCreation})
+          $ if enemyCreationExhausted enemyCreation
+            then overAttrs (\attrs -> attrs {enemyExhausted = True}) enemy''
+            else enemy''
 
     enemy <- case getBearer card of
       Nothing -> pure enemy'

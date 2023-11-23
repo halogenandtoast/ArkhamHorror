@@ -35,7 +35,7 @@ instance IsLabel "agility" SkillType where
 
 data SkillIcon = SkillIcon SkillType | WildIcon | WildMinusIcon
   deriving stock (Show, Eq, Generic, Ord, Data)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
 instance IsLabel "willpower" SkillIcon where
   fromLabel = SkillIcon SkillWillpower

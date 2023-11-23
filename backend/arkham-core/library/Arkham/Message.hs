@@ -879,6 +879,7 @@ data Message
   | UnsealChaosToken ChaosToken
   | ChaosTokenIgnored InvestigatorId Source ChaosToken
   | ChaosTokenCanceled InvestigatorId Source ChaosToken
+  | SetActiveCard Card
   | UnsetActiveCard
   | AddCardEntity Card
   | RemoveCardEntity Card

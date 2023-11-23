@@ -174,12 +174,14 @@ allEncounterTreacheryCards =
       , deadlyFate
       , deathApproaches
       , deepDark
+      , deeperSlumber
       , descentIntoMadness
       , diabolicVoices
       , dismalCurse
       , disquietingDreams
       , dissonantVoices
       , draggedUnder
+      , dreamersCurse
       , dreamsOfRlyeh
       , drivenToMadness
       , eagerForDeath
@@ -1696,6 +1698,24 @@ lawOfYgirothPandemonium =
   (treachery "06089" ("Law of 'Ygiroth" <:> "Pandemonium") AgentsOfNyarlathotep 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+dreamersCurse :: CardDef
+dreamersCurse =
+  (treachery "06093" "Dreamer's Curse" DreamersCurse 2)
+    { cdCardTraits = singleton Curse
+    }
+
+somniphobia :: CardDef
+somniphobia =
+  (treachery "06094" "Somniphobia" DreamersCurse 2)
+    { cdCardTraits = singleton Terror
+    }
+
+deeperSlumber :: CardDef
+deeperSlumber =
+  (treachery "06095" "Deeper Slumber" DreamersCurse 2)
+    { cdCardTraits = singleton Curse
     }
 
 theHarbinger :: CardDef

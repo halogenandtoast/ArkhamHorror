@@ -11,7 +11,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
-import Arkham.SkillType (SkillType)
+import Arkham.SkillType (SkillIcon (..), SkillType)
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
@@ -40,6 +40,7 @@ data SkillTest = SkillTest
   , skillTestAction :: Maybe Action
   , skillTestSubscribers :: [Target]
   , skillTestIsRevelation :: Bool
+  , skillTestIconValues :: Map SkillIcon Int
   }
   deriving stock (Show, Eq, Ord)
 
@@ -110,7 +111,16 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestAction = Nothing
     , skillTestSubscribers = [toTarget iid]
     , skillTestIsRevelation = False
+    , skillTestIconValues = iconValuesForSkillTestType stType
     }
+
+iconValuesForSkillTestType :: SkillTestType -> Map SkillIcon Int
+iconValuesForSkillTestType = \case
+  SkillSkillTest skillType -> base <> singletonMap (SkillIcon skillType) 1
+  AndSkillTest skillTypes -> base <> mapFromList (map ((,1) . SkillIcon) skillTypes)
+  ResourceSkillTest -> base
+ where
+  base = mapFromList [(#wild, 1), (#wildMinus, -1)]
 
 resetSkillTest :: SkillTest -> SkillTest
 resetSkillTest skillTest =
@@ -126,4 +136,26 @@ resetSkillTest skillTest =
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)
 $(deriveJSON defaultOptions ''SkillTestResultsData)
-$(deriveJSON (aesonOptions $ Just "skillTest") ''SkillTest)
+
+instance FromJSON SkillTest where
+  parseJSON = withObject "skillTest" $ \o -> do
+    skillTestInvestigator <- o .: "investigator"
+    skillTestResolveFailureInvestigator <- o .: "resolveFailureInvestigator"
+    skillTestType <- o .: "type"
+    skillTestBaseValue <- o .: "baseValue"
+    skillTestDifficulty <- o .: "difficulty"
+    skillTestSetAsideChaosTokens <- o .: "setAsideChaosTokens"
+    skillTestRevealedChaosTokens <- o .: "revealedChaosTokens"
+    skillTestResolvedChaosTokens <- o .: "resolvedChaosTokens"
+    skillTestValueModifier <- o .: "valueModifier"
+    skillTestResult <- o .: "result"
+    skillTestCommittedCards <- o .: "committedCards"
+    skillTestSource <- o .: "source"
+    skillTestTarget <- o .: "target"
+    skillTestAction <- o .: "action"
+    skillTestSubscribers <- o .: "subscribers"
+    skillTestIsRevelation <- o .: "isRevelation"
+    skillTestIconValues <- o .:? "iconValues" .!= iconValuesForSkillTestType skillTestType
+    pure SkillTest {..}
+
+$(deriveToJSON (aesonOptions $ Just "skillTest") ''SkillTest)

@@ -2375,6 +2375,7 @@ library
       Arkham.Treachery.Cards.DeadlyFate
       Arkham.Treachery.Cards.DeathApproaches
       Arkham.Treachery.Cards.DeepDark
+      Arkham.Treachery.Cards.DeeperSlumber
       Arkham.Treachery.Cards.DescentIntoMadness
       Arkham.Treachery.Cards.DetachedFromReality
       Arkham.Treachery.Cards.DiabolicVoices
@@ -2384,6 +2385,7 @@ library
       Arkham.Treachery.Cards.Doomed
       Arkham.Treachery.Cards.DraggedUnder
       Arkham.Treachery.Cards.DrawingTheSign
+      Arkham.Treachery.Cards.DreamersCurse
       Arkham.Treachery.Cards.DreamsOfRlyeh
       Arkham.Treachery.Cards.DrivenToMadness
       Arkham.Treachery.Cards.EagerForDeath
@@ -2506,6 +2508,7 @@ library
       Arkham.Treachery.Cards.SnakeBite
       Arkham.Treachery.Cards.Snakescourge
       Arkham.Treachery.Cards.SomethingInTheDrinks
+      Arkham.Treachery.Cards.Somniphobia
       Arkham.Treachery.Cards.SordidAndSilent
       Arkham.Treachery.Cards.SpacesBetween
       Arkham.Treachery.Cards.SpectralMist

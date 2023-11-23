@@ -71,13 +71,7 @@ getSkillTestSkillTypes =
     Nothing -> []
 
 getSkillTestMatchingSkillIcons :: HasGame m => m (Set SkillIcon)
-getSkillTestMatchingSkillIcons =
-  getsSkillTest skillTestType <&> \case
-    Just stType -> case stType of
-      SkillSkillTest skillType -> setFromList [#wildMinus, #wild, SkillIcon skillType]
-      AndSkillTest types -> setFromList $ #wildMinus : #wild : map SkillIcon types
-      ResourceSkillTest -> setFromList [#wildMinus, #wild]
-    _ -> mempty
+getSkillTestMatchingSkillIcons = maybe mempty keysSet <$> getsSkillTest skillTestIconValues
 
 getIsBeingInvestigated :: HasGame m => LocationId -> m Bool
 getIsBeingInvestigated lid = do
@@ -239,11 +233,9 @@ skillIconCount SkillTest {..} = do
       AddSkillIcons icons -> icons
       _ -> []
   totalIcons <-
-    (+ length addedIcons)
-      <$> count matches
-      <$> concatMapM
-        iconsForCard
-        (concat $ toList skillTestCommittedCards)
+    foldr ((+) . toValue) 0
+      <$> (<> addedIcons)
+      <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
   case skillTestType of
     SkillSkillTest sType -> do
       investigatorModifiers <- getModifiers skillTestInvestigator
@@ -260,11 +252,8 @@ skillIconCount SkillTest {..} = do
     ResourceSkillTest -> pure totalIcons
  where
   matches WildMinusIcon = False
-  matches WildIcon = True
-  matches (SkillIcon s) = case skillTestType of
-    SkillSkillTest sType -> s == sType
-    AndSkillTest types -> s `elem` types
-    ResourceSkillTest -> False
+  matches icon = member icon skillTestIconValues
+  toValue icon = fromMaybe 0 $ lookup icon skillTestIconValues
 
 getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
 getAlternateSkill st sType = do

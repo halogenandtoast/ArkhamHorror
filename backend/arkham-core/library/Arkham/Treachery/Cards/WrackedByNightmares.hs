@@ -26,13 +26,12 @@ instance HasAbilities WrackedByNightmares where
   getAbilities (WrackedByNightmares a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
 
 instance RunMessage WrackedByNightmares where
-  runMessage msg t@(WrackedByNightmares attrs) =
-    case msg of
-      Revelation iid (isSource attrs -> True) -> do
-        assets <- selectList $ assetControlledBy iid
-        pushAll $ map (Exhaust . toTarget) assets <> [attachTreachery attrs iid]
-        pure t
-      UseThisAbility iid (isSource attrs -> True) 1 -> do
-        push $ toDiscardBy iid (toAbilitySource attrs 1) (toId attrs)
-        pure t
-      _ -> WrackedByNightmares <$> runMessage msg attrs
+  runMessage msg t@(WrackedByNightmares attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      assets <- selectList $ assetControlledBy iid
+      pushAll $ map (Exhaust . toTarget) assets <> [attachTreachery attrs iid]
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) (toId attrs)
+      pure t
+    _ -> WrackedByNightmares <$> runMessage msg attrs

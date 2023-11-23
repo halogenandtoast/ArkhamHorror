@@ -199,6 +199,7 @@ data ModifierType
   | GainVictory Int
   | GiveAdditionalAction AdditionalAction
   | HandSize Int
+  | CheckHandSizeAfterDraw
   | HandSizeCardCount Int
   | HealHorrorOnThisAsIfInvestigator InvestigatorId
   | HealthModifier Int

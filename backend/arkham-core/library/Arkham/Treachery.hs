@@ -360,6 +360,10 @@ allTreacheries =
       SomeTreacheryCard lawOfYgirothChaos
     , SomeTreacheryCard lawOfYgirothDiscord
     , SomeTreacheryCard lawOfYgirothPandemonium
+    , -- Dreamer's Curse
+      SomeTreacheryCard dreamersCurse
+    , SomeTreacheryCard somniphobia
+    , SomeTreacheryCard deeperSlumber
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

@@ -587,11 +587,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   CheckHandSize iid | iid == investigatorId -> do
     handSize <- getHandSize a
     inHandCount <- getInHandCount a
+    when (inHandCount > handSize) $ do
+      send $ format a <> " must discard down to " <> tshow handSize <> " cards"
+      push $ Do msg
+    pure a
+  Do (CheckHandSize iid) | iid == investigatorId -> do
+    handSize <- getHandSize a
+    inHandCount <- getInHandCount a
     -- investigatorHand: can only discard cards actually in hand
     player <- getPlayer iid
     pushWhen (inHandCount > handSize)
       $ chooseOne player
-      $ [ targetLabel (toCardId card) [DiscardCard iid GameSource (toCardId card), CheckHandSize iid]
+      $ [ targetLabel (toCardId card) [DiscardCard iid GameSource (toCardId card), Do (CheckHandSize iid)]
         | card <- filter (isNothing . cdCardSubType . toCardDef) $ onlyPlayerCards investigatorHand
         ]
     pure a
@@ -1896,14 +1903,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #draw)]
     drawing <- drawCards iid source n
     pushAll
-      [ BeginAction
-      , beforeWindowMsg
-      , TakeActions iid [#draw] (ActionCost 1)
-      , CheckAttackOfOpportunity iid False
-      , drawing
-      , afterWindowMsg
-      , FinishAction
-      ]
+      $ [ BeginAction
+        , beforeWindowMsg
+        , TakeActions iid [#draw] (ActionCost 1)
+        , CheckAttackOfOpportunity iid False
+        , drawing
+        , afterWindowMsg
+        , FinishAction
+        ]
     pure a
   MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n | iid == investigatorId -> do
     let (cards, deck) = draw n investigatorDeck
@@ -1996,6 +2003,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
                 else pure []
             (before, _, after) <- frame $ Window.DrawCards iid $ map toCard allDrawn
+            checkHandSize <- hasModifier iid CheckHandSizeAfterDraw
             pushAll
               $ windowMsgs
               <> [DeckHasNoCards iid Nothing | null deck']
@@ -2003,6 +2011,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               <> [before]
               <> msgs'
               <> [after]
+              <> [CheckHandSize iid | checkHandSize]
             pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ Deck deck'
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-

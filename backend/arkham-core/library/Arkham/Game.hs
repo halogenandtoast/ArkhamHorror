@@ -5986,6 +5986,7 @@ runGameMessage msg g = case msg of
       ]
     pure g
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
+    -- [ALERT] If changed update (DreamersCurse, Somniphobia)
     card <- field TreacheryCard tid
 
     let
@@ -6179,6 +6180,7 @@ runGameMessage msg g = case msg of
       & (resolvingCardL ?~ PlayerCard card)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
+  SetActiveCard c -> pure $ g & activeCardL ?~ c
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation {} -> pure $ g & activeCardL .~ Nothing
   AddCardEntity card -> do

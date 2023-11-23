@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.EncounterSet qualified as EncounterSet
@@ -54,13 +55,14 @@ instance RunMessage TheFinalDescent where
           , EncounterSet.Dreamlands
           , EncounterSet.ChillingCold
           ]
+      laboringGug <- genCard Enemies.laboringGug
 
       pushAll
         $ map (RemoveAllClues (toSource attrs) . toTarget) investigators
         <> [AddChaosToken Skull]
         <> [RemoveLocation step | step <- steps]
         <> placeEnchantedWoods
-        <> [SetEncounterDeck encounterDeck]
+        <> [SetEncounterDeck encounterDeck, SetCardAside laboringGug]
         <> [advanceActDeck attrs]
       pure a
     _ -> TheFinalDescent <$> runMessage msg attrs

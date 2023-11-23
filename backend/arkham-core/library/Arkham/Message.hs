@@ -544,6 +544,7 @@ data Message
   | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
   | EnemySpawnEngagedWithPrey EnemyId
+  | EnemySpawnEngagedWith EnemyId InvestigatorMatcher
   | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnedAt LocationId EnemyId
   | EngageEnemy InvestigatorId EnemyId (Maybe Target) Bool
@@ -943,6 +944,7 @@ data Message
   | If WindowType [Message]
   | SendMessage Target Message
   | IfEnemyExists EnemyMatcher [Message]
+  | ExcessDamage EnemyId [Message]
   | -- Commit
     Do Message
   | DoBatch BatchId Message

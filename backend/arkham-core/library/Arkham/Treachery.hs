@@ -367,6 +367,8 @@ allTreacheries =
     , -- Dreamlands
       SomeTreacheryCard dreamlandsEclipse
     , SomeTreacheryCard prismaticPhenomenon
+    , -- Zoogs
+      SomeTreacheryCard zoogBurrow
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

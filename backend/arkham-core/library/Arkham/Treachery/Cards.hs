@@ -337,6 +337,7 @@ allEncounterTreacheryCards =
       , wracked
       , wrackedByTime
       , yithianPresence
+      , zoogBurrow
       ]
 
 coverUp :: CardDef
@@ -1730,6 +1731,12 @@ prismaticPhenomenon :: CardDef
 prismaticPhenomenon =
   (treachery "06097" "Prismatic Phenomenon" Dreamlands 2)
     { cdCardTraits = singleton Power
+    }
+
+zoogBurrow :: CardDef
+zoogBurrow =
+  (treachery "06109" "Zoog Burrow" Dreamlands 1)
+    { cdCardTraits = singleton Hazard
     }
 
 theHarbinger :: CardDef

@@ -46,6 +46,7 @@ instance HasAbilities MedicoDellaPeste where
               You
               (NotSkillType SkillWillpower)
               AnySkillTestValue
+              #any
           )
           (DiscardCost FromPlay $ toTarget a)
     ]

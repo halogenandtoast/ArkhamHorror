@@ -941,12 +941,7 @@ letMeHandleThis =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit]
     , cdFastWindow =
-        Just
-          $ DrawCard
-            #after
-            (affectsOthers NotYou)
-            (basic $ NonPeril <> CardWithOneOf (map CardWithType encounterCardTypes))
-            EncounterDeck
+        Just $ DrawCard #after (affectsOthers NotYou) (basic $ NonPeril <> IsEncounterCard) AnyDeck
     }
 
 everVigilant1 :: CardDef
@@ -1581,7 +1576,7 @@ againstAllOdds2 =
   (event "04202" "Against All Odds" 2 Survivor)
     { cdCardTraits = singleton Spirit
     , cdSkills = [#willpower, #combat, #agility]
-    , cdFastWindow = Just $ InitiatedSkillTest #when You AnySkillType GreaterThanBaseValue
+    , cdFastWindow = Just $ InitiatedSkillTest #when You AnySkillType GreaterThanBaseValue #any
     , cdLevel = 2
     }
 
@@ -1762,7 +1757,7 @@ moneyTalks :: CardDef
 moneyTalks =
   (event "05029" "Money Talks" 0 Rogue)
     { cdCardTraits = setFromList [Favor, Gambit]
-    , cdFastWindow = Just $ InitiatedSkillTest #when You AnySkillType AnySkillTestValue
+    , cdFastWindow = Just $ InitiatedSkillTest #when You AnySkillType AnySkillTestValue #any
     }
 
 denyExistence :: CardDef
@@ -2368,7 +2363,12 @@ moneyTalks2 =
     , cdCardTraits = setFromList [Favor, Gambit]
     , cdFastWindow =
         Just
-          $ InitiatedSkillTest #when (affectsOthers $ InvestigatorAt Anywhere) AnySkillType AnySkillTestValue
+          $ InitiatedSkillTest
+            #when
+            (affectsOthers $ InvestigatorAt Anywhere)
+            AnySkillType
+            AnySkillTestValue
+            #any
     , cdLevel = 2
     }
 

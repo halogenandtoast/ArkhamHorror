@@ -2183,7 +2183,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
             _ -> noMatch
       isWindowMatch skillTestResultMatcher
-    Matcher.InitiatedSkillTest timing whoMatcher skillTypeMatcher skillValueMatcher ->
+    Matcher.InitiatedSkillTest timing whoMatcher skillTypeMatcher skillValueMatcher skillTestTypeMatcher ->
       guardTiming timing $ \case
         Window.InitiatedSkillTest st -> case skillTestType st of
           SkillSkillTest skillType | skillTypeMatches skillType skillTypeMatcher -> do
@@ -2195,6 +2195,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                   (skillTestAction st)
                   (skillTestType st)
                   skillValueMatcher
+              , skillTestTypeMatches st skillTestTypeMatcher
               ]
           _ -> noMatch
         _ -> noMatch
@@ -3375,3 +3376,8 @@ canDo iid action = do
       IsAnyAction {} -> pure True
 
   not <$> anyM prevents mods
+
+skillTestTypeMatches :: HasGame m => SkillTest -> Matcher.SkillTestTypeMatcher -> m Bool
+skillTestTypeMatches st = \case
+  Matcher.AnySkillTestType -> pure True
+  Matcher.InvestigationSkillTest -> pure $ skillTestAction st == Just #investigate

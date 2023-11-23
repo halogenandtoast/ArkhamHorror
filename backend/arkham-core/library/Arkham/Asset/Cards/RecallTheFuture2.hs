@@ -31,7 +31,7 @@ instance HasAbilities RecallTheFuture2 where
   getAbilities (RecallTheFuture2 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue)
+          (InitiatedSkillTest Timing.When You AnySkillType AnySkillTestValue #any)
           Free
     ]
 

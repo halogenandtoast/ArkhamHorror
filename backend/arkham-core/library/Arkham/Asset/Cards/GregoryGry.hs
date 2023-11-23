@@ -24,7 +24,7 @@ instance HasAbilities GregoryGry where
   getAbilities (GregoryGry a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (InitiatedSkillTest #when You AnySkillType AnySkillTestValue)
+          (InitiatedSkillTest #when You AnySkillType AnySkillTestValue #any)
           (UseCostUpTo (AssetWithId $ toId a) Resource 1 3)
     ]
 

@@ -225,3 +225,101 @@ neutralDream2 =
       \ you, you push away the fallen limbs piling atop an old, familiar spot and\
       \ are relieved to find the weathered wood of a cellar door."
     ]
+
+noResolution :: FlavorText
+noResolution =
+  FlavorText
+    (Just "No resolution")
+    [ "You are nudged into consciousness by an old, scarred cat. “Hey. You all\
+      \ right, human?"
+    , "I’m dreaming, you remember, and suddenly the talking cat doesn’t seem\
+      \ quite as weird. Exhausted, you manage to rise to your feet, brushing off\
+      \ the dirt caked on your clothing. “You’re lucky you weren’t harmed before we\
+      \ arrived,” a human voice calls out to you. It belongs to a blond-haired man\
+      \ in a brown traveling coat, who leans against a nearby tree. “These woods\
+      \ are not forgiving to the faint of heart.” The scarred cat walks to the\
+      \ man’s side, and the man leans over to pet its back."
+    , "You ask the man where you are and how he came to this place, but he cuts\
+      \ you off. “I will explain in due time. For now, we must follow the path to\
+      \ the town of Ulthar. It is a safe place, relatively speaking. There you may\
+      \ recover from your ordeals.” He turns to the cat and utters a word in an odd\
+      \ language—a password of sorts, you suspect—but the cat simply wanders off\
+      \ toward a hedge, where you see several other cats banded together. “Do it\
+      \ yerself,” it replies."
+    , "“Don’t mind the cats,” the man says to you quietly as the cats depart.\
+      \ “They are useful allies, but also independent creatures with no need for\
+      \ you or me. When we reach Ulthar, you may get the chance to meet others of\
+      \ their kind. But first things first.” Together, you leave the eaves of the\
+      \ enchanted forest behind."
+    ]
+
+resolution1 :: FlavorText
+resolution1 =
+  FlavorText
+    (Just "Resolution 1")
+    [ "The creatures chitter among themselves, and after a moment, a dozen of\
+      \ them retreat in the direction of the great tree beyond the beaten path.\
+      \ They return shortly afterward carrying a variety of grouse, quail, and\
+      \ pheasants in their mouths. You’re almost certain now that you are going\
+      \ crazy. And yet, the spectacle continues. The creatures timidly drop their\
+      \ “tribute” of birds in front of the cats and quietly depart. “My apologies\
+      \ on behalf of the Zoogs,” the man says as he approaches. “They are curious\
+      \ creatures, and not usually so...agitated. It is good that we showed up when\
+      \ we did.” The leader of the cats jumps on a tree stump and adds, “Yes, yes.\
+      \ Them vile Zoogs have done their part, now let’s do ours and leave this\
+      \ forsaken place. What say yeh?”"
+    , "You cannot contain your excitement. Zoogs, talking cats— everything you\
+      \ have read about is real. You begin to ask the man more about this world,\
+      \ but he cuts you off. “I will explain in due time. For now, we must follow\
+      \ the path to the town of Ulthar. It is a safe place, relatively speaking.\
+      \ There you may recover from your travels.” He turns to the old, scarred cat\
+      \ and utters a word in an odd language—a password of sorts, you suspect—and\
+      \ the cat replies with a quick nod. The rest of the cats, tribute in mouth,\
+      \ take a protective circular formation around you, and together you escape\
+      \ from the eaves of the enchanted forest."
+    ]
+
+resolution2 :: FlavorText
+resolution2 =
+  FlavorText
+    (Just "Resolution 2")
+    [ "You hold a hand up to the new visitors, believing that you can defuse\
+      \ this situation on your own. Had you known these rodent-like creatures were\
+      \ intelligent all along, you might have tried to communicate with them much\
+      \ earlier. You inform them that you are just travelers in this faraway land\
+      \ and that you simply wish to pass through peacefully. The creatures chitter\
+      \ among themselves for a moment: “They are kind!” “They are not with the\
+      \ black cat after all!” “Summon the Council of Sages!” After a short while,\
+      \ several more of them appear, each with withering grey fur and a frail, thin\
+      \ body. The eldest one peeks behind you and states that they will aid you if\
+      \ you get the cats to leave."
+    , "Somehow, you contain your disbelief and politely ask the cats to come\
+      \ back another time. “All right,” the scarred cat replies, “but you ain’t\
+      \ seen the last of us.” The cats retreat to the edge of the woods, though\
+      \ their human companion stays behind with you. Once the cats are out of\
+      \ earshot, one of the elders offers you a gourd of what appears to be\
+      \ fermented tree sap, which you accept graciously."
+    , "“It is the wine of the moon-tree,” the man behind you explains quietly,\
+      \ stepping forward. “The Zoogs do not give such gifts lightly. They are\
+      \ curious creatures, but not without wisdom. Now that you may speak freely\
+      \ with their elders, try asking them a question. They know more of the\
+      \ dealings of this land than you might think.”"
+    , "You describe the author Virgil Gray and ask the Zoogs if they have seen\
+      \ a man fitting that description pass through these woods. You add that he\
+      \ would have walked this path many times. A hush falls over the Zoogs, and\
+      \ some of them immediately depart into the deep foliage. “We have met this\
+      \ human,” one of the elders replies with a flutter just louder than a\
+      \ whisper. “He often comes this way. He is kind but foolish. Take the road to\
+      \ Ulthar. You may meet him.” Then it adds with a low growl: “...but beware\
+      \ the cat that follows him. All cats are liars, but the black cat\
+      \ especially.” You thank the ancient Zoog for its wisdom and depart, led by\
+      \ the blond man and his feline escort. The cats eye you suspiciously after\
+      \ your discussion with the Zoogs. The man breaks the tension. “If you are\
+      \ heading to Ulthar to find this friend of yours, allow me to guide you\
+      \ there. It is a safe place, relatively speaking. There you may recover from\
+      \ your travels.”"
+    , "Zoogs. Talking cats. This can’t all be a figment of your imagination.\
+      \ Somehow, you can see a layer of truth beneath all of this absurdity. For\
+      \ better or for worse, the Zoog council has confirmed the reality of your\
+      \ situation: the Dreamlands are real, and Virgil Gray is here."
+    ]

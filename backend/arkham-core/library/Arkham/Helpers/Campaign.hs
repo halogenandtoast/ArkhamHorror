@@ -16,6 +16,7 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
+import Data.Aeson (Result (..))
 import Data.Map.Strict qualified as Map
 
 completedScenario :: HasGame m => ScenarioId -> m Bool
@@ -59,6 +60,13 @@ getIsAlreadyOwned cDef = do
 
 campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
 campaignField fld = selectJust TheCampaign >>= field fld
+
+getCampaignMeta :: forall a m. (HasGame m, FromJSON a) => m a
+getCampaignMeta = do
+  result <- fromJSON @a <$> campaignField CampaignMeta
+  case result of
+    Success a -> pure a
+    Error e -> error $ "Failed to parse campaign meta: " <> e
 
 matchingCardsAlreadyInDeck
   :: HasGame m => CardMatcher -> m (Map InvestigatorId (Set CardCode))

@@ -862,6 +862,7 @@ library
       Arkham.Campaigns.TheDreamEaters.CampaignSteps
       Arkham.Campaigns.TheDreamEaters.FlavorText
       Arkham.Campaigns.TheDreamEaters.Import
+      Arkham.Campaigns.TheDreamEaters.Meta
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag
       Arkham.Campaigns.TheDunwichLegacy.FlavorText

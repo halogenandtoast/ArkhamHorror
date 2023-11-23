@@ -47,6 +47,7 @@ data instance Field Campaign :: Type -> Type where
   CampaignStoryCards :: Field Campaign (Map InvestigatorId [PlayerCard])
   CampaignCampaignLog :: Field Campaign CampaignLog
   CampaignDecks :: Field Campaign (Map InvestigatorId (Deck PlayerCard))
+  CampaignMeta :: Field Campaign Value
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
@@ -60,6 +61,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: Map ScenarioId Resolution
   , campaignModifiers :: Map InvestigatorId [Modifier]
+  , campaignMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
 
@@ -89,6 +91,9 @@ logL = lens campaignLog $ \m x -> m {campaignLog = x}
 
 stepL :: Lens' CampaignAttrs CampaignStep
 stepL = lens campaignStep $ \m x -> m {campaignStep = x}
+
+metaL :: Lens' CampaignAttrs Value
+metaL = lens campaignMeta $ \m x -> m {campaignMeta = x}
 
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
@@ -161,6 +166,7 @@ campaign f campaignId' name difficulty chaosBagContents =
       , campaignCompletedSteps = []
       , campaignResolutions = mempty
       , campaignModifiers = mempty
+      , campaignMeta = Null
       }
 
 instance Entity Campaign where

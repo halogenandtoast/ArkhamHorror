@@ -7,6 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
@@ -15,16 +17,19 @@ import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Campaign
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
 import Arkham.Trait (
@@ -379,5 +384,23 @@ instance RunMessage BeyondTheGatesOfSleep where
             isSwarming <- eid <=~> SwarmingEnemy
             pushWhen isSwarming $ PlaceSwarmCards iid eid 1
           _ -> pure ()
+      pure s
+    ScenarioResolution resolution -> do
+      lead <- getLeadPlayer
+      gainXp <- toGainXp attrs getXp
+      investigators <- allInvestigators
+      let chooseToAddRandolphCarter = addCampaignCardToDeckChoice lead investigators Assets.randolphCarterExpertDreamer
+      let
+        logKey =
+          case resolution of
+            NoResolution -> TheInvestigatorsWereSavedByRandolphCarder
+            Resolution 1 -> TheCatsCollectedTheirTributeFromTheZoogs
+            Resolution 2 -> TheInvestigatorsParleyedWithTheZoogs
+            _ -> error "Invalid Resolution"
+
+      pushAll
+        $ [Record logKey, chooseToAddRandolphCarter]
+        <> gainXp
+        <> [EndOfGame Nothing]
       pure s
     _ -> BeyondTheGatesOfSleep <$> runMessage msg attrs

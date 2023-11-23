@@ -11,7 +11,7 @@ import Arkham.Enemy.Types
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Message (
-  Message (DefeatEnemy, EnemySpawnAtLocationMatching, PlaceEnemy),
+  Message (DefeatEnemy, EnemySpawnAtLocationMatching, EnemySpawnEngagedWith, PlaceEnemy),
   placeLocation,
   resolve,
  )
@@ -48,6 +48,8 @@ spawnAt eid (SpawnAt locationMatcher) = do
     $ windows'
     <> resolve
       (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
+spawnAt eid (SpawnEngagedWith investigatorMatcher) = do
+  pushAll $ resolve (EnemySpawnEngagedWith eid investigatorMatcher)
 spawnAt eid (SpawnPlaced placement) = do
   push $ PlaceEnemy eid placement
 spawnAt _ (SpawnAtFirst []) = error "must have something"

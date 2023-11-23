@@ -54,6 +54,7 @@ import Arkham.Matcher (
   investigatorAt,
   investigatorEngagedWith,
   locationWithInvestigator,
+  oneOf,
   preyWith,
   replaceYouMatcher,
   pattern InvestigatorCanDisengage,
@@ -162,25 +163,15 @@ instance RunMessage EnemyAttrs where
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       prey <- getPreyMatcher a
       preyIds <- selectList prey
-      preyIdsWithLocation <-
-        forToSnd
-          preyIds
-          (selectJust . locationWithInvestigator)
+      runMessage (EnemySpawnEngagedWith eid $ oneOf $ map InvestigatorWithId preyIds) a
+    EnemySpawnEngagedWith eid investigatorMatcher | eid == enemyId -> do
+      preyIds <- selectList investigatorMatcher
+      iidsWithLocations <- forToSnd preyIds (selectJust . locationWithInvestigator)
       lead <- getLeadPlayer
-      for_ (nonEmpty preyIdsWithLocation) $ \iids ->
-        push
-          $ chooseOrRunOne
-            lead
-            [ targetLabel
-              lid
-              [ Will (EnemySpawn (Just iid) lid eid)
-              , When (EnemySpawn (Just iid) lid eid)
-              , EnemySpawnedAt lid eid
-              , EnemyEngageInvestigator eid iid
-              , After (EnemySpawn (Just iid) lid eid)
-              ]
-            | (iid, lid) <- toList iids
-            ]
+      push
+        $ chooseOrRunOne
+          lead
+          [targetLabel iid $ resolve (EnemySpawn (Just iid) lid eid) | (iid, lid) <- toList iidsWithLocations]
       pure a
     SetBearer (EnemyTarget eid) iid | eid == enemyId -> do
       pure $ a & bearerL ?~ iid
@@ -204,9 +195,8 @@ instance RunMessage EnemyAttrs where
             [] -> pure ()
             [x] -> do
               n <- getGameValue x
-              active <- selectJust ActiveInvestigator
-              let swarmInvestigator = fromMaybe active miid
-              push $ PlaceSwarmCards swarmInvestigator eid n
+              lead <- getLead
+              push $ PlaceSwarmCards lead eid n
             _ -> error "more than one swarming value"
 
           if Keyword.Aloof `notElem` keywords && Keyword.Massive `notElem` keywords && not enemyExhausted
@@ -1087,24 +1077,23 @@ instance RunMessage EnemyAttrs where
                   , afterExcessMsg
                   , whenMsg
                   , afterMsg
-                  , EnemyDefeated
-                      eid
-                      (toCardId a)
-                      source
-                      (setToList $ toTraits a)
+                  , EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
                   ]
                 <> ( guard (notNull excessDamageTargets && excess > 0)
-                      *> [ chooseOne
-                            controller
-                            [ Label
-                                "Deal Excess Damage to Host or Swarm?"
-                                [ chooseOrRunOne
-                                    controller
-                                    [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
-                                    | other <- excessDamageTargets
+                      *> [ ExcessDamage
+                            eid
+                            [ chooseOne
+                                controller
+                                [ Label
+                                    "Deal Excess Damage to Host or Swarm?"
+                                    [ chooseOrRunOne
+                                        controller
+                                        [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
+                                        | other <- excessDamageTargets
+                                        ]
                                     ]
+                                , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
                                 ]
-                            , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
                             ]
                          ]
                    )
@@ -1271,7 +1260,7 @@ instance RunMessage EnemyAttrs where
             applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnAt m) =
               applyMatcherExclusions xs (SpawnAt $ m <> NotLocation n)
             applyMatcherExclusions (_ : xs) m = applyMatcherExclusions xs m
-          spawnAt enemyId (applyMatcherExclusions modifiers' matcher)
+          spawnAt enemyId (applyMatcherExclusions modifiers' $ replaceYouMatcher iid matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId

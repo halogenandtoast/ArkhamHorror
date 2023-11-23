@@ -1,6 +1,6 @@
-module Arkham.Enemy.Cards.FurtiveZoog (
-  furtiveZoog,
-  FurtiveZoog (..),
+module Arkham.Enemy.Cards.StealthyZoog (
+  stealthyZoog,
+  StealthyZoog (..),
 )
 where
 
@@ -11,16 +11,16 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 
-newtype FurtiveZoog = FurtiveZoog EnemyAttrs
+newtype StealthyZoog = StealthyZoog EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
-furtiveZoog :: EnemyCard FurtiveZoog
-furtiveZoog =
-  enemyWith FurtiveZoog Cards.furtiveZoog (3, Static 1, 1) (1, 0)
+stealthyZoog :: EnemyCard StealthyZoog
+stealthyZoog =
+  enemyWith StealthyZoog Cards.stealthyZoog (1, Static 1, 3) (0, 1)
     $ (spawnAtL ?~ SpawnEngagedWith (InvestigatorAt YourLocation <> InvestigatorWithLowestSkill #combat))
     . (preyL .~ Prey (InvestigatorWithLowestSkill #combat))
 
-instance RunMessage FurtiveZoog where
-  runMessage msg (FurtiveZoog attrs) =
-    FurtiveZoog <$> runMessage msg attrs
+instance RunMessage StealthyZoog where
+  runMessage msg (StealthyZoog attrs) =
+    StealthyZoog <$> runMessage msg attrs

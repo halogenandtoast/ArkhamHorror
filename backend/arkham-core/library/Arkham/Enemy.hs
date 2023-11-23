@@ -304,6 +304,8 @@ allEnemies =
     , SomeEnemyCard ancientZoog
     , --- Zoogs
       SomeEnemyCard furtiveZoog
+    , SomeEnemyCard stealthyZoog
+    , SomeEnemyCard inconspiciousZoog
     , --- Agents of Nyarlathotep
       SomeEnemyCard theCrawlingMist
     , -- Return to Night of the Zealot

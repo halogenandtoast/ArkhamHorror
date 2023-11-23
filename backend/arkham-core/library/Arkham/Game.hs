@@ -5091,6 +5091,9 @@ runGameMessage msg g = case msg of
   Would bId (x : xs) -> do
     pushAll [x, Would bId xs]
     pure $ g & currentBatchIdL ?~ bId
+  ExcessDamage _ msgs -> do
+    pushAll msgs
+    pure g
   CancelBatch bId -> do
     withQueue_ $ \q ->
       flip map q $ \case
@@ -5906,6 +5909,8 @@ runGameMessage msg g = case msg of
       SpawnViaSpawnInstruction -> spawnAt enemyId (fromMaybe (error "called without spawn at") $ attr enemySpawnAt enemy)
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
+    pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid
+  EnemySpawnEngagedWith eid _ ->
     pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid
   Discarded (InvestigatorTarget iid) source card -> do
     pushM

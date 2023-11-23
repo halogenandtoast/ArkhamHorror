@@ -150,66 +150,72 @@ watch(abilities, (abilities) => {
 </script>
 
 <template>
-  <div class="enemy">
-    <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
-    <template v-else>
-      <div class="card-frame">
-        <img :src="image"
-          :class="{'enemy--can-interact': canInteract, exhausted: isExhausted }"
-          class="card enemy"
-          :data-id="id"
-          @click="clicked"
-        />
-
-        <div class="pool">
-          <div class="keys" v-if="keys.length > 0">
-            <Key v-for="key in keys" :key="key" :name="key" />
-          </div>
-          <PoolItem v-if="!omnipotent" type="health" :amount="enemyDamage" />
-          <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-          <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
-          <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
-          <Token
-            v-for="(sealedToken, index) in enemy.sealedChaosTokens"
-            :key="index"
-            :token="sealedToken"
-            :playerId="playerId"
-            :game="game"
-            @choose="choose"
+  <div class="enemy--outer">
+    <div class="enemy">
+      <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
+      <template v-else>
+        <div class="card-frame">
+          <img :src="image"
+            :class="{'enemy--can-interact': canInteract, exhausted: isExhausted }"
+            class="card enemy"
+            :data-id="id"
+            @click="clicked"
           />
-        </div>
 
-        <div v-if="showAbilities" class="abilities" :data-image="image">
-          <AbilityButton
-            v-for="ability in abilities"
-            :key="ability.index"
-            :ability="ability.contents"
-            @click="chooseAbility(ability.index)"
+          <div class="pool">
+            <div class="keys" v-if="keys.length > 0">
+              <Key v-for="key in keys" :key="key" :name="key" />
+            </div>
+            <PoolItem v-if="!omnipotent" type="health" :amount="enemyDamage" />
+            <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+            <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+            <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+            <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
+            <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
+            <Token
+              v-for="(sealedToken, index) in enemy.sealedChaosTokens"
+              :key="index"
+              :token="sealedToken"
+              :playerId="playerId"
+              :game="game"
+              @choose="choose"
             />
-        </div>
-      </div>
+          </div>
 
-    </template>
-    <Treachery
-      v-for="treacheryId in enemy.treacheries"
-      :key="treacheryId"
-      :treachery="game.treacheries[treacheryId]"
-      :game="game"
-      :playerId="playerId"
-      :attached="true"
-      :class="{ 'small-treachery': atLocation }"
-      @choose="$emit('choose', $event)"
-    />
-    <Asset
-      v-for="assetId in enemy.assets"
-      :key="assetId"
-      :asset="game.assets[assetId]"
-      :game="game"
-      :playerId="playerId"
-      @choose="$emit('choose', $event)"
-    />
+          <div v-if="showAbilities" class="abilities" :data-image="image">
+            <AbilityButton
+              v-for="ability in abilities"
+              :key="ability.index"
+              :ability="ability.contents"
+              @click="chooseAbility(ability.index)"
+              />
+          </div>
+        </div>
+
+      </template>
+      <Treachery
+        v-for="treacheryId in enemy.treacheries"
+        :key="treacheryId"
+        :treachery="game.treacheries[treacheryId]"
+        :game="game"
+        :playerId="playerId"
+        :attached="true"
+        :class="{ 'small-treachery': atLocation }"
+        @choose="$emit('choose', $event)"
+      />
+      <Asset
+        v-for="assetId in enemy.assets"
+        :key="assetId"
+        :asset="game.assets[assetId]"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      />
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
+      </template>
+    </div>
+
     <div class="swarm" v-if="swarmEnemies.length > 0">
       <Enemy
         v-for="enemy in swarmEnemies"
@@ -222,9 +228,6 @@ watch(abilities, (abilities) => {
         class="enemy--swarming"
       />
     </div>
-    <template v-if="debug.active">
-      <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
-    </template>
   </div>
 </template>
 
@@ -317,15 +320,19 @@ watch(abilities, (abilities) => {
 }
 
 .swarm {
-  position: absolute;
-  left: 100%;
-  z-index: -10000px;
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-evenly;
+  z-index: -1000;
 }
 
 .enemy--swarming {
-  margin-left: -30px;
+  margin-left: calc(($card-width / 1.5) * -1);
+}
+
+.enemy--outer {
+  isolation: isolate;
+  display: flex;
+  justify-content: space-evenly;
 }
 </style>

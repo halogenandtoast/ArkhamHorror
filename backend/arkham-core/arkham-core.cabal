@@ -1072,6 +1072,7 @@ library
       Arkham.Enemy.Cards.Ichtaca
       Arkham.Enemy.Cards.IchtacaScionOfYig
       Arkham.Enemy.Cards.IcyGhoul
+      Arkham.Enemy.Cards.InconspiciousZoog
       Arkham.Enemy.Cards.InterstellarTraveler
       Arkham.Enemy.Cards.IshimaruHaruko
       Arkham.Enemy.Cards.JeremiahPierce
@@ -1143,6 +1144,7 @@ library
       Arkham.Enemy.Cards.SpecterOfDeath
       Arkham.Enemy.Cards.SpectralRaven
       Arkham.Enemy.Cards.StealthyByakhee
+      Arkham.Enemy.Cards.StealthyZoog
       Arkham.Enemy.Cards.StubbornDetective
       Arkham.Enemy.Cards.SummonedBeast
       Arkham.Enemy.Cards.SwampLeech
@@ -2584,6 +2586,7 @@ library
       Arkham.Treachery.Cards.WrackedByTime
       Arkham.Treachery.Cards.Yaztaroth
       Arkham.Treachery.Cards.YithianPresence
+      Arkham.Treachery.Cards.ZoogBurrow
       Arkham.Treachery.Helpers
       Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries

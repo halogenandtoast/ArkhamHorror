@@ -153,6 +153,7 @@ allEncounterEnemyCards =
       , ichtaca
       , ichtacaScionOfYig
       , icyGhoul
+      , inconspiciousZoog
       , interstellarTraveler
       , ishimaruHaruko
       , jeremiahPierce
@@ -220,6 +221,7 @@ allEncounterEnemyCards =
       , specterOfDeath
       , spectralRaven
       , stealthyByakhee
+      , stealthyZoog
       , summonedBeast
       , swampLeech
       , swarmOfRats
@@ -1586,7 +1588,21 @@ furtiveZoog :: CardDef
 furtiveZoog =
   (enemy "06106" "Furtive Zoog" Zoogs 2)
     { cdCardTraits = setFromList [Creature, Zoog]
-    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Swarming (Static 1)]
+    , cdKeywords = setFromList [Keyword.Retaliate, Keyword.Swarming (Static 1)]
+    }
+
+stealthyZoog :: CardDef
+stealthyZoog =
+  (enemy "06107" "Stealthy Zoog" Zoogs 2)
+    { cdCardTraits = setFromList [Creature, Zoog]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Swarming (Static 1)]
+    }
+
+inconspiciousZoog :: CardDef
+inconspiciousZoog =
+  (enemy "06108" "Inconspicious Zoog" Zoogs 1)
+    { cdCardTraits = setFromList [Creature, Zoog]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Swarming (Static 2)]
     }
 
 unboundBeast :: CardDef

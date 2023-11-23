@@ -279,6 +279,7 @@ allEncounterTreacheryCards =
       , snakeBite
       , snakescourge
       , somethingInTheDrinks
+      , somniphobia
       , sordidAndSilent
       , spacesBetween
       , spectralMist

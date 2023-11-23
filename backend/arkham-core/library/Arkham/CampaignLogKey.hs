@@ -213,6 +213,8 @@ data CampaignLogKey
   | TheInvestigatorsWereSavedByRandolphCarder
   | TheCatsCollectedTheirTributeFromTheZoogs
   | TheInvestigatorsParleyedWithTheZoogs
+  | DrMaheswaranJoinedTheInvestigation
+  | DrMaheswaranStayedWithHerPatients
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

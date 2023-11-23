@@ -2166,6 +2166,7 @@ library
       Arkham.Scenarios.UndimensionedAndUnseen.Story
       Arkham.Scenarios.UnionAndDisillusion.Helpers
       Arkham.Scenarios.UnionAndDisillusion.Story
+      Arkham.Scenarios.WakingNightmare.FlavorText
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Skill
       Arkham.Skill.Cards

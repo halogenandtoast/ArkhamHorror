@@ -23,7 +23,7 @@ instance HasAbilities ScryingMirror where
   getAbilities (ScryingMirror a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (InitiatedSkillTest Timing.When (InvestigatorAt YourLocation) AnySkillType AnySkillTestValue)
+          (InitiatedSkillTest Timing.When (InvestigatorAt YourLocation) AnySkillType AnySkillTestValue #any)
         $ ExhaustCost (toTarget a)
         <> UseCost (AssetWithId $ toId a) Secret 1
     ]

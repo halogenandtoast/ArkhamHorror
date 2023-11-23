@@ -760,7 +760,7 @@ data WindowMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
   | TreacheryWouldBeDiscarded Timing TreacheryMatcher
   | WouldPerformRevelationSkillTest Timing Who
-  | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher
+  | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher SkillTestTypeMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher
   | PlacedCounter Timing Who SourceMatcher CounterMatcher ValueMatcher
@@ -937,6 +937,15 @@ data ValueMatcher
   | EqualTo GameValue
   | AnyValue
   deriving stock (Show, Eq, Ord, Data)
+
+data SkillTestTypeMatcher = InvestigationSkillTest | AnySkillTestType
+  deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "investigation" SkillTestTypeMatcher where
+  fromLabel = InvestigationSkillTest
+
+instance IsLabel "any" SkillTestTypeMatcher where
+  fromLabel = AnySkillTestType
 
 data SkillTestValueMatcher
   = SkillTestGameValue ValueMatcher
@@ -1187,6 +1196,7 @@ $( do
     skill <- deriveJSON defaultOptions ''SkillMatcher
     skillTest <- deriveJSON defaultOptions ''SkillTestMatcher
     skillTestResult <- deriveJSON defaultOptions ''SkillTestResultMatcher
+    skillTestType <- deriveJSON defaultOptions ''SkillTestTypeMatcher
     skillTestValue <- deriveJSON defaultOptions ''SkillTestValueMatcher
     skillType <- deriveJSON defaultOptions ''SkillTypeMatcher
     source <- deriveJSON defaultOptions ''SourceMatcher
@@ -1227,6 +1237,7 @@ $( do
         , skill
         , skillTest
         , skillTestResult
+        , skillTestType
         , skillTestValue
         , skillType
         , source

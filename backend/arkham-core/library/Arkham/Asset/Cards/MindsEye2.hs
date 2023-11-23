@@ -23,7 +23,8 @@ instance HasAbilities MindsEye2 where
   getAbilities (MindsEye2 attrs) =
     [ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility
-          (InitiatedSkillTest #when You (SkillTypeOneOf [#intellect, #combat, #agility]) AnySkillTestValue)
+          ( InitiatedSkillTest #when You (SkillTypeOneOf [#intellect, #combat, #agility]) AnySkillTestValue #any
+          )
           (assetUseCost attrs Secret 1)
     , restrictedAbility attrs 2 ControlsThis $ FastAbility $ HandDiscardCost 1 $ cardIs Cards.mindsEye2
     ]

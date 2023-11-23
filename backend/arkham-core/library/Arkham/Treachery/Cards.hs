@@ -11,7 +11,7 @@ import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
-import Arkham.Trait
+import Arkham.Trait hiding (Dreamlands)
 
 baseTreachery
   :: CardCode
@@ -182,6 +182,7 @@ allEncounterTreacheryCards =
       , dissonantVoices
       , draggedUnder
       , dreamersCurse
+      , dreamlandsEclipse
       , dreamsOfRlyeh
       , drivenToMadness
       , eagerForDeath
@@ -254,6 +255,7 @@ allEncounterTreacheryCards =
       , possessionTorturous
       , possessionTraitorous
       , primordialGateway
+      , prismaticPhenomenon
       , psychopompsSong
       , psychopompsSongUnionAndDisillusion
       , pulledByTheStars
@@ -1716,6 +1718,18 @@ deeperSlumber :: CardDef
 deeperSlumber =
   (treachery "06095" "Deeper Slumber" DreamersCurse 2)
     { cdCardTraits = singleton Curse
+    }
+
+dreamlandsEclipse :: CardDef
+dreamlandsEclipse =
+  (treachery "06096" "Dreamlands Eclipse" Dreamlands 2)
+    { cdCardTraits = singleton Power
+    }
+
+prismaticPhenomenon :: CardDef
+prismaticPhenomenon =
+  (treachery "06097" "Prismatic Phenomenon" Dreamlands 2)
+    { cdCardTraits = singleton Power
     }
 
 theHarbinger :: CardDef

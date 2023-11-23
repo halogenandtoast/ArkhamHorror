@@ -364,6 +364,9 @@ allTreacheries =
       SomeTreacheryCard dreamersCurse
     , SomeTreacheryCard somniphobia
     , SomeTreacheryCard deeperSlumber
+    , -- Dreamlands
+      SomeTreacheryCard dreamlandsEclipse
+    , SomeTreacheryCard prismaticPhenomenon
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

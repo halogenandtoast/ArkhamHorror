@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Campaign.Runner
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheDreamEaters.Import
+import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
@@ -15,126 +16,118 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator (Investigator, lookupInvestigator)
-import Arkham.Investigator.Types (InvestigatorAttrs)
 import Arkham.Projection
+import Data.Aeson (Result (..))
 
-data CampaignPart = TheDreamQuest | TheWebOfDreams
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data CampaignMode = PartialMode CampaignPart | FullMode
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data Metadata = Metadata
-  { campaignMode :: CampaignMode
-  , currentCampaignMode :: Maybe CampaignPart
-  , otherCampaignAttrs :: Maybe CampaignAttrs
-  , currentCampaignPlayers :: Map PlayerId InvestigatorAttrs
-  , otherCampaignPlayers :: Map PlayerId InvestigatorAttrs
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype TheDreamEaters = TheDreamEaters (CampaignAttrs `With` Metadata)
+newtype TheDreamEaters = TheDreamEaters CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 theDreamEaters :: Difficulty -> TheDreamEaters
 theDreamEaters difficulty =
-  campaign
-    (TheDreamEaters . (`with` Metadata FullMode Nothing Nothing mempty mempty))
+  campaignWith
+    TheDreamEaters
     (CampaignId "06")
     "The Dream-Eaters"
     difficulty
     [] -- We will set this later
+    ( metaL
+        .~ toJSON
+          (Metadata FullMode Nothing Nothing mempty mempty)
+    )
 
 instance IsCampaign TheDreamEaters where
-  nextStep a@(TheDreamEaters (_ `With` meta)) = case campaignStep (toAttrs a) of
-    PrologueStep -> error $ "Unhandled campaign step: " <> show a
-    BeyondTheGatesOfSleep ->
-      Just
-        ( UpgradeDeckStep
-            $ case campaignMode meta of
-              FullMode ->
-                if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
-                  then InterludeStep 1 Nothing
-                  else WakingNightmare
-              PartialMode _ -> InterludeStep 1 Nothing
-        )
-    WakingNightmare ->
-      Just
-        ( UpgradeDeckStep
-            $ case campaignMode meta of
-              FullMode ->
-                if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
-                  then InterludeStep 1 Nothing
-                  else BeyondTheGatesOfSleep
-              PartialMode _ -> InterludeStep 1 Nothing
-        )
-    InterludeStep 1 _ -> error $ "Unhandled campaign step: " <> show a
-    TheSearchForKadath ->
-      Just
-        ( UpgradeDeckStep
-            $ case campaignMode meta of
-              FullMode ->
-                if AThousandShapesOfHorror `elem` campaignCompletedSteps (toAttrs a)
-                  then InterludeStep 2 Nothing
-                  else AThousandShapesOfHorror
-              PartialMode _ -> DarkSideOfTheMoon
-        )
-    AThousandShapesOfHorror ->
-      Just
-        ( UpgradeDeckStep
-            $ case campaignMode meta of
-              FullMode ->
-                if TheSearchForKadath `elem` campaignCompletedSteps (toAttrs a)
-                  then InterludeStep 2 Nothing
-                  else TheSearchForKadath
-              PartialMode _ -> PointOfNoReturn
-        )
-    InterludeStep 2 _ -> error $ "Unhandled campaign step: " <> show a
-    DarkSideOfTheMoon ->
-      Just
-        ( UpgradeDeckStep
-            $ case campaignMode meta of
-              FullMode ->
-                if PointOfNoReturn `elem` campaignCompletedSteps (toAttrs a)
-                  then InterludeStep 3 Nothing
-                  else PointOfNoReturn
-              PartialMode _ -> WhereTheGodsDwell
-        )
-    PointOfNoReturn ->
-      Just
-        ( UpgradeDeckStep
-            $ case campaignMode meta of
-              FullMode ->
-                if DarkSideOfTheMoon `elem` campaignCompletedSteps (toAttrs a)
-                  then InterludeStep 3 Nothing
-                  else DarkSideOfTheMoon
-              PartialMode _ -> WeaverOfTheCosmos
-        )
-    InterludeStep 3 _ -> error $ "Unhandled campaign step: " <> show a
-    WhereTheGodsDwell ->
-      Just
-        ( case campaignMode meta of
-            FullMode ->
-              if WeaverOfTheCosmos `elem` campaignCompletedSteps (toAttrs a)
-                then EpilogueStep
-                else WeaverOfTheCosmos
-            PartialMode _ -> EpilogueStep
-        )
-    WeaverOfTheCosmos ->
-      Just
-        ( case campaignMode meta of
-            FullMode ->
-              if WhereTheGodsDwell `elem` campaignCompletedSteps (toAttrs a)
-                then EpilogueStep
-                else WhereTheGodsDwell
-            PartialMode _ -> EpilogueStep
-        )
-    EpilogueStep -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+  nextStep a@(TheDreamEaters attrs) =
+    let
+      meta = case fromJSON (campaignMeta attrs) of
+        Success x -> x
+        _ -> error "impossible"
+     in
+      case campaignStep (toAttrs a) of
+        PrologueStep -> error $ "Unhandled campaign step: " <> show a
+        BeyondTheGatesOfSleep ->
+          Just
+            ( UpgradeDeckStep
+                $ case campaignMode meta of
+                  FullMode ->
+                    if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
+                      then InterludeStep 1 Nothing
+                      else WakingNightmare
+                  PartialMode _ -> InterludeStep 1 Nothing
+            )
+        WakingNightmare ->
+          Just
+            ( UpgradeDeckStep
+                $ case campaignMode meta of
+                  FullMode ->
+                    if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
+                      then InterludeStep 1 Nothing
+                      else BeyondTheGatesOfSleep
+                  PartialMode _ -> InterludeStep 1 Nothing
+            )
+        InterludeStep 1 _ -> error $ "Unhandled campaign step: " <> show a
+        TheSearchForKadath ->
+          Just
+            ( UpgradeDeckStep
+                $ case campaignMode meta of
+                  FullMode ->
+                    if AThousandShapesOfHorror `elem` campaignCompletedSteps (toAttrs a)
+                      then InterludeStep 2 Nothing
+                      else AThousandShapesOfHorror
+                  PartialMode _ -> DarkSideOfTheMoon
+            )
+        AThousandShapesOfHorror ->
+          Just
+            ( UpgradeDeckStep
+                $ case campaignMode meta of
+                  FullMode ->
+                    if TheSearchForKadath `elem` campaignCompletedSteps (toAttrs a)
+                      then InterludeStep 2 Nothing
+                      else TheSearchForKadath
+                  PartialMode _ -> PointOfNoReturn
+            )
+        InterludeStep 2 _ -> error $ "Unhandled campaign step: " <> show a
+        DarkSideOfTheMoon ->
+          Just
+            ( UpgradeDeckStep
+                $ case campaignMode meta of
+                  FullMode ->
+                    if PointOfNoReturn `elem` campaignCompletedSteps (toAttrs a)
+                      then InterludeStep 3 Nothing
+                      else PointOfNoReturn
+                  PartialMode _ -> WhereTheGodsDwell
+            )
+        PointOfNoReturn ->
+          Just
+            ( UpgradeDeckStep
+                $ case campaignMode meta of
+                  FullMode ->
+                    if DarkSideOfTheMoon `elem` campaignCompletedSteps (toAttrs a)
+                      then InterludeStep 3 Nothing
+                      else DarkSideOfTheMoon
+                  PartialMode _ -> WeaverOfTheCosmos
+            )
+        InterludeStep 3 _ -> error $ "Unhandled campaign step: " <> show a
+        WhereTheGodsDwell ->
+          Just
+            ( case campaignMode meta of
+                FullMode ->
+                  if WeaverOfTheCosmos `elem` campaignCompletedSteps (toAttrs a)
+                    then EpilogueStep
+                    else WeaverOfTheCosmos
+                PartialMode _ -> EpilogueStep
+            )
+        WeaverOfTheCosmos ->
+          Just
+            ( case campaignMode meta of
+                FullMode ->
+                  if WhereTheGodsDwell `elem` campaignCompletedSteps (toAttrs a)
+                    then EpilogueStep
+                    else WhereTheGodsDwell
+                PartialMode _ -> EpilogueStep
+            )
+        EpilogueStep -> Nothing
+        UpgradeDeckStep nextStep' -> Just nextStep'
+        _ -> Nothing
 
 theDreamQuestSteps :: [CampaignStep]
 theDreamQuestSteps = [BeyondTheGatesOfSleep, TheSearchForKadath, DarkSideOfTheMoon, WhereTheGodsDwell]
@@ -293,194 +286,216 @@ initChaosBag TheWebOfDreams = \case
     ]
 
 instance RunMessage TheDreamEaters where
-  runMessage msg c@(TheDreamEaters (attrs `With` meta)) = case msg of
-    StartCampaign -> do
-      -- [ALERT] StartCampaign, overriden to not choose decks yet
-      lead <- getActivePlayer
-      pushAll
-        $ [Ask lead PickCampaignSettings | campaignStep attrs /= PrologueStep]
-        <> [CampaignStep $ campaignStep attrs]
-      pure c
-    CampaignStep PrologueStep -> do
-      lead <- getActivePlayer
-      players <- allPlayers
-      pushAll
-        [ story players prologue
-        , questionLabel "Which mode would you like to play" lead
-            $ ChooseOne
-              [ Label "Full Campaign" [CampaignStep (PrologueStepPart 1)]
-              , Label "The Dream-Quest" [CampaignStep (PrologueStepPart 2)]
-              , Label "The Web of Dreams" [CampaignStep (PrologueStepPart 3)]
-              ]
-        ]
-      pure c
-    CampaignStep (PrologueStepPart 1) -> do
-      lead <- getActivePlayer
-      push
-        $ questionLabel "Which scenario would you like to start with" lead
-        $ ChooseOne
-          [ Label "Beyond the Gates of Sleep" [CampaignStep (PrologueStepPart 11)]
-          , Label "Waking Nightmare" [CampaignStep (PrologueStepPart 12)]
-          ]
-      pure c
-    CampaignStep (PrologueStepPart 2) -> do
-      players <- allPlayers
-      pushAll
-        $ map chooseDeck players
-        <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
-      pure
-        $ TheDreamEaters
-        $ attrs {campaignChaosBag = initChaosBag TheDreamQuest (campaignDifficulty attrs)}
-        `with` meta {campaignMode = PartialMode TheDreamQuest}
-    CampaignStep (PrologueStepPart 3) -> do
-      players <- allPlayers
-      pushAll
-        $ map chooseDeck players
-        <> [NextCampaignStep (Just WakingNightmare)]
-      pure
-        $ TheDreamEaters
-        $ attrs {campaignChaosBag = initChaosBag TheWebOfDreams (campaignDifficulty attrs)}
-        `with` meta {campaignMode = PartialMode TheWebOfDreams}
-    CampaignStep (PrologueStepPart 11) -> do
-      players <- allPlayers
-      pushAll
-        $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
-        <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
-      let difficulty = campaignDifficulty attrs
-      pure
-        $ TheDreamEaters
-        $ attrs {campaignChaosBag = initChaosBag TheDreamQuest difficulty}
-        `with` meta
-          { currentCampaignMode = Just TheDreamQuest
-          , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheWebOfDreams difficulty})
-          }
-    CampaignStep (PrologueStepPart 12) -> do
-      players <- allPlayers
-      pushAll
-        $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
-        <> [NextCampaignStep (Just WakingNightmare)]
-      let difficulty = campaignDifficulty attrs
-      pure
-        $ TheDreamEaters
-        $ attrs {campaignChaosBag = initChaosBag TheWebOfDreams difficulty}
-        `with` meta
-          { currentCampaignMode = Just TheWebOfDreams
-          , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheDreamQuest difficulty})
-          }
-    CampaignStep s@(ScenarioStep _) -> do
-      void $ defaultCampaignRunner msg c
-      case s of
-        _ | s `elem` theDreamQuestSteps -> do
-          if currentCampaignMode meta == Just TheWebOfDreams
-            then do
-              investigators <- allInvestigators
-              currentPlayers <- for investigators \i -> do
-                player <- getPlayer i
-                iattrs <- getAttrs @Investigator i
-                pure (player, iattrs)
+  runMessage msg c@(TheDreamEaters attrs) = do
+    let
+      meta = case fromJSON (campaignMeta attrs) of
+        Success a -> a
+        _ -> error "Could not read Metadata"
 
-              if (s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs)
-                then do
-                  players <- allPlayers
-                  pushAll $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
-                else do
-                  for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
-                    let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
-                    push $ SetInvestigator pid i
-              let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-              pure
-                $ TheDreamEaters
-                  ( newAttrs
-                      { campaignCompletedSteps = campaignCompletedSteps attrs
-                      , campaignStep = s
-                      , campaignLog = campaignLog attrs
-                      , campaignResolutions = campaignResolutions attrs
-                      , campaignModifiers = campaignModifiers attrs
-                      }
-                      `with` meta
-                        { currentCampaignMode = Just TheDreamQuest
-                        , otherCampaignAttrs = Just attrs
-                        , currentCampaignPlayers = otherCampaignPlayers meta
-                        , otherCampaignPlayers = mapFromList currentPlayers
-                        }
-                  )
-            else pure $ TheDreamEaters (attrs `with` meta)
-        _ | s `elem` theWebOfDreamsSteps -> do
-          if currentCampaignMode meta == Just TheDreamQuest
-            then do
-              investigators <- allInvestigators
-              currentPlayers <- for investigators \i -> do
-                player <- getPlayer i
-                iattrs <- getAttrs @Investigator i
-                pure (player, iattrs)
-              if (s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs)
-                then do
-                  players <- allPlayers
-                  pushAll $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
-                else do
-                  for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
-                    let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
-                    push $ SetInvestigator pid i
-              let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-              pure
-                $ TheDreamEaters
-                  ( newAttrs
-                      { campaignCompletedSteps = campaignCompletedSteps attrs
-                      , campaignStep = s
-                      , campaignLog = campaignLog attrs
-                      , campaignResolutions = campaignResolutions attrs
-                      , campaignModifiers = campaignModifiers attrs
-                      }
-                      `with` meta
-                        { currentCampaignMode = Just TheWebOfDreams
-                        , otherCampaignAttrs = Just attrs
-                        , currentCampaignPlayers = otherCampaignPlayers meta
-                        , otherCampaignPlayers = mapFromList currentPlayers
-                        }
-                  )
-            else pure $ TheDreamEaters (attrs `with` meta)
-        _ -> error $ "Unknown scenario: " <> show s
-    CampaignStep (InterludeStep 1 _) -> do
-      case campaignMode meta of
-        PartialMode TheWebOfDreams -> push $ CampaignStep (InterludeStepPart 1 Nothing 3)
-        _ -> push $ CampaignStep (InterludeStepPart 1 Nothing 1)
-      pure c
-    CampaignStep (InterludeStepPart 1 _ 1) -> do
-      case campaignMode meta of
-        FullMode -> push $ CampaignStep (InterludeStepPart 1 Nothing 2)
-        _ -> push $ NextCampaignStep (Just TheSearchForKadath)
-      pure c
-    CampaignStep (InterludeStepPart 1 _ 2) -> do
-      push $ CampaignStep (InterludeStepPart 1 Nothing 3)
-      pure c
-    CampaignStep (InterludeStepPart 1 _ 3) -> do
-      case campaignMode meta of
-        FullMode -> do
-          lead <- getLeadPlayer
-          push
-            $ questionLabel "Proceed to which scenario" lead
-            $ ChooseOne
-              [ Label "The Search for Kadath" [NextCampaignStep (Just TheSearchForKadath)]
-              , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
-              ]
-        _ -> push $ NextCampaignStep (Just AThousandShapesOfHorror)
-      pure c
-    CampaignStep (InterludeStep 2 _) -> do
-      lead <- getLeadPlayer
-      push
-        $ questionLabel "Proceed to which scenario" lead
-        $ ChooseOne
-          [ Label "Dark Side of the Moon" [NextCampaignStep (Just DarkSideOfTheMoon)]
-          , Label "Point of No Return" [NextCampaignStep (Just PointOfNoReturn)]
+    case msg of
+      StartCampaign -> do
+        -- [ALERT] StartCampaign, overriden to not choose decks yet
+        lead <- getActivePlayer
+        pushAll
+          $ [Ask lead PickCampaignSettings | campaignStep attrs /= PrologueStep]
+          <> [CampaignStep $ campaignStep attrs]
+        pure c
+      CampaignStep PrologueStep -> do
+        lead <- getActivePlayer
+        players <- allPlayers
+        pushAll
+          [ story players prologue
+          , questionLabel "Which mode would you like to play" lead
+              $ ChooseOne
+                [ Label "Full Campaign" [CampaignStep (PrologueStepPart 1)]
+                , Label "The Dream-Quest" [CampaignStep (PrologueStepPart 2)]
+                , Label "The Web of Dreams" [CampaignStep (PrologueStepPart 3)]
+                ]
           ]
-      pure c
-    CampaignStep (InterludeStep 3 _) -> do
-      lead <- getLeadPlayer
-      push
-        $ questionLabel "Proceed to which scenario" lead
-        $ ChooseOne
-          [ Label "Where the Gods Dwell" [NextCampaignStep (Just WhereTheGodsDwell)]
-          , Label "Weaver of the Cosmos" [NextCampaignStep (Just WeaverOfTheCosmos)]
-          ]
-      pure c
-    _ -> defaultCampaignRunner msg c
+        pure c
+      CampaignStep (PrologueStepPart 1) -> do
+        lead <- getActivePlayer
+        push
+          $ questionLabel "Which scenario would you like to start with" lead
+          $ ChooseOne
+            [ Label "Beyond the Gates of Sleep" [CampaignStep (PrologueStepPart 11)]
+            , Label "Waking Nightmare" [CampaignStep (PrologueStepPart 12)]
+            ]
+        pure c
+      CampaignStep (PrologueStepPart 2) -> do
+        players <- allPlayers
+        pushAll
+          $ map chooseDeck players
+          <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
+        pure
+          $ TheDreamEaters
+          $ attrs
+            { campaignChaosBag = initChaosBag TheDreamQuest (campaignDifficulty attrs)
+            , campaignMeta = toJSON $ meta {campaignMode = PartialMode TheDreamQuest}
+            }
+      CampaignStep (PrologueStepPart 3) -> do
+        players <- allPlayers
+        pushAll
+          $ map chooseDeck players
+          <> [NextCampaignStep (Just WakingNightmare)]
+        pure
+          $ TheDreamEaters
+          $ attrs
+            { campaignChaosBag = initChaosBag TheWebOfDreams (campaignDifficulty attrs)
+            , campaignMeta = toJSON $ meta {campaignMode = PartialMode TheWebOfDreams}
+            }
+      CampaignStep (PrologueStepPart 11) -> do
+        players <- allPlayers
+        pushAll
+          $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+          <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
+        let difficulty = campaignDifficulty attrs
+        pure
+          $ TheDreamEaters
+          $ attrs
+            { campaignChaosBag = initChaosBag TheDreamQuest difficulty
+            , campaignMeta =
+                toJSON
+                  $ meta
+                    { currentCampaignMode = Just TheDreamQuest
+                    , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheWebOfDreams difficulty})
+                    }
+            }
+      CampaignStep (PrologueStepPart 12) -> do
+        players <- allPlayers
+        pushAll
+          $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+          <> [NextCampaignStep (Just WakingNightmare)]
+        let difficulty = campaignDifficulty attrs
+        pure
+          $ TheDreamEaters
+          $ attrs
+            { campaignChaosBag = initChaosBag TheWebOfDreams difficulty
+            , campaignMeta =
+                toJSON
+                  $ meta
+                    { currentCampaignMode = Just TheWebOfDreams
+                    , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheDreamQuest difficulty})
+                    }
+            }
+      CampaignStep s@(ScenarioStep _) -> do
+        void $ defaultCampaignRunner msg c
+        case s of
+          _ | s `elem` theDreamQuestSteps -> do
+            if currentCampaignMode meta == Just TheWebOfDreams
+              then do
+                investigators <- allInvestigators
+                currentPlayers <- for investigators \i -> do
+                  player <- getPlayer i
+                  iattrs <- getAttrs @Investigator i
+                  pure (player, iattrs)
+
+                if (s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs)
+                  then do
+                    players <- allPlayers
+                    pushAll $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+                  else do
+                    for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+                      let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+                      push $ SetInvestigator pid i
+                let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+                pure
+                  $ TheDreamEaters
+                    ( newAttrs
+                        { campaignCompletedSteps = campaignCompletedSteps attrs
+                        , campaignStep = s
+                        , campaignLog = campaignLog attrs
+                        , campaignResolutions = campaignResolutions attrs
+                        , campaignModifiers = campaignModifiers attrs
+                        , campaignMeta =
+                            toJSON
+                              $ meta
+                                { currentCampaignMode = Just TheDreamQuest
+                                , otherCampaignAttrs = Just attrs
+                                , currentCampaignPlayers = otherCampaignPlayers meta
+                                , otherCampaignPlayers = mapFromList currentPlayers
+                                }
+                        }
+                    )
+              else pure c
+          _ | s `elem` theWebOfDreamsSteps -> do
+            if currentCampaignMode meta == Just TheDreamQuest
+              then do
+                investigators <- allInvestigators
+                currentPlayers <- for investigators \i -> do
+                  player <- getPlayer i
+                  iattrs <- getAttrs @Investigator i
+                  pure (player, iattrs)
+                if (s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs)
+                  then do
+                    players <- allPlayers
+                    pushAll $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+                  else do
+                    for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+                      let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+                      push $ SetInvestigator pid i
+                let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+                pure
+                  $ TheDreamEaters
+                    ( newAttrs
+                        { campaignCompletedSteps = campaignCompletedSteps attrs
+                        , campaignStep = s
+                        , campaignLog = campaignLog attrs
+                        , campaignResolutions = campaignResolutions attrs
+                        , campaignModifiers = campaignModifiers attrs
+                        , campaignMeta =
+                            toJSON
+                              $ meta
+                                { currentCampaignMode = Just TheWebOfDreams
+                                , otherCampaignAttrs = Just attrs
+                                , currentCampaignPlayers = otherCampaignPlayers meta
+                                , otherCampaignPlayers = mapFromList currentPlayers
+                                }
+                        }
+                    )
+              else pure c
+          _ -> error $ "Unknown scenario: " <> show s
+      CampaignStep (InterludeStep 1 _) -> do
+        case campaignMode meta of
+          PartialMode TheWebOfDreams -> push $ CampaignStep (InterludeStepPart 1 Nothing 3)
+          _ -> push $ CampaignStep (InterludeStepPart 1 Nothing 1)
+        pure c
+      CampaignStep (InterludeStepPart 1 _ 1) -> do
+        case campaignMode meta of
+          FullMode -> push $ CampaignStep (InterludeStepPart 1 Nothing 2)
+          _ -> push $ NextCampaignStep (Just TheSearchForKadath)
+        pure c
+      CampaignStep (InterludeStepPart 1 _ 2) -> do
+        push $ CampaignStep (InterludeStepPart 1 Nothing 3)
+        pure c
+      CampaignStep (InterludeStepPart 1 _ 3) -> do
+        case campaignMode meta of
+          FullMode -> do
+            lead <- getLeadPlayer
+            push
+              $ questionLabel "Proceed to which scenario" lead
+              $ ChooseOne
+                [ Label "The Search for Kadath" [NextCampaignStep (Just TheSearchForKadath)]
+                , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
+                ]
+          _ -> push $ NextCampaignStep (Just AThousandShapesOfHorror)
+        pure c
+      CampaignStep (InterludeStep 2 _) -> do
+        lead <- getLeadPlayer
+        push
+          $ questionLabel "Proceed to which scenario" lead
+          $ ChooseOne
+            [ Label "Dark Side of the Moon" [NextCampaignStep (Just DarkSideOfTheMoon)]
+            , Label "Point of No Return" [NextCampaignStep (Just PointOfNoReturn)]
+            ]
+        pure c
+      CampaignStep (InterludeStep 3 _) -> do
+        lead <- getLeadPlayer
+        push
+          $ questionLabel "Proceed to which scenario" lead
+          $ ChooseOne
+            [ Label "Where the Gods Dwell" [NextCampaignStep (Just WhereTheGodsDwell)]
+            , Label "Weaver of the Cosmos" [NextCampaignStep (Just WeaverOfTheCosmos)]
+            ]
+        pure c
+      _ -> defaultCampaignRunner msg c

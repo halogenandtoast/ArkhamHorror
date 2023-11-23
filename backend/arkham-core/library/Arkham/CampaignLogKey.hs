@@ -208,8 +208,11 @@ data CampaignLogKey
   | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
   | AzathothSlumbersForNow
   | TheInvestigatorsSignedTheBlackBookOfAzathoth
-  | -- | The Circle Undone
+  | -- | The Dream-Eaters
     TheDreamersStrayedFromThePath
+  | TheInvestigatorsWereSavedByRandolphCarder
+  | TheCatsCollectedTheirTributeFromTheZoogs
+  | TheInvestigatorsParleyedWithTheZoogs
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -226,6 +226,10 @@ allActs =
     , SomeActCard theTrialOfNashtAndKamanThah
     , SomeActCard theFinalDescent
     , SomeActCard thePath
+    , --- Waking Nightmare
+      SomeActCard lookingForAnswers
+    , SomeActCard searchForThePatient
+    , SomeActCard containingTheOutbreak
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

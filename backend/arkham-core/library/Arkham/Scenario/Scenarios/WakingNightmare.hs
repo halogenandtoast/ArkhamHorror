@@ -5,12 +5,17 @@ module Arkham.Scenario.Scenarios.WakingNightmare (
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WakingNightmare.FlavorText
 
@@ -57,6 +62,25 @@ instance RunMessage WakingNightmare where
           ]
       pure s
     Setup -> do
-      push $ EndOfGame Nothing
-      pure s
+      encounterDeck <-
+        buildEncounterDeck
+          [ EncounterSet.WakingNightmare
+          , EncounterSet.MergingRealities
+          , EncounterSet.WhispersOfHypnos
+          , EncounterSet.LockedDoors
+          , EncounterSet.StrikingFear
+          ]
+      pushAll [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
+
+      agendas <-
+        genCards [Agendas.hallsOfStMarys, Agendas.theInfestationSpreads, Agendas.hospitalOfHorrors]
+      acts <- genCards [Acts.lookingForAnswers, Acts.searchForThePatient, Acts.containingTheOutbreak]
+
+      WakingNightmare
+        <$> runMessage
+          msg
+          ( attrs
+              & (agendaStackL . at 1 ?~ agendas)
+              & (actStackL . at 1 ?~ acts)
+          )
     _ -> WakingNightmare <$> runMessage msg attrs

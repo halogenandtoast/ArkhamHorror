@@ -188,6 +188,10 @@ allAgendas =
     , -- The Dream-Eaters
       -- Beyond the Gates of Sleep
       SomeAgendaCard journeyThroughTheGates
+    , -- Waking Nightmare
+      SomeAgendaCard hallsOfStMarys
+    , SomeAgendaCard theInfestationSpreads
+    , SomeAgendaCard hospitalOfHorrors
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

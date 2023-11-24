@@ -47,6 +47,7 @@ allActCards =
       , campusSafety
       , cavernOfTheForgottenAge
       , closeTheRift
+      , containingTheOutbreak
       , crossingTheThreshold
       , curtainCall
       , darkKnowledgeV1
@@ -119,6 +120,7 @@ allActCards =
       , saracenicScript
       , searchForAlejandro
       , searchForTheBrotherhood
+      , searchForThePatient
       , searchForThePattern
       , searchForTheRuins
       , searchForTheStrangerV1
@@ -641,6 +643,15 @@ theFinalDescent = act "06043" "The Final Descent" 3 BeyondTheGatesOfSleep
 
 thePath :: CardDef
 thePath = act "06044" "The Final Descent" 4 BeyondTheGatesOfSleep
+
+lookingForAnswers :: CardDef
+lookingForAnswers = act "06067" "Looking for Answers" 1 WakingNightmare
+
+searchForThePatient :: CardDef
+searchForThePatient = act "06068" "Search for the Patient" 2 WakingNightmare
+
+containingTheOutbreak :: CardDef
+containingTheOutbreak = act "06069" "Containing the Outbreak" 3 WakingNightmare
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

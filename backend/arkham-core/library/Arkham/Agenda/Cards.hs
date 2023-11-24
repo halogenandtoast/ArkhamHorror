@@ -48,10 +48,12 @@ allAgendaCards =
       , fashionablyLate
       , feedTheBeast
       , furyThatShakesTheEarth
+      , hallsOfStMarys
       , hiddenEntanglements
       , hisDomain
       , horrificDescent
       , horrorsUnleashed
+      , hospitalOfHorrors
       , humanityFading
       , intruders
       , inEveryShadow
@@ -107,6 +109,7 @@ allAgendaCards =
       , theHangedManXII
       , theHermitIX
       , theHierophantV
+      , theInfestationSpreads
       , theJunglesHeart
       , theLonelyCaverns
       , theLoversVI
@@ -477,6 +480,15 @@ theFinalCountdown = agenda "05328" "The Final Countdown" 3 BeforeTheBlackThrone
 
 journeyThroughTheGates :: CardDef
 journeyThroughTheGates = agenda "06040" "Journey through the Gates" 1 BeyondTheGatesOfSleep
+
+hallsOfStMarys :: CardDef
+hallsOfStMarys = agenda "06064" "Hall of St. Mary's" 1 WakingNightmare
+
+theInfestationSpreads :: CardDef
+theInfestationSpreads = agenda "06065" "The Infestation Spreads" 2 WakingNightmare
+
+hospitalOfHorrors :: CardDef
+hospitalOfHorrors = agenda "06066" "Hospital of Horrors" 3 WakingNightmare
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

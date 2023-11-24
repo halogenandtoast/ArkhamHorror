@@ -43,6 +43,7 @@ library
       Arkham.Act.Cards.CampusSafety
       Arkham.Act.Cards.CavernOfTheForgottenAge
       Arkham.Act.Cards.CloseTheRift
+      Arkham.Act.Cards.ContainingTheOutbreak
       Arkham.Act.Cards.CrossingTheThreshold
       Arkham.Act.Cards.CurtainCall
       Arkham.Act.Cards.DarkKnowledgeV1
@@ -85,6 +86,7 @@ library
       Arkham.Act.Cards.InvestigatingTheWitchHouse
       Arkham.Act.Cards.JourneyToTheNexus
       Arkham.Act.Cards.LeadingTheWay
+      Arkham.Act.Cards.LookingForAnswers
       Arkham.Act.Cards.LostInTheWoods
       Arkham.Act.Cards.MagicAndScience
       Arkham.Act.Cards.MendTheShatter
@@ -115,6 +117,7 @@ library
       Arkham.Act.Cards.SaracenicScript
       Arkham.Act.Cards.SearchForAlejandro
       Arkham.Act.Cards.SearchForTheBrotherhood
+      Arkham.Act.Cards.SearchForThePatient
       Arkham.Act.Cards.SearchForThePattern
       Arkham.Act.Cards.SearchForTheRuins
       Arkham.Act.Cards.SearchForTheStrangerV1
@@ -213,10 +216,12 @@ library
       Arkham.Agenda.Cards.FashionablyLate
       Arkham.Agenda.Cards.FeedTheBeast
       Arkham.Agenda.Cards.FuryThatShakesTheEarth
+      Arkham.Agenda.Cards.HallsOfStMarys
       Arkham.Agenda.Cards.HiddenEntanglements
       Arkham.Agenda.Cards.HisDomain
       Arkham.Agenda.Cards.HorrificDescent
       Arkham.Agenda.Cards.HorrorsUnleashed
+      Arkham.Agenda.Cards.HospitalOfHorrors
       Arkham.Agenda.Cards.HumanityFading
       Arkham.Agenda.Cards.InEveryShadow
       Arkham.Agenda.Cards.Intruders
@@ -272,6 +277,7 @@ library
       Arkham.Agenda.Cards.TheHangedManXII
       Arkham.Agenda.Cards.TheHermitIX
       Arkham.Agenda.Cards.TheHierophantV
+      Arkham.Agenda.Cards.TheInfestationSpreads
       Arkham.Agenda.Cards.TheJunglesHeart
       Arkham.Agenda.Cards.TheLonelyCaverns
       Arkham.Agenda.Cards.TheLoversVI

@@ -2884,6 +2884,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
     Matcher.LocationWithoutClues -> locationId <=~> matcher
     Matcher.HighestShroud _ -> locationId <=~> matcher
+    Matcher.LocationWithDamage {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFrom _ _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId

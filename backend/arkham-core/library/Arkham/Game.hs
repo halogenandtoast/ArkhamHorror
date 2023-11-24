@@ -116,6 +116,7 @@ import Arkham.Location.Types (
   LocationAttrs (..),
   isRevealed,
   locationClues,
+  locationDamage,
   locationDoom,
   locationHorror,
   locationResources,
@@ -1513,6 +1514,10 @@ getLocationsMatching lmatcher = do
         filterM
           (field LocationDoom . toId >=> (`gameValueMatches` gameValueMatcher))
           ls
+      LocationWithDamage gameValueMatcher -> do
+        filterM
+          (field LocationDamage . toId >=> (`gameValueMatches` gameValueMatcher))
+          ls
       LocationWithHorror gameValueMatcher -> do
         filterM
           (field LocationHorror . toId >=> (`gameValueMatches` gameValueMatcher))
@@ -2714,6 +2719,7 @@ instance Projection Location where
       LocationClues -> pure $ locationClues attrs
       LocationResources -> pure $ locationResources attrs
       LocationHorror -> pure $ locationHorror attrs
+      LocationDamage -> pure $ locationDamage attrs
       LocationDoom -> pure $ locationDoom attrs
       LocationShroud -> getModifiedShroudValueFor attrs
       LocationBrazier -> pure locationBrazier

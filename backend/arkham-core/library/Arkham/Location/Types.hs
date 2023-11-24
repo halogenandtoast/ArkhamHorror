@@ -64,6 +64,7 @@ data instance Field Location :: Type -> Type where
   LocationClues :: Field Location Int
   LocationResources :: Field Location Int
   LocationHorror :: Field Location Int
+  LocationDamage :: Field Location Int
   LocationDoom :: Field Location Int
   LocationShroud :: Field Location Int
   LocationConnectedMatchers :: Field Location [LocationMatcher]
@@ -97,6 +98,7 @@ fieldLens = \case
   LocationTokens -> tokensL
   LocationClues -> tokensL . at Clue . non 0
   LocationResources -> tokensL . at Resource . non 0
+  LocationDamage -> tokensL . at #damage . non 0
   LocationHorror -> tokensL . at Horror . non 0
   LocationDoom -> tokensL . at Doom . non 0
   LocationShroud -> shroudL
@@ -141,6 +143,7 @@ instance FromJSON (SomeField Location) where
     "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
     "LocationClues" -> pure $ SomeField LocationClues
     "LocationResources" -> pure $ SomeField LocationResources
+    "LocationDamage" -> pure $ SomeField LocationDamage
     "LocationHorror" -> pure $ SomeField LocationHorror
     "LocationDoom" -> pure $ SomeField LocationDoom
     "LocationShroud" -> pure $ SomeField LocationShroud

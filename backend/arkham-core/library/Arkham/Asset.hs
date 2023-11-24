@@ -556,6 +556,13 @@ allAssets =
     , SomeAssetCard augur
     , --- basic weakness [tde]
       SomeAssetCard kleptomania
+    , -- Beyond the Gates of Sleep
+      --- story [tde]
+      SomeAssetCard randolphCarterExpertDreamer
+    , -- Waking Nightmare
+      --- story [tde]
+      SomeAssetCard randolphCarterChainedToTheWakingWorld
+    , SomeAssetCard drShivaniMaheswaran
     , -- The Search for Kadath
       --- seeker [sfk]
       SomeAssetCard dreamDiary

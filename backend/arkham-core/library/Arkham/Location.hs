@@ -505,6 +505,15 @@ allLocations =
     , SomeLocationCard enchantedWoodsTheMoonTree
     , SomeLocationCard enchantedWoodsFungalForest
     , SomeLocationCard enchantedWoodsLostWoods
+    , -- Waking Nightmare
+      SomeLocationCard waitingRoom
+    , SomeLocationCard emergencyRoom
+    , SomeLocationCard experimentalTherapiesWard
+    , SomeLocationCard recordsOffice
+    , SomeLocationCard stairwell
+    , SomeLocationCard morgue
+    , SomeLocationCard operatingRoom
+    , SomeLocationCard privateRoom
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

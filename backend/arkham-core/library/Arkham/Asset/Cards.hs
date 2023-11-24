@@ -202,6 +202,7 @@ allPlayerAssetCards =
       , drFrancisMorgan
       , drHenryArmitage
       , drMilanChristopher
+      , drShivaniMaheswaran
       , drWilliamTMaleson
       , dragonPole
       , drawingThin
@@ -427,6 +428,7 @@ allPlayerAssetCards =
       , rabbitsFoot
       , rabbitsFoot3
       , randallCho
+      , randolphCarterChainedToTheWakingWorld
       , randolphCarterExpertDreamer
       , recallTheFuture2
       , relentless
@@ -3691,6 +3693,24 @@ randolphCarterExpertDreamer =
     { cdSkills = [#combat, #agility, #wild]
     , cdCardTraits = setFromList [Ally, Dreamer]
     , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+randolphCarterChainedToTheWakingWorld :: CardDef
+randolphCarterChainedToTheWakingWorld =
+  (storyAsset "06079" ("Randolph Carter" <:> "Chained to the Waking World") 3 WakingNightmare)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Ally, Dreamer]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+drShivaniMaheswaran :: CardDef
+drShivaniMaheswaran =
+  (storyAsset "06080" ("Dr. Shivani Maheswaran" <:> "Emergency Physician") 0 WakingNightmare)
+    { cdCardTraits = setFromList [Ally, Medic]
+    , cdUnique = True
+    , cdCost = Nothing
     }
 
 dreamDiary :: CardDef

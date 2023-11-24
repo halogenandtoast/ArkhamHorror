@@ -75,4 +75,5 @@ allStories =
     , SomeStoryCard valentinosFate
     , SomeStoryCard theTrialOfKamanThah
     , SomeStoryCard theTrialOfNasht
+    , SomeStoryCard theInfestationBegins
     ]

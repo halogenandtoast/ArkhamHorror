@@ -104,6 +104,7 @@ allEncounterEnemyCards =
       , corpseDweller
       , corpseHungryGhoul
       , corpseTaker
+      , corruptedOrderly
       , covenInitiate
       , crazedShoggoth
       , creatureOutOfDemhe
@@ -223,6 +224,7 @@ allEncounterEnemyCards =
       , stealthyByakhee
       , stealthyZoog
       , summonedBeast
+      , suspiciousOrderly
       , swampLeech
       , swarmOfRats
       , swiftByakhee
@@ -1572,6 +1574,20 @@ ancientZoog =
   (enemy "06061" "Ancient Zoog" BeyondTheGatesOfSleep 1)
     { cdCardTraits = setFromList [Creature, Zoog, Elite]
     , cdKeywords = singleton Keyword.Aloof
+    }
+
+suspiciousOrderly :: CardDef
+suspiciousOrderly =
+  (enemy "06081" "Suspicious Orderly" WakingNightmare 2)
+    { cdCardTraits = setFromList [Humanoid, Staff]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+corruptedOrderly :: CardDef
+corruptedOrderly =
+  (enemy "06082" "Corrupted Orderly" WakingNightmare 2)
+    { cdCardTraits = setFromList [Humanoid, Staff, Spider]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 theCrawlingMist :: CardDef

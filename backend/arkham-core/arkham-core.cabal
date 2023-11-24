@@ -457,6 +457,7 @@ library
       Arkham.Asset.Cards.DrFrancisMorgan
       Arkham.Asset.Cards.DrHenryArmitage
       Arkham.Asset.Cards.DrMilanChristopher
+      Arkham.Asset.Cards.DrShivaniMaheswaran
       Arkham.Asset.Cards.DrWilliamTMaleson
       Arkham.Asset.Cards.Duke
       Arkham.Asset.Cards.EarlSawyer
@@ -686,6 +687,7 @@ library
       Arkham.Asset.Cards.RabbitsFoot
       Arkham.Asset.Cards.RabbitsFoot3
       Arkham.Asset.Cards.RandallCho
+      Arkham.Asset.Cards.RandolphCarterChainedToTheWakingWorld
       Arkham.Asset.Cards.RandolphCarterExpertDreamer
       Arkham.Asset.Cards.RecallTheFuture2
       Arkham.Asset.Cards.Relentless
@@ -1026,6 +1028,7 @@ library
       Arkham.Enemy.Cards.CorpseDweller
       Arkham.Enemy.Cards.CorpseHungryGhoul
       Arkham.Enemy.Cards.CorpseTaker
+      Arkham.Enemy.Cards.CorruptedOrderly
       Arkham.Enemy.Cards.CovenInitiate
       Arkham.Enemy.Cards.CrazedShoggoth
       Arkham.Enemy.Cards.CreatureOutOfDemhe
@@ -1154,6 +1157,7 @@ library
       Arkham.Enemy.Cards.StealthyZoog
       Arkham.Enemy.Cards.StubbornDetective
       Arkham.Enemy.Cards.SummonedBeast
+      Arkham.Enemy.Cards.SuspiciousOrderly
       Arkham.Enemy.Cards.SwampLeech
       Arkham.Enemy.Cards.SwarmOfRats
       Arkham.Enemy.Cards.SwiftByakhee
@@ -1719,6 +1723,7 @@ library
       Arkham.Location.Cards.Easttown
       Arkham.Location.Cards.EasttownArkhamPoliceStation
       Arkham.Location.Cards.EerieGlade
+      Arkham.Location.Cards.EmergencyRoom
       Arkham.Location.Cards.EmptySpace
       Arkham.Location.Cards.EnchantedWoodsFungalForest
       Arkham.Location.Cards.EnchantedWoodsGreatStoneCircle
@@ -1742,6 +1747,7 @@ library
       Arkham.Location.Cards.ExhibitHallNatureExhibit
       Arkham.Location.Cards.ExhibitHallRestrictedHall
       Arkham.Location.Cards.ExpeditionCamp
+      Arkham.Location.Cards.ExperimentalTherapiesWard
       Arkham.Location.Cards.EztliExhibit
       Arkham.Location.Cards.FacultyOfficesTheHourIsLate
       Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung
@@ -1851,6 +1857,7 @@ library
       Arkham.Location.Cards.Montmartre209
       Arkham.Location.Cards.Montmartre210
       Arkham.Location.Cards.Montparnasse
+      Arkham.Location.Cards.Morgue
       Arkham.Location.Cards.MouthOfKnYanTheCavernsMaw
       Arkham.Location.Cards.MouthOfKnYanTheDepthsBelow
       Arkham.Location.Cards.Mu
@@ -1868,6 +1875,7 @@ library
       Arkham.Location.Cards.OfficeSpectral
       Arkham.Location.Cards.OperaGarnier212
       Arkham.Location.Cards.OperaGarnier213
+      Arkham.Location.Cards.OperatingRoom
       Arkham.Location.Cards.OrneLibrary
       Arkham.Location.Cards.OsbornsGeneralStore_206
       Arkham.Location.Cards.OsbornsGeneralStore_207
@@ -1896,8 +1904,10 @@ library
       Arkham.Location.Cards.Pnakotus
       Arkham.Location.Cards.PorteDeLAvancee
       Arkham.Location.Cards.PrismaticCascade
+      Arkham.Location.Cards.PrivateRoom
       Arkham.Location.Cards.QuietHalls_131
       Arkham.Location.Cards.QuietHalls_135
+      Arkham.Location.Cards.RecordsOffice
       Arkham.Location.Cards.RehearsalRoom
       Arkham.Location.Cards.Restaurant
       Arkham.Location.Cards.ReturnToAttic
@@ -1950,6 +1960,7 @@ library
       Arkham.Location.Cards.Southside_295
       Arkham.Location.Cards.SouthsideHistoricalSociety
       Arkham.Location.Cards.SouthsideMasBoardingHouse
+      Arkham.Location.Cards.Stairwell
       Arkham.Location.Cards.StepsOfYhagharl
       Arkham.Location.Cards.StepsOfYoth
       Arkham.Location.Cards.StMarysHospital
@@ -2014,6 +2025,7 @@ library
       Arkham.Location.Cards.VictorianHallsSpectral
       Arkham.Location.Cards.VillageCommons
       Arkham.Location.Cards.VipArea
+      Arkham.Location.Cards.WaitingRoom
       Arkham.Location.Cards.WalterGilmansRoom
       Arkham.Location.Cards.WellOfSouls
       Arkham.Location.Cards.WhateleyRuins_250
@@ -2295,6 +2307,7 @@ library
       Arkham.Story.Cards.TheFall
       Arkham.Story.Cards.TheFirstShow
       Arkham.Story.Cards.TheHeightOfTheDepths
+      Arkham.Story.Cards.TheInfestationBegins
       Arkham.Story.Cards.TheKingsParade
       Arkham.Story.Cards.ThePattern
       Arkham.Story.Cards.TheTrialOfKamanThah
@@ -2473,6 +2486,7 @@ library
       Arkham.Treachery.Cards.OnTheProwl
       Arkham.Treachery.Cards.OnWingsOfDarkness
       Arkham.Treachery.Cards.OozeAndFilth
+      Arkham.Treachery.Cards.Outbreak
       Arkham.Treachery.Cards.OutOfBodyExperience
       Arkham.Treachery.Cards.Overgrowth
       Arkham.Treachery.Cards.Overzealous

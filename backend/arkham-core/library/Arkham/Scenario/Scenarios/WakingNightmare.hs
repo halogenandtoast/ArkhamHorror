@@ -7,12 +7,14 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -21,7 +23,9 @@ import Arkham.Matcher
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WakingNightmare.FlavorText
+import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Staff))
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype WakingNightmare = WakingNightmare ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -78,7 +82,8 @@ instance RunMessage WakingNightmare where
       pure s
     Setup -> do
       encounterDeck <-
-        buildEncounterDeck
+        buildEncounterDeckExcluding
+          [Enemies.corruptedOrderly, Treacheries.outbreak]
           [ EncounterSet.WakingNightmare
           , EncounterSet.MergingRealities
           , EncounterSet.WhispersOfHypnos
@@ -86,10 +91,14 @@ instance RunMessage WakingNightmare where
           , EncounterSet.StrikingFear
           ]
 
+      drMaheswaranInPlay <- getHasRecord DrMaheswaranJoinedTheInvestigation
+      drShivaniMaheswaran <- genCard Assets.drShivaniMaheswaran
+
       (waitingRoom, placeWaitingRoom) <- placeLocationCard Locations.waitingRoom
       otherPlacements <-
         placeLocationCards_
           [Locations.emergencyRoom, Locations.experimentalTherapiesWard, Locations.recordsOffice]
+      lead <- getLead
 
       pushAll
         $ [ SetEncounterDeck encounterDeck
@@ -98,11 +107,21 @@ instance RunMessage WakingNightmare where
           , placeWaitingRoom
           , MoveAllTo (toSource attrs) waitingRoom
           ]
+        <> [ TakeControlOfSetAsideAsset lead drShivaniMaheswaran
+           | drMaheswaranInPlay
+           ]
         <> otherPlacements
 
       agendas <-
         genCards [Agendas.hallsOfStMarys, Agendas.theInfestationSpreads, Agendas.hospitalOfHorrors]
       acts <- genCards [Acts.lookingForAnswers, Acts.searchForThePatient, Acts.containingTheOutbreak]
+      setAsideCards <-
+        mconcat
+          <$> sequence
+            [ genSetAsideCards [Enemies.corruptedOrderly, Treacheries.outbreak]
+            , genCards [Assets.randolphCarterChainedToTheWakingWorld, Stories.theInfestationBegins]
+            , pure $ guard (not drMaheswaranInPlay) *> [drShivaniMaheswaran]
+            ]
 
       WakingNightmare
         <$> runMessage
@@ -110,5 +129,6 @@ instance RunMessage WakingNightmare where
           ( attrs
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
+              & (setAsideCardsL .~ setAsideCards)
           )
     _ -> WakingNightmare <$> runMessage msg attrs

@@ -113,6 +113,11 @@ genFlippedCard a = flipCard <$> genCard a
 genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
 genCards = traverse genCard
 
+genSetAsideCards :: (HasCardDef a, CardGen m) => [a] -> m [Card]
+genSetAsideCards cards = traverse genCard $ concatMap splay cards
+ where
+  splay card = replicate (fromMaybe 0 $ cdEncounterSetQuantity $ toCardDef card) card
+
 genPlayerCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t PlayerCard)
 genPlayerCards = traverse genPlayerCard
 

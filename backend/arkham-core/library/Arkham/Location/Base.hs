@@ -58,6 +58,9 @@ locationDoom = countTokens Doom . locationTokens
 locationHorror :: LocationAttrs -> Int
 locationHorror = countTokens Horror . locationTokens
 
+locationDamage :: LocationAttrs -> Int
+locationDamage = countTokens Damage . locationTokens
+
 locationResources :: LocationAttrs -> Int
 locationResources = countTokens Resource . locationTokens
 

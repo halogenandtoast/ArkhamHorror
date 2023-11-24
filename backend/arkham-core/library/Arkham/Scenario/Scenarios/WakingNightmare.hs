@@ -13,12 +13,15 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WakingNightmare.FlavorText
+import Arkham.Trait (Trait (Staff))
 
 newtype WakingNightmare = WakingNightmare ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -36,12 +39,23 @@ wakingNightmare difficulty =
     , "emergencyRoom .             experimentalTherapiesWard"
     ]
 
+pattern InfestedLocation :: LocationMatcher
+pattern InfestedLocation <- (LocationWithDamage (GreaterThan (Static 0)))
+  where
+    InfestedLocation = LocationWithDamage (GreaterThan (Static 0))
+
 instance HasChaosTokenValue WakingNightmare where
   getChaosTokenValue iid tokenFace (WakingNightmare attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Skull -> do
+      isEngaged <- selectAny $ EnemyWithTrait Staff <> enemyEngagedWith iid
+      pure
+        $ if isEngaged
+          then toChaosTokenValue attrs Skull 1 3
+          else toChaosTokenValue attrs Skull 3 5
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    ElderThing -> do
+      n <- selectCount InfestedLocation
+      pure $ toChaosTokenValue attrs ElderThing n (n + 1)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WakingNightmare where

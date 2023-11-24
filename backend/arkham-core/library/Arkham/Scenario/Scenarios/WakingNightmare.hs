@@ -15,6 +15,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WakingNightmare.FlavorText
@@ -70,7 +71,20 @@ instance RunMessage WakingNightmare where
           , EncounterSet.LockedDoors
           , EncounterSet.StrikingFear
           ]
-      pushAll [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
+
+      (waitingRoom, placeWaitingRoom) <- placeLocationCard Locations.waitingRoom
+      otherPlacements <-
+        placeLocationCards_
+          [Locations.emergencyRoom, Locations.experimentalTherapiesWard, Locations.recordsOffice]
+
+      pushAll
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , placeWaitingRoom
+          , MoveAllTo (toSource attrs) waitingRoom
+          ]
+        <> otherPlacements
 
       agendas <-
         genCards [Agendas.hallsOfStMarys, Agendas.theInfestationSpreads, Agendas.hospitalOfHorrors]

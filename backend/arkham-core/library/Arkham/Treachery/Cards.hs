@@ -247,6 +247,7 @@ allEncounterTreacheryCards =
       , onTheProwl
       , onWingsOfDarkness
       , oozeAndFilth
+      , outbreak
       , overgrowth
       , passageIntoTheVeil
       , pitfall
@@ -1681,6 +1682,12 @@ lostInTheWoods =
   (treachery "06062" "Lost in the Woods" BeyondTheGatesOfSleep 2)
     { cdCardTraits = singleton Blunder
     , cdKeywords = singleton Keyword.Surge
+    }
+
+outbreak :: CardDef
+outbreak =
+  (treachery "06083" "Outbreak" WakingNightmare 3)
+    { cdCardTraits = singleton Hazard
     }
 
 lawOfYgirothChaos :: CardDef

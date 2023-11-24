@@ -356,6 +356,8 @@ allTreacheries =
     , SomeTreacheryCard narcolepsy
     , -- Beyond the Gates of Sleep
       SomeTreacheryCard lostInTheWoods
+    , -- Waking Nightmare
+      SomeTreacheryCard outbreak
     , -- Agents of Nyarlathotep
       SomeTreacheryCard lawOfYgirothChaos
     , SomeTreacheryCard lawOfYgirothDiscord

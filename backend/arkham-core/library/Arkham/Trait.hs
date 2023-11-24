@@ -22,6 +22,7 @@ data Trait
   | Assistant
   | Augury
   | Avatar
+  | Basement
   | Bayou
   | Believer
   | Blessed
@@ -166,7 +167,9 @@ data Trait
   | Sorcerer
   | Spectral
   | Spell
+  | Spider
   | Spirit
+  | StMarys
   | Staff
   | Steps
   | Summon

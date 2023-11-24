@@ -302,6 +302,9 @@ allEnemies =
     , SomeEnemyCard nasht
     , SomeEnemyCard laboringGug
     , SomeEnemyCard ancientZoog
+    , --- Waking Nightmare
+      SomeEnemyCard suspiciousOrderly
+    , SomeEnemyCard corruptedOrderly
     , --- Zoogs
       SomeEnemyCard furtiveZoog
     , SomeEnemyCard stealthyZoog

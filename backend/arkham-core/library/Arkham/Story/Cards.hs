@@ -59,6 +59,7 @@ allStoryCards =
       , valentinosFate
       , theTrialOfKamanThah
       , theTrialOfNasht
+      , theInfestationBegins
       ]
 
 sickeningReality_65 :: CardDef
@@ -175,3 +176,6 @@ theTrialOfKamanThah = story "06057b" "The Trial of Kaman-Thah" BeyondTheGatesOfS
 
 theTrialOfNasht :: CardDef
 theTrialOfNasht = story "06058b" "The Trial of Nasht" BeyondTheGatesOfSleep
+
+theInfestationBegins :: CardDef
+theInfestationBegins = story "06078" "The Infestation Begins" WakingNightmare

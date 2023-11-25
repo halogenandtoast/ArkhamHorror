@@ -369,6 +369,8 @@ allTreacheries =
     , -- Dreamlands
       SomeTreacheryCard dreamlandsEclipse
     , SomeTreacheryCard prismaticPhenomenon
+    , -- Spiders
+      SomeTreacheryCard sickeningWebs
     , -- Zoogs
       SomeTreacheryCard zoogBurrow
     , -- Edge of the Earth

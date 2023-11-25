@@ -1611,6 +1611,19 @@ getLocationsMatching lmatcher = do
               matchingLocationIds <- map toId <$> getLocationsMatching matcher
               getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
         pure $ filter ((`elem` matches') . toId) ls
+      NearestLocationTo iid matcher -> do
+        mStart <- field InvestigatorLocation iid
+        case mStart of
+          Nothing -> pure []
+          Just start -> do
+            currentMatch <- start <=~> matcher
+            matches' <-
+              if currentMatch
+                then pure [start]
+                else do
+                  matchingLocationIds <- map toId <$> getLocationsMatching matcher
+                  getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
+            pure $ filter ((`elem` matches') . toId) ls
       AccessibleLocation -> guardYourLocation $ \yourLocation -> do
         getLocationsMatching (AccessibleFrom $ LocationWithId yourLocation)
       ConnectedLocation -> guardYourLocation $ \yourLocation -> do
@@ -2122,6 +2135,7 @@ getStoriesMatching matcher = do
     StoryMatchAll ms -> foldM filterMatcher as ms
     StoryWithPlacement placement ->
       pure $ filter ((== placement) . attr storyPlacement) as
+    StoryIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
 
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> maybeEnemy eid

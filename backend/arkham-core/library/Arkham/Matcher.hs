@@ -229,6 +229,11 @@ skillIs = SkillIs . toCardCode
 skillControlledBy :: InvestigatorId -> SkillMatcher
 skillControlledBy = SkillControlledBy . InvestigatorWithId
 
+-- ** Story Helpers **
+
+storyIs :: HasCardCode a => a -> StoryMatcher
+storyIs = StoryIs . toCardCode
+
 -- ** Card Helpers **
 
 cardIs :: HasCardCode a => a -> CardMatcher

@@ -1153,6 +1153,7 @@ library
       Arkham.Enemy.Cards.SpawnOfHali
       Arkham.Enemy.Cards.SpecterOfDeath
       Arkham.Enemy.Cards.SpectralRaven
+      Arkham.Enemy.Cards.SpiderOfLeng
       Arkham.Enemy.Cards.StealthyByakhee
       Arkham.Enemy.Cards.StealthyZoog
       Arkham.Enemy.Cards.StubbornDetective
@@ -1160,6 +1161,7 @@ library
       Arkham.Enemy.Cards.SuspiciousOrderly
       Arkham.Enemy.Cards.SwampLeech
       Arkham.Enemy.Cards.SwarmOfRats
+      Arkham.Enemy.Cards.SwarmOfSpiders
       Arkham.Enemy.Cards.SwiftByakhee
       Arkham.Enemy.Cards.TemporalDevourer
       Arkham.Enemy.Cards.TheCrawlingMist
@@ -2530,6 +2532,7 @@ library
       Arkham.Treachery.Cards.ShatteredAges
       Arkham.Treachery.Cards.ShellShock
       Arkham.Treachery.Cards.ShockingDiscovery
+      Arkham.Treachery.Cards.SickeningWebs
       Arkham.Treachery.Cards.SlitheringBehindYou
       Arkham.Treachery.Cards.SmiteTheWicked
       Arkham.Treachery.Cards.SnakeBite

@@ -5,13 +5,13 @@ module Arkham.Agenda.Cards.TheInfestationSpreads (
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Story.Cards qualified as Stories
+import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype TheInfestationSpreads = TheInfestationSpreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -28,7 +28,7 @@ instance RunMessage TheInfestationSpreads where
   runMessage msg a@(TheInfestationSpreads attrs) =
     case msg of
       UseThisAbility _ (isSource attrs -> True) 1 -> do
-        theInfestationBegins <- selectJust $ storyIs Stories.theInfestationBegins
+        makeInfestationTest
         pure a
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
         a <$ pushAll [advanceAgendaDeck attrs]

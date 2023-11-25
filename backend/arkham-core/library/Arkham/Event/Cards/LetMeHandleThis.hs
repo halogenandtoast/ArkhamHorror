@@ -57,7 +57,8 @@ instance RunMessage LetMeHandleThis where
       when (isNothing $ (mTreachery $> ()) <|> (mEnemy $> ()) <|> (mLocation $> ()) <|> (mAsset $> ()))
         $ error "Unhandled card type"
 
-      pushAll [createCardEffect Cards.letMeHandleThis Nothing attrs iid]
+      pushWhen (cdRevelation (toCardDef card) == IsRevelation)
+        $ createCardEffect Cards.letMeHandleThis Nothing attrs iid
       pure e
     _ -> LetMeHandleThis <$> runMessage msg attrs
 

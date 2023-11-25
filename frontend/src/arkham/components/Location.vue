@@ -176,6 +176,7 @@ const breaches = computed(() => {
   return 0
 })
 const horror = computed(() => props.location.tokens[TokenType.Horror])
+const damage = computed(() => props.location.tokens[TokenType.Damage])
 
 const debug = useDebug()
 </script>
@@ -214,6 +215,7 @@ const debug = useDebug()
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
           <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
+          <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
           <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
           <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />

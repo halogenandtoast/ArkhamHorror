@@ -15,7 +15,6 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
@@ -23,6 +22,7 @@ import Arkham.Matcher
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WakingNightmare.FlavorText
+import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Staff))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -42,11 +42,6 @@ wakingNightmare difficulty =
     , ".             waitingRoom   ."
     , "emergencyRoom .             experimentalTherapiesWard"
     ]
-
-pattern InfestedLocation :: LocationMatcher
-pattern InfestedLocation <- (LocationWithDamage (GreaterThan (Static 0)))
-  where
-    InfestedLocation = LocationWithDamage (GreaterThan (Static 0))
 
 instance HasChaosTokenValue WakingNightmare where
   getChaosTokenValue iid tokenFace (WakingNightmare attrs) = case tokenFace of

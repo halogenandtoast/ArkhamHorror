@@ -6,10 +6,12 @@ export interface Story {
   id: string
   placement: Placement
   otherSide: Target | null
+  flipped: boolean
 }
 
 export const storyDecoder = JsonDecoder.object<Story>({
   id: JsonDecoder.string,
   placement: placementDecoder,
-  otherSide: JsonDecoder.nullable(targetDecoder)
+  otherSide: JsonDecoder.nullable(targetDecoder),
+  flipped: JsonDecoder.boolean
 }, 'Story');

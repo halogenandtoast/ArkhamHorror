@@ -17,8 +17,9 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { atLocation: false })
 
 const image = computed(() => {
-  const { id } = props.story
-  return imgsrc(`cards/${id.replace('c', '')}.jpg`);
+  const { id, flipped } = props.story
+  const suffix = flipped ? 'b' : ''
+  return imgsrc(`cards/${id.replace('c', '')}${suffix}.jpg`);
 })
 
 const id = computed(() => props.story.id)

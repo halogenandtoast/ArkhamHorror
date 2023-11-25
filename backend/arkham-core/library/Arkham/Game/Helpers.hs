@@ -482,6 +482,7 @@ getCanAffordCost
 getCanAffordCost iid (toSource -> source) actions windows' = \case
   Free -> pure True
   UpTo {} -> pure True
+  OptionalCost {} -> pure True
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
     pure $ x >= n

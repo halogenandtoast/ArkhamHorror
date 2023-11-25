@@ -273,6 +273,15 @@ payCost msg c iid skipAdditionalCosts cost = do
           )
           xs
       pure c
+    OptionalCost x -> do
+      canAfford <- getCanAffordCost iid source actions [] x
+      pushWhen canAfford
+        $ chooseOne
+          player
+          [ Label (displayCostType x) [PayCost acId iid skipAdditionalCosts x]
+          , Label "Do not pay" []
+          ]
+      pure c
     Costs xs ->
       c <$ pushAll [PayCost acId iid skipAdditionalCosts x | x <- xs]
     UpTo 0 _ -> pure c

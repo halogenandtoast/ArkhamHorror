@@ -97,7 +97,11 @@ instance RunMessage TheInfestationBegins where
               . concat
               <$> for
                 infestedLocations
-                (\location -> selectList $ NotLocation InfestedLocation <> ConnectedFrom (LocationWithId location))
+                ( \location ->
+                    selectList
+                      $ NotLocation (oneOf [InfestedLocation, LocationWithHorror $ atLeast 1])
+                      <> ConnectedFrom (LocationWithId location)
+                )
           when (notNull adjacentLocations) $ do
             lead <- getLeadPlayer
             push

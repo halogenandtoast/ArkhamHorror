@@ -34,6 +34,7 @@ import Database.Esqueleto.Experimental hiding (update)
 import Entity.Answer
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
+import Import qualified as P
 import Json
 import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)
@@ -235,6 +236,7 @@ updateGame response gameId userId writeChannel = do
         arkhamGameCreatedAt
         now
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
+    deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
     insert_
       $ ArkhamStep
         gameId

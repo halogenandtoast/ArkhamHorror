@@ -115,7 +115,20 @@ instance ToJSON CampaignAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "campaign"
 
 instance FromJSON CampaignAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
+  parseJSON = withObject "CampaignAttrs" $ \o -> do
+    campaignId <- o .: "id"
+    campaignName <- o .: "name"
+    campaignDecks <- o .: "decks"
+    campaignStoryCards <- o .: "storyCards"
+    campaignDifficulty <- o .: "difficulty"
+    campaignChaosBag <- o .: "chaosBag"
+    campaignLog <- o .: "log"
+    campaignStep <- o .: "step"
+    campaignCompletedSteps <- o .: "completedSteps"
+    campaignResolutions <- o .: "resolutions"
+    campaignModifiers <- o .: "modifiers"
+    campaignMeta <- o .:? "meta" .!= Null
+    pure CampaignAttrs {..}
 
 addRandomBasicWeaknessIfNeeded
   :: MonadRandom m => Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])

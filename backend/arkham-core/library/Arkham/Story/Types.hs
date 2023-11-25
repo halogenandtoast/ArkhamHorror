@@ -47,6 +47,7 @@ data StoryAttrs = StoryAttrs
   , storyPlacement :: Placement
   , storyOtherSide :: Maybe Target
   , storyFlipped :: Bool
+  , storyMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
 
@@ -67,6 +68,7 @@ storyWith f cardDef g =
             , storyPlacement = Unplaced
             , storyOtherSide = mTarget
             , storyFlipped = False
+            , storyMeta = Null
             }
     }
 

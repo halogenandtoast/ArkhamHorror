@@ -311,6 +311,9 @@ allEnemies =
     , SomeEnemyCard inconspiciousZoog
     , --- Agents of Nyarlathotep
       SomeEnemyCard theCrawlingMist
+    , --- Spiders
+      SomeEnemyCard spiderOfLeng
+    , SomeEnemyCard swarmOfSpiders
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

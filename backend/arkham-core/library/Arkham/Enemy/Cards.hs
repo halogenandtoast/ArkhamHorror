@@ -221,12 +221,14 @@ allEncounterEnemyCards =
       , spawnOfHali
       , specterOfDeath
       , spectralRaven
+      , spiderOfLeng
       , stealthyByakhee
       , stealthyZoog
       , summonedBeast
       , suspiciousOrderly
       , swampLeech
       , swarmOfRats
+      , swarmOfSpiders
       , swiftByakhee
       , temporalDevourer
       , theCrawlingMist
@@ -1598,6 +1600,19 @@ theCrawlingMist =
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
     , cdVictoryPoints = Just 1
     , cdUnique = True
+    }
+
+spiderOfLeng :: CardDef
+spiderOfLeng =
+  (enemy "06101" "Spider of Leng" Spiders 1)
+    { cdCardTraits = setFromList [Monster, Spider]
+    }
+
+swarmOfSpiders :: CardDef
+swarmOfSpiders =
+  (enemy "06102" "Swarm of Spiders" Spiders 2)
+    { cdCardTraits = setFromList [Monster, Spider]
+    , cdKeywords = setFromList [Keyword.Swarming (Static 2)]
     }
 
 furtiveZoog :: CardDef

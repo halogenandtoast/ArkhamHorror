@@ -276,6 +276,7 @@ allEncounterTreacheryCards =
       , shadowed
       , shapesInTheMist
       , shatteredAges
+      , sickeningWebs
       , slitheringBehindYou
       , snakeBite
       , snakescourge
@@ -1739,6 +1740,12 @@ prismaticPhenomenon :: CardDef
 prismaticPhenomenon =
   (treachery "06097" "Prismatic Phenomenon" Dreamlands 2)
     { cdCardTraits = singleton Power
+    }
+
+sickeningWebs :: CardDef
+sickeningWebs =
+  (treachery "06103" "Sickening Webs" Spiders 2)
+    { cdCardTraits = singleton Obstacle
     }
 
 zoogBurrow :: CardDef

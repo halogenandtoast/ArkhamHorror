@@ -83,6 +83,10 @@ instance HasCardDef StoryAttrs where
     Just def -> def
     Nothing -> error $ "missing card def for story " <> show (unStoryId $ storyId e)
 
+instance HasCardCode Story where
+  toCardCode (Story a) = toCardCode (toAttrs a)
+  {-# INLINE toCardCode #-}
+
 instance ToJSON StoryAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "story"
   toEncoding = genericToEncoding $ aesonOptions $ Just "story"

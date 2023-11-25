@@ -2878,6 +2878,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.NearestLocationToLocation _ _ -> locationId <=~> matcher
     Matcher.FarthestLocationFromAll _ -> locationId <=~> matcher
     Matcher.NearestLocationToYou _ -> locationId <=~> matcher
+    Matcher.NearestLocationTo _ _ -> locationId <=~> matcher
     Matcher.LocationWithTrait _ -> locationId <=~> matcher
     Matcher.LocationWithoutTrait _ -> locationId <=~> matcher
     Matcher.LocationInDirection _ _ -> locationId <=~> matcher

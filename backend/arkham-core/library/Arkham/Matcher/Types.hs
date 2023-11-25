@@ -377,6 +377,7 @@ data LocationMatcher
     FarthestLocationFromInvestigator InvestigatorMatcher LocationMatcher
   | FarthestLocationFromAll LocationMatcher
   | NearestLocationToYou LocationMatcher
+  | NearestLocationTo InvestigatorId LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTrait Trait
   | LocationInDirection Direction LocationMatcher
@@ -1154,6 +1155,7 @@ data StoryMatcher
   = StoryWithTitle Text
   | StoryWithPlacement Placement
   | StoryMatchAll [StoryMatcher]
+  | StoryIs CardCode
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup StoryMatcher where

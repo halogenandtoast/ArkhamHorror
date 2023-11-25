@@ -24,6 +24,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
+import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 
@@ -172,6 +173,10 @@ const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter
 
 const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) =>
   enemy.placement.tag === "OtherPlacement" && enemy.placement.contents === "Global" && enemy.asSelfLocation === null
+))
+
+const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>
+  story.placement.tag === "OtherPlacement" && story.placement.contents === "Global"
 ))
 
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
@@ -345,6 +350,15 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           v-for="enemy in globalEnemies"
           :key="enemy.id"
           :enemy="enemy"
+          :game="game"
+          :playerId="playerId"
+          @choose="choose"
+        />
+
+        <Story
+          v-for="story in globalStories"
+          :key="story.id"
+          :story="story"
           :game="game"
           :playerId="playerId"
           @choose="choose"

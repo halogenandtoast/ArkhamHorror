@@ -139,4 +139,8 @@ instance RunMessage TheInfestationBegins where
           lead
           [targetLabel location [creation] | (location, creation) <- locationsWithCreation]
       pure s
+    SendMessage (isTarget attrs -> True) (AddChaosToken face) -> do
+      let bag = infestationBag attrs
+      let bag' = bag {infestationTokens = InfestationToken face : infestationTokens bag}
+      pure $ TheInfestationBegins $ attrs {storyMeta = toJSON bag'}
     _ -> TheInfestationBegins <$> runMessage msg attrs

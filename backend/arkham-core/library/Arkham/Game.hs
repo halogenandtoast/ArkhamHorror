@@ -4590,6 +4590,32 @@ runGameMessage msg g = case msg of
             ]
           <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
+  ReplaceEnemy eid card replaceStrategy -> do
+    -- if replaceStrategy is swap we also want to copy over revealed, all tokens
+    enemy <- getEnemy eid
+    let
+      oldAttrs = toAttrs enemy
+      enemy' =
+        flip overAttrs (lookupEnemy (toCardCode card) eid (toCardId card))
+          $ \attrs -> case replaceStrategy of
+            DefaultReplace -> attrs
+            Swap ->
+              attrs
+                { enemyTokens = enemyTokens oldAttrs
+                , enemyPlacement = enemyPlacement oldAttrs
+                , enemyAssignedDamage = enemyAssignedDamage oldAttrs
+                , enemyExhausted = enemyExhausted oldAttrs
+                , enemyMovedFromHunterKeyword = enemyMovedFromHunterKeyword oldAttrs
+                , enemySealedChaosTokens = enemySealedChaosTokens oldAttrs
+                , enemyKeys = enemyKeys oldAttrs
+                , enemySpawnedBy = enemySpawnedBy oldAttrs
+                , enemyOriginalCardCode = enemyOriginalCardCode oldAttrs
+                }
+
+    pushWhen (replaceStrategy == DefaultReplace)
+      $ EnemyCheckEngagement eid
+    -- todo: should we just run this in place?
+    pure $ g & entitiesL . enemiesL . at eid ?~ enemy'
   RemoveAsset aid -> do
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)

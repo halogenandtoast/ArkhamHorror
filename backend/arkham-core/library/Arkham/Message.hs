@@ -331,6 +331,7 @@ data Message
   | AdvanceAgendaDeck Int Source
   | AdvanceCurrentAgenda
   | ReplaceLocation LocationId Card ReplaceStrategy
+  | ReplaceEnemy EnemyId Card ReplaceStrategy
   | ReplacedLocation LocationId LocationId
   | ReplaceAgenda AgendaId Card
   | RevertAgenda AgendaId
@@ -744,6 +745,7 @@ data Message
   | RemoveTreachery TreacheryId
   | RemoveFromDiscard InvestigatorId CardId
   | RemoveFromEncounterDiscard EncounterCard
+  | RemoveFromEncounterDeck EncounterCard
   | RemoveFromGame Target
   | RemoveCompletedActFromGame Int ActId
   | RemovedFromGame Card

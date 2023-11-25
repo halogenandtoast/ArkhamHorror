@@ -38,9 +38,11 @@ wakingNightmare difficulty =
     "06063"
     "Waking Nightmare"
     difficulty
-    [ ".             recordsOffice ."
-    , ".             waitingRoom   ."
-    , "emergencyRoom .             experimentalTherapiesWard"
+    [ ".             recordsOffice .                         ."
+    , ".             waitingRoom   .                         ."
+    , "emergencyRoom .             experimentalTherapiesWard ."
+    , ".             basementDoor1 stairwell                 basementDoor3"
+    , ".             .             basementDoor2             ."
     ]
 
 instance HasChaosTokenValue WakingNightmare where
@@ -113,7 +115,14 @@ instance RunMessage WakingNightmare where
       setAsideCards <-
         mconcat
           <$> sequence
-            [ genSetAsideCards [Enemies.corruptedOrderly, Treacheries.outbreak]
+            [ genSetAsideCards
+                [ Enemies.corruptedOrderly
+                , Treacheries.outbreak
+                , Locations.stairwell
+                , Locations.morgue
+                , Locations.operatingRoom
+                , Locations.privateRoom
+                ]
             , genCards [Assets.randolphCarterChainedToTheWakingWorld, Stories.theInfestationBegins]
             , pure $ guard (not drMaheswaranInPlay) *> [drShivaniMaheswaran]
             ]

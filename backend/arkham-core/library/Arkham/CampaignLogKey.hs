@@ -215,6 +215,7 @@ data CampaignLogKey
   | TheInvestigatorsParleyedWithTheZoogs
   | DrMaheswaranJoinedTheInvestigation
   | DrMaheswaranStayedWithHerPatients
+  | StepsOfTheBridge
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

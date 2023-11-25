@@ -742,6 +742,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     cardCode <- field AssetCardCode aid
     pure $ a & resignedCardCodesL %~ (cardCode :)
   RemoveFromEncounterDiscard ec -> pure $ a & discardL %~ filter (/= ec)
+  RemoveFromEncounterDeck ec -> pure $ a & encounterDeckL %~ filter (/= ec)
   ShuffleEncounterDiscardBackIn -> do
     encounterDeck <-
       withDeckM

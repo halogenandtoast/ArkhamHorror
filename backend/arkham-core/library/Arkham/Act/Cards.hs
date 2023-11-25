@@ -90,6 +90,7 @@ allActCards =
       , investigatingTheTrail
       , journeyToTheNexus
       , leadingTheWay
+      , lookingForAnswers
       , lostInTheWoods
       , magicAndScience
       , mendTheShatter

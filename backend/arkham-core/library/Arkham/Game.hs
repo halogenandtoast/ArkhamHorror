@@ -5745,7 +5745,11 @@ runGameMessage msg g = case msg of
             then pure $ performRevelationSkillTestWindow : msgs
             else pure msgs
 
-        pushAll (pre <> msgs')
+        pushAll
+          $ [SetActiveInvestigator (skillTestInvestigator skillTest)]
+          <> pre
+          <> msgs'
+          <> [SetActiveInvestigator (g ^. activeInvestigatorIdL)]
         pure $ g & (skillTestL ?~ skillTest)
   BeforeSkillTest skillTest ->
     pure $ g & activeInvestigatorIdL .~ skillTestInvestigator skillTest
@@ -6025,7 +6029,9 @@ runGameMessage msg g = case msg of
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card
   InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
-  SetActiveInvestigator iid -> pure $ g & activeInvestigatorIdL .~ iid
+  SetActiveInvestigator iid -> do
+    player <- getPlayer iid
+    pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
   InvestigatorDrawEncounterCard iid -> do
     drawEncounterCardWindow <-
       checkWindows

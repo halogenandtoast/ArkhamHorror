@@ -1478,7 +1478,9 @@ library
       Arkham.Game.Diff
       Arkham.Game.Helpers
       Arkham.Game.Json
+      Arkham.Game.Runner
       Arkham.Game.Settings
+      Arkham.Game.Utils
       Arkham.GameEnv
       Arkham.GameValue
       Arkham.Git

@@ -32,6 +32,6 @@ instance RunMessage ZoogBurrow where
         else do
           player <- getPlayer iid
           lead <- getLead
-          push $ chooseOrRunOne player [targetLabel zoog [PlaceSwarmCards lead zoog 1] | zoog <- zoogs]
+          push $ chooseOrRunOne player [targetLabel zoog [PlaceSwarmCards lead zoog n] | zoog <- zoogs]
       pure t
     _ -> ZoogBurrow <$> runMessage msg attrs

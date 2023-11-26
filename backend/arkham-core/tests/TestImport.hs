@@ -21,8 +21,9 @@ import Arkham.Cost as X hiding (PaidCost)
 import Arkham.Enemy as X
 import Arkham.Entities as X
 import Arkham.Event as X
-import Arkham.Game as X hiding (getAsset, newGame, runMessages, withModifiers)
+import Arkham.Game as X hiding (newGame, runMessages, withModifiers)
 import Arkham.Game.Helpers as X hiding (getCanAffordCost)
+import Arkham.Game.Utils as X hiding (getAsset)
 import Arkham.GameValue as X
 import Arkham.Helpers as X
 import Arkham.Helpers.Message as X hiding (createEnemy, putCardIntoPlay)

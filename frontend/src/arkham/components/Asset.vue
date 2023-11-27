@@ -155,13 +155,14 @@ watch(abilities, (abilities) => {
 <template>
   <div class="asset" :data-index="asset.cardId">
     <div class="card-frame">
-      <img
-        :data-id="id"
-        :src="image"
-        :class="{ 'asset--can-interact': canInteract, exhausted}"
-        class="card"
-        @click="clicked"
-      />
+      <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, exhausted}">
+        <img
+          :data-id="id"
+          :src="image"
+          class="card"
+          @click="clicked"
+        />
+      </div>
       <div v-if="hasPool" class="pool">
         <div class="keys" v-if="keys.length > 0">
           <Key v-for="key in keys" :key="key" :name="key" />
@@ -255,8 +256,10 @@ watch(abilities, (abilities) => {
 }
 
 .asset--can-interact {
-  border: 2px solid $select;
-  cursor:pointer;
+  img {
+    border: 2px solid $select;
+    cursor:pointer;
+  }
 }
 
 .pool {

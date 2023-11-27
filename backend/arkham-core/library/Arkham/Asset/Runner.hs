@@ -266,7 +266,12 @@ instance RunMessage AssetAttrs where
       pure $ a & placementL .~ Unplaced
     ShuffleCardsIntoDeck _ cards ->
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
-    Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
+    Exhaust target | a `isTarget` target -> do
+      msgs <- doFrame (Exhaust target) (Window.Exhausts (toTarget a))
+      pushAll msgs
+      pure a
+    Do (Exhaust target) | a `isTarget` target -> do
+      pure $ a & exhaustedL .~ True
     ExhaustThen target msgs | a `isTarget` target -> do
       unless assetExhausted $ pushAll msgs
       pure $ a & exhaustedL .~ True

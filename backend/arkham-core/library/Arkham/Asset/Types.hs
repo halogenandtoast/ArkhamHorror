@@ -14,6 +14,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Customization
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
@@ -30,6 +31,9 @@ import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Data.Data
+import Data.IntMap.Strict qualified as IntMap
+import Data.List (elemIndex)
+import Data.Map.Strict qualified as Map
 import GHC.Records
 
 data Asset = forall a. IsAsset a => Asset a
@@ -166,6 +170,7 @@ data instance Field Asset :: Type -> Type where
   AssetSealedChaosTokens :: Field Asset [ChaosToken]
   AssetPlacement :: Field Asset Placement
   AssetCardsUnderneath :: Field Asset [Card]
+  AssetCustomizations :: Field Asset (IntMap Int)
   -- virtual
   AssetClasses :: Field Asset (Set ClassSymbol)
   AssetTraits :: Field Asset (Set Trait)
@@ -234,6 +239,8 @@ data AssetAttrs = AssetAttrs
   , assetKeys :: Set ArkhamKey
   , assetAssignedHealthDamage :: Int
   , assetAssignedSanityDamage :: Int
+  , assetCustomizations :: IntMap Int
+  , assetMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
 
@@ -332,6 +339,8 @@ assetWith f cardDef g =
             , assetKeys = mempty
             , assetAssignedHealthDamage = 0
             , assetAssignedSanityDamage = 0
+            , assetCustomizations = mempty
+            , assetMeta = Null
             }
     }
 

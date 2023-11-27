@@ -46,6 +46,7 @@ import Control.Monad.Random as X (MonadRandom, uniform)
 import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
 import Control.Monad.Random.Strict as X (Random)
 import Control.Monad.Trans.Maybe as X (MaybeT (..), hoistMaybe, runMaybeT)
+import Data.Aeson (Result (..))
 import Data.Aeson as X hiding (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
@@ -354,3 +355,8 @@ toSentence = go False
   go True [a, b] = tshow a <> ", and " <> tshow b
   go False [a, b] = tshow a <> " and " <> tshow b
   go _ (a : as) = tshow a <> ", " <> go True as
+
+toResult :: FromJSON a => Value -> a
+toResult x = case fromJSON x of
+  Success a -> a
+  Error e -> error $ "result failure: " <> e

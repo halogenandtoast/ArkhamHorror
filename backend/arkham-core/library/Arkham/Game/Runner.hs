@@ -1583,8 +1583,15 @@ runGameMessage msg g = case msg of
         [#when, Timing.AtIf, #after]
     pushAll windows'
     pure g
+  BeginRoundWindow -> do
+    windows' <-
+      traverse
+        (\t -> checkWindows [mkWindow t Window.AtBeginningOfRound])
+        [#when, Timing.AtIf, #after]
+    pushAll windows'
+    pure g
   EndRound -> do
-    pushAllEnd [BeginRound, Begin MythosPhase]
+    pushAllEnd [BeginRoundWindow, BeginRound, Begin MythosPhase]
     pure $ g & (roundHistoryL .~ mempty)
   Begin MythosPhase {} -> do
     hasEncounterDeck <- scenarioField ScenarioHasEncounterDeck

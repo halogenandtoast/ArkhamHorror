@@ -361,6 +361,7 @@ data LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
   | LocationWithHorror ValueMatcher
+  | LocationWithShroud ValueMatcher
   | LocationWithMostClues LocationMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
@@ -778,6 +779,7 @@ data WindowMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who
   | TurnEnds Timing Who
+  | RoundBegins Timing
   | RoundEnds Timing
   | DuringTurn Who
   | Enters Timing Who Where
@@ -816,6 +818,7 @@ data WindowMatcher
   | LostResources Timing Who SourceMatcher
   | LostActions Timing Who SourceMatcher
   | WouldTriggerChaosTokenRevealEffectOnCard Who CardMatcher [ChaosTokenFace]
+  | Exhausts Timing Who TargetMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep

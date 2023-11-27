@@ -30,6 +30,7 @@ data Keyword
   | Bonded Int CardCode
   | Patrol LocationMatcher
   | Swarming GameValue
+  | Customizable
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

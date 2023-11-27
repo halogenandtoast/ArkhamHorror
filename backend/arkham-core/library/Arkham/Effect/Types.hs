@@ -43,6 +43,9 @@ data instance Field Effect :: Type -> Type where
 cardEffect :: (EffectAttrs -> a) -> CardDef -> EffectArgs -> a
 cardEffect f def = f . uncurry4 (baseAttrs (toCardCode def))
 
+cardEffectWith :: (EffectAttrs -> a) -> CardDef -> (EffectAttrs -> EffectAttrs) -> EffectArgs -> a
+cardEffectWith f def g = f . g . uncurry4 (baseAttrs (toCardCode def))
+
 instance AsId EffectAttrs where
   type IdOf EffectAttrs = EffectId
   asId = toId
@@ -58,11 +61,15 @@ data EffectAttrs = EffectAttrs
   , effectFinished :: Bool
   -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
   -- to track and escape recursion
+  , effectExtraMetadata :: Value
   }
   deriving stock (Show, Eq, Generic)
 
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
+
+extraL :: Lens' EffectAttrs Value
+extraL = lens effectExtraMetadata $ \m x -> m {effectExtraMetadata = x}
 
 instance HasField "finished" EffectAttrs Bool where
   getField = effectFinished
@@ -75,6 +82,12 @@ instance HasField "source" EffectAttrs Source where
 
 instance HasField "metadata" EffectAttrs (Maybe (EffectMetadata Window Message)) where
   getField = effectMetadata
+
+instance HasField "meta" EffectAttrs (Maybe (EffectMetadata Window Message)) where
+  getField = effectMetadata
+
+instance HasField "extra" EffectAttrs Value where
+  getField = effectExtraMetadata
 
 type EffectArgs =
   (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
@@ -96,6 +109,7 @@ baseAttrs cardCode eid meffectMetadata source target =
     , effectTraits = mempty
     , effectWindow = Nothing
     , effectFinished = False
+    , effectExtraMetadata = Null
     }
 
 targetL :: Lens' EffectAttrs Target

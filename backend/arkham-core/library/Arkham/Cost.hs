@@ -279,6 +279,7 @@ displayCostType = \case
     Resource -> pluralize n "Resource from the asset"
     Key -> pluralize n "Key"
     Lock -> pluralize n "Lock"
+    Evidence -> tshow n <> " Evidence"
   DynamicUseCost _ uType _ -> case uType of
     Ammo -> "X Ammo"
     Supply -> "X Supplies"
@@ -290,6 +291,7 @@ displayCostType = \case
     Resource -> "X Resources"
     Key -> "X Keys"
     Lock -> "X Locks"
+    Evidence -> "X Evidence"
   UseCostUpTo _ uType n m -> case uType of
     Ammo -> tshow n <> "-" <> tshow m <> " Ammo"
     Supply -> tshow n <> "-" <> tshow m <> " Supplies"
@@ -301,6 +303,7 @@ displayCostType = \case
     Resource -> tshow n <> "-" <> tshow m <> " Resources"
     Key -> tshow n <> "-" <> tshow m <> " Keys"
     Lock -> tshow n <> "-" <> tshow m <> " Locks"
+    Evidence -> tshow n <> "-" <> tshow m <> " Evidence"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
   SealChaosTokenCost _ -> "Seal token"

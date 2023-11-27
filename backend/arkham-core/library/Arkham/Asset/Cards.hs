@@ -14,12 +14,13 @@ import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.Cost
 import Arkham.Criteria qualified as Criteria
+import Arkham.Customization
 import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
-import Arkham.Trait hiding (Supply)
+import Arkham.Trait hiding (Evidence, Supply)
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
@@ -216,6 +217,7 @@ allPlayerAssetCards =
       , eighteenDerringer
       , eighteenDerringer2
       , elderSignAmulet3
+      , empiricalHypothesis
       , empowerSelfAcuity2
       , empowerSelfAlacrity2
       , empowerSelfStamina2
@@ -4191,6 +4193,27 @@ handcuffs2 =
       , cdSkills = [#combat, #agility]
       , cdLevel = 2
       }
+
+empiricalHypothesis :: CardDef
+empiricalHypothesis =
+  (asset "09041" "Empirical Hypothesis" 2 Seeker)
+    { cdCardTraits = setFromList [Talent, Science]
+    , cdSkills = [#intellect]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdUses = uses Evidence 0
+    , cdCustomizations =
+        mapFromList
+          [ (PessimisticOutlook, 1)
+          , (TrialAndError, 1)
+          , (IndepedentVariable, 1)
+          , (FieldResearch, 1)
+          , (PeerReview, 2)
+          , (ResearchGrant, 2)
+          , (IrrefutableProof, 3)
+          , (AlternativeHypothesis, 4)
+          ]
+    }
 
 fingerprintKit4 :: CardDef
 fingerprintKit4 =

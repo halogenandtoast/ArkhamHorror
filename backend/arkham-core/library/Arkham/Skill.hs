@@ -98,6 +98,7 @@ allSkills =
     , SomeSkillCard theEyeOfTruth5
     , SomeSkillCard dreamParasite
     , SomeSkillCard promiseOfPower
+    , SomeSkillCard surveyTheArea1
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied
     , SomeSkillCard riseToTheOccasion3

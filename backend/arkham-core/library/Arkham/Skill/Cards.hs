@@ -90,6 +90,7 @@ allPlayerSkillCards =
       , strokeOfLuck2
       , stunningBlow
       , surprisingFind1
+      , surveyTheArea1
       , survivalInstinct
       , survivalInstinct2
       , takeHeart
@@ -598,6 +599,14 @@ promiseOfPower :: CardDef
 promiseOfPower =
   (skill "07032" "Promise of Power" [#wild, #wild, #wild, #wild] Mystic)
     { cdCardTraits = setFromList [Practiced, Cursed]
+    }
+
+surveyTheArea1 :: CardDef
+surveyTheArea1 =
+  (skill "08037" "Survey the Area" [] Seeker)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = 1
+    , cdCardInHandEffects = True
     }
 
 riseToTheOccasion3 :: CardDef

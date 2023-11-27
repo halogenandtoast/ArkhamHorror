@@ -167,11 +167,13 @@ watch(abilities, (abilities) => {
         <div class="keys" v-if="keys.length > 0">
           <Key v-for="key in keys" :key="key" :name="key" />
         </div>
-        <PoolItem
-          v-if="asset.uses && asset.uses.amount > 0"
-          type="resource"
-          :amount="asset.uses.amount"
-        />
+        <template v-for="[use, amount] in Object.entries(asset.uses)" :key="use">
+          <PoolItem
+            v-if="amount > 0"
+            type="resource"
+            :amount="amount"
+          />
+        </template>
         <PoolItem
           v-if="asset.health !== null || (damage || 0) > 0"
           type="health"

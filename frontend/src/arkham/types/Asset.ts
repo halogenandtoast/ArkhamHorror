@@ -7,14 +7,6 @@ import {
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
-export interface Uses {
-  amount: number; // eslint-disable-line
-}
-
-export const usesDecoder = JsonDecoder.object<Uses>({
-  amount: JsonDecoder.number,
-}, 'Uses');
-
 export interface Asset {
   id: string;
   cardCode: string;
@@ -23,7 +15,7 @@ export interface Asset {
   health: number | null;
   sanity: number | null;
   tokens: Tokens;
-  uses: Uses | null;
+  uses: Record<string, number>;
   exhausted: boolean;
   events: string[];
   treacheries: string[];
@@ -41,7 +33,7 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   health: JsonDecoder.nullable(JsonDecoder.number),
   tokens: tokensDecoder,
   sanity: JsonDecoder.nullable(JsonDecoder.number),
-  uses: JsonDecoder.nullable(usesDecoder),
+  uses: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], 'Uses'), 'Uses[]').map((x) => x.reduce((acc, [k, v]) => (acc[k] = v, acc), {} as Record<string, number>)),
   exhausted: JsonDecoder.boolean,
   events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),

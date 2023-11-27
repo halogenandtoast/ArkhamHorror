@@ -1420,6 +1420,10 @@ getLocationsMatching lmatcher = do
         filterM
           (field LocationHorror . toId >=> (`gameValueMatches` gameValueMatcher))
           ls
+      LocationWithShroud gameValueMatcher -> do
+        filterM
+          (field LocationShroud . toId >=> (`gameValueMatches` gameValueMatcher))
+          ls
       LocationWithMostClues locationMatcher -> do
         matches' <- getLocationsMatching locationMatcher
         maxes <$> forToSnd matches' (pure . attr locationClues)
@@ -2641,6 +2645,7 @@ instance Projection Asset where
             _ -> Nothing
         pure $ mcontroller <|> assetController
       AssetOwner -> pure assetOwner
+      AssetCustomizations -> pure assetCustomizations
       AssetLocation -> case assetPlacement of
         AtLocation lid -> pure $ Just lid
         AttachedToLocation lid -> pure $ Just lid

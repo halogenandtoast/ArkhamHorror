@@ -464,6 +464,7 @@ library
       Arkham.Asset.Cards.EighteenDerringer
       Arkham.Asset.Cards.EighteenDerringer2
       Arkham.Asset.Cards.ElderSignAmulet3
+      Arkham.Asset.Cards.EmpiricalHypothesis
       Arkham.Asset.Cards.EmpowerSelfAcuity2
       Arkham.Asset.Cards.EmpowerSelfAlacrity2
       Arkham.Asset.Cards.EmpowerSelfStamina2
@@ -924,6 +925,7 @@ library
       Arkham.Cost.Status
       Arkham.Criteria
       Arkham.Criteria.Override
+      Arkham.Customization
       Arkham.Damage
       Arkham.DamageEffect
       Arkham.Deck
@@ -943,7 +945,6 @@ library
       Arkham.Effect.Effects.BindMonster2
       Arkham.Effect.Effects.CallingInFavors
       Arkham.Effect.Effects.ChaosTokenEffect
-      Arkham.Effect.Effects.CharlesRossEsq
       Arkham.Effect.Effects.CursedShores
       Arkham.Effect.Effects.CurseOfTheRougarouTabletToken
       Arkham.Effect.Effects.DaisysToteBagAdvanced
@@ -1491,6 +1492,7 @@ library
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag
+      Arkham.Helpers.Customization
       Arkham.Helpers.Deck
       Arkham.Helpers.Doom
       Arkham.Helpers.Effect

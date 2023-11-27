@@ -37,6 +37,7 @@ windowModifierEffect' eid metadata effectWindow source target =
       , effectTraits = mempty
       , effectWindow = Just effectWindow
       , effectFinished = False
+      , effectExtraMetadata = Null
       }
 
 instance HasModifiersFor WindowModifierEffect where

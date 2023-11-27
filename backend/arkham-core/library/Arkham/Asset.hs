@@ -11,7 +11,12 @@ import Arkham.Id
 
 createAsset :: IsCard a => a -> AssetId -> Asset
 createAsset a aId =
-  lookupAsset (toCardCode a) aId (toCardOwner a) (toCardId a)
+  let this = lookupAsset (toCardCode a) aId (toCardOwner a) (toCardId a)
+   in overAttrs (\attrs -> attrs {assetCustomizations = customizations}) this
+ where
+  customizations = case toCard a of
+    PlayerCard pc -> pcCustomizations pc
+    _ -> mempty
 
 lookupAsset :: CardCode -> AssetId -> Maybe InvestigatorId -> CardId -> Asset
 lookupAsset cardCode = case lookup cardCode allAssets of
@@ -663,7 +668,8 @@ allAssets =
       SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2
     , --- seeker [tsk]
-      SomeAssetCard fingerprintKit4
+      SomeAssetCard empiricalHypothesis
+    , SomeAssetCard fingerprintKit4
     , --- rogue [tsk]
       SomeAssetCard chuckFergus2
     , -- Return to Night of the Zealot

@@ -517,6 +517,7 @@ data Message
   | ScenarioResolutionStep Int Resolution
   | EndOfScenario (Maybe CampaignStep)
   | EndRound
+  | BeginRoundWindow
   | EndRoundWindow
   | EndSearch InvestigatorId Source Target [(Zone, ZoneReturnStrategy)]
   | SearchEnded InvestigatorId

@@ -17,6 +17,7 @@ data UseType
   | Resource
   | Key
   | Lock
+  | Evidence
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''UseType)

@@ -14,6 +14,7 @@ import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria
+import Arkham.Customization
 import Arkham.EncounterSet
 import Arkham.GameValue
 import Arkham.Id
@@ -128,6 +129,7 @@ data CardDef = CardDef
   , cdBondedWith :: [(Int, CardCode)]
   , cdSkipPlayWindows :: Bool
   , cdBeforeEffect :: Bool
+  , cdCustomizations :: Map Customization Int
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -183,6 +185,7 @@ emptyCardDef cCode name cType =
     , cdBondedWith = []
     , cdSkipPlayWindows = False
     , cdBeforeEffect = False
+    , cdCustomizations = mempty
     }
 
 instance IsCardMatcher CardDef where

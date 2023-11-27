@@ -1955,6 +1955,17 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.AgendaAdvances timing agendaMatcher -> guardTiming timing $ \case
       Window.AgendaAdvance aid -> agendaMatches aid agendaMatcher
       _ -> noMatch
+    Matcher.Exhausts timing whoMatcher targetMatcher -> guardTiming timing \case
+      Window.Exhausts target@(AssetTarget aid) -> do
+        mController <- field AssetController aid
+        case mController of
+          Just controller -> do
+            andM
+              [ matchWho iid controller whoMatcher
+              , targetMatches target targetMatcher
+              ]
+          Nothing -> noMatch
+      _ -> noMatch
     Matcher.MovedBy timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.MovedBy source' _ who ->
         andM
@@ -2121,6 +2132,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.TurnEnds timing whoMatcher -> guardTiming timing $ \case
       Window.TurnEnds who -> matchWho iid who whoMatcher
       _ -> noMatch
+    Matcher.RoundBegins timing -> guardTiming timing (pure . (== Window.AtBeginningOfRound))
     Matcher.RoundEnds timing -> guardTiming timing (pure . (== Window.AtEndOfRound))
     Matcher.Enters timing whoMatcher whereMatcher -> guardTiming timing $ \case
       Window.Entering iid' lid ->
@@ -2468,22 +2480,19 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       Window.WouldReady (EnemyTarget enemyId) -> enemyMatches enemyId enemyMatcher
       _ -> noMatch
     Matcher.FastPlayerWindow -> guardTiming #when (pure . (== Window.FastPlayerWindow))
-    Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher ->
-      case whoMatcher of
-        Matcher.You -> guardTiming timing $ \case
-          Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _ ->
-            andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
-          Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _ ->
-            andM
-              [ member aid
-                  <$> select
-                    ( Matcher.AssetControlledBy
-                        $ Matcher.replaceYouMatcher iid whoMatcher
-                    )
-              , sourceMatches source' sourceMatcher
-              ]
-          _ -> noMatch
-        _ -> noMatch
+    Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
+      Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _ ->
+        andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+      Window.WouldTakeDamageOrHorror source' (AssetTarget aid) _ _ ->
+        andM
+          [ member aid
+              <$> select
+                ( Matcher.AssetControlledBy
+                    $ Matcher.replaceYouMatcher iid whoMatcher
+                )
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> noMatch
     Matcher.DealtDamage timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtDamage source' _ (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
@@ -2894,6 +2903,8 @@ locationMatches investigatorId source window locationId matcher' = do
       (`gameValueMatches` valueMatcher) =<< field LocationDoom locationId
     Matcher.LocationWithHorror valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationHorror locationId
+    Matcher.LocationWithShroud valueMatcher ->
+      (`gameValueMatches` valueMatcher) =<< field LocationShroud locationId
     Matcher.LocationWithMostClues locationMatcher ->
       member locationId
         <$> select (Matcher.LocationWithMostClues locationMatcher)

@@ -87,6 +87,7 @@ data WindowType
   | AnyPhaseBegins
   | AssetDefeated AssetId DefeatedBy
   | AssignedHorror Source InvestigatorId [Target]
+  | AtBeginningOfRound
   | AtEndOfRound
   | GameBegins
   | ChosenRandomLocation LocationId
@@ -123,6 +124,7 @@ data WindowType
   | EnemyWouldBeDefeated EnemyId
   | EnterPlay Target
   | Entering InvestigatorId LocationId
+  | Exhausts Target
   | FailAttackEnemy InvestigatorId EnemyId Int
   | FailEvadeEnemy InvestigatorId EnemyId Int
   | FailInvestigationSkillTest InvestigatorId LocationId Int

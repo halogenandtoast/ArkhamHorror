@@ -33,10 +33,12 @@ import Arkham.Asset.Assets (
   azureFlame5Effect,
   azureFlameEffect,
   baseballBatEffect,
+  charlesRossEsqEffect,
   clairvoyance3Effect,
   clairvoyance5Effect,
   clairvoyanceEffect,
   crystalPendulumEffect,
+  empiricalHypothesisEffect,
   fence1Effect,
   gregoryGryEffect,
   grislyTotemSeeker3Effect,
@@ -270,7 +272,7 @@ allEffects =
     , ("03047c", SomeEffect theStrangerTheShoresOfHali)
     , ("03100", SomeEffect theKingsEdict)
     , ("03141", SomeEffect mrPeabody)
-    , ("03149", SomeEffect charlesRossEsq)
+    , ("03149", SomeEffect charlesRossEsqEffect)
     , ("03153", SomeEffect stormOfSpiritsEffect)
     , ("03155", SomeEffect fightOrFlight)
     , ("03158", SomeEffect callingInFavors)
@@ -337,6 +339,7 @@ allEffects =
     , ("06325", SomeEffect theEyeOfTruth5Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)
+    , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50008", SomeEffect mindWipe3)
     , ("50044", SomeEffect jeremiahPierce)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)

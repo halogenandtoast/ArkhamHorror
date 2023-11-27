@@ -38,8 +38,10 @@ allPlayerSkillCards =
       , daredevil
       , daredevil2
       , daring
+      , dauntlessSpirit1
       , deduction
       , deduction2
+      , defensiveStance1
       , defiance
       , defiance2
       , desperateSearch
@@ -66,6 +68,7 @@ allPlayerSkillCards =
       , neitherRainNorSnow
       , nimble
       , notWithoutAFight
+      , occultTheory1
       , opportunist
       , opportunist2
       , overpower
@@ -601,9 +604,33 @@ promiseOfPower =
     { cdCardTraits = setFromList [Practiced, Cursed]
     }
 
+defensiveStance1 :: CardDef
+defensiveStance1 =
+  (skill "08024" "Defensive Stance" [] Guardian)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = 1
+    , cdCardInHandEffects = True
+    }
+
 surveyTheArea1 :: CardDef
 surveyTheArea1 =
   (skill "08037" "Survey the Area" [] Seeker)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = 1
+    , cdCardInHandEffects = True
+    }
+
+occultTheory1 :: CardDef
+occultTheory1 =
+  (skill "08065" "Occult Theory" [] Mystic)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = 1
+    , cdCardInHandEffects = True
+    }
+
+dauntlessSpirit1 :: CardDef
+dauntlessSpirit1 =
+  (skill "08078" "Dauntless Spirit" [] Survivor)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = 1
     , cdCardInHandEffects = True

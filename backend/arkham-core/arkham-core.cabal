@@ -2207,8 +2207,10 @@ library
       Arkham.Skill.Cards.Daredevil
       Arkham.Skill.Cards.Daredevil2
       Arkham.Skill.Cards.Daring
+      Arkham.Skill.Cards.DauntlessSpirit1
       Arkham.Skill.Cards.Deduction
       Arkham.Skill.Cards.Deduction2
+      Arkham.Skill.Cards.DefensiveStance1
       Arkham.Skill.Cards.Defiance
       Arkham.Skill.Cards.Defiance2
       Arkham.Skill.Cards.DesperateSearch
@@ -2235,6 +2237,7 @@ library
       Arkham.Skill.Cards.NeitherRainNorSnow
       Arkham.Skill.Cards.Nimble
       Arkham.Skill.Cards.NotWithoutAFight
+      Arkham.Skill.Cards.OccultTheory1
       Arkham.Skill.Cards.Opportunist
       Arkham.Skill.Cards.Opportunist2
       Arkham.Skill.Cards.Overpower

@@ -3407,4 +3407,6 @@ canDo iid action = do
 skillTestTypeMatches :: HasGame m => SkillTest -> Matcher.SkillTestTypeMatcher -> m Bool
 skillTestTypeMatches st = \case
   Matcher.AnySkillTestType -> pure True
-  Matcher.InvestigationSkillTest -> pure $ skillTestAction st == Just #investigate
+  Matcher.InvestigationSkillTest locationMatcher -> case toActionTarget (skillTestTarget st) of
+    LocationTarget lid -> andM [lid <=~> locationMatcher, pure $ skillTestAction st == Just #investigate]
+    _ -> pure False

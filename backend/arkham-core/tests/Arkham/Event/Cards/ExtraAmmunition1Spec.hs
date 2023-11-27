@@ -14,6 +14,6 @@ spec = describe "Extra Ammunition (1)" $ do
     self `moveTo` location
     investigator2 `moveTo` location
     fortyFiveAutomatic <- self `putAssetIntoPlay` Assets.fortyFiveAutomatic
-    fortyFiveAutomatic.uses `shouldReturn` Uses Ammo 4
+    fortyFiveAutomatic.uses `shouldReturn` singletonMap Ammo 4
     self `playEvent` Events.extraAmmunition1
-    fortyFiveAutomatic.uses `shouldReturn` Uses Ammo 7
+    fortyFiveAutomatic.uses `shouldReturn` singletonMap Ammo 7

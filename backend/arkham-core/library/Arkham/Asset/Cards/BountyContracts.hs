@@ -44,7 +44,7 @@ instance RunMessage BountyContracts where
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
       player <- getPlayer iid
       health <- field EnemyHealth enemy
-      let maxAmount = min health (min 3 (useCount (assetUses attrs)))
+      let maxAmount = min health (min 3 (findWithDefault 0 Bounty $ assetUses attrs))
       push
         $ chooseAmounts
           player

@@ -40,9 +40,9 @@ instance RunMessage Contraband2 where
 
       let
         ammoAssetsWithUseCount =
-          map (\(aid, uses) -> (Ammo, useCount uses, aid)) ammoAssets
+          map (\(aid, uses) -> (Ammo, findWithDefault 0 Ammo uses, aid)) ammoAssets
         supplyAssetsWithUseCount =
-          map (\(aid, uses) -> (Supply, useCount uses, aid)) supplyAssets
+          map (\(aid, uses) -> (Supply, findWithDefault 0 Supply uses, aid)) supplyAssets
 
       drawing <- drawCards iid attrs 1
       player <- getPlayer iid

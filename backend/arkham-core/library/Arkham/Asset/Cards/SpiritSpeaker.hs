@@ -33,7 +33,7 @@ instance RunMessage SpiritSpeaker where
       assetIds <- selectList $ AssetControlledBy You <> AssetWithUseType Charge
       discardableAssetIds <-
         selectList $ assetControlledBy iid <> AssetWithUseType Charge <> DiscardableAsset
-      assetIdsWithChargeCounts <- forToSnd assetIds $ fmap useCount . field AssetUses
+      assetIdsWithChargeCounts <- forToSnd assetIds $ fieldMap AssetUses (findWithDefault 0 Charge)
       player <- getPlayer iid
       push
         $ chooseOne

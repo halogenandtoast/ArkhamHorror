@@ -26,7 +26,7 @@ instance HasAbilities HardKnocks4 where
 
 instance RunMessage HardKnocks4 where
   runMessage msg a@(HardKnocks4 attrs) = case msg of
-    Do BeginRound -> pure . HardKnocks4 $ attrs & usesL .~ Uses Resource 2
+    Do BeginRound -> pure . HardKnocks4 $ attrs & usesL . ix Resource %~ max 2
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       player <- getPlayer iid
       push

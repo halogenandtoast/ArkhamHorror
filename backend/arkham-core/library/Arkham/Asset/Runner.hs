@@ -46,7 +46,7 @@ defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDama
     _ -> Nothing
 
 hasUses :: AssetAttrs -> Bool
-hasUses = (> 0) . useCount . assetUses
+hasUses = any (> 0) . toList . assetUses
 
 instance RunMessage Asset where
   runMessage msg x@(Asset a) = do
@@ -148,15 +148,19 @@ instance RunMessage AssetAttrs where
           _ -> False
       when shouldDiscard $ push $ toDiscard GameSource assetId
       pure a
-    AddUses aid useType' n | aid == assetId -> case assetUses of
-      Uses useType'' m | useType' == useType'' -> do
-        pure $ a & usesL .~ Uses useType' (n + m)
-      UsesWithLimit useType'' m l | useType' == useType'' -> do
-        pure $ a & usesL .~ UsesWithLimit useType' (min (n + m) l) l
+    AddUses aid useType' n | aid == assetId -> case assetPrintedUses of
+      NoUses -> pure $ a & usesL . ix useType' %~ (+ n)
+      Uses useType'' _ | useType' == useType'' -> do
+        pure $ a & usesL . ix useType' +~ n
+      UsesWithLimit useType'' _ pl | useType' == useType'' -> do
+        l <- getPlayerCountValue pl
+        pure $ a & usesL . ix useType' %~ min l . (+ n)
       _ ->
         error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
-    SpendUses target useType' n | isTarget a target -> case assetUses of
-      Uses useType'' m | useType' == useType'' -> do
+    SpendUses target useType' n | isTarget a target -> case assetPrintedUses of
+      NoUses -> pure $ a & usesL . ix useType' %~ max 0 . subtract n
+      Uses useType'' _ | useType' == useType'' -> do
+        let m = findWithDefault 0 useType' assetUses
         let remainingUses = max 0 (m - n)
         when (remainingUses == 0) $ for_ assetWhenNoUses \case
           DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
@@ -166,7 +170,19 @@ instance RunMessage AssetAttrs where
           NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
         for_ assetController $ \controller ->
           pushM $ checkWindows [mkAfter $ Window.SpentUses controller (toId a) useType' n]
-        pure $ a & usesL .~ Uses useType' remainingUses
+        pure $ a & usesL . ix useType' .~ remainingUses
+      UsesWithLimit useType'' _ _ | useType' == useType'' -> do
+        let m = findWithDefault 0 useType' assetUses
+        let remainingUses = max 0 (m - n)
+        when (remainingUses == 0) $ for_ assetWhenNoUses \case
+          DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
+          ReturnToHandWhenNoUses ->
+            for_ assetController \iid ->
+              push $ ReturnToHand iid $ toTarget a
+          NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
+        for_ assetController $ \controller ->
+          pushM $ checkWindows [mkAfter $ Window.SpentUses controller (toId a) useType' n]
+        pure $ a & usesL . ix useType' .~ remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
       LocationTarget lid -> pure $ a & (placementL .~ AttachedToLocation lid)
@@ -217,13 +233,16 @@ instance RunMessage AssetAttrs where
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope
       modifiers <- getModifiers (toTarget a)
-      startingUses <- toStartingUses $ cdUses $ toCardDef a
+      let printedUses = cdUses (toCardDef a)
+      startingUses <- toStartingUses printedUses
       let
-        applyModifier (Uses uType m) (AdditionalStartingUses n) =
-          Uses uType (n + m)
-        applyModifier (UsesWithLimit uType m l) (AdditionalStartingUses n) =
-          UsesWithLimit uType (min l (n + m)) l
-        applyModifier m _ = m
+        applyModifier usesMap (AdditionalStartingUses n) = case printedUses of
+          Uses uType _ -> pure $ adjustMap (+ n) uType usesMap
+          UsesWithLimit uType _ pl -> do
+            l <- getPlayerCountValue pl
+            pure $ adjustMap (min l . (+ n)) uType usesMap
+          _ -> pure usesMap
+        applyModifier m _ = pure m
       whenEnterMsg <-
         checkWindows
           [mkWindow Timing.When (Window.EnterPlay $ toTarget a)]
@@ -242,15 +261,16 @@ instance RunMessage AssetAttrs where
             Nothing -> controllerL ?~ iid
             Just _ -> id
 
+      uses <-
+        if assetUses == mempty
+          then foldM applyModifier startingUses modifiers
+          else pure assetUses
+
       pure
         $ a
         & placementF
         & controllerF
-        & ( usesL
-              .~ if assetUses == NoUses
-                then foldl' applyModifier startingUses modifiers
-                else assetUses
-          )
+        & (usesL .~ uses)
     TakeControlOfAsset iid aid | aid == assetId -> do
       push
         =<< checkWindows

@@ -20,7 +20,8 @@ instance RunMessage JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of
     PaidForCardCost _ card payment | toCardId card == toCardId attrs -> do
       let n = totalResourcePayment payment
-      JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
+      JennysTwin45s
+        <$> runMessage msg (attrs & printedUsesL .~ Uses Ammo (Static n) & usesL .~ singletonMap Ammo n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       pushAll

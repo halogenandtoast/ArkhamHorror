@@ -37,6 +37,7 @@ import Arkham.Game.Settings
 import Arkham.GameEnv
 import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
+import Arkham.Helpers.Use (asStartingUses)
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Keyword qualified as Keyword
@@ -315,17 +316,17 @@ instance HasField "sanity" AssetId (TestAppT (Maybe Int)) where
 instance HasField "horror" AssetId (TestAppT Int) where
   getField = field AssetHorror
 
-instance HasField "uses" AssetId (TestAppT (Uses Int)) where
+instance HasField "uses" AssetId (TestAppT (Map UseType Int)) where
   getField = field AssetUses
 
 instance HasField "ammo" AssetId (TestAppT Int) where
-  getField = fieldMap AssetUses useCount
+  getField = fieldMap AssetUses (findWithDefault 0 Ammo)
 
 instance HasField "charges" AssetId (TestAppT Int) where
-  getField = fieldMap AssetUses useCount
+  getField = fieldMap AssetUses (findWithDefault 0 Charge)
 
 instance HasField "secrets" AssetId (TestAppT Int) where
-  getField = fieldMap AssetUses useCount
+  getField = fieldMap AssetUses (findWithDefault 0 Secret)
 
 instance HasField "damage" AssetId (TestAppT Int) where
   getField = field Field.AssetDamage
@@ -543,32 +544,32 @@ class HasUses (s :: Symbol) where
 instance HasUses "charge" where
   hasUses = \def n -> it ("starts with " <> show n <> " charges") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
-    field AssetUses this `shouldReturn` Uses Charge n
+    fieldMap AssetUses (findWithDefault 0 Charge) this `shouldReturn` n
 
 instance HasUses "ammo" where
   hasUses = \def n -> it ("starts with " <> show n <> " ammo") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
-    field AssetUses this `shouldReturn` Uses Ammo n
+    fieldMap AssetUses (findWithDefault 0 Ammo) this `shouldReturn` n
 
 instance HasUses "supply" where
   hasUses = \def n -> it ("starts with " <> show n <> " supplies") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
-    field AssetUses this `shouldReturn` Uses Supply n
+    fieldMap AssetUses (findWithDefault 0 Supply) this `shouldReturn` n
 
 instance HasUses "secret" where
   hasUses = \def n -> it ("starts with " <> show n <> " secrets") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
-    field AssetUses this `shouldReturn` Uses Secret n
+    fieldMap AssetUses (findWithDefault 0 Secret) this `shouldReturn` n
 
 instance HasUses "supplies" where
   hasUses = \def n -> it ("starts with " <> show n <> " supplies") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
-    field AssetUses this `shouldReturn` Uses Supply n
+    fieldMap AssetUses (findWithDefault 0 Supply) this `shouldReturn` n
 
 instance HasUses "bounties" where
   hasUses = \def n -> it ("starts with " <> show n <> " bounties") . gameTest $ \self -> do
     this <- self `putAssetIntoPlay` def
-    field AssetUses this `shouldReturn` Uses Bounty n
+    fieldMap AssetUses (findWithDefault 0 Bounty) this `shouldReturn` n
 
 -- N.B. Use carefully as this deletes the entire question currently, but it is a useful way to make
 -- sure we've applied all damage
@@ -613,7 +614,7 @@ applyAllHorror = do
 discardedWhenNoUses :: CardDef -> SpecWith ()
 discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> do
   this <- self `putAssetIntoPlay` def
-  uses <- field AssetUses this
+  uses <- fieldMapM AssetStartingUses asStartingUses this
   case useType uses of
     Nothing -> expectationFailure "asset has no uses"
     Just useType' -> do

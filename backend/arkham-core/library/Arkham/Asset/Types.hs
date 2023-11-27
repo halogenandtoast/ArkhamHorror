@@ -155,7 +155,7 @@ data instance Field Asset :: Type -> Type where
   AssetRemainingSanity :: Field Asset (Maybe Int)
   AssetDoom :: Field Asset Int
   AssetExhausted :: Field Asset Bool
-  AssetUses :: Field Asset (Uses Int)
+  AssetUses :: Field Asset (Map UseType Int)
   AssetStartingUses :: Field Asset (Uses GameValue)
   AssetController :: Field Asset (Maybe InvestigatorId)
   AssetOwner :: Field Asset (Maybe InvestigatorId)
@@ -224,7 +224,8 @@ data AssetAttrs = AssetAttrs
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
-  , assetUses :: Uses Int
+  , assetUses :: Map UseType Int
+  , assetPrintedUses :: Uses GameValue
   , assetExhausted :: Bool
   , assetTokens :: Tokens
   , assetCanLeavePlayByNormalMeans :: Bool
@@ -299,6 +300,7 @@ instance FromJSON AssetAttrs where
     assetHealth <- o .: "health"
     assetSanity <- o .: "sanity"
     assetUses <- o .: "uses"
+    assetPrintedUses <- o .: "printedUses"
     assetExhausted <- o .: "exhausted"
     assetTokens <- o .: "tokens"
     assetCanLeavePlayByNormalMeans <- o .: "canLeavePlayByNormalMeans"
@@ -348,7 +350,8 @@ assetWith f cardDef g =
             , assetSlots = cdSlots cardDef
             , assetHealth = Nothing
             , assetSanity = Nothing
-            , assetUses = NoUses
+            , assetUses = mempty
+            , assetPrintedUses = cdUses cardDef
             , assetExhausted = False
             , assetTokens = mempty
             , assetCanLeavePlayByNormalMeans = True

@@ -29,22 +29,19 @@ instance HasAbilities Investments where
     ]
    where
     firstRestriction =
-      if useCount (assetUses a) == 10 then Never else NoRestriction
+      if findWithDefault 0 Supply (assetUses a) == 10 then Never else NoRestriction
     secondRestriction =
-      if useCount (assetUses a) == 0 then Never else NoRestriction
+      if findWithDefault 0 Supply (assetUses a) == 0 then Never else NoRestriction
 
 instance RunMessage Investments where
   runMessage msg a@(Investments attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      unless (useCount (assetUses attrs) == 10)
+      unless (findWithDefault 0 Supply (assetUses attrs) == 10)
         $ push
-        $ AddUses
-          (toId attrs)
-          Supply
-          1
+        $ AddUses (toId attrs) Supply 1
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      let n = useCount (assetUses attrs)
+      let n = findWithDefault 0 Supply (assetUses attrs)
       push $ TakeResources iid n (toSource attrs) False
       pure a
     _ -> Investments <$> runMessage msg attrs

@@ -24,7 +24,6 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Attack
 import Arkham.Capability
 import Arkham.Card
@@ -522,7 +521,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   UseCost assetMatcher uType n -> do
     assets <- selectList assetMatcher
     uses <-
-      sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+      sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
     pure $ uses >= n
   DynamicUseCost assetMatcher uType useCost -> case useCost of
     DrawnCardsValue -> do
@@ -533,12 +532,12 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
         drawnCardsValue = sum $ map toDrawnCards windows'
       assets <- selectList assetMatcher
       uses <-
-        sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+        sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
       pure $ uses >= drawnCardsValue
   UseCostUpTo assetMatcher uType n _ -> do
     assets <- selectList assetMatcher
     uses <-
-      sum <$> traverse (fmap (useTypeCount uType) . field AssetUses) assets
+      sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
     pure $ uses >= n
   ActionCost n -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
@@ -1011,7 +1010,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
                 , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
                 ]
             if canContribute
-              then fieldMap AssetUses (useTypeCount uType) assetId
+              then fieldMap AssetUses (findWithDefault 0 uType) assetId
               else pure 0
           _ -> pure 0
 

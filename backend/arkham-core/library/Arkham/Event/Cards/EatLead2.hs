@@ -36,7 +36,7 @@ instance RunMessage EatLead2 where
     InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ _ ability)] _ | eid == toId attrs -> do
       case abilitySource ability of
         AssetSource aid -> do
-          uses <- fieldMap AssetUses useCount aid
+          uses <- fieldMap AssetUses (findWithDefault 0 Ammo) aid
           player <- getPlayer iid
           push
             $ chooseAmounts

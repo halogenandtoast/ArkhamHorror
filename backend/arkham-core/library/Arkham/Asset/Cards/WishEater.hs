@@ -20,7 +20,7 @@ newtype WishEater = WishEater AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wishEater :: AssetCard WishEater
-wishEater = assetWith WishEater Cards.wishEater (usesL .~ Uses Charge 0)
+wishEater = asset WishEater Cards.wishEater
 
 instance HasAbilities WishEater where
   getAbilities (WishEater attrs) =
@@ -40,11 +40,11 @@ instance RunMessage WishEater where
   runMessage msg a@(WishEater attrs) = case msg of
     CardEnteredPlay iid card | toCardId attrs == toCardId card -> do
       emptyVessel <- selectJust $ assetIs Cards.emptyVessel4
-      charges <- fieldMap AssetUses useCount emptyVessel
+      charges <- fieldMap AssetUses (findWithDefault 0 Charge) emptyVessel
       attrs' <- runMessage msg attrs
       emptyVesselCard <- field AssetCard emptyVessel
       push $ PlaceInBonded iid emptyVesselCard
-      pure $ WishEater (attrs' {assetUses = Uses Charge charges})
+      pure $ WishEater (attrs' {assetUses = singletonMap Charge charges})
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
       let source = toAbilitySource attrs 1
       healDamage <- canHaveDamageHealed source iid

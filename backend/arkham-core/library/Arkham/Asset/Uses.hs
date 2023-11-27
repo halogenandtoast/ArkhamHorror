@@ -22,6 +22,9 @@ data UseType
 
 $(deriveJSON defaultOptions ''UseType)
 
+deriving anyclass instance ToJSONKey UseType
+deriving anyclass instance FromJSONKey UseType
+
 data Uses n = NoUses | Uses UseType n | UsesWithLimit UseType n n
   deriving stock (Show, Eq, Ord, Data)
 

@@ -34,4 +34,4 @@ spec = describe "Tony Morgan" do
       setChaosTokens [ElderSign]
       runSkillTest self #agility 100
       -- 6 starting plus 1 from elder sign
-      fieldMap AssetUses useCount bountyContracts `shouldReturn` 7
+      fieldMap AssetUses (findWithDefault 0 Bounty) bountyContracts `shouldReturn` 7

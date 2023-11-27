@@ -662,6 +662,8 @@ allAssets =
       SomeAssetCard schoffnersCatalogue
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent
+    , --- seeker/rogue [eote]
+      SomeAssetCard geneBeauregard3
     , -- The Scarlet Keys
       --- guardian [tsk]
       -- , SomeAssetCard runicAxe

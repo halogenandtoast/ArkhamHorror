@@ -265,6 +265,7 @@ allPlayerAssetCards =
       , garroteWire2
       , gateBox
       , gavriellaMizrah
+      , geneBeauregard3
       , gildedVolto
       , grannyOrne
       , grannyOrne3
@@ -4166,6 +4167,15 @@ medicalStudent =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ally, Miskatonic, Science]
     , cdSlots = [#ally]
+    }
+
+geneBeauregard3 :: CardDef
+geneBeauregard3 =
+  (multiClassAsset "08099" ("Gené Beauregard" <:> "Intrepid Explorer") 5 [Seeker, Rogue])
+    { cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdSkills = [#intellect, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 runicAxe :: CardDef

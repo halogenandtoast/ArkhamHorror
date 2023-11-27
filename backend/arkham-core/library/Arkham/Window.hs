@@ -203,6 +203,7 @@ data WindowType
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId
   | WouldBeDiscarded Target
+  | EntityDiscarded Source Target
   | WouldBeShuffledIntoDeck DeckSignifier Card
   | WouldDrawEncounterCard InvestigatorId Phase
   | WouldFailSkillTest InvestigatorId

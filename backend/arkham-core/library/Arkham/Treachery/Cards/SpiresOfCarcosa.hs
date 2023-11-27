@@ -48,7 +48,7 @@ instance RunMessage SpiresOfCarcosa where
         Just location -> push (RemoveDoom (toAbilitySource attrs 1) location 1)
         Nothing -> error "must be attached to location to trigger ability"
       pure t
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ toDiscard (toAbilitySource attrs 2) attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
       pure t
     _ -> SpiresOfCarcosa <$> runMessage msg attrs

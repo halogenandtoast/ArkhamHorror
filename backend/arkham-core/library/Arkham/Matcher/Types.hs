@@ -257,6 +257,7 @@ data EnemyMatcher
   | CanEvadeEnemyWithOverride CriteriaOverride
   | CanEngageEnemy Source
   | CanEngageEnemyWithOverride CriteriaOverride
+  | EnemyDiscardedBy InvestigatorMatcher
   | ReadyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
@@ -505,6 +506,7 @@ data TreacheryMatcher
   | TreacheryWithResolvedEffectsBy InvestigatorMatcher
   | TreacheryDiscardedBy InvestigatorMatcher
   | AnyTreachery
+  | InPlayTreachery
   | TreacheryOwnedBy InvestigatorMatcher
   | TreacheryMatches [TreacheryMatcher]
   | TreacheryOneOf [TreacheryMatcher]
@@ -762,6 +764,8 @@ data WindowMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
   | TreacheryWouldBeDiscarded Timing TreacheryMatcher
+  | EnemyDiscarded Timing SourceMatcher EnemyMatcher
+  | TreacheryDiscarded Timing SourceMatcher TreacheryMatcher
   | WouldPerformRevelationSkillTest Timing Who
   | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher SkillTestTypeMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher

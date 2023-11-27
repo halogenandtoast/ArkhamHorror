@@ -178,7 +178,11 @@ instance HasAbilities EmpiricalHypothesisEffect where
           then AnyWindow
           else NotAnyWindow
       Just (EffectInt 4) -> DealtDamageOrHorror #when AnySource matcher
-      Just (EffectInt 5) -> Discarded #when matcher (SourceOwnedBy You) (oneOf [#treachery, #enemy])
+      Just (EffectInt 5) ->
+        oneOf
+          [ EnemyDiscarded #when AnySource (EnemyDiscardedBy You)
+          , TreacheryDiscarded #when AnySource (InPlayTreachery <> TreacheryDiscardedBy You)
+          ]
       Just (EffectInt 6) -> Enters #when matcher $ LocationWithShroud $ atLeast 3
       _ -> error $ "invalid effect: " <> show attrs.meta
   getAbilities _ = []

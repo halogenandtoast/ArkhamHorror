@@ -43,7 +43,7 @@ instance RunMessage ObscuringFog where
       withoutObscuringFog <- selectNone $ treacheryAt location <> treacheryIs Cards.obscuringFog
       pushWhen withoutObscuringFog $ AttachTreachery treacheryId $ LocationTarget location
       pure t
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ toDiscard (toAbilitySource attrs 1) (toTarget attrs)
+    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) (toTarget attrs)
       pure t
     _ -> ObscuringFog <$> runMessage msg attrs

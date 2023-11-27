@@ -120,7 +120,17 @@ instance ToJSON EffectAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "effect"
 
 instance FromJSON EffectAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "effect"
+  parseJSON = withObject "EffectAttrs" $ \o -> do
+    effectId <- o .: "id"
+    effectCardCode <- o .: "cardCode"
+    effectTarget <- o .: "target"
+    effectSource <- o .: "source"
+    effectTraits <- o .: "traits"
+    effectMetadata <- o .: "metadata"
+    effectWindow <- o .: "window"
+    effectFinished <- o .: "finished"
+    effectExtraMetadata <- o .:? "extraMetadata" .!= Null
+    pure EffectAttrs {..}
 
 instance HasAbilities EffectAttrs
 

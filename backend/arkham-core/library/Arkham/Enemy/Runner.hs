@@ -1149,25 +1149,30 @@ instance RunMessage EnemyAttrs where
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
+      discardWindow <- windows [Window.EntityDiscarded source (toTarget a)]
+
       pushAll
         $ [whenMsg, When msg, After msg]
         <> victoryMsgs
         <> [afterMsg]
+        <> discardWindow
         <> defeatMsgs
       pure $ a & keysL .~ mempty
-    Discard _ source target | a `isTarget` target -> do
+    Discard miid source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
+      windows'' <- windows [Window.EntityDiscarded source (toTarget a)]
       let
         card = case enemyPlacement of
           AsSwarm _ c -> c
           _ -> toCard a
       pushAll
         $ windows'
+        <> windows''
         <> [ RemovedFromPlay $ toSource a
            , Discarded (toTarget a) source card
            , Do (Discarded (toTarget a) source card)
            ]
-      pure $ a & keysL .~ mempty
+      pure $ a & keysL .~ mempty & discardedByL .~ miid
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll
         $ resolve (RemoveEnemy $ toId a)

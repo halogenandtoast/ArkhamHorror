@@ -1949,8 +1949,22 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (EnemyTarget eid) -> elem eid <$> select enemyMatcher
       _ -> noMatch
+    Matcher.EnemyDiscarded timing sourceMatcher enemyMatcher -> guardTiming timing $ \case
+      Window.EntityDiscarded source' (EnemyTarget eid) ->
+        andM
+          [ eid <=~> enemyMatcher
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> noMatch
     Matcher.TreacheryWouldBeDiscarded timing treacheryMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (TreacheryTarget tid) -> elem tid <$> select treacheryMatcher
+      _ -> noMatch
+    Matcher.TreacheryDiscarded timing sourceMatcher treacheryMatcher -> guardTiming timing $ \case
+      Window.EntityDiscarded source' (TreacheryTarget tid) ->
+        andM
+          [ tid <=~> treacheryMatcher
+          , sourceMatches source' sourceMatcher
+          ]
       _ -> noMatch
     Matcher.AgendaAdvances timing agendaMatcher -> guardTiming timing $ \case
       Window.AgendaAdvance aid -> agendaMatches aid agendaMatcher

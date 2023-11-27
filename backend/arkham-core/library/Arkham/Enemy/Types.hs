@@ -185,6 +185,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemySealedChaosTokens = []
             , enemyKeys = mempty
             , enemySpawnedBy = Nothing
+            , enemyDiscardedBy = Nothing
             }
     }
 

@@ -1059,6 +1059,13 @@ getTreacheriesMatching matcher = do
   matcherFilter = \case
     AnyTreachery -> pure . const True
     NotTreachery m -> fmap not . matcherFilter m
+    InPlayTreachery -> \t -> do
+      placement <- field TreacheryPlacement (toId t)
+      pure $ case placement of
+        Placement.TreacheryAttachedTo {} -> True
+        Placement.TreacheryInHandOf {} -> False
+        Placement.TreacheryNextToAgenda -> True
+        Placement.TreacheryLimbo -> False
     TreacheryWithResolvedEffectsBy investigatorMatcher -> \t -> do
       iids <- select investigatorMatcher
       pure $ any (`elem` attr treacheryResolved t) iids
@@ -2072,6 +2079,12 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  EnemyDiscardedBy investigatorMatcher -> \enemy ->
+    case attr enemyDiscardedBy enemy of
+      Nothing -> pure False
+      Just discardee -> do
+        iids <- select investigatorMatcher
+        pure $ discardee `elem` iids
   SwarmingEnemy -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     keywords <- field EnemyKeywords (toId enemy)

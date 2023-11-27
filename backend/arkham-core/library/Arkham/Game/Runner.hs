@@ -577,6 +577,7 @@ runGameMessage msg g = case msg of
                 , enemySealedChaosTokens = enemySealedChaosTokens oldAttrs
                 , enemyKeys = enemyKeys oldAttrs
                 , enemySpawnedBy = enemySpawnedBy oldAttrs
+                , enemyDiscardedBy = enemyDiscardedBy oldAttrs
                 , enemyOriginalCardCode = enemyOriginalCardCode oldAttrs
                 }
 
@@ -1126,6 +1127,9 @@ runGameMessage msg g = case msg of
     pure g
   DoBatch _ msg'@(Discarded {}) -> do
     push msg'
+    pure g
+  DoBatch _ (Run msgs) -> do
+    pushAll msgs
     pure g
   CancelEachNext source msgTypes -> do
     push
@@ -2276,8 +2280,9 @@ runGameMessage msg g = case msg of
   Discard miid source (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     iid <- maybe getActiveInvestigatorId pure miid
+    windows'' <- windows [Window.EntityDiscarded source (toTarget tid)]
     wouldDo
-      (Discarded (TreacheryTarget tid) source card)
+      (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
       (Window.WouldBeDiscarded (TreacheryTarget tid))
       (Window.Discarded iid source card)
 

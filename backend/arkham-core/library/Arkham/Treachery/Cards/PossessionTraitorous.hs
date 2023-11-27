@@ -38,8 +38,8 @@ instance RunMessage PossessionTraitorous where
         pushWhen (horror > sanity * 2) $ InvestigatorKilled (toSource attrs) iid
         pure t
       Nothing -> pure t
-    InvestigatorCommittedCard _ card | toCardId card == toCardId attrs ->
+    InvestigatorCommittedCard iid card | toCardId card == toCardId attrs ->
       do
-        pushAll [toDiscard attrs attrs, FailSkillTest]
+        pushAll [toDiscardBy iid attrs attrs, FailSkillTest]
         pure t
     _ -> PossessionTraitorous <$> runMessage msg attrs

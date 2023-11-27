@@ -14,7 +14,6 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
-import Arkham.Customization
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
@@ -31,9 +30,6 @@ import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Data.Data
-import Data.IntMap.Strict qualified as IntMap
-import Data.List (elemIndex)
-import Data.Map.Strict qualified as Map
 import GHC.Records
 
 data Asset = forall a. IsAsset a => Asset a
@@ -291,7 +287,31 @@ instance ToJSON AssetAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "asset"
 
 instance FromJSON AssetAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
+  parseJSON = withObject "AssetAttrs" $ \o -> do
+    assetId <- o .: "id"
+    assetCardId <- o .: "cardId"
+    assetCardCode <- o .: "cardCode"
+    assetOriginalCardCode <- o .: "originalCardCode"
+    assetPlacement <- o .: "placement"
+    assetOwner <- o .: "owner"
+    assetController <- o .: "controller"
+    assetSlots <- o .: "slots"
+    assetHealth <- o .: "health"
+    assetSanity <- o .: "sanity"
+    assetUses <- o .: "uses"
+    assetExhausted <- o .: "exhausted"
+    assetTokens <- o .: "tokens"
+    assetCanLeavePlayByNormalMeans <- o .: "canLeavePlayByNormalMeans"
+    assetWhenNoUses <- o .: "whenNoUses"
+    assetIsStory <- o .: "isStory"
+    assetCardsUnderneath <- o .: "cardsUnderneath"
+    assetSealedChaosTokens <- o .: "sealedChaosTokens"
+    assetKeys <- o .: "keys"
+    assetAssignedHealthDamage <- o .: "assignedHealthDamage"
+    assetAssignedSanityDamage <- o .: "assignedSanityDamage"
+    assetCustomizations <- o .:? "customizations" .!= mempty
+    assetMeta <- o .:? "meta" .!= Null
+    pure AssetAttrs {..}
 
 instance IsCard AssetAttrs where
   toCardId = assetCardId

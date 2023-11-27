@@ -42,6 +42,7 @@ data EnemyAttrs = EnemyAttrs
   , enemySealedChaosTokens :: [ChaosToken]
   , enemyKeys :: Set ArkhamKey
   , enemySpawnedBy :: Maybe InvestigatorId
+  , enemyDiscardedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
 
@@ -62,7 +63,33 @@ instance ToJSON EnemyAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "enemy"
 
 instance FromJSON EnemyAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
+  parseJSON = withObject "EnemyAttrs" $ \o -> do
+    enemyId <- o .: "id"
+    enemyCardId <- o .: "cardId"
+    enemyCardCode <- o .: "cardCode"
+    enemyOriginalCardCode <- o .: "originalCardCode"
+    enemyPlacement <- o .: "placement"
+    enemyFight <- o .: "fight"
+    enemyHealth <- o .: "health"
+    enemyEvade <- o .: "evade"
+    enemyAssignedDamage <- o .: "assignedDamage"
+    enemyHealthDamage <- o .: "healthDamage"
+    enemySanityDamage <- o .: "sanityDamage"
+    enemyPrey <- o .: "prey"
+    enemyModifiers <- o .: "modifiers"
+    enemyExhausted <- o .: "exhausted"
+    enemyTokens <- o .: "tokens"
+    enemySpawnAt <- o .: "spawnAt"
+    enemySurgeIfUnableToSpawn <- o .: "surgeIfUnableToSpawn"
+    enemyAsSelfLocation <- o .: "asSelfLocation"
+    enemyMovedFromHunterKeyword <- o .: "movedFromHunterKeyword"
+    enemyDamageStrategy <- o .: "damageStrategy"
+    enemyBearer <- o .: "bearer"
+    enemySealedChaosTokens <- o .: "sealedChaosTokens"
+    enemyKeys <- o .: "keys"
+    enemySpawnedBy <- o .: "spawnedBy"
+    enemyDiscardedBy <- o .:? "discardedBy" .!= Nothing
+    pure EnemyAttrs {..}
 
 instance Be EnemyAttrs EnemyMatcher where
   be = EnemyWithId . enemyId

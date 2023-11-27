@@ -54,6 +54,25 @@ isOutOfPlayPlacement = \case
   OutOfPlay _ -> True
   _ -> False
 
+isInPlayPlacement :: Placement -> Bool
+isInPlayPlacement = \case
+  AtLocation {} -> True
+  AttachedToLocation {} -> True
+  InPlayArea {} -> True
+  InThreatArea {} -> True
+  StillInHand {} -> False
+  StillInDiscard {} -> False
+  AttachedToEnemy {} -> True
+  AttachedToAsset {} -> True
+  AttachedToAct {} -> True
+  AttachedToAgenda {} -> True
+  AttachedToInvestigator {} -> True
+  AsSwarm {} -> True
+  Unplaced {} -> False
+  Limbo {} -> False
+  Global {} -> True
+  OutOfPlay {} -> False
+
 data TreacheryPlacement
   = TreacheryAttachedTo Target
   | TreacheryInHandOf InvestigatorId

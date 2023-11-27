@@ -55,7 +55,7 @@ instance RunMessage NobodysHome where
           $ attachTreachery attrs lid
           : [gainSurge attrs | clueless]
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ toDiscard (toAbilitySource attrs 1) attrs
       pure t
     _ -> NobodysHome <$> runMessage msg attrs

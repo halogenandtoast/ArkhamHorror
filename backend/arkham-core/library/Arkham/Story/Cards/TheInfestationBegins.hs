@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Story.Cards qualified as Cards
@@ -15,6 +16,7 @@ import Arkham.Story.Runner
 import Arkham.Trait (Trait (Spider))
 import Arkham.Zone
 import Data.Aeson (Result (..))
+import Data.Aeson.KeyMap ((!?))
 import Data.UUID (nil)
 
 newtype TheInfestationBegins = TheInfestationBegins StoryAttrs
@@ -79,7 +81,18 @@ instance RunMessage TheInfestationBegins where
       let bag = infestationBag attrs
       (tokens, rest) <- splitAt 1 <$> shuffleM (infestationTokens bag)
       let token = fromJustNote "invalid infestation token" $ headMay tokens
-      case infestationTokenFace token of
+      mods <- getModifiers attrs
+
+      let
+        enabled = \case
+          MetaModifier (Object o) -> o !? "treatTabletAsSkill" == Just (Bool True)
+          _ -> False
+      let treatTabletAsSkull = any enabled mods
+      let swapToken = \case
+            Tablet | treatTabletAsSkull -> Skull
+            t -> t
+
+      case swapToken (infestationTokenFace token) of
         Skull -> do
           lead <- getLead
           push

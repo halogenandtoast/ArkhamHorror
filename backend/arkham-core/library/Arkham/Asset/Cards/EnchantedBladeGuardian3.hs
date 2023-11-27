@@ -35,7 +35,7 @@ instance RunMessage EnchantedBladeGuardian3 where
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       player <- getPlayer iid
-      pushWhen (useCount (assetUses attrs) > 0)
+      pushWhen (findWithDefault 0 Charge (assetUses attrs) > 0)
         $ chooseOne player
         $ [ Label "Spend 1 use to empower" [DoStep 1 (SpendUses (toTarget attrs) Charge 1)]
           , Label "Do not spend use" []

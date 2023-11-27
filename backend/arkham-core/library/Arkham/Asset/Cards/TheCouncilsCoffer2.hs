@@ -21,7 +21,7 @@ theCouncilsCoffer2 = asset TheCouncilsCoffer2 Cards.theCouncilsCoffer2
 instance HasAbilities TheCouncilsCoffer2 where
   getAbilities (TheCouncilsCoffer2 a) =
     [ limitedAbility (MaxPer Cards.theCouncilsCoffer2 PerCampaign 1)
-        $ restrictedAbility a 0 (if useCount (assetUses a) == 0 then NoRestriction else Never)
+        $ restrictedAbility a 0 (if findWithDefault 0 Lock (assetUses a) == 0 then NoRestriction else Never)
         $ SilentForcedAbility AnyWindow
     , restrictedAbility a 1 OnSameLocation
         $ ActionAbility []
@@ -55,5 +55,5 @@ instance RunMessage TheCouncilsCoffer2 where
           [SkillLabel sType [chooseSkillTest sType] | sType <- allSkills]
       pure a
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      pure . TheCouncilsCoffer2 $ attrs & usesL %~ use
+      pure . TheCouncilsCoffer2 $ attrs & usesL . ix Lock %~ max 0 . subtract 1
     _ -> TheCouncilsCoffer2 <$> runMessage msg attrs

@@ -7,20 +7,28 @@ import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
 import Arkham.GameValue
 
-toStartingUses :: HasGame m => Uses GameValue -> m (Uses Int)
-toStartingUses (Uses uType gameValue) = do
+toStartingUses :: HasGame m => Uses GameValue -> m (Map UseType Int)
+toStartingUses uses = toMap <$> asStartingUses uses
+ where
+  toMap = \case
+    Uses uType value -> singletonMap uType value
+    UsesWithLimit uType value _ -> singletonMap uType value
+    NoUses -> mempty
+
+asStartingUses :: HasGame m => Uses GameValue -> m (Uses Int)
+asStartingUses (Uses uType gameValue) = do
   value <- getPlayerCountValue gameValue
   pure $ Uses uType value
-toStartingUses (UsesWithLimit uType gameValue limitValue) = do
+asStartingUses (UsesWithLimit uType gameValue limitValue) = do
   value <- getPlayerCountValue gameValue
   limit <- getPlayerCountValue limitValue
   pure $ UsesWithLimit uType value limit
-toStartingUses NoUses = pure NoUses
+asStartingUses NoUses = pure NoUses
 
 startingUseCountFor :: HasGame m => UseType -> Uses GameValue -> m Int
 startingUseCountFor uType uses = do
   u' <- toStartingUses uses
-  pure $ if useType u' == Just uType then useCount u' else 0
+  pure $ findWithDefault 0 uType u'
 
-hasUsesFor :: UseType -> Uses Int -> Bool
-hasUsesFor uType uses = useType uses == Just uType && useCount uses > 0
+hasUsesFor :: UseType -> Uses GameValue -> Bool
+hasUsesFor uType uses = useType uses == Just uType

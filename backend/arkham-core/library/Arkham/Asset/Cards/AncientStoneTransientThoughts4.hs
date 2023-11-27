@@ -40,7 +40,10 @@ instance RunMessage AncientStoneTransientThoughts4 where
   runMessage msg a@(AncientStoneTransientThoughts4 attrs) = case msg of
     InvestigatorPlayedAsset _ aid | aid == toId attrs -> do
       n <- getRecordCount YouHaveIdentifiedTheStone
-      AncientStoneTransientThoughts4 <$> runMessage msg (attrs {assetUses = Uses Secret n})
+      AncientStoneTransientThoughts4
+        <$> runMessage
+          msg
+          (attrs {assetPrintedUses = Uses Secret (Static n), assetUses = singletonMap Secret n})
     UseCardAbility iid (isSource attrs -> True) 1 ws p@(getMoves -> n) -> do
       pushAll $ replicate n $ UseCardAbilityStep iid (toSource attrs) 1 ws p 1
       pure a

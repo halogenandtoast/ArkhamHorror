@@ -35,7 +35,7 @@ instance RunMessage ForbiddenTome where
       pure a
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
       n <- fieldMap InvestigatorHand length iid
-      noUses <- fieldMap AssetUses ((== 0) . useCount) (toId attrs)
+      noUses <- fieldMap AssetUses ((== 0) . findWithDefault 0 Secret) (toId attrs)
       player <- getPlayer iid
       pushWhen (n >= 10 && noUses)
         $ chooseOne player

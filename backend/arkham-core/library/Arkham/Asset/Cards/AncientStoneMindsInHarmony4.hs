@@ -49,7 +49,9 @@ instance RunMessage AncientStoneMindsInHarmony4 where
     InvestigatorPlayedAsset _ aid | aid == toId attrs -> do
       n <- getRecordCount YouHaveIdentifiedTheStone
       AncientStoneMindsInHarmony4
-        <$> runMessage msg (attrs {assetUses = Uses Secret n})
+        <$> runMessage
+          msg
+          (attrs {assetPrintedUses = Uses Secret (Static n), assetUses = singletonMap Secret n})
     UseCardAbility iid (isSource attrs -> True) 1 _ (getAmount -> amount) -> do
       investigatorsWithHealMessage <-
         getInvestigatorsWithHealHorror attrs amount $ colocatedWith iid

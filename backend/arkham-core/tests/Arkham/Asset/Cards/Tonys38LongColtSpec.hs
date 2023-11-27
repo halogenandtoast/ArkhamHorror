@@ -75,4 +75,4 @@ spec = describe "Tony's .38 Long Colt" do
         startSkillTest
         applyResults
         -- started with 6, moved 2, gain 1: 6 - 2 + 1 = 5
-        fieldMap AssetUses useCount bountyContracts `shouldReturn` 5
+        fieldMap AssetUses (findWithDefault 0 Bounty) bountyContracts `shouldReturn` 5

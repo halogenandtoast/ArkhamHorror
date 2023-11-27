@@ -36,8 +36,8 @@ instance RunMessage SwiftReload2 where
           ]
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (AssetTarget aid) -> do
-      startingUses <- fmap useCount . toStartingUses =<< field AssetStartingUses aid
-      currentUses <- fieldMap AssetUses useCount aid
+      startingUses <- fmap useCount . asStartingUses =<< field AssetStartingUses aid
+      currentUses <- fieldMap AssetUses (findWithDefault 0 Ammo) aid
       let diff = startingUses - currentUses
       push $ AddUses aid Ammo diff
       pure e

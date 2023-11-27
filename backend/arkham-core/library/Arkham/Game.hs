@@ -25,7 +25,7 @@ import Arkham.Asset.Types (
   assetHorror,
   assetResources,
  )
-import Arkham.Asset.Uses (Uses (..), useCount, useType)
+import Arkham.Asset.Uses (Uses (..), useType)
 import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignStep
@@ -1775,18 +1775,20 @@ getAssetsMatching matcher = do
       modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `elem` modifiers'
     AssetMatches ms -> foldM filterMatcher as ms
-    AssetNotAtUseLimit ->
-      let
-        atUseLimit (UsesWithLimit _ a b) = a >= b
-        atUseLimit Uses {} = False
-        atUseLimit NoUses {} = True
-       in
-        pure $ filter (atUseLimit . attr assetUses) as
+    AssetNotAtUseLimit -> flip filterM as $ \a -> do
+      starting <- field AssetStartingUses (toId a)
+      case starting of
+        UsesWithLimit uType _ pl -> do
+          l <- getPlayerCountValue pl
+          fieldMap AssetUses ((< l) . findWithDefault 0 uType) (toId a)
+        Uses {} -> pure False
+        NoUses -> pure True
     AssetNotAtUsesX -> do
       filterM
         ( \a -> do
             uses <- toStartingUses =<< field AssetStartingUses (toId a)
-            pure $ useCount (attr assetUses a) < useCount uses
+            pure $ flip all (mapToList uses) $ \(uType, uCount) ->
+              findWithDefault 0 uType (attr assetUses a) < uCount
         )
         as
     AssetWithUseType uType ->
@@ -1795,21 +1797,14 @@ getAssetsMatching matcher = do
         as
     AssetWithUseCount uType valueMatcher ->
       filterM
-        ( ( andM
-              . sequence [pure . (== Just uType) . useType, (`gameValueMatches` valueMatcher) . useCount]
-          )
-            <=< (field AssetUses . toId)
-        )
+        (fieldMapM AssetUses ((`gameValueMatches` valueMatcher) . findWithDefault 0 uType) . toId)
         as
     AssetWithFewestClues assetMatcher -> do
       matches' <- getAssetsMatching assetMatcher
       mins <$> forToSnd matches' (field AssetClues . toId)
     AssetWithUses uType ->
       filterM
-        ( fmap (and . sequence [(> 0) . useCount, (== Just uType) . useType])
-            . field AssetUses
-            . toId
-        )
+        (fieldMap AssetUses ((> 0) . findWithDefault 0 uType) . toId)
         as
     AssetCanBeAssignedDamageBy iid -> do
       modifiers' <- getModifiers (InvestigatorTarget iid)

@@ -36,7 +36,7 @@ instance RunMessage Contraband where
         map (\(c, aid) -> (Ammo, c, aid))
           <$> for
             ammoAssets
-            (\aid -> (,aid) . useCount <$> field AssetUses aid)
+            (\aid -> (,aid) <$> fieldMap AssetUses (findWithDefault 0 Ammo) aid)
 
       supplyAssets <-
         selectList
@@ -48,7 +48,7 @@ instance RunMessage Contraband where
         map (\(c, aid) -> (Supply, c, aid))
           <$> for
             supplyAssets
-            (\aid -> (,aid) . useCount <$> field AssetUses aid)
+            (\aid -> (,aid) <$> fieldMap AssetUses (findWithDefault 0 Supply) aid)
 
       player <- getPlayer iid
       pushAll

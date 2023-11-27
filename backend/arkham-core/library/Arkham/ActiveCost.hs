@@ -22,7 +22,6 @@ import Arkham.Asset.Types (
     AssetUses
   ),
  )
-import Arkham.Asset.Uses (useTypeCount)
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
@@ -576,7 +575,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                       ]
                   if canContribute
                     then do
-                      total <- fieldMap AssetUses (useTypeCount uType) assetId
+                      total <- fieldMap AssetUses (findWithDefault 0 uType) assetId
                       name <- fieldMap AssetName toTitle assetId
                       pure $ guard (total > 0) $> (iid', assetId, uType, name, total)
                     else pure Nothing
@@ -690,7 +689,7 @@ payCost msg c iid skipAdditionalCosts cost = do
     UseCostUpTo assetMatcher uType n m -> do
       assets <- selectList assetMatcher
       uses <-
-        sum <$> traverse (fieldMap AssetUses (useTypeCount uType)) assets
+        sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
       let maxUses = min uses m
 
       name <- fieldMap InvestigatorName toTitle iid

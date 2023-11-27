@@ -30,7 +30,7 @@ instance RunMessage FortyFiveThompsonRogue3 where
         , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
         ]
       pure a
-    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | useCount (assetUses attrs) > 0 -> do
+    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | findWithDefault 0 Ammo (assetUses attrs) > 0 -> do
       mSkillTestTarget <- getSkillTestTarget
       case mSkillTestTarget of
         Just (EnemyTarget eid) -> do

@@ -7,7 +7,7 @@ import TestImport.Lifted hiding (EnemyDamage)
 import Arkham.ActiveCost
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
-import Arkham.Asset.Uses (useCount)
+import Arkham.Asset.Uses (UseType (Ammo))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Matcher (AbilityMatcher (..), assetIs)
@@ -29,7 +29,7 @@ spec = describe "Jenny's Twin .45s" $ do
       $ replicate 5
       $ PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
     assetId <- selectJust $ assetIs Cards.jennysTwin45s
-    assert $ fieldP AssetUses ((== 5) . useCount) assetId
+    assert $ fieldP AssetUses ((== 5) . findWithDefault 0 Ammo) assetId
 
   it "gives +2 combat and does +1 damage" $ gameTest $ \investigator -> do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s

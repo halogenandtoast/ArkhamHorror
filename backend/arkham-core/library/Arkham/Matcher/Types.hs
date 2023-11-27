@@ -947,11 +947,11 @@ data ValueMatcher
   | AnyValue
   deriving stock (Show, Eq, Ord, Data)
 
-data SkillTestTypeMatcher = InvestigationSkillTest | AnySkillTestType
+data SkillTestTypeMatcher = InvestigationSkillTest LocationMatcher | AnySkillTestType
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "investigation" SkillTestTypeMatcher where
-  fromLabel = InvestigationSkillTest
+  fromLabel = InvestigationSkillTest Anywhere
 
 instance IsLabel "any" SkillTestTypeMatcher where
   fromLabel = AnySkillTestType

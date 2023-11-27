@@ -98,7 +98,10 @@ allSkills =
     , SomeSkillCard theEyeOfTruth5
     , SomeSkillCard dreamParasite
     , SomeSkillCard promiseOfPower
+    , SomeSkillCard defensiveStance1
     , SomeSkillCard surveyTheArea1
+    , SomeSkillCard occultTheory1
+    , SomeSkillCard dauntlessSpirit1
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied
     , SomeSkillCard riseToTheOccasion3

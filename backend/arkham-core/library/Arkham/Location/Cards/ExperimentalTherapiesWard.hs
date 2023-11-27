@@ -1,14 +1,16 @@
-module Arkham.Location.Cards.ExperimentalTherapiesWard
-  ( experimentalTherapiesWard
-  , ExperimentalTherapiesWard(..)
-  )
+module Arkham.Location.Cards.ExperimentalTherapiesWard (
+  experimentalTherapiesWard,
+  ExperimentalTherapiesWard (..),
+)
 where
 
 import Arkham.Prelude
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
 
 newtype ExperimentalTherapiesWard = ExperimentalTherapiesWard LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +21,23 @@ experimentalTherapiesWard = location ExperimentalTherapiesWard Cards.experimenta
 
 instance HasAbilities ExperimentalTherapiesWard where
   getAbilities (ExperimentalTherapiesWard attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ ReactionAbility
+            ( InitiatedSkillTest
+                #when
+                You
+                AnySkillType
+                AnySkillTestValue
+                (InvestigationSkillTest $ LocationWithId $ toId attrs)
+            )
+            (HorrorCost (toSource attrs) YouTarget 1)
+      ]
 
 instance RunMessage ExperimentalTherapiesWard where
-  runMessage msg (ExperimentalTherapiesWard attrs) =
-    ExperimentalTherapiesWard <$> runMessage msg attrs
+  runMessage msg l@(ExperimentalTherapiesWard attrs) = case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ skillTestModifier (toAbilitySource attrs 1) attrs (ShroudModifier (-2))
+      pure l
+    _ -> ExperimentalTherapiesWard <$> runMessage msg attrs

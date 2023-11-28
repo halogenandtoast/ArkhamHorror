@@ -115,7 +115,7 @@ findUniqueCard def = findJustCard (`cardMatch` (cardIs def <> CardIsUnique))
 
 iconsForCard :: HasGame m => Card -> m [SkillIcon]
 iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-  modifiers' <- traceShowId <$> getModifiers (CardIdTarget pcId)
+  modifiers' <- getModifiers (CardIdTarget pcId)
   pure
     $ foldr
       applyAfterSkillModifiers

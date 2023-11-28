@@ -47,7 +47,12 @@ import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Investigator (additionalActionCovers, baseSkillValueFor, getCanAfford)
+import Arkham.Helpers.Investigator (
+  additionalActionCovers,
+  baseSkillValueFor,
+  getActionCost,
+  getCanAfford,
+ )
 import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
 import Arkham.Helpers.Tarot
 import Arkham.History
@@ -187,6 +192,7 @@ getCanPerformAbility !iid !window !ability = do
     setCriteria = \case
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
+
   andM
     [ getCanAffordCost iid (toSource ability) actions [window] cost
     , meetsActionRestrictions iid window ability
@@ -1086,13 +1092,16 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           if costStatus == PaidCost then Nothing else Just $ SealCost matcher
         _ -> Nothing
 
+    attrs <- getAttrs @Investigator iid
+    actionCost <- getActionCost attrs (cdActions pcDef)
+
     -- Warning: We check if the source is GameSource, this affects the
     -- PlayableCardWithCostReduction matcher currently only used by Dexter
     -- Drake and De Vermis Mysteriis (2) which are non-action situations
     canAffordAdditionalCosts <-
       allM
         (getCanAffordCost iid (CardSource c) [] windows')
-        $ [ActionCost 1 | not inFastWindow && costStatus /= PaidCost && source /= GameSource]
+        $ [ActionCost actionCost | costStatus /= PaidCost && actionCost > 0 && source /= GameSource]
         <> additionalCosts
         <> sealedChaosTokenCost
         <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
@@ -2332,7 +2341,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       Window.DuringTurn who -> matchWho iid who whoMatcher
       Window.FastPlayerWindow -> do
         miid <- selectOne Matcher.TurnInvestigator
-        pure $ Just iid == miid
+        case miid of
+          Nothing -> pure False
+          Just who -> matchWho iid who whoMatcher
       _ -> noMatch
     Matcher.OrWindowMatcher matchers ->
       anyM (windowMatches iid source window') matchers

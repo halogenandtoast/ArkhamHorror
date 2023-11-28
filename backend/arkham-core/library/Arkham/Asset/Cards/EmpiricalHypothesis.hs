@@ -155,12 +155,21 @@ instance HasModifiersFor EmpiricalHypothesisEffect where
 instance HasAbilities EmpiricalHypothesisEffect where
   getAbilities (EmpiricalHypothesisEffect attrs) | isJust attrs.meta = case attrs.source of
     AssetSource aid ->
-      [ withTooltip "You may exhaust Empirical Hypothesis to add 1 evidence to it."
+      [ withTooltip
+          ("When " <> trigger <> ", you may exhaust Empirical Hypothesis to add 1 evidence to it.")
           $ restrictedAbility (proxy (AssetWithId aid) attrs) 1 criteria
           $ ReactionAbility reactionWindow (exhaust aid)
       ]
     _ -> error $ "invalid effect source: " <> show attrs.source
    where
+    trigger = case attrs.meta of
+      Just (EffectInt 1) -> "you fail a test by 2 or more."
+      Just (EffectInt 2) -> "you succeed at a test by 3 or more."
+      Just (EffectInt 3) -> "you run out of cards in your hand."
+      Just (EffectInt 4) -> "you are dealt damage or horror."
+      Just (EffectInt 5) -> "you discard a treachery or enemy from play."
+      Just (EffectInt 6) -> "you enter a location with 3 or more shroud."
+      _ -> error $ "invalid effect meta: " <> show attrs.meta
     matcher = case attrs.target of
       InvestigatorTarget iid ->
         if peerReview (toResult attrs.extra)

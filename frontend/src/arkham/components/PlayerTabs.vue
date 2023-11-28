@@ -35,7 +35,7 @@ function tabClass(investigator: Investigator) {
   return [
     {
       'tab--selected': pid === selectedTab.value,
-      'tab--active-player': pid == props.activePlayerId,
+      'tab--active-player': investigator.id === props.activePlayerId,
       'tab--has-actions': pid !== props.playerId && hasChoices(investigator.playerId),
     },
     `tab--${investigator.class}`,

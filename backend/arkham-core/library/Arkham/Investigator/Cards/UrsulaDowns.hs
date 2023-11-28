@@ -49,13 +49,14 @@ instance RunMessage UrsulaDowns where
       let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
       actions <- nub <$> concatMapM (\w -> getActionsWith iid w decreaseCost) windows'
       handCards <- field InvestigatorHand iid
-      let investigateCards = filter (elem Action.Investigate . cdActions . toCardDef) handCards
-      playableCards <- filterM (getIsPlayable iid (toSource attrs) UnpaidCost windows') investigateCards
+      let investigateCards = filter (elem #investigate . cdActions . toCardDef) handCards
+      playableCards <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do
+        filterM (getIsPlayable iid (toSource attrs) UnpaidCost windows') investigateCards
       player <- getPlayer iid
       push
         $ AskPlayer
         $ chooseOne player
-        $ map ((\f -> f windows' []) . AbilityLabel iid) (filter (`abilityIs` Action.Investigate) actions)
+        $ map ((\f -> f windows' []) . AbilityLabel iid) (filter (`abilityIs` #investigate) actions)
         <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do

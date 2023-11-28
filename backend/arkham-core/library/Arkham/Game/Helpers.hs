@@ -65,7 +65,7 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenario.Types (Field (..), ScenarioDeckKey (ExplorationDeck))
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos qualified as Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Skill.Types (Field (..))
@@ -310,7 +310,10 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Resign -> pure True
   Action.Resource -> pure True
   Action.Explore ->
-    iid <=~> Matcher.InvestigatorWithoutModifier CannotExplore
+    andM
+      [ iid <=~> Matcher.InvestigatorWithoutModifier CannotExplore
+      , notNull <$> getScenarioDeck ExplorationDeck
+      ]
   Action.Circle -> pure True
 
 getCanAffordAbility

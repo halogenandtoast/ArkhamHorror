@@ -1,15 +1,10 @@
-module Arkham.Act.Cards.MagicAndScience (
-  MagicAndScience (..),
-  magicAndScience,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.MagicAndScience (MagicAndScience (..), magicAndScience) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner hiding (Label)
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Direction
@@ -20,8 +15,8 @@ import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Scenario.Deck
 import Control.Monad.Extra (findM)
 import Data.Function (on)
 import Data.Monoid (Last (..))
@@ -39,13 +34,7 @@ magicAndScience =
     (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Chamber of Time"))
 
 instance HasAbilities MagicAndScience where
-  getAbilities (MagicAndScience a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-          $ ActionAbility [Action.Explore]
-          $ ActionCost 1
-      ]
+  getAbilities (MagicAndScience a) = withBaseAbilities a [mkAbility a 1 exploreAction_]
 
 data LocationCandidate = LocationCandidate
   { locationCandidateId :: LocationId
@@ -55,13 +44,10 @@ data LocationCandidate = LocationCandidate
 
 instance RunMessage MagicAndScience where
   runMessage msg a@(MagicAndScience attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push
-        $ Explore
-          iid
-          source
-          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      let source = toAbilitySource attrs 1
+      push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
@@ -118,7 +104,7 @@ instance RunMessage MagicAndScience where
         <> [SetConnections lid [] | lid <- otherLocations]
         <> concatMap handleCandidateGroup candidateGroups
         <> [ NextAdvanceActStep (toId attrs) 1
-           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+           , advanceActDeck attrs
            ]
       pure a
     HandleTargetChoice _ source (LocationTarget lid) | isSource attrs source ->

@@ -1,17 +1,13 @@
-module Arkham.Location.Cards.Xochimilco (
-  xochimilco,
-  Xochimilco (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Xochimilco (xochimilco, Xochimilco (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Xochimilco = Xochimilco LocationAttrs
   deriving anyclass (IsLocation)
@@ -23,27 +19,18 @@ xochimilco =
 
 instance HasModifiersFor Xochimilco where
   getModifiersFor (InvestigatorTarget iid) (Xochimilco a) = do
-    atXochimilco <- iid <=~> InvestigatorAt (LocationWithId $ toId a)
+    atXochimilco <- iid <=~> investigatorAt (toId a)
     pure $ toModifiers a [CannotGainResources | atXochimilco]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Xochimilco where
   getAbilities (Xochimilco attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 Here
-        $ ActionAbility [Action.Explore]
-        $ ActionCost 1
-        <> ResourceCost 3
-      | locationRevealed attrs
-      ]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ exploreAction $ ResourceCost 3]
 
 instance RunMessage Xochimilco where
   runMessage msg l@(Xochimilco attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ Explore iid (toSource attrs)
-        $ CardWithPrintedLocationSymbol
-        $ locationSymbol attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
+      push $ Explore iid source $ CardWithPrintedLocationSymbol $ locationSymbol attrs
       pure l
     _ -> Xochimilco <$> runMessage msg attrs

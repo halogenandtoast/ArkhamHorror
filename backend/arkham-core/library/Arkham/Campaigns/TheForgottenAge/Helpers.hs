@@ -2,6 +2,7 @@ module Arkham.Campaigns.TheForgottenAge.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -66,16 +67,11 @@ getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] Explorat
 
 getSetAsidePoisonedCount :: HasGame m => m Int
 getSetAsidePoisonedCount = do
-  n <-
-    selectCount
-      $ InDeckOf Anyone
-      <> BasicCardMatch
-        (cardIs Treacheries.poisoned)
+  n <- selectCount $ InDeckOf Anyone <> basic (cardIs Treacheries.poisoned)
   pure $ 4 - n
 
 getIsPoisoned :: HasGame m => InvestigatorId -> m Bool
-getIsPoisoned iid =
-  selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid
+getIsPoisoned iid = selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid
 
 getSetAsidePoisoned :: HasGame m => m Card
 getSetAsidePoisoned =
@@ -232,3 +228,9 @@ getVengeancePoints = getCardField cdVengeancePoints
 
 getHasVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m Bool
 getHasVengeancePoints c = isJust <$> getVengeancePoints c
+
+exploreAction :: Cost -> AbilityType
+exploreAction cost = ActionAbility [#explore] (ActionCost 1 <> cost)
+
+exploreAction_ :: AbilityType
+exploreAction_ = exploreAction mempty

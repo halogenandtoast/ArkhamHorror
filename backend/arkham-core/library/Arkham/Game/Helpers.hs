@@ -1062,6 +1062,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (pure True)
         (passesCriteria iid (Just (c, costStatus)) (replaceThisCard c source) windows')
         (foldl' handleCriteriaReplacement (cdCriteria pcDef) cardModifiers)
+
     inFastWindow <-
       maybe
         (pure False)
@@ -1101,7 +1102,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     canAffordAdditionalCosts <-
       allM
         (getCanAffordCost iid (CardSource c) [] windows')
-        $ [ActionCost actionCost | costStatus /= PaidCost && actionCost > 0 && source /= GameSource]
+        $ [ ActionCost actionCost
+          | costStatus /= PaidCost && actionCost > 0 && source /= GameSource && not inFastWindow
+          ]
         <> additionalCosts
         <> sealedChaosTokenCost
         <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]

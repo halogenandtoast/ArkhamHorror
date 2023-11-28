@@ -1,20 +1,14 @@
-module Arkham.Investigator.Cards.UrsulaDowns (
-  ursulaDowns,
-  UrsulaDowns (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.UrsulaDowns (ursulaDowns, UrsulaDowns (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata {moveAfterTest :: Bool}
@@ -34,7 +28,7 @@ instance HasAbilities UrsulaDowns where
   getAbilities (UrsulaDowns (attrs `With` _)) =
     [ playerLimit PerRound
         $ restrictedAbility attrs 1 Self
-        $ freeReaction (Moves Timing.After You AnySource Anywhere Anywhere)
+        $ freeReaction (Moves #after You AnySource Anywhere Anywhere)
     ]
 
 instance HasChaosTokenValue UrsulaDowns where
@@ -44,7 +38,7 @@ instance HasChaosTokenValue UrsulaDowns where
 
 instance RunMessage UrsulaDowns where
   runMessage msg i@(UrsulaDowns (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let windows' = defaultWindows iid
       let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
       actions <- nub <$> concatMapM (\w -> getActionsWith iid w decreaseCost) windows'

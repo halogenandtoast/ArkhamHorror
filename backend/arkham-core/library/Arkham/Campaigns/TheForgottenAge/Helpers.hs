@@ -62,10 +62,7 @@ getVengeanceInVictoryDisplay = do
   pure $ inVictoryDisplay + locationsWithModifier + vengeanceCards
 
 getExplorationDeck :: HasGame m => m [Card]
-getExplorationDeck =
-  scenarioFieldMap
-    ScenarioDecks
-    (findWithDefault (error "missing deck") ExplorationDeck)
+getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)
 
 getSetAsidePoisonedCount :: HasGame m => m Int
 getSetAsidePoisonedCount = do

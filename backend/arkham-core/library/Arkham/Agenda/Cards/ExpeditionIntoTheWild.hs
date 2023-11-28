@@ -1,12 +1,6 @@
-module Arkham.Agenda.Cards.ExpeditionIntoTheWild (
-  ExpeditionIntoTheWild (..),
-  expeditionIntoTheWild,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.ExpeditionIntoTheWild (ExpeditionIntoTheWild (..), expeditionIntoTheWild) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -17,33 +11,24 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Scenario.Deck
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 expeditionIntoTheWild :: AgendaCard ExpeditionIntoTheWild
-expeditionIntoTheWild =
-  agenda (1, A) ExpeditionIntoTheWild Cards.expeditionIntoTheWild (Static 6)
+expeditionIntoTheWild = agenda (1, A) ExpeditionIntoTheWild Cards.expeditionIntoTheWild (Static 6)
 
 instance HasAbilities ExpeditionIntoTheWild where
-  getAbilities (ExpeditionIntoTheWild a) =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility [Action.Explore]
-        $ ActionCost 1
-    ]
+  getAbilities (ExpeditionIntoTheWild a) = [mkAbility a 1 exploreAction_]
 
 instance RunMessage ExpeditionIntoTheWild where
   runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push
-        $ Explore
-          iid
-          source
-          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      let source = toAbilitySource attrs 1
+      push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <- getSetAsideEncounterSet AgentsOfYig
@@ -52,23 +37,15 @@ instance RunMessage ExpeditionIntoTheWild where
         $ [ ShuffleEncounterDiscardBackIn
           , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
           ]
-        <> [ beginSkillTest
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            SkillWillpower
-            3
-           | iid <- iids
-           ]
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+        <> [beginSkillTest iid attrs iid #willpower 3 | iid <- iids]
+        <> [advanceAgendaDeck attrs]
       pure a
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          isPoisoned <- getIsPoisoned iid
-          if isPoisoned
-            then push $ InvestigatorAssignDamage iid source DamageAny 1 1
-            else do
-              poisoned <- getSetAsidePoisoned
-              push $ CreateWeaknessInThreatArea poisoned iid
-          pure a
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      isPoisoned <- getIsPoisoned iid
+      if isPoisoned
+        then push $ assignDamageAndHorror iid attrs 1 1
+        else do
+          poisoned <- getSetAsidePoisoned
+          push $ CreateWeaknessInThreatArea poisoned iid
+      pure a
     _ -> ExpeditionIntoTheWild <$> runMessage msg attrs

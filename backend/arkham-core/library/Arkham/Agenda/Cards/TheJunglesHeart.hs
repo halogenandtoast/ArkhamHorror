@@ -1,12 +1,6 @@
-module Arkham.Agenda.Cards.TheJunglesHeart (
-  TheJunglesHeart (..),
-  theJunglesHeart,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheJunglesHeart (TheJunglesHeart (..), theJunglesHeart) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -18,32 +12,24 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Scenario.Deck
+import Arkham.Prelude
 
 newtype TheJunglesHeart = TheJunglesHeart AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theJunglesHeart :: AgendaCard TheJunglesHeart
-theJunglesHeart =
-  agenda (1, A) TheJunglesHeart Cards.theJunglesHeart (Static 5)
+theJunglesHeart = agenda (1, A) TheJunglesHeart Cards.theJunglesHeart (Static 5)
 
 instance HasAbilities TheJunglesHeart where
-  getAbilities (TheJunglesHeart a) =
-    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
-        $ ActionAbility [Action.Explore]
-        $ ActionCost 1
-    ]
+  getAbilities (TheJunglesHeart a) = [mkAbility a 1 exploreAction_]
 
 instance RunMessage TheJunglesHeart where
   runMessage msg a@(TheJunglesHeart attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push
-        $ Explore
-          iid
-          source
-          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      let source = toAbilitySource attrs 1
+      push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       lead <- getLeadPlayer
@@ -65,7 +51,7 @@ instance RunMessage TheJunglesHeart where
       pushAll
         [ ShuffleEncounterDiscardBackIn
         , chooseOrRunOne lead [targetLabel iid $ lookoutMessages iid | iid <- iids]
-        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        , advanceAgendaDeck attrs
         ]
       pure a
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do

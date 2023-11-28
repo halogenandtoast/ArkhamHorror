@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.Zocalo (
-  zocalo,
-  Zocalo (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Zocalo (zocalo, Zocalo (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Zocalo = Zocalo LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,21 +17,12 @@ zocalo = locationWith Zocalo Cards.zocalo 3 (Static 0) (labelL .~ "diamond")
 
 instance HasAbilities Zocalo where
   getAbilities (Zocalo attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 Here
-        $ ActionAbility [Action.Explore]
-        $ ActionCost 1
-        <> DiscardCombinedCost 5
-      | locationRevealed attrs
-      ]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ exploreAction $ DiscardCombinedCost 5]
 
 instance RunMessage Zocalo where
   runMessage msg l@(Zocalo attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ Explore iid (toSource attrs)
-        $ CardWithPrintedLocationSymbol
-        $ locationSymbol attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = toAbilitySource attrs 1
+      push $ Explore iid source $ CardWithPrintedLocationSymbol $ locationSymbol attrs
       pure l
     _ -> Zocalo <$> runMessage msg attrs

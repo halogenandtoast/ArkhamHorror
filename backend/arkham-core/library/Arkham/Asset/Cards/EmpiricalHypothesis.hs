@@ -196,6 +196,10 @@ instance HasAbilities EmpiricalHypothesisEffect where
       _ -> error $ "invalid effect: " <> show attrs.meta
   getAbilities _ = []
 
+-- TODO: Determine if this is a delayed effect, lasting effect, or replaced
+-- Currently treating is as thought it is replaced, if this switchings to
+-- delayed: then we would disable on the AddUses line and remove the HandleAbilityOption
+-- lasting: remove the HandleAbilityOption
 instance RunMessage EmpiricalHypothesisEffect where
   runMessage msg e@(EmpiricalHypothesisEffect attrs) = case msg of
     CreatedEffect eid _ (AssetSource aid) _ | eid == toId attrs -> do
@@ -225,4 +229,7 @@ instance RunMessage EmpiricalHypothesisEffect where
           let newExtra = toJSON $ extra {oldHandCount = newCount, pessimisticOutlook = pessimistic}
           pure $ EmpiricalHypothesisEffect $ attrs' {effectExtraMetadata = newExtra}
         _ -> pure $ EmpiricalHypothesisEffect attrs'
+    HandleAbilityOption _ source _ | source == attrs.source -> do
+      push $ disable attrs
+      pure e
     _ -> EmpiricalHypothesisEffect <$> runMessage msg attrs

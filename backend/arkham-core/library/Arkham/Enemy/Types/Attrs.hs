@@ -62,6 +62,10 @@ instance ToJSON EnemyAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"
   toEncoding = genericToEncoding $ aesonOptions $ Just "enemy"
 
+instance AsId EnemyAttrs where
+  type IdOf EnemyAttrs = EnemyId
+  asId = enemyId
+
 instance FromJSON EnemyAttrs where
   parseJSON = withObject "EnemyAttrs" $ \o -> do
     enemyId <- o .: "id"

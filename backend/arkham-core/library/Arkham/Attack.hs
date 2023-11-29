@@ -25,8 +25,12 @@ data EnemyAttackDetails = EnemyAttackDetails
   deriving stock (Show, Eq, Ord)
 
 enemyAttack
-  :: (Targetable target, Sourceable source) => EnemyId -> source -> target -> EnemyAttackDetails
-enemyAttack enemyId (toSource -> source) (toTarget -> target) =
+  :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy)
+  => enemy
+  -> source
+  -> target
+  -> EnemyAttackDetails
+enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
   EnemyAttackDetails
     { attackTarget = target
     , attackEnemy = enemyId

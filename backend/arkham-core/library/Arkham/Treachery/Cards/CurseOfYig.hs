@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.CurseOfYig (
-  curseOfYig,
-  CurseOfYig (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CurseOfYig (curseOfYig, CurseOfYig (..)) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -22,24 +17,19 @@ curseOfYig :: TreacheryCard CurseOfYig
 curseOfYig = treachery CurseOfYig Cards.curseOfYig
 
 instance HasModifiersFor CurseOfYig where
-  getModifiersFor (InvestigatorTarget iid) (CurseOfYig attrs) =
-    pure
-      $ if treacheryOnInvestigator iid attrs
-        then
-          toModifiers
-            attrs
-            [SkillModifier #combat (-1), HealthModifier (-1), AddTrait Serpent]
-        else []
+  getModifiersFor (InvestigatorTarget iid) (CurseOfYig attrs) | attrs `on` iid = do
+    pure $ toModifiers attrs [SkillModifier #combat (-1), HealthModifier (-1), AddTrait Serpent]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CurseOfYig where
-  getAbilities (CurseOfYig a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
+  getAbilities (CurseOfYig a) = [restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage CurseOfYig where
   runMessage msg t@(CurseOfYig attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    Revelation iid (isSource attrs -> True) -> do
+      push $ attachTreachery attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getVengeanceInVictoryDisplay
       push $ beginSkillTest iid attrs iid #willpower (2 + n)
       pure t

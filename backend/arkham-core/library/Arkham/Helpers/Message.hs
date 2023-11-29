@@ -416,6 +416,9 @@ nonAttackEnemyDamage source damage enemy = EnemyDamage enemy (nonAttack source d
 placeDoom :: (Sourceable source, Targetable target) => source -> target -> Int -> Message
 placeDoom (toSource -> source) (toTarget -> target) n = PlaceDoom source target n
 
+addToVictory :: Targetable target => target -> Message
+addToVictory (toTarget -> target) = AddToVictory target
+
 -- This is obviously very complicated, but it feels like it shouldn't be
 -- However we find the correct message and only remove the amount indicated
 cancelDoom :: HasQueue Message m => Target -> Int -> m ()

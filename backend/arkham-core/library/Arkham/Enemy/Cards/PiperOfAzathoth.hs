@@ -1,16 +1,11 @@
-module Arkham.Enemy.Cards.PiperOfAzathoth (
-  piperOfAzathoth,
-  PiperOfAzathoth (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.PiperOfAzathoth (piperOfAzathoth, PiperOfAzathoth (..)) where
 
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype PiperOfAzathoth = PiperOfAzathoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -20,7 +15,7 @@ piperOfAzathoth :: EnemyCard PiperOfAzathoth
 piperOfAzathoth = enemy PiperOfAzathoth Cards.piperOfAzathoth (5, Static 7, 2) (0, 2)
 
 instance HasAbilities PiperOfAzathoth where
-  getAbilities (PiperOfAzathoth a) = withBaseAbilities a [mkAbility a 1 $ ForcedAbility $ PhaseEnds #when #enemy]
+  getAbilities (PiperOfAzathoth a) = extend a [mkAbility a 1 $ forced $ PhaseEnds #when #enemy]
 
 instance RunMessage PiperOfAzathoth where
   runMessage msg e@(PiperOfAzathoth attrs) = case msg of
@@ -30,7 +25,7 @@ instance RunMessage PiperOfAzathoth where
           $ InvestigatorAt (locationWithEnemy $ toId e)
           <> NotInvestigator (investigatorEngagedWith $ toId e)
       pushAll
-        [ toMessage $ enemyAttack (toId e) (toAbilitySource attrs 1) investigator
+        [ toMessage $ enemyAttack attrs (toAbilitySource attrs 1) investigator
         | investigator <- investigators
         ]
       pure e

@@ -93,6 +93,10 @@ restrictedAbility
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') {abilityCriteria = restriction}
 
+restricted
+  :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
+restricted = restrictedAbility
+
 controlledAbility
   :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
 controlledAbility entity idx restriction = restrictedAbility entity idx (ControlsThis <> restriction)
@@ -138,8 +142,8 @@ forcedAbility :: Sourceable a => a -> Int -> WindowMatcher -> Ability
 forcedAbility entity idx window =
   mkAbility entity idx (ForcedAbility window)
 
-restricted :: Criterion -> Ability -> Ability
-restricted criteria = abilityCriteriaL .~ criteria
+-- restricted :: Criterion -> Ability -> Ability
+-- restricted criteria = abilityCriteriaL .~ criteria
 
 withCriteria :: Ability -> Criterion -> Ability
 withCriteria a c = a & abilityCriteriaL <>~ c

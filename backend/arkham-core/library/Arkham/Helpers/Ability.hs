@@ -7,3 +7,6 @@ import Arkham.Classes.HasAbilities
 
 withBaseAbilities :: HasAbilities a => a -> [Ability] -> [Ability]
 withBaseAbilities a f = getAbilities a <> f
+
+extend :: HasAbilities a => a -> [Ability] -> [Ability]
+extend = withBaseAbilities

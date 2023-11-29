@@ -4,6 +4,7 @@ module Arkham.Treachery.Runner (
   module X,
   addHiddenToHand,
   forcedOnElimination,
+  on,
 ) where
 
 import Arkham.Prelude
@@ -41,6 +42,9 @@ addHiddenToHand iid a = PlaceTreachery (toId a) (TreacheryInHandOf iid)
 
 forcedOnElimination :: InvestigatorId -> AbilityType
 forcedOnElimination = ForcedAbility . eliminationWindow
+
+on :: Targetable target => TreacheryAttrs -> target -> Bool
+on = flip treacheryOn
 
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of

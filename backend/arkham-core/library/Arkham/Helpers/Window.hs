@@ -150,3 +150,6 @@ enters
   -> location
   -> WindowMatcher
 enters timing investigator location = Enters timing (be investigator) (be location)
+
+defeated :: Timing -> EnemyMatcher -> WindowMatcher
+defeated timing matcher = Arkham.Matcher.EnemyDefeated timing Anyone ByAny matcher

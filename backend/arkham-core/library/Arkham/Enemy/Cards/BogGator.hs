@@ -1,16 +1,11 @@
-module Arkham.Enemy.Cards.BogGator (
-  bogGator,
-  BogGator (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.BogGator (bogGator, BogGator (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade)
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype BogGator = BogGator EnemyAttrs
@@ -19,23 +14,17 @@ newtype BogGator = BogGator EnemyAttrs
 
 bogGator :: EnemyCard BogGator
 bogGator =
-  enemyWith
-    BogGator
-    Cards.bogGator
-    (2, Static 2, 2)
-    (1, 1)
-    (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
+  enemyWith BogGator Cards.bogGator (2, Static 2, 2) (1, 1)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #agility)
 
 instance HasModifiersFor BogGator where
-  getModifiersFor (EnemyTarget eid) (BogGator a@EnemyAttrs {..})
-    | spawned a && eid == enemyId = do
-        bayouLocation <-
-          selectAny $ LocationWithTrait Bayou <> locationWithEnemy eid
-        pure
-          $ toModifiers a
-          $ if bayouLocation
-            then [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
-            else []
+  getModifiersFor target (BogGator a) | spawned a && a `is` target = do
+    bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy (toId a)
+    pure
+      $ toModifiers a
+      $ guard bayouLocation
+      *> [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BogGator where

@@ -1,16 +1,11 @@
-module Arkham.Treachery.Cards.ArcaneBarrier (
-  ArcaneBarrier (..),
-  arcaneBarrier,
-  arcaneBarrierEffect,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ArcaneBarrier (ArcaneBarrier (..), arcaneBarrier, arcaneBarrierEffect) where
 
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Investigator.Types
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -25,7 +20,7 @@ arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 -- TODO: Move move to effect to a modifier...
 instance RunMessage ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       mLocation <- field InvestigatorLocation iid
       for_ mLocation $ push . AttachTreachery (toId attrs) . toTarget
       pure t
@@ -33,8 +28,7 @@ instance RunMessage ArcaneBarrier where
       shouldCostAdditional <-
         selectAny
           $ locationWithTreachery (toId attrs)
-          <> LocationMatchAny
-            [locationWithInvestigator iid, moveToLocationMatcher movement]
+          <> oneOf [locationWithInvestigator iid, moveToLocationMatcher movement]
       when shouldCostAdditional $ do
         moveFromMessage <- fromJustNote "missing move from" <$> popMessage
         moveToMessage <- fromJustNote "missing move to" <$> popMessage
@@ -42,8 +36,8 @@ instance RunMessage ArcaneBarrier where
           $ createCardEffect
             Cards.arcaneBarrier
             (Just $ EffectMessages [moveFromMessage, moveToMessage])
-            (toSource attrs)
-            (toTarget iid)
+            attrs
+            iid
       pure t
     _ -> ArcaneBarrier <$> runMessage msg attrs
 

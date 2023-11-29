@@ -104,6 +104,11 @@ pattern CanManipulateDeck <-
   where
     CanManipulateDeck = InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotManipulateDeck])
 
+pattern InYourThreatArea :: Criterion
+pattern InYourThreatArea <- InThreatAreaOf You
+  where
+    InYourThreatArea = InThreatAreaOf You
+
 data Criterion
   = AssetExists AssetMatcher
   | EventExists EventMatcher

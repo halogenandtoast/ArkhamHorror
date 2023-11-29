@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.AvianThrall (
-  AvianThrall (..),
-  avianThrall,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.AvianThrall (AvianThrall (..), avianThrall) where
 
 import Arkham.Action qualified as Action
 import Arkham.Asset.Types (Field (..))
@@ -12,8 +7,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyFight)
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Trait
 
 newtype AvianThrall = AvianThrall EnemyAttrs
@@ -22,26 +17,19 @@ newtype AvianThrall = AvianThrall EnemyAttrs
 
 avianThrall :: EnemyCard AvianThrall
 avianThrall =
-  enemyWith
-    AvianThrall
-    Cards.avianThrall
-    (5, Static 4, 3)
-    (1, 1)
-    (preyL .~ Prey (InvestigatorWithLowestSkill SkillIntellect))
+  enemyWith AvianThrall Cards.avianThrall (5, Static 4, 3) (1, 1)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #intellect)
 
 instance HasModifiersFor AvianThrall where
-  getModifiersFor target (AvianThrall attrs) | isTarget attrs target = do
+  getModifiersFor target (AvianThrall attrs) | attrs `is` target = do
     mSource <- getSkillTestSource
     mAction <- getSkillTestAction
     case (mSource, mAction) of
       (Just (AssetSource aid), Just Action.Fight) -> do
         traits <- field AssetTraits aid
-        pure
-          $ toModifiers
-            attrs
-            [ Modifier.EnemyFight (-3)
-            | any (`elem` [Ranged, Firearm, Spell]) traits
-            ]
+        let validTraits = [Ranged, Firearm, Spell]
+        pure $ toModifiers attrs [Modifier.EnemyFight (-3) | any (`elem` validTraits) traits]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.AngeredSpirits (
-  angeredSpirits,
-  AngeredSpirits (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.AngeredSpirits (angeredSpirits, AngeredSpirits (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -37,13 +33,13 @@ instance RunMessage AngeredSpirits where
     Revelation iid (isSource attrs -> True) -> do
       pushAll
         [ RemoveCardFromHand iid (toCardId attrs)
-        , AttachTreachery (toId attrs) (InvestigatorTarget iid)
+        , attachTreachery attrs iid
         ]
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ (ExhaustPayment [target]) -> do
       pushAll [SpendUses target Charge 1, PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1]
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      withTreacheryInvestigator attrs $ \tormented -> push (SufferTrauma tormented 1 0)
+      withTreacheryInvestigator attrs \tormented -> push (SufferTrauma tormented 1 0)
       pure t
     _ -> AngeredSpirits <$> runMessage msg attrs

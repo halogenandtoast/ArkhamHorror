@@ -97,8 +97,8 @@ notInvestigator = NotInvestigator . InvestigatorWithId
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
 colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 
-investigatorEngagedWith :: EnemyId -> InvestigatorMatcher
-investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId
+investigatorEngagedWith :: (AsId enemy, IdOf enemy ~ EnemyId) => enemy -> InvestigatorMatcher
+investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId . asId
 
 investigatorAt :: LocationId -> InvestigatorMatcher
 investigatorAt = InvestigatorAt . LocationWithId

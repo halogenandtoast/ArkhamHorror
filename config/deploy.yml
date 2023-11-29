@@ -10,14 +10,6 @@ servers:
   - 159.89.182.72
 
 builder:
-  local:
-      arch: arm64
-      host: unix:///Users/<%= `whoami`.strip %>/.docker/run/docker.sock
-  remote:
-    arch: amd64
-    host: ssh://root@143.244.185.242
-
-
   cache:
     type: gha
 

@@ -53,6 +53,9 @@ actionAbilityWithCost cost = ActionAbility [] (ActionCost 1 <> cost)
 freeReaction :: WindowMatcher -> AbilityType
 freeReaction window = ReactionAbility window Free
 
+forced :: WindowMatcher -> AbilityType
+forced = ForcedAbility
+
 pattern FastAbility :: Cost -> AbilityType
 pattern FastAbility cost <- FastAbility' cost []
   where

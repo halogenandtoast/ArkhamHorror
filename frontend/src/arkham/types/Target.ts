@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json'
 
 type TargetContents = string | { face: string, id: string }
 
-export interface Target {
+export type Target = {
   tag: string
   contents?: TargetContents
 }

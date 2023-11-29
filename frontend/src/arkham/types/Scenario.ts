@@ -13,7 +13,7 @@ import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { TarotScope, TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
 
-export interface ScenarioName {
+export type ScenarioName = {
   title: string;
   subtitle: string | null;
 }
@@ -26,12 +26,12 @@ export const scenarioNameDecoder = JsonDecoder.object<ScenarioName>(
   'ScenarioName'
 );
 
-export interface ScenarioDeck {
+export type ScenarioDeck = {
   tag: string;
   deckSize: number;
 }
 
-export interface Scenario {
+export type Scenario = {
   name: ScenarioName;
   id: string;
   reference: string;

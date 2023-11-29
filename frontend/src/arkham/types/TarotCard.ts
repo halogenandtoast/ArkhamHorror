@@ -63,7 +63,7 @@ export const tarotCardFacingDecoder = JsonDecoder.oneOf<TarotCardFacing>([
   JsonDecoder.isExactly('Reversed'),
 ], 'TarotCardFacing')
 
-export interface TarotCard {
+export type TarotCard = {
   arcana: TarotCardArcana
   facing: TarotCardFacing
   scope: TarotScope

@@ -1,7 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
-export interface ChaosToken {
+export type ChaosToken = {
   face: TokenFace;
   id: string;
   modifiers?: Modifier[];

@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface Skill {
+export type Skill = {
   id: string;
   cardCode: string;
 }

@@ -58,7 +58,7 @@ export function toCardContents(card: Card | CardContents): CardContents {
   }
 }
 
-export interface CardContents {
+export type CardContents = {
   tag: "CardContents"
   id: string
   cardCode: string
@@ -67,17 +67,17 @@ export interface CardContents {
   art?: string
 }
 
-export interface VengeanceCard {
+export type VengeanceCard = {
   tag: 'VengeanceCard';
   contents: PlayerCard | EncounterCard;
 }
 
-export interface PlayerCard {
+export type PlayerCard = {
   tag: 'PlayerCard';
   contents: CardContents;
 }
 
-export interface EncounterCard {
+export type EncounterCard = {
   tag: 'EncounterCard';
   contents: CardContents;
 }

@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window
@@ -141,3 +142,11 @@ cardDrawn :: [Window] -> Card
 cardDrawn [] = error "missing play card window"
 cardDrawn ((windowType -> Window.DrawCard _ c _) : _) = c
 cardDrawn (_ : xs) = cardDrawn xs
+
+enters
+  :: (Be investigator InvestigatorMatcher, Be location LocationMatcher)
+  => Timing
+  -> investigator
+  -> location
+  -> WindowMatcher
+enters timing investigator location = Enters timing (be investigator) (be location)

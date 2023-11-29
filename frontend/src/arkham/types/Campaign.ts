@@ -3,15 +3,15 @@ import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 
 export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep | ResupplyPoint
 
-export interface PrologueStep {
+export type PrologueStep = {
   tag: 'PrologueStep';
 }
 
-export interface ResupplyPoint {
+export type ResupplyPoint = {
   tag: 'ResupplyPoint';
 }
 
-export interface EpilogueStep {
+export type EpilogueStep = {
   tag: 'EpilogueStep';
 }
 
@@ -36,7 +36,7 @@ export const epilogueStepDecoder = JsonDecoder.object<EpilogueStep>(
   'EpilogueStep',
 );
 
-export interface ScenarioStep {
+export type ScenarioStep = {
   tag: 'ScenarioStep';
   contents: string;
 }
@@ -49,7 +49,7 @@ export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
   'ScenarioStep',
 );
 
-export interface InterludeStep {
+export type InterludeStep = {
   tag: 'InterludeStep';
 }
 
@@ -60,7 +60,7 @@ export const interludeStepDecoder = JsonDecoder.object<InterludeStep>(
   'InterludeStep',
 );
 
-export interface UpgradeDeckStep {
+export type UpgradeDeckStep = {
   tag: 'UpgradeDeckStep';
 }
 
@@ -83,13 +83,13 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
   'Question',
 );
 
-export interface LogContents {
+export type LogContents = {
   recorded: string[];
   recordedSets: Record<string, any[]>; // eslint-disable-line
   recordedCounts: [string, number][]; // eslint-disable-line
 }
 
-export interface Campaign {
+export type Campaign = {
   name: string;
   id: string;
   log: LogContents;

@@ -185,6 +185,9 @@ data Criterion
   | AffectedByTarot
   deriving stock (Show, Eq, Ord, Data)
 
+cluesOnThis :: Int -> Criterion
+cluesOnThis = CluesOnThis . atLeast
+
 enemyExists :: EnemyMatcher -> Criterion
 enemyExists = EnemyCriteria . EnemyExists
 
@@ -205,6 +208,9 @@ instance Exists AgendaMatcher where
 
 instance Exists InvestigatorMatcher where
   exists = InvestigatorExists
+
+you :: InvestigatorMatcher -> Criterion
+you a = exists (You <> a)
 
 instance Exists AssetMatcher where
   exists = AssetExists

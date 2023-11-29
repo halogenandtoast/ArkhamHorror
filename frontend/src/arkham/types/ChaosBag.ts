@@ -3,7 +3,7 @@ import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 
 export type ChaosBagStepState = Resolved | Decided | Undecided | Deciding
 
-export interface Resolved {
+export type Resolved = {
   tag: "Resolved"
   tokens: ChaosToken[]
 }
@@ -13,7 +13,7 @@ export const resolvedDecoder = JsonDecoder.object<Resolved>({
   tokens: JsonDecoder.array(chaosTokenDecoder, "Token[]")
 }, 'Resolved')
 
-export interface Decided {
+export type Decided = {
   tag: "Decided"
   step: ChaosBagStep
 }
@@ -23,7 +23,7 @@ export const decidedDecoder = JsonDecoder.object<Decided>({
   step: JsonDecoder.lazy(() => chaosBagStepDecoder)
 }, 'Decided')
 
-export interface Undecided {
+export type Undecided = {
   tag: "Undecided"
   step: ChaosBagStep
 }
@@ -33,7 +33,7 @@ export const undecidedDecoder = JsonDecoder.object<Undecided>({
   step: JsonDecoder.lazy(() => chaosBagStepDecoder)
 }, 'Undecided')
 
-export interface Deciding {
+export type Deciding = {
   tag: "Deciding"
   step: ChaosBagStep
 }
@@ -54,7 +54,7 @@ export type ChaosBagStep = Draw | Choose | ChooseMatch | ChooseMatchChoice
 
 export type TokenStrategy = "IgnoreChoice" | "CancelChoice" | "ResolveChoice"
 
-export interface Draw {
+export type Draw = {
   tag: "Draw"
 }
 
@@ -68,7 +68,7 @@ export const tokenStrategyDecoder = JsonDecoder.oneOf<TokenStrategy>([
   JsonDecoder.isExactly("ResolveChoice"),
 ], 'TokenStrategy')
 
-export interface Choose {
+export type Choose = {
   tag: "Choose"
   tokenStrategy: TokenStrategy
   amount: number
@@ -84,7 +84,7 @@ export const chooseDecoder = JsonDecoder.object<Choose>({
   tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
 }, 'Choose')
 
-export interface ChooseMatch {
+export type ChooseMatch = {
   tag: "ChooseMatch"
   tokenStrategy: TokenStrategy
   amount: number
@@ -101,7 +101,7 @@ export const chooseMatchDecoder = JsonDecoder.object<ChooseMatch>({
   tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
 }, 'ChooseMatch')
 
-export interface ChooseMatchChoice {
+export type ChooseMatchChoice = {
   tag: "ChooseMatchChoice"
   steps: ChaosBagStepState[]
   tokenGroups: ChaosToken[][]
@@ -122,7 +122,7 @@ export const chaosBagStepDecoder: JsonDecoder.Decoder<ChaosBagStep> = JsonDecode
 ], 'ChaosBagStep')
 
 
-export interface ChaosBag {
+export type ChaosBag = {
   chaosTokens: ChaosToken[]
   choice: ChaosBagStepState | null
 }

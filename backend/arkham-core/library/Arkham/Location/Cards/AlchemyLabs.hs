@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.AlchemyLabs (
-  alchemyLabs,
-  AlchemyLabs (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.AlchemyLabs (alchemyLabs, AlchemyLabs (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -15,6 +10,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving anyclass (IsLocation)
@@ -43,7 +39,7 @@ instance RunMessage AlchemyLabs where
       pushM $ mkInvestigate iid (toAbilitySource attrs 1)
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
-      maid <- selectOne (assetIs Cards.alchemicalConcoction)
+      maid <- selectOne $ assetIs Cards.alchemicalConcoction
       for_ maid (push . TakeControlOfAsset iid)
       pure l
     _ -> AlchemyLabs <$> runMessage msg attrs

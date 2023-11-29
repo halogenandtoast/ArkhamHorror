@@ -6,6 +6,7 @@ module Arkham.Matcher (
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.Id
 import Arkham.Matcher.Patterns
@@ -14,6 +15,15 @@ import Arkham.Modifier
 import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
+
+class IsMatcher matcher => Has matcher a where
+  has :: a -> matcher
+
+have :: Has matcher a => a -> matcher
+have = has
+
+instance Has InvestigatorMatcher Supply where
+  has = InvestigatorWithSupply
 
 affectsOthers :: InvestigatorMatcher -> InvestigatorMatcher
 affectsOthers You = You

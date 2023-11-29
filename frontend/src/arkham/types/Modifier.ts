@@ -2,42 +2,42 @@ import { JsonDecoder } from 'ts.data.json';
 
 export type ModifierType = BaseSkillOf | ActionSkillModifier | SkillModifier | UseEncounterDeck | CannotEnter | OtherModifier
 
-export interface BaseSkillOf {
+export type BaseSkillOf = {
   tag: "BaseSkillOf"
   skillType: string
   value: number
 }
 
-export interface ActionSkillModifier {
+export type ActionSkillModifier = {
   tag: "ActionSkillModifier"
   action: string
   skillType: string
   value: number
 }
 
-export interface SkillModifier {
+export type SkillModifier = {
   tag: "SkillModifier"
   skillType: string
   value: number
 }
 
-export interface UseEncounterDeck {
+export type UseEncounterDeck = {
   tag: "UseEncounterDeck"
   contents: string
 }
 
-export interface CannotEnter {
+export type CannotEnter = {
   tag: "CannotEnter"
   contents: string
 }
 
-export interface OtherModifier {
+export type OtherModifier = {
   tag: "OtherModifier"
   contents: string
 }
 
 
-export interface Modifier {
+export type Modifier = {
   type: ModifierType;
 }
 

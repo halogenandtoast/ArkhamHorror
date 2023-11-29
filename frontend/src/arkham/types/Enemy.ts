@@ -5,7 +5,7 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
-export interface Enemy {
+export type Enemy = {
   id: string;
   cardId: string;
   cardCode: string;

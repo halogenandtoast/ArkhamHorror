@@ -1,16 +1,16 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface Costs {
+export type Costs = {
   tag: "Costs"
   contents: Cost[]
 }
 
-export interface ActionCost {
+export type ActionCost = {
   tag: "ActionCost"
   contents: number
 }
 
-export interface OtherCost {
+export type OtherCost = {
   tag: "OtherCost"
 }
 

@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 
-export interface Story {
+export type Story = {
   id: string
   placement: Placement
   otherSide: Target | null

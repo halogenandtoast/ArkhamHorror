@@ -6,7 +6,7 @@ type CardCost = { contents: number, tag: "StaticCost" } | { tag: "DynamicCost" }
 type SkillIcon = { contents: string, tag: "SkillIcon" } | { tag: "WildIcon" } | { tag: "WildMinusIcon" }
 
 
-export interface CardDef {
+export type CardDef = {
   cardCode: string;
   classSymbols: string[];
   cardType: string;

@@ -7,7 +7,7 @@ import {
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
-export interface Asset {
+export type Asset = {
   id: string;
   cardCode: string;
   cardId: string;

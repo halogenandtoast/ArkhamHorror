@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface Name {
+export type Name = {
   title: string;
   subtitle: string | null;
 }

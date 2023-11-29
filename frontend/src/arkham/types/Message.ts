@@ -27,39 +27,39 @@ export enum MessageType {
   EFFECT_ACTION_BUTTON = 'EffectActionButton'
 }
 
-export interface AbilityMessage {
+export type AbilityMessage = {
   contents: AbilityLabel | FightLabel | EvadeLabel
   displayAsAction: boolean
   index: number
 }
 
-export interface Done {
+export type Done = {
   tag: MessageType.DONE
   label: string
 }
 
-export interface Label {
+export type Label = {
   tag: MessageType.LABEL
   label: string
 }
 
-export interface TooltipLabel {
+export type TooltipLabel = {
   tag: MessageType.TOOLTIP_LABEL
   label: string
   tooltip: string
 }
 
-export interface SkillLabel {
+export type SkillLabel = {
   tag: MessageType.SKILL_LABEL
   skillType: SkillType
 }
 
-export interface TargetLabel {
+export type TargetLabel = {
   tag: MessageType.TARGET_LABEL
   target: Target
 }
 
-export interface EndTurnButton {
+export type EndTurnButton = {
   tag: MessageType.END_TURN_BUTTON
   investigatorId: string
 }
@@ -76,19 +76,19 @@ export const tokenTypeDecoder = JsonDecoder.oneOf<TokenType>(
   , JsonDecoder.isExactly('DoomToken')
   ], 'TokenType');
 
-export interface InvestigatorComponent {
+export type InvestigatorComponent = {
   tag: "InvestigatorComponent";
   investigatorId: string;
   tokenType: TokenType;
 }
 
-export interface AssetComponent {
+export type AssetComponent = {
   tag: "AssetComponent";
   assetId: string;
   tokenType: TokenType;
 }
 
-export interface InvestigatorDeckComponent {
+export type InvestigatorDeckComponent = {
   tag: "InvestigatorDeckComponent";
   investigatorId: string;
 }
@@ -121,12 +121,12 @@ export const componentDecoder = JsonDecoder.oneOf<Component>(
     assetComponentDecoder,
   ], 'Component');
 
-export interface ComponentLabel {
+export type ComponentLabel = {
   tag: MessageType.COMPONENT_LABEL
   component: Component
 }
 
-export interface FightLabel {
+export type FightLabel = {
   tag: MessageType.FIGHT_LABEL
   enemyId: string
 }
@@ -137,7 +137,7 @@ export const fightLabelDecoder = JsonDecoder.object<FightLabel>(
     enemyId: JsonDecoder.string,
   }, 'FightLabel')
 
-export interface EvadeLabel {
+export type EvadeLabel = {
   tag: MessageType.EVADE_LABEL
   enemyId: string
 }
@@ -148,7 +148,7 @@ export const evadeLabelDecoder = JsonDecoder.object<EvadeLabel>(
     enemyId: JsonDecoder.string,
   }, 'EvadeLabel')
 
-export interface EngageLabel {
+export type EngageLabel = {
   tag: MessageType.ENGAGE_LABEL
   enemyId: string
 }
@@ -159,7 +159,7 @@ export const engageLabelDecoder = JsonDecoder.object<EngageLabel>(
     enemyId: JsonDecoder.string,
   }, 'EngageLabel')
 
-export interface GridLabel {
+export type GridLabel = {
   tag: MessageType.GRID_LABEL
   gridLabel: string
 }
@@ -170,7 +170,7 @@ export const gridLabelDecoder = JsonDecoder.object<GridLabel>(
     gridLabel: JsonDecoder.string,
   }, 'GridLabel')
 
-export interface TarotLabel {
+export type TarotLabel = {
   tag: MessageType.TAROT_LABEL
   tarotCard: TarotCard
 }
@@ -181,7 +181,7 @@ export const tarotLabelDecoder = JsonDecoder.object<TarotLabel>(
     tarotCard: tarotCardDecoder,
   }, 'TarotLabel')
 
-export interface CardLabel {
+export type CardLabel = {
   tag: MessageType.CARD_LABEL
   cardCode: string
 }
@@ -192,7 +192,7 @@ export const cardLabelDecoder = JsonDecoder.object<CardLabel>(
     cardCode: JsonDecoder.string,
   }, 'CardLabel')
 
-export interface PortraitLabel {
+export type PortraitLabel = {
   tag: MessageType.PORTRAIT_LABEL
   investigatorId: string
 }
@@ -203,7 +203,7 @@ export const portraitLabelDecoder = JsonDecoder.object<PortraitLabel>(
     investigatorId: JsonDecoder.string,
   }, 'PortraitLabel')
 
-export interface AbilityLabel {
+export type AbilityLabel = {
   tag: MessageType.ABILITY_LABEL
   investigatorId: string
   ability: Ability
@@ -216,7 +216,7 @@ export const abilityLabelDecoder = JsonDecoder.object<AbilityLabel>(
     ability: abilityDecoder,
   }, 'Ability')
 
-export interface StartSkillTestButton {
+export type StartSkillTestButton = {
   tag: MessageType.START_SKILL_TEST_BUTTON
   investigatorId: string
 }
@@ -227,7 +227,7 @@ export const startSkillTestButtonDecoder = JsonDecoder.object<StartSkillTestButt
     investigatorId: JsonDecoder.string,
   }, 'StartSkillTestButton')
 
-export interface SkillTestApplyResultsButton {
+export type SkillTestApplyResultsButton = {
   tag: MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON
 }
 
@@ -281,7 +281,7 @@ export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
     investigatorId: JsonDecoder.string,
   }, 'EndTurnButton')
 
-export interface ChaosTokenGroupChoice {
+export type ChaosTokenGroupChoice = {
   tag: MessageType.TOKEN_GROUP_CHOICE
   investigatorId: string
   step: ChaosBagStep
@@ -294,7 +294,7 @@ export const chaosTokenGroupChoiceDecoder = JsonDecoder.object<ChaosTokenGroupCh
     step: chaosBagStepDecoder
   }, 'ChaosTokenGroupChoice')
 
-export interface EffectActionButton {
+export type EffectActionButton = {
   tag: MessageType.EFFECT_ACTION_BUTTON
   effectId: string
   tooltip: string

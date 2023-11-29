@@ -1,10 +1,4 @@
-module Arkham.Location.Cards.AbandonedChapelSpectral (
-  abandonedChapelSpectral,
-  AbandonedChapelSpectral (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.AbandonedChapelSpectral (abandonedChapelSpectral, AbandonedChapelSpectral (..)) where
 
 import Arkham.Card
 import Arkham.Game.Helpers
@@ -15,6 +9,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype AbandonedChapelSpectral = AbandonedChapelSpectral LocationAttrs

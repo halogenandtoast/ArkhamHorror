@@ -128,6 +128,24 @@ maybeAsset aid = do
     <|> getInDiscardEntity assetsL aid g
     <|> getRemovedEntity assetsL aid g
 
+getEffect :: (HasCallStack, HasGame m) => EffectId -> m Effect
+getEffect effectId = fromMaybe (throw missingEffect) <$> maybeEffect effectId
+ where
+  missingEffect =
+    MissingEntity
+      $ "Unknown effect: "
+      <> tshow effectId
+      <> "\n"
+      <> T.pack
+        (prettyCallStack callStack)
+
+maybeEffect :: HasGame m => EffectId -> m (Maybe Effect)
+maybeEffect effectId = do
+  g <- getGame
+  pure
+    $ preview (entitiesL . effectsL . ix effectId) g
+    <|> getRemovedEntity effectsL effectId g
+
 getPlacementLocation :: HasGame m => Placement -> m (Maybe LocationId)
 getPlacementLocation = \case
   AtLocation location -> pure $ Just location

@@ -16,6 +16,15 @@ import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
 
+class Locatable a where
+  at_ :: LocationMatcher -> a
+
+instance Locatable InvestigatorMatcher where
+  at_ = InvestigatorAt
+
+instance Not InvestigatorMatcher where
+  not_ = NotInvestigator
+
 class IsMatcher matcher => Has matcher a where
   has :: a -> matcher
 
@@ -176,8 +185,8 @@ locationWithAsset :: (AsId a, IdOf a ~ AssetId) => a -> LocationMatcher
 locationWithAsset = LocationWithAsset . AssetWithId . asId
 {-# INLINE locationWithAsset #-}
 
-locationWithEnemy :: EnemyId -> LocationMatcher
-locationWithEnemy = LocationWithEnemy . EnemyWithId
+locationWithEnemy :: (AsId a, IdOf a ~ EnemyId) => a -> LocationMatcher
+locationWithEnemy = LocationWithEnemy . EnemyWithId . asId
 {-# INLINE locationWithEnemy #-}
 
 locationWithInvestigator :: InvestigatorId -> LocationMatcher

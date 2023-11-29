@@ -1,13 +1,9 @@
-module Arkham.Enemy.Cards.BeastOfAldebaran (
-  beastOfAldebaran,
-  BeastOfAldebaran (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.BeastOfAldebaran (beastOfAldebaran, BeastOfAldebaran (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Prelude
 
 newtype BeastOfAldebaran = BeastOfAldebaran EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

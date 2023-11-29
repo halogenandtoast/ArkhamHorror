@@ -1162,6 +1162,7 @@ ancestralFear =
   (treachery "04093" "Ancestral Fear" ForgottenRuins 2)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Surge]
+    , cdVengeancePoints = Just 1
     }
 
 deepDark :: CardDef

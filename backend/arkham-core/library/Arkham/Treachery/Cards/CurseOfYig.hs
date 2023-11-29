@@ -28,7 +28,7 @@ instance HasModifiersFor CurseOfYig where
         then
           toModifiers
             attrs
-            [SkillModifier SkillCombat (-1), HealthModifier (-1), AddTrait Serpent]
+            [SkillModifier #combat (-1), HealthModifier (-1), AddTrait Serpent]
         else []
   getModifiersFor _ _ = pure []
 
@@ -37,11 +37,10 @@ instance HasAbilities CurseOfYig where
 
 instance RunMessage CurseOfYig where
   runMessage msg t@(CurseOfYig attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
+    Revelation iid source | isSource attrs source -> do
+      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       n <- getVengeanceInVictoryDisplay
-      push $ beginSkillTest iid attrs iid SkillWillpower (2 + n)
+      push $ beginSkillTest iid attrs iid #willpower (2 + n)
       pure t
     _ -> CurseOfYig <$> runMessage msg attrs

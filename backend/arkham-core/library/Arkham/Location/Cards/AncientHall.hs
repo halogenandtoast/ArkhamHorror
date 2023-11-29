@@ -1,19 +1,13 @@
-module Arkham.Location.Cards.AncientHall (
-  ancientHall,
-  AncientHall (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.AncientHall (ancientHall, AncientHall (..)) where
 
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype AncientHall = AncientHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,31 +15,18 @@ newtype AncientHall = AncientHall LocationAttrs
 
 ancientHall :: LocationCard AncientHall
 ancientHall =
-  locationWith
-    AncientHall
-    Cards.ancientHall
-    3
-    (PerPlayer 2)
-    (connectsToL .~ setFromList [LeftOf, RightOf])
+  locationWith AncientHall Cards.ancientHall 3 (PerPlayer 2)
+    $ connectsToL
+    .~ setFromList [LeftOf, RightOf]
 
 instance HasAbilities AncientHall where
   getAbilities (AncientHall attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          (CluesOnThis $ AtLeast $ Static 1)
-          (ForcedAbility $ RoundEnds $ Timing.When)
-      ]
+    withRevealedAbilities attrs [restrictedAbility attrs 1 (cluesOnThis 1) (forced $ RoundEnds #when)]
 
 instance RunMessage AncientHall where
   runMessage msg l@(AncientHall attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      iids <-
-        selectList
-          $ InvestigatorAt (LocationWithId $ toId attrs)
-          <> InvestigatorCanSpendResources (Static 3)
+    UseThisAbility _ (isSource attrs -> True) 1 _ _ -> do
+      iids <- selectList $ investigatorAt (toId attrs) <> InvestigatorCanSpendResources (Static 3)
       lead <- getLeadPlayer
       let flipClue = FlipClues (toTarget attrs) 1
       if null iids

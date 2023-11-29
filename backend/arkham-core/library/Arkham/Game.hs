@@ -7,7 +7,7 @@ module Arkham.Game (
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability hiding (you)
 import Arkham.Act
 import Arkham.Act.Sequence qualified as AC
 import Arkham.Act.Types (ActAttrs (..), Field (..))

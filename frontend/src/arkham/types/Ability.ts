@@ -4,7 +4,7 @@ import { Cost, costDecoder } from '@/arkham/types/Cost';
 import { Action, actionDecoder } from '@/arkham/types/Action';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 
-export interface FastAbility {
+export type FastAbility = {
   tag: "FastAbility"
   cost: Cost
 }
@@ -14,7 +14,7 @@ export const fastAbilityDecoder = JsonDecoder.object<FastAbility>({
   cost: costDecoder
 }, 'FastAbility')
 
-export interface ReactionAbility {
+export type ReactionAbility = {
   tag: "ReactionAbility"
   cost: Cost
   // window :: WindowMatcher
@@ -25,7 +25,7 @@ export const reactionAbilityDecoder = JsonDecoder.object<ReactionAbility>({
   cost: costDecoder
 }, 'ReactionAbility')
 
-export interface ActionAbility {
+export type ActionAbility = {
   tag: "ActionAbility"
   actions: Action[]
   cost: Cost
@@ -37,9 +37,9 @@ export const actionAbilityDecoder = JsonDecoder.object<ActionAbility>({
   cost: costDecoder,
 }, 'ActionAbility')
 
-export interface ActionAbilityWithSkill {
+export type ActionAbilityWithSkill = {
   tag: "ActionAbilityWithSkill"
-  actions: [Action]
+  actions: Action[]
   skillType: SkillType
   cost: Cost
 }
@@ -51,7 +51,7 @@ export const actionAbilityWithSkillDecoder = JsonDecoder.object<ActionAbilityWit
   cost: costDecoder
 }, 'ActionAbility')
 
-export interface ActionAbilityWithBefore {
+export type ActionAbilityWithBefore = {
   tag: "ActionAbilityWithBefore"
   actions: Action[]
   actionBefore: Action
@@ -65,7 +65,7 @@ export const actionAbilityWithBeforeDecoder = JsonDecoder.object<ActionAbilityWi
   cost: costDecoder
 }, 'ActionAbility')
 
-export interface SilentForcedAbility {
+export type SilentForcedAbility = {
   tag: "SilentForcedAbility"
 }
 
@@ -73,7 +73,7 @@ export const silentForcedAbilityDecoder = JsonDecoder.object<SilentForcedAbility
   tag: JsonDecoder.isExactly("SilentForcedAbility"),
 }, 'SilentForcedAbility')
 
-export interface ForcedAbility {
+export type ForcedAbility = {
   tag: "ForcedAbility"
 }
 
@@ -81,7 +81,7 @@ export const forcedAbilityDecoder = JsonDecoder.object<ForcedAbility>({
   tag: JsonDecoder.isExactly("ForcedAbility"),
 }, 'ForcedAbility')
 
-export interface ForcedAbilityWithCost {
+export type ForcedAbilityWithCost = {
   tag: "ForcedAbilityWithCost"
   cost: Cost
 }
@@ -91,7 +91,7 @@ export const forcedAbilityWithCostDecoder = JsonDecoder.object<ForcedAbilityWith
   cost: costDecoder
 }, 'ForcedAbilityWithCost')
 
-export interface AbilityEffect {
+export type AbilityEffect = {
   tag: "AbilityEffect"
   cost: Cost
 }
@@ -101,7 +101,7 @@ export const abilityEffectDecoder = JsonDecoder.object<AbilityEffect>({
   cost: costDecoder
 }, 'AbilityEffect')
 
-export interface Objective {
+export type Objective = {
   tag: "Objective"
   abilityType: AbilityType
 }
@@ -111,7 +111,7 @@ export const objectiveDecoder = JsonDecoder.object<Objective>({
   abilityType: JsonDecoder.lazy<AbilityType>(() => abilityTypeDecoder)
 }, 'Objective')
 
-export interface Haunted {
+export type Haunted = {
   tag: "Haunted"
 }
 
@@ -122,7 +122,7 @@ export const hauntedDecoder = JsonDecoder.object<Haunted>({
 
 export type AbilityType = FastAbility | ReactionAbility | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted
 
-export interface ForcedWhen {
+export type ForcedWhen = {
   tag: "ForcedWhen"
   abilityType: AbilityType
 }
@@ -148,7 +148,7 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   forcedWhenDecoder.map((fw: ForcedWhen) => fw.abilityType)
 ], 'AbilityType')
 
-export interface Ability {
+export type Ability = {
   type: AbilityType
   source: Source
   tooltip: string | null

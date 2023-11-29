@@ -31,7 +31,7 @@ export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
   'GameState'
 );
 
-export interface Game {
+export type Game = {
   id: string;
   name: string;
   log: string[];
@@ -125,7 +125,7 @@ export function choicesSource(game: Game, investigatorId: string): Source | null
   }
 }
 
-interface Mode {
+type Mode = {
   This?: Campaign;
   That?: Scenario;
 }

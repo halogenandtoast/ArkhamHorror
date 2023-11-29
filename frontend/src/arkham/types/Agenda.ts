@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface Agenda {
+export type Agenda = {
   doom: number;
   // doomThreshold: GameValue;
   id: string;

@@ -13,7 +13,6 @@ import Arkham.GameValue
 import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher
 
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving anyclass (IsLocation)
@@ -23,7 +22,7 @@ ascendingPath :: LocationCard AscendingPath
 ascendingPath =
   locationWith AscendingPath Cards.ascendingPath 3 (Static 0)
     $ revealedConnectedMatchersL
-    <>~ [LocationWithTitle "Altered Path"]
+    <>~ ["Altered Path"]
 
 instance HasModifiersFor AscendingPath where
   getModifiersFor target (AscendingPath l@LocationAttrs {..}) | isTarget l target = do
@@ -35,7 +34,7 @@ instance HasAbilities AscendingPath where
     withRevealedAbilities attrs
       $ [ withTooltip
             "{action}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Altered Path into play. (Limit once per round.)"
-            $ limitedAbility (PlayerLimit PerRound 1)
+            $ playerLimit PerRound
             $ investigateAbility attrs 1 mempty Here
         ]
 
@@ -45,7 +44,7 @@ instance RunMessage AscendingPath where
       pushM $ mkInvestigate iid (toAbilitySource attrs 1)
       pure l
     Successful (Action.Investigate, _) _ (isAbilitySource attrs 1 -> True) _ _ -> do
-      alteredPaths <- getSetAsideCardsMatching $ CardWithTitle "Altered Path"
+      alteredPaths <- getSetAsideCardsMatching "Altered Path"
       for_ (nonEmpty alteredPaths) $ \ne -> do
         pushM $ placeLocation_ =<< sample ne
       pure l

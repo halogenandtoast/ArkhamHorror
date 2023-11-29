@@ -1,16 +1,16 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface ActSequence {
-  number: number;
-  side: string;
+export type ActSequence = {
+  number: number
+  side: string
 }
 
-export interface Act {
-  id: string;
-  clues: number | null;
-  deckId: number;
-  sequence: ActSequence;
-  treacheries: string[];
+export type Act = {
+  id: string
+  clues: number | null
+  deckId: number
+  sequence: ActSequence
+  treacheries: string[]
 }
 
 export const actSequenceDecoder = JsonDecoder.

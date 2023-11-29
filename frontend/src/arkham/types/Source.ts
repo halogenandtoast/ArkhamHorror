@@ -1,20 +1,20 @@
 import { JsonDecoder } from 'ts.data.json'
 import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard'
 
-export interface ProxySource {
+export type ProxySource = {
   sourceTag: "ProxySource"
   tag: "ProxySource"
   source: Source
   originalSource: Source
 }
 
-export interface OtherSource {
+export type OtherSource = {
   sourceTag: "OtherSource"
   tag: string
   contents?: string
 }
 
-export interface TarotSource {
+export type TarotSource = {
   sourceTag: "TarotSource"
   tag: "TarotSource"
   contents: TarotCard

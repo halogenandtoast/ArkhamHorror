@@ -18,7 +18,7 @@ export const breachStatusDecoder: JsonDecoder.Decoder<BreachStatus> = JsonDecode
   JsonDecoder.object<BreachStatus>({ tag: JsonDecoder.isExactly("Incursion"), contents: JsonDecoder.number }, 'Incursion'),
 ], 'BreachStatus');
 
-export interface Location {
+export type Location = {
   cardCode: string;
   label: string;
   id: string;

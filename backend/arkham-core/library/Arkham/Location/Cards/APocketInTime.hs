@@ -3,7 +3,6 @@ module Arkham.Location.Cards.APocketInTime (aPocketInTime, APocketInTime (..)) w
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Id

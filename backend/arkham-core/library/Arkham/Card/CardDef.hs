@@ -296,4 +296,22 @@ instance FromJSON CardDef where
     cdCustomizations <- o .:? "customizations" .!= mempty
     pure CardDef {..}
 
+instance Has InvestigatorMatcher CardDef where
+  has cardDef = case cdCardType cardDef of
+    AssetType -> HasMatchingAsset (assetIs cardDef)
+    EventType -> HasMatchingEvent (eventIs cardDef)
+    SkillType -> HasMatchingSkill (skillIs cardDef)
+    PlayerTreacheryType -> HasMatchingTreachery (treacheryIs cardDef)
+    PlayerEnemyType -> error "invalid matcher"
+    TreacheryType -> HasMatchingTreachery (treacheryIs cardDef)
+    EnemyType -> error "invalid matcher"
+    LocationType -> error "invalid matcher"
+    EncounterAssetType -> HasMatchingAsset (assetIs cardDef)
+    EncounterEventType -> HasMatchingEvent (eventIs cardDef)
+    ActType -> error "invalid matcher"
+    AgendaType -> error "invalid matcher"
+    StoryType -> error "invalid matcher"
+    InvestigatorType -> error "invalid matcher"
+    ScenarioType -> error "invalid matcher"
+
 $(deriveToJSON (aesonOptions $ Just "cd") ''CardDef)

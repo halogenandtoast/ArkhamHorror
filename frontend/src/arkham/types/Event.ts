@@ -5,7 +5,7 @@ import {
   cardDecoder,
 } from '@/arkham/types/Card';
 
-export interface Event {
+export type Event = {
   id: string;
   cardCode: string;
   cardId: string;

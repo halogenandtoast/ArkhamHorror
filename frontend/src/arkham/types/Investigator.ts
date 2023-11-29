@@ -28,7 +28,7 @@ type AdditionalActionType
   | { tag: "AnyAdditionalAction" }
   | { tag: "BountyAction" }
 
-interface AdditionalAction {
+type AdditionalAction = {
   kind: AdditionalActionType
 }
 
@@ -45,7 +45,7 @@ export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionTyp
 export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
   { kind: additionalActionTypeDecoder }, 'AdditionalAction')
 
-interface InvestigatorSearch {
+type InvestigatorSearch = {
   searchingFoundCards: Record<string, Card[]>;
 }
 
@@ -53,7 +53,7 @@ export const investigatorSearchDecoder = JsonDecoder.object<InvestigatorSearch>(
   searchingFoundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
 }, 'InvestigatorSearch');
 
-export interface Investigator {
+export type Investigator = {
   deckSize?: number;
   connectedLocations: string[];
   modifiers?: Modifier[];
@@ -108,7 +108,7 @@ export const slotTypeDecoder = JsonDecoder.oneOf<SlotType>([
   JsonDecoder.isExactly('AllySlot'),
 ], 'SlotType')
 
-interface Slot {
+type Slot = {
   tag: SlotType
   empty: boolean
 }
@@ -118,7 +118,7 @@ export const slotDecoder = JsonDecoder.object<Slot>({
   empty: JsonDecoder.boolean,
 }, 'Slot')
 
-interface SlotContents {
+type SlotContents = {
   assets: string[]
 }
 

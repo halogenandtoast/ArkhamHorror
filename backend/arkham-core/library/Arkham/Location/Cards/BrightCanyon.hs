@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.BrightCanyon (
-  brightCanyon,
-  BrightCanyon (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BrightCanyon (brightCanyon, BrightCanyon (..)) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.GameValue
-import Arkham.Helpers.Ability
+import Arkham.Helpers.Window (enters)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype BrightCanyon = BrightCanyon LocationAttrs
@@ -20,40 +15,23 @@ newtype BrightCanyon = BrightCanyon LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brightCanyon :: LocationCard BrightCanyon
-brightCanyon =
-  symbolLabel $ location BrightCanyon Cards.brightCanyon 2 (PerPlayer 2)
+brightCanyon = symbolLabel $ location BrightCanyon Cards.brightCanyon 2 (PerPlayer 2)
 
 instance HasAbilities BrightCanyon where
   getAbilities (BrightCanyon attrs) =
-    withBaseAbilities
+    withRevealedAbilities
       attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( InvestigatorExists
-              $ You
-              <> HasMatchingTreachery
-                (treacheryIs Treacheries.poisoned)
-          )
-          $ ForcedAbility
-          $ Enters Timing.After You
-          $ LocationWithId
-          $ toId attrs
-      , limitedAbility (GroupLimit PerDepthLevel 1)
-          $ restrictedAbility
-            attrs
-            2
-            ( CluesOnThis (AtLeast $ Static 1)
-                <> InvestigatorExists (You <> InvestigatorWithSupply Binoculars)
-            )
-          $ ActionAbility []
-          $ ActionCost 1
+      [ restrictedAbility attrs 1 (you $ have Treacheries.poisoned)
+          $ forced
+          $ enters #after You attrs
+      , groupLimit PerDepthLevel
+          $ restrictedAbility attrs 2 (Here <> cluesOnThis 1 <> you (have Binoculars)) actionAbility
       ]
 
 instance RunMessage BrightCanyon where
   runMessage msg l@(BrightCanyon attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ assignDamage iid (toAbilitySource attrs 1) 1
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 2) 2 Nothing

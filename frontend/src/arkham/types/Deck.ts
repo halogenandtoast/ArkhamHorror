@@ -1,11 +1,11 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface DeckList {
+export type DeckList = {
   investigator_code: string;
   slots: Record<string, number>;
 }
 
-export interface Deck {
+export type Deck = {
   id: string;
   name: string;
   url : string | null;

@@ -22,32 +22,32 @@ export enum QuestionType {
   PICK_CAMPAIGN_SETTINGS = 'PickCampaignSettings',
 }
 
-export interface PickScenarioSettings {
+export type PickScenarioSettings = {
   tag: QuestionType.PICK_SCENARIO_SETTINGS;
 }
 
-export interface PickCampaignSettings {
+export type PickCampaignSettings = {
   tag: QuestionType.PICK_CAMPAIGN_SETTINGS;
 }
 
-export interface ChooseOne {
+export type ChooseOne = {
   tag: QuestionType.CHOOSE_ONE;
   choices: Message[];
 }
 
-export interface QuestionLabel {
+export type QuestionLabel = {
   tag: QuestionType.QUESTION_LABEL
   card: string | null
   label: string
   question: Question
 }
 
-export interface FlavorText {
+export type FlavorText = {
   title: string | null;
   body: string[];
 }
 
-export interface Read {
+export type Read = {
   tag: QuestionType.READ
   flavorText: FlavorText
   readChoices: Message[]
@@ -86,46 +86,46 @@ export const supplyDecoder = JsonDecoder.oneOf<Supply>([
   JsonDecoder.isExactly('Pickaxe')
 ], 'Supply')
 
-export interface PickSupplies {
+export type PickSupplies = {
   tag: QuestionType.PICK_SUPPLIES
   pointsRemaining: number
   chosenSupplies: Supply[]
   choices: Message[]
 }
 
-export interface DropDown {
+export type DropDown = {
   tag: QuestionType.DROP_DOWN
   options: string[]
 }
 
-export interface ChooseN {
+export type ChooseN = {
   tag: QuestionType.CHOOSE_N
   amount: number
   choices: Message[]
 }
 
-export interface ChooseSome {
+export type ChooseSome = {
   tag: QuestionType.CHOOSE_SOME
   choices: Message[]
 }
 
-export interface ChooseSome1 {
+export type ChooseSome1 = {
   tag: QuestionType.CHOOSE_SOME_1
   choices: Message[]
 }
 
-export interface ChooseUpToN {
+export type ChooseUpToN = {
   tag: QuestionType.CHOOSE_UP_TO_N
   amount: number
   choices: Message[]
 }
 
-export interface ChooseOneAtATime {
+export type ChooseOneAtATime = {
   tag: QuestionType.CHOOSE_ONE_AT_A_TIME
   choices: Message[]
 }
 
-export interface ChoosePaymentAmounts {
+export type ChoosePaymentAmounts = {
   tag: QuestionType.CHOOSE_PAYMENT_AMOUNTS
   label: string
   paymentAmountTargetValue: AmountTarget | null
@@ -138,22 +138,22 @@ export type AmountTarget
   | { tag: "MinAmountTarget", contents: number }
   | { tag: 'AmountOneOf', contents: number[] }
 
-export interface ChooseAmounts {
+export type ChooseAmounts = {
   tag: QuestionType.CHOOSE_AMOUNTS
   label: string
   amountTargetValue: AmountTarget
   amountChoices: AmountChoice[]
 }
 
-export interface ChooseUpgradeDeck {
+export type ChooseUpgradeDeck = {
   tag: QuestionType.CHOOSE_UPGRADE_DECK
 }
 
-export interface ChooseDeck {
+export type ChooseDeck = {
   tag: QuestionType.CHOOSE_DECK
 }
 
-export interface AmountChoice {
+export type AmountChoice = {
   label: string
   minBound: number
   maxBound: number
@@ -182,7 +182,7 @@ export const chooseAmountsDecoder = JsonDecoder.object<ChooseAmounts>(
   }, 'ChooseAmounts',
 )
 
-export interface PaymentAmountChoice {
+export type PaymentAmountChoice = {
   investigatorId: string
   minBound: number
   maxBound: number

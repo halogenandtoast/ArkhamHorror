@@ -17,7 +17,7 @@ export const treacheryPlacementDecoder = JsonDecoder.oneOf<TreacheryPlacement>(
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryInSkillTest') }, 'TreacheryInSkillTest')
   ], 'TreacheryPlacement')
 
-export interface Treachery {
+export type Treachery = {
   id: string;
   cardCode: string;
   tokens: Tokens;

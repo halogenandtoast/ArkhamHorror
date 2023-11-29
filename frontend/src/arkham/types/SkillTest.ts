@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Card, cardDecoder} from '@/arkham/types/Card';
 
-export interface Source {
+export type Source = {
   tag: string;
   contents: any; // eslint-disable-line
 }
@@ -12,7 +12,7 @@ export const sourceDecoder = JsonDecoder.object<Source>({
   contents: JsonDecoder.succeed,
 }, 'Source');
 
-export interface SkillTest {
+export type SkillTest = {
   investigator: string;
   difficulty: number;
   setAsideChaosTokens: ChaosToken[];
@@ -22,7 +22,7 @@ export interface SkillTest {
   action: string | null;
 }
 
-export interface SkillTestResults {
+export type SkillTestResults = {
   skillTestResultsSkillValue: number;
   skillTestResultsIconValue: number;
   skillTestResultsChaosTokensValue: number;

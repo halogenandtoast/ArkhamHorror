@@ -425,6 +425,12 @@ instance IsMatcher InvestigatorMatcher
 class IsMatcher b => Be a b where
   be :: a -> b
 
+instance Be InvestigatorMatcher InvestigatorMatcher where
+  be = id
+
+instance Be LocationMatcher LocationMatcher where
+  be = id
+
 instance IsString LocationMatcher where
   fromString = LocationWithTitle . fromString
 

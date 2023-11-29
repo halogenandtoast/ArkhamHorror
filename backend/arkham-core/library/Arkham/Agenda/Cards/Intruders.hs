@@ -31,12 +31,7 @@ instance RunMessage Intruders where
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       iids <- getInvestigatorIds
-      unpoisoned <-
-        selectList
-          $ NotInvestigator
-          $ HasMatchingTreachery
-          $ treacheryIs
-          $ Treacheries.poisoned
+      unpoisoned <- getUnpoisoned
       pushAll
         $ [InvestigatorDefeated (toSource attrs) iid | iid <- iids]
         <> [ AddCampaignCardToDeck iid Treacheries.poisoned

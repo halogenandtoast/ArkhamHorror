@@ -72,6 +72,9 @@ import System.Random.Shuffle as X
 import Data.Foldable (Foldable (foldMap), foldlM)
 import Data.List.NonEmpty qualified as NE
 
+class Not a where
+  not_ :: a -> a
+
 suffixedNamer :: FieldNamer
 suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of
   x : xs -> [TopName (mkName ((C.toLower x : xs) ++ "L"))]

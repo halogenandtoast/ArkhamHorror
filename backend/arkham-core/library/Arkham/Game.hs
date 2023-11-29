@@ -2526,15 +2526,6 @@ maybeAgenda aid =
   preview (entitiesL . agendasL . ix aid)
     <$> getGame
 
-getEffect :: HasGame m => EffectId -> m Effect
-getEffect eid = fromJustNote missingEffect <$> maybeEffect eid
- where
-  missingEffect = "Unknown effect: " <> show eid
-
-maybeEffect :: HasGame m => EffectId -> m (Maybe Effect)
-maybeEffect eid =
-  preview (entitiesL . effectsL . ix eid) <$> getGame
-
 instance Projection Location where
   getAttrs lid = toAttrs <$> getLocation lid
   project lid = preview (entitiesL . locationsL . ix lid) <$> getGame

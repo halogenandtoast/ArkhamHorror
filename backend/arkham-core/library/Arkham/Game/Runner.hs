@@ -392,8 +392,14 @@ runGameMessage msg g = case msg of
         source
         (ChaosTokenTarget token)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  DisableEffect effectId ->
-    pure $ g & entitiesL . effectsL %~ deleteMap effectId
+  DisableEffect effectId -> do
+    removedEntitiesF <-
+      if notNull (gameActiveAbilities g)
+        then do
+          effect <- getEffect effectId
+          pure $ actionRemovedEntitiesL . effectsL %~ insertEntity effect
+        else pure id
+    pure $ g & entitiesL . effectsL %~ deleteMap effectId & removedEntitiesF
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
   FocusTarotCards cards -> pure $ g & focusedTarotCardsL .~ cards
@@ -1655,9 +1661,7 @@ runGameMessage msg g = case msg of
 
     if inSkillTestWindow
       then do
-        if gameInAction g && not isSameAction
-          then insertAfterMatching [msg] (== FinishAction)
-          else insertAfterMatching [msg] (== EndSkillTestWindow)
+        insertAfterMatching [msg] (== EndSkillTestWindow)
         pure g
       else do
         let iid = skillTestInvestigator skillTest

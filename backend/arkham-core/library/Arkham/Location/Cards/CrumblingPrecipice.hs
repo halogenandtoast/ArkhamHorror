@@ -1,70 +1,35 @@
-module Arkham.Location.Cards.CrumblingPrecipice (
-  crumblingPrecipice,
-  CrumblingPrecipice (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CrumblingPrecipice (crumblingPrecipice, CrumblingPrecipice (..)) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillTest.Type
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype CrumblingPrecipice = CrumblingPrecipice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crumblingPrecipice :: LocationCard CrumblingPrecipice
-crumblingPrecipice =
-  symbolLabel
-    $ location CrumblingPrecipice Cards.crumblingPrecipice 4 (Static 0)
+crumblingPrecipice = symbolLabel $ location CrumblingPrecipice Cards.crumblingPrecipice 4 (Static 0)
 
 instance HasAbilities CrumblingPrecipice where
   getAbilities (CrumblingPrecipice a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 Here
-          $ ForcedAbility
-          $ AttemptExplore
-            Timing.When
-            You
-      ]
+    withRevealedAbilities a [restrictedAbility a 1 Here $ forced $ AttemptExplore #when You]
 
 instance RunMessage CrumblingPrecipice where
   runMessage msg l@(CrumblingPrecipice attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ beginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          SkillWillpower
-          4
+      push $ beginSkillTest iid (attrs.ability 1) iid #willpower 4
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillWillpower) _ -> do
-      push
-        $ beginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          SkillAgility
-          3
-      pure l
-    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillAgility) _ -> do
-      push
-        $ beginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          SkillCombat
-          2
-      pure l
-    FailedSkillTest iid _ (isSource attrs -> True) _ (SkillSkillTest SkillCombat) _ -> do
-      push $ InvestigatorKilled (toSource attrs) iid
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) Initiator {} (SkillSkillTest sType) _ -> do
+      case sType of
+        SkillWillpower -> push $ beginSkillTest iid (attrs.ability 1) iid #agility 3
+        SkillAgility -> push $ beginSkillTest iid (attrs.ability 1) iid #combat 2
+        SkillCombat -> push $ InvestigatorKilled (toSource attrs) iid
+        _ -> error "Invalid skill type"
       pure l
     _ -> CrumblingPrecipice <$> runMessage msg attrs

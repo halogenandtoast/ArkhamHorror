@@ -23,6 +23,7 @@ import Arkham.Helpers.Message as X hiding (
   PhaseStep,
  )
 import Arkham.Helpers.SkillTest as X
+import Arkham.Id as X (AsId (..))
 import Arkham.Source as X
 import Arkham.Spawn as X
 import Arkham.Target as X

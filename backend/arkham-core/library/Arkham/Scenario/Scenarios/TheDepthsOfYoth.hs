@@ -21,6 +21,7 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Scenario
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDamage)
@@ -34,7 +35,7 @@ import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Scenarios.TheDepthsOfYoth.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
-import Arkham.Trait (Trait (Injury))
+import Arkham.Trait (Trait (Injury, Serpent))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
@@ -61,9 +62,7 @@ theDepthsOfYoth difficulty =
 
 instance HasChaosTokenValue TheDepthsOfYoth where
   getChaosTokenValue iid chaosTokenFace (TheDepthsOfYoth attrs) = case chaosTokenFace of
-    Skull -> do
-      depth <- getCurrentDepth
-      pure $ ChaosTokenValue Skull $ NegativeModifier depth
+    Skull -> ChaosTokenValue Skull . NegativeModifier <$> getCurrentDepth
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ ChaosTokenValue Tablet NoModifier
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
@@ -263,11 +262,7 @@ instance RunMessage TheDepthsOfYoth where
       gainXp <- toGainXp attrs $ getXpWithBonus depth
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
-      inVictory <-
-        selectAny
-          $ VictoryDisplayCardMatch
-          $ cardIs
-            Enemies.harbingerOfValusia
+      inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs Enemies.harbingerOfValusia
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       damage <- case inPlayHarbinger of
         Just eid -> field EnemyDamage eid
@@ -313,11 +308,38 @@ instance RunMessage TheDepthsOfYoth where
       pure s
     ScenarioResolutionStep 1 (Resolution 1) -> do
       allKilled <- selectNone AliveInvestigator
-      when allKilled $ push GameOver
+      pushWhen allKilled GameOver
       pure s
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
-      for_ mcard $ \card ->
+      for_ mcard \card ->
         push
           $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+      pure s
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      push $ DrawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ ElderThing _ -> do
+      n <- getVengeanceInVictoryDisplay
+      pushWhen (n >= 3) FailSkillTest
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
+        Skull | isHardExpert attrs -> do
+          push $ assignHorror iid (ChaosTokenEffectSource Skull) 1
+        Cultist -> do
+          serpents <-
+            selectList
+              $ EnemyWithTrait Serpent
+              <> oneOf [enemyAtLocationWith iid, EnemyAt $ ConnectedFrom (locationWithInvestigator iid)]
+          for_ serpents \serpent -> do
+            push $ HealDamage (toTarget serpent) (ChaosTokenEffectSource Cultist) 2
+        Tablet -> do
+          mlocation <- field InvestigatorLocation iid
+          for_ mlocation $ \location -> do
+            push $ PlaceClues (ChaosTokenEffectSource Tablet) (toTarget location) 2
+        _ -> pure ()
       pure s
     _ -> TheDepthsOfYoth <$> runMessage msg attrs

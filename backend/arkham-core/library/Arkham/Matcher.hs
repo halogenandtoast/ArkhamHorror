@@ -22,9 +22,6 @@ class Locatable a where
 instance Locatable InvestigatorMatcher where
   at_ = InvestigatorAt
 
-instance Not InvestigatorMatcher where
-  not_ = NotInvestigator
-
 class IsMatcher matcher => Has matcher a where
   has :: a -> matcher
 

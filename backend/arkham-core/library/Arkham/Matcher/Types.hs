@@ -126,6 +126,9 @@ data InvestigatorMatcher
 
 instance Plated InvestigatorMatcher
 
+instance Not InvestigatorMatcher where
+  not_ = NotInvestigator
+
 instance Semigroup InvestigatorMatcher where
   Anyone <> x = x
   x <> Anyone = x

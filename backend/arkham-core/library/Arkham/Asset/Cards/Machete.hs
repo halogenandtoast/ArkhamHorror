@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.Machete (
-  Machete (..),
-  machete,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Machete (Machete (..), machete) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Machete = Machete AssetAttrs
   deriving anyclass (IsAsset)
@@ -36,7 +32,7 @@ instance HasAbilities Machete where
 instance RunMessage Machete where
   runMessage msg a@(Machete attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
+      let source = attrs.ability 1
       pushAll
         [skillTestModifier source iid (SkillModifier #combat 1), chooseFightEnemy iid source #combat]
       pure a

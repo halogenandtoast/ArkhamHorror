@@ -22,6 +22,9 @@ class Locatable a where
 instance Locatable InvestigatorMatcher where
   at_ = InvestigatorAt
 
+instance Locatable AssetMatcher where
+  at_ = AssetAt
+
 class IsMatcher matcher => Has matcher a where
   has :: a -> matcher
 

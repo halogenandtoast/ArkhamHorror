@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.GuardDog (
-  GuardDog (..),
-  guardDog,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.GuardDog (GuardDog (..), guardDog) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Id
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -22,7 +18,7 @@ guardDog = ally GuardDog Cards.guardDog (3, 1)
 
 instance HasAbilities GuardDog where
   getAbilities (GuardDog x) =
-    [ restrictedAbility x 1 (ControlsThis <> CanDealDamage)
+    [ controlledAbility x 1 CanDealDamage
         $ freeReaction
         $ AssetDealtDamage #when (SourceIsEnemyAttack AnyEnemy) (AssetWithId (toId x))
     ]
@@ -38,6 +34,6 @@ toEnemyId (_ : ws) = toEnemyId ws
 instance RunMessage GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (toEnemyId -> eid) _ -> do
-      push $ nonAttackEnemyDamage (toAbilitySource attrs 1) 1 eid
+      push $ nonAttackEnemyDamage (attrs.ability 1) 1 eid
       pure a
     _ -> GuardDog <$> runMessage msg attrs

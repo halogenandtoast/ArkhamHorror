@@ -1,9 +1,4 @@
-module Arkham.Investigator.Cards.RolandBanks (
-  RolandBanks (..),
-  rolandBanks,
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.RolandBanks (RolandBanks (..), rolandBanks) where
 
 import Arkham.Discover
 import Arkham.Investigator.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Investigator.Runner
 import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
@@ -39,6 +35,6 @@ instance HasChaosTokenValue RolandBanks where
 instance RunMessage RolandBanks where
   runMessage msg i@(RolandBanks attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ discoverAtYourLocation iid (attrs.ability 1) 1
       pure i
     _ -> RolandBanks <$> runMessage msg attrs

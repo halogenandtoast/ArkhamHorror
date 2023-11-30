@@ -190,6 +190,9 @@ data Criterion
   | AffectedByTarot
   deriving stock (Show, Eq, Ord, Data)
 
+instance OneOf Criterion where
+  oneOf = AnyCriterion
+
 cluesOnThis :: Int -> Criterion
 cluesOnThis = CluesOnThis . atLeast
 

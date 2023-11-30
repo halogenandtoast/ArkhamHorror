@@ -257,6 +257,9 @@ instance HasField "horror" AssetAttrs Int where
 instance HasField "controller" AssetAttrs (Maybe InvestigatorId) where
   getField = assetController
 
+instance HasField "ability" AssetAttrs (Int -> Source) where
+  getField this = toAbilitySource this
+
 assetDoom :: AssetAttrs -> Int
 assetDoom = countTokens Doom . assetTokens
 

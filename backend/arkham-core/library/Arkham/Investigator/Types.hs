@@ -267,6 +267,9 @@ instance HasField "deck" InvestigatorAttrs (Deck PlayerCard) where
 instance HasField "discard" InvestigatorAttrs [PlayerCard] where
   getField = investigatorDiscard
 
+instance HasField "ability" InvestigatorAttrs (Int -> Source) where
+  getField this = toAbilitySource this
+
 data Investigator = forall a. IsInvestigator a => Investigator a
 
 instance HasField "id" Investigator InvestigatorId where

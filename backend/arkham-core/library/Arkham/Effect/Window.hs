@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Card.Id
 import Arkham.Phase
+import GHC.OverloadedLabels
 
 data EffectWindow
   = EffectPhaseWindow
@@ -27,3 +28,6 @@ data EffectWindow
   | EffectUI
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+instance IsLabel "skillTest" EffectWindow where
+  fromLabel = EffectSkillTestWindow

@@ -67,6 +67,15 @@ skillTestModifier
 skillTestModifier source target modifier =
   skillTestModifiers source target [modifier]
 
+failedSkillTestModifier
+  :: (Sourceable source, Targetable target)
+  => source
+  -> target
+  -> ModifierType
+  -> Message
+failedSkillTestModifier source target modifier =
+  failedSkillTestModifiers source target [modifier]
+
 skillTestModifiers
   :: forall target source
    . (Sourceable source, Targetable target)
@@ -74,12 +83,20 @@ skillTestModifiers
   -> target
   -> [ModifierType]
   -> Message
-skillTestModifiers source target modifiers =
-  CreateWindowModifierEffect
-    EffectSkillTestWindow
-    (EffectModifiers $ toModifiers source modifiers)
-    (toSource source)
-    (toTarget target)
+skillTestModifiers (toSource -> source) (toTarget -> target) mods =
+  CreateWindowModifierEffect #skillTest (EffectModifiers $ toModifiers source mods) source target
+
+failedSkillTestModifiers
+  :: forall target source
+   . (Sourceable source, Targetable target)
+  => source
+  -> target
+  -> [ModifierType]
+  -> Message
+failedSkillTestModifiers (toSource -> source) (toTarget -> target) mods =
+  CreateWindowModifierEffect #skillTest (failed $ toModifiers source mods) source target
+ where
+  failed = FailedByEffectModifiers
 
 effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
 effectModifiers source = EffectModifiers . toModifiers source
@@ -91,21 +108,13 @@ createWindowModifierEffect
   -> target
   -> [ModifierType]
   -> Message
-createWindowModifierEffect eWindow source target modifiers' =
-  CreateWindowModifierEffect
-    eWindow
-    (effectModifiers source modifiers')
-    (toSource source)
-    (toTarget target)
+createWindowModifierEffect eWindow (toSource -> source) (toTarget -> target) mods =
+  CreateWindowModifierEffect eWindow (effectModifiers source mods) source target
 
 createCostModifiers
   :: (Sourceable source, IsCard card) => source -> card -> [ModifierType] -> Message
 createCostModifiers source (toCard -> card) modifiers' =
-  createWindowModifierEffect
-    (EffectCardCostWindow $ toCardId card)
-    source
-    (toCardId card)
-    modifiers'
+  createWindowModifierEffect (EffectCardCostWindow $ toCardId card) source (toCardId card) modifiers'
 
 reduceCostOf :: (Sourceable source, IsCard card) => source -> card -> Int -> Message
 reduceCostOf source (toCard -> card) n = createCostModifiers source card [ReduceCostOf (CardWithId $ toCardId card) n]

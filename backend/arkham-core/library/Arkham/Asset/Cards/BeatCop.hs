@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.BeatCop (
-  BeatCop (..),
-  beatCop,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.BeatCop (BeatCop (..), beatCop) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Prelude
 
 newtype BeatCop = BeatCop AssetAttrs
   deriving anyclass (IsAsset)
@@ -25,14 +21,14 @@ instance HasModifiersFor BeatCop where
 
 instance HasAbilities BeatCop where
   getAbilities (BeatCop x) =
-    [ restrictedAbility x 1 (ControlsThis <> enemyExists (EnemyAt YourLocation) <> CanDealDamage)
+    [ controlledAbility x 1 (exists (EnemyAt YourLocation) <> CanDealDamage)
         $ FastAbility (DiscardCost FromPlay $ toTarget x)
     ]
 
 instance RunMessage BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
+      let source = attrs.ability 1
       enemies <- selectList $ enemyAtLocationWith iid
       player <- getPlayer iid
       push $ chooseOrRunOne player $ targetLabels enemies (only . assignEnemyDamage (nonAttack source 1))

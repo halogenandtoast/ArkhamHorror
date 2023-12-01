@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Location
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Movement
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
@@ -24,7 +24,7 @@ instance HasAbilities Pathfinder1 where
     [ controlledAbility
         attrs
         1
-        (exists (You <> UnengagedInvestigator) <> exists AccessibleLocation)
+        (exists (You <> UnengagedInvestigator) <> exists AccessibleLocation <> DuringTurn You)
         (FastAbility $ exhaust attrs)
     ]
 

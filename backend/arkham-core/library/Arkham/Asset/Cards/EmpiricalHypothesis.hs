@@ -55,7 +55,7 @@ instance HasAbilities EmpiricalHypothesis where
          ]
    where
     alternativeHypothesisCriteria =
-      if any (`notElem` (toResult @[Int] $ assetMeta a)) [1 .. 6]
+      if any (`notElem` (toResult @[Int] $ assetMeta a)) availableOptions
         then NoRestriction
         else Never
     matcher = case assetController a of
@@ -64,6 +64,12 @@ instance HasAbilities EmpiricalHypothesis where
           then colocatedWith iid
           else You <> InvestigatorWithId iid
       Nothing -> NoOne
+    availableOptions =
+      [1, 2]
+        <> [3 | a `hasCustomization` PessimisticOutlook]
+        <> [4 | a `hasCustomization` TrialAndError]
+        <> [5 | a `hasCustomization` IndepedentVariable]
+        <> [6 | a `hasCustomization` FieldResearch]
 
 instance RunMessage EmpiricalHypothesis where
   runMessage msg a@(EmpiricalHypothesis attrs) = case msg of

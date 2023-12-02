@@ -250,16 +250,16 @@ const showChoices = computed(() =>
 )
 
 const title = computed(() => {
+  if (question.value && question.value.tag === 'QuestionLabel') {
+    return replaceIcons(question.value.label)
+  }
+
   if (skillTestResults.value) {
     return "Results"
   }
 
   if (cardLabels.value.length > 0) {
     return "Choose"
-  }
-
-  if (question.value && question.value.tag === 'QuestionLabel') {
-    return question.value.label
   }
 
   if (question.value && question.value.tag === QuestionType.READ) {
@@ -285,13 +285,14 @@ const replaceIcons = function(body: string) {
     replace('{intellect}', '<span class="intellect-icon"></span>').
     replace('{combat}', '<span class="combat-icon"></span>').
     replace('{agility}', '<span class="agility-icon"></span>').
-    replace('{wild}', '<span class="wild-icon"></span>')
+    replace('{wild}', '<span class="wild-icon"></span>').
+    replace('{elderSign}', '<span class="elder-sign"></span>')
 }
 </script>
 
 <template>
   <Draggable v-if="showChoices">
-  <template #handle><h1>{{title}}</h1></template>
+  <template #handle><h1 v-html="title"></h1></template>
     <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
       <div class="modal-contents focused-cards">
         <Card

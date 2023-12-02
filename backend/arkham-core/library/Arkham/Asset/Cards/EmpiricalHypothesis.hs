@@ -58,12 +58,13 @@ instance HasAbilities EmpiricalHypothesis where
       if any (`notElem` (toResult @[Int] $ assetMeta a)) availableOptions
         then NoRestriction
         else Never
-    matcher = case assetController a of
-      Just iid ->
-        if a `hasCustomization` PeerReview
-          then colocatedWith iid
-          else You <> InvestigatorWithId iid
-      Nothing -> NoOne
+    matcher =
+      You <> case assetController a of
+        Just iid ->
+          if a `hasCustomization` PeerReview
+            then colocatedWith iid
+            else InvestigatorWithId iid
+        Nothing -> NoOne
     availableOptions =
       [1, 2]
         <> [3 | a `hasCustomization` PessimisticOutlook]

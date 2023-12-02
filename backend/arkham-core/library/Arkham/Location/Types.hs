@@ -192,6 +192,9 @@ instance Sourceable LocationAttrs where
   isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
+instance HasField "id" LocationAttrs LocationId where
+  getField = locationId
+
 instance HasField "ability" LocationAttrs (Int -> Source) where
   getField this = toAbilitySource this
 

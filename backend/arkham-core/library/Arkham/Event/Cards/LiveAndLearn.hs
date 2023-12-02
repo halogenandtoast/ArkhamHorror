@@ -24,9 +24,7 @@ instance RunMessage LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [windowType -> Window.SkillTestEnded st] _ | eid == toId attrs -> do
       push
-        $ BeginSkillTestWithPreMessages
-          True
-          [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)]
+        $ BeginSkillTestWithPreMessages [skillTestModifier attrs iid (AnySkillValue 2)]
         $ ( buildSkillTest
               iid
               (skillTestSource st)

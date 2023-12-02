@@ -40,7 +40,7 @@ instance HasAbilities TheRougarou where
   getAbilities (TheRougarou (attrs `With` meta)) = do
     let
       actions' = getAbilities attrs
-      forced =
+      firstAbility =
         restrictedAbility
           attrs
           1
@@ -67,8 +67,8 @@ instance HasAbilities TheRougarou where
               $ ActionAbility [Action.Engage]
               $ GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere
               <> ActionCost 1
-        forced : filter (not . isEngage) actions' <> [engageAction]
-      else forced : actions'
+        firstAbility : filter (not . isEngage) actions' <> [engageAction]
+      else firstAbility : actions'
 
 instance RunMessage TheRougarou where
   runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) =

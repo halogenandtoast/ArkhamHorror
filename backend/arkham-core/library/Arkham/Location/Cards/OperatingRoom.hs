@@ -1,14 +1,11 @@
-module Arkham.Location.Cards.OperatingRoom
-  ( operatingRoom
-  , OperatingRoom(..)
-  )
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.OperatingRoom (operatingRoom, OperatingRoom (..)) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Prelude
 
 newtype OperatingRoom = OperatingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +16,33 @@ operatingRoom = location OperatingRoom Cards.operatingRoom 2 (PerPlayer 1)
 
 instance HasAbilities OperatingRoom where
   getAbilities (OperatingRoom attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 2]
 
 instance RunMessage OperatingRoom where
-  runMessage msg (OperatingRoom attrs) =
-    OperatingRoom <$> runMessage msg attrs
+  runMessage msg l@(OperatingRoom attrs) = case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- selectList $ affectsOthers $ investigatorAt attrs.id
+      player <- getPlayer iid
+      push
+        $ chooseOrRunOne
+          player
+          [ targetLabel target [beginSkillTest iid (attrs.ability 1) target #intellect 4]
+          | target <- investigators
+          ]
+      pure l
+    PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
+      mTarget <- getSkillTestTarget
+      case mTarget of
+        Just (InvestigatorTarget target) ->
+          whenM (canHaveDamageHealed (attrs.ability 1) target)
+            $ push
+            $ HealDamage (toTarget target) (attrs.ability 1) 3
+        _ -> error "invalid target"
+      pure l
+    FailedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
+      mTarget <- getSkillTestTarget
+      case mTarget of
+        Just (InvestigatorTarget target) -> push $ assignDamage target (attrs.ability 1) 2
+        _ -> error "invalid target"
+      pure l
+    _ -> OperatingRoom <$> runMessage msg attrs

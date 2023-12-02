@@ -5,6 +5,7 @@ import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Trait (Trait (Basement))
@@ -27,6 +28,24 @@ instance HasAbilities Stairwell where
 instance RunMessage Stairwell where
   runMessage msg l@(Stairwell attrs) =
     case msg of
-      UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      UseThisAbility iid (isSource attrs -> True) 1 -> do
+        basementLocations <- selectList $ LocationWithTrait Basement
+        player <- getPlayer iid
+        push
+          $ chooseOne
+            player
+            [ targetLabel
+              basementLocation
+              [ toMessage $ move (attrs.ability 1) iid basementLocation
+              , beginSkillTest iid (attrs.ability 1) iid #agility 4
+              ]
+            | basementLocation <- basementLocations
+            ]
+        pure l
+      FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+        push $ assignDamage iid (attrs.ability 1) 2
+        pure l
+      UseThisAbility _iid (isSource attrs -> True) 2 -> do
+        pushM makeInfestationTest
         pure l
       _ -> Stairwell <$> runMessage msg attrs

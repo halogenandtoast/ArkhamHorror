@@ -41,7 +41,7 @@ instance RunMessage LostInTheWilds where
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n -> do
       pushAll
-        [ assignDamage iid source n
+        [ assignHorror iid source n
         , attachTreachery attrs iid
         ]
       pure t

@@ -102,6 +102,15 @@ body {
   }
 }
 
+.elder-sign {
+  &:before {
+    font-weight: normal;
+    font-size: 1.3em;
+    font-family: "Arkham";
+    content: "\0058";
+  }
+}
+
 .action-icon {
   &:before {
     font-family: "arkham";

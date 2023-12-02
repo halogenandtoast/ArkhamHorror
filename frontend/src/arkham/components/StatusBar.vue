@@ -136,7 +136,8 @@ const replaceIcons = function(body: string) {
     replace('{seeker}', '<span class="seeker-icon"></span>').
     replace('{rogue}', '<span class="rogue-icon"></span>').
     replace('{mystic}', '<span class="mystic-icon"></span>').
-    replace('{survivor}', '<span class="survivor-icon"></span>')
+    replace('{survivor}', '<span class="survivor-icon"></span>').
+    replace('{elderSign}', '<span class="elder-sign"></span>')
 }
 
 const label = function(body: string) {

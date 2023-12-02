@@ -2056,7 +2056,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       $ [EmptyDeck iid mDrawing]
       <> maybeToList mDrawing
-      <> [Msg.InvestigatorDamage iid EmptyDeckSource 0 1]
+      <> [assignHorror iid EmptyDeckSource 1]
     pure a
   EmptyDeck iid _ | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)

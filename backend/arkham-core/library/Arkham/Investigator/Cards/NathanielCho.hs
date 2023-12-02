@@ -84,11 +84,12 @@ instance RunMessage NathanielChoEffect where
         else do
           player <- getPlayer iid
           pushAll
-            [ chooseOne
-                player
-                [ targetLabel (toCardId event) [ReturnToHand iid (CardTarget $ PlayerCard event)]
-                | event <- events
-                ]
+            [ FocusCards (map toCard events)
+            , questionLabel "{elderSign}: return an event from your discard pile to your hand." player
+                $ ChooseOne
+                  [ targetLabel (toCardId event) [UnfocusCards, ReturnToHand iid (CardTarget $ PlayerCard event)]
+                  | event <- events
+                  ]
             , disable attrs
             ]
       pure e

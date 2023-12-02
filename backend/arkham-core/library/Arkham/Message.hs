@@ -231,6 +231,10 @@ instance IsMessage Message where
   toMessage = id
   {-# INLINE toMessage #-}
 
+instance IsMessage Movement where
+  toMessage = Arkham.Message.Move
+  {-# INLINE toMessage #-}
+
 instance IsMessage EnemyAttackDetails where
   toMessage = InitiateEnemyAttack
   {-# INLINE toMessage #-}

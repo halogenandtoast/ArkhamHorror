@@ -1,14 +1,13 @@
-module Arkham.Location.Cards.Stairwell
-  ( stairwell
-  , Stairwell(..)
-  )
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Stairwell (stairwell, Stairwell (..)) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Trait (Trait (Basement))
 
 newtype Stairwell = Stairwell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +18,15 @@ stairwell = location Stairwell Cards.stairwell 3 (PerPlayer 1)
 
 instance HasAbilities Stairwell where
   getAbilities (Stairwell attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1 $ freeReaction $ moves #after You (not_ $ LocationWithTrait Basement) attrs
+      , mkAbility attrs 2 $ ForcedAbility $ BecomesInfested #after $ LocationWithId $ toId attrs
+      ]
 
 instance RunMessage Stairwell where
-  runMessage msg (Stairwell attrs) =
-    Stairwell <$> runMessage msg attrs
+  runMessage msg l@(Stairwell attrs) =
+    case msg of
+      UseThisAbility _iid (isSource attrs -> True) 1 -> do
+        pure l
+      _ -> Stairwell <$> runMessage msg attrs

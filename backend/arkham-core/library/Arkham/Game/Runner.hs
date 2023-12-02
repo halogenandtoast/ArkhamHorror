@@ -1656,7 +1656,7 @@ runGameMessage msg g = case msg of
       . (: [EndPhase, After EndPhase])
       =<< checkWindows [mkWhen (Window.PhaseEnds MythosPhase)]
     pure $ g & (phaseHistoryL .~ mempty)
-  BeginSkillTestWithPreMessages isSameAction pre skillTest -> do
+  BeginSkillTestWithPreMessages pre skillTest -> do
     inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
 
     if inSkillTestWindow

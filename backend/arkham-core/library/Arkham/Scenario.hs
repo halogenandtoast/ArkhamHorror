@@ -141,12 +141,12 @@ instance HasModifiersFor TarotCard where
         case target of
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
-            defeated <- iid <=~> Matcher.DefeatedInvestigator
+            isDefeated <- iid <=~> Matcher.DefeatedInvestigator
             pure
               . toModifiers source
               $ case facing of
-                Upright -> [XPModifier 2 | not defeated && affected]
-                Reversed -> [XPModifier (-2) | defeated && affected]
+                Upright -> [XPModifier 2 | not isDefeated && affected]
+                Reversed -> [XPModifier (-2) | isDefeated && affected]
           _ -> pure []
       TheMagicianI ->
         case target of

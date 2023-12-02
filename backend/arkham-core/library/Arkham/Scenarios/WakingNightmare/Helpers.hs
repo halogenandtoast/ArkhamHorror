@@ -12,11 +12,18 @@ import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
+import Arkham.Timing (Timing)
 
 pattern InfestedLocation :: LocationMatcher
 pattern InfestedLocation <- (LocationWithDamage (GreaterThan (Static 0)))
   where
     InfestedLocation = LocationWithDamage (GreaterThan (Static 0))
+
+pattern BecomesInfested :: Timing -> LocationMatcher -> WindowMatcher
+pattern BecomesInfested t lmatcher <-
+  PlacedCounterOnLocation t lmatcher AnySource DamageCounter (GreaterThan (Static 0))
+  where
+    BecomesInfested t lmatcher = PlacedCounterOnLocation t lmatcher AnySource DamageCounter (GreaterThan (Static 0))
 
 makeInfestationTest :: (HasGame m, Query StoryMatcher) => m Message
 makeInfestationTest = do

@@ -50,12 +50,12 @@ instance RunMessage PowderOfIbnGhazi where
           , EarlSawyerSurvivedTheDunwichLegacy
           ]
       PowderOfIbnGhazi <$> runMessage msg (attrs & tokensL %~ setTokens Clue survivedCount)
-    UseCardAbility you source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer you
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      player <- getPlayer iid
       targets <-
         selectListMap EnemyTarget
           $ EnemyWithTitle "Brood of Yog-Sothoth"
-          <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId you)
+          <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
           <> ExhaustedEnemy
       case targets of
         [] -> throwIO $ InvalidState "missing brood of yog sothoth"

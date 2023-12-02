@@ -55,7 +55,7 @@ instance RunMessage JourneyToTheNexus where
       if depth >= 5 && not isStandalone
         then push R2
         else do
-          defeated <- selectList $ NotInvestigator $ InvestigatorAt $ locationIs Locations.stepsOfYoth
+          allDefeated <- selectList $ NotInvestigator $ InvestigatorAt $ locationIs Locations.stepsOfYoth
           enemies <- selectList AnyEnemy
           explorationDeck <- getExplorationDeck
           stepsOfYoth <- selectJust $ locationIs Locations.stepsOfYoth
@@ -71,8 +71,8 @@ instance RunMessage JourneyToTheNexus where
           newExplorationDeck <- shuffleM (stepsOfYothCard : rest)
           (newStartId, placeNewStart) <- placeLocation newStart
           pushAll
-            $ map (InvestigatorDefeated (toSource attrs)) defeated
-            <> map (InvestigatorDiscardAllClues (toSource attrs)) defeated
+            $ map (InvestigatorDefeated (toSource attrs)) allDefeated
+            <> map (InvestigatorDiscardAllClues (toSource attrs)) allDefeated
             <> map (\e -> PlaceEnemy e (OutOfPlay PursuitZone)) enemies
             <> map
               (RemoveAllDoom (toSource attrs) . LocationTarget)

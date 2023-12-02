@@ -420,6 +420,9 @@ data LocationMatcher
 
 instance Plated LocationMatcher
 
+instance Not LocationMatcher where
+  not_ = NotLocation
+
 class IsMatcher a
 instance IsMatcher LocationMatcher
 instance IsMatcher EnemyMatcher

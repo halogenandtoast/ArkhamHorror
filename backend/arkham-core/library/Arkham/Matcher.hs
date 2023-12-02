@@ -95,6 +95,10 @@ instance WithTrait CardMatcher where
   withTrait = CardWithTrait
   {-# INLINE withTrait #-}
 
+instance WithTrait LocationMatcher where
+  withTrait = LocationWithTrait
+  {-# INLINE withTrait #-}
+
 -- ** Investigator Helpers **
 
 investigatorIs :: HasCardCode a => a -> InvestigatorMatcher

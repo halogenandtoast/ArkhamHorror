@@ -259,7 +259,10 @@ instance RunMessage LocationAttrs where
     RemoveResources _ target n | isTarget a target -> do
       pure $ a & tokensL %~ subtractTokens Resource n
     PlaceHorror _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Horror n
-    PlaceDamage _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens #damage n
+    PlaceDamage source target n | isTarget a target -> do
+      windows' <- windows [Window.PlacedDamage source (toTarget a) n]
+      pushAll windows'
+      pure $ a & tokensL %~ addTokens #damage n
     RemoveClues _ (LocationTarget lid) n | lid == locationId -> do
       let clueCount = max 0 $ subtract n $ locationClues a
       pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)

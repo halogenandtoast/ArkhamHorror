@@ -47,7 +47,7 @@ instance RunMessage OneTwoPunch5 where
             $ chooseOrRunOne player
             $ [ Label
                 "Fight that enemy again"
-                [ BeginSkillTestWithPreMessages
+                [ BeginSkillTestWithPreMessages'
                     [ skillTestModifiers attrs iid [SkillModifier #combat 3, DamageDealt 2]
                     ]
                     (resetSkillTest skillTest)

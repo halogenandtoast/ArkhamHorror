@@ -36,7 +36,7 @@ instance HasAbilities GeneBeauregard3 where
               , exists (NonEliteEnemy <> EnemyAt ConnectedLocation <> EnemyCanEnter YourLocation)
               ]
         )
-        $ ReactionAbility (Moves #after You AnySource Anywhere Anywhere) (exhaust x)
+        $ ReactionAbility (Enters #after You Anywhere) (exhaust x)
     ]
 
 instance RunMessage GeneBeauregard3 where

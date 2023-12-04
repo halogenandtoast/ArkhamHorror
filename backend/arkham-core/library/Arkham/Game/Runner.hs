@@ -319,12 +319,6 @@ runGameMessage msg g = case msg of
             ]
           <> [Label "Resolve Normally" [msg']]
     pure g
-  Will (MoveFrom _ iid lid) -> do
-    window <- checkWindows [mkWhen (Window.Leaving iid lid)]
-    g <$ push window
-  After (MoveFrom _ iid lid) -> do
-    window <- checkWindows [mkAfter (Window.Leaving iid lid)]
-    g <$ push window
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)

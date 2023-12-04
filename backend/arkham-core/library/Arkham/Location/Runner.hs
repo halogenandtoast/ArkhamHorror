@@ -189,7 +189,6 @@ instance RunMessage LocationAttrs where
           )
       pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
     EnterLocation iid lid | lid == locationId -> do
-      push =<< checkWindows [mkWindow Timing.When $ Window.Entering iid lid]
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure a
     SetFlippable lid flippable | lid == locationId -> do

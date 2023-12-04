@@ -932,20 +932,42 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           source = moveSource movement
           iid = investigatorId
         mFromLocation <- field InvestigatorLocation iid
-        windowMsgs <-
-          Helpers.windows
-            [Window.Moves iid source mFromLocation destinationLocationId]
+
+        let
+          (whenMoves, atIfMoves, afterMoves) = timings (Window.Moves iid source mFromLocation destinationLocationId)
+          (mWhenLeaving, mAtIfLeaving, mAfterLeaving) = case mFromLocation of
+            Just from ->
+              timings (Window.Leaving iid from) & \case
+                (whens, atIfs, afters) -> (Just whens, Just atIfs, Just afters)
+            Nothing -> (Nothing, Nothing, Nothing)
+          (whenEntering, atIfEntering, afterEntering) = timings (Window.Entering iid destinationLocationId)
+
+        -- Windows we need to check as understood:
+        -- when {leaving, move} -> atIf {leaving} -> after {leaving} -> atIf {move} -> when {entering} -> atIf {entering} -> Reveal Location -> after {move but before enemy engagement} -> Enemy Engagement -> after {entering, move}
+        -- move but before enemy engagement is handled in MoveTo
+
+        runWhenLeavingMoves <- checkWindows $ whenMoves : maybeToList mWhenLeaving
+        mRunAtIfLeaving <- case mAtIfLeaving of
+          Just atIfLeaving -> Just <$> checkWindows [atIfLeaving]
+          Nothing -> pure Nothing
+        mRunAfterLeaving <- case mAfterLeaving of
+          Just afterLeaving -> Just <$> checkWindows [afterLeaving]
+          Nothing -> pure Nothing
+        runAtIfMoves <- checkWindows [atIfMoves]
+        runWhenEntering <- checkWindows [whenEntering]
+        runAtIfEntering <- checkWindows [atIfEntering]
+        runAfterEnteringMoves <- checkWindows [afterEntering, afterMoves]
+
         batchId <- getRandom
+
         pushBatched batchId
-          $ [ Will (MoveFrom source iid fromLocationId)
-            | fromLocationId <- maybeToList mFromLocation
-            ]
-          <> [Will (MoveTo $ move source iid destinationLocationId)]
-          <> [ MoveFrom source iid fromLocationId
-             | fromLocationId <- maybeToList mFromLocation
-             ]
+          $ [runWhenLeavingMoves]
+          <> [runAtIfLeaving | runAtIfLeaving <- maybeToList mRunAtIfLeaving]
+          <> [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
+          <> [runAfterLeaving | runAfterLeaving <- maybeToList mRunAfterLeaving]
+          <> [runAtIfMoves, runWhenEntering, runAtIfEntering]
           <> [MoveTo $ move source iid destinationLocationId]
-          <> windowMsgs
+          <> [runAfterEnteringMoves]
     pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _) | iid == iid' && iid == investigatorId -> do
     pushM $ checkWindows [mkWhen (Window.WouldPassSkillTest iid)]
@@ -1690,22 +1712,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
         pure a
       ToLocation lid -> do
-        let
-          source = moveSource movement
-          iid = investigatorId
+        let iid = investigatorId
+
         moveWith <-
           selectList (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
             >>= traverse (traverseToSnd getPlayer)
-        movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
+
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
-        afterEnterWindow <- checkWindows [mkAfter (Window.Entering iid lid)]
+
         pushAll
-          $ movedByWindows
-          <> [ WhenWillEnterLocation iid lid
-             , Do (WhenWillEnterLocation iid lid)
-             , EnterLocation iid lid
-             ]
+          $ [ WhenWillEnterLocation iid lid
+            , Do (WhenWillEnterLocation iid lid)
+            , EnterLocation iid lid
+            ]
           <> [ chooseOne
               player
               [ Label "Move too" [MoveTo $ move iid' iid' lid]
@@ -1713,8 +1733,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ]
              | (iid', player) <- moveWith
              ]
-          <> [ afterEnterWindow
-             , afterMoveButBeforeEnemyEngagement
+          <> [ afterMoveButBeforeEnemyEngagement
              , CheckEnemyEngagement iid
              ]
         pure a

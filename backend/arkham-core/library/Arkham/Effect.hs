@@ -40,6 +40,7 @@ import Arkham.Asset.Assets (
   crystalPendulumEffect,
   empiricalHypothesisEffect,
   fence1Effect,
+  fieldworkEffect,
   gregoryGryEffect,
   grislyTotemSeeker3Effect,
   grislyTotemSurvivor3Effect,
@@ -262,7 +263,7 @@ allEffects =
     , ("03012", SomeEffect thePaintedWorld)
     , ("03018", SomeEffect improvisation)
     , ("03022", SomeEffect letMeHandleThisEffect)
-    , ("03024", SomeEffect fieldwork)
+    , ("03024", SomeEffect fieldworkEffect)
     , ("03029", SomeEffect sleightOfHand)
     , ("03031", SomeEffect lockpicks1Effect)
     , ("03032", SomeEffect alchemicalTransmutationEffect)

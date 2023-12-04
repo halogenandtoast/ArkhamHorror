@@ -26,9 +26,10 @@ suspiciousOrderly =
 
 instance HasModifiersFor SuspiciousOrderly where
   getModifiersFor target (SuspiciousOrderly attrs) | isTarget attrs target = do
-    pure $ toModifiers attrs [CannotAttack, CannotBeDamaged]
-  getModifiersFor (InvestigatorTarget _) (SuspiciousOrderly attrs) = do
-    pure $ toModifiers attrs [CannotFight (EnemyWithId $ toId attrs)]
+    pure $ toModifiers attrs [CannotAttack, CannotBeDamaged, CannotBeAttacked]
+  getModifiersFor (InvestigatorTarget iid) (SuspiciousOrderly attrs) = do
+    affected <- iid <=~> investigatorEngagedWith (toId attrs)
+    pure $ toModifiers attrs [CannotInvestigate | affected]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SuspiciousOrderly where

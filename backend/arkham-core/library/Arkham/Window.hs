@@ -25,6 +25,7 @@ import Arkham.Target (Target)
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Data.Aeson.TH
+import GHC.Records
 
 data Result b a = Success a | Failure b
   deriving stock (Show, Eq, Ord)
@@ -35,6 +36,9 @@ data Window = Window
   , windowBatchId :: Maybe BatchId
   }
   deriving stock (Show, Eq, Ord)
+
+instance HasField "timing" Window Timing where
+  getField = windowTiming
 
 mkWindow :: Timing -> WindowType -> Window
 mkWindow timing windowType = Window timing windowType Nothing

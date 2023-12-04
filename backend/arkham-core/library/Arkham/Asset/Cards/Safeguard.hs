@@ -32,7 +32,7 @@ instance HasAbilities Safeguard where
               YourLocation
               (AccessibleFrom YourLocation <> CanEnterLocation You)
           )
-        $ exhaust a
+          (exhaust a)
     ]
 
 getMovedToLocation :: [Window] -> LocationId

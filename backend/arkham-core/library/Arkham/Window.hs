@@ -42,6 +42,9 @@ mkWindow timing windowType = Window timing windowType Nothing
 mkWhen :: WindowType -> Window
 mkWhen windowType = Window #when windowType Nothing
 
+mkAtIf :: WindowType -> Window
+mkAtIf windowType = Window #at windowType Nothing
+
 mkAfter :: WindowType -> Window
 mkAfter windowType = Window #after windowType Nothing
 

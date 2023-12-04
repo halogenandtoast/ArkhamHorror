@@ -51,11 +51,12 @@ wouldWindows window = do
 frame :: HasGame m => WindowType -> m (Message, Message, Message)
 frame window = do
   iids <- selectList UneliminatedInvestigator
+  let (whenWindow, atIfWindow, afterWindow) = timings window
   pure
-    ( CheckWindow iids [mkWindow Timing.When window]
-    , CheckWindow iids [mkWindow Timing.AtIf window]
-    , CheckWindow iids [mkWindow Timing.After window]
-    )
+    (CheckWindow iids [whenWindow], CheckWindow iids [atIfWindow], CheckWindow iids [afterWindow])
+
+timings :: WindowType -> (Window, Window, Window)
+timings wType = (mkWhen wType, mkAtIf wType, mkAfter wType)
 
 doFrame :: HasGame m => Message -> WindowType -> m [Message]
 doFrame msg window = do

@@ -45,12 +45,12 @@ instance HasAbilities TonyMorgan where
       $ restrictedAbility
         attrs
         1
-        ( Self
-            <> exists (EnemyWithBounty <> oneOf [CanFightEnemy (toSource attrs), CanEngageEnemy (toSource attrs)])
-        )
+        (Self <> exists (EnemyWithBounty <> oneOf [CanFightEnemy source, CanEngageEnemy source]))
       $ ActionAbility [] mempty
     | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
     ]
+   where
+    source = toSource attrs
 
 instance HasChaosTokenValue TonyMorgan where
   getChaosTokenValue iid ElderSign (TonyMorgan (attrs `With` _)) | iid == toId attrs = do

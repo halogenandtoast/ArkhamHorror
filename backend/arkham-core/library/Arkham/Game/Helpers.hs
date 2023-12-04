@@ -1995,7 +1995,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           Nothing -> noMatch
       _ -> noMatch
     Matcher.MovedBy timing whoMatcher sourceMatcher -> guardTiming timing $ \case
-      Window.MovedBy source' _ who ->
+      Window.Moves who source' _ _ ->
         andM
           [ matchWho iid who whoMatcher
           , sourceMatches source' sourceMatcher

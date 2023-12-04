@@ -128,7 +128,7 @@ getInvestigatorsAtSameLocation attrs = do
   enemyLocation <- field EnemyLocation (toId attrs)
   case enemyLocation of
     Nothing -> pure []
-    Just loc -> selectList $ InvestigatorAt $ LocationWithId loc
+    Just loc -> selectList $ investigatorAt loc
 
 getPreyMatcher :: HasGame m => EnemyAttrs -> m PreyMatcher
 getPreyMatcher a = do
@@ -338,23 +338,19 @@ instance RunMessage EnemyAttrs where
                       , MoveUntil lid target
                       ]
       pure a
-    EnemyMove eid lid | eid == enemyId -> do
-      case enemyPlacement of
-        AsSwarm eid' _ -> do
-          push $ EnemyMove eid' lid
-          pure a
-        _ -> do
-          willMove <- canEnterLocation eid lid
-          if willMove
-            then do
-              enemyLocation <- field EnemyLocation enemyId
-              leaveWindows <- for enemyLocation
-                $ \oldId -> windows [Window.EnemyLeaves eid oldId]
-              pushAll
-                $ fromMaybe [] leaveWindows
-                <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
-              pure $ a & placementL .~ AtLocation lid
-            else a <$ push (EnemyCheckEngagement eid)
+    EnemyMove eid lid | eid == enemyId -> case enemyPlacement of
+      AsSwarm eid' _ -> do
+        push $ EnemyMove eid' lid
+        pure a
+      _ -> do
+        willMove <- canEnterLocation eid lid
+        if willMove
+          then do
+            enemyLocation <- field EnemyLocation enemyId
+            leaveWindows <- for enemyLocation \oldId -> windows [Window.EnemyLeaves eid oldId]
+            pushAll $ fromMaybe [] leaveWindows <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
+            pure $ a & placementL .~ AtLocation lid
+          else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) -> do
       keywords <- getModifiedKeywords a
@@ -368,20 +364,22 @@ instance RunMessage EnemyAttrs where
               canEngage <- flip allM investigatorModifiers $ \case
                 CannotBeEngagedBy matcher -> notElem eid <$> select matcher
                 _ -> pure True
-              pure
-                $ canEngage
-                && EnemyCannotEngage iid
-                `notElem` modifiers'
-                && CannotBeEngaged
-                `notElem` modifiers'
+              pure $ canEngage && all (`notElem` modifiers') [EnemyCannotEngage iid, CannotBeEngaged]
       investigatorIds' <- filterM modifiedFilter =<< getInvestigatorsAtSameLocation a
-      prey <- getPreyMatcher a
-      preyIds <- selectList $ case prey of
-        Prey m ->
-          Prey $ m <> AnyInvestigator (map InvestigatorWithId investigatorIds')
-        other -> other
+      let valids = oneOf (map InvestigatorWithId investigatorIds')
 
-      let investigatorIds = if null preyIds then investigatorIds' else preyIds
+      prey <- getPreyMatcher a
+      investigatorIds <- case prey of
+        Prey m -> do
+          preyIds <- selectList $ Prey $ m <> valids
+          pure $ if null preyIds then investigatorIds' else preyIds
+        OnlyPrey m -> selectList $ OnlyPrey $ m <> valids
+        other@(BearerOf {}) -> do
+          mBearer <- selectOne other
+          pure $ maybe [] (\bearer -> if bearer `elem` investigatorIds' then [bearer] else []) mBearer
+        other@(RestrictedBearerOf {}) -> do
+          mBearer <- selectOne other
+          pure $ maybe [] (\bearer -> if bearer `elem` investigatorIds' then [bearer] else []) mBearer
 
       lead <- getLeadPlayer
       unengaged <- selectNone $ investigatorEngagedWith enemyId

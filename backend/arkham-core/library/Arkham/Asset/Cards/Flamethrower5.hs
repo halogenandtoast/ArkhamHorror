@@ -28,7 +28,7 @@ instance HasAbilities Flamethrower5 where
 instance RunMessage Flamethrower5 where
   runMessage msg a@(Flamethrower5 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      enemies <- withMaxField Field.EnemyFight =<< selectList (enemyEngagedWith iid)
+      enemies <- withMaybeMaxField Field.EnemyFight =<< selectList (enemyEngagedWith iid)
       pushAll
         [ skillTestModifier attrs iid (SkillModifier #combat 4)
         , ChooseFightEnemy

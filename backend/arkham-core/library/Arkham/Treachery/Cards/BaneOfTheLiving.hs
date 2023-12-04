@@ -61,7 +61,7 @@ instance RunMessage BaneOfTheLiving where
       pure t
     HandleTargetChoice _ (isSource attrs -> True) (CardIdTarget cardId) -> do
       e <- selectJust $ EnemyWithCardId cardId
-      health <- field EnemyHealth e
+      health <- fieldJust EnemyHealth e
       push $ PlaceDamage (toSource attrs) (toTarget e) (health `div` 2)
       pure t
     RevelationChoice iid (isSource attrs -> True) 2 -> do

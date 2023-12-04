@@ -2082,6 +2082,7 @@ enemyMatcherFilter = \case
       Just discardee -> do
         iids <- select investigatorMatcher
         pure $ discardee `elem` iids
+  EnemyWithHealth -> fieldMap EnemyHealth isJust . toId
   SwarmingEnemy -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     keywords <- field EnemyKeywords (toId enemy)

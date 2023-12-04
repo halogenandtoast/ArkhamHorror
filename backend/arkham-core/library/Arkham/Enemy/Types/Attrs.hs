@@ -23,8 +23,8 @@ data EnemyAttrs = EnemyAttrs
   , enemyCardCode :: CardCode
   , enemyOriginalCardCode :: CardCode
   , enemyPlacement :: Placement
-  , enemyFight :: Int
-  , enemyHealth :: GameValue
+  , enemyFight :: Maybe Int
+  , enemyHealth :: Maybe GameValue
   , enemyEvade :: Maybe Int
   , enemyAssignedDamage :: Map Source DamageAssignment
   , enemyHealthDamage :: Int

@@ -36,14 +36,14 @@ instance RunMessage SerpentsIre where
       serpents <-
         selectList $ OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent
       fightValue <-
-        fieldMax
+        maybeFieldMax
           (OutOfPlayEnemyField PursuitZone EnemyFight)
           (OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent)
       choices <-
         toList
           . setFromList @(Set EnemyId)
           <$> filterM
-            (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) ((== fightValue)))
+            (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) ((== Just fightValue)))
             serpents
       if null choices
         then push $ gainSurge attrs
@@ -51,8 +51,8 @@ instance RunMessage SerpentsIre where
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid -> do
             player <- getPlayer iid
-            push $
-              chooseOne
+            push
+              $ chooseOne
                 player
                 [ targetLabel
                   eid
@@ -66,7 +66,7 @@ instance RunMessage SerpentsIre where
       spawned <- selectAny $ EnemyWithId eid
       if spawned
         then do
-          fightValue <- field EnemyFight eid
+          fightValue <- fieldJust EnemyFight eid
           push $ RevelationSkillTest iid (toSource attrs) SkillAgility fightValue
           pure . SerpentsIre $ attrs `with` Metadata (Just eid)
         else pure t

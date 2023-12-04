@@ -58,12 +58,14 @@ data instance Field Enemy :: Type -> Type where
   EnemyEngagedInvestigators :: Field Enemy (Set InvestigatorId)
   EnemyDoom :: Field Enemy Int
   EnemyEvade :: Field Enemy (Maybe Int)
-  EnemyFight :: Field Enemy Int
+  EnemyFight :: Field Enemy (Maybe Int)
   EnemyTokens :: Field Enemy Tokens
   EnemyClues :: Field Enemy Int
   EnemyDamage :: Field Enemy Int
-  EnemyHealth :: Field Enemy Int
-  EnemyRemainingHealth :: Field Enemy Int
+  EnemyHealth :: Field Enemy (Maybe Int)
+  EnemyForcedHealth :: Field Enemy Int
+  EnemyRemainingHealth :: Field Enemy (Maybe Int)
+  EnemyForcedRemainingHealth :: Field Enemy Int
   EnemyHealthDamage :: Field Enemy Int
   EnemySanityDamage :: Field Enemy Int
   EnemyTraits :: Field Enemy (Set Trait)
@@ -90,10 +92,9 @@ instance Ord (SomeField Enemy) where
 instance FromJSON (Field Enemy Int) where
   parseJSON = withText "Field Enemy" $ \case
     "EnemyDoom" -> pure EnemyDoom
-    "EnemyFight" -> pure Arkham.Enemy.Types.EnemyFight
     "EnemyClues" -> pure EnemyClues
     "EnemyDamage" -> pure EnemyDamage
-    "EnemyRemainingHealth" -> pure EnemyRemainingHealth
+    "EnemyRemainingHealth" -> pure EnemyForcedRemainingHealth
     "EnemyHealthDamage" -> pure EnemyHealthDamage
     "EnemySanityDamage" -> pure EnemySanityDamage
     _ -> error "no such int field"
@@ -107,7 +108,10 @@ instance FromJSON (SomeField Enemy) where
     "EnemyTokens" -> pure $ SomeField EnemyTokens
     "EnemyClues" -> pure $ SomeField EnemyClues
     "EnemyDamage" -> pure $ SomeField EnemyDamage
+    "EnemyHealth" -> pure $ SomeField EnemyHealth
+    "EnemyForcedHealth" -> pure $ SomeField EnemyHealth
     "EnemyRemainingHealth" -> pure $ SomeField EnemyRemainingHealth
+    "EnemyForcedRemainingHealth" -> pure $ SomeField EnemyForcedRemainingHealth
     "EnemyHealthDamage" -> pure $ SomeField EnemyHealthDamage
     "EnemySanityDamage" -> pure $ SomeField EnemySanityDamage
     "EnemyTraits" -> pure $ SomeField EnemyTraits
@@ -119,6 +123,8 @@ instance FromJSON (SomeField Enemy) where
     "EnemyLocation" -> pure $ SomeField EnemyLocation
     "EnemyPlacement" -> pure $ SomeField EnemyPlacement
     "EnemySealedChaosTokens" -> pure $ SomeField EnemySealedChaosTokens
+    "EnemyKeys" -> pure $ SomeField EnemyKeys
+    "EnemySpawnedBy" -> pure $ SomeField EnemySpawnedBy
     _ -> error "no such field"
 
 data instance Field (OutOfPlayEntity Enemy) :: Type -> Type where
@@ -166,8 +172,8 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyCardCode = toCardCode cardDef
             , enemyOriginalCardCode = toCardCode cardDef
             , enemyPlacement = Unplaced
-            , enemyFight = fight
-            , enemyHealth = health
+            , enemyFight = Just fight
+            , enemyHealth = Just health
             , enemyEvade = Just evade
             , enemyAssignedDamage = mempty
             , enemyHealthDamage = healthDamage

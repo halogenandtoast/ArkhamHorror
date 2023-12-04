@@ -250,6 +250,9 @@ instance Sourceable EnemyAttrs where
   isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
+instance HasField "ability" EnemyAttrs (Int -> Source) where
+  getField = toAbilitySource
+
 data Enemy = forall a. IsEnemy a => Enemy a
 
 instance HasField "id" Enemy EnemyId where

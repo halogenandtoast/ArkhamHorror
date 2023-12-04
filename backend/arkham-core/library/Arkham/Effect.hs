@@ -72,7 +72,9 @@ import Arkham.Asset.Assets (
 import Arkham.Enemy.Enemies (
   alejandroVelaEffect,
   boaConstrictorEffect,
+  corruptedOrderlyEffect,
   ichtacaScionOfYigEffect,
+  tommyMalloyEffect,
  )
 import Arkham.Event.Events (
   aChanceEncounterEffect,
@@ -331,6 +333,7 @@ allEffects =
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06056", SomeEffect enchantedWoodsLostWoodsEffect)
+    , ("06082", SomeEffect corruptedOrderlyEffect)
     , ("06114", SomeEffect followedEffect)
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
@@ -348,7 +351,7 @@ allEffects =
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielChoEffect)
-    , ("60103", SomeEffect tommyMalloy)
+    , ("60103", SomeEffect tommyMalloyEffect)
     , ("60220", SomeEffect libraryDocent1Effect)
     , ("60226", SomeEffect mindOverMatter2Effect)
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)

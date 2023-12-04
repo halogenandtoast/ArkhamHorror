@@ -9,15 +9,17 @@ import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window (checkWindows)
 import Arkham.Matcher
 import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.WakingNightmare.InfestationBag
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
 import Arkham.Trait (Trait (Spider))
+import Arkham.Window (mkWhen)
+import Arkham.Window qualified as Window
 import Arkham.Zone
-import Data.Aeson (Result (..))
 import Data.Aeson.KeyMap ((!?))
-import Data.UUID (nil)
 
 newtype TheInfestationBegins = TheInfestationBegins StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -25,29 +27,6 @@ newtype TheInfestationBegins = TheInfestationBegins StoryAttrs
 
 theInfestationBegins :: StoryCard TheInfestationBegins
 theInfestationBegins = story TheInfestationBegins Cards.theInfestationBegins
-
-infestationBag :: StoryAttrs -> InfestationBag
-infestationBag attrs = case fromJSON (storyMeta attrs) of
-  Success a -> a
-  _ -> error "invalid infestation bag"
-
-newtype InfestationToken = InfestationToken {infestationTokenFace :: ChaosTokenFace}
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
-
-data InfestationBag = InfestationBag
-  { infestationTokens :: [InfestationToken]
-  , infestationSetAside :: [InfestationToken]
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-initInfestationBag :: InfestationBag
-initInfestationBag =
-  InfestationBag
-    { infestationTokens =
-        map InfestationToken [#skull, #tablet, #tablet, #tablet, #tablet, #cultist, #cultist]
-    , infestationSetAside = []
-    }
 
 instance RunMessage TheInfestationBegins where
   runMessage msg s@(TheInfestationBegins attrs) = case msg of
@@ -79,10 +58,28 @@ instance RunMessage TheInfestationBegins where
       pure s
     SendMessage (isTarget attrs -> True) (RequestChaosTokens _ _ (Reveal 1) _) -> do
       let bag = infestationBag attrs
+      lead <- getLead
       (tokens, rest) <- splitAt 1 <$> shuffleM (infestationTokens bag)
       let token = fromJustNote "invalid infestation token" $ headMay tokens
-      mods <- getModifiers attrs
+      let bag' = bag {infestationTokens = rest, infestationCurrentToken = Just token}
+      revealWindow <- checkWindows [mkWhen (Window.RevealChaosToken lead $ asChaosToken token)]
+      pushAll
+        [ FocusChaosTokens [asChaosToken token]
+        , revealWindow
+        , SendMessage (toTarget attrs) (ResolveChaosToken (asChaosToken token) token.face lead)
+        ]
 
+      pure
+        $ TheInfestationBegins
+        $ attrs {storyMeta = toJSON bag'}
+    SendMessage (isTarget attrs -> True) (ResolveChaosToken _ _ _) | Just token <- infestationCurrentToken (infestationBag attrs) -> do
+      let tokenFace = token.face
+      mods <- getModifiers attrs
+      let bag =
+            (infestationBag attrs)
+              { infestationCurrentToken = Nothing
+              , infestationSetAside = infestationSetAside (infestationBag attrs) <> [InfestationToken tokenFace]
+              }
       let
         enabled = \case
           MetaModifier (Object o) -> o !? "treatTabletAsSkill" == Just (Bool True)
@@ -92,7 +89,7 @@ instance RunMessage TheInfestationBegins where
             Tablet | treatTabletAsSkull -> Skull
             t -> t
 
-      case swapToken (infestationTokenFace token) of
+      case swapToken tokenFace of
         Skull -> do
           lead <- getLead
           push
@@ -126,23 +123,16 @@ instance RunMessage TheInfestationBegins where
                 | location <- adjacentLocations
                 ]
         _ -> error "Invalid infestation token"
-      let bag' = bag {infestationTokens = rest, infestationSetAside = tokens <> infestationSetAside bag}
 
       lead <- getLeadPlayer
-      pushAll
-        [ FocusChaosTokens [ChaosToken (ChaosTokenId nil) (infestationTokenFace token)]
-        , chooseOne lead [Label "Continue" [UnfocusChaosTokens]]
-        ]
+      push $ chooseOne lead [Label "Continue" [UnfocusChaosTokens]]
 
-      if count (== InfestationToken Cultist) (infestationTokens bag') == 2
+      if count (== InfestationToken Cultist) (infestationTokens bag) == 2
         then do
           pure
             $ TheInfestationBegins
             $ attrs {storyMeta = toJSON initInfestationBag}
-        else
-          pure
-            $ TheInfestationBegins
-            $ attrs {storyMeta = toJSON bag'}
+        else pure $ TheInfestationBegins $ attrs {storyMeta = toJSON bag}
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
       investigators <- getInvestigators
       locations <-
@@ -159,5 +149,14 @@ instance RunMessage TheInfestationBegins where
     SendMessage (isTarget attrs -> True) (AddChaosToken face) -> do
       let bag = infestationBag attrs
       let bag' = bag {infestationTokens = InfestationToken face : infestationTokens bag}
+      pure $ TheInfestationBegins $ attrs {storyMeta = toJSON bag'}
+    SendMessage (isTarget attrs -> True) (ChaosTokenCanceled _ _ _) -> do
+      let bag = infestationBag attrs
+      let bag' =
+            bag
+              { infestationTokens = infestationTokens bag <> maybeToList (infestationCurrentToken bag)
+              , infestationCurrentToken = Nothing
+              }
+      push $ UnfocusChaosTokens
       pure $ TheInfestationBegins $ attrs {storyMeta = toJSON bag'}
     _ -> TheInfestationBegins <$> runMessage msg attrs

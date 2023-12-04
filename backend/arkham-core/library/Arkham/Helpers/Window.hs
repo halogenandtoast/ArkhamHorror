@@ -3,6 +3,7 @@ module Arkham.Helpers.Window where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -164,3 +165,9 @@ moves
   -> WindowMatcher
 moves timing who source destination =
   Arkham.Matcher.Moves timing (be who) AnySource (be source) (be destination)
+
+getChaosToken :: [Window] -> ChaosToken
+getChaosToken = \case
+  [] -> error "No chaos token drawn"
+  ((windowType -> Window.RevealChaosToken _ token) : _) -> token
+  (_ : rest) -> getChaosToken rest

@@ -53,12 +53,6 @@ advanceActSideA attrs advanceMode = do
 instance RunMessage Act where
   runMessage msg (Act a) = Act <$> runMessage msg a
 
-getChaosToken :: [Window] -> ChaosToken
-getChaosToken = \case
-  [] -> error "No chaos token drawn"
-  ((windowType -> Window.RevealChaosToken _ token) : _) -> token
-  (_ : rest) -> getChaosToken rest
-
 instance RunMessage ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
     AdvanceAct aid _ advanceMode | aid == actId && onSide A a -> do

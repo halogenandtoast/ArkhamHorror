@@ -137,11 +137,13 @@ import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.WakingNightmare.InfestationBag
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Story
+import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
@@ -2955,12 +2957,32 @@ instance Projection Investigator where
 
 instance Query ChaosTokenMatcher where
   select matcher = do
-    tokens <- if includeSealed then getAllChaosTokens else getBagChaosTokens
+    tokens <-
+      if includeSealed
+        then getAllChaosTokens
+        else
+          if isInfestation
+            then getInfestationTokens
+            else getBagChaosTokens
     setFromList <$> filterM (go matcher) tokens
    where
     includeSealed = case matcher of
       IncludeSealed _ -> True
       _ -> False
+    isInfestation = case matcher of
+      IsInfestationToken _ -> True
+      _ -> False
+    getInfestationTokens = do
+      ms <- selectOne $ storyIs Stories.theInfestationBegins
+      case ms of
+        Nothing -> pure []
+        Just s -> do
+          bag <- infestationBag <$> getAttrs @Story s
+          pure
+            $ map asChaosToken
+            $ infestationTokens bag
+            <> infestationSetAside bag
+            <> maybeToList (infestationCurrentToken bag)
     go = \case
       WouldReduceYourSkillValueToZero -> \t -> do
         mSkillTest <- getSkillTest
@@ -2988,6 +3010,7 @@ instance Query ChaosTokenMatcher where
       ChaosTokenMatchesAny ms -> \t -> anyM (`go` t) ms
       ChaosTokenMatches ms -> \t -> allM (`go` t) ms
       IncludeSealed m -> go m
+      IsInfestationToken m -> go m
 
 instance Query AssetMatcher where
   select = fmap (setFromList . map toId) . getAssetsMatching

@@ -27,12 +27,6 @@ import Arkham.Window qualified as Window
 advanceAgendaDeck :: AgendaAttrs -> Message
 advanceAgendaDeck attrs = AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
 
-getChaosToken :: [Window] -> ChaosToken
-getChaosToken = \case
-  [] -> error "No chaos token drawn"
-  ((windowType -> Window.RevealChaosToken _ token) : _) -> token
-  (_ : rest) -> getChaosToken rest
-
 instance RunMessage AgendaAttrs where
   runMessage msg a@AgendaAttrs {..} = case msg of
     PlaceUnderneath target cards | isTarget a target -> do

@@ -2192,6 +2192,7 @@ library
       Arkham.Scenarios.UnionAndDisillusion.Story
       Arkham.Scenarios.WakingNightmare.FlavorText
       Arkham.Scenarios.WakingNightmare.Helpers
+      Arkham.Scenarios.WakingNightmare.InfestationBag
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Skill
       Arkham.Skill.Cards

@@ -298,6 +298,9 @@ instance Semigroup EnemyMatcher where
   x <> EnemyMatchAll xs = EnemyMatchAll (x : xs)
   x <> y = EnemyMatchAll [x, y]
 
+instance Not EnemyMatcher where
+  not_ = NotEnemy
+
 instance Monoid EnemyMatcher where
   mempty = AnyEnemy
 
@@ -983,6 +986,7 @@ data ChaosTokenMatcher
   | ChaosTokenMatches [ChaosTokenMatcher]
   | IncludeSealed ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
+  | IsInfestationToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "skull" ChaosTokenMatcher where

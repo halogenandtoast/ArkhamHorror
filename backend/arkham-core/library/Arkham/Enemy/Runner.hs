@@ -982,7 +982,7 @@ instance RunMessage EnemyAttrs where
               getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
           let validDefeat = canBeDefeated && not hasSwarm && isNothing mOnlyBeDefeatedByModifier
           when validDefeat $ do
-            modifiedHealth <- field EnemyForcedHealth (toId a)
+            modifiedHealth <- fieldJust EnemyHealth (toId a)
             when (enemyDamage a >= modifiedHealth) $ do
               whenMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
               afterMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
@@ -1017,7 +1017,7 @@ instance RunMessage EnemyAttrs where
               )
               <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
           when validDefeat $ do
-            modifiedHealth <- field EnemyForcedHealth (toId a)
+            modifiedHealth <- fieldJust EnemyHealth (toId a)
             when (enemyDamage a + amount' >= modifiedHealth) $ do
               let excess = (enemyDamage a + amount') - modifiedHealth
               let
@@ -1088,7 +1088,7 @@ instance RunMessage EnemyAttrs where
           pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
-      modifiedHealth <- field EnemyForcedHealth (toId a)
+      modifiedHealth <- fieldJust EnemyHealth (toId a)
       canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
       modifiers' <- getModifiers (toTarget a)
       let
@@ -1114,7 +1114,7 @@ instance RunMessage EnemyAttrs where
           (setToList $ toTraits a)
       pure a
     EnemyDefeated eid _ source _ | eid == toId a -> do
-      modifiedHealth <- field EnemyForcedHealth (toId a)
+      modifiedHealth <- fieldJust EnemyHealth (toId a)
       let
         defeatedByDamage = enemyDamage a >= modifiedHealth
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source

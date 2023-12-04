@@ -470,7 +470,7 @@ runGameMessage msg g = case msg of
     -- TODO: This is wrong but history is the way we track if enemies were
     -- defeated for cards like Kerosene (1), we need a history independent of
     -- the iid for cases where we aren't looking at a specific investigator
-    enemyHealth <- field EnemyHealth eid
+    enemyHealth <- fieldJust EnemyHealth eid
     let
       iid = fromMaybe lead miid
       placement' = maybe (enemyPlacement attrs) AtLocation mlid

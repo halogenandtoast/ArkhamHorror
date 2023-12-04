@@ -16,7 +16,7 @@ spec = do
     context "after engaging an enemy" $ do
       it "spend 1 resource and exhaust to deal one damage to that enemy" $ gameTest $ \investigator -> do
         updateInvestigator investigator (Investigator.tokensL %~ setTokens Resource 1)
-        enemy <- testEnemyWith (Enemy.healthL .~ Static 2)
+        enemy <- testEnemyWith (Enemy.healthL ?~ Static 2)
         location <- testLocationWith id
         putCardIntoPlay investigator Assets.zoeysCross
         pushAndRun $ spawnAt enemy location

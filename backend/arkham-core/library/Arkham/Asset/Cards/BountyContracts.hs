@@ -26,7 +26,9 @@ bountyContracts = asset BountyContracts Cards.bountyContracts
 
 instance HasAbilities BountyContracts where
   getAbilities (BountyContracts a) =
-    [ restrictedAbility a 1 (available <> ControlsThis) $ freeReaction $ EnemyEntersPlay #after AnyEnemy
+    [ restrictedAbility a 1 (available <> ControlsThis)
+        $ freeReaction
+        $ EnemyEntersPlay #after EnemyWithHealth
     , restrictedAbility a 2 ControlsThis $ ForcedAbility $ EnemyDefeated #after You ByAny EnemyWithBounty
     ]
    where
@@ -43,7 +45,7 @@ instance RunMessage BountyContracts where
   runMessage msg a@(BountyContracts attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
       player <- getPlayer iid
-      health <- field EnemyHealth enemy
+      health <- field EnemyForcedHealth enemy
       let maxAmount = min health (min 3 (findWithDefault 0 Bounty $ assetUses attrs))
       push
         $ chooseAmounts

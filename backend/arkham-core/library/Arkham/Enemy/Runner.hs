@@ -71,7 +71,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
-import Arkham.Window (mkWhen, mkWindow)
+import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Data.List.Extra (firstJust)
 import Data.Monoid (First (..))
@@ -642,26 +642,15 @@ instance RunMessage EnemyAttrs where
             iids
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
-      enemyFight' <- field EnemyFight eid
+      enemyFight' <- fieldJust EnemyFight eid
       push
-        $ fight
-          iid
-          source
-          (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
-          skillType
-          enemyFight'
+        $ fight iid source (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget) skillType enemyFight'
       pure a
     PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n
       | isActionTarget a target -> do
-          whenWindow <-
-            checkWindows
-              [mkWindow Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
-          afterSuccessfulWindow <-
-            checkWindows
-              [mkWindow Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
-          afterWindow <-
-            checkWindows
-              [mkWindow Timing.After (Window.EnemyAttacked iid source enemyId)]
+          whenWindow <- checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid enemyId n)]
+          afterSuccessfulWindow <- checkWindows [mkAfter (Window.SuccessfulAttackEnemy iid enemyId n)]
+          afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
           pushAll
             [ whenWindow
             , Successful
@@ -993,7 +982,7 @@ instance RunMessage EnemyAttrs where
               getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
           let validDefeat = canBeDefeated && not hasSwarm && isNothing mOnlyBeDefeatedByModifier
           when validDefeat $ do
-            modifiedHealth <- field EnemyHealth (toId a)
+            modifiedHealth <- field EnemyForcedHealth (toId a)
             when (enemyDamage a >= modifiedHealth) $ do
               whenMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
               afterMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
@@ -1028,7 +1017,7 @@ instance RunMessage EnemyAttrs where
               )
               <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
           when validDefeat $ do
-            modifiedHealth <- field EnemyHealth (toId a)
+            modifiedHealth <- field EnemyForcedHealth (toId a)
             when (enemyDamage a + amount' >= modifiedHealth) $ do
               let excess = (enemyDamage a + amount') - modifiedHealth
               let
@@ -1099,7 +1088,7 @@ instance RunMessage EnemyAttrs where
           pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
-      modifiedHealth <- field EnemyHealth (toId a)
+      modifiedHealth <- field EnemyForcedHealth (toId a)
       canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
       modifiers' <- getModifiers (toTarget a)
       let
@@ -1125,7 +1114,7 @@ instance RunMessage EnemyAttrs where
           (setToList $ toTraits a)
       pure a
     EnemyDefeated eid _ source _ | eid == toId a -> do
-      modifiedHealth <- field EnemyHealth (toId a)
+      modifiedHealth <- field EnemyForcedHealth (toId a)
       let
         defeatedByDamage = enemyDamage a >= modifiedHealth
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source

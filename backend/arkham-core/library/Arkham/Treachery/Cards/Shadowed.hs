@@ -33,15 +33,15 @@ instance RunMessage Shadowed where
             ]
         else do
           player <- getPlayer iid
-          push $
-            chooseOrRunOne
+          push
+            $ chooseOrRunOne
               player
               [ targetLabel
                 cultist
                 [ PlaceDoom (toSource attrs) (toTarget cultist) 1
                 , RevelationSkillTest iid source SkillWillpower x
                 ]
-              | (cultist, x) <- cultists
+              | (cultist, Just x) <- cultists
               ]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do

@@ -34,7 +34,7 @@ instance RunMessage FortyFiveThompsonRogue3 where
       mSkillTestTarget <- getSkillTestTarget
       case mSkillTestTarget of
         Just (EnemyTarget eid) -> do
-          fightValue <- field EnemyFight eid
+          fightValue <- fieldJust EnemyFight eid
           when (n >= fightValue) $ do
             enemies <- selectList $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid)
             canDealDamage <- withoutModifier iid CannotDealDamage

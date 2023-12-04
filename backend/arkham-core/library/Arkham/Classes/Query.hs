@@ -43,6 +43,17 @@ selectWithField
   -> m [(QueryElement a, typ)]
 selectWithField fld = traverse (traverseToSnd (field fld)) <=< selectList
 
+selectField
+  :: ( EntityId rec ~ QueryElement a
+     , Projection rec
+     , HasGame m
+     , Query a
+     )
+  => Field rec typ
+  -> a
+  -> m [typ]
+selectField fld = traverse (field fld) <=< selectList
+
 selectRandom
   :: (HasCallStack, Query a, HasGame m, MonadRandom m)
   => a
@@ -166,6 +177,21 @@ fieldMax
   -> matcher
   -> m a
 fieldMax fld matcher = selectAgg' Max0 fld matcher
+
+maybeFieldMax
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Ord a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     )
+  => Field attrs (Maybe a)
+  -> matcher
+  -> m a
+maybeFieldMax fld matcher = do
+  results <- catMaybes <$> selectField fld matcher
+  pure $ getMax0 $ foldMap Max0 results
 
 selectMax
   :: ( QueryElement matcher ~ EntityId attrs

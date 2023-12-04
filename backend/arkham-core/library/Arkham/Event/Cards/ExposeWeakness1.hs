@@ -39,7 +39,7 @@ instance RunMessage ExposeWeakness1 where
                 SkillIntellect
                 enemyFight
             ]
-          | (enemy, enemyFight) <- enemies
+          | (enemy, Just enemyFight) <- enemies
           ]
       pure e
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ n

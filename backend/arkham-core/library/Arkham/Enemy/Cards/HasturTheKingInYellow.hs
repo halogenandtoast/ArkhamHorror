@@ -41,7 +41,7 @@ instance RunMessage HasturTheKingInYellow where
       pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      x <- field EnemyFight (toId attrs)
+      x <- fieldJust EnemyFight (toId attrs)
       push $ beginSkillTest iid (toAbilitySource attrs 2) attrs #willpower x
       pure e
     PassedThisSkillTest _ (isSource attrs -> True) -> do

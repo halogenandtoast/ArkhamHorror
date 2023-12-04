@@ -41,7 +41,8 @@ instance HasAbilities TheTrueCulpritV5 where
          , restrictedAbility
             attrs
             2
-            (exists $ enemyIs Cards.vengefulSpecter <> EnemyWithEqualFields EnemyClues EnemyRemainingHealth)
+            ( exists $ enemyIs Cards.vengefulSpecter <> EnemyWithEqualFields EnemyClues EnemyForcedRemainingHealth
+            )
             $ Objective
             $ ForcedAbility AnyWindow
          ]

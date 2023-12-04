@@ -63,7 +63,6 @@ data instance Field Enemy :: Type -> Type where
   EnemyClues :: Field Enemy Int
   EnemyDamage :: Field Enemy Int
   EnemyHealth :: Field Enemy (Maybe Int)
-  EnemyForcedHealth :: Field Enemy Int
   EnemyRemainingHealth :: Field Enemy (Maybe Int)
   EnemyForcedRemainingHealth :: Field Enemy Int
   EnemyHealthDamage :: Field Enemy Int
@@ -109,7 +108,6 @@ instance FromJSON (SomeField Enemy) where
     "EnemyClues" -> pure $ SomeField EnemyClues
     "EnemyDamage" -> pure $ SomeField EnemyDamage
     "EnemyHealth" -> pure $ SomeField EnemyHealth
-    "EnemyForcedHealth" -> pure $ SomeField EnemyHealth
     "EnemyRemainingHealth" -> pure $ SomeField EnemyRemainingHealth
     "EnemyForcedRemainingHealth" -> pure $ SomeField EnemyForcedRemainingHealth
     "EnemyHealthDamage" -> pure $ SomeField EnemyHealthDamage

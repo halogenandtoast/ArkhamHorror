@@ -20,8 +20,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Tarot
-import Arkham.Timing qualified as Timing
-import Arkham.Window (Window, mkWindow, windowType)
+import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
 advanceAgendaDeck :: AgendaAttrs -> Message
@@ -78,22 +77,10 @@ instance RunMessage AgendaAttrs where
             getSum
               <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
           totalDoom <- subtract otherAgendaDoom <$> getDoomCount
-          when
-            (totalDoom >= modifiedPerPlayerDoomThreshold)
-            do
-              whenMsg <-
-                checkWindows
-                  [ mkWindow
-                      Timing.When
-                      (Window.AgendaWouldAdvance DoomThreshold $ toId a)
-                  ]
-              afterMsg <-
-                checkWindows
-                  [ mkWindow
-                      Timing.After
-                      (Window.AgendaWouldAdvance DoomThreshold $ toId a)
-                  ]
-              pushAll [whenMsg, afterMsg, Do AdvanceAgendaIfThresholdSatisfied]
+          when (totalDoom >= modifiedPerPlayerDoomThreshold) do
+            whenMsg <- checkWindows [mkWhen (Window.AgendaWouldAdvance DoomThreshold $ toId a)]
+            afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold $ toId a)]
+            pushAll [whenMsg, afterMsg, Do AdvanceAgendaIfThresholdSatisfied]
       pure a
     Do AdvanceAgendaIfThresholdSatisfied -> do
       case a ^. doomThresholdL of
@@ -115,9 +102,7 @@ instance RunMessage AgendaAttrs where
           when (totalDoom >= modifiedPerPlayerDoomThreshold) $ do
             leadInvestigatorId <- getLeadInvestigatorId
             pushAll
-              [ CheckWindow
-                  [leadInvestigatorId]
-                  [mkWindow Timing.When (Window.AgendaAdvance agendaId)]
+              [ CheckWindow [leadInvestigatorId] [mkWhen (Window.AgendaAdvance agendaId)]
               , RemoveAllDoomFromPlay agendaRemoveDoomMatchers
               , AdvanceAgenda agendaId
               ]

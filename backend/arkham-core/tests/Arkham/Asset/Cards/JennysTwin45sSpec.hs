@@ -39,7 +39,7 @@ spec = describe "Jenny's Twin .45s" $ do
         , investigatorHand = [PlayerCard jennysTwin45s]
         , investigatorCombat = 3
         }
-    enemy <- testEnemyWith ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
+    enemy <- testEnemyWith ((Enemy.healthL ?~ Static 3) . (Enemy.fightL ?~ 5))
     location <- testLocationWith id
     pushAndRunAll [SetChaosTokens [Zero], playAssetCard jennysTwin45s investigator]
     activeCost <- getActiveCost

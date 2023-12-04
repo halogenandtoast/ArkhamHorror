@@ -279,7 +279,7 @@ class TestHasFight a where
 instance TestHasFight Enemy where
   setFight fight action = do
     this <- action
-    updateThis this $ \attrs -> attrs {enemyFight = fight}
+    updateThis this $ \attrs -> attrs {enemyFight = Just fight}
 
 class TestHasHealth a where
   setHealth :: Int -> TestAppT a -> TestAppT a
@@ -287,7 +287,7 @@ class TestHasHealth a where
 instance TestHasHealth Enemy where
   setHealth health action = do
     this <- action
-    updateThis this $ \attrs -> attrs {enemyHealth = Static health}
+    updateThis this $ \attrs -> attrs {enemyHealth = Just (Static health)}
 
 class UpdateField (s :: Symbol) a b | s a -> b where
   updateField :: b -> a -> TestAppT a
@@ -363,13 +363,13 @@ instance UpdateField "resources" Investigator Int where
     pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens Resource resources)
 
 instance UpdateField "fight" Enemy Int where
-  updateField fight = pure . overAttrs (\attrs -> attrs {enemyFight = fight})
+  updateField fight = pure . overAttrs (\attrs -> attrs {enemyFight = Just fight})
 
 instance UpdateField "evade" Enemy Int where
   updateField evade = pure . overAttrs (\attrs -> attrs {enemyEvade = Just evade})
 
 instance UpdateField "health" Enemy Int where
-  updateField health = pure . overAttrs (\attrs -> attrs {enemyHealth = Static health})
+  updateField health = pure . overAttrs (\attrs -> attrs {enemyHealth = Just (Static health)})
 
 instance UpdateField "healthDamage" Enemy Int where
   updateField damage = pure . overAttrs (\attrs -> attrs {enemyHealthDamage = damage})

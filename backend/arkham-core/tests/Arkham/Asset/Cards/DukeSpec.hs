@@ -19,7 +19,7 @@ spec = describe "Duke" $ do
     it "uses a base combat skill of 4 and does +1 damage"
       $ gameTest
       $ \investigator -> do
-        enemy <- testEnemyWith ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
+        enemy <- testEnemyWith ((Enemy.healthL ?~ Static 3) . (Enemy.fightL ?~ 4))
         updateInvestigator investigator
           $ \attrs -> attrs {investigatorCombat = 1}
         putCardIntoPlay investigator Assets.duke

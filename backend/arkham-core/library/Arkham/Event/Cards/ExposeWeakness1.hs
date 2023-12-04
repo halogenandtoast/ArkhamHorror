@@ -24,8 +24,10 @@ instance RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
-        selectWithField EnemyFight
-          $ EnemyAt (locationWithInvestigator iid)
+        selectWithField
+          EnemyFight
+          (EnemyAt $ locationWithInvestigator iid)
+          <&> mapMaybe (\(x, y) -> (x,) <$> y)
       player <- getPlayer iid
       push
         $ chooseOne
@@ -39,7 +41,7 @@ instance RunMessage ExposeWeakness1 where
                 SkillIntellect
                 enemyFight
             ]
-          | (enemy, Just enemyFight) <- enemies
+          | (enemy, enemyFight) <- enemies
           ]
       pure e
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ n

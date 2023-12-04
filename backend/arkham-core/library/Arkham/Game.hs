@@ -2249,8 +2249,15 @@ enemyMatcherFilter = \case
     pure $ any (`elem` engagedInvestigators) iids
   EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
     matches' <- getEnemiesMatching enemyMatcher
-    elem enemy . maxes <$> forToSnd matches' (field EnemyRemainingHealth . toId)
-  EnemyWithRemainingHealth valueMatcher -> fieldMapM EnemyRemainingHealth (`gameValueMatches` valueMatcher) . toId
+    elem enemy
+      . maxes
+      . mapMaybe (\(x, y) -> (x,) <$> y)
+      <$> forToSnd matches' (field EnemyRemainingHealth . toId)
+  EnemyWithRemainingHealth valueMatcher -> do
+    let hasRemainingHealth = \case
+          Nothing -> pure False
+          Just v -> gameValueMatches v valueMatcher
+    fieldMapM EnemyRemainingHealth hasRemainingHealth . toId
   EnemyWithoutModifier modifier ->
     \enemy -> notElem modifier <$> getModifiers (toTarget enemy)
   EnemyWithModifier modifier ->
@@ -2785,7 +2792,7 @@ getEnemyField f e = do
       iid <- toId <$> getActiveInvestigator
       let
         applyBefore (Helpers.AlternateFightField someField) original = case someField of
-          SomeField EnemyEvade -> fromMaybe original enemyEvade
+          SomeField EnemyEvade -> enemyEvade
           _ -> original
         applyBefore _ n = n
         applyModifier (Helpers.EnemyFight m) n = max 0 (n + m)
@@ -2796,24 +2803,35 @@ getEnemyField f e = do
         applyAfterModifier _ n = n
       investigatorModifiers <- getModifiers iid
       modifiers' <- getModifiers (EnemyTarget enemyId)
-      let
-        fieldValue = foldr applyBefore enemyFight investigatorModifiers
-        initialFight = foldr applyModifier (foldr applyPreModifier fieldValue modifiers') modifiers'
-      pure $ foldr applyAfterModifier initialFight modifiers'
+      let mFieldValue = foldr applyBefore enemyFight investigatorModifiers
+
+      case mFieldValue of
+        Nothing -> pure Nothing
+        Just fieldValue -> do
+          let initialFight = foldr applyModifier (foldr applyPreModifier fieldValue modifiers') modifiers'
+          pure $ Just $ foldr applyAfterModifier initialFight modifiers'
     EnemyClues -> pure $ enemyClues attrs
     EnemyDamage -> pure $ enemyDamage attrs
     EnemyRemainingHealth -> do
-      totalHealth <- field EnemyHealth (toId e)
+      mTotalHealth <- field EnemyHealth (toId e)
+      case mTotalHealth of
+        Nothing -> pure Nothing
+        Just totalHealth -> do
+          pure $ Just (totalHealth - enemyDamage attrs)
+    EnemyForcedRemainingHealth -> do
+      totalHealth <- fieldJust EnemyHealth (toId e)
       pure (totalHealth - enemyDamage attrs)
-    EnemyHealth -> do
-      let
-        applyModifier (Helpers.HealthModifier m) n = max 0 (n + m)
-        applyModifier _ n = n
-        applyPreModifier (Helpers.HealthModifierWithMin m (Min minVal)) n = max (min n minVal) (n + m)
-        applyPreModifier _ n = n
-      modifiers' <- getModifiers (EnemyTarget enemyId)
-      value <- getPlayerCountValue enemyHealth
-      pure $ foldr applyModifier (foldr applyPreModifier value modifiers') modifiers'
+    EnemyHealth -> case enemyHealth of
+      Nothing -> pure Nothing
+      Just health -> do
+        let
+          applyModifier (Helpers.HealthModifier m) n = max 0 (n + m)
+          applyModifier _ n = n
+          applyPreModifier (Helpers.HealthModifierWithMin m (Min minVal)) n = max (min n minVal) (n + m)
+          applyPreModifier _ n = n
+        modifiers' <- getModifiers (EnemyTarget enemyId)
+        value <- getPlayerCountValue health
+        pure $ Just $ foldr applyModifier (foldr applyPreModifier value modifiers') modifiers'
     EnemyHealthDamage -> do
       let
         applyModifier (Helpers.DamageDealt m) n = max 0 (n + m)

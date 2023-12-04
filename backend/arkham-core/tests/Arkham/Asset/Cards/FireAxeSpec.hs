@@ -21,7 +21,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location
@@ -41,7 +41,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location
@@ -84,7 +84,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
       location <- testLocationWith id
 
       pushAndRun $ SetChaosTokens [Zero]
@@ -116,7 +116,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Static 3, enemyFight = 3}
+        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location

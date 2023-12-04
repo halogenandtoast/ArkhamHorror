@@ -22,8 +22,8 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
-    enemy <- testEnemyWith $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 2)
-    enemy2 <- testEnemyWith (Enemy.healthL .~ Static 3)
+    enemy <- testEnemyWith $ (Enemy.healthL ?~ Static 1) . (Enemy.fightL ?~ 2)
+    enemy2 <- testEnemyWith (Enemy.healthL ?~ Static 3)
     location <- testLocationWith (revealCluesL .~ Static 0)
 
     pushAndRunAll
@@ -65,8 +65,8 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
-    enemy <- testEnemyWith $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 4)
-    enemy2 <- testEnemyWith (Enemy.healthL .~ Static 3)
+    enemy <- testEnemyWith $ (Enemy.healthL ?~ Static 1) . (Enemy.fightL ?~ 4)
+    enemy2 <- testEnemyWith (Enemy.healthL ?~ Static 3)
     location <- testLocationWith id
 
     pushAndRunAll
@@ -108,8 +108,8 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.tokensL %~ setTokens Resource 2)
     oops <- genCard Cards.oops
-    enemy <- testEnemyWith $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 5)
-    enemy2 <- testEnemyWith (Enemy.healthL .~ Static 3)
+    enemy <- testEnemyWith $ (Enemy.healthL ?~ Static 1) . (Enemy.fightL ?~ 5)
+    enemy2 <- testEnemyWith (Enemy.healthL ?~ Static 3)
     location <- testLocationWith id
 
     pushAndRunAll

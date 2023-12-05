@@ -108,7 +108,16 @@ getSetAsideEncounterSet encounterSet =
     (filter ((== Just encounterSet) . cdEncounterSet . toCardDef))
 
 maybeGetSetAsideEncounterCard :: HasGame m => CardDef -> m (Maybe EncounterCard)
-maybeGetSetAsideEncounterCard = fmap (preview _EncounterCard) . getSetAsideCard
+maybeGetSetAsideEncounterCard def = do
+  mcard <- selectOne . SetAsideCardMatch $ cardIs def
+  case mcard of
+    Nothing -> pure Nothing
+    Just card ->
+      pure
+        $ preview _EncounterCard
+        $ if cardCodeExactEq (toCardCode card) (toCardCode def)
+          then card
+          else lookupCard (toCardCode def) (toCardId card)
 
 getSetAsideCardsMatching :: HasGame m => CardMatcher -> m [Card]
 getSetAsideCardsMatching = selectList . SetAsideCardMatch

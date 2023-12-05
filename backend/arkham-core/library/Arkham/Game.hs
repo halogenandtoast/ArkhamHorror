@@ -1687,6 +1687,7 @@ getAssetsMatching matcher = do
         , not . cdPermanent . toCardDef
         ]
   filterMatcher as = \case
+    PermanentAsset -> pure $ filter (cdPermanent . toCardDef) as
     NotAsset matcher' -> do
       matches' <- getAssetsMatching matcher'
       pure $ filter (`notElem` matches') as

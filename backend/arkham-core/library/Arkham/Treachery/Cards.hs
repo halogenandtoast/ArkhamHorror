@@ -203,6 +203,7 @@ allEncounterTreacheryCards =
       , giftOfMadnessMisery
       , giftOfMadnessPity
       , ghostlyPresence
+      , glimpseOfTheUnderworld
       , graspingHands
       , graveLight
       , graveLightSpectral
@@ -1747,6 +1748,12 @@ prismaticPhenomenon =
 nightTerrors :: CardDef
 nightTerrors =
   (treachery "06098" "Night Terrors" MergingRealities 2)
+    { cdCardTraits = singleton Terror
+    }
+
+glimpseOfTheUnderworld :: CardDef
+glimpseOfTheUnderworld =
+  (treachery "06099" "Glimpse of the Underworld" MergingRealities 2)
     { cdCardTraits = singleton Terror
     }
 

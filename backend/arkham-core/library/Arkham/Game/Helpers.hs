@@ -772,6 +772,7 @@ getActionsWith iid window f = do
           -- TODO: this is a leaky abstraction, we may want to track this
           -- on the abilities themselves
           blankPrevents Blank = abilityIndex ability < 100
+          blankPrevents BlankExceptForcedAbilities = not isForced
           blankPrevents _ = False
           -- If the window is fast we only permit fast abilities, but forced
           -- abilities need to be everpresent so we include them

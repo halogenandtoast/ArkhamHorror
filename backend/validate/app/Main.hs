@@ -8,7 +8,6 @@ import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (SomeAssetCard (..), assetHealth, assetSanity)
 import Arkham.Card
-import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.EncounterCard
@@ -114,8 +113,8 @@ data EnemyStatsMismatch
   = EnemyStatsMismatch
       CardCode
       Name
-      (Int, GameValue, Maybe Int)
-      (Int, GameValue, Maybe Int)
+      (Maybe Int, Maybe GameValue, Maybe Int)
+      (Maybe Int, Maybe GameValue, Maybe Int)
   deriving stock (Show)
 
 data AssetStatsMismatch
@@ -310,8 +309,9 @@ normalizeClassSymbol :: Maybe ClassSymbol -> Maybe ClassSymbol
 normalizeClassSymbol (Just Mythos) = Nothing
 normalizeClassSymbol c = c
 
-normalizeEnemyStats :: CardCode -> (Int, GameValue, Maybe Int) -> (Int, GameValue, Maybe Int)
-normalizeEnemyStats "05085" (fight, _, evade) = (fight, Static 3, evade)
+normalizeEnemyStats
+  :: CardCode -> (Maybe Int, Maybe GameValue, Maybe Int) -> (Maybe Int, Maybe GameValue, Maybe Int)
+normalizeEnemyStats "05085" (fight, _, evade) = (fight, Just (Static 3), evade)
 normalizeEnemyStats _ stats = stats
 
 ignoreCardCode :: CardCode -> Bool
@@ -524,14 +524,11 @@ getValidationResults cards = runValidateT $ do
           let
             cardStats =
               normalizeEnemyStats ccode $
-                ( max 0 $ fromMaybe 0 enemy_fight
-                , toGameVal
-                    (fromMaybe False health_per_investigator)
-                    (fromMaybe 0 health)
+                ( max 0 <$> enemy_fight
+                , toGameVal (fromMaybe False health_per_investigator) <$> health
                 , max 0 <$> enemy_evade
                 )
-            enemyStats =
-              (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
+            enemyStats = (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
             cardDamage =
               ( max 0 $ fromMaybe 0 enemy_damage
               , max 0 $ fromMaybe 0 enemy_horror

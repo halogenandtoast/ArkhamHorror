@@ -87,6 +87,9 @@ instance HasField "resources" TreacheryAttrs Int where
 instance HasField "owner" TreacheryAttrs (Maybe InvestigatorId) where
   getField = treacheryOwner
 
+instance HasField "attached" TreacheryAttrs (Maybe Target) where
+  getField = treacheryAttachedTarget
+
 instance HasField "ability" TreacheryAttrs (Int -> Source) where
   getField self = toAbilitySource self
 

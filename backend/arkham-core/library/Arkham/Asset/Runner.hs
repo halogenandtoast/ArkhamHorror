@@ -52,7 +52,7 @@ instance RunMessage Asset where
   runMessage msg x@(Asset a) = do
     inPlay <- member (toId x) <$> select AnyAsset
     modifiers' <- if inPlay then getModifiers (toTarget x) else pure []
-    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
+    let msg' = if any (`elem` modifiers') [Blank, BlankExceptForcedAbilities] then Blanked msg else msg
     Asset <$> runMessage msg' a
 
 instance RunMessage AssetAttrs where

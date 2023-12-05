@@ -67,6 +67,7 @@ data ModifierType
   | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BecomesFast
   | Blank
+  | BlankExceptForcedAbilities
   | Blocked
   | BondedInsteadOfDiscard
   | BondedInsteadOfShuffle

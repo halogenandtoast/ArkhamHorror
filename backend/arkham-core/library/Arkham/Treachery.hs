@@ -372,6 +372,7 @@ allTreacheries =
     , -- Merging Realities
       SomeTreacheryCard nightTerrors
     , SomeTreacheryCard glimpseOfTheUnderworld
+    , SomeTreacheryCard threadsOfReality
     , -- Spiders
       SomeTreacheryCard sickeningWebs
     , -- Zoogs

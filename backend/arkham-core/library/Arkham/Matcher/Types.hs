@@ -197,11 +197,15 @@ data AssetMatcher
   | NonWeaknessAsset
   | AssetWithMatchingSkillTestIcon
   | UniqueAsset
+  | PermanentAsset
   | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher ExtendedCardMatcher AssetMatcher
   | HealableAsset Source DamageType AssetMatcher
   | AssetWithPlacement Placement
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not AssetMatcher where
+  not_ = NotAsset
 
 instance IsString AssetMatcher where
   fromString = AssetWithTitle . fromString

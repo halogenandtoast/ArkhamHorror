@@ -306,6 +306,7 @@ allEncounterTreacheryCards =
       , theShadowBehindYou
       , theYellowSign
       , theZealotsSeal
+      , threadsOfReality
       , timelineDestabilization
       , toilAndTrouble
       , torturousChords
@@ -1755,6 +1756,12 @@ glimpseOfTheUnderworld :: CardDef
 glimpseOfTheUnderworld =
   (treachery "06099" "Glimpse of the Underworld" MergingRealities 2)
     { cdCardTraits = singleton Terror
+    }
+
+threadsOfReality :: CardDef
+threadsOfReality =
+  (treachery "06100" "Threads of Reality" MergingRealities 2)
+    { cdCardTraits = singleton Power
     }
 
 sickeningWebs :: CardDef

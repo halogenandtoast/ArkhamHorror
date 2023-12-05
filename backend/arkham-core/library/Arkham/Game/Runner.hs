@@ -860,6 +860,9 @@ runGameMessage msg g = case msg of
           $ reverse
           $ mapMaybe (preview _EncounterCard)
           $ findWithDefault [] Zone.FromDeck foundCards
+      RemoveRestFromGame -> do
+        -- Try to obtain, then don't add back
+        pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck foundCards
     pure g
   AddToEncounterDiscard card -> do
     pure

@@ -2623,6 +2623,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Deck.InvestigatorDeck iid)
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       PutBack -> when (foundKey cardSource == Zone.FromDeck) (error "Can not take deck")
+      RemoveRestFromGame -> do
+        -- Try to obtain, then don't add back
+        pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)
     pure
       $ a
       & usedAbilitiesL
@@ -2835,6 +2838,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 $ if null targetCards
                   then chooseOne player [Label "No cards found" [SearchNoneFound iid searchTarget]]
                   else SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+            DrawAllFound who -> do
+              let
+                choices =
+                  [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                  | (zone, cards) <- mapToList targetCards
+                  , card <- cards
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseOneAtATime player choices
             ReturnCards -> pure ()
       _ -> pure ()
     pure a

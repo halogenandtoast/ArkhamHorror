@@ -369,6 +369,8 @@ allTreacheries =
     , -- Dreamlands
       SomeTreacheryCard dreamlandsEclipse
     , SomeTreacheryCard prismaticPhenomenon
+    , -- Merging Realities
+      SomeTreacheryCard nightTerrors
     , -- Spiders
       SomeTreacheryCard sickeningWebs
     , -- Zoogs

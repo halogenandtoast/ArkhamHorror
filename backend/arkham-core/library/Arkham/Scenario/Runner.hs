@@ -727,6 +727,18 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                 player
                 [Label "No cards found" [SearchNoneFound iid searchTarget]]
             else SearchFound iid searchTarget Deck.EncounterDeck targetCards
+      DrawAllFound who -> do
+        let
+          choices =
+            [ targetLabel
+              (toCardId card)
+              [InvestigatorDrewEncounterCard who card]
+            | card <- mapMaybe (preview _EncounterCard) targetCards
+            ]
+        pushBatch batchId
+          $ if null choices
+            then chooseOne player [Label "No cards found" []]
+            else chooseOneAtATime player choices
       PlayFound {} -> error "PlayFound is not a valid EncounterDeck strategy"
       PlayFoundNoCost {} -> error "PlayFound is not a valid EncounterDeck strategy"
       ReturnCards -> pure ()

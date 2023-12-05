@@ -24,6 +24,7 @@ data ZoneReturnStrategy
   | ShuffleBackIn
   | PutBack
   | DiscardRest
+  | RemoveRestFromGame
   deriving stock (Show, Eq, Ord, Data)
 
 -- NOTE: INT must be the number of targets to resolve
@@ -31,6 +32,7 @@ data FoundCardsStrategy
   = PlayFound InvestigatorId Int
   | PlayFoundNoCost InvestigatorId Int
   | DrawFound InvestigatorId Int
+  | DrawAllFound InvestigatorId
   | DrawFoundUpTo InvestigatorId Int
   | DeferSearchedToTarget Target
   | ReturnCards

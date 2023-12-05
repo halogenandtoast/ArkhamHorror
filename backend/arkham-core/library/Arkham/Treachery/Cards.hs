@@ -238,6 +238,7 @@ allEncounterTreacheryCards =
       , morbidAwareness
       , mysteriesOfTheLodge
       , mysteriousChanting
+      , nightTerrors
       , noTurningBack
       , nobodysHome
       , noxiousFumes
@@ -1741,6 +1742,12 @@ prismaticPhenomenon :: CardDef
 prismaticPhenomenon =
   (treachery "06097" "Prismatic Phenomenon" Dreamlands 2)
     { cdCardTraits = singleton Power
+    }
+
+nightTerrors :: CardDef
+nightTerrors =
+  (treachery "06098" "Night Terrors" MergingRealities 2)
+    { cdCardTraits = singleton Terror
     }
 
 sickeningWebs :: CardDef

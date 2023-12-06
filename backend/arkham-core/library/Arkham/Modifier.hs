@@ -281,6 +281,7 @@ data ModifierType
   | UseSkillInsteadOf SkillType SkillType -- this doesn't
   | XPModifier Int
   | IfSuccessfulModifier ModifierType
+  | NoInitialSwarm
   | -- UI only modifiers
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast

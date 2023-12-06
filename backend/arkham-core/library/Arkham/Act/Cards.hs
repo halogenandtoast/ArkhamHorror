@@ -146,6 +146,7 @@ allActCards =
       , theChamberOfTheBeast
       , theCosmosBeckons
       , theDisappearance
+      , theFinalDescent
       , theFourKeys
       , theGateOpens
       , theGuardedRuins
@@ -154,6 +155,7 @@ allActCards =
       , theOath
       , theParisianConspiracyV1
       , theParisianConspiracyV2
+      , thePath
       , thePathIsBarred
       , thePathToTheHill
       , theReallyBadOnesV1

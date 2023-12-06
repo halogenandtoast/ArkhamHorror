@@ -631,7 +631,7 @@ occultTheory1 =
 dauntlessSpirit1 :: CardDef
 dauntlessSpirit1 =
   (skill "08078" "Dauntless Spirit" [] Survivor)
-    { cdCardTraits = setFromList [Practiced, Expert]
+    { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = 1
     , cdCardInHandEffects = True
     }
@@ -646,6 +646,7 @@ riseToTheOccasion3 =
   )
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 1]
+    , cdLevel = 3
     }
 
 overpower2 :: CardDef

@@ -1,6 +1,6 @@
-module Arkham.Asset.Cards.OtherworldlyCodex2 (
-  otherworldlyCodex2,
-  OtherworldlyCodex2 (..),
+module Arkham.Asset.Cards.OtherworldCodex2 (
+  otherworldCodex2,
+  OtherworldCodex2 (..),
 )
 where
 
@@ -14,23 +14,23 @@ import Arkham.Card
 import Arkham.Matcher
 import Arkham.Trait (Trait (Elite))
 
-newtype OtherworldlyCodex2 = OtherworldlyCodex2 AssetAttrs
+newtype OtherworldCodex2 = OtherworldCodex2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-otherworldlyCodex2 :: AssetCard OtherworldlyCodex2
-otherworldlyCodex2 = asset OtherworldlyCodex2 Cards.otherworldlyCodex2
+otherworldCodex2 :: AssetCard OtherworldCodex2
+otherworldCodex2 = asset OtherworldCodex2 Cards.otherworldCodex2
 
-instance HasAbilities OtherworldlyCodex2 where
-  getAbilities (OtherworldlyCodex2 attrs) =
+instance HasAbilities OtherworldCodex2 where
+  getAbilities (OtherworldCodex2 attrs) =
     [ controlledAbility attrs 1 (exists $ You <> can.target.encounterDeck)
         $ actionAbilityWithCost
         $ exhaust attrs
         <> assetUseCost attrs Secret 1
     ]
 
-instance RunMessage OtherworldlyCodex2 where
-  runMessage msg a@(OtherworldlyCodex2 attrs) = case msg of
+instance RunMessage OtherworldCodex2 where
+  runMessage msg a@(OtherworldCodex2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push
         $ search
@@ -59,4 +59,4 @@ instance RunMessage OtherworldlyCodex2 where
         . toDiscardBy iid (toAbilitySource attrs 1)
 
       pure a
-    _ -> OtherworldlyCodex2 <$> runMessage msg attrs
+    _ -> OtherworldCodex2 <$> runMessage msg attrs

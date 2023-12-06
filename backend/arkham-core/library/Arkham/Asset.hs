@@ -579,7 +579,7 @@ allAssets =
       --- guardian [tsh]
       SomeAssetCard tetsuoMori
     , --- seeker [tsh]
-      SomeAssetCard otherworldlyCodex2
+      SomeAssetCard otherworldCodex2
     , SomeAssetCard dreamEnhancingSerum
     , --- rogue [tsh]
       SomeAssetCard gregoryGry

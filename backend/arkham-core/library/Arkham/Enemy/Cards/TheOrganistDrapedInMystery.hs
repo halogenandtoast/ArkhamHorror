@@ -27,7 +27,13 @@ instance HasAbilities TheOrganistDrapedInMystery where
     withBaseAbilities attrs [mkAbility attrs 1 $ ForcedAbility $ PhaseEnds #after #enemy]
 
 theOrganistDrapedInMystery :: EnemyCard TheOrganistDrapedInMystery
-theOrganistDrapedInMystery = enemy TheOrganistDrapedInMystery Cards.theOrganistDrapedInMystery (3, Static 1, 5) (0, 1)
+theOrganistDrapedInMystery =
+  enemyWith
+    TheOrganistDrapedInMystery
+    Cards.theOrganistDrapedInMystery
+    (3, Static 1, 5)
+    (0, 1)
+    (healthL .~ Nothing)
 
 instance RunMessage TheOrganistDrapedInMystery where
   runMessage msg e@(TheOrganistDrapedInMystery attrs) = case msg of

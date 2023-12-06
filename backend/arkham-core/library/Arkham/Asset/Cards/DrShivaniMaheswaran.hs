@@ -13,7 +13,7 @@ newtype DrShivaniMaheswaran = DrShivaniMaheswaran AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drShivaniMaheswaran :: AssetCard DrShivaniMaheswaran
-drShivaniMaheswaran = asset DrShivaniMaheswaran Cards.drShivaniMaheswaran
+drShivaniMaheswaran = ally DrShivaniMaheswaran Cards.drShivaniMaheswaran (1, 3)
 
 suspiciousOrderlyMatcher :: EnemyMatcher
 suspiciousOrderlyMatcher = enemyIs Enemies.suspiciousOrderly <> not_ ExhaustedEnemy <> EnemyIsEngagedWith Anyone

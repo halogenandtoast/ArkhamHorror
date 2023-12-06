@@ -132,7 +132,7 @@ const cards = computed(() => {
     all = all.filter((c) => cardType(c).toLowerCase() === cardTypeText.toLowerCase())
   }
 
-  return all
+  return all.filter((c) => c.cardCode !== "cx05184")
 })
 
 const setFilter = () => {

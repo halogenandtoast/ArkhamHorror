@@ -23,7 +23,7 @@ newtype TheGallowsSpectral_170 = TheGallowsSpectral_170 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGallowsSpectral_170 :: LocationCard TheGallowsSpectral_170
-theGallowsSpectral_170 = location TheGallowsSpectral_170 Cards.theGallowsSpectral_170 3 (Static 0)
+theGallowsSpectral_170 = location TheGallowsSpectral_170 Cards.theGallowsSpectral_170 0 (Static 0)
 
 instance HasModifiersFor TheGallowsSpectral_170 where
   getModifiersFor target (TheGallowsSpectral_170 attrs) | isTarget attrs target = do

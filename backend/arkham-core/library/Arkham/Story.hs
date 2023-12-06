@@ -44,7 +44,7 @@ allStories =
     , SomeStoryCard sickeningReality_68
     , SomeStoryCard sickeningReality_69
     , SomeStoryCard engramsOath
-    , SomeStoryCard langneauPerdu
+    , SomeStoryCard lagneauPerdu
     , SomeStoryCard thePattern
     , SomeStoryCard theFirstShow
     , SomeStoryCard aboveAndBelow

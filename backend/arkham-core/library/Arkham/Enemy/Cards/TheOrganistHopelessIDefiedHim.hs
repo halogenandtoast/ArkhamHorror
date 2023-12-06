@@ -36,11 +36,12 @@ instance HasAbilities TheOrganistHopelessIDefiedHim where
 
 theOrganistHopelessIDefiedHim :: EnemyCard TheOrganistHopelessIDefiedHim
 theOrganistHopelessIDefiedHim =
-  enemy
+  enemyWith
     TheOrganistHopelessIDefiedHim
     Cards.theOrganistHopelessIDefiedHim
     (5, Static 1, 3)
     (0, 3)
+    (healthL .~ Nothing)
 
 instance RunMessage TheOrganistHopelessIDefiedHim where
   runMessage msg e@(TheOrganistHopelessIDefiedHim attrs) = case msg of

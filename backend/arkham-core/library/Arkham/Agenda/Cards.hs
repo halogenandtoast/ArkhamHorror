@@ -163,7 +163,7 @@ theyreGettingOut :: CardDef
 theyreGettingOut = agenda "01107" "They're Getting Out!" 3 TheGathering
 
 predatorOrPrey :: CardDef
-predatorOrPrey = agenda "01121" "Predator or Prey?" 1 TheMidnightMasks
+predatorOrPrey = agenda "01121a" "Predator or Prey?" 1 TheMidnightMasks
 
 timeIsRunningShort :: CardDef
 timeIsRunningShort = agenda "01122" "Time Is Running Short" 2 TheMidnightMasks
@@ -449,7 +449,7 @@ markedForSacrifice :: CardDef
 markedForSacrifice = agenda "05124" "Marked for Sacrifice" 4 TheSecretName
 
 theHangedManXII :: CardDef
-theHangedManXII = agenda "05162" "THE HANGED MAN • XII" 1 TheWagesOfSin
+theHangedManXII = agenda "05162" "THE HANGED MAN · XII" 1 TheWagesOfSin
 
 deathsApproach :: CardDef
 deathsApproach = agenda "05163" "Death's Approach" 2 TheWagesOfSin
@@ -482,7 +482,7 @@ journeyThroughTheGates :: CardDef
 journeyThroughTheGates = agenda "06040" "Journey through the Gates" 1 BeyondTheGatesOfSleep
 
 hallsOfStMarys :: CardDef
-hallsOfStMarys = agenda "06064" "Hall of St. Mary's" 1 WakingNightmare
+hallsOfStMarys = agenda "06064" "Halls of St. Mary's" 1 WakingNightmare
 
 theInfestationSpreads :: CardDef
 theInfestationSpreads = agenda "06065" "The Infestation Spreads" 2 WakingNightmare
@@ -492,7 +492,7 @@ hospitalOfHorrors = agenda "06066" "Hospital of Horrors" 3 WakingNightmare
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =
-  agenda "50026" "Predator or Prey?" 1 ReturnToTheMidnightMasks
+  agenda "50026a" "Predator or Prey?" 1 ReturnToTheMidnightMasks
 
 aCreatureOfTheBayou :: CardDef
 aCreatureOfTheBayou = agenda "81002" "A Creature of the Bayou" 1 TheBayou

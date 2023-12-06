@@ -430,6 +430,8 @@ allEvents =
       SomeEventCard eatLead
     , --- seeker [rtptc]
       SomeEventCard logicalReasoning4
+    , --- mystic [rtptc]
+      SomeEventCard stormOfSpirits3
     , -- Return to the Forgotten Age
       --- guardian [rttfa]
       SomeEventCard bloodEclipse1

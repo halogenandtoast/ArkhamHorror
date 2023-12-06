@@ -551,6 +551,9 @@ revelation def = def {cdRevelation = IsRevelation}
 singleSided :: CardDef -> CardDef
 singleSided def = def {cdDoubleSided = False}
 
+storyOnBack :: CardDef -> CardDef
+storyOnBack def = def {cdDoubleSided = False}
+
 quantity :: Int -> CardDef -> CardDef
 quantity n def = def {cdEncounterSetQuantity = Just n}
 
@@ -2625,143 +2628,134 @@ abbeyTowerSpiresForbidden =
 
 shoresOfHali :: CardDef
 shoresOfHali =
-  location "03325b" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
+  storyOnBack $ location "03325a" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
 
 bleakPlainsStarsOfAldebaran :: CardDef
 bleakPlainsStarsOfAldebaran =
-  location
-    "03326b"
-    "Bleak Plains"
-    [Otherworld]
-    Square
-    [Circle, Triangle, Diamond]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03326a"
+      "Bleak Plains"
+      [Otherworld]
+      Square
+      [Circle, Triangle, Diamond]
+      DimCarcosa
 
 bleakPlainsBleakDesolation :: CardDef
 bleakPlainsBleakDesolation =
-  location
-    "03326d"
-    "Bleak Plains"
-    [Otherworld]
-    Square
-    [Circle, Triangle, Diamond]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03326c"
+      "Bleak Plains"
+      [Otherworld]
+      Square
+      [Circle, Triangle, Diamond]
+      DimCarcosa
 
 ruinsOfCarcosaInhabitantOfCarcosa :: CardDef
 ruinsOfCarcosaInhabitantOfCarcosa =
-  location
-    "03327b"
-    "Ruins of Carcosa"
-    [Otherworld]
-    Triangle
-    [Square, Equals, Star]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03327a"
+      "Ruins of Carcosa"
+      [Otherworld]
+      Triangle
+      [Square, Equals, Star]
+      DimCarcosa
 
 ruinsOfCarcosaAMomentsRest :: CardDef
 ruinsOfCarcosaAMomentsRest =
-  location
-    "03327d"
-    "Ruins of Carcosa"
-    [Otherworld]
-    Triangle
-    [Square, Equals, Star]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03327c"
+      "Ruins of Carcosa"
+      [Otherworld]
+      Triangle
+      [Square, Equals, Star]
+      DimCarcosa
 
 ruinsOfCarcosaTheCoffin :: CardDef
 ruinsOfCarcosaTheCoffin =
-  location
-    "03327f"
-    "Ruins of Carcosa"
-    [Otherworld]
-    Triangle
-    [Square, Equals, Star]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03327e"
+      "Ruins of Carcosa"
+      [Otherworld]
+      Triangle
+      [Square, Equals, Star]
+      DimCarcosa
 
 dimStreetsMappingTheStreets :: CardDef
 dimStreetsMappingTheStreets =
-  location
-    "03328b"
-    "Dim Streets"
-    [Otherworld]
-    Diamond
-    [Square, Equals, Star]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03328a"
+      "Dim Streets"
+      [Otherworld]
+      Diamond
+      [Square, Equals, Star]
+      DimCarcosa
 
 dimStreetsTheKingsParade :: CardDef
 dimStreetsTheKingsParade =
-  location
-    "03328d"
-    "Dim Streets"
-    [Otherworld]
-    Diamond
-    [Square, Equals, Star]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03328c"
+      "Dim Streets"
+      [Otherworld]
+      Diamond
+      [Square, Equals, Star]
+      DimCarcosa
 
 dimStreetsTheArchway :: CardDef
 dimStreetsTheArchway =
-  location
-    "03328f"
-    "Dim Streets"
-    [Otherworld]
-    Diamond
-    [Square, Equals, Star]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03328e"
+      "Dim Streets"
+      [Otherworld]
+      Diamond
+      [Square, Equals, Star]
+      DimCarcosa
 
 depthsOfDemheTheHeightOfTheDepths :: CardDef
 depthsOfDemheTheHeightOfTheDepths =
-  location
-    "03329b"
-    "Depths of Demhe"
-    [Otherworld]
-    Equals
-    [Moon, Triangle, Diamond]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03329a"
+      "Depths of Demhe"
+      [Otherworld]
+      Equals
+      [Moon, Triangle, Diamond]
+      DimCarcosa
 
 depthsOfDemheStepsOfThePalace :: CardDef
 depthsOfDemheStepsOfThePalace =
-  location
-    "03329d"
-    "Depths of Demhe"
-    [Otherworld]
-    Equals
-    [Moon, Triangle, Diamond]
-    DimCarcosa
+  storyOnBack
+    $ location
+      "03329c"
+      "Depths of Demhe"
+      [Otherworld]
+      Equals
+      [Moon, Triangle, Diamond]
+      DimCarcosa
 
 darkSpires :: CardDef
-darkSpires =
-  location "03330b" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
+darkSpires = storyOnBack $ location "03330" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
 
 palaceOfTheKing :: CardDef
 palaceOfTheKing =
-  location
-    "03331b"
-    "Palace of the King"
-    [Otherworld]
-    Star
-    [Triangle, Diamond]
-    DimCarcosa
+  storyOnBack $ location "03331" "Palace of the King" [Otherworld] Star [Triangle, Diamond] DimCarcosa
 
 expeditionCamp :: CardDef
 expeditionCamp =
-  location
-    "04050"
-    "Expedition Camp"
-    [Campsite, Jungle]
-    Circle
-    [Square, Diamond, Moon]
-    TheUntamedWilds
+  location "04050" "Expedition Camp" [Campsite, Jungle] Circle [Square, Diamond, Moon] TheUntamedWilds
 
 ruinsOfEztli :: CardDef
 ruinsOfEztli =
   victory 2
     $ singleSided
-    $ location
-      "04053"
-      "Ruins of Eztli"
-      [Ancient, Ruins]
-      Hourglass
-      [Triangle, Heart]
-      TheUntamedWilds
+    $ location "04053" "Ruins of Eztli" [Ancient, Ruins] Hourglass [Triangle, Heart] TheUntamedWilds
 
 entryway :: CardDef
 entryway =
@@ -2974,7 +2968,7 @@ blackCave =
   victory 1
     $ singleSided
     $ location
-      "04133f"
+      "04133b"
       "Black Cave"
       [Cave]
       Hourglass
@@ -4095,7 +4089,8 @@ siteOfTheSacrifice =
 
 strangeGeometry :: CardDef
 strangeGeometry =
-  singleSided
+  quantity 2
+    $ singleSided
     $ location
       "05142"
       "Strange Geometry"
@@ -4422,23 +4417,25 @@ lounge =
 
 vault :: CardDef
 vault =
-  location
-    "05211"
-    "Vault"
-    [Lodge]
-    Plus
-    [Moon]
-    ForTheGreaterGood
+  victory 1
+    $ location
+      "05211"
+      "Vault"
+      [Lodge]
+      Plus
+      [Moon]
+      ForTheGreaterGood
 
 library :: CardDef
 library =
-  location
-    "05212"
-    "Library"
-    [Lodge]
-    Heart
-    [Moon]
-    ForTheGreaterGood
+  victory 1
+    $ location
+      "05212"
+      "Library"
+      [Lodge]
+      Heart
+      [Moon]
+      ForTheGreaterGood
 
 lodgeCatacombs :: CardDef
 lodgeCatacombs =
@@ -4452,17 +4449,18 @@ lodgeCatacombs =
 
 sanctumDoorwayCeremonyRoom :: CardDef
 sanctumDoorwayCeremonyRoom =
-  locationWithUnrevealed
-    "05214"
-    "Sanctum Doorway"
-    [Lodge, Sanctum]
-    Star
-    [Squiggle]
-    "Ceremony Room"
-    [Lodge, Sanctum]
-    Triangle
-    [Squiggle]
-    ForTheGreaterGood
+  victory 2
+    $ locationWithUnrevealed
+      "05214"
+      "Sanctum Doorway"
+      [Lodge, Sanctum]
+      Star
+      [Squiggle]
+      "Ceremony Room"
+      [Lodge, Sanctum]
+      Triangle
+      [Squiggle]
+      ForTheGreaterGood
 
 sanctumDoorwayHoldingCells :: CardDef
 sanctumDoorwayHoldingCells =
@@ -4607,7 +4605,7 @@ theGeistTrap =
   victory 1
     $ location
       "05257"
-      "The Geist Trap"
+      "The Geist-Trap"
       [Woods, Spectral]
       Plus
       [Squiggle]
@@ -4748,7 +4746,7 @@ silverTwilightLodgeShroudedInMystery =
   victory 1
     $ location
       "05303"
-      ("Silver Twilight Lodge" <:> "Shrouded in Mystery")
+      ("Silver Twilight Lodge" <:> "Shrouded In Mystery")
       [Arkham]
       Star
       [T]
@@ -4759,7 +4757,7 @@ hangmansHillShroudedInMystery =
   victory 1
     $ location
       "05304"
-      ("Hangman's Hill" <:> "Shrouded in Mystery")
+      ("Hangman's Hill" <:> "Shrouded In Mystery")
       [Arkham]
       Moon
       [Plus]
@@ -4829,45 +4827,48 @@ theBlackThrone =
 
 dancersMist :: CardDef
 dancersMist =
-  locationWithUnrevealed
-    "05336"
-    "Cosmos"
-    [Otherworld]
-    NoSymbol
-    []
-    "Dancer's Mist"
-    [Otherworld, Void]
-    NoSymbol
-    []
-    BeforeTheBlackThrone
+  quantity 3
+    $ locationWithUnrevealed
+      "05336"
+      "Cosmos"
+      [Otherworld]
+      NoSymbol
+      []
+      "Dancer's Mist"
+      [Otherworld, Void]
+      NoSymbol
+      []
+      BeforeTheBlackThrone
 
 flightIntoOblivion :: CardDef
 flightIntoOblivion =
-  locationWithUnrevealed
-    "05337"
-    "Cosmos"
-    [Otherworld]
-    NoSymbol
-    []
-    "Flight into Oblivion"
-    [Otherworld, Void]
-    NoSymbol
-    []
-    BeforeTheBlackThrone
+  quantity 3
+    $ locationWithUnrevealed
+      "05337"
+      "Cosmos"
+      [Otherworld]
+      NoSymbol
+      []
+      "Flight into Oblivion"
+      [Otherworld, Void]
+      NoSymbol
+      []
+      BeforeTheBlackThrone
 
 infinityOfDarkness :: CardDef
 infinityOfDarkness =
-  locationWithUnrevealed
-    "05338"
-    "Cosmos"
-    [Otherworld]
-    NoSymbol
-    []
-    "Infinity of Darkness"
-    [Otherworld, Void]
-    NoSymbol
-    []
-    BeforeTheBlackThrone
+  quantity 3
+    $ locationWithUnrevealed
+      "05338"
+      "Cosmos"
+      [Otherworld]
+      NoSymbol
+      []
+      "Infinity of Darkness"
+      [Otherworld, Void]
+      NoSymbol
+      []
+      BeforeTheBlackThrone
 
 cosmicGate :: CardDef
 cosmicGate =
@@ -4877,7 +4878,7 @@ cosmicGate =
     [Otherworld]
     NoSymbol
     []
-    "Cosmis Gate"
+    "Cosmic Gate"
     [Otherworld, Void]
     NoSymbol
     []
@@ -4885,17 +4886,18 @@ cosmicGate =
 
 pathwayIntoVoid :: CardDef
 pathwayIntoVoid =
-  locationWithUnrevealed
-    "05340"
-    "Cosmos"
-    [Otherworld]
-    NoSymbol
-    []
-    "Pathway into Void"
-    [Otherworld, Void]
-    NoSymbol
-    []
-    BeforeTheBlackThrone
+  quantity 2
+    $ locationWithUnrevealed
+      "05340"
+      "Cosmos"
+      [Otherworld]
+      NoSymbol
+      []
+      "Pathway into Void"
+      [Otherworld, Void]
+      NoSymbol
+      []
+      BeforeTheBlackThrone
 
 dreamGateWondrousJourney :: CardDef
 dreamGateWondrousJourney =
@@ -4908,6 +4910,7 @@ dreamGateWondrousJourney =
     , cdLocationRevealedSymbol = Just NoSymbol
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
+    , cdClassSymbols = singleton #neutral
     }
 
 dreamGatePointlessReality :: CardDef
@@ -4922,6 +4925,7 @@ dreamGatePointlessReality =
     , cdLocationRevealedSymbol = Just NoSymbol
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
+    , cdClassSymbols = singleton #neutral
     }
 
 seventySteps :: CardDef
@@ -5165,18 +5169,17 @@ operatingRoom =
 
 privateRoom :: CardDef
 privateRoom =
-  victory 2
-    $ locationWithUnrevealed
-      "06077"
-      "Basement Door"
-      [StMarys, Basement]
-      Plus
-      [Heart]
-      "Private Room"
-      [StMarys, Basement]
-      Moon
-      [Heart]
-      WakingNightmare
+  locationWithUnrevealed
+    "06077"
+    "Basement Door"
+    [StMarys, Basement]
+    Plus
+    [Heart]
+    "Private Room"
+    [StMarys, Basement]
+    Moon
+    [Heart]
+    WakingNightmare
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

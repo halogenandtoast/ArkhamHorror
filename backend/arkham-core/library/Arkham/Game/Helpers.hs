@@ -439,13 +439,19 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
           abilityCardDef = \case
             MaxPer cDef _ _ -> Just cDef
             _ -> Nothing
+
+        usedAbilities' <-
+          filterDepthSpecificAbilities
+            =<< concatMapM (field InvestigatorUsedAbilities)
+            =<< allInvestigatorIds
+
         pure
           . (< n)
           . getSum
           . foldMap (Sum . usedTimes)
           $ filter
             ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
-            usedAbilities
+            usedAbilities'
       PerInvestigatorLimit _ n -> do
         -- This is difficult and based on the window, so we need to match out the
         -- relevant investigator ids from the window. If this becomes more prevalent

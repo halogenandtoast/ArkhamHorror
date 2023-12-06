@@ -404,7 +404,7 @@ allPlayerAssetCards =
       , onYourOwn3
       , onYourOwn3_Exceptional
       , ornateBow3
-      , otherworldlyCodex2
+      , otherworldCodex2
       , otherworldlyCompass2
       , painkillers
       , pantalone
@@ -1599,7 +1599,7 @@ springfieldM19034 =
 
 luckyDice2 :: CardDef
 luckyDice2 =
-  (asset "02230" ("Lucky Dice" <:> "... Or Are They?") 2 Rogue)
+  (asset "02230" ("Lucky Dice" <:> "...Or Are They?") 2 Rogue)
     { cdCardTraits = setFromList [Item, Relic]
     , cdSkills = [#willpower, #agility]
     , cdExceptional = True
@@ -1921,7 +1921,7 @@ gravediggersShovel =
 
 constanceDumaine :: CardDef
 constanceDumaine =
-  ( storyAsset "03076" ("Constance Dumaine" <:> "Sociable Hostess") 0 TheLastKing
+  ( storyAsset "03076a" ("Constance Dumaine" <:> "Sociable Hostess") 0 TheLastKing
   )
     { cdCardTraits = singleton Bystander
     , cdUnique = True
@@ -2341,6 +2341,7 @@ thePallidMask =
   (asset "03321b" ("The Pallid Mask" <:> "Chasing Tails") 0 Neutral)
     { cdCardTraits = setFromList [Item, Relic]
     , cdRevelation = IsRevelation
+    , cdUnique = True
     }
 
 mitchBrown :: CardDef
@@ -2594,7 +2595,7 @@ harlanEarnstone =
 henryDeveau :: CardDef
 henryDeveau =
   ( storyAsset
-      "04125d"
+      "04125b"
       ("Henry Deveau" <:> "Friend of Alejandro")
       0
       ThreadsOfFate
@@ -2606,7 +2607,7 @@ henryDeveau =
 
 mariaDeSilva :: CardDef
 mariaDeSilva =
-  (storyAsset "04134f" ("Maria DeSilver" <:> "Wealthy Patron") 0 ThreadsOfFate)
+  (storyAsset "04134b" ("Maria DeSilva" <:> "Wealthy Patron") 0 ThreadsOfFate)
     { cdCardTraits = singleton Bystander
     , cdCost = Nothing
     , cdUnique = True
@@ -3375,12 +3376,12 @@ puzzleBox =
 
 esotericAtlas1 :: CardDef
 esotericAtlas1 =
-  (asset "05232" "Esoteric Atlas" 2 Seeker)
+  (asset "05232" "Esoteric Atlas" 3 Seeker)
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
     , cdUses = uses Secret 4
-    , cdLevel = 2
+    , cdLevel = 1
     }
 
 investments :: CardDef
@@ -3398,6 +3399,7 @@ deVermisMysteriis2 =
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
     , cdUnique = True
+    , cdLevel = 2
     }
 
 guidingSpirit1 :: CardDef
@@ -3412,28 +3414,32 @@ guidingSpirit1 =
 gavriellaMizrah :: CardDef
 gavriellaMizrah =
   (storyAsset "05258" ("Gavriella Mizrah" <:> "Not Going Down That Easily") 2 ForTheGreaterGood)
-    { cdCardTraits = setFromList [Ally, Veteran]
+    { cdSkills = [#combat, #wild]
+    , cdCardTraits = setFromList [Ally, Veteran]
     , cdUnique = True
     }
 
 jeromeDavids :: CardDef
 jeromeDavids =
   (storyAsset "05259" ("Jerome Davids" <:> "In Way Over His Head") 2 ForTheGreaterGood)
-    { cdCardTraits = setFromList [Ally, Assistant]
+    { cdSkills = [#intellect, #wild]
+    , cdCardTraits = setFromList [Ally, Assistant]
     , cdUnique = True
     }
 
 pennyWhite :: CardDef
 pennyWhite =
   (storyAsset "05260" ("Penny White" <:> "The Nightmare is Over") 2 ForTheGreaterGood)
-    { cdCardTraits = setFromList [Ally, Assistant]
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Ally, Assistant]
     , cdUnique = True
     }
 
 valentinoRivas :: CardDef
 valentinoRivas =
   (storyAsset "05261" ("Valentino Rivas" <:> "Took You Long Enough") 2 ForTheGreaterGood)
-    { cdCardTraits = setFromList [Ally, Socialite]
+    { cdSkills = [#agility, #wild]
+    , cdCardTraits = setFromList [Ally, Socialite]
     , cdUnique = True
     }
 
@@ -3450,7 +3456,7 @@ agencyBackup5 :: CardDef
 agencyBackup5 =
   (asset "05274" "Agency Backup" 7 Guardian)
     { cdSkills = [#willpower, #intellect, #combat]
-    , cdCardTraits = setFromList [Item, Weapon, Ranged]
+    , cdCardTraits = setFromList [Ally, Agency]
     , cdLevel = 5
     , cdSlots = [#ally]
     }
@@ -3466,7 +3472,7 @@ studious3 =
 anotherDayAnotherDollar3 :: CardDef
 anotherDayAnotherDollar3 =
   permanent
-    $ (asset "05278" "Another Day, Another Dollar " 0 Rogue)
+    $ (asset "05278" "Another Day, Another Dollar" 0 Rogue)
       { cdCardTraits = singleton Talent
       , cdLevel = 3
       }
@@ -3598,6 +3604,7 @@ theHungeringBlade1 =
     , cdAdditionalCost = Just (ShuffleBondedCost 3 "06019")
     , cdLevel = 1
     , cdBondedWith = [(3, "06019")]
+    , cdUnique = True
     }
 
 solemnVow :: CardDef
@@ -3630,6 +3637,7 @@ pendantOfTheQueen =
     , cdUses = uses Charge 3
     , cdSlots = [#accessory]
     , cdCost = Nothing
+    , cdUnique = True
     }
 
 crystallizerOfDreams :: CardDef
@@ -3661,6 +3669,7 @@ hope =
       { cdSkills = [#intellect, #combat]
       , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
+      , cdUnique = True
       }
 
 zeal :: CardDef
@@ -3670,6 +3679,7 @@ zeal =
       { cdSkills = [#intellect, #agility]
       , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
+      , cdUnique = True
       }
 
 augur :: CardDef
@@ -3679,6 +3689,7 @@ augur =
       { cdSkills = [#combat, #agility]
       , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
+      , cdUnique = True
       }
 
 kleptomania :: CardDef
@@ -3753,9 +3764,9 @@ tetsuoMori =
     , cdUnique = True
     }
 
-otherworldlyCodex2 :: CardDef
-otherworldlyCodex2 =
-  (asset "06158" "Otherworldly Codex" 3 Seeker)
+otherworldCodex2 :: CardDef
+otherworldCodex2 =
+  (asset "06158" "Otherworld Codex" 3 Seeker)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
@@ -3773,7 +3784,7 @@ dreamEnhancingSerum =
 
 gregoryGry :: CardDef
 gregoryGry =
-  (asset "06162" ("Gregory Gry" <:> "Muckracker") 3 Rogue)
+  (asset "06162" ("Gregory Gry" <:> "Muckraker") 3 Rogue)
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Ally, Criminal, Dreamer]
     , cdSlots = [#ally]
@@ -3964,6 +3975,7 @@ delilahORourke3 =
     , cdCardTraits = setFromList [Ally, Criminal, Syndicate]
     , cdSlots = [#ally]
     , cdLevel = 3
+    , cdUnique = True
     }
 
 summonedHound1 :: CardDef
@@ -4143,6 +4155,7 @@ theBlackFan3 =
     , cdSlots = [#hand]
     , cdUnique = True
     , cdExceptional = True
+    , cdLevel = 3
     }
 
 dragonPole :: CardDef
@@ -4156,7 +4169,7 @@ dragonPole =
 schoffnersCatalogue :: CardDef
 schoffnersCatalogue =
   (asset "08072" "Schoffner's Catalogue" 2 Survivor)
-    { cdSkills = [#willpower]
+    { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tome]
     , cdUses = uses Secret 5
     }
@@ -4176,6 +4189,7 @@ geneBeauregard3 =
     , cdSkills = [#intellect, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
+    , cdLevel = 3
     }
 
 runicAxe :: CardDef
@@ -4355,7 +4369,7 @@ thirtyTwoColt2 =
 
 archaicGlyphsMarkingsOfIsis3 :: CardDef
 archaicGlyphsMarkingsOfIsis3 =
-  (asset "52004" ("Archaic Glyphs" <:> "Markings of Isis 3") 2 Seeker)
+  (asset "52004" ("Archaic Glyphs" <:> "Markings of Isis") 2 Seeker)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = singleton Spell
     , cdSlots = [#arcane]
@@ -4483,7 +4497,6 @@ onYourOwn3_Exceptional =
   permanent
     $ (asset "53010" "On Your Own" 0 Survivor)
       { cdCardTraits = singleton Talent
-      , cdSkills = [#willpower]
       , cdLimits = [LimitPerInvestigator 1]
       , cdExceptional = True
       , cdLevel = 3
@@ -4502,6 +4515,7 @@ dendromorphosis :: CardDef
 dendromorphosis =
   (basicWeakness "53012" ("Dendromorphosis" <:> "\"Natural\" Transformation"))
     { cdSlots = [#hand, #hand]
+    , cdCardTraits = setFromList [Curse, Flora]
     , cdCost = Nothing
     }
 
@@ -4762,7 +4776,6 @@ forbiddenTome =
     , cdCardTraits = setFromList [Item, Relic, Tome]
     , cdUses = uses Secret 5
     , cdSlots = [#hand]
-    , cdUnique = True
     }
 
 higherEducation :: CardDef
@@ -5261,24 +5274,28 @@ maskedCarnevaleGoer_17 :: CardDef
 maskedCarnevaleGoer_17 =
   (storyAsset "82017b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
     { cdCardTraits = singleton Carnevale
+    , cdCost = Nothing
     }
 
 maskedCarnevaleGoer_18 :: CardDef
 maskedCarnevaleGoer_18 =
   (storyAsset "82018b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
     { cdCardTraits = singleton Carnevale
+    , cdCost = Nothing
     }
 
 maskedCarnevaleGoer_19 :: CardDef
 maskedCarnevaleGoer_19 =
   (storyAsset "82019b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
     { cdCardTraits = singleton Carnevale
+    , cdCost = Nothing
     }
 
 maskedCarnevaleGoer_20 :: CardDef
 maskedCarnevaleGoer_20 =
   (storyAsset "82020b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
     { cdCardTraits = singleton Carnevale
+    , cdCost = Nothing
     }
 
 innocentReveler :: CardDef
@@ -5292,6 +5309,7 @@ maskedCarnevaleGoer_21 :: CardDef
 maskedCarnevaleGoer_21 =
   (storyAsset "82021b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
     { cdCardTraits = singleton Carnevale
+    , cdCost = Nothing
     }
 
 abbessAllegriaDiBiase :: CardDef

@@ -308,7 +308,7 @@ allEnemies =
     , --- Zoogs
       SomeEnemyCard furtiveZoog
     , SomeEnemyCard stealthyZoog
-    , SomeEnemyCard inconspiciousZoog
+    , SomeEnemyCard inconspicuousZoog
     , --- Agents of Nyarlathotep
       SomeEnemyCard theCrawlingMist
     , --- Spiders

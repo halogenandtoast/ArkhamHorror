@@ -16,7 +16,7 @@ newtype RandolphCarterChainedToTheWakingWorld = RandolphCarterChainedToTheWaking
 
 randolphCarterChainedToTheWakingWorld :: AssetCard RandolphCarterChainedToTheWakingWorld
 randolphCarterChainedToTheWakingWorld =
-  asset RandolphCarterChainedToTheWakingWorld Cards.randolphCarterChainedToTheWakingWorld
+  ally RandolphCarterChainedToTheWakingWorld Cards.randolphCarterChainedToTheWakingWorld (2, 3)
 
 instance HasModifiersFor RandolphCarterChainedToTheWakingWorld where
   getModifiersFor (InvestigatorTarget iid) (RandolphCarterChainedToTheWakingWorld a) | a `controlledBy` iid = do

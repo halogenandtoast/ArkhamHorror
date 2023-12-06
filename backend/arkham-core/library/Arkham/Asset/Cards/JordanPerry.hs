@@ -41,7 +41,7 @@ instance RunMessage JordanPerry where
         $ pushAll [RemoveClues source (toTarget attrs) 1, GainClues iid source 1]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      langneauPerdu <- genCard Story.langneauPerdu
-      push $ ReadStory iid langneauPerdu ResolveIt (Just $ toTarget attrs)
+      lagneauPerdu <- genCard Story.lagneauPerdu
+      push $ ReadStory iid lagneauPerdu ResolveIt (Just $ toTarget attrs)
       pure a
     _ -> JordanPerry <$> runMessage msg attrs

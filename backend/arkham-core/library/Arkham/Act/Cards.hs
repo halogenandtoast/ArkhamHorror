@@ -368,15 +368,15 @@ inLostCarcosa = act "03320" "In Lost Carcosa" 1 DimCarcosa
 
 searchForTheStrangerV1 :: CardDef
 searchForTheStrangerV1 =
-  act "03321" "Search For the Stranger (v.I)" 2 DimCarcosa
+  act "03321a" "Search For the Stranger (v.I)" 2 DimCarcosa
 
 searchForTheStrangerV2 :: CardDef
 searchForTheStrangerV2 =
-  act "03322" "Search For the Stranger (v.II)" 2 DimCarcosa
+  act "03322a" "Search For the Stranger (v.II)" 2 DimCarcosa
 
 searchForTheStrangerV3 :: CardDef
 searchForTheStrangerV3 =
-  act "03323" "Search For the Stranger (v.III)" 2 DimCarcosa
+  act "03323a" "Search For the Stranger (v.III)" 2 DimCarcosa
 
 theKingInTatters :: CardDef
 theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa
@@ -406,10 +406,10 @@ escapeTheRuins :: CardDef
 escapeTheRuins = act "04059" "Escape the Ruins" 3 TheDoomOfEztli
 
 theRelicIsMissing :: CardDef
-theRelicIsMissing = act "04117" "The Relic is Missing!" 1 ThreadsOfFate
+theRelicIsMissing = act "04117a" "The Relic Is Missing!" 1 ThreadsOfFate
 
 harlanIsInDanger :: CardDef
-harlanIsInDanger = act "04118" "Harlan is in Danger!" 1 ThreadsOfFate
+harlanIsInDanger = act "04118a" "Harlan Is in Danger!" 1 ThreadsOfFate
 
 atTheExhibitTheRelicsLocation :: CardDef
 atTheExhibitTheRelicsLocation = act "04119" "At the Exhibit" 2 ThreadsOfFate
@@ -430,52 +430,52 @@ recoverTheRelic :: CardDef
 recoverTheRelic = act "04124" "Recover the Relic" 3 ThreadsOfFate
 
 searchForAlejandro :: CardDef
-searchForAlejandro = act "04125c" "Search for Alejandro" 1 ThreadsOfFate
+searchForAlejandro = act "04125a" "Search for Alejandro" 1 ThreadsOfFate
 
 missingPersons :: CardDef
-missingPersons = act "04126c" "Missing Persons" 1 ThreadsOfFate
+missingPersons = act "04126a" "Missing Persons" 1 ThreadsOfFate
 
 atTheStationInShadowedTalons :: CardDef
-atTheStationInShadowedTalons = act "04127c" "At the Station" 2 ThreadsOfFate
+atTheStationInShadowedTalons = act "04127" "At the Station" 2 ThreadsOfFate
 
 atTheStationTrainTracks :: CardDef
-atTheStationTrainTracks = act "04128c" "At the Station" 2 ThreadsOfFate
+atTheStationTrainTracks = act "04128a" "At the Station" 2 ThreadsOfFate
 
 friendsInHighPlacesHenrysInformation :: CardDef
-friendsInHighPlacesHenrysInformation = act "04129c" "Friends in High Places" 2 ThreadsOfFate
+friendsInHighPlacesHenrysInformation = act "04129" "Friends in High Places" 2 ThreadsOfFate
 
 friendsInHighPlacesHenryDeveau :: CardDef
-friendsInHighPlacesHenryDeveau = act "04130c" "Friends in High Places" 2 ThreadsOfFate
+friendsInHighPlacesHenryDeveau = act "04130a" "Friends in High Places" 2 ThreadsOfFate
 
 alejandrosPrison :: CardDef
-alejandrosPrison = act "04131c" "Alejandro's Prison" 3 ThreadsOfFate
+alejandrosPrison = act "04131" "Alejandro's Prison" 3 ThreadsOfFate
 
 alejandrosPlight :: CardDef
-alejandrosPlight = act "04132c" "Alejandro's Plight" 3 ThreadsOfFate
+alejandrosPlight = act "04132" "Alejandro's Plight" 3 ThreadsOfFate
 
 trialOfTheHuntress :: CardDef
-trialOfTheHuntress = act "04133e" "Trial of the Huntress" 1 ThreadsOfFate
+trialOfTheHuntress = act "04133a" "Trial of the Huntress" 1 ThreadsOfFate
 
 theGuardiansInquiry :: CardDef
-theGuardiansInquiry = act "04134e" "The Guardian's Inquiry" 1 ThreadsOfFate
+theGuardiansInquiry = act "04134a" "The Guardian's Inquiry" 1 ThreadsOfFate
 
 theCaveOfDarknessEmbroiledInBattle :: CardDef
-theCaveOfDarknessEmbroiledInBattle = act "04135e" "The Cave of Darkness" 2 ThreadsOfFate
+theCaveOfDarknessEmbroiledInBattle = act "04135" "The Cave of Darkness" 2 ThreadsOfFate
 
 theCaveOfDarknessTunnelsInTheDark :: CardDef
-theCaveOfDarknessTunnelsInTheDark = act "04136e" "The Cave of Darkness" 2 ThreadsOfFate
+theCaveOfDarknessTunnelsInTheDark = act "04136" "The Cave of Darkness" 2 ThreadsOfFate
 
 strangeRelicsMariaDeSilva :: CardDef
-strangeRelicsMariaDeSilva = act "04137e" "Strange Relics" 2 ThreadsOfFate
+strangeRelicsMariaDeSilva = act "04137a" "Strange Relics" 2 ThreadsOfFate
 
 strangeRelicsMariasInformation :: CardDef
-strangeRelicsMariasInformation = act "04138e" "Strange Relics" 2 ThreadsOfFate
+strangeRelicsMariasInformation = act "04138" "Strange Relics" 2 ThreadsOfFate
 
 strangeOccurences :: CardDef
-strangeOccurences = act "04139e" "Strange Occurrences" 3 ThreadsOfFate
+strangeOccurences = act "04139" "Strange Occurrences" 3 ThreadsOfFate
 
 theBrotherhoodIsRevealed :: CardDef
-theBrotherhoodIsRevealed = act "04140e" "The Brotherhood is Revealed" 3 ThreadsOfFate
+theBrotherhoodIsRevealed = act "04140" "The Brotherhood Is Revealed" 3 ThreadsOfFate
 
 crossingTheThreshold :: CardDef
 crossingTheThreshold = act "04165" "Crossing the Threshold" 1 TheBoundaryBeyond
@@ -613,13 +613,13 @@ theBrokenRite :: CardDef
 theBrokenRite = act "05248" "The Broken Rite" 4 UnionAndDisillusion
 
 darkKnowledgeV1 :: CardDef
-darkKnowledgeV1 = act "05286" "Dark Knowledge (v. I)" 1 MusicOfTheDamned
+darkKnowledgeV1 = act "05286a" "Dark Knowledge (v. I)" 1 MusicOfTheDamned
 
 beyondTheGrave :: CardDef
 beyondTheGrave = act "05287" "Beyond the Grave" 2 MusicOfTheDamned
 
 darkKnowledgeV2 :: CardDef
-darkKnowledgeV2 = act "05288" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse
+darkKnowledgeV2 = act "05288a" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse
 
 newWorldOrder :: CardDef
 newWorldOrder = act "05289" "New World Order" 2 SecretsOfTheUniverse

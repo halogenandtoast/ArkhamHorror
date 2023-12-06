@@ -11,7 +11,13 @@ newtype Azathoth = Azathoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 azathoth :: EnemyCard Azathoth
-azathoth = enemy Azathoth Cards.azathoth (0, Static 1, 0) (0, 0)
+azathoth =
+  enemyWith
+    Azathoth
+    Cards.azathoth
+    (0, Static 1, 0)
+    (3, 3)
+    (\a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing})
 
 instance HasAbilities Azathoth where
   getAbilities (Azathoth a) =

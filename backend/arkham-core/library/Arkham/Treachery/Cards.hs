@@ -1618,7 +1618,7 @@ toilAndTrouble =
 
 ultimateChaos :: CardDef
 ultimateChaos =
-  (treachery "05342" "Ultimate Chaos" BeforeTheBlackThrone 2)
+  (treachery "05342" "Ultimate Chaos" BeforeTheBlackThrone 3)
     { cdCardTraits = singleton Power
     , cdRevelation = CannotBeCanceledRevelation
     }
@@ -1632,7 +1632,7 @@ whisperedBargain =
 
 theEndIsNigh :: CardDef
 theEndIsNigh =
-  (treachery "05344" "The End is Night!" BeforeTheBlackThrone 2)
+  (treachery "05344" "The End is Nigh!" BeforeTheBlackThrone 2)
     { cdCardTraits = singleton Endtimes
     }
 
@@ -1671,7 +1671,7 @@ bloodlust =
 selfCentered :: CardDef
 selfCentered =
   (basicWeakness "06035" "Self-Centered")
-    { cdCardTraits = setFromList [Madness]
+    { cdCardTraits = setFromList [Flaw]
     , cdDeckRestrictions = [MultiplayerOnly]
     }
 
@@ -2018,7 +2018,7 @@ drivenToMadness =
 
 bloodOnYourHands :: CardDef
 bloodOnYourHands =
-  (treachery "84025" "Blood on Your Hands" MurderAtTheExcelsiorHotel 3)
+  (treachery "84025" "Blood on Your Hands" MurderAtTheExcelsiorHotel 4)
     { cdCardTraits = singleton Terror
     }
 

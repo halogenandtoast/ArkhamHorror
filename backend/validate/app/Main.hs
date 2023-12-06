@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE TupleSections #-}
 
 module Main where
@@ -11,7 +12,7 @@ import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.EncounterCard
-import Arkham.EncounterSet
+import Arkham.EncounterSet ()
 import Arkham.Enemy
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (
@@ -43,6 +44,7 @@ import Control.Monad.Random.Lazy hiding (mapM_)
 import Control.Monad.Validate
 import Data.Aeson
 import Data.Text qualified as T
+import GHC.Stack
 import System.Directory
 import Text.Read (readEither)
 
@@ -80,8 +82,11 @@ data CardJson = CardJson
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
-newtype UnknownCard = UnknownCard CardCode
+data UnknownCard = UnknownCard CardCode [(String, SrcLoc)]
   deriving stock (Show)
+
+unknownCard :: HasCallStack => CardCode -> UnknownCard
+unknownCard code = UnknownCard code (getCallStack callStack)
 
 data MissingImplementation = MissingImplementation CardCode Name
   deriving stock (Show)
@@ -170,25 +175,6 @@ instance Exception ClueMismatch
 instance Exception XpMismatch
 instance Exception QuantityMismatch
 
-filterTest :: [(CardCode, CardDef)] -> [(CardCode, CardDef)]
-filterTest =
-  filter
-    ( \(code, cdef) ->
-        code /= "asset"
-          && cdEncounterSet cdef /= Just Test
-          && not
-            ("b" `isSuffixOf` unCardCode code)
-    )
-
-filterTestEntities :: [(CardCode, a)] -> [(CardCode, a)]
-filterTestEntities =
-  filter
-    ( \(code, _) ->
-        code `notElem` ["enemy", "location", "asset"]
-          && not
-            ("b" `isSuffixOf` unCardCode code)
-    )
-
 toClassSymbol :: String -> Maybe ClassSymbol
 toClassSymbol = \case
   "Guardian" -> Just Guardian
@@ -200,21 +186,17 @@ toClassSymbol = \case
   _ -> Nothing
 
 normalizeName :: CardCode -> Text -> Text
-normalizeName "01121a" _ = "Predator or Prey?"
-normalizeName "02219" _ = "Powder of Ibn-Ghazi"
--- TODO: update these names
-normalizeName "03095" _ = "Maniac"
-normalizeName "03096" _ = "Young Psychopath"
-normalizeName "03184" _ = "Mad Patient"
+normalizeName "02219" _ = "Powder of Ibn-Ghazi" -- missing -
+normalizeName "06078" _ = "The Infestation Begins" -- includes a ... not in the name
+normalizeName "84025" _ = "Blood on Your Hands" -- your is lowercase on ADB
 normalizeName _ a = T.replace "\8217" "'" a
 
 normalizeSubname :: CardCode -> Maybe Text -> Maybe Text
-normalizeSubname "02230" _ = Just "... Or Are They?"
-normalizeSubname "03182a" _ = Just "He's Not Doing All Too Well"
 normalizeSubname _ a = T.replace "\8217" "'" <$> a
 
 normalizeCost :: CardCode -> Maybe Int -> Maybe CardCost
-normalizeCost "02178" _ = Nothing
+normalizeCost "02178" _ = Nothing -- has Just 0 for a treachery
+normalizeCost "06034" (Just (-2)) = Just DiscardAmountCost
 normalizeCost _ (Just (-2)) = Just DynamicCost
 normalizeCost _ (Just n) = Just (StaticCost n)
 normalizeCost _ Nothing = Nothing
@@ -237,6 +219,7 @@ getTraits :: CardJson -> Set Trait
 getTraits CardJson {code} | code == "01000" = mempty
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
+  Just "" -> mempty -- Cards with removed traits like Patient Confinement: Daniel's Cell can show up this way
   Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
  where
   toTrait x =
@@ -247,6 +230,7 @@ getTraits CardJson {..} = case traits of
       . cleanText
       $ T.replace "á" "a"
       $ T.replace "-" ""
+      $ T.replace "'" ""
       $ T.replace " " "" x
   handleEither _ (Right a) = a
   handleEither x (Left err) =
@@ -260,16 +244,20 @@ toGameVal :: Bool -> Int -> GameValue
 toGameVal True n = PerPlayer n
 toGameVal False n = Static n
 
+-- Convert our card code into the card code on ADB
 normalizeCardCode :: CardCode -> CardCode
-normalizeCardCode "01121" = "01121a"
-normalizeCardCode "03076a" = "03076"
-normalizeCardCode "03221" = "03221b"
-normalizeCardCode "03323" = "03323a"
-normalizeCardCode "04128" = "04128a"
-normalizeCardCode "04133" = "04133a"
-normalizeCardCode "04126" = "04126a"
-normalizeCardCode "50026" = "50026a"
-normalizeCardCode c = c
+normalizeCardCode (CardCode c) =
+  if
+    | c `elem` maskedCarnevaleGoers -> "82017b"
+    | c `elem` cardsThatShouldNotHaveSuffix ->
+        CardCode $ take (length c - 1) c
+    | otherwise -> CardCode c
+ where
+  -- Masked Carnevale-Goer is treated as 1 card on adb
+  maskedCarnevaleGoers = ["82017b", "82018b", "82019b", "82020b", "82021b"]
+  -- Sometimes arkhamdb will give an a suffix to a card that doesn't need it
+  -- Sometimes arkhamdb will not use the suffix even if printed on the card
+  cardsThatShouldNotHaveSuffix = ["03221a", "05217a"]
 
 runMissing :: Maybe Text -> Map CardCode CardJson -> IO ()
 runMissing mPackCode cards = do
@@ -296,14 +284,15 @@ runMissing mPackCode cards = do
 
 filterOutIrrelevant
   :: Maybe Text -> Map CardCode CardJson -> Map CardCode CardJson
-filterOutIrrelevant mPackCode =
-  filterMap
-    ( \card ->
-        (code card /= "01000")
-          && ( type_code card `notElem` ["investigator", "scenario", "act", "agenda"]
-             )
-          && maybe True ((== pack_code card) . unpack) mPackCode
-    )
+filterOutIrrelevant _mPackCode = id
+
+-- filterMap
+--   ( \card ->
+--       (code card /= "01000")
+--         && ( type_code card `notElem` ["investigator", "scenario", "act", "agenda"]
+--            )
+--         && maybe True ((== pack_code card) . unpack) mPackCode
+--   )
 
 normalizeClassSymbol :: Maybe ClassSymbol -> Maybe ClassSymbol
 normalizeClassSymbol (Just Mythos) = Nothing
@@ -311,64 +300,72 @@ normalizeClassSymbol c = c
 
 normalizeEnemyStats
   :: CardCode -> (Maybe Int, Maybe GameValue, Maybe Int) -> (Maybe Int, Maybe GameValue, Maybe Int)
-normalizeEnemyStats "05085" (fight, _, evade) = (fight, Just (Static 3), evade)
+normalizeEnemyStats "05085" (fight, _, evade) = (fight, Just (Static 3), evade) -- ADB incorrectly has this as 2 health
 normalizeEnemyStats _ stats = stats
+
+normalizeEnemyDamage :: CardCode -> (Int, Int) -> (Int, Int)
+normalizeEnemyDamage "03067b" _ = (1, 1) -- ADB incorrectly has this as 4 damage
+normalizeEnemyDamage "05263b" _ = (1, 1) -- ADB incorrectly has this as no horror
+normalizeEnemyDamage "05264b" _ = (0, 2) -- ADB incorrectly has this as no horror
+normalizeEnemyDamage "05265b" _ = (1, 1) -- ADB incorrectly has this as no horror
+normalizeEnemyDamage _ damage = damage
 
 ignoreCardCode :: CardCode -> Bool
 ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
  where
-  ignoredCardCodes =
-    [ "03076" -- Constance Dumaine
-    , "03221a" -- The Organist
-    , "03325c" -- Shores of Hali
-    , "03326d" -- Bleak Plains
-    , "03326e" -- Bleak Plains
-    , "03327c" -- Inhabitant of Carcosa
-    , "03327e" -- A Moment's Rest
-    , "03327f" -- The Coffin
-    , "03327g" -- The Coffin
-    , "03328d" -- The King's Parade
-    , "03328e" -- The King's Parade
-    , "03328f" -- The King's Parade
-    , "03328g" -- The Archway
-    , "03329d" -- Steps of the Palace
-    , "03330c" -- The Fall
-    , "03331c" -- Hastur's End
-    , "04117" -- Threads of Fate stuff
-    , "04118"
-    , -- \^^
-      "04125d"
-    , -- \^^
-      "04126c"
-    , -- \^^
-      "04127c"
-    , -- \^^
-      "04128c"
-    , -- \^^
-      "04129c"
-    , -- \^^
-      "04130c"
-    , -- \^^
-      "04132c"
-    , -- \^^
-      "04133f"
-    , -- \^^
-      "04134e"
-    , -- \^^
-      "04134f"
-    , -- \^^
-      "04135e"
-    , -- \^^
-      "04136e"
-    , -- \^^
-      "04137e"
-    , -- \^^
-      "04138e"
-    , -- \^^
-      "04139e"
-    , -- \^^
-      "04140e"
-    ]
+  ignoredCardCodes = []
+
+-- [ "03076" -- Constance Dumaine
+-- , "03221a" -- The Organist
+-- , "03325c" -- Shores of Hali
+-- , "03326d" -- Bleak Plains
+-- , "03326e" -- Bleak Plains
+-- , "03327c" -- Inhabitant of Carcosa
+-- , "03327e" -- A Moment's Rest
+-- , "03327f" -- The Coffin
+-- , "03327g" -- The Coffin
+-- , "03328d" -- The King's Parade
+-- , "03328e" -- The King's Parade
+-- , "03328f" -- The King's Parade
+-- , "03328g" -- The Archway
+-- , "03329d" -- Steps of the Palace
+-- , "03330c" -- The Fall
+-- , "03331c" -- Hastur's End
+-- , "04117" -- Threads of Fate stuff
+-- , "04118"
+-- , -- \^^
+--   "04125d"
+-- , -- \^^
+--   "04126c"
+-- , -- \^^
+--   "04127c"
+-- , -- \^^
+--   "04128c"
+-- , -- \^^
+--   "04129c"
+-- , -- \^^
+--   "04130c"
+-- , -- \^^
+--   "04132c"
+-- , -- \^^
+--   "04133f"
+-- , -- \^^
+--   "04134e"
+-- , -- \^^
+--   "04134f"
+-- , -- \^^
+--   "04135e"
+-- , -- \^^
+--   "04136e"
+-- , -- \^^
+--   "04137e"
+-- , -- \^^
+--   "04138e"
+-- , -- \^^
+--   "04139e"
+-- , -- \^^
+--   "04140e"
+-- ]
 
 -- \^^
 
@@ -382,78 +379,54 @@ runValidations cards = do
 invariant :: (MonadValidate [SomeException] m, Exception e) => e -> m ()
 invariant = dispute . pure . SomeException
 
+invariantWhen :: (MonadValidate [SomeException] m, Exception e) => Bool -> e -> m ()
+invariantWhen invariantPred e = when invariantPred (invariant e)
+
 getValidationResults :: Map CardCode CardJson -> IO (Either [SomeException] ())
 getValidationResults cards = runValidateT $ do
   -- validate card defs
-  for_ (filterTest $ mapToList allCards) $ \(ccode', card) -> do
+  for_ (mapToList allCards) $ \(ccode', card) -> do
     let ccode = normalizeCardCode ccode'
     case lookup ccode cards of
-      Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
+      Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
       Just cardJson@CardJson {..} -> do
         if type_code == "location"
           then do
             for_ back_name $ \name' ->
-              when
-                (Name (normalizeName code name') Nothing /= cdName card)
-                ( unless
-                    (ignoreCardCode ccode)
-                    ( invariant $
-                        NameMismatch
-                          code
-                          (Name (normalizeName code name') Nothing)
-                          (cdName card)
-                    )
-                )
+              when (Name (normalizeName code name') Nothing /= cdName card) do
+                unless (ignoreCardCode ccode) do
+                  invariant $ NameMismatch code (Name (normalizeName code name') Nothing) (cdName card)
             for_ (cdRevealedName card) $ \revealedName ->
-              when
-                ( Name (normalizeName code name) (normalizeSubname code subname)
-                    /= revealedName
-                )
-                ( unless
-                    (ignoreCardCode ccode)
-                    ( invariant $
-                        NameMismatch
-                          code
-                          ( Name
-                              (normalizeName code name)
-                              (normalizeSubname code subname)
-                          )
-                          revealedName
-                    )
-                )
+              when (Name (normalizeName code name) (normalizeSubname code subname) /= revealedName) do
+                unless (ignoreCardCode ccode) do
+                  invariant $
+                    NameMismatch code (Name (normalizeName code name) (normalizeSubname code subname)) revealedName
           else do
-            when
-              ( Name (normalizeName code name) (normalizeSubname code subname)
-                  /= cdName card
-              )
-              ( unless
-                  (ignoreCardCode ccode)
-                  ( invariant $
-                      NameMismatch
-                        code
-                        ( Name
-                            (normalizeName code name)
-                            (normalizeSubname code subname)
-                        )
-                        (cdName card)
-                  )
-              )
-        when
+            when (Name (normalizeName code name) (normalizeSubname code subname) /= cdName card) do
+              unless (ignoreCardCode ccode) do
+                invariant $
+                  NameMismatch code (Name (normalizeName code name) (normalizeSubname code subname)) (cdName card)
+
+        -- Masked Carnevale-Goer is split up differently so we say the quantity is 1
+        -- ideally we'd add them all up
+        let quantity' = if code == "82017b" then 1 else quantity
+
+        invariantWhen
           ( isJust (cdEncounterSet card)
-              && Just quantity
+              && Just quantity'
                 /= cdEncounterSetQuantity card
               && cdCardType card
                 `notElem` [ActType, AgendaType]
           )
-          ( invariant $
-              QuantityMismatch
-                code
-                (Name name subname)
-                quantity
-                (cdEncounterSetQuantity card)
-          )
+          $ QuantityMismatch
+            code
+            (Name name subname)
+            quantity
+            (cdEncounterSetQuantity card)
+
+        let isUnique = if code == "06329" then True else is_unique -- Shining Trapezohedron is unique
         when
-          (is_unique /= cdUnique card)
+          (isUnique /= cdUnique card)
           (invariant $ UniqueMismatch code (cdName card))
         when
           (fromMaybe 0 xp /= cdLevel card)
@@ -462,6 +435,8 @@ getValidationResults cards = runValidateT $ do
         when
           (normalizeCost code cost /= cdCost card)
           (invariant $ CardCostMismatch code (cdName card) cost (cdCost card))
+
+        -- story types copy their front, so we ignore them
         when
           ( sort
               ( mapMaybe
@@ -469,17 +444,13 @@ getValidationResults cards = runValidateT $ do
                   (toClassSymbol faction_name : maybe [] (pure . toClassSymbol) faction2_name)
               )
               /= sort (mapMaybe (normalizeClassSymbol . Just) (setToList $ cdClassSymbols card))
+              && type_code /= "story"
           )
-          ( invariant $
-              ClassMismatch
-                code
-                (cdName card)
-                faction_name
-                (cdClassSymbols card)
-          )
+          $ do
+            invariant $ ClassMismatch code (cdName card) faction_name (cdClassSymbols card)
         when
           ( sort (normalizeSkills code $ getSkills cardJson)
-              /= sort (cdSkills card)
+              /= sort (replaceWildMinus $ cdSkills card)
           )
           ( invariant $
               SkillsMismatch
@@ -515,11 +486,12 @@ getValidationResults cards = runValidateT $ do
           )
 
   -- validate enemies
-  for_ (filterTestEntities $ mapToList allEnemies) $
-    \(ccode, SomeEnemyCard builder) -> do
+  for_ (mapToList allEnemies) $
+    \(ccode', SomeEnemyCard builder) -> do
+      let ccode = normalizeCardCode ccode'
       attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
       case lookup ccode cards of
-        Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
+        Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           let
             cardStats =
@@ -530,30 +502,17 @@ getValidationResults cards = runValidateT $ do
                 )
             enemyStats = (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
             cardDamage =
-              ( max 0 $ fromMaybe 0 enemy_damage
-              , max 0 $ fromMaybe 0 enemy_horror
-              )
+              normalizeEnemyDamage ccode $
+                ( max 0 $ fromMaybe 0 enemy_damage
+                , max 0 $ fromMaybe 0 enemy_horror
+                )
             enemyDamage = (enemyHealthDamage attrs, enemySanityDamage attrs)
 
-          when
-            (cardStats /= enemyStats)
-            ( invariant $
-                EnemyStatsMismatch
-                  code
-                  (cdName $ toCardDef attrs)
-                  cardStats
-                  enemyStats
-            )
+          invariantWhen (cardStats /= enemyStats) $
+            EnemyStatsMismatch ccode (cdName $ toCardDef attrs) cardStats enemyStats
 
-          when
-            (cardDamage /= enemyDamage)
-            ( invariant $
-                EnemyDamageMismatch
-                  code
-                  (cdName $ toCardDef attrs)
-                  cardDamage
-                  enemyDamage
-            )
+          invariantWhen (cardDamage /= enemyDamage) $
+            EnemyDamageMismatch ccode (cdName $ toCardDef attrs) cardDamage enemyDamage
 
   for_ (Enemies.allPlayerEnemyCards <> Enemies.allEncounterEnemyCards) $
     \def -> do
@@ -563,11 +522,11 @@ getValidationResults cards = runValidateT $ do
         (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
   -- validate locations
-  for_ (filterTestEntities $ mapToList allLocations) $
+  for_ (mapToList allLocations) $
     \(ccode, SomeLocationCard builder) -> do
       attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
       case lookup ccode cards of
-        Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
+        Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           when
             (max 0 (fromMaybe 0 shroud) /= locationShroud attrs)
@@ -589,12 +548,13 @@ getValidationResults cards = runValidateT $ do
             )
 
   -- validate assets
-  for_ (filterTestEntities $ mapToList allAssets) $
-    \(ccode, SomeAssetCard builder) -> do
+  for_ (mapToList allAssets) $
+    \(ccode', SomeAssetCard builder) -> do
       attrs <-
         toAttrs . cbCardBuilder builder nullCardId <$> ((,Just "01001") <$> lift getRandom)
+      let ccode = normalizeCardCode ccode'
       case lookup ccode cards of
-        Nothing -> unless (ignoreCardCode ccode) (invariant $ UnknownCard ccode)
+        Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           let
             cardStats = (health, sanity)
@@ -640,31 +600,35 @@ getValidationResults cards = runValidateT $ do
         (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
 normalizeImageCardCode :: CardCode -> Text
-normalizeImageCardCode "02214" = "02214b"
+-- normalizeImageCardCode "02214" = "02214b"
 normalizeImageCardCode other = unCardCode other
 
+replaceWildMinus :: [SkillIcon] -> [SkillIcon]
+replaceWildMinus = map $ \case
+  WildMinusIcon -> WildIcon
+  other -> other
+
 normalizeSkills :: CardCode -> [SkillIcon] -> [SkillIcon]
--- normalizeSkills "02230" _ = [SkillIcon SkillWillpower, SkillIcon SkillAgility]
-normalizeSkills "04244" _ = [] -- Body of a Yithian
-normalizeSkills "05046" _ = [] -- Gavriella Mizrah
-normalizeSkills "05047" _ = [] -- Jerome Davids
-normalizeSkills "05048" _ = [] -- Valentino Rivas
-normalizeSkills "05049" _ = [] -- Penny White
+normalizeSkills "04244" _ = [] -- Body of a Yithian, investigator stats listed as skills
+normalizeSkills "05046" _ = [] -- Gavriella Mizrah, investigator stats listed as
+normalizeSkills "05047" _ = [] -- Jerome Davids, investigator stats listed as
+normalizeSkills "05048" _ = [] -- Valentino Rivas, investigator stats listed as
+normalizeSkills "05049" _ = [] -- Penny White, investigator stats listed as
 normalizeSkills _ skills = skills
 
 normalizeTraits :: CardCode -> Set Trait -> Set Trait
 -- Erratum: Each of the Patient Confinement locations should not have the Arkham Asylum trait.
-normalizeTraits "03178" _ = mempty
-normalizeTraits "03179" _ = mempty
-normalizeTraits "03180" _ = mempty
-normalizeTraits "03181" _ = mempty
+-- normalizeTraits "03178" _ = mempty
+-- normalizeTraits "03179" _ = mempty
+-- normalizeTraits "03180" _ = mempty
+-- normalizeTraits "03181" _ = mempty
 normalizeTraits _ traits = traits
 
 runMissingImages :: IO ()
 runMissingImages = do
   missing <-
     catMaybes <$> for
-      (keys . filterTest $ mapToList allCards)
+      (keys $ mapToList allCards)
       \ccode -> do
         let
           filename = unpack $ normalizeImageCardCode ccode <> ".jpg"

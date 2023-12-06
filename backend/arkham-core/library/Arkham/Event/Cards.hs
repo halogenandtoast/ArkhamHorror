@@ -1893,6 +1893,7 @@ telescopicSight3 =
     , cdCardTraits = setFromList [Item, Upgrade]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ Criteria.exists (AssetControlledBy You <> AssetInTwoHandSlots)
+    , cdLevel = 3
     }
 
 knowledgeIsPower :: CardDef
@@ -1945,6 +1946,7 @@ fortuneOrFate2 =
     , cdCardTraits = setFromList [Fortune, Blessed]
     , cdLimits = [MaxPerGame 1]
     , cdFastWindow = Just $ PlacedDoomCounter #when (SourceIsCancelable AnySource) ScenarioCardTarget
+    , cdLevel = 2
     }
 
 ghastlyRevelation :: CardDef
@@ -2089,7 +2091,7 @@ eucatastrophe3 =
 
 occultEvidence :: CardDef
 occultEvidence =
-  (event "06008" "Occult Evidence" 0 Seeker)
+  (event "06008" "Occult Evidence" 0 Neutral)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Insight, Research]
     , cdCardInSearchEffects = True
@@ -2115,6 +2117,7 @@ easyMark1 =
     , cdCardTraits = singleton Trick
     , cdKeywords = singleton Keyword.Myriad
     , cdCriteria = Just $ Criteria.AnyCriterion [Criteria.CanGainResources, Criteria.CanDrawCards]
+    , cdLevel = 1
     }
 
 stargazing1 :: CardDef
@@ -2125,11 +2128,12 @@ stargazing1 =
     , cdLimits = [MaxPerGame 2]
     , cdCriteria = Just $ Criteria.EncounterDeckWith $ LengthIs (atLeast 10)
     , cdBondedWith = [(1, "06028")]
+    , cdLevel = 1
     }
 
 theStarsAreRight :: CardDef
 theStarsAreRight =
-  (event "06028" "TheStarsAreRight" 0 Mystic)
+  (event "06028" "The Stars Are Right" 0 Mystic)
     { cdCardTraits = singleton Augury
     , cdKeywords = singleton (Keyword.Bonded 1 "06027")
     , cdCost = Nothing
@@ -2287,7 +2291,7 @@ lucidDreaming2 =
 heroicRescue2 :: CardDef
 heroicRescue2 =
   (event "06234" "Heroic Rescue" 0 Guardian)
-    { cdSkills = [#willpower, #combat]
+    { cdSkills = [#willpower, #combat, #agility]
     , cdCardTraits = setFromList [Spirit, Tactic]
     , cdFastWindow =
         Just
@@ -2538,6 +2542,7 @@ trialByFire3 =
     { cdSkills = [#wild, #wild]
     , cdCardTraits = singleton Spirit
     , cdFastWindow = Just $ DuringTurn You
+    , cdLevel = 3
     }
 
 cleanThemOut :: CardDef

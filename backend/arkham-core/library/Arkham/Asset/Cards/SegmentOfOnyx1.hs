@@ -21,7 +21,12 @@ segmentOfOnyx1 = asset SegmentOfOnyx1 Cards.segmentOfOnyx1
 
 instance HasAbilities SegmentOfOnyx1 where
   getAbilities (SegmentOfOnyx1 attrs) =
-    [ controlledAbility attrs 1 (AssetCount 3 $ AssetControlledBy You <> assetIs Cards.segmentOfOnyx1)
+    [ controlledAbility
+        attrs
+        1
+        ( AssetCount 3 (AssetControlledBy You <> assetIs Cards.segmentOfOnyx1)
+            <> Negate (exists $ assetIs Cards.pendantOfTheQueen) -- unique so we can't have more than one
+        )
         $ FastAbility Free
     ]
 

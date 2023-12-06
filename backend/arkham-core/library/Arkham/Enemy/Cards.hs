@@ -154,7 +154,7 @@ allEncounterEnemyCards =
       , ichtaca
       , ichtacaScionOfYig
       , icyGhoul
-      , inconspiciousZoog
+      , inconspicuousZoog
       , interstellarTraveler
       , ishimaruHaruko
       , jeremiahPierce
@@ -703,7 +703,7 @@ jordanPerry =
 ishimaruHaruko :: CardDef
 ishimaruHaruko =
   unique
-    $ (enemy "03067b" ("Ishimaru Haruku" <:> "Just Skin and Bones") TheLastKing 1)
+    $ (enemy "03067b" ("Ishimaru Haruko" <:> "Just Skin and Bones") TheLastKing 1)
       { cdCardTraits = setFromList [Monster, Lunatic, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
@@ -769,13 +769,13 @@ poltergeist =
 
 maniac :: CardDef
 maniac =
-  (enemy "03095" "Maniac" HastursGift 2)
+  (enemy "03095" "Seer of the Sign" HastursGift 2)
     { cdCardTraits = setFromList [Humanoid, Lunatic]
     }
 
 youngPsychopath :: CardDef
 youngPsychopath =
-  (enemy "03096" "Young Psychopath" HastursGift 2)
+  (enemy "03096" "Puppet of Hastur" HastursGift 2)
     { cdCardTraits = setFromList [Humanoid, Lunatic]
     }
 
@@ -825,7 +825,7 @@ danielChesterfield =
     $ ( enemy
           "03182b"
           ( "Daniel Chesterfield"
-              <:> "...Or At Least, What's Left of Him"
+              <:> "…Or At Least, What's Left of Him"
           )
           TheUnspeakableOath
           1
@@ -844,7 +844,7 @@ asylumGorger =
 
 madPatient :: CardDef
 madPatient =
-  (enemy "03184" "Mad Patient" TheUnspeakableOath 3)
+  (enemy "03184" "Haunted Patient" TheUnspeakableOath 3)
     { cdCardTraits = setFromList [Humanoid, Lunatic]
     }
 
@@ -880,12 +880,12 @@ stealthyByakhee =
 
 specterOfDeath :: CardDef
 specterOfDeath =
-  unique
-    $ ( enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1
-      )
-      { cdCardTraits = setFromList [Monster, Geist, Elite]
-      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
-      }
+  ( enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1
+  )
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    }
 
 catacombsDocent :: CardDef
 catacombsDocent =
@@ -1044,7 +1044,7 @@ harlanEarnstoneCrazedByTheCurse =
 henryDeveauAlejandrosKidnapper :: CardDef
 henryDeveauAlejandrosKidnapper =
   unique
-    $ ( enemy "04130d" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1
+    $ ( enemy "04130b" ("Henry Deveau" <:> "Alejandro's Kidnapper") ThreadsOfFate 1
       )
       { cdCardTraits = setFromList [Humanoid, Conspirator, Elite]
       , cdVictoryPoints = Just 1
@@ -1089,12 +1089,11 @@ handOfTheBrotherhood =
 
 theWingedSerpent :: CardDef
 theWingedSerpent =
-  unique
-    $ ( enemy "04209b" ("The Winged Serpent" <:> "The Wrath of Yig") PillarsOfJudgement 1
-      )
-      { cdCardTraits = setFromList [Monster, Serpent, Elite]
-      , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive]
-      }
+  ( enemy "04209b" ("The Winged Serpent" <:> "The Wrath of Yig") PillarsOfJudgement 1
+  )
+    { cdCardTraits = setFromList [Monster, Serpent, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive]
+    }
 
 apexStrangleweed :: CardDef
 apexStrangleweed =
@@ -1397,6 +1396,7 @@ summonedBeast =
   (enemy "05220" ("Summoned Beast" <:> "Guardian of the Trap") ForTheGreaterGood 1)
     { cdCardTraits = setFromList [Monster, SilverTwilight, Elite]
     , cdKeywords = setFromList [Keyword.Retaliate, Keyword.Hunter]
+    , cdVictoryPoints = Just 2
     }
 
 knightOfTheInnerCircle :: CardDef
@@ -1474,6 +1474,7 @@ anetteMasonReincarnatedEvil =
     { cdCardTraits = setFromList [Humanoid, Witch, Servitor, Elite]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
     , cdVictoryPoints = Just 2
+    , cdUnique = True
     }
 
 carlSanfordDeathlessFanatic :: CardDef
@@ -1482,6 +1483,7 @@ carlSanfordDeathlessFanatic =
     { cdCardTraits = setFromList [Humanoid, SilverTwilight, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 2
+    , cdUnique = True
     }
 
 lodgeEnforcer :: CardDef
@@ -1610,8 +1612,8 @@ spiderOfLeng =
 
 swarmOfSpiders :: CardDef
 swarmOfSpiders =
-  (enemy "06102" "Swarm of Spiders" Spiders 2)
-    { cdCardTraits = setFromList [Monster, Spider]
+  (enemy "06102" "Swarm of Spiders" Spiders 3)
+    { cdCardTraits = setFromList [Creature, Spider]
     , cdKeywords = setFromList [Keyword.Swarming (Static 2)]
     }
 
@@ -1629,9 +1631,9 @@ stealthyZoog =
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Swarming (Static 1)]
     }
 
-inconspiciousZoog :: CardDef
-inconspiciousZoog =
-  (enemy "06108" "Inconspicious Zoog" Zoogs 1)
+inconspicuousZoog :: CardDef
+inconspicuousZoog =
+  (enemy "06108" "Inconspicuous Zoog" Zoogs 1)
     { cdCardTraits = setFromList [Creature, Zoog]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Swarming (Static 2)]
     }
@@ -1886,7 +1888,7 @@ conspicuousStaff =
 
 hotelGuest :: CardDef
 hotelGuest =
-  (enemy "84022" "Hotel Guest" MurderAtTheExcelsiorHotel 3)
+  (enemy "84022" "Hotel Guest" MurderAtTheExcelsiorHotel 4)
     { cdCardTraits = setFromList [Humanoid, Guest, Innocent]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTrait CrimeScene)]
     , cdVictoryPoints = Just 0

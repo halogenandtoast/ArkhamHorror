@@ -661,7 +661,7 @@ library
       Arkham.Asset.Cards.OnYourOwn3
       Arkham.Asset.Cards.OnYourOwn3_Exceptional
       Arkham.Asset.Cards.OrnateBow3
-      Arkham.Asset.Cards.OtherworldlyCodex2
+      Arkham.Asset.Cards.OtherworldCodex2
       Arkham.Asset.Cards.OtherworldlyCompass2
       Arkham.Asset.Cards.Painkillers
       Arkham.Asset.Cards.Pantalone
@@ -1082,7 +1082,7 @@ library
       Arkham.Enemy.Cards.Ichtaca
       Arkham.Enemy.Cards.IchtacaScionOfYig
       Arkham.Enemy.Cards.IcyGhoul
-      Arkham.Enemy.Cards.InconspiciousZoog
+      Arkham.Enemy.Cards.InconspicuousZoog
       Arkham.Enemy.Cards.InterstellarTraveler
       Arkham.Enemy.Cards.IshimaruHaruko
       Arkham.Enemy.Cards.JeremiahPierce
@@ -2302,7 +2302,7 @@ library
       Arkham.Story.Cards.InhabitantOfCarcosa
       Arkham.Story.Cards.JeromesFate
       Arkham.Story.Cards.JosefsPlan
-      Arkham.Story.Cards.LangneauPerdu
+      Arkham.Story.Cards.LagneauPerdu
       Arkham.Story.Cards.MappingTheStreets
       Arkham.Story.Cards.PennysFate
       Arkham.Story.Cards.SickeningReality_65

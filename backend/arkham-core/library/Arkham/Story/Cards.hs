@@ -27,7 +27,7 @@ allStoryCards =
       , sickeningReality_68
       , sickeningReality_69
       , engramsOath
-      , langneauPerdu
+      , lagneauPerdu
       , thePattern
       , theFirstShow
       , aboveAndBelow
@@ -62,6 +62,9 @@ allStoryCards =
       , theInfestationBegins
       ]
 
+victory :: Int -> CardDef -> CardDef
+victory n def = def {cdVictoryPoints = Just n}
+
 sickeningReality_65 :: CardDef
 sickeningReality_65 = story "03065" "Sickening Reality" TheLastKing
 
@@ -80,8 +83,8 @@ sickeningReality_69 = story "03069" "Sickening Reality" TheLastKing
 engramsOath :: CardDef
 engramsOath = story "03076b" "Engram's Oath" TheLastKing
 
-langneauPerdu :: CardDef
-langneauPerdu = story "03077b" "L'angneau Perdu" TheLastKing
+lagneauPerdu :: CardDef
+lagneauPerdu = story "03077b" "L'agneau Perdu" TheLastKing
 
 thePattern :: CardDef
 thePattern = story "03078b" "The Pattern" TheLastKing
@@ -94,43 +97,43 @@ aboveAndBelow = story "03080b" "Above and Below" TheLastKing
 
 songsThatTheHyadesShallSing :: CardDef
 songsThatTheHyadesShallSing =
-  story "03325c" "Songs That the Hyades Shall Sing" DimCarcosa
+  story "03325b" "Songs That the Hyades Shall Sing" DimCarcosa
 
 starsOfAldebaran :: CardDef
-starsOfAldebaran = story "03326c" "Stars of Aldebaran" DimCarcosa
+starsOfAldebaran = story "03326b" "Stars of Aldebaran" DimCarcosa
 
 bleakDesolation :: CardDef
-bleakDesolation = story "03326e" "Bleak Desolation" DimCarcosa
+bleakDesolation = story "03326d" "Bleak Desolation" DimCarcosa
 
 inhabitantOfCarcosa :: CardDef
-inhabitantOfCarcosa = story "03327c" "Inhabitant of Carcosa" DimCarcosa
+inhabitantOfCarcosa = story "03327b" "Inhabitant of Carcosa" DimCarcosa
 
 aMomentsRest :: CardDef
-aMomentsRest = story "03327e" "A Moment's Rest" DimCarcosa
+aMomentsRest = story "03327d" "A Moment's Rest" DimCarcosa
 
 theCoffin :: CardDef
-theCoffin = story "03327g" "The Coffin" DimCarcosa
+theCoffin = story "03327f" "The Coffin" DimCarcosa
 
 mappingTheStreets :: CardDef
-mappingTheStreets = story "03328c" "Mapping the Streets" DimCarcosa
+mappingTheStreets = story "03328b" "Mapping the Streets" DimCarcosa
 
 theKingsParade :: CardDef
-theKingsParade = story "03328e" "The King's Parade" DimCarcosa
+theKingsParade = story "03328d" "The King's Parade" DimCarcosa
 
 theArchway :: CardDef
-theArchway = story "03328g" "The Archway" DimCarcosa
+theArchway = story "03328f" "The Archway" DimCarcosa
 
 theHeightOfTheDepths :: CardDef
-theHeightOfTheDepths = story "03329c" "The Height of the Deapths" DimCarcosa
+theHeightOfTheDepths = story "03329b" "The Height of the Depths" DimCarcosa
 
 stepsOfThePalace :: CardDef
-stepsOfThePalace = story "03329e" "Steps of the Palace" DimCarcosa
+stepsOfThePalace = story "03329d" "Steps of the Palace" DimCarcosa
 
 theFall :: CardDef
-theFall = story "03330c" "The Fall" DimCarcosa
+theFall = story "03330b" "The Fall" DimCarcosa
 
 hastursEnd :: CardDef
-hastursEnd = story "03331c" "Hastur's End" DimCarcosa
+hastursEnd = story "03331b" "Hastur's End" DimCarcosa
 
 yigsMercy :: CardDef
 yigsMercy = story "04325b" "Yig's Mercy" ShatteredAeons
@@ -142,22 +145,22 @@ josefsPlan :: CardDef
 josefsPlan = story "05085b" "Josef's Plan" AtDeathsDoorstep
 
 unfinishedBusiness_B :: CardDef
-unfinishedBusiness_B = story "05178b" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_B = victory 1 $ story "05178b" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_D :: CardDef
-unfinishedBusiness_D = story "05178d" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_D = victory 1 $ story "05178d" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_F :: CardDef
-unfinishedBusiness_F = story "05178f" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_F = victory 1 $ story "05178f" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_H :: CardDef
-unfinishedBusiness_H = story "05178h" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_H = victory 1 $ story "05178h" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_J :: CardDef
-unfinishedBusiness_J = story "05178j" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_J = victory 1 $ story "05178j" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_L :: CardDef
-unfinishedBusiness_L = story "05178l" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_L = victory 1 $ story "05178l" "Unfinished Business" TheWagesOfSin
 
 gavriellasFate :: CardDef
 gavriellasFate = story "05262" "Gavriella's Fate" UnionAndDisillusion

@@ -26,6 +26,7 @@ import Arkham.Enemy.Types (
 import Arkham.Event
 import Arkham.Event.Cards qualified as Events
 import Arkham.GameValue
+import Arkham.Investigator.Cards
 import Arkham.Location
 import Arkham.Location.Types (
   SomeLocationCard (..),
@@ -34,6 +35,7 @@ import Arkham.Location.Types (
  )
 import Arkham.Name
 import Arkham.PlayerCard
+import Arkham.Scenario
 import Arkham.Skill
 import Arkham.Skill.Cards qualified as Skills
 import Arkham.SkillType hiding (allSkills)
@@ -202,7 +204,12 @@ normalizeCost _ (Just n) = Just (StaticCost n)
 normalizeCost _ Nothing = Nothing
 
 allCards :: Map CardCode CardDef
-allCards = allPlayerCards <> allEncounterCards
+allCards =
+  allInvestigatorCards
+    <> allPlayerCards
+    <> allEncounterCards
+    <> allScenarioCards
+    <> allEncounterInvestigatorCards
 
 getSkills :: CardJson -> [SkillIcon]
 getSkills CardJson {..} =
@@ -259,6 +266,9 @@ normalizeCardCode (CardCode c) =
   -- Sometimes arkhamdb will not use the suffix even if printed on the card
   cardsThatShouldNotHaveSuffix = ["03221a", "05217a"]
 
+allCardCodes :: Set CardCode
+allCardCodes = setFromList $ concatMap (\c -> cdCardCode c : cdAlternateCardCodes c) allCards
+
 runMissing :: Maybe Text -> Map CardCode CardJson -> IO ()
 runMissing mPackCode cards = do
   let
@@ -268,7 +278,7 @@ runMissing mPackCode cards = do
         . map (unCardCode . normalizeCardCode)
         . toList
         $ keysSet (filterOutIrrelevant mPackCode cards)
-          `difference` keysSet allCards
+          `difference` allCardCodes
   case filter (not . ignoreCardCode) cardCodes of
     [] -> putStrLn "Complete!"
     xs -> do
@@ -314,60 +324,6 @@ ignoreCardCode :: CardCode -> Bool
 ignoreCardCode x = T.isPrefixOf "x" (unCardCode x) || x `elem` ignoredCardCodes
  where
   ignoredCardCodes = []
-
--- [ "03076" -- Constance Dumaine
--- , "03221a" -- The Organist
--- , "03325c" -- Shores of Hali
--- , "03326d" -- Bleak Plains
--- , "03326e" -- Bleak Plains
--- , "03327c" -- Inhabitant of Carcosa
--- , "03327e" -- A Moment's Rest
--- , "03327f" -- The Coffin
--- , "03327g" -- The Coffin
--- , "03328d" -- The King's Parade
--- , "03328e" -- The King's Parade
--- , "03328f" -- The King's Parade
--- , "03328g" -- The Archway
--- , "03329d" -- Steps of the Palace
--- , "03330c" -- The Fall
--- , "03331c" -- Hastur's End
--- , "04117" -- Threads of Fate stuff
--- , "04118"
--- , -- \^^
---   "04125d"
--- , -- \^^
---   "04126c"
--- , -- \^^
---   "04127c"
--- , -- \^^
---   "04128c"
--- , -- \^^
---   "04129c"
--- , -- \^^
---   "04130c"
--- , -- \^^
---   "04132c"
--- , -- \^^
---   "04133f"
--- , -- \^^
---   "04134e"
--- , -- \^^
---   "04134f"
--- , -- \^^
---   "04135e"
--- , -- \^^
---   "04136e"
--- , -- \^^
---   "04137e"
--- , -- \^^
---   "04138e"
--- , -- \^^
---   "04139e"
--- , -- \^^
---   "04140e"
--- ]
-
--- \^^
 
 runValidations :: Map CardCode CardJson -> IO ()
 runValidations cards = do

@@ -22,6 +22,9 @@ class Locatable a where
 instance Locatable InvestigatorMatcher where
   at_ = InvestigatorAt
 
+instance Locatable EnemyMatcher where
+  at_ = EnemyAt
+
 instance Locatable AssetMatcher where
   at_ = AssetAt
 
@@ -202,8 +205,8 @@ locationWithDiscoverableCluesBy =
   LocationWithDiscoverableCluesBy . InvestigatorWithId
 {-# INLINE locationWithDiscoverableCluesBy #-}
 
-locationWithTreachery :: TreacheryId -> LocationMatcher
-locationWithTreachery = LocationWithTreachery . TreacheryWithId
+locationWithTreachery :: (AsId a, IdOf a ~ TreacheryId) => a -> LocationMatcher
+locationWithTreachery = LocationWithTreachery . TreacheryWithId . asId
 {-# INLINE locationWithTreachery #-}
 
 locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher

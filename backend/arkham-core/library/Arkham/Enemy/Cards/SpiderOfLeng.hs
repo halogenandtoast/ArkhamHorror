@@ -35,6 +35,10 @@ instance RunMessage SpiderOfLeng where
             $ chooseOneAtATime player [targetLabel eid [PlaceSwarmCards lead eid 1] | eid <- swarmsOfSpiders]
       pure e
     FoundEncounterCard _iid (isTarget attrs -> True) card -> do
-      pushM $ createEnemy card (locationWithEnemy $ toId attrs)
+      creation <- createEnemy card (locationWithEnemy $ toId attrs)
+      pushAll
+        [ abilityModifier (attrs.ability 1) creation.enemy NoInitialSwarm
+        , toMessage creation
+        ]
       pure e
     _ -> SpiderOfLeng <$> runMessage msg attrs

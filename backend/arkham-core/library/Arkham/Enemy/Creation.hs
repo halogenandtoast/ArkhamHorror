@@ -7,6 +7,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Target
+import GHC.Records
 
 data EnemyCreationMethod
   = SpawnEngagedWith InvestigatorId
@@ -47,3 +48,6 @@ data EnemyCreation msg = MkEnemyCreation
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+instance HasField "enemy" (EnemyCreation msg) EnemyId where
+  getField = enemyCreationEnemyId

@@ -943,16 +943,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (whenEntering, atIfEntering, afterEntering) = timings (Window.Entering iid destinationLocationId)
 
         -- Windows we need to check as understood:
-        -- when {leaving, move} -> atIf {leaving} -> after {leaving} -> atIf {move} -> when {entering} -> atIf {entering} -> Reveal Location -> after {move but before enemy engagement} -> Enemy Engagement -> after {entering, move}
+        -- according to Empirical Hypothesis ruling the order should be like:
+        -- when {leaving} -> atIf {leaving} -> after {leaving} -> before {entering} -> atIf {entering} / when {move} -> atIf {move} -> Reveal Location -> after but before enemy engagement {entering} -> Check Enemy Engagement -> after {entering, move}
         -- move but before enemy engagement is handled in MoveTo
 
-        runWhenLeavingMoves <- checkWindows $ whenMoves : maybeToList mWhenLeaving
+        mRunWhenLeaving <- case mWhenLeaving of
+          Just whenLeaving -> Just <$> checkWindows [whenLeaving]
+          Nothing -> pure Nothing
         mRunAtIfLeaving <- case mAtIfLeaving of
           Just atIfLeaving -> Just <$> checkWindows [atIfLeaving]
           Nothing -> pure Nothing
         mRunAfterLeaving <- case mAfterLeaving of
           Just afterLeaving -> Just <$> checkWindows [afterLeaving]
           Nothing -> pure Nothing
+        runWhenMoves <- checkWindows [whenMoves]
         runAtIfMoves <- checkWindows [atIfMoves]
         runWhenEntering <- checkWindows [whenEntering]
         runAtIfEntering <- checkWindows [atIfEntering]
@@ -961,11 +965,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         batchId <- getRandom
 
         pushBatched batchId
-          $ [runWhenLeavingMoves]
-          <> [runAtIfLeaving | runAtIfLeaving <- maybeToList mRunAtIfLeaving]
+          $ maybeToList mRunWhenLeaving
+          <> maybeToList mRunAtIfLeaving
           <> [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
-          <> [runAfterLeaving | runAfterLeaving <- maybeToList mRunAfterLeaving]
-          <> [runAtIfMoves, runWhenEntering, runAtIfEntering]
+          <> maybeToList mRunAfterLeaving
+          <> [runWhenEntering, runAtIfEntering, runWhenMoves, runAtIfMoves]
           <> [MoveTo $ move source iid destinationLocationId]
           <> [runAfterEnteringMoves]
     pure a

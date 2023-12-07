@@ -39,6 +39,7 @@ class
 data instance Field Effect :: Type -> Type where
   EffectCardCode :: Field Effect CardCode
   EffectAbilities :: Field Effect [Ability]
+  EffectMeta :: Field Effect (Maybe (EffectMetadata Window Message))
 
 cardEffect :: (EffectAttrs -> a) -> CardDef -> EffectArgs -> a
 cardEffect f def = f . uncurry4 (baseAttrs (toCardCode def))

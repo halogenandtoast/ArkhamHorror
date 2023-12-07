@@ -336,6 +336,7 @@ allEncounterTreacheryCards =
       , whispersInYourHeadDismay
       , whispersInYourHeadDoubt
       , whispersInYourHeadDread
+      , whispersOfHypnos
       , windowToAnotherTime
       , wordsOfPower
       , worldsMerge
@@ -1714,6 +1715,13 @@ lawOfYgirothPandemonium =
   (treachery "06089" ("Law of 'Ygiroth" <:> "Pandemonium") AgentsOfNyarlathotep 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+whispersOfHypnos :: CardDef
+whispersOfHypnos =
+  (treachery "06090" "Whispers of Hypnos" WhispersOfHypnos 3)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = singleton Keyword.Peril
     }
 
 dreamersCurse :: CardDef

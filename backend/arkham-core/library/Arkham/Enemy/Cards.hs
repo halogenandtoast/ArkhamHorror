@@ -132,6 +132,7 @@ allEncounterEnemyCards =
       , goatSpawn
       , grapplingHorror
       , graveEater
+      , greyWeaver
       , handOfTheBrotherhood
       , harbingerOfValusia
       , harlanEarnstoneCrazedByTheCurse
@@ -1592,6 +1593,14 @@ corruptedOrderly =
   (enemy "06082" "Corrupted Orderly" WakingNightmare 2)
     { cdCardTraits = setFromList [Humanoid, Staff, Spider]
     , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+greyWeaver :: CardDef
+greyWeaver =
+  (enemy "06084" "Grey Weaver" AgentsOfAtlachNacha 2)
+    { cdCardTraits = setFromList [Monster, Spider]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 1
     }
 
 theCrawlingMist :: CardDef

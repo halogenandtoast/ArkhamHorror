@@ -337,6 +337,7 @@ allEncounterTreacheryCards =
       , whispersInYourHeadDoubt
       , whispersInYourHeadDread
       , whispersOfHypnos
+      , willOfTheSpiderMother
       , windowToAnotherTime
       , wordsOfPower
       , worldsMerge
@@ -1694,6 +1695,12 @@ outbreak :: CardDef
 outbreak =
   (treachery "06083" "Outbreak" WakingNightmare 3)
     { cdCardTraits = singleton Hazard
+    }
+
+willOfTheSpiderMother :: CardDef
+willOfTheSpiderMother =
+  (treachery "06085" "Will of the Spider-Mother" AgentsOfAtlachNacha 2)
+    { cdCardTraits = singleton Power
     }
 
 lawOfYgirothChaos :: CardDef

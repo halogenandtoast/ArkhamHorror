@@ -358,6 +358,8 @@ allTreacheries =
       SomeTreacheryCard lostInTheWoods
     , -- Waking Nightmare
       SomeTreacheryCard outbreak
+    , -- Agents of Atlach-Nacha
+      SomeTreacheryCard willOfTheSpiderMother
     , -- Agents of Nyarlathotep
       SomeTreacheryCard lawOfYgirothChaos
     , SomeTreacheryCard lawOfYgirothDiscord

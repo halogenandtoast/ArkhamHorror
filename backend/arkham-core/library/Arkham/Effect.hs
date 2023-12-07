@@ -137,6 +137,7 @@ import Arkham.Treachery.Treacheries (
   arcaneBarrierEffect,
   chillingPresenceEffect,
   mysteriesOfTheLodgeEffect,
+  whispersOfHypnosEffect,
  )
 
 createEffect
@@ -334,6 +335,7 @@ allEffects =
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06056", SomeEffect enchantedWoodsLostWoodsEffect)
     , ("06082", SomeEffect corruptedOrderlyEffect)
+    , ("06089", SomeEffect whispersOfHypnosEffect)
     , ("06114", SomeEffect followedEffect)
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)

@@ -362,6 +362,8 @@ allTreacheries =
       SomeTreacheryCard lawOfYgirothChaos
     , SomeTreacheryCard lawOfYgirothDiscord
     , SomeTreacheryCard lawOfYgirothPandemonium
+    , -- Whispers of Hypnos
+      SomeTreacheryCard whispersOfHypnos
     , -- Dreamer's Curse
       SomeTreacheryCard dreamersCurse
     , SomeTreacheryCard somniphobia

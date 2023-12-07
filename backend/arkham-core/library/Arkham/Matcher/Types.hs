@@ -1153,7 +1153,7 @@ data ScenarioMatcher = TheScenario
 data CampaignMatcher = TheCampaign
   deriving stock (Show, Eq, Ord, Data)
 
-data EffectMatcher = AnyEffect
+data EffectMatcher = AnyEffect | EffectWithCardCode CardCode
   deriving stock (Show, Eq, Ord, Data)
 
 data SkillTypeMatcher

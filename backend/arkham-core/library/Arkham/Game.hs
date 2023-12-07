@@ -564,6 +564,7 @@ getEffectsMatching matcher = do
  where
   go = \case
     AnyEffect -> pure . const True
+    EffectWithCardCode cCode -> fieldMap EffectCardCode (== cCode) . toId
 
 getCampaignsMatching :: HasGame m => CampaignMatcher -> m [Campaign]
 getCampaignsMatching matcher = do
@@ -3506,6 +3507,7 @@ instance Projection Effect where
     case fld of
       EffectAbilities -> pure $ getAbilities e
       EffectCardCode -> pure $ effectCardCode $ toAttrs e
+      EffectMeta -> pure $ attr effectMetadata e
 
 eventField :: HasGame m => Event -> Field Event a -> m a
 eventField e fld = do

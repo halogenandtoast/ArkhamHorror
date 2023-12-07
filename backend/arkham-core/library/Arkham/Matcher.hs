@@ -178,6 +178,11 @@ enemyAtLocationWith = EnemyAt . locationWithInvestigator
 enemyEngagedWith :: InvestigatorId -> EnemyMatcher
 enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId
 
+-- ** Effect Helpers **
+
+effectFrom :: HasCardCode a => a -> EffectMatcher
+effectFrom = EffectWithCardCode . toCardCode
+
 -- ** Location Helpers **
 
 canEnterLocation :: (AsId a, IdOf a ~ InvestigatorId) => a -> LocationMatcher

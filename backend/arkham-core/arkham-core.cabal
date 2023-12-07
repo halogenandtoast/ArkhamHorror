@@ -1058,6 +1058,7 @@ library
       Arkham.Enemy.Cards.GrapplingHorror
       Arkham.Enemy.Cards.GraveEater
       Arkham.Enemy.Cards.GraveyardGhouls
+      Arkham.Enemy.Cards.GreyWeaver
       Arkham.Enemy.Cards.GuardianOfTheCrystallizer
       Arkham.Enemy.Cards.HandOfTheBrotherhood
       Arkham.Enemy.Cards.HarbingerOfValusia
@@ -2615,6 +2616,7 @@ library
       Arkham.Treachery.Cards.WhispersInYourHeadDoubt
       Arkham.Treachery.Cards.WhispersInYourHeadDread
       Arkham.Treachery.Cards.WhispersOfHypnos
+      Arkham.Treachery.Cards.WillOfTheSpiderMother
       Arkham.Treachery.Cards.WindowToAnotherTime
       Arkham.Treachery.Cards.WordsOfPower
       Arkham.Treachery.Cards.WorldsMerge

@@ -305,6 +305,8 @@ allEnemies =
     , --- Waking Nightmare
       SomeEnemyCard suspiciousOrderly
     , SomeEnemyCard corruptedOrderly
+    , --- Agents of Atlach-Nacha
+      SomeEnemyCard greyWeaver
     , --- Zoogs
       SomeEnemyCard furtiveZoog
     , SomeEnemyCard stealthyZoog

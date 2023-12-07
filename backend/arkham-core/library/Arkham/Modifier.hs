@@ -349,6 +349,9 @@ data ActionTarget
 instance IsLabel "draw" ActionTarget where
   fromLabel = IsAction #draw
 
+instance IsLabel "move" ActionTarget where
+  fromLabel = IsAction #move
+
 instance IsLabel "investigate" ActionTarget where
   fromLabel = IsAction #investigate
 

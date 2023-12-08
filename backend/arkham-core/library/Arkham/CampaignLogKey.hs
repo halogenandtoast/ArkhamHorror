@@ -216,6 +216,12 @@ data CampaignLogKey
   | DrMaheswaranJoinedTheInvestigation
   | DrMaheswaranStayedWithHerPatients
   | StepsOfTheBridge
+  | DrMaheswaran'sFateIsUnknown
+  | RandolphEscapedTheHospitalOnHisOwn
+  | RandolphEscapedTheHospitalWithTheInvestigators
+  | DrMaheswaranIsAlive
+  | DrMaheswaranIsMissing
+  | TheDreamersGrowWeaker
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

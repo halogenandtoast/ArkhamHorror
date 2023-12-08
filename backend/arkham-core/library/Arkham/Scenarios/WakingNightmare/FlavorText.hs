@@ -93,3 +93,145 @@ intro3 =
       \ what is going on, please.” She shivers. “I really hate this place after\
       \ dark...” You nod and venture back into the hospital’s waiting room."
     ]
+
+noResolution :: FlavorText
+noResolution =
+  FlavorText
+    (Just "No Resolution")
+    [ "With panic overtaking your mind, you run through the main exit of St.\
+      \ Mary’s Hospital, putting as much distance as you can between you and this\
+      \ accursed infestation. The moment you get home, you collapse from exhaustion."
+    , "The next day, you wake and check the morning papers, expecting to see\
+      \ tales of chaos at St. Mary’s and of an infestation of arachnids. However,\
+      \ there is no news regarding the hospital at all. Did last night’s events occur\
+      \ too late for the Arkham Advertiser to report on them? Was it all just a bad\
+      \ dream? You put on your coat and head back to the hospital to confirm that\
+      \ what you saw last night was real."
+    , "When you arrive at St. Mary’s, you expect to see the building—or perhaps\
+      \ all of Uptown—covered in spiderwebs. But instead, to your surprise, it is\
+      \ perfectly clean. Patients, nurses, and doctors walk through its halls like\
+      \ none of last night’s events transpired. Before you can find your sleeping\
+      \ companions, however, a blond-haired man with heavy bags under his eyes\
+      \ approaches you and places a hand on your shoulder."
+    , "“Good morning. We should talk.”"
+    ]
+
+resolution1 :: FlavorText
+resolution1 =
+  FlavorText
+    (Just "Resolution 1")
+    [ "Before you depart from the hospital, Doctor Maheswaran announces that\
+      \ she is going to check on her patients, and you decide to join her. You head\
+      \ back to the emergency ward and find that your companions are still\
+      \ unconscious. Doctor Maheswaran checks their eyes, takes their pulses, and\
+      \ shakes her head. “It’s even worse than before. Whatever internal stimuli\
+      \ they are reacting to, they are causing the patients’ minds and bodies a\
+      \ great deal of stress.” She sits down next to one of her patients and shakes\
+      \ her head. “I’ll stay here. You go talk to that patient and get to the\
+      \ bottom of this, okay? Oh, and if you find any more spiders, squash one for\
+      \ me, please.” As you leave, you swear to your sleeping friends that you will\
+      \ get to the bottom of this and save them."
+    ]
+
+resolution2 :: FlavorText
+resolution2 =
+  FlavorText
+    (Just "Resolution 2")
+    [ "Before you depart from the hospital, you search high and low for Doctor\
+      \ Maheswaran, but she is nowhere to be found. You head back to the emergency\
+      \ ward to check on your companions and find that they are still unconscious.\
+      \ In fact, their condition seems to have grown worse. Their foreheads are\
+      \ covered in sweat, and blood drips from their closed eyes. One of them is\
+      \ whispering something in their sleep, a repeated phrase in a language you\
+      \ cannot understand. As you leave, you swear to your sleeping friends that\
+      \ you will get to the bottom of this and save them."
+    ]
+
+resolution3 :: FlavorText
+resolution3 =
+  FlavorText
+    (Just "Resolution 3")
+    [ "Before you depart from the hospital, you go back to the emergency ward\
+      \ to check on Doctor Maheswaran. The door to the room where your companions\
+      \ are staying is sealed shut, so you knock on the door and ask if she is\
+      \ there. On the other side, you hear furniture being shifted aside and\
+      \ knocked over. An exhausted Shivani Maheswaran cracks open the door and\
+      \ peers at you with bloodshot eyes. “Oh, thank goodness it is you.” She lets\
+      \ you in and collapses onto a nearby chair. “Those...things tried to get into\
+      \ the room. I had to barricade myself inside to stop them.” You inform her\
+      \ that the danger has passed and thank her for watching over your friends.\
+      \ “I’ll continue to keep an eye on them,” she says. “Just please, tell me\
+      \ there are no more spiders out there, or I’m taking the first train out of\
+      \ this town.” As you leave, you swear to your sleeping friends that you will\
+      \ get to the bottom of this and save them."
+    ]
+
+resolution4 :: FlavorText
+resolution4 =
+  FlavorText
+    (Just "Resolution 4")
+    [ "With panic overtaking your mind and no idea how you can escape, you\
+      \ flee anywhere your feet will take you. Hideous monsters begin to close in\
+      \ around you, and you envision yourself wrapped in webs, waiting to be a\
+      \ spider’s meal. Eventually you come to a dead end: a room covered from floor\
+      \ to ceiling in thick, sticky webs. The skittering of spider legs follows\
+      \ close behind, and you realize you have no hope to escape unless there is a\
+      \ path behind the webs. There is no choice remaining for you. You run\
+      \ headlong into the webs, ripping and tearing at them with the ferocity of a\
+      \ cornered animal. It is tough work, but eventually you see a light behind\
+      \ the webs—perhaps an escape route."
+    , " Once you cross through the webs, you are no longer in the dark, sterile\
+      \ halls of St. Mary’s, but in a narrow, web-covered cavern. You dare not\
+      \ tarry or go back the way you came, so you run through the dark, cramped\
+      \ cave with no idea where it might lead. Glancing through the cobwebs to your\
+      \ left and right, you see not just hard rock, but the glimmering of lights,\
+      \ like a sea of stars looming beyond the silken threads. Eventually, you\
+      \ emerge from another wall of webs, only to find yourself in an alleyway in\
+      \ Arkham’s Merchant District, near the Miskatonic River. You have neither the\
+      \ time nor the desire to analyze this, instead deciding to put as much\
+      \ distance as you can between you and the hospital. The moment you get home,\
+      \ you collapse from exhaustion."
+    , "The next day, you wake and check the morning papers, expecting to see\
+      \ tales of chaos at St. Mary’s and of an infestation of arachnids. However,\
+      \ there is no news regarding the hospital at all. Did last night’s events\
+      \ occur too late for the Arkham Advertiser to report on them? Was it all just\
+      \ a bad dream? You put on your coat and head back to the hospital to confirm\
+      \ that what you saw last night was real."
+    , "When you arrive at St. Mary’s, you expect to see the building—or perhaps\
+      \ all of Uptown—covered in spiderwebs. Instead, to your surprise, it is\
+      \ perfectly clean. Patients, nurses, and doctors walk through its halls like\
+      \ none of last night’s events transpired. You ask the receptionist if you can\
+      \ see Doctor Maheswaran, but he shakes his head. “I’m sorry, but I don’t\
+      \ think she’s here today. She left in the middle of her shift last night, and\
+      \ nobody has seen her since. Is there somebody else I can reach for you?”"
+    , "Something is not right. None of this makes any sense. You are about to\
+      \ demand to see your sleeping companions when a blond-haired man with heavy\
+      \ bags under his eyes approaches you and places a hand on your shoulder."
+    , "“Good morning. We should talk.”"
+    ]
+
+resolution5 :: FlavorText
+resolution5 =
+  FlavorText
+    (Just "Resolution 5")
+    [ "You depart from the hospital with the blond-haired man in tow, and he\
+      \ introduces himself more fully. The man, whose name is Randolph Carter,\
+      \ tells you that he is a “dreamer,” like Virgil Gray and your friends: one\
+      \ with the ability to traverse the divide between the waking world and a\
+      \ parallel dimension that was created by, is sustained by, and dwells within\
+      \ the dreams of all living organisms on Earth—a realm he calls The\
+      \ Dreamlands. “It is a place of both dreams and nightmares,” he explains.\
+      \ “And I’m afraid your friends are trapped there as we speak.”"
+    , "You ask if there is anything you can do to aid them. Randolph ponders\
+      \ this for a moment, then replies: “Normally, dreamers can return to the real\
+      \ world simply by willing themselves awake, but for some reason, your friends\
+      \ are unable to do so. If you truly wish to help them, you too must enter the\
+      \ Dreamlands and find them. But forcing your way into the Dreamlands is not\
+      \ easy. Such paths are usually accessible only to experienced dreamers, and\
+      \ only in sleep. Still, there are some places where the Dreamlands touch the\
+      \ waking world, and in those places, with the right tools, you may enter the\
+      \ Dreamlands in your physical body. I know of such a place, not far from\
+      \ here. However—”"
+    , "Before Randolph is able to finish his sentence, he is interrupted by a\
+      \ mysterious voice..."
+    ]

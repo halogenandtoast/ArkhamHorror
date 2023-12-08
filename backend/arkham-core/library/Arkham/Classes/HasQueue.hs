@@ -98,3 +98,6 @@ insertAfterMatching msgs p = withQueue_ \queue ->
    in case rest of
         (x : xs) -> before <> (x : msgs <> xs)
         _ -> queue
+
+assertQueue :: HasQueue msg m => (msg -> Bool) -> m Bool
+assertQueue matcher = any matcher <$> peekQueue

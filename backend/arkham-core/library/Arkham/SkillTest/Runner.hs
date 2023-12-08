@@ -522,10 +522,17 @@ instance RunMessage SkillTest where
       pure s
     SkillTestApplyResultsAfter -> do
       -- ST.7 -- apply results
-      pushAll
-        [ SkillTestEnds skillTestInvestigator skillTestSource
-        , Do (SkillTestEnds skillTestInvestigator skillTestSource) -- -> ST.8 -- Skill test ends
-        ]
+
+      valid <- assertQueue \case
+        SkillTestEnds {} -> True
+        _ -> False
+
+      -- If we haven't already decided to end the skill test we need to end it
+      unless valid
+        $ pushAll
+          [ SkillTestEnds skillTestInvestigator skillTestSource
+          , Do (SkillTestEnds skillTestInvestigator skillTestSource) -- -> ST.8 -- Skill test ends
+          ]
       modifiers' <- getModifiers (toTarget s)
       let
         modifiedSkillTestResult =

@@ -1,11 +1,7 @@
-module Arkham.Campaign.Campaigns.TheDreamEaters (
-  TheDreamEaters (..),
-  theDreamEaters,
-) where
-
-import Arkham.Prelude
+module Arkham.Campaign.Campaigns.TheDreamEaters (TheDreamEaters (..), theDreamEaters) where
 
 import Arkham.Campaign.Runner
+import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheDreamEaters.Import
 import Arkham.Campaigns.TheDreamEaters.Meta
@@ -13,9 +9,11 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator (Investigator, lookupInvestigator)
+import Arkham.Prelude
 import Arkham.Projection
 import Data.Aeson (Result (..))
 
@@ -461,24 +459,85 @@ instance RunMessage TheDreamEaters where
           _ -> push $ CampaignStep (InterludeStepPart 1 Nothing 1)
         pure c
       CampaignStep (InterludeStepPart 1 _ 1) -> do
-        case campaignMode meta of
-          FullMode -> push $ CampaignStep (InterludeStepPart 1 Nothing 2)
-          _ -> push $ NextCampaignStep (Just TheSearchForKadath)
+        let
+          next = case campaignMode meta of
+            FullMode -> CampaignStep (InterludeStepPart 1 Nothing 2)
+            _ -> NextCampaignStep (Just TheSearchForKadath)
+        players <- getAllPlayers
+        pushAll [story players theBlackCat1, next]
         pure c
       CampaignStep (InterludeStepPart 1 _ 2) -> do
-        push $ CampaignStep (InterludeStepPart 1 Nothing 3)
+        players <- getAllPlayers
+        lead <- getLeadPlayer
+        pushAll
+          [ storyWithChooseOne
+              lead
+              players
+              theBlackCat2
+              [ Label
+                  "Tell your companions of your quest, your plight, and your peril. The black cat will return to you once this message is delivered. This may put an undue burden on your companions. "
+                  [Record TheBlackCatDeliveredNewsOfYourPlight]
+              , Label
+                  "Tell your companions about your new friends and about the Dreamlands."
+                  [Record TheBlackCatSharedKnowledgeOfTheDreamlands]
+              , Label
+                  "Tell your companions that they are in danger, and that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult."
+                  [Record TheBlackCatWarnedTheOthers]
+              , Label
+                  "You don’t trust this creature one bit. You threaten the black cat, warning it not to approach your friends under any circumstance. The black cat yawns and vanishes out the door."
+                  [Record OkayFineHaveItYourWayThen]
+              ]
+          , CampaignStep (InterludeStepPart 1 Nothing 3)
+          ]
         pure c
       CampaignStep (InterludeStepPart 1 _ 3) -> do
-        case campaignMode meta of
-          FullMode -> do
-            lead <- getLeadPlayer
-            push
-              $ questionLabel "Proceed to which scenario" lead
-              $ ChooseOne
-                [ Label "The Search for Kadath" [NextCampaignStep (Just TheSearchForKadath)]
-                , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
-                ]
-          _ -> push $ NextCampaignStep (Just AThousandShapesOfHorror)
+        players <- getAllPlayers
+        lead <- getLeadPlayer
+        let
+          next =
+            case campaignMode meta of
+              FullMode ->
+                questionLabel "Proceed to which scenario" lead
+                  $ ChooseOne
+                    [ Label "The Search for Kadath" [NextCampaignStep (Just TheSearchForKadath)]
+                    , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
+                    ]
+              _ -> NextCampaignStep (Just AThousandShapesOfHorror)
+        isOnYourOwn <- getIsTheWebOfDreams
+        isSharedKnowledgeOfTheDreamlands <- getHasRecord TheBlackCatSharedKnowledgeOfTheDreamlands
+        isDeliveredNewsOfYourPlight <- getHasRecord TheBlackCatDeliveredNewsOfYourPlight
+        isWarnedTheOthers <- getHasRecord TheBlackCatWarnedTheOthers
+        isOkayFineHaveItYourWayThen <- getHasRecord OkayFineHaveItYourWayThen
+        pushAll
+          $ story players theBlackCat3
+          : (guard isOnYourOwn *> [story players youAreOnYourOwn, Record YouAreOnYourOwn])
+            <> ( guard isSharedKnowledgeOfTheDreamlands
+                  *> [ story players theBlackCatSharedKnowledgeOfTheDreamlands
+                     , InTheDreamQuest (Record TheBlackCatHasAHunch)
+                     , InTheWebOfDreams (Record TheBlackCatHasAHunch)
+                     ]
+               )
+            <> ( guard isDeliveredNewsOfYourPlight
+                  *> [ story players theBlackCatDeliveredNewsOfYourPlight
+                     , InTheDreamQuest (Record TheBlackCatIsAtYourSide)
+                     , InTheDreamQuest (AddChaosToken ElderThing)
+                     , InTheWebOfDreams (AddChaosToken ElderThing)
+                     ]
+               )
+            <> ( guard isWarnedTheOthers
+                  *> [ story players theBlackCatWarnedTheOthers
+                     , InTheWebOfDreams (Record TheBlackCatIsAtYourSide)
+                     , InTheWebOfDreams (AddChaosToken Tablet)
+                     , InTheDreamQuest (AddChaosToken Tablet)
+                     ]
+               )
+            <> ( guard isOkayFineHaveItYourWayThen
+                  *> [ story players okayFineHaveItYourWayThen
+                     , InTheDreamQuest (Record YouAskedForIt)
+                     , InTheWebOfDreams (Record YouAskedForIt)
+                     ]
+               )
+            <> [next]
         pure c
       CampaignStep (InterludeStep 2 _) -> do
         lead <- getLeadPlayer
@@ -498,4 +557,26 @@ instance RunMessage TheDreamEaters where
             , Label "Weaver of the Cosmos" [NextCampaignStep (Just WeaverOfTheCosmos)]
             ]
         pure c
+      InTheDreamQuest msg' -> do
+        case currentCampaignMode meta of
+          Nothing -> error "called with no campaign mode"
+          Just TheDreamQuest -> defaultCampaignRunner msg' c
+          Just TheWebOfDreams -> case otherCampaignAttrs meta of
+            Nothing -> error "called with no other campaign attrs"
+            Just otherAttrs -> do
+              TheDreamEaters otherAttrs' <- defaultCampaignRunner msg' (TheDreamEaters otherAttrs)
+              pure
+                $ TheDreamEaters
+                $ attrs {campaignMeta = toJSON $ meta {otherCampaignAttrs = Just otherAttrs'}}
+      InTheWebOfDreams msg' -> do
+        case currentCampaignMode meta of
+          Nothing -> error "called with no campaign mode"
+          Just TheWebOfDreams -> defaultCampaignRunner msg' c
+          Just TheDreamQuest -> case otherCampaignAttrs meta of
+            Nothing -> error "called with no other campaign attrs"
+            Just otherAttrs -> do
+              TheDreamEaters otherAttrs' <- defaultCampaignRunner msg' (TheDreamEaters otherAttrs)
+              pure
+                $ TheDreamEaters
+                $ attrs {campaignMeta = toJSON $ meta {otherCampaignAttrs = Just otherAttrs'}}
       _ -> defaultCampaignRunner msg c

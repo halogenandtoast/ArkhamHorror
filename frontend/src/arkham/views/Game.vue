@@ -94,6 +94,9 @@ const resultQueue = ref<any>([])
 
 const handleResult = (result) => {
   switch(result.tag) {
+    case "GameError":
+      alert(result.contents)
+      return
     case "GameMessage":
       gameLog.value = Object.freeze([...gameLog.value, result.contents])
       return

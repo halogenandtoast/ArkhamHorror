@@ -18,6 +18,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -56,6 +57,9 @@ data ActAttrs = ActAttrs
   , actUsedWheelOfFortuneX :: Bool
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasField "ability" ActAttrs (Int -> Source) where
+  getField = toAbilitySource
 
 sequenceL :: Lens' ActAttrs AS.ActSequence
 sequenceL = lens actSequence $ \m x -> m {actSequence = x}

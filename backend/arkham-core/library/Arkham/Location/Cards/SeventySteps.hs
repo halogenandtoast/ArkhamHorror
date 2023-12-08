@@ -28,7 +28,8 @@ instance HasAbilities SeventySteps where
             $ Leaves #after (You <> HandWith (LengthIs $ atLeast 6))
             $ LocationWithId
             $ toId attrs
-        , restrictedAbility attrs 2 Here $ FastAbility Free
+        , restrictedAbility attrs 2 (Here <> exists (You <> HandWith (HasCard DiscardableCard)))
+            $ FastAbility Free
         ]
 
 instance RunMessage SeventySteps where

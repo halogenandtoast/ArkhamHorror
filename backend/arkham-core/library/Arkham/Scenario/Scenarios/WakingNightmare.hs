@@ -1,14 +1,10 @@
-module Arkham.Scenario.Scenarios.WakingNightmare (
-  WakingNightmare (..),
-  wakingNightmare,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.WakingNightmare (WakingNightmare (..), wakingNightmare) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -19,6 +15,8 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.WakingNightmare.FlavorText
@@ -135,4 +133,66 @@ instance RunMessage WakingNightmare where
               & (actStackL . at 1 ?~ acts)
               & (setAsideCardsL .~ setAsideCards)
           )
+    ScenarioResolution r -> do
+      players <- allPlayers
+      lead <- getLeadPlayer
+      investigators <- allInvestigators
+      isFullCampaign <- getIsFullCampaign
+      case r of
+        NoResolution -> do
+          anyResigned <- selectAny ResignedInvestigator
+          n <- selectCount InfestedLocation
+          steps <- getRecordCount StepsOfTheBridge
+          if anyResigned
+            then do
+              pushAll
+                [ story players noResolution
+                , RecordCount StepsOfTheBridge (steps + n)
+                , Record DrMaheswaran'sFateIsUnknown
+                , Record RandolphEscapedTheHospitalOnHisOwn
+                , addCampaignCardToDeckChoice lead investigators Assets.randolphCarterChainedToTheWakingWorld
+                , R5
+                ]
+            else pushAll [RecordCount StepsOfTheBridge (steps + n), R4]
+        Resolution 1 -> do
+          pushAll
+            $ [ story players resolution1
+              , Record DrMaheswaranIsAlive
+              ]
+            <> [Record TheDreamersGrowWeaker | isFullCampaign]
+            <> [ Record RandolphEscapedTheHospitalWithTheInvestigators
+               , addCampaignCardToDeckChoice lead investigators Assets.randolphCarterChainedToTheWakingWorld
+               , R5
+               ]
+        Resolution 2 -> do
+          pushAll
+            $ [ story players resolution2
+              , Record DrMaheswaranIsMissing
+              ]
+            <> [Record TheDreamersGrowWeaker | isFullCampaign]
+            <> [ Record RandolphEscapedTheHospitalWithTheInvestigators
+               , addCampaignCardToDeckChoice lead investigators Assets.randolphCarterChainedToTheWakingWorld
+               , R5
+               ]
+        Resolution 3 -> do
+          pushAll
+            [ story players resolution3
+            , Record DrMaheswaranIsAlive
+            , Record RandolphEscapedTheHospitalWithTheInvestigators
+            , addCampaignCardToDeckChoice lead investigators Assets.randolphCarterChainedToTheWakingWorld
+            , R5
+            ]
+        Resolution 4 -> do
+          pushAll
+            [ story players resolution4
+            , Record DrMaheswaranIsMissing
+            , Record RandolphEscapedTheHospitalWithTheInvestigators
+            , addCampaignCardToDeckChoice lead investigators Assets.randolphCarterChainedToTheWakingWorld
+            , R5
+            ]
+        Resolution 5 -> do
+          gainXp <- toGainXp (toSource attrs) getXp
+          pushAll $ gainXp <> [EndOfGame Nothing]
+        _ -> error "Invalid resolution"
+      pure s
     _ -> WakingNightmare <$> runMessage msg attrs

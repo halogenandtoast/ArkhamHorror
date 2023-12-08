@@ -873,6 +873,7 @@ library
       Arkham.Campaigns.TheCircleUndone.Memento
       Arkham.Campaigns.TheDreamEaters.CampaignSteps
       Arkham.Campaigns.TheDreamEaters.FlavorText
+      Arkham.Campaigns.TheDreamEaters.Helpers
       Arkham.Campaigns.TheDreamEaters.Import
       Arkham.Campaigns.TheDreamEaters.Meta
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps

@@ -502,6 +502,7 @@ library
       Arkham.Asset.Cards.ForbiddenTome
       Arkham.Asset.Cards.ForbiddenTomeDarkKnowledge3
       Arkham.Asset.Cards.ForbiddenTomeSecretsRevealed3
+      Arkham.Asset.Cards.ForcedLearning
       Arkham.Asset.Cards.FortyFiveAutomatic
       Arkham.Asset.Cards.FortyFiveAutomatic2
       Arkham.Asset.Cards.FortyFiveThompson
@@ -564,6 +565,7 @@ library
       Arkham.Asset.Cards.IneffableTruth5
       Arkham.Asset.Cards.InnocentReveler
       Arkham.Asset.Cards.InTheKnow1
+      Arkham.Asset.Cards.InTheThickOfIt
       Arkham.Asset.Cards.Intrepid
       Arkham.Asset.Cards.Investments
       Arkham.Asset.Cards.IshimaruHaruko

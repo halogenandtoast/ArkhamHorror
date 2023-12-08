@@ -6,6 +6,7 @@ import { CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/ar
 import { imgsrc } from '@/arkham/helpers';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
+import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 
 export interface Props {
@@ -132,6 +133,12 @@ const choose = (idx: number) => emit('choose', idx)
       </template>
     </div>
   </template>
+
+  <ChoiceModal
+    :game="game"
+    :playerId="playerId"
+    @choose="$emit('choose', $event)"
+  />
 </template>
 
 <style lang="scss" scoped>

@@ -61,6 +61,7 @@ data Trait
   | Detective
   | Developed
   | Dhole
+  | Dilemma
   | Dreamer
   | Dreamlands
   | Drifter

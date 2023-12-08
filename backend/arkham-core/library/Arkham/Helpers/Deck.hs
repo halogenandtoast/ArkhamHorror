@@ -7,10 +7,13 @@ import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers
 import Arkham.Helpers.Scenario
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Target
 import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map
 
@@ -38,3 +41,34 @@ getDeck = \case
       scenarioFieldMap
         ScenarioEncounterDecks
         (map EncounterCard . unDeck . view (at other . non (Deck [], []) . _1))
+
+initDeckTrauma :: Deck PlayerCard -> InvestigatorId -> PlayerId -> Target -> [Message]
+initDeckTrauma deck' iid pid target =
+  let
+    toMentalTrauma = \case
+      PurchaseMentalTrauma n -> n
+      _ -> 0
+    toPhysicalTrauma = \case
+      PurchasePhysicalTrauma n -> n
+      _ -> 0
+    toAnyTrauma = \case
+      PurchaseAnyTrauma n -> n
+      _ -> 0
+    getResult (a, b, c) = (getSum a, getSum b, getSum c)
+
+    (physicalTrauma, mentalTrauma, anyTrauma) =
+      getResult
+        $ foldMap
+          ( \(toCardDef -> cdPurchaseTrauma -> t) -> (Sum $ toPhysicalTrauma t, Sum $ toMentalTrauma t, Sum $ toAnyTrauma t)
+          )
+          deck'
+   in
+    [SufferTrauma iid physicalTrauma mentalTrauma | mentalTrauma > 0 || physicalTrauma > 0]
+      <> [ chooseAmounts
+          pid
+          "Suffer n total physical and/or mental trauma"
+          (TotalAmountTarget anyTrauma)
+          [("Physical", (0, anyTrauma)), ("Mental", (0, anyTrauma))]
+          (LabeledTarget "Purchase Trauma" target)
+         | anyTrauma > 0
+         ]

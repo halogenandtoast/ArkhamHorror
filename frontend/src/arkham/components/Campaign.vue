@@ -48,6 +48,11 @@ const chooseDeck = computed(() => {
 
   return false
 })
+
+const questionHash = computed(() => {
+  let question = JSON.stringify(props.game.question[props.playerId])
+  return btoa(encodeURIComponent(question))
+})
 </script>
 
 <template>
@@ -68,7 +73,7 @@ const chooseDeck = computed(() => {
       @update="update"
     />
     <template v-else>
-      <StoryQuestion :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
+      <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />
     </template>
   </div>
 </template>

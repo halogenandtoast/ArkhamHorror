@@ -184,8 +184,14 @@ pattern PlaceResources source target n = PlaceTokens source target Token.Resourc
 pattern PlaceDamage :: Source -> Target -> Int -> Message
 pattern PlaceDamage source target n = PlaceTokens source target Token.Damage n
 
+pattern RemoveDamage :: Source -> Target -> Int -> Message
+pattern RemoveDamage source target n = RemoveTokens source target Token.Damage n
+
 pattern PlaceHorror :: Source -> Target -> Int -> Message
 pattern PlaceHorror source target n = PlaceTokens source target Horror n
+
+pattern RemoveHorror :: Source -> Target -> Int -> Message
+pattern RemoveHorror source target n = RemoveTokens source target Horror n
 
 pattern RemoveClues :: Source -> Target -> Int -> Message
 pattern RemoveClues source target n = RemoveTokens source target Clue n

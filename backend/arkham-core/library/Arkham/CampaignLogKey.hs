@@ -221,7 +221,15 @@ data CampaignLogKey
   | RandolphEscapedTheHospitalWithTheInvestigators
   | DrMaheswaranIsAlive
   | DrMaheswaranIsMissing
+  | TheBlackCatDeliveredNewsOfYourPlight
+  | TheBlackCatSharedKnowledgeOfTheDreamlands
+  | TheBlackCatWarnedTheOthers
+  | OkayFineHaveItYourWayThen
   | TheDreamersGrowWeaker
+  | YouAreOnYourOwn
+  | TheBlackCatHasAHunch
+  | TheBlackCatIsAtYourSide
+  | YouAskedForIt
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

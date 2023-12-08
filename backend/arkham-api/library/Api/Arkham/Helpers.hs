@@ -60,6 +60,7 @@ toPublicGame (Entity gId ArkhamGame {..}) gameLog =
 data ApiResponse
   = GameUpdate (PublicGame ArkhamGameId)
   | GameMessage Text
+  | GameError Text
   | GameCard {title :: Text, card :: Aeson.Value}
   | GameTarot Aeson.Value
   deriving stock (Generic)

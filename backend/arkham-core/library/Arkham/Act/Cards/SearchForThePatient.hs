@@ -30,8 +30,8 @@ instance HasAbilities SearchForThePatient where
 
 instance RunMessage SearchForThePatient where
   runMessage msg a@(SearchForThePatient attrs) = case msg of
-    UseCardAbility _ source 3 _ _ | isSource attrs source -> do
-      push $ advanceVia #other attrs attrs
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ advanceVia #other attrs (attrs.ability 1)
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       pushAll [ShuffleEncounterDiscardBackIn, advanceActDeck attrs]

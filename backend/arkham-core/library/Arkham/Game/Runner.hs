@@ -226,6 +226,7 @@ runGameMessage msg g = case msg of
       & (entitiesL . eventsL .~ mempty)
       & (entitiesL . effectsL .~ mempty)
       & (entitiesL . skillsL .~ mempty)
+      & (entitiesL . storiesL .~ mempty)
       & (inDiscardEntitiesL .~ mempty)
       & (gameStateL .~ IsActive)
       & (turnPlayerInvestigatorIdL .~ Nothing)

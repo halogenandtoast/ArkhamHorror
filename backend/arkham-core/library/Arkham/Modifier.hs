@@ -56,6 +56,7 @@ data ModifierType
   | AlternateResourceCost CardMatcher Cost
   | AlternateSuccessfullEvasion
   | AlternateSuccessfullInvestigation Target
+  | AlternateUpkeepDraw Target
   | AlternativeReady Source
   | AnySkillValue Int
   | AsIfAt LocationId

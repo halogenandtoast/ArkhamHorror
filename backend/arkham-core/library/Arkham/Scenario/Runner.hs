@@ -119,17 +119,19 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         playerCount <- getPlayerCount
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
         weaknesses <- traverse genPlayerCard randomWeaknesses
-        let
-          mentalTrauma =
-            getSum
-              $ foldMap
-                (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
-                deck'
+        pid <- getPlayer iid
+        let purchaseTrauma = initDeckTrauma deck' iid pid (toTarget a)
+
         pushAll
           $ LoadDeck iid (withDeck (<> weaknesses) deck')
-          : [SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0]
+          : purchaseTrauma
         pure $ a & playerDecksL %~ insertMap iid deck'
       else pure a
+  ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" (isTarget a -> True)) -> do
+    let physical = getChoiceAmount "Physical" choiceMap
+    let mental = getChoiceAmount "Mental" choiceMap
+    push $ SufferTrauma iid physical mental
+    pure a
   PlaceLocationMatching cardMatcher -> do
     let
       matches =

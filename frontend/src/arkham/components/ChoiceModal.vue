@@ -270,6 +270,10 @@ const title = computed(() => {
     return "Story"
   }
 
+  if (amountsLabel.value) {
+    return amountsLabel.value
+  }
+
   if (showChoices.value) {
     return "Choose"
   }

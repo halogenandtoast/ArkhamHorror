@@ -2027,6 +2027,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 else pure []
             (before, _, after) <- frame $ Window.DrawCards iid $ map toCard allDrawn
             checkHandSize <- hasModifier iid CheckHandSizeAfterDraw
+
+            -- Cards with revelations won't be in hand afte they resolve, so exclude them from the discard
+            let
+              toDrawDiscard = \case
+                AfterDrawDiscard x -> Sum x
+                _ -> mempty
+            let discardable =
+                  filter (`cardMatch` (DiscardableCard <> NotCard CardWithRevelation)) allDrawn
+            let discardAmount =
+                  min (length discardable)
+                    $ getSum (foldMap toDrawDiscard (toList $ cardDrawRules cardDraw))
+            -- Only focus those that will still be in hand
+            let focusable = map toCard $ filter (`cardMatch` NotCard CardWithRevelation) allDrawn
+
             pushAll
               $ windowMsgs
               <> [DeckHasNoCards iid Nothing | null deck']
@@ -2034,6 +2048,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               <> [before]
               <> msgs'
               <> [after]
+              <> ( guard (discardAmount > 0)
+                    *> [ FocusCards focusable
+                       , chooseN
+                          player
+                          discardAmount
+                          [targetLabel (toCardId card) [DiscardCard iid (toSource a) (toCardId card)] | card <- discardable]
+                       , UnfocusCards
+                       ]
+                 )
               <> [CheckHandSize iid | checkHandSize]
             pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ Deck deck'
   InvestigatorDrewPlayerCard iid card -> do
@@ -2088,7 +2111,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards) $ do
-      pushM $ drawCards investigatorId ScenarioSource 1
+      mods <- getModifiers a
+      let alternateUpkeepDraws = [target | AlternateUpkeepDraw target <- mods]
+      if notNull alternateUpkeepDraws
+        then do
+          pid <- getPlayer investigatorId
+          push
+            $ chooseOrRunOne
+              pid
+              [targetLabel target [SendMessage target AllDrawCardAndResource] | target <- alternateUpkeepDraws]
+        else pushM $ drawCards investigatorId ScenarioSource 1
     takeUpkeepResources a
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->

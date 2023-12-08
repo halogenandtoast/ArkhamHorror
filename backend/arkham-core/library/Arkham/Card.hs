@@ -167,6 +167,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
     elem sym . cdLocationRevealedConnections $ toCardDef a
   CardFillsSlot slot -> elem slot $ cdSlots $ toCardDef a
   DiscardableCard -> cardMatch a NonWeakness
+  CardWithRevelation -> cdRevelation (toCardDef a) /= NoRevelation
   CardOwnedBy iid -> toCardOwner a == Just iid
 
 instance IsCard PlayerCard where

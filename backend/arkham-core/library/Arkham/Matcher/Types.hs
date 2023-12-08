@@ -628,6 +628,7 @@ data CardMatcher
   | CardWithVengeance
   | CardFillsSlot SlotType
   | DiscardableCard
+  | CardWithRevelation
   | CardOwnedBy InvestigatorId
   | CardFromEncounterSet EncounterSet
   | CardWithOddCost

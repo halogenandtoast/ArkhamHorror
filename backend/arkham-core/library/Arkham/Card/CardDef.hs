@@ -33,6 +33,7 @@ data DeckRestriction
   | CampaignModeOnly
   | PerDeckLimit Int
   | MultiplayerOnly
+  | PurchaseAtDeckCreation
   deriving stock (Show, Eq, Ord, Data)
 
 data AttackOfOpportunityModifier
@@ -79,6 +80,14 @@ isRevelation = \case
   IsRevelation -> True
   CannotBeCanceledRevelation -> True
 
+data PurchaseTrauma
+  = NoTrauma
+  | PurchaseMentalTrauma Int
+  | PurchasePhysicalTrauma Int
+  | PurchaseAnyTrauma Int
+  deriving stock (Show, Eq, Ord, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
 data CardDef = CardDef
   { cdCardCode :: CardCode
   , cdName :: Name
@@ -122,7 +131,7 @@ data CardDef = CardDef
   , cdLocationRevealedSymbol :: Maybe LocationSymbol
   , cdLocationConnections :: [LocationSymbol]
   , cdLocationRevealedConnections :: [LocationSymbol]
-  , cdPurchaseMentalTrauma :: Maybe Int
+  , cdPurchaseTrauma :: PurchaseTrauma
   , cdGrantedXp :: Maybe Int
   , cdCanReplace :: Bool
   , cdDeckRestrictions :: [DeckRestriction]
@@ -178,7 +187,7 @@ emptyCardDef cCode name cType =
     , cdLocationRevealedSymbol = Nothing
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
-    , cdPurchaseMentalTrauma = Nothing
+    , cdPurchaseTrauma = NoTrauma
     , cdGrantedXp = Nothing
     , cdCanReplace = True
     , cdDeckRestrictions = []
@@ -286,7 +295,7 @@ instance FromJSON CardDef where
     cdLocationRevealedSymbol <- o .: "locationRevealedSymbol"
     cdLocationConnections <- o .: "locationConnections"
     cdLocationRevealedConnections <- o .: "locationRevealedConnections"
-    cdPurchaseMentalTrauma <- o .: "purchaseMentalTrauma"
+    cdPurchaseTrauma <- o .: "purchaseTrauma"
     cdGrantedXp <- o .: "grantedXp"
     cdCanReplace <- o .: "canReplace"
     cdDeckRestrictions <- o .: "deckRestrictions"

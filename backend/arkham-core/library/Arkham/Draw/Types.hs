@@ -11,7 +11,7 @@ import Arkham.Source
 import Data.Aeson.TH
 import GHC.Records
 
-data CardDrawRules = ShuffleBackInEachWeakness
+data CardDrawRules = ShuffleBackInEachWeakness | AfterDrawDiscard Int
   deriving stock (Show, Eq, Ord)
 
 data CardDrawState

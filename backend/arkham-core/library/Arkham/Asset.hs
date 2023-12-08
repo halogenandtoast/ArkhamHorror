@@ -654,6 +654,8 @@ allAssets =
     , -- Edge of the Earth
       --- signature [eote]
       SomeAssetCard livreDeibon
+    , --- seeker [eote]
+      SomeAssetCard forcedLearning
     , --- rogue [eote]
       SomeAssetCard theBlackFan3
     , --- mystic [eote]
@@ -664,6 +666,8 @@ allAssets =
       SomeAssetCard medicalStudent
     , --- seeker/rogue [eote]
       SomeAssetCard geneBeauregard3
+    , --- neutral [eote]
+      SomeAssetCard inTheThickOfIt
     , -- The Scarlet Keys
       --- guardian [tsk]
       -- , SomeAssetCard runicAxe

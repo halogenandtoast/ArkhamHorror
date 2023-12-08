@@ -26,7 +26,7 @@ patriceHathaway =
 
 instance HasModifiersFor PatriceHathaway where
   getModifiersFor target (PatriceHathaway attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [HandSize (-3)]
+    pure $ toModifiers attrs [HandSize (-3), AlternateUpkeepDraw (toTarget attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue PatriceHathaway where
@@ -36,7 +36,7 @@ instance HasChaosTokenValue PatriceHathaway where
 
 instance RunMessage PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs) = case msg of
-    AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
+    SendMessage (isTarget attrs -> True) AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
       attrs' <- takeUpkeepResources attrs
       hand <- field InvestigatorHand (toId attrs)
       let nonWeaknessCards = filter (`cardMatch` NonWeakness) hand
@@ -47,7 +47,7 @@ instance RunMessage PatriceHathaway where
         , DoStep 1 msg
         ]
       pure $ PatriceHathaway attrs'
-    DoStep 1 AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
+    DoStep 1 (SendMessage (isTarget attrs -> True) AllDrawCardAndResource) | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
       cards <- field InvestigatorHand (toId attrs)
       let numberToDraw = max 0 (5 - length cards)
       when (numberToDraw > 0) $ pushM $ drawCards (toId attrs) ScenarioSource numberToDraw

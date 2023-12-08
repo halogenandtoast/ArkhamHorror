@@ -254,6 +254,7 @@ allPlayerAssetCards =
       , forbiddenTome
       , forbiddenTomeDarkKnowledge3
       , forbiddenTomeSecretsRevealed3
+      , forcedLearning
       , fortyFiveAutomatic
       , fortyFiveAutomatic2
       , fortyFiveThompson
@@ -309,12 +310,13 @@ allPlayerAssetCards =
       , hyperawareness2
       , hypnoticTherapy
       , ichtacaTheForgottenGuardian
+      , inTheKnow1
+      , inTheThickOfIt
       , ineffableTruth
       , ineffableTruth3
       , ineffableTruth5
       , innocentReveler
       , investments
-      , inTheKnow1
       , jakeWilliams
       , jennysTwin45s
       , jeromeDavids
@@ -2576,7 +2578,7 @@ arcaneResearch =
   permanent
     $ (asset "04109" "Arcane Research" 0 Mystic)
       { cdCardTraits = singleton Talent
-      , cdPurchaseMentalTrauma = Just 1
+      , cdPurchaseTrauma = PurchaseMentalTrauma 1
       }
 
 harlanEarnstone :: CardDef
@@ -4147,6 +4149,15 @@ livreDeibon =
     , cdDeckRestrictions = [Signature "08004"]
     }
 
+-- TODO: if we ever care about deck size need to encode that somehow
+forcedLearning :: CardDef
+forcedLearning =
+  permanent
+    $ (asset "08031" "Forced Learning" 0 Seeker)
+      { cdCardTraits = setFromList [Talent, Ritual]
+      , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      }
+
 theBlackFan3 :: CardDef
 theBlackFan3 =
   (asset "08057" ("The Black Fan" <:> "Symbol of Power") 3 Rogue)
@@ -4191,6 +4202,14 @@ geneBeauregard3 =
     , cdUnique = True
     , cdLevel = 3
     }
+
+inTheThickOfIt :: CardDef
+inTheThickOfIt =
+  permanent
+    $ (asset "08125" "In the Thick of it" 0 Neutral)
+      { cdCardTraits = singleton Curse
+      , cdPurchaseTrauma = PurchaseAnyTrauma 2
+      }
 
 runicAxe :: CardDef
 runicAxe =

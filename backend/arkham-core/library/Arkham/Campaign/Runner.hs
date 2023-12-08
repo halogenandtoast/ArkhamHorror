@@ -79,18 +79,20 @@ defaultCampaignRunner msg a = case msg of
   InitDeck iid deck -> do
     playerCount <- getPlayerCount
     (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
-    let
-      mentalTrauma =
-        getSum
-          $ foldMap
-            (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
-            deck'
+    pid <- getPlayer iid
+    let purchaseTrauma = initDeckTrauma deck' iid pid CampaignTarget
     pushAll
       $ map (AddCampaignCardToDeck iid) randomWeaknesses
-      <> [SufferTrauma iid 0 mentalTrauma | mentalTrauma > 0]
+      <> purchaseTrauma
 
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
+  ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" CampaignTarget) -> do
+    let physical = getChoiceAmount "Physical" choiceMap
+    let mental = getChoiceAmount "Mental" choiceMap
+    push $ SufferTrauma iid physical mental
+    pure a
   UpgradeDeck iid deck -> do
+    pid <- getPlayer iid
     let
       oldDeck = fromJustNote "No deck?" $ lookup iid (campaignDecks $ toAttrs a)
       deckDiff =
@@ -98,16 +100,13 @@ defaultCampaignRunner msg a = case msg of
           (\x -> deleteFirstMatch ((== toCardCode x) . toCardCode))
           (unDeck deck)
           (unDeck oldDeck)
-      mentalTrauma =
-        getSum
-          $ foldMap
-            (Sum . fromMaybe 0 . cdPurchaseMentalTrauma . toCardDef)
-            deckDiff
+
+    let purchaseTrauma = initDeckTrauma (Deck deckDiff) iid pid CampaignTarget
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     playerCount <- getPlayerCount
     (deck', _) <- addRandomBasicWeaknessIfNeeded playerCount deck
-    when (mentalTrauma > 0) $ push $ SufferTrauma iid 0 mentalTrauma
+    pushAll purchaseTrauma
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of
     UpgradeDeckStep nextStep' -> do

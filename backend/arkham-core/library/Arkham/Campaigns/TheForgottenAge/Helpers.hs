@@ -215,6 +215,7 @@ explore iid source cardMatcher exploreRule matchCount = do
         if null notMatched
           then pure rest
           else shuffleM (rest <> notMatched)
+      -- TODO: Uh why is this effect empty here?
       pushAll
         $ [ FocusCards drawn
           , chooseN

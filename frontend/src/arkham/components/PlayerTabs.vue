@@ -19,21 +19,12 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-
-const investigatorId = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)?.id
-
 const selectedTab = ref(props.playerId)
-
 const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
-
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
-
 const investigators = computed(() => props.playerOrder.map(iid => props.players[iid]))
-
-const lead = computed(() => {
-  return `url('${imgsrc(`lead-investigator.png`)}')`
-})
+const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId

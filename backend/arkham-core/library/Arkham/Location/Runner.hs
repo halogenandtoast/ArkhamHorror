@@ -262,7 +262,7 @@ instance RunMessage LocationAttrs where
       windows' <- windows [Window.PlacedDamage source (toTarget a) n]
       pushAll windows'
       pure $ a & tokensL %~ addTokens #damage n
-    RemoveDamage source target n | isTarget a target -> do
+    RemoveDamage _source target n | isTarget a target -> do
       pure $ a & tokensL %~ subtractTokens #damage n
     RemoveClues _ (LocationTarget lid) n | lid == locationId -> do
       let clueCount = max 0 $ subtract n $ locationClues a

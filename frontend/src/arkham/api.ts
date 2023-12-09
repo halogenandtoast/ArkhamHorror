@@ -18,6 +18,12 @@ interface FetchReplay {
   game: Game
 }
 
+export const fetchJoinGame = (gameId: string): Promise<Game> => api
+  .get(`arkham/games/${gameId}/join`)
+  .then((resp) => {
+    return gameDecoder.decodeToPromise(resp.data)
+  });
+
 export const fetchGame = (gameId: string, spectate = false): Promise<FetchData> => api
   .get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`)
   .then((resp) => {

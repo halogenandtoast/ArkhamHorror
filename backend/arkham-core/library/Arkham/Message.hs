@@ -1064,5 +1064,5 @@ chooseAmounts pid label total choiceMap (toTarget -> target) =
 chooseUpgradeDeck :: PlayerId -> Message
 chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
 
-chooseDeck :: PlayerId -> Message
-chooseDeck pid = Ask pid ChooseDeck
+chooseDecks :: [PlayerId] -> Message
+chooseDecks pids = AskMap $ mapFromList $ map (,ChooseDeck) pids

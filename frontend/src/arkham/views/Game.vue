@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import GameDetails from '@/arkham/components/GameDetails.vue';
 import { JsonDecoder } from 'ts.data.json';
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
@@ -192,15 +193,6 @@ fetchGame(props.gameId, spectate).then(({ game: newGame, playerId: newPlayerId, 
     playerId.value = newPlayerId
     ready.value = true
   })
-
-
-  // Object.values(newGame.cards).forEach((card) => {
-  //   const { cardCode, isFlipped } = card.contents
-  //   const suffix = !props.revealed && isFlipped ? 'b' : ''
-  //   const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
-  //   if (preloaded.includes(url)) return
-  //   preload(url)
-  // })
 })
 
 async function choose(idx: number) {
@@ -232,15 +224,6 @@ function switchInvestigator (newPlayerId: string) { playerId.value = newPlayerId
 async function update(state: Arkham.Game) { game.value = state }
 
 const preloaded = reactive([])
-
-const preload = (img) => {
-  const preloadLink = document.createElement("link");
-  preloadLink.href = img;
-  preloadLink.rel = "preload";
-  preloadLink.as = "image";
-  preloaded.push(img)
-  document.head.appendChild(preloadLink);
-}
 
 function debugExport () {
   fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
@@ -281,14 +264,14 @@ provide('solo', solo)
       <header>
         <h2>Waiting for more players</h2>
       </header>
-      <div id='invite'>
-        <div v-if="playerId == game.activePlayerId">
+      <GameDetails :game="game" id="invite">
+        <div v-if="playerId == game.activePlayerId" class="full-width">
           <p>Invite them with this url:</p>
           <div class="invite-link">
             <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
           </div>
         </div>
-      </div>
+      </GameDetails>
     </div>
     <template v-else>
       <div class="game-main">
@@ -432,7 +415,6 @@ provide('solo', solo)
 #invite {
   background-color: #15192C;
   color: white;
-  padding: 20px;
   width: 800px;
   margin: 0 auto;
   margin-top: 20px;
@@ -458,6 +440,7 @@ header {
 }
 
 .invite-link {
+  flex: 1;
   input {
     color: #26283B;
     font-size: 1.3em;
@@ -889,5 +872,10 @@ header {
       animation-delay: inherit;
     }
   }
+}
+
+.full-width {
+  flex: 1;
+  padding-bottom: 10px;
 }
 </style>

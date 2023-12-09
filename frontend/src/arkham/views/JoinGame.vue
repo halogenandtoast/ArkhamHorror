@@ -1,6 +1,9 @@
 <script lang="ts" setup>
+import type { Game } from '@/arkham/types/Game';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router'
-import { joinGame } from '@/arkham/api'
+import { joinGame, fetchJoinGame} from '@/arkham/api'
+import GameDetails from '@/arkham/components/GameDetails.vue';
 
 export interface Props {
   gameId: string
@@ -8,6 +11,9 @@ export interface Props {
 const props = defineProps<Props>()
 
 const router = useRouter()
+const game = ref<Game | null>(null)
+
+fetchJoinGame(props.gameId).then((result: Game) => game.value = result)
 
 async function join() {
     joinGame(props.gameId)
@@ -19,13 +25,14 @@ async function join() {
   <div class="container">
     <div>
       <header>
-        <router-link to="/" class="back-link">‹</router-link>
         <h2>Join Game</h2>
       </header>
 
-      <form id="join-game" @submit.prevent="join">
-        <button type="submit" :disabled="disabled">Join</button>
-      </form>
+      <GameDetails v-if="game" :game="game">
+        <form id="join-game" @submit.prevent="join">
+          <button type="submit">Join</button>
+        </form>
+      </GameDetails>
     </div>
   </div>
 </template>

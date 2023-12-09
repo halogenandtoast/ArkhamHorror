@@ -36,8 +36,9 @@ defaultCampaignRunner msg a = case msg of
     lead <- getActivePlayer
     pushAll
       $ [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep]
-      <> map chooseDeck players
-      <> [CampaignStep $ campaignStep $ toAttrs a]
+      <> [ chooseDecks players
+         , CampaignStep $ campaignStep $ toAttrs a
+         ]
     pure a
   CampaignStep (ScenarioStep sid) -> do
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]

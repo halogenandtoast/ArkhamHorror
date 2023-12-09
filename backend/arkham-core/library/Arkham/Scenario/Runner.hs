@@ -108,9 +108,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       players <- allPlayers
       lead <- getActivePlayer
       pushAll
-        $ Ask lead PickScenarioSettings
-        : map chooseDeck players
-          <> [ResetInvestigators, ResetGame, StartScenario scenarioId]
+        $ [ Ask lead PickScenarioSettings
+          , chooseDecks players
+          ]
+        <> [ResetInvestigators, ResetGame, StartScenario scenarioId]
     pure a
   InitDeck iid deck -> do
     standalone <- getIsStandalone

@@ -75,6 +75,11 @@ async function choose() {
 function portraitImage(investigator) {
   return imgsrc(`portraits/${investigator.cardCode.replace('c', '')}.jpg`)
 }
+
+const needsReply = computed(() => {
+  const question = props.game.question[props.playerId]
+  return question !== null && question !== undefined
+})
 </script>
 
 <template>
@@ -97,7 +102,7 @@ function portraitImage(investigator) {
         </div>
       </div>
     </div>
-    <form id="choose-deck" @submit.prevent="choose">
+    <form id="choose-deck" @submit.prevent="choose" v-if="needsReply">
       <p>Choose a Deck</p>
       <select v-model="deckId">
         <option disabled :value="null">-- Select a Deck--</option>

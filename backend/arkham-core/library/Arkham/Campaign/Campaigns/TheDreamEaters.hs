@@ -323,8 +323,9 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 2) -> do
         players <- allPlayers
         pushAll
-          $ map chooseDeck players
-          <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
+          [ chooseDecks players
+          , NextCampaignStep (Just BeyondTheGatesOfSleep)
+          ]
         pure
           $ TheDreamEaters
           $ attrs
@@ -334,8 +335,9 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 3) -> do
         players <- allPlayers
         pushAll
-          $ map chooseDeck players
-          <> [NextCampaignStep (Just WakingNightmare)]
+          [ chooseDecks players
+          , NextCampaignStep (Just WakingNightmare)
+          ]
         pure
           $ TheDreamEaters
           $ attrs

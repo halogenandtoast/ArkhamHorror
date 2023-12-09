@@ -7,6 +7,7 @@ import Player from '@/arkham/components/Player.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
+import { imgsrc } from '@/arkham/helpers';
 
 export interface Props {
   game: Game
@@ -30,12 +31,17 @@ const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length >
 
 const investigators = computed(() => props.playerOrder.map(iid => props.players[iid]))
 
+const lead = computed(() => {
+  return `url('${imgsrc(`lead-investigator.png`)}')`
+})
+
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
   return [
     {
       'tab--selected': pid === selectedTab.value,
       'tab--active-player': investigator.id === props.activePlayerId,
+      'tab--lead-player': investigator.id === props.game.leadInvestigatorId,
       'tab--has-actions': pid !== props.playerId && hasChoices(investigator.playerId),
     },
     `tab--${investigator.class}`,
@@ -160,5 +166,20 @@ ul.tabs__header > li.tab--selected {
 
 .player-info {
   margin-top: -32px;
+}
+
+.tab--lead-player {
+  &:before {
+    position: absolute;
+    content: "";
+    inset: 0;
+    top: -5px;
+    margin-inline: auto;
+    transform: translateY(-100%);
+    width: 25px;
+    height: 25px;
+    background-image: v-bind(lead);
+    background-size: contain;
+  }
 }
 </style>

@@ -24,14 +24,9 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-const questionLabel = computed(() => {
-  const question = props.game.question[props.playerId]
-  return question.tag === 'QuestionLabel' ? question.label : null
-})
-
-const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
 const chooseDeck = computed(() => {
-  const question = props.game.question[props.playerId]
+  const question = Object.values(props.game.question)[0]
+
   if (question === null || question == undefined) {
     return false
   }
@@ -48,6 +43,19 @@ const chooseDeck = computed(() => {
 
   return false
 })
+
+
+const questionLabel = computed(() => {
+  let question = props.game.question[props.playerId]
+
+  if (!question && chooseDeck.value) {
+    question = Object.values(props.game.question)[0]
+  }
+
+  return question.tag === 'QuestionLabel' ? question.label : null
+})
+
+const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
 
 const questionHash = computed(() => {
   let question = JSON.stringify(props.game.question[props.playerId])

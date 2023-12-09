@@ -1,4 +1,7 @@
+{-# LANGUAGE OverloadedRecordDot #-}
+
 module Api.Handler.Arkham.PendingGames (
+  getApiV1ArkhamPendingGameR,
   putApiV1ArkhamPendingGameR,
 ) where
 
@@ -14,6 +17,12 @@ import Data.Aeson
 import Data.Time.Clock
 import Entity.Arkham.Step
 import Safe (fromJustNote)
+
+getApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
+getApiV1ArkhamPendingGameR gameId = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  ge <- runDB $ get404 gameId
+  pure $ toPublicGame (Entity gameId ge) mempty
 
 putApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 putApiV1ArkhamPendingGameR gameId = do

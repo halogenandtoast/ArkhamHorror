@@ -224,7 +224,12 @@ handleAnswer Game {..} playerId = \case
     when (arkhamDeckUserId deck /= arkhamPlayerUserId player) notFound
     let investigatorId = investigator_code $ arkhamDeckList deck
     runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
-    pure [LoadDecklist playerId (arkhamDeckList deck)]
+
+    let question' = Map.delete playerId gameQuestion
+
+    pure
+      $ [LoadDecklist playerId (arkhamDeckList deck)]
+      <> [AskMap question' | not (Map.null question')]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
     pure [SetCampaignLog standaloneCampaignLog]

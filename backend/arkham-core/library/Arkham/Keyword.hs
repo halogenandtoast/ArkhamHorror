@@ -10,6 +10,7 @@ import Arkham.GameValue
 import {-# SOURCE #-} Arkham.Matcher.Types
 import Control.Lens (Prism', prism')
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 data Keyword
   = Alert
@@ -40,5 +41,11 @@ _Swarming :: Prism' Keyword GameValue
 _Swarming = prism' Swarming $ \case
   Swarming n -> Just n
   _ -> Nothing
+
+instance IsLabel "aloof" Keyword where
+  fromLabel = Aloof
+
+instance IsLabel "massive" Keyword where
+  fromLabel = Massive
 
 $(deriveJSON defaultOptions ''Keyword)

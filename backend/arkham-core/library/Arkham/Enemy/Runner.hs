@@ -1,12 +1,7 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Enemy.Runner (
-  module Arkham.Enemy.Runner,
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
 import Arkham.Ability as X
 import Arkham.Enemy.Helpers as X hiding (EnemyEvade, EnemyFight)
@@ -64,6 +59,7 @@ import Arkham.Matcher (
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType ()
 import Arkham.Token
@@ -138,12 +134,8 @@ getPreyMatcher a = do
 
 noSpawn :: HasQueue Message m => EnemyAttrs -> Maybe InvestigatorId -> m ()
 noSpawn attrs miid = do
-  pushAll
-    $ toDiscard GameSource attrs
-    : [ Surge iid (toSource attrs)
-      | enemySurgeIfUnableToSpawn attrs
-      , iid <- toList miid
-      ]
+  pushAll $ toDiscard GameSource attrs
+    : [Surge iid (toSource attrs) | enemySurgeIfUnableToSpawn attrs, iid <- toList miid]
 
 isSwarm :: EnemyAttrs -> Bool
 isSwarm attrs = case enemyPlacement attrs of
@@ -288,23 +280,17 @@ instance RunMessage EnemyAttrs where
         AsSwarm eid' _ -> push $ MoveUntil lid (EnemyTarget eid')
         _ -> do
           enemyLocation <- field EnemyLocation enemyId
-          for_ enemyLocation \loc ->
-            when (lid /= loc) $ do
-              lead <- getLeadPlayer
-              adjacentLocationIds <- selectList $ AccessibleFrom $ LocationWithId loc
-              closestLocationIds <- selectList $ ClosestPathLocation loc lid
-              if lid `elem` adjacentLocationIds
-                then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
-                else
-                  when (notNull closestLocationIds)
-                    $ pushAll
-                      [ chooseOne
-                          lead
-                          [ targetLabel lid' [EnemyMove enemyId lid']
-                          | lid' <- closestLocationIds
-                          ]
-                      , MoveUntil lid target
-                      ]
+          for_ enemyLocation \loc -> when (lid /= loc) do
+            lead <- getLeadPlayer
+            adjacentLocationIds <- selectList $ AccessibleFrom $ LocationWithId loc
+            closestLocationIds <- selectList $ ClosestPathLocation loc lid
+            if lid `elem` adjacentLocationIds
+              then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
+              else when (notNull closestLocationIds) do
+                pushAll
+                  [ chooseOne lead $ targetLabels closestLocationIds (only . EnemyMove enemyId)
+                  , MoveUntil lid target
+                  ]
       pure a
     EnemyMove eid lid | eid == enemyId -> case enemyPlacement of
       AsSwarm eid' _ -> do
@@ -911,13 +897,8 @@ instance RunMessage EnemyAttrs where
             &&
           )
           <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
-      when validDefeat
-        $ push
-        $ EnemyDefeated
-          eid
-          (toCardId a)
-          source
-          (setToList $ toTraits a)
+      when validDefeat do
+        push $ EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
       pure a
     EnemyDefeated eid _ source _ | eid == toId a -> do
       modifiedHealth <- fieldJust EnemyHealth (toId a)
@@ -930,15 +911,13 @@ instance RunMessage EnemyAttrs where
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
       let
-        victoryMsgs =
-          [DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance)]
+        victoryMsgs = [DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance)]
         defeatMsgs =
           if isJust (victory <|> vengeance)
             then resolve $ RemoveEnemy eid
             else [Discard miid GameSource $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
-
       discardWindow <- windows [Window.EntityDiscarded source (toTarget a)]
 
       pushAll

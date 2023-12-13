@@ -4,7 +4,14 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.ActiveCost.Base
-import {-# SOURCE #-} Arkham.Card
+import {-# SOURCE #-} Arkham.Card (
+  Card (EncounterCard, PlayerCard),
+  CardCode,
+  CardGen (..),
+  CardId,
+  unsafeMakeCardId,
+ )
+import Arkham.Card.CardDef (toCardDef)
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger
@@ -99,8 +106,7 @@ toGameEnv = do
   game <- view gameRefL
   gen <- view genL
   queueRef <- messageQueue
-  logger <- getLogger
-  pure $ GameEnv game queueRef gen logger
+  GameEnv game queueRef gen <$> getLogger
 
 runWithEnv
   :: ( HasGameRef env

@@ -7,16 +7,16 @@ module Arkham.Criteria (
 
 import Arkham.Prelude
 
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Capability
-import Arkham.Cost.Status
+import Arkham.CampaignLogKey ( CampaignLogKey )
+import Arkham.Campaigns.TheForgottenAge.Supply ( Supply )
+import Arkham.Capability ( Capabilities, Capable(..) )
+import Arkham.Cost.Status ( CostStatus )
 import Arkham.Criteria.Override
-import Arkham.Direction
-import Arkham.GameValue
-import Arkham.History.Types
+import Arkham.Direction ( GridDirection )
+import Arkham.GameValue ( GameValue(Static) )
+import Arkham.History.Types ( HistoryType )
 import Arkham.Matcher
-import {-# SOURCE #-} Arkham.Modifier
+import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Trait

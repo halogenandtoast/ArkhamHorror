@@ -7,6 +7,7 @@ module Arkham.Game (
 
 import Arkham.Prelude
 
+import Arkham.Git (gitHash)
 import Arkham.Ability hiding (you)
 import Arkham.Act
 import Arkham.Act.Sequence qualified as AC
@@ -60,7 +61,6 @@ import Arkham.Game.Runner ()
 import Arkham.Game.Settings
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Git (gitHash)
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.ChaosBag
@@ -166,7 +166,7 @@ import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Aeson.Types (parse)
+import Data.Aeson.Types (parse, emptyArray)
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal (getMonoidalMap)
 import Data.Map.Monoidal qualified as MonoidalMap
@@ -522,30 +522,29 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
    where
     emptyAdditionalData =
       object
-        [ "additionalActions" .= ([] :: [()])
-        , "engagedEnemies" .= ([] :: [()])
-        , "assets" .= ([] :: [()])
-        , "events" .= ([] :: [()])
-        , "skills" .= ([] :: [()])
-        , "treacheries" .= ([] :: [()])
+        [ "additionalActions" .= emptyArray
+        , "engagedEnemies" .= emptyArray
+        , "assets" .= emptyArray
+        , "events" .= emptyArray
+        , "skills" .= emptyArray
+        , "treacheries" .= emptyArray
         ]
     otherInvestigators = case gameMode of
       This (Campaign c) -> campaignOtherInvestigators (toJSON c)
       That _ -> mempty
       These (Campaign c) _ -> campaignOtherInvestigators (toJSON c)
-    campaignOtherInvestigators j = case parse (withObject "" \o -> o .: "otherCampaignAttrs") j of
+    campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
       Error _ -> mempty
       Success attrs ->
         Map.fromList
           . map
             ( \iid ->
                 ( iid
-                , ( (`with` emptyAdditionalData)
+                , (`with` emptyAdditionalData)
                       . (`with` ConnectionData [])
                       . (`with` ModifierData [])
                       . WithDeckSize
                       $ lookupInvestigator iid (PlayerId nil)
-                  )
                 )
             )
           $ Map.keys (campaignDecks attrs)
@@ -915,16 +914,15 @@ getInvestigatorsMatching matcher = do
                 (fmap (map CommittedSkillIcon) . iconsForCard)
                 cards
           gameValueMatches skillTestCount valueMatcher
-    HealableInvestigator _source damageType matcher' -> \i ->
+    HealableInvestigator _source damageType matcher' -> \i -> do
+      mods <- getActiveInvestigatorModifiers
       case damageType of
         DamageType -> do
-          modifiers' <- getActiveInvestigatorModifiers
-          if any (`elem` modifiers') [CannotAffectOtherPlayersWithPlayerEffectsExceptDamage]
+          if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
             then member (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyDamage)
             else member (toId i) <$> select (matcher' <> InvestigatorWithAnyDamage)
         HorrorType -> do
-          modifiers' <- getActiveInvestigatorModifiers
-          if CannotHealHorror `elem` modifiers'
+          if CannotHealHorror `elem` mods
             then member (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyHorror)
             else member (toId i) <$> select (matcher' <> InvestigatorWithAnyHorror)
     InvestigatorWithMostCardsInPlayArea -> \i ->
@@ -3487,7 +3485,7 @@ instance Projection Agenda where
       AgendaUsedWheelOfFortuneX -> pure agendaUsedWheelOfFortuneX
 
 instance Projection Campaign where
-  getAttrs _ = toAttrs . fromJustNote ("should be impossible, was looking campaign attrs") <$> getCampaign
+  getAttrs _ = toAttrs . fromJustNote "should be impossible, was looking campaign attrs" <$> getCampaign
   project _ = getCampaign
   field fld _ = do
     c <- fromJustNote "impossible" <$> getCampaign
@@ -3591,7 +3589,7 @@ instance Projection (InDiscardEntity Asset) where
       InDiscardAssetCardId -> pure $ toCardId attrs
 
 instance Projection Scenario where
-  getAttrs _ = toAttrs . fromJustNote ("should be impossible, was looking scenario attrs") <$> getScenario
+  getAttrs _ = toAttrs . fromJustNote "should be impossible, was looking scenario attrs" <$> getScenario
   project _ = getScenario
   field fld _ = do
     s <-

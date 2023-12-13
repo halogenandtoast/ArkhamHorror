@@ -1,6 +1,6 @@
 module Arkham.Card.Class where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 class HasCost a where
   getCost :: a -> Int

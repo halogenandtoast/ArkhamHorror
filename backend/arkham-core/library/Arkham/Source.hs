@@ -7,12 +7,11 @@ module Arkham.Source where
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Card
-import Arkham.Card.CardCode
-import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken
 import Arkham.Id
-import Arkham.Matcher
+import Arkham.Matcher.Types
+    ( AgendaMatcher, AssetMatcher, LocationMatcher, EnemyMatcher )
 import Arkham.Tarot
 import Arkham.Trait
 import Control.Lens (Prism', prism')

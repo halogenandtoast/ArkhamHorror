@@ -13,8 +13,6 @@ import Arkham.Zone as X
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
-import Arkham.Card.CardCode
-import Arkham.Card.Id
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Cost.FieldCost

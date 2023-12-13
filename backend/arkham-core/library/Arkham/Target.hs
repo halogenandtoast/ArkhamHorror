@@ -8,9 +8,7 @@ import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Ability.Types
 import {-# SOURCE #-} Arkham.Card
-import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.Card.EncounterCard
-import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken
 import Arkham.Id

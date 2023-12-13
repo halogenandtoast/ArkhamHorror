@@ -1,4 +1,4 @@
-module Arkham.Card where
+module Arkham.Card (module Arkham.Card, module Arkham.Card.CardCode, module Arkham.Card.Id) where
 
 import Arkham.Prelude
 
@@ -11,6 +11,9 @@ import Arkham.Id
 import Arkham.Trait
 
 data Card
+  = PlayerCard PlayerCard
+  | EncounterCard EncounterCard
+  | VengeanceCard Card
 
 instance Data Card
 instance Show Card

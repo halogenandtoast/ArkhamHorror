@@ -5,7 +5,7 @@ import Arkham.ActiveCost.Base
 import Arkham.Game.Settings
 import Arkham.History
 import Arkham.Id
-import {-# SOURCE #-} Arkham.Modifier
+import {-# SOURCE #-} Arkham.Modifier ( Modifier )
 import Arkham.Phase
 import Arkham.Prelude
 import Arkham.SkillTest.Base

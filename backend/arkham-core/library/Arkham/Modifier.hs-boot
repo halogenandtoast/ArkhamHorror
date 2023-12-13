@@ -2,6 +2,7 @@ module Arkham.Modifier where
 
 import Arkham.Prelude
 
+data Modifier
 data ModifierType
 
 instance Show ModifierType

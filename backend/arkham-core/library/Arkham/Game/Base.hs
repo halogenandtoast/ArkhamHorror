@@ -8,7 +8,7 @@ import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import Arkham.Campaign.Types (Campaign)
-import {-# SOURCE #-} Arkham.Card
+import {-# SOURCE #-} Arkham.Card (CardCode, CardId, Card)
 import Arkham.ChaosToken
 import {-# SOURCE #-} Arkham.Entities
 import Arkham.Game.Settings

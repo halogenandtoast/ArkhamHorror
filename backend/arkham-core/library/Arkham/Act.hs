@@ -230,6 +230,12 @@ allActs =
       SomeActCard lookingForAnswers
     , SomeActCard searchForThePatient
     , SomeActCard containingTheOutbreak
+    , --- The Search for Kadath
+      SomeActCard kingdomOfTheSkai
+    , SomeActCard theIsleOfOriab
+    , SomeActCard theDoomThatCameBefore
+    , SomeActCard seekOutTheNight
+    , SomeActCard theKingsDecree
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

@@ -137,6 +137,7 @@ data Trait
   | Pnakotus
   | Poison
   | Police
+  | Port
   | Power
   | Practiced
   | PresentDay

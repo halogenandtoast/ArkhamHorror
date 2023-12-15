@@ -40,12 +40,7 @@ const isAction = (action: string) => {
 
 function totalActionCost(cost: Cost) {
   if (cost.tag === "Costs") {
-    return cost.contents.reduce((acc, v) => {
-        if (v.tag === "ActionCost") {
-          return acc + v.contents
-        }
-        return acc
-      }, 0)
+    return cost.contents.reduce((acc, v) => v.tag === "ActionCost" ? acc + v.contents : acc, 0)
   } else if (cost.tag === "ActionCost") {
     return cost.contents
   }

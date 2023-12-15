@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.AtTheExhibitTheBrotherhoodsPlot (
-  AtTheExhibitTheBrotherhoodsPlot (..),
-  atTheExhibitTheBrotherhoodsPlot,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.AtTheExhibitTheBrotherhoodsPlot (AtTheExhibitTheBrotherhoodsPlot (..), atTheExhibitTheBrotherhoodsPlot) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
@@ -14,6 +9,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AtTheExhibitTheBrotherhoodsPlot = AtTheExhibitTheBrotherhoodsPlot ActAttrs
@@ -21,12 +17,7 @@ newtype AtTheExhibitTheBrotherhoodsPlot = AtTheExhibitTheBrotherhoodsPlot ActAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 atTheExhibitTheBrotherhoodsPlot :: ActCard AtTheExhibitTheBrotherhoodsPlot
-atTheExhibitTheBrotherhoodsPlot =
-  act
-    (2, A)
-    AtTheExhibitTheBrotherhoodsPlot
-    Cards.atTheExhibitTheBrotherhoodsPlot
-    Nothing
+atTheExhibitTheBrotherhoodsPlot = act (2, A) AtTheExhibitTheBrotherhoodsPlot Cards.atTheExhibitTheBrotherhoodsPlot Nothing
 
 instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
   runMessage msg a@(AtTheExhibitTheBrotherhoodsPlot attrs) = case msg of
@@ -46,22 +37,17 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       lead <- getLeadPlayer
       brotherhoodCultists <- selectList $ enemyIs Enemies.brotherhoodCultist
       farthestBrotherhoodCultists <-
-        selectList
-          $ FarthestEnemyFromAll
-          $ enemyIs
-            Enemies.brotherhoodCultist
+        selectList $ FarthestEnemyFromAll $ enemyIs Enemies.brotherhoodCultist
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       assetId <- getRandom
       pushAll
-        $ map
-          ((`HealAllDamage` toSource attrs) . EnemyTarget)
-          brotherhoodCultists
+        $ map ((`HealAllDamage` toSource attrs) . toTarget) brotherhoodCultists
         <> [ chooseOrRunOne
               lead
               [ targetLabel cultist
                 $ CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
-                : [PlaceDoom (toSource attrs) (EnemyTarget cultist) 1 | deckCount <= 2]
+                : [PlaceDoom (toSource attrs) (toTarget cultist) 1 | deckCount <= 2]
               | cultist <- farthestBrotherhoodCultists
               ]
            ]
@@ -70,10 +56,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       locations <- selectList $ FarthestLocationFromAll Anywhere
       lead <- getLeadPlayer
       push
-        $ chooseOrRunOne
-          lead
-          [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
-          | location <- locations
-          ]
+        $ chooseOrRunOne lead
+        $ targetLabels locations (only . SpawnEnemyAt (EncounterCard card))
       pure a
     _ -> AtTheExhibitTheBrotherhoodsPlot <$> runMessage msg attrs

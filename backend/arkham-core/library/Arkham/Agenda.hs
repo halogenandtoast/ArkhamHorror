@@ -192,6 +192,10 @@ allAgendas =
       SomeAgendaCard hallsOfStMarys
     , SomeAgendaCard theInfestationSpreads
     , SomeAgendaCard hospitalOfHorrors
+    , SomeAgendaCard hallsOfStMarys
+    , -- The Search for Kadath
+      SomeAgendaCard journeyAcrossTheDreamlands
+    , SomeAgendaCard agentsOfTheOuterGods
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

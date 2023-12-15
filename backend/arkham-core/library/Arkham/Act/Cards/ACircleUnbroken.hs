@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.ACircleUnbroken (
-  ACircleUnbroken (..),
-  aCircleUnbroken,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.ACircleUnbroken (ACircleUnbroken (..), aCircleUnbroken) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -12,6 +7,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype ACircleUnbroken = ACircleUnbroken ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,11 +20,11 @@ instance HasAbilities ACircleUnbroken where
   getAbilities (ACircleUnbroken x) =
     [ mkAbility x 1
         $ Objective
-        $ ForcedAbility
+        $ forced
         $ EnemyDefeated #after Anyone ByAny
         $ enemyIs Enemies.anetteMason
     , restrictedAbility x 2 (exists $ locationIs Locations.witchesCircle <> LocationWithoutClues)
-        $ Objective (ForcedAbility AnyWindow)
+        $ Objective (forced AnyWindow)
     ]
 
 instance RunMessage ACircleUnbroken where

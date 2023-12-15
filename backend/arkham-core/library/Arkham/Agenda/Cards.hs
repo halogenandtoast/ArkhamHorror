@@ -24,6 +24,7 @@ allAgendaCards =
       (toCardCode &&& id)
       [ aCreatureOfTheBayou
       , aTearInReality
+      , agentsOfTheOuterGods
       , allIsOne
       , beckoningForPower
       , behindTheCurtain
@@ -58,6 +59,7 @@ allAgendaCards =
       , intruders
       , inEveryShadow
       , itAwaits
+      , journeyAcrossTheDreamlands
       , journeyThroughTheGates
       , judgementXX
       , justiceXI
@@ -489,6 +491,12 @@ theInfestationSpreads = agenda "06065" "The Infestation Spreads" 2 WakingNightma
 
 hospitalOfHorrors :: CardDef
 hospitalOfHorrors = agenda "06066" "Hospital of Horrors" 3 WakingNightmare
+
+journeyAcrossTheDreamlands :: CardDef
+journeyAcrossTheDreamlands = agenda "06120" "Journey Across the Dreamlands" 1 TheSearchForKadath
+
+agentsOfTheOuterGods :: CardDef
+agentsOfTheOuterGods = agenda "06121" "Agents of the Outer Gods" 2 TheSearchForKadath
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

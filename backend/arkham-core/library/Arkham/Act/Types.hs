@@ -55,6 +55,7 @@ data ActAttrs = ActAttrs
   , actDeckId :: Int
   , actBreaches :: Maybe Int
   , actUsedWheelOfFortuneX :: Bool
+  , actMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
 
@@ -66,6 +67,9 @@ sequenceL = lens actSequence $ \m x -> m {actSequence = x}
 
 cluesL :: Lens' ActAttrs Int
 cluesL = lens actClues $ \m x -> m {actClues = x}
+
+metaL :: Lens' ActAttrs Value
+metaL = lens actMeta $ \m x -> m {actMeta = x}
 
 breachesL :: Lens' ActAttrs (Maybe Int)
 breachesL = lens actBreaches $ \m x -> m {actBreaches = x}
@@ -96,6 +100,7 @@ actWith (n, side) f cardDef mCost g =
             , actDeckId = deckId
             , actBreaches = Nothing
             , actUsedWheelOfFortuneX = False
+            , actMeta = Null
             }
     }
 

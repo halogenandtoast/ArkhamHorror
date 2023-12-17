@@ -85,6 +85,7 @@ allEncounterEnemyCards =
       , balefulReveler
       , basilisk
       , beastOfAldebaran
+      , beingsOfIb
       , billyCooper
       , boaConstrictor
       , bogGator
@@ -95,6 +96,7 @@ allEncounterEnemyCards =
       , carlSanfordDeathlessFanatic
       , carnevaleSentinel
       , catacombsDocent
+      , catsOfUlthar
       , cellKeeper
       , cloverClubPitBoss
       , cnidathqua
@@ -147,6 +149,7 @@ allEncounterEnemyCards =
       , heretic_I
       , heretic_K
       , hermanCollins
+      , hordeOfNight
       , hotelGuest
       , hotelManager
       , hotelSecurity
@@ -186,8 +189,10 @@ allEncounterEnemyCards =
       , nathanWickMasterOfIndoctrination
       , nathanWickMasterOfInitiation
       , netherMist
+      , nightriders
       , oBannionsThug
       , otherworldlyMeddler
+      , packOfVooniths
       , padmaAmrita
       , pennyWhite
       , peterWarren
@@ -197,6 +202,7 @@ allEncounterEnemyCards =
       , poleman
       , poltergeist
       , possessedOathspeaker
+      , priestOfAThousandMasks
       , priestessOfTheCoven
       , ravenousGhoul
       , relentlessDarkYoung
@@ -223,6 +229,7 @@ allEncounterEnemyCards =
       , specterOfDeath
       , spectralRaven
       , spiderOfLeng
+      , stalkingManticore
       , stealthyByakhee
       , stealthyZoog
       , summonedBeast
@@ -232,6 +239,7 @@ allEncounterEnemyCards =
       , swarmOfSpiders
       , swiftByakhee
       , temporalDevourer
+      , tenebrousNightgaunt
       , theCrawlingMist
       , theExperiment
       , theMaskedHunter
@@ -1645,6 +1653,64 @@ inconspicuousZoog =
   (enemy "06108" "Inconspicuous Zoog" Zoogs 1)
     { cdCardTraits = setFromList [Creature, Zoog]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Swarming (Static 2)]
+    }
+
+catsOfUlthar :: CardDef
+catsOfUlthar =
+  (enemy "06145" "Cats of Ulthar" TheSearchForKadath 1)
+    { cdCardTraits = setFromList [Creature, Elite]
+    , cdKeywords = singleton $ Keyword.Swarming (Static 2)
+    , cdVictoryPoints = Just 1
+    }
+
+stalkingManticore :: CardDef
+stalkingManticore =
+  (enemy "06146" "Stalking Manticore" TheSearchForKadath 1)
+    { cdCardTraits = setFromList [Creature, Monster, Elite]
+    , cdVictoryPoints = Just 1
+    }
+
+hordeOfNight :: CardDef
+hordeOfNight =
+  (enemy "06147" "Horde of Night" TheSearchForKadath 1)
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdVictoryPoints = Just 1
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Swarming (Static 1)]
+    }
+
+beingsOfIb :: CardDef
+beingsOfIb =
+  (enemy "06148" "Beings of Ib" TheSearchForKadath 1)
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdVictoryPoints = Just 1
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter, Keyword.Swarming (Static 1)]
+    }
+
+priestOfAThousandMasks :: CardDef
+priestOfAThousandMasks =
+  (enemy "06149" "Priest of a Thousand Masks" TheSearchForKadath 3)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    }
+
+tenebrousNightgaunt :: CardDef
+tenebrousNightgaunt =
+  (enemy "06150" "Tenebrous Nightgaunt" TheSearchForKadath 2)
+    { cdCardTraits = setFromList [Monster, Nightgaunt]
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
+packOfVooniths :: CardDef
+packOfVooniths =
+  (enemy "06151" "Pack of Vooniths" TheSearchForKadath 2)
+    { cdCardTraits = setFromList [Creature, Monster]
+    , cdKeywords = singleton (Keyword.Swarming (Static 1))
+    }
+
+nightriders :: CardDef
+nightriders =
+  (enemy "06152" "Nighriders" TheSearchForKadath 2)
+    { cdCardTraits = setFromList [Creature, Monster]
+    , cdKeywords = singleton (Keyword.Swarming (Static 1))
     }
 
 unboundBeast :: CardDef

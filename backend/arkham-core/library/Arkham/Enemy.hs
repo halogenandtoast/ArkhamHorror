@@ -307,15 +307,24 @@ allEnemies =
     , SomeEnemyCard corruptedOrderly
     , --- Agents of Atlach-Nacha
       SomeEnemyCard greyWeaver
-    , --- Zoogs
-      SomeEnemyCard furtiveZoog
-    , SomeEnemyCard stealthyZoog
-    , SomeEnemyCard inconspicuousZoog
     , --- Agents of Nyarlathotep
       SomeEnemyCard theCrawlingMist
     , --- Spiders
       SomeEnemyCard spiderOfLeng
     , SomeEnemyCard swarmOfSpiders
+    , --- Zoogs
+      SomeEnemyCard furtiveZoog
+    , SomeEnemyCard stealthyZoog
+    , SomeEnemyCard inconspicuousZoog
+    , -- TheSearchForKadath
+      SomeEnemyCard catsOfUlthar
+    , SomeEnemyCard stalkingManticore
+    , SomeEnemyCard hordeOfNight
+    , SomeEnemyCard beingsOfIb
+    , SomeEnemyCard priestOfAThousandMasks
+    , SomeEnemyCard tenebrousNightgaunt
+    , SomeEnemyCard packOfVooniths
+    , SomeEnemyCard nightriders
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

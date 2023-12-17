@@ -31,6 +31,7 @@ data Keyword
   | Bonded Int CardCode
   | Patrol LocationMatcher
   | Swarming GameValue
+  | Veiled
   | Customizable
   deriving stock (Show, Eq, Ord, Data)
 

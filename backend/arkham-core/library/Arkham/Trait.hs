@@ -40,6 +40,7 @@ data Trait
   | Charm
   | Chosen
   | Circle
+  | City
   | Civic
   | Clairvoyant
   | Clothing
@@ -82,6 +83,7 @@ data Trait
   | Flaw
   | Flora
   | Footwear
+  | Forbidden
   | Forgotten
   | Fortune
   | Future
@@ -120,13 +122,17 @@ data Trait
   | MexicoCity
   | MiGo
   | Miskatonic
+  | Mnar
   | Monster
+  | Mountain
   | Mystery
   | NewOrleans
   | Nightgaunt
   | Obstacle
   | Occult
   | Omen
+  | OothNargai
+  | Oriab
   | Otherworld
   | Pact
   | Paradox
@@ -164,6 +170,7 @@ data Trait
   | Shattered
   | Shoggoth
   | SilverTwilight
+  | Skai
   | Socialite
   | Song
   | Sorcerer
@@ -181,6 +188,7 @@ data Trait
   | Talent
   | Tarot
   | Task
+  | Temple
   | Tenochtitlan
   | Tentacle
   | Terror
@@ -197,6 +205,7 @@ data Trait
   | Veteran
   | Void
   | Warden
+  | Wastes
   | Wayfarer
   | Weapon
   | Wilderness

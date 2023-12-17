@@ -565,6 +565,7 @@ allPlayerAssetCards =
       , vaultOfKnowledge
       , venturer
       , versatile2
+      , virgilGray
       , wellConnected
       , wellConnected3
       , wellPrepared2
@@ -3754,6 +3755,13 @@ jessicaHyde1 =
     , cdCardTraits = setFromList [Ally, Wayfarer, Cursed]
     , cdLevel = 1
     , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+virgilGray :: CardDef
+virgilGray =
+  (storyAsset "06144" ("Virgil Gray" <:> "Writer of Strange Tales") 0 TheSearchForKadath)
+    { cdCardTraits = setFromList [Ally, Dreamer]
     , cdUnique = True
     }
 

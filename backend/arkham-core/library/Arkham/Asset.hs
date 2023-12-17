@@ -575,6 +575,8 @@ allAssets =
       SomeAssetCard scrollOfProphecies
     , --- survivor [sfk]
       SomeAssetCard jessicaHyde1
+    , --- story [tde]
+      SomeAssetCard virgilGray
     , -- A Thousand Shapes of Horror
       --- guardian [tsh]
       SomeAssetCard tetsuoMori

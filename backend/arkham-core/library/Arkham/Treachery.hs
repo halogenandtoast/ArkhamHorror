@@ -381,6 +381,9 @@ allTreacheries =
       SomeTreacheryCard sickeningWebs
     , -- Zoogs
       SomeTreacheryCard zoogBurrow
+    , -- The Search for Kadath
+      SomeTreacheryCard songOfTheMagahBird
+    , SomeTreacheryCard wondrousLands
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

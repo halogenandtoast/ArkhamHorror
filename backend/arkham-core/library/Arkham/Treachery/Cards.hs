@@ -104,6 +104,7 @@ allPlayerTreacheryCards =
       , shellShock
       , shockingDiscovery
       , smiteTheWicked
+      , songOfTheMagahBird
       , starsOfHyades
       , terribleSecret
       , the13thVision
@@ -117,6 +118,7 @@ allPlayerTreacheryCards =
       , unspeakableOathCuriosity
       , voiceOfTheMessenger
       , whatHaveYouDone
+      , wondrousLands
       , wrackedByNightmares
       , yaztaroth
       ]
@@ -1789,6 +1791,18 @@ zoogBurrow :: CardDef
 zoogBurrow =
   (treachery "06109" "Zoog Burrow" Dreamlands 1)
     { cdCardTraits = singleton Hazard
+    }
+
+songOfTheMagahBird :: CardDef
+songOfTheMagahBird =
+  (treachery "06153" "Song of the Magah Bird" TheSearchForKadath 2)
+    { cdCardTraits = singleton Curse
+    }
+
+wondrousLands :: CardDef
+wondrousLands =
+  (treachery "06154" "Wondrous Lands" TheSearchForKadath 2)
+    { cdCardTraits = singleton Power
     }
 
 theHarbinger :: CardDef

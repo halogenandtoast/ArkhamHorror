@@ -11,6 +11,7 @@ import Arkham.LocationSymbol
 import Arkham.Name
 import Arkham.Trait hiding (Circle)
 import Arkham.Trait qualified as Trait
+import Data.Set qualified as Set
 
 locationWithUnrevealed
   :: CardCode
@@ -103,6 +104,7 @@ allLocationCards =
       , audubonPark
       , backAlley
       , backstage
+      , baharna
       , balcony
       , balconyAtDeathsDoorstep
       , balconySpectral
@@ -142,6 +144,7 @@ allLocationCards =
       , canalsOfTenochtitlan_181
       , candlelitTunnels
       , cavernsOfYoth
+      , celephais
       , cellar
       , chamberOfTime
       , chapelOfStAubertThePathIsOpen
@@ -163,6 +166,7 @@ allLocationCards =
       , cityOfElderThings
       , cityOfTheSerpents
       , cityOfTheUnseen
+      , cityWhichAppearsOnNoMap
       , cloister
       , cloverClubBar
       , cloverClubCardroom
@@ -209,6 +213,7 @@ allLocationCards =
       , dressingRoom
       , dunwichVillage_242
       , dunwichVillage_243
+      , dylathLeen
       , easttown
       , easttownArkhamPoliceStation
       , eerieGlade
@@ -243,6 +248,7 @@ allLocationCards =
       , faubourgMarigny
       , flightIntoOblivion
       , floodedSquare
+      , forbiddenLands
       , forbiddingShore
       , forgottenMarsh
       , forkedPath
@@ -278,6 +284,7 @@ allLocationCards =
       , hangmansHillWhereItAllEnds
       , hauntedFields
       , hauntedFieldsSpectral
+      , hazuthKleg
       , hereticsGravesSpectral_171
       , hereticsGravesSpectral_172
       , hereticsGraves_171
@@ -298,6 +305,7 @@ allLocationCards =
       , houseInTheReeds_210
       , houseInTheReeds_211
       , humanitiesBuilding
+      , ilekVad
       , infinityOfDarkness
       , infirmary
       , innerSanctum
@@ -305,6 +313,7 @@ allLocationCards =
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
       , joeMazurewiczsRoom
+      , kadatheron
       , keziahsRoom
       , kitchen
       , knightsHall
@@ -348,9 +357,11 @@ allLocationCards =
       , morgue
       , mouthOfKnYanTheCavernsMaw
       , mouthOfKnYanTheDepthsBelow
+      , mtNgranek
       , mu
       , museumEntrance
       , museumHalls
+      , namelessRuins
       , narrowShaft
       , nexusOfNKai
       , northside
@@ -416,6 +427,7 @@ allLocationCards =
       , ruinsOfCarcosaInhabitantOfCarcosa
       , ruinsOfCarcosaTheCoffin
       , ruinsOfEztli
+      , ruinsOfIb
       , ruinsOfNewYork
       , sacredWoods_184
       , sacredWoods_185
@@ -423,6 +435,7 @@ allLocationCards =
       , sanMarcoBasilica
       , sanctumDoorwayCeremonyRoom
       , sanctumDoorwayHoldingCells
+      , sarnath
       , schoolhouse_212
       , schoolhouse_213
       , scienceBuilding
@@ -431,6 +444,7 @@ allLocationCards =
       , securityOffice_128
       , securityOffice_129
       , sentinelPeak
+      , serannian
       , serpentsHaven
       , sevenHundredSteps
       , seventySteps
@@ -440,6 +454,7 @@ allLocationCards =
       , silverTwilightLodgeShroudedInMystery
       , silverTwilightLodgeWhereItAllEnds
       , siteOfTheSacrifice
+      , skaiRiver
       , slaughteredWoods
       , sleepingCar
       , southChurch_298
@@ -463,6 +478,7 @@ allLocationCards =
       , tearThroughSpace
       , tearThroughTime
       , templeOfTheFang
+      , templeOfUnattainableDesires
       , templeRuins
       , templesOfTenochtitlan_176
       , templesOfTenochtitlan_177
@@ -494,6 +510,7 @@ allLocationCards =
       , trophyRoomSpectral
       , twilightAbyss
       , twistedUnderbrush
+      , ulthar
       , undergroundRuins
       , unvisitedIsleDecayedWillow
       , unvisitedIsleForsakenWoods
@@ -533,6 +550,7 @@ allLocationCards =
       , yourHouse
       , yuggoth
       , zocalo
+      , zulanThek
       ]
 
 allSpecialLocationCards :: Map CardCode CardDef
@@ -550,6 +568,9 @@ revelation def = def {cdRevelation = IsRevelation}
 
 singleSided :: CardDef -> CardDef
 singleSided def = def {cdDoubleSided = False}
+
+veiled :: CardDef -> CardDef
+veiled def = def {cdDoubleSided = False, cdKeywords = Set.insert Keyword.Veiled $ cdKeywords def}
 
 storyOnBack :: CardDef -> CardDef
 storyOnBack def = def {cdDoubleSided = False}
@@ -5180,6 +5201,136 @@ privateRoom =
     Moon
     [Heart]
     WakingNightmare
+
+ulthar :: CardDef
+ulthar = veiled $ location "06127" "Ulthar" [Skai, City] Heart [Squiggle] TheSearchForKadath
+
+skaiRiver :: CardDef
+skaiRiver = location "06128" "Skai River" [Skai, City] Squiggle [Heart, Triangle] TheSearchForKadath
+
+dylathLeen :: CardDef
+dylathLeen = veiled $ location "06129" "Dylath-Leen" [Skai, City, Port] Triangle [Squiggle] TheSearchForKadath
+
+kadatheron :: CardDef
+kadatheron =
+  veiled
+    $ location
+      "06130"
+      "Kadatheron"
+      [Mnar, Ancient, City, Port]
+      Circle
+      [Square, Diamond]
+      TheSearchForKadath
+
+sarnath :: CardDef
+sarnath =
+  victory 1
+    $ veiled
+    $ location "06131" "Kadatheron" [Mnar, Ancient, Ruins] Circle [Square, Diamond] TheSearchForKadath
+
+ruinsOfIb :: CardDef
+ruinsOfIb =
+  victory 1
+    $ veiled
+    $ location "06132" "Ruins of Ib" [Mnar, Ancient, Ruins] Square [Circle, Diamond] TheSearchForKadath
+
+ilekVad :: CardDef
+ilekVad =
+  victory 1
+    $ veiled
+    $ location "06133" "Ilek-Vad" [Forbidden, City, Port] Circle [Diamond] TheSearchForKadath
+
+forbiddenLands :: CardDef
+forbiddenLands =
+  location "06134" "Forbidden Lands" [Forbidden, Wastes] Diamond [Circle, Square] TheSearchForKadath
+
+zulanThek :: CardDef
+zulanThek =
+  veiled
+    $ location "06135" "Zulan-Thek" [Forbidden, City] Square [Diamond] TheSearchForKadath
+
+baharna :: CardDef
+baharna =
+  victory 1
+    $ veiled
+    $ location "06136" "Baharna" [Oriab, City, Port] Circle [Square, Diamond] TheSearchForKadath
+
+mtNgranek :: CardDef
+mtNgranek =
+  victory 1
+    $ veiled
+    $ location "06137" "Mt. Ngarek" [Oriab, Mountain] Square [Circle, Diamond] TheSearchForKadath
+
+namelessRuins :: CardDef
+namelessRuins =
+  victory 1
+    $ veiled
+    $ location
+      "06138"
+      "Nameless Ruins"
+      [Oriab, Ancient, Ruins]
+      Diamond
+      [Circle, Square]
+      TheSearchForKadath
+
+celephais :: CardDef
+celephais =
+  victory 1
+    $ veiled
+    $ location
+      "06139"
+      "Celephaïs"
+      [OothNargai, City, Port]
+      Hourglass
+      [Moon, Plus]
+      TheSearchForKadath
+
+serannian :: CardDef
+serannian =
+  victory 1
+    $ veiled
+    $ location
+      "06140"
+      "Serannian"
+      [OothNargai, City, Port]
+      Moon
+      [Hourglass]
+      TheSearchForKadath
+
+hazuthKleg :: CardDef
+hazuthKleg =
+  veiled
+    $ location
+      "06141"
+      "Hazuth-Kleg"
+      [OothNargai, City]
+      Plus
+      [Hourglass, Plus]
+      TheSearchForKadath
+
+templeOfUnattainableDesires :: CardDef
+templeOfUnattainableDesires =
+  victory 1
+    $ veiled
+    $ location
+      "06142"
+      "Temple of Unattainable Desires"
+      [OothNargai, Temple]
+      T
+      [Plus, Star]
+      TheSearchForKadath
+
+cityWhichAppearsOnNoMap :: CardDef
+cityWhichAppearsOnNoMap =
+  victory 2
+    $ veiled
+    $ location
+      "06143"
+      "City-Which-Appears-On-No-Map"
+      [City, Otherworld]
+      T
+      [Plus, Star]
+      TheSearchForKadath
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

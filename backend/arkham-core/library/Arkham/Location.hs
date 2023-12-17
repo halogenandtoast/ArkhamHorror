@@ -514,6 +514,24 @@ allLocations =
     , SomeLocationCard morgue
     , SomeLocationCard operatingRoom
     , SomeLocationCard privateRoom
+    , --- The Search for Kadath
+      SomeLocationCard ulthar
+    , SomeLocationCard skaiRiver
+    , SomeLocationCard dylathLeen
+    , SomeLocationCard kadatheron
+    , SomeLocationCard sarnath
+    , SomeLocationCard ruinsOfIb
+    , SomeLocationCard ilekVad
+    , SomeLocationCard forbiddenLands
+    , SomeLocationCard zulanThek
+    , SomeLocationCard baharna
+    , SomeLocationCard mtNgranek
+    , SomeLocationCard namelessRuins
+    , SomeLocationCard celephais
+    , SomeLocationCard serannian
+    , SomeLocationCard hazuthKleg
+    , SomeLocationCard templeOfUnattainableDesires
+    , SomeLocationCard cityWhichAppearsOnNoMap
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -3112,6 +3112,7 @@ agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 actionMatches :: HasGame m => InvestigatorId -> Action -> Matcher.ActionMatcher -> m Bool
 actionMatches _ _ Matcher.AnyAction = pure True
 actionMatches _ a (Matcher.ActionIs a') = pure $ a == a'
+actionMatches iid a (Matcher.ActionMatches as) = allM (actionMatches iid a) as
 actionMatches iid a (Matcher.ActionOneOf as) = anyM (actionMatches iid a) as
 actionMatches iid a Matcher.RepeatableAction = do
   a' <- getAttrs @Investigator iid

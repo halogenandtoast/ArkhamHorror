@@ -1050,8 +1050,51 @@ data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter 
 instance IsLabel "clue" CounterMatcher where
   fromLabel = ClueCounter
 
-data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher] | RepeatableAction
+data ActionMatcher
+  = ActionIs Action
+  | AnyAction
+  | ActionOneOf [ActionMatcher]
+  | ActionMatches [ActionMatcher]
+  | RepeatableAction
   deriving stock (Show, Eq, Ord, Data)
+
+instance Semigroup ActionMatcher where
+  AnyAction <> x = x
+  x <> AnyAction = x
+  ActionMatches xs <> ActionMatches ys = ActionMatches $ xs <> ys
+  ActionMatches xs <> x = ActionMatches $ xs <> [x]
+  x <> ActionMatches xs = ActionMatches $ x : xs
+  x <> y = ActionMatches [x, y]
+
+instance Monoid ActionMatcher where
+  mempty = AnyAction
+
+instance IsLabel "activate" ActionMatcher where
+  fromLabel = ActionIs #activate
+
+instance IsLabel "engage" ActionMatcher where
+  fromLabel = ActionIs #engage
+
+instance IsLabel "evade" ActionMatcher where
+  fromLabel = ActionIs #evade
+
+instance IsLabel "fight" ActionMatcher where
+  fromLabel = ActionIs #fight
+
+instance IsLabel "investigate" ActionMatcher where
+  fromLabel = ActionIs #investigate
+
+instance IsLabel "move" ActionMatcher where
+  fromLabel = ActionIs #move
+
+instance IsLabel "play" ActionMatcher where
+  fromLabel = ActionIs #play
+
+instance IsLabel "resource" ActionMatcher where
+  fromLabel = ActionIs #resource
+
+instance IsLabel "draw" ActionMatcher where
+  fromLabel = ActionIs #draw
 
 data AbilityMatcher
   = AbilityOnLocation LocationMatcher

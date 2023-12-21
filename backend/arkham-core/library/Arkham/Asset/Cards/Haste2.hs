@@ -29,7 +29,14 @@ haste2 = asset Haste2 Cards.haste2
 instance HasAbilities Haste2 where
   getAbilities (Haste2 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (PerformedSameTypeOfAction #after You RepeatableAction) (exhaust a)
+        $ ReactionAbility
+          ( PerformedSameTypeOfAction
+              #after
+              You
+              $ RepeatableAction
+              <> oneOf [#activate, #engage, #evade, #fight, #investigate, #move, #play, #resource, #draw]
+          )
+          (exhaust a)
     ]
 
 getActionTypes :: [Window] -> [Action]

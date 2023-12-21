@@ -34,6 +34,9 @@ data Action
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+instance IsLabel "activate" Action where
+  fromLabel = Activate
+
 instance IsLabel "investigate" Action where
   fromLabel = Investigate
 

@@ -53,6 +53,9 @@ affectsOthers matcher =
 class OneOf a where
   oneOf :: [a] -> a
 
+instance OneOf ActionMatcher where
+  oneOf = ActionOneOf
+
 instance OneOf ChaosTokenMatcher where
   oneOf = ChaosTokenMatchesAny
 

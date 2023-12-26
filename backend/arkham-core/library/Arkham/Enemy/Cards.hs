@@ -107,6 +107,7 @@ allEncounterEnemyCards =
       , corpseHungryGhoul
       , corpseTaker
       , corruptedOrderly
+      , corsairOfLeng
       , covenInitiate
       , crazedShoggoth
       , creatureOutOfDemhe
@@ -1632,6 +1633,13 @@ swarmOfSpiders =
   (enemy "06102" "Swarm of Spiders" Spiders 3)
     { cdCardTraits = setFromList [Creature, Spider]
     , cdKeywords = setFromList [Keyword.Swarming (Static 2)]
+    }
+
+corsairOfLeng :: CardDef
+corsairOfLeng =
+  (enemy "06105" "Corsair of Leng" Corsairs 2)
+    { cdCardTraits = setFromList [Humanoid, Monster]
+    , cdKeywords = singleton Keyword.Alert
     }
 
 furtiveZoog :: CardDef

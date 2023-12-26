@@ -183,6 +183,7 @@ data Trait
   | Steps
   | Summon
   | Supply
+  | Surface
   | Syndicate
   | Tactic
   | Talent

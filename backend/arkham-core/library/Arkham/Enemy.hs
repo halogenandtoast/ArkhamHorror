@@ -312,6 +312,8 @@ allEnemies =
     , --- Spiders
       SomeEnemyCard spiderOfLeng
     , SomeEnemyCard swarmOfSpiders
+    , --- Corsairs
+      SomeEnemyCard corsairOfLeng
     , --- Zoogs
       SomeEnemyCard furtiveZoog
     , SomeEnemyCard stealthyZoog

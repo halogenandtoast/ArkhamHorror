@@ -10,7 +10,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Data.Aeson.TH
 
-data EnemyAttackType = AttackOfOpportunity | RegularAttack
+data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack
   deriving stock (Show, Eq, Ord)
 
 data EnemyAttackDetails = EnemyAttackDetails
@@ -49,6 +49,9 @@ attackOfOpportunity enemyId source target =
 damageStrategyL :: Lens' EnemyAttackDetails DamageStrategy
 damageStrategyL =
   lens attackDamageStrategy $ \m x -> m {attackDamageStrategy = x}
+
+viaAlert :: EnemyAttackDetails -> EnemyAttackDetails
+viaAlert a = a {attackType = AlertAttack}
 
 $(deriveJSON defaultOptions ''EnemyAttackType)
 $(deriveJSON defaultOptions ''EnemyAttackDetails)

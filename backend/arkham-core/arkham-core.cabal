@@ -2214,6 +2214,7 @@ library
       Arkham.Scenarios.ThePallidMask.Helpers
       Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.TheSearchForKadath.FlavorText
+      Arkham.Scenarios.TheSearchForKadath.Helpers
       Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story

@@ -67,7 +67,7 @@ data ScenarioLogKey
   | ThePoliceAreOnYourSide
   deriving stock (Eq, Show, Ord, Data)
 
-data ScenarioCountKey = CurrentDepth | PlaceholderCountKey
+data ScenarioCountKey = CurrentDepth | SignOfTheGods
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where

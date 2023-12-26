@@ -1,9 +1,11 @@
 module Arkham.Scenario.Scenarios.TheSearchForKadath (TheSearchForKadath (..), theSearchForKadath) where
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Runner (Message (PreScenarioSetup), story)
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -14,10 +16,13 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.TheSearchForKadath.FlavorText
 import Arkham.Scenarios.TheSearchForKadath.Helpers
 
 newtype TheSearchForKadath = TheSearchForKadath ScenarioAttrs
@@ -45,6 +50,45 @@ instance HasChaosTokenValue TheSearchForKadath where
 
 instance RunMessage TheSearchForKadath where
   runMessage msg s@(TheSearchForKadath attrs) = case msg of
+    PreScenarioSetup -> do
+      players <- allPlayers
+      blackCatAtYourSide <- getHasRecord TheBlackCatIsAtYourSide
+      parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
+      saved <- getHasRecord TheInvestigatorsWereSavedByRandolphCarder
+      withLuke <- selectAny $ InvestigatorWithTitle "Luke Robinson"
+      pushAll $ story players intro1 -- 1
+        : (guard blackCatAtYourSide *> [story players intro2]) -- 2
+          <> (guard withLuke *> [story players intro3]) -- 3
+          <> (guard (not withLuke) *> [story players intro4]) -- 4
+          <> [DoStep (if parleyed || saved then 5 else 6) PreScenarioSetup] -- 5 || 6
+      pure s
+    DoStep 5 PreScenarioSetup -> do
+      lead <- getLeadPlayer
+      players <- allPlayers
+      push
+        $ storyWithChooseOne
+          lead
+          players
+          intro5
+          [ Label "Leave empty-handed" [story players intro7]
+          , Label
+              "Force your way into the temple."
+              [story players intro8, Record TheInvestigatorsForcedTheirWayIntoTheTemple]
+          ]
+      pure s
+    DoStep 6 PreScenarioSetup -> do
+      players <- allPlayers
+      investigators <- allInvestigators
+      parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
+      pushAll
+        $ [story players intro6, story players intro9, IncrementRecordCount EvidenceOfKadath 1]
+        <> ( guard parleyed
+              *> ( [story players intro10, IncrementRecordCount EvidenceOfKadath 1]
+                    <> map (\iid -> GainXP iid (toSource attrs) 2) investigators
+                 )
+           )
+        <> (guard (not parleyed) *> [story players intro11])
+      pure s
     Setup -> do
       let
         setAsideCards =

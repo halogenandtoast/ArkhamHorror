@@ -326,8 +326,8 @@ instance Sourceable Investigator where
 instance ToGameLoggerFormat Investigator where
   format = format . toAttrs
 
-data SomeInvestigatorCard
-  = forall a. IsInvestigator a => SomeInvestigatorCard (InvestigatorCard a)
+data SomeInvestigatorCard where
+  SomeInvestigatorCard :: IsInvestigator a => InvestigatorCard a -> SomeInvestigatorCard
 
 instance HasCardCode Investigator where
   toCardCode = investigatorCardCode . toAttrs
@@ -347,8 +347,7 @@ toInvestigator (SomeInvestigatorCard f) = Investigator . cbCardBuilder f nullCar
 makeLensesWith suffixedFields ''InvestigatorAttrs
 
 searchingFoundCardsL :: Lens' InvestigatorSearch (Map Zone [Card])
-searchingFoundCardsL =
-  lens searchingFoundCards $ \m x -> m {searchingFoundCards = x}
+searchingFoundCardsL = lens searchingFoundCards $ \m x -> m {searchingFoundCards = x}
 
 foundCardsL :: Traversal' InvestigatorAttrs (Map Zone [Card])
 foundCardsL = searchL . _Just . searchingFoundCardsL

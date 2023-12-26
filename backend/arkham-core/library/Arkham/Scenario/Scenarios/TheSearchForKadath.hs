@@ -1,14 +1,22 @@
 module Arkham.Scenario.Scenarios.TheSearchForKadath (TheSearchForKadath (..), theSearchForKadath) where
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Prelude
+import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheSearchForKadath.Helpers
 
@@ -38,8 +46,65 @@ instance HasChaosTokenValue TheSearchForKadath where
 instance RunMessage TheSearchForKadath where
   runMessage msg s@(TheSearchForKadath attrs) = case msg of
     Setup -> do
-      push $ EndOfGame Nothing
-      pure s
+      let
+        setAsideCards =
+          [ Enemies.catsOfUlthar
+          , Enemies.stalkingManticore
+          , Enemies.theCrawlingMist
+          , Enemies.hordeOfNight
+          , Enemies.beingsOfIb
+          , Enemies.tenebrousNightgaunt
+          , Enemies.tenebrousNightgaunt
+          , Enemies.corsairOfLeng
+          , Enemies.corsairOfLeng
+          , Enemies.priestOfAThousandMasks
+          , Enemies.priestOfAThousandMasks
+          , Enemies.priestOfAThousandMasks
+          ]
+      let excludes = setAsideCards
+
+      encounterDeck <-
+        buildEncounterDeckExcluding
+          excludes
+          [ EncounterSet.TheSearchForKadath
+          , EncounterSet.AgentsOfNyarlathotep
+          , EncounterSet.Corsairs
+          , EncounterSet.Dreamlands
+          , EncounterSet.WhispersOfHypnos
+          , EncounterSet.Zoogs
+          ]
+
+      setAside <- genCards setAsideCards
+
+      (ulthar, placeUlthar) <- placeLocationCard Locations.ulthar
+      otherPlacements <- placeLocationCards_ [Locations.skaiRiver, Locations.dylathLeen]
+
+      agendas <- genCards [Agendas.journeyAcrossTheDreamlands, Agendas.agentsOfTheOuterGods]
+      acts <-
+        genCards
+          [ Acts.kingdomOfTheSkai
+          , Acts.theIsleOfOriab
+          , Acts.theDoomThatCameBefore
+          , Acts.seekOutTheNight
+          , Acts.theKingsDecree
+          ]
+      lead <- getLead
+      virgil <- genCard Assets.virgilGray
+
+      pushAll
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck, placeUlthar]
+        <> otherPlacements
+        <> [MoveAllTo (toSource attrs) ulthar]
+        <> [TakeControlOfSetAsideAsset lead virgil]
+
+      TheSearchForKadath
+        <$> runMessage
+          msg
+          ( attrs
+              & (setAsideCardsL .~ setAside)
+              & (actStackL . at 1 ?~ acts)
+              & (agendaStackL . at 1 ?~ agendas)
+          )
     ResolveChaosToken _ Cultist iid -> do
       push $ DrawAnotherChaosToken iid
       pure s

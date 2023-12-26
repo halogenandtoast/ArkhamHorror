@@ -748,6 +748,7 @@ data WindowMatcher
   | EnemyEnters Timing Where EnemyMatcher
   | EnemyLeaves Timing Where EnemyMatcher
   | AgendaAdvances Timing AgendaMatcher
+  | ActAdvances Timing ActMatcher
   | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
   | AssetDefeated Timing DefeatedByMatcher AssetMatcher
   | EnemyEvaded Timing Who EnemyMatcher

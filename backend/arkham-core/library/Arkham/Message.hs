@@ -734,6 +734,7 @@ data Message
   | ReadyExhausted
   | Record CampaignLogKey
   | RecordCount CampaignLogKey Int
+  | IncrementRecordCount CampaignLogKey Int
   | RecordSetInsert CampaignLogKey [SomeRecorded]
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
   | RefillSlots InvestigatorId

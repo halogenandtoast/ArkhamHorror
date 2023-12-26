@@ -177,6 +177,8 @@ defaultCampaignRunner msg a = case msg of
         )
   RecordCount key int ->
     pure $ updateAttrs a $ logL . recordedCountsL %~ insertMap key int
+  IncrementRecordCount key int ->
+    pure $ updateAttrs a $ logL . recordedCountsL %~ alterMap (Just . maybe int (+ int)) key
   ScenarioResolution r -> case campaignStep (toAttrs a) of
     ScenarioStep sid -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
     _ -> error "must be called in a scenario"

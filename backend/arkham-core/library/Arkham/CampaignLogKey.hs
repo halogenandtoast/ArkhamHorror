@@ -230,6 +230,8 @@ data CampaignLogKey
   | TheBlackCatHasAHunch
   | TheBlackCatIsAtYourSide
   | YouAskedForIt
+  | TheInvestigatorsForcedTheirWayIntoTheTemple
+  | EvidenceOfKadath
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

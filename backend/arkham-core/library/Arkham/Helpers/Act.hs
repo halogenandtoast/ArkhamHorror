@@ -23,3 +23,6 @@ getActStep = fieldMap ActSequence (AS.unActStep . AS.actStep)
 advanceVia
   :: (EntityId a ~ ActId, Sourceable source, Entity a) => AdvancementMethod -> a -> source -> Message
 advanceVia method (toId -> actId) (toSource -> source) = AdvanceAct actId source method
+
+getCurrentAct :: HasGame m => m ActId
+getCurrentAct = selectOnlyOne AnyAct

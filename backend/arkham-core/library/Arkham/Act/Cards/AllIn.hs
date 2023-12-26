@@ -11,7 +11,6 @@ import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.SkillType
 
 newtype AllIn = AllIn ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

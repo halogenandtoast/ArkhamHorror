@@ -379,6 +379,8 @@ allTreacheries =
     , SomeTreacheryCard threadsOfReality
     , -- Spiders
       SomeTreacheryCard sickeningWebs
+    , -- Corsairs
+      SomeTreacheryCard huntedByCorsairs
     , -- Zoogs
       SomeTreacheryCard zoogBurrow
     , -- The Search for Kadath

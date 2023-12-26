@@ -730,6 +730,12 @@ getActionsWith iid window f = do
               $ map
                 (\source -> action {abilitySource = ProxySource source base})
                 sources
+          ProxySource (ActMatcherSource m) base -> do
+            sources <- selectListMap ActSource m
+            pure
+              $ map
+                (\source -> action {abilitySource = ProxySource source base})
+                sources
           ProxySource (AssetMatcherSource m) base -> do
             sources <- selectListMap AssetSource m
             pure
@@ -1991,6 +1997,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.AgendaAdvances timing agendaMatcher -> guardTiming timing $ \case
       Window.AgendaAdvance aid -> agendaMatches aid agendaMatcher
       _ -> noMatch
+    Matcher.ActAdvances timing actMatcher -> guardTiming timing $ \case
+      Window.ActAdvance aid -> actMatches aid actMatcher
+      _ -> noMatch
     Matcher.Exhausts timing whoMatcher targetMatcher -> guardTiming timing \case
       Window.Exhausts target@(AssetTarget aid) -> do
         mController <- field AssetController aid
@@ -3108,6 +3117,9 @@ deckMatch iid deckSignifier = \case
 
 agendaMatches :: HasGame m => AgendaId -> Matcher.AgendaMatcher -> m Bool
 agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
+
+actMatches :: HasGame m => ActId -> Matcher.ActMatcher -> m Bool
+actMatches !actId !mtchr = member actId <$> select mtchr
 
 actionMatches :: HasGame m => InvestigatorId -> Action -> Matcher.ActionMatcher -> m Bool
 actionMatches _ _ Matcher.AnyAction = pure True

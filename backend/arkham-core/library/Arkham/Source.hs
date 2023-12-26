@@ -10,8 +10,13 @@ import {-# SOURCE #-} Arkham.Card
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken
 import Arkham.Id
-import Arkham.Matcher.Types
-    ( AgendaMatcher, AssetMatcher, LocationMatcher, EnemyMatcher )
+import Arkham.Matcher.Types (
+  ActMatcher,
+  AgendaMatcher,
+  AssetMatcher,
+  EnemyMatcher,
+  LocationMatcher,
+ )
 import Arkham.Tarot
 import Arkham.Trait
 import Control.Lens (Prism', prism')
@@ -28,6 +33,7 @@ data Source
   | AgendaSource AgendaId
   | AgendaMatcherSource AgendaMatcher
   | AssetMatcherSource AssetMatcher
+  | ActMatcherSource ActMatcher
   | AssetSource AssetId
   | CardCodeSource CardCode
   | CardSource Card
@@ -128,6 +134,9 @@ instance Sourceable PlayerCard where
 
 instance Sourceable AssetMatcher where
   toSource = AssetMatcherSource
+
+instance Sourceable ActMatcher where
+  toSource = ActMatcherSource
 
 instance Sourceable LocationMatcher where
   toSource = LocationMatcherSource

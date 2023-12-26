@@ -22,6 +22,7 @@ sourceTraits = \case
   AgendaSource _ -> pure mempty
   AgendaMatcherSource _ -> pure mempty
   AssetMatcherSource _ -> pure mempty
+  ActMatcherSource _ -> pure mempty
   AssetSource aid -> field AssetTraits aid
   CardCodeSource _ -> pure mempty
   CardSource c -> pure (toTraits c)

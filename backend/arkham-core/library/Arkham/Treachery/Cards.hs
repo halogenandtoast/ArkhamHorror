@@ -211,6 +211,7 @@ allEncounterTreacheryCards =
       , graveLightSpectral
       , harvestedBrain
       , huntedByByakhee
+      , huntedByCorsairs
       , huntedDown
       , huntingShadow
       , illOmen
@@ -1785,6 +1786,12 @@ sickeningWebs :: CardDef
 sickeningWebs =
   (treachery "06103" "Sickening Webs" Spiders 2)
     { cdCardTraits = singleton Obstacle
+    }
+
+huntedByCorsairs :: CardDef
+huntedByCorsairs =
+  (treachery "06104" "Hunted by Corsairs" Corsairs 2)
+    { cdCardTraits = singleton Scheme
     }
 
 zoogBurrow :: CardDef

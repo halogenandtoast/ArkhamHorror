@@ -53,17 +53,21 @@ advanceActSideA attrs advanceMode = do
 instance RunMessage Act where
   runMessage msg (Act a) = Act <$> runMessage msg a
 
+onFrontSide :: ActAttrs -> Bool
+onFrontSide = (`elem` [A, C, E]) . actSide . actSequence
+
+backSide :: ActAttrs -> ActSide
+backSide attrs = case actSide $ actSequence attrs of
+  A -> B
+  C -> D
+  E -> F
+  _ -> error "backSide: not on front side"
+
 instance RunMessage ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
-    AdvanceAct aid _ advanceMode | aid == actId && onSide A a -> do
+    AdvanceAct aid _ advanceMode | aid == actId && onFrontSide a -> do
       pushAll =<< advanceActSideA a advanceMode
-      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) B)
-    AdvanceAct aid _ advanceMode | aid == actId && onSide C a -> do
-      pushAll =<< advanceActSideA a advanceMode
-      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) D)
-    AdvanceAct aid _ advanceMode | aid == actId && onSide E a -> do
-      pushAll =<< advanceActSideA a advanceMode
-      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) F)
+      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) (backSide a))
     AttachTreachery tid (ActTarget aid) | aid == actId -> do
       pure $ a & treacheriesL %~ insertSet tid
     Discard _ _ (ActTarget aid) | aid == toId a -> do

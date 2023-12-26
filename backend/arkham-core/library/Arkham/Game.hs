@@ -7,7 +7,6 @@ module Arkham.Game (
 
 import Arkham.Prelude
 
-import Arkham.Git (gitHash)
 import Arkham.Ability hiding (you)
 import Arkham.Act
 import Arkham.Act.Sequence qualified as AC
@@ -61,6 +60,7 @@ import Arkham.Game.Runner ()
 import Arkham.Game.Settings
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Git (gitHash)
 import Arkham.Helpers
 import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
 import Arkham.Helpers.ChaosBag
@@ -166,7 +166,7 @@ import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Aeson.Types (parse, emptyArray)
+import Data.Aeson.Types (emptyArray, parse)
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal (getMonoidalMap)
 import Data.Map.Monoidal qualified as MonoidalMap
@@ -541,10 +541,10 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
             ( \iid ->
                 ( iid
                 , (`with` emptyAdditionalData)
-                      . (`with` ConnectionData [])
-                      . (`with` ModifierData [])
-                      . WithDeckSize
-                      $ lookupInvestigator iid (PlayerId nil)
+                    . (`with` ConnectionData [])
+                    . (`with` ModifierData [])
+                    . WithDeckSize
+                    $ lookupInvestigator iid (PlayerId nil)
                 )
             )
           $ Map.keys (campaignDecks attrs)
@@ -1269,6 +1269,12 @@ replaceMatcherSources :: HasGame m => Ability -> m [Ability]
 replaceMatcherSources ability = case abilitySource ability of
   ProxySource (AgendaMatcherSource m) base -> do
     sources <- selectListMap AgendaSource m
+    pure
+      $ map
+        (\source -> ability {abilitySource = ProxySource source base})
+        sources
+  ProxySource (ActMatcherSource m) base -> do
+    sources <- selectListMap ActSource m
     pure
       $ map
         (\source -> ability {abilitySource = ProxySource source base})

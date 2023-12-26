@@ -3151,6 +3151,7 @@ enemyAttackMatches :: HasGame m => EnemyAttackDetails -> Matcher.EnemyAttackMatc
 enemyAttackMatches details@EnemyAttackDetails {..} = \case
   Matcher.AnyEnemyAttack -> pure True
   Matcher.AttackOfOpportunityAttack -> pure $ attackType == AttackOfOpportunity
+  Matcher.AttackViaAlert -> pure $ attackType == AlertAttack
   Matcher.CancelableEnemyAttack matcher -> do
     modifiers' <- getModifiers (sourceToTarget attackSource)
     enemyModifiers <- getModifiers attackEnemy

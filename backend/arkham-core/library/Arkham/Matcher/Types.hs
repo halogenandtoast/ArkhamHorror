@@ -1188,6 +1188,7 @@ data DamageEffectMatcher
 data EnemyAttackMatcher
   = AnyEnemyAttack
   | AttackOfOpportunityAttack
+  | AttackViaAlert
   | CancelableEnemyAttack EnemyAttackMatcher
   deriving stock (Show, Eq, Ord, Data)
 

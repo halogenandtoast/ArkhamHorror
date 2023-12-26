@@ -660,7 +660,7 @@ instance RunMessage EnemyAttrs where
       afterWindow <- checkWindows [mkAfter $ Window.FailEvadeEnemy iid enemyId n]
       pushAll
         $ [whenWindow, afterWindow]
-        <> [ EnemyAttack $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
+        <> [ EnemyAttack $ viaAlert $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
            | Keyword.Alert `elem` keywords
            ]
       pure a

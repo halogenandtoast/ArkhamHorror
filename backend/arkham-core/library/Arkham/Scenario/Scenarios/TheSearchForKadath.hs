@@ -1,10 +1,10 @@
 module Arkham.Scenario.Scenarios.TheSearchForKadath (TheSearchForKadath (..), theSearchForKadath) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Act.Runner (Message (PreScenarioSetup), story)
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
@@ -16,7 +16,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
-import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
@@ -48,8 +47,43 @@ instance HasChaosTokenValue TheSearchForKadath where
     ElderThing -> pure $ ChaosTokenValue ElderThing (PositiveModifier $ if isEasyStandard attrs then 2 else 1)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Skull
+  , Cultist
+  , Tablet
+  , Tablet
+  , AutoFail
+  , ElderSign
+  ]
+
+standaloneCampaignLog :: CampaignLog
+standaloneCampaignLog =
+  mkCampaignLog {campaignLogRecorded = setFromList [TheInvestigatorsWereSavedByRandolphCarder]}
+
 instance RunMessage TheSearchForKadath where
   runMessage msg s@(TheSearchForKadath attrs) = case msg of
+    SetChaosTokensForScenario -> do
+      whenM getIsStandalone $ do
+        push $ SetChaosTokens standaloneChaosTokens
+      pure s
+    StandaloneSetup -> do
+      pure
+        . TheSearchForKadath
+        $ attrs
+        & standaloneCampaignLogL
+        .~ standaloneCampaignLog
     PreScenarioSetup -> do
       players <- allPlayers
       blackCatAtYourSide <- getHasRecord TheBlackCatIsAtYourSide

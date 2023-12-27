@@ -198,5 +198,26 @@
           "content": 0
         }
     ]
+  },
+  {
+    "id": "06039",
+    "name": "Beyond the Gates of Sleep",
+    "campaign": "06",
+    "beta": true,
+    "settings": []
+  },
+  {
+    "id": "06063",
+    "name": "Waking Nightmare",
+    "campaign": "06",
+    "beta": true,
+    "settings": []
+  },
+  {
+    "id": "06119",
+    "name": "The Search for Kadath",
+    "campaign": "06",
+    "beta": true,
+    "settings": []
   }
 ]

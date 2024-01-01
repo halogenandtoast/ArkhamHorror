@@ -5226,7 +5226,7 @@ sarnath :: CardDef
 sarnath =
   victory 1
     $ veiled
-    $ location "06131" "Kadatheron" [Mnar, Ancient, Ruins] Circle [Square, Diamond] TheSearchForKadath
+    $ location "06131" "Sarnath" [Mnar, Ancient, Ruins] Diamond [Circle, Square] TheSearchForKadath
 
 ruinsOfIb :: CardDef
 ruinsOfIb =
@@ -5259,7 +5259,7 @@ mtNgranek :: CardDef
 mtNgranek =
   victory 1
     $ veiled
-    $ location "06137" "Mt. Ngarek" [Oriab, Mountain] Square [Circle, Diamond] TheSearchForKadath
+    $ location "06137" "Mt. Ngranek" [Oriab, Mountain] Square [Circle, Diamond] TheSearchForKadath
 
 namelessRuins :: CardDef
 namelessRuins =

@@ -15,41 +15,9 @@ packages:
     version: 1.2.0.1
   original:
     url: https://github.com/halogenandtoast/monad-validate/archive/e5f36d4a82875c09c6000fed8f8ced50e21b75ce.tar.gz
-- completed:
-    name: esqueleto
-    pantry-tree:
-      sha256: dd38315f4243f75c27cb3bb2a7534b1935ff13a187390775cb3fb4fde7ef5a65
-      size: 5824
-    sha256: 7ac417ea2e98781b94387af086c19c3b7d726c5d8cd87e58d3b3f7637527ee02
-    size: 435871
-    url: https://github.com/MercuryTechnologies/esqueleto/archive/94d27de57072a823d97bd9868b33c45545c067c4.tar.gz
-    version: 3.5.11.0
-  original:
-    url: https://github.com/MercuryTechnologies/esqueleto/archive/94d27de57072a823d97bd9868b33c45545c067c4.tar.gz
-- completed:
-    hackage: websockets-0.12.7.3@sha256:3ecf458d4e1ffa64b61bce3c127ab5fff9be61fa2a246774e6e36c0ea1d4ad10,8237
-    pantry-tree:
-      sha256: 2287d61b83756a41fd3e47a94971d4f647176d36bde49b34f20b37653e44c978
-      size: 2592
-  original:
-    hackage: websockets-0.12.7.3@sha256:3ecf458d4e1ffa64b61bce3c127ab5fff9be61fa2a246774e6e36c0ea1d4ad10,8237
-- completed:
-    hackage: yesod-websockets-0.3.0.3@sha256:99f49618f7cbb944c928d2870872b6ff867602c80af5d83421a68feb2ad94186,1068
-    pantry-tree:
-      sha256: c5d20966fa615a5f11d7759ebb7b408b9ab69b3503c71e4d29dbd3e095bddff4
-      size: 320
-  original:
-    hackage: yesod-websockets-0.3.0.3@sha256:99f49618f7cbb944c928d2870872b6ff867602c80af5d83421a68feb2ad94186,1068
-- completed:
-    hackage: wai-websockets-3.0.1.2@sha256:0e713ddb8c28d47be76cefeab3a73b6876477d648ddcd873ba6b15d08691aa7f,1905
-    pantry-tree:
-      sha256: 81b4067c7fefad29f632f3e3b97096f1b16753afb3f6052beb5350dd4943e67f
-      size: 558
-  original:
-    hackage: wai-websockets-3.0.1.2@sha256:0e713ddb8c28d47be76cefeab3a73b6876477d648ddcd873ba6b15d08691aa7f,1905
 snapshots:
 - completed:
-    sha256: 5e0996fc81d0500f270e6e945a5b9cf412bf935cf7e0c419c01cd365717b8fe8
-    size: 529494
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/1/1.yaml
-  original: nightly-2024-01-01
+    sha256: 8b211c5a6aad3787e023dfddaf7de7868968e4f240ecedf14ad1c5b2199046ca
+    size: 714097
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/4.yaml
+  original: lts-22.4

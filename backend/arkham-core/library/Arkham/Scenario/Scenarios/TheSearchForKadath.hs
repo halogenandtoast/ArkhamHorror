@@ -1,6 +1,7 @@
 module Arkham.Scenario.Scenarios.TheSearchForKadath (TheSearchForKadath (..), theSearchForKadath) where
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Sequence
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -9,6 +10,7 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
@@ -30,7 +32,7 @@ newtype TheSearchForKadath = TheSearchForKadath ScenarioAttrs
 
 theSearchForKadath :: Difficulty -> TheSearchForKadath
 theSearchForKadath difficulty =
-  scenario
+  scenarioWith
     TheSearchForKadath
     "06119"
     "The Search for Kadath"
@@ -41,6 +43,7 @@ theSearchForKadath difficulty =
     , ".             .              ruinsOfIb .           ."
     , "zulanThek     forbiddenLands ilekVad   .           ."
     ]
+    (metaL .~ toJSON (Meta []))
 
 instance HasChaosTokenValue TheSearchForKadath where
   getChaosTokenValue iid tokenFace (TheSearchForKadath attrs) = case tokenFace of
@@ -226,4 +229,86 @@ instance RunMessage TheSearchForKadath where
           lift $ push $ skillTestModifier ElderThing iid (DiscoveredClues 1)
         _ -> pure ()
       pure s
+    SetScenarioMeta value -> do
+      let region = toResult value
+      let meta = toResult (scenarioMeta attrs)
+      let meta' = meta {regions = regions meta <> [region]}
+
+      leadId <- getLead
+      investigators <- getInvestigators
+      victoryLocations <- selectList $ LocationWithVictory <> LocationWithoutClues
+      locations <- filter (`notElem` victoryLocations) <$> selectList Anywhere
+
+      case region of
+        Oriab -> do
+          (baharna, placeBaharna) <- placeSetAsideLocation Locations.baharna
+          placeOriabRest <- placeSetAsideLocations [Locations.mtNgranek, Locations.namelessRuins]
+
+          pushAll
+            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> [placeBaharna, MoveAllTo (toSource attrs) baharna]
+            <> placeOriabRest
+            <> map (AddToVictory . toTarget) victoryLocations
+            <> map RemoveLocation locations
+            <> [ search
+                  leadId
+                  (toSource attrs)
+                  EncounterDeckTarget
+                  [fromDeck]
+                  (cardIs Enemies.nightriders)
+                  (DeferSearchedToTarget $ toTarget attrs)
+               , AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
+               ]
+        Mnar -> do
+          (kadatheron, placeKadatheron) <- placeSetAsideLocation Locations.kadatheron
+          (ruinsOfIb, placeRuinsOfIb) <- placeSetAsideLocation Locations.ruinsOfIb
+          placeSarnath <- placeSetAsideLocation_ Locations.sarnath
+          beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
+          createBeingsOfIb <- createEnemyAt_ beingsOfIb ruinsOfIb Nothing
+
+          pushAll
+            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> [placeKadatheron, MoveAllTo (toSource attrs) kadatheron]
+            <> [placeRuinsOfIb, placeSarnath, createBeingsOfIb]
+            <> map (AddToVictory . toTarget) victoryLocations
+            <> map RemoveLocation locations
+            <> [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs)]
+        ForbiddenLands -> do
+          (ilekVad, placeIlekVad) <- placeSetAsideLocation Locations.ilekVad
+          (forbiddenLands, placeForbiddenLands) <- placeSetAsideLocation Locations.forbiddenLands
+          (zulanThek, placeZulanThek) <- placeSetAsideLocation Locations.zulanThek
+          stalkingManticore <- getSetAsideCard Enemies.stalkingManticore
+          hordeOfNight <- getSetAsideCard Enemies.hordeOfNight
+          createStalkingManticore <- createEnemyAt_ stalkingManticore forbiddenLands Nothing
+          createHordeOfNight <- createEnemyAt_ hordeOfNight zulanThek Nothing
+
+          pushAll
+            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> [placeIlekVad, MoveAllTo (toSource attrs) ilekVad]
+            <> [placeForbiddenLands, placeZulanThek, createStalkingManticore, createHordeOfNight]
+            <> map (AddToVictory . toTarget) victoryLocations
+            <> map RemoveLocation locations
+            <> [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs)]
+        TimelessRealm -> do
+          (celephais, placeCelephais) <- placeSetAsideLocation Locations.celephais
+          placeTimlessRealmRest <- placeSetAsideLocations [Locations.serannian, Locations.hazuthKleg]
+          theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
+
+          pushAll
+            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> [placeCelephais, MoveAllTo (toSource attrs) celephais]
+            <> placeTimlessRealmRest
+            <> map (AddToVictory . toTarget) victoryLocations
+            <> map RemoveLocation locations
+            <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]
+               , search
+                  leadId
+                  (toSource attrs)
+                  EncounterDeckTarget
+                  [fromDeck]
+                  (cardIs Enemies.priestOfAThousandMasks)
+                  (DeferSearchedToTarget $ toTarget attrs)
+               , AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
+               ]
+      pure $ TheSearchForKadath $ attrs & metaL .~ toJSON meta'
     _ -> TheSearchForKadath <$> runMessage msg attrs

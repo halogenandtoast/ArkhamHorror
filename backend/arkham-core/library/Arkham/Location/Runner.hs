@@ -374,6 +374,9 @@ instance RunMessage LocationAttrs where
       let k = fromJustNote "missing key" $ setToList locationKeys !!? (n - 500)
       push $ PlaceKey (InvestigatorTarget iid) k
       pure a
+    RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
+      push $ RemoveLocation (toId a)
+      pure a
     _ -> pure a
 
 locationInvestigatorsWithClues :: HasGame m => LocationAttrs -> m [InvestigatorId]

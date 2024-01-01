@@ -1019,6 +1019,18 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & decksL
       . each
       %~ filter ((/= cCode) . toCardCode)
+  RemoveAllCopiesOfEncounterCardFromGame cardMatcher ->
+    pure
+      $ a
+      & setAsideCardsL
+      %~ filter (not . (`cardMatch` cardMatcher))
+      & encounterDeckL
+      %~ filter (not . (`cardMatch` cardMatcher))
+      & discardL
+      %~ filter (not . (`cardMatch` cardMatcher))
+      & decksL
+      . each
+      %~ filter (not . (`cardMatch` cardMatcher))
   SetCampaignLog newLog -> do
     isStandalone <- getIsStandalone
     if isStandalone

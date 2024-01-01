@@ -911,6 +911,7 @@ sourceToTarget = \case
   AbilitySource {} -> error "not implemented"
   ActDeckSource -> ActDeckTarget
   AgendaDeckSource -> AgendaDeckTarget
+  ActMatcherSource {} -> error "not converted"
   AgendaMatcherSource {} -> error "not converted"
   AssetMatcherSource {} -> error "not converted"
   LocationMatcherSource {} -> error "not converted"
@@ -2889,10 +2890,18 @@ locationMatches investigatorId source window locationId matcher' = do
   case matcher of
     -- special cases
     Matcher.NotLocation m -> not <$> locationMatches investigatorId source window locationId m
+    Matcher.LocationWithEnemy enemyMatcher -> selectAny $ Matcher.enemyAt locationId <> enemyMatcher
+    Matcher.LocationWithAsset assetMatcher -> selectAny $ Matcher.assetAt locationId <> assetMatcher
+    Matcher.LocationWithInvestigator whoMatcher -> selectAny $ Matcher.investigatorAt locationId <> whoMatcher
+    Matcher.LocationWithoutTreachery treacheryMatcher -> do selectNone $ Matcher.treacheryAt locationId <> treacheryMatcher
+    Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
+
+    -- normal cases
     Matcher.CanEnterLocation _ -> locationId <=~> matcher
     Matcher.IncludeEmptySpace _ -> locationId <=~> matcher
     Matcher.LocationCanBeEnteredBy {} -> locationId <=~> matcher
     Matcher.MostBreaches _ -> locationId <=~> matcher
+    Matcher.LocationWithVictory -> locationId <=~> matcher
     Matcher.FewestBreaches {} -> locationId <=~> matcher
     Matcher.LocationWithBreaches _ -> locationId <=~> matcher
     Matcher.LocationWithBrazier _ -> locationId <=~> matcher
@@ -2904,13 +2913,6 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.IsIchtacasDestination -> locationId <=~> matcher
     Matcher.HauntedLocation -> locationId <=~> matcher
     Matcher.SingleSidedLocation -> locationId <=~> matcher
-    Matcher.LocationWithEnemy enemyMatcher -> selectAny $ Matcher.enemyAt locationId <> enemyMatcher
-    Matcher.LocationWithAsset assetMatcher -> selectAny $ Matcher.assetAt locationId <> assetMatcher
-    Matcher.LocationWithInvestigator whoMatcher -> selectAny $ Matcher.investigatorAt locationId <> whoMatcher
-    Matcher.LocationWithoutTreachery treacheryMatcher -> do selectNone $ Matcher.treacheryAt locationId <> treacheryMatcher
-    Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
-
-    -- normal cases
     Matcher.LocationWithLowerPrintedShroudThan _ -> locationId <=~> matcher
     Matcher.LocationNotInPlay -> locationId <=~> matcher
     Matcher.LocationWithLabel _ -> locationId <=~> matcher

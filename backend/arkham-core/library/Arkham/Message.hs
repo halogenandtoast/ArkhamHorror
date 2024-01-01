@@ -742,6 +742,7 @@ data Message
   | ScenarioCountIncrementBy ScenarioCountKey Int
   | ScenarioCountDecrementBy ScenarioCountKey Int
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
+  | RemoveAllCopiesOfEncounterCardFromGame CardMatcher
   | RemovePlayerCardFromGame Bool Card
   | RemoveAllClues Source Target
   | RemoveAllDoomFromPlay RemoveDoomMatchers

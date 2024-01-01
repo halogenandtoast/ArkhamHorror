@@ -5,6 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.EncounterSet (EncounterSet(Zoogs))
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
@@ -16,10 +17,6 @@ import Arkham.Trait (Trait (Port))
 newtype KingdomOfTheSkai = KingdomOfTheSkai ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
-
--- Search the encounter deck, discard pile, and all play areas for Cats of
--- Ulthar, each Pack of Vooniths, and each card from the Zoogs encounter set,
--- and remove them from the game.
 
 kingdomOfTheSkai :: ActCard KingdomOfTheSkai
 kingdomOfTheSkai =
@@ -62,7 +59,9 @@ instance RunMessage KingdomOfTheSkai where
       theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
 
       pushAll
-        [ ShuffleCardsIntoDeck Deck.EncounterDeck priests
+        [ RemoveAllCopiesOfEncounterCardFromGame
+            $ oneOf [cardIs Enemies.catsOfUlthar, cardIs Enemies.packOfVooniths, CardFromEncounterSet Zoogs]
+        , ShuffleCardsIntoDeck Deck.EncounterDeck priests
         , ShuffleEncounterDiscardBackIn
         , storyWithChooseOne
             lead

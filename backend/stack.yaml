@@ -28,6 +28,7 @@ ghc-options:
     -Wno-implicit-prelude
     -Wno-deriving-typeable
     -Wno-missing-safe-haskell-mode
+    -Wno-missing-role-annotations
 
 packages:
   - cards-discover

@@ -35,7 +35,12 @@ theSearchForKadath difficulty =
     "06119"
     "The Search for Kadath"
     difficulty
-    ["ulthar skaiRiver dylathLeen"]
+    [ ".             baharna        ulthar    .           serannian"
+    , "namelessRuins mtNgranek      skaiRiver dylathLeen  celephaïs"
+    , ".             .              sarnath   kadatheron  hazuthKleg"
+    , ".             .              ruinsOfIb .           ."
+    , "zulanThek     forbiddenLands ilekVad   .           ."
+    ]
 
 instance HasChaosTokenValue TheSearchForKadath where
   getChaosTokenValue iid tokenFace (TheSearchForKadath attrs) = case tokenFace of
@@ -138,6 +143,18 @@ instance RunMessage TheSearchForKadath where
           , Enemies.priestOfAThousandMasks
           , Enemies.priestOfAThousandMasks
           , Enemies.priestOfAThousandMasks
+          , Locations.baharna
+          , Locations.namelessRuins
+          , Locations.mtNgranek
+          , Locations.sarnath
+          , Locations.kadatheron
+          , Locations.ruinsOfIb
+          , Locations.zulanThek
+          , Locations.forbiddenLands
+          , Locations.ilekVad
+          , Locations.serannian
+          , Locations.celephais
+          , Locations.hazuthKleg
           ]
       let excludes = setAsideCards
 

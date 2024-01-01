@@ -187,6 +187,9 @@ placeSetAsideLocation = placeLocation <=< getSetAsideCard
 placeSetAsideLocation_ :: (MonadRandom m, HasGame m) => CardDef -> m Message
 placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
 
+placeSetAsideLocations :: (MonadRandom m, HasGame m) => [CardDef] -> m [Message]
+placeSetAsideLocations = traverse placeSetAsideLocation_
+
 placeLocationCard :: (CardGen m, HasGame m) => CardDef -> m (LocationId, Message)
 placeLocationCard = placeLocation <=< genCard
 

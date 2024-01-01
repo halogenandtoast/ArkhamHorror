@@ -62,7 +62,7 @@ import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Git (gitHash)
 import Arkham.Helpers
-import Arkham.Helpers.Card (extendedCardMatch, iconsForCard)
+import Arkham.Helpers.Card (extendedCardMatch, getHasVictoryPoints, iconsForCard)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
 import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
@@ -1667,6 +1667,7 @@ getLocationsMatching lmatcher = do
       MostBreaches matcher' -> do
         ls' <- filter (`elem` ls) <$> getLocationsMatching matcher'
         maxes <$> forToSnd ls' (fieldMap LocationBreaches (maybe 0 Breach.countBreaches) . toId)
+      LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
       -- these can not be queried
       LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
       LocationLeavingPlay -> pure []

@@ -645,7 +645,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         batchId <- getRandom
         push $ DoBatch batchId msg
     pure a
-  DoBatch batchId (Search _ iid source EncounterDeckTarget cardSources _traits foundStrategy) -> do
+  DoBatch batchId (Search _ iid source EncounterDeckTarget cardSources cardMatcher foundStrategy) -> do
     mods <- getModifiers iid
     let
       additionalDepth = foldl' (+) 0 $ mapMaybe (preview Modifier._SearchDepth) mods
@@ -685,7 +685,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           ( (`notElem` findWithDefault [] Zone.FromDeck foundCards) . EncounterCard
           )
           (unDeck scenarioEncounterDeck)
-      targetCards = concat $ toList foundCards
+      targetCards = filter (`cardMatch` cardMatcher) $ concat $ toList foundCards
     pushBatch batchId $ EndSearch iid source EncounterDeckTarget cardSources
     player <- getPlayer iid
 

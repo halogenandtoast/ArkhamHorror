@@ -369,6 +369,7 @@ data LocationMatcher
   | ConnectedTo LocationMatcher
   | AccessibleFrom LocationMatcher
   | AccessibleTo LocationMatcher
+  | LocationWithVictory
   | LocationWithDistanceFrom Int LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher

@@ -1128,5 +1128,8 @@ instance RunMessage EnemyAttrs where
     RemoveAllCopiesOfCardFromGame _ cCode | cCode == toCardCode a -> do
       push $ RemoveEnemy (toId a)
       pure a
+    RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
+      push $ RemoveEnemy (toId a)
+      pure a
     SendMessage (isTarget a -> True) msg' -> runMessage msg' a
     _ -> pure a

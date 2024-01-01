@@ -68,9 +68,9 @@ getEventMaybe eid = do
     <|> getRemovedEntity eventsL eid g
 
 getInDiscardEntity
-  :: (id ~ EntityId entity, Ord id)
+  :: (entityId ~ EntityId entity, Ord entityId)
   => Lens' Entities (EntityMap entity)
-  -> id
+  -> entityId
   -> Game
   -> Maybe entity
 getInDiscardEntity lensFunc entityId game =
@@ -80,9 +80,9 @@ getInDiscardEntity lensFunc entityId game =
       (toList $ view inDiscardEntitiesL game)
 
 getRemovedEntity
-  :: (id ~ EntityId entity, Ord id)
+  :: (entityId ~ EntityId entity, Ord entityId)
   => Lens' Entities (EntityMap entity)
-  -> id
+  -> entityId
   -> Game
   -> Maybe entity
 getRemovedEntity lensFunc entityId game =
@@ -131,13 +131,7 @@ maybeAsset aid = do
 getEffect :: (HasCallStack, HasGame m) => EffectId -> m Effect
 getEffect effectId = fromMaybe (throw missingEffect) <$> maybeEffect effectId
  where
-  missingEffect =
-    MissingEntity
-      $ "Unknown effect: "
-      <> tshow effectId
-      <> "\n"
-      <> T.pack
-        (prettyCallStack callStack)
+  missingEffect = MissingEntity $ "Unknown effect: " <> tshow effectId <> "\n" <> T.pack (prettyCallStack callStack)
 
 maybeEffect :: HasGame m => EffectId -> m (Maybe Effect)
 maybeEffect effectId = do

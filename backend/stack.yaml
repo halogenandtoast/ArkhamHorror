@@ -3,8 +3,8 @@ require-stack-version: ">= 2.13.1"
 concurrent-tests: false
 system-ghc: true
 install-ghc: false
-resolver: nightly-2024-01-01
-compiler: ghc-9.8.1
+resolver: lts-22.4
+compiler: ghc-9.6.3
 
 ghc-options:
   "$locals":
@@ -28,7 +28,6 @@ ghc-options:
     -Wno-implicit-prelude
     -Wno-deriving-typeable
     -Wno-missing-safe-haskell-mode
-    -Wno-missing-role-annotations
 
 packages:
   - cards-discover
@@ -41,8 +40,3 @@ allow-newer: true
 extra-deps:
 - github: halogenandtoast/monad-validate
   commit: e5f36d4a82875c09c6000fed8f8ced50e21b75ce
-- github: MercuryTechnologies/esqueleto
-  commit: 94d27de57072a823d97bd9868b33c45545c067c4
-- websockets-0.12.7.3@sha256:3ecf458d4e1ffa64b61bce3c127ab5fff9be61fa2a246774e6e36c0ea1d4ad10,8237
-- yesod-websockets-0.3.0.3@sha256:99f49618f7cbb944c928d2870872b6ff867602c80af5d83421a68feb2ad94186,1068
-- wai-websockets-3.0.1.2@sha256:0e713ddb8c28d47be76cefeab3a73b6876477d648ddcd873ba6b15d08691aa7f,1905

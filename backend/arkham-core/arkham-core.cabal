@@ -2697,7 +2697,6 @@ library
       PatternSynonyms
       RecordWildCards
       StrictData
-      TypeAbstractions
       TypeFamilies
       TypeFamilyDependencies
       TypeOperators
@@ -2919,7 +2918,6 @@ test-suite spec
       PatternSynonyms
       RecordWildCards
       StrictData
-      TypeAbstractions
       TypeFamilies
       TypeFamilyDependencies
       TypeOperators

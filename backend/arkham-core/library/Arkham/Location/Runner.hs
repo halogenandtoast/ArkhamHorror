@@ -30,6 +30,7 @@ import Arkham.Target as X
 import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Constants
 import Arkham.Direction
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
@@ -370,6 +371,9 @@ instance RunMessage LocationAttrs where
       -- free because already paid for by ability
       push $ MoveAction iid locationId Free False
       pure a
+    UseCardAbility iid source 199 _ _ | isSource a source -> do
+      push $ Flip iid (toSource a) (toTarget a)
+      pure a
     UseCardAbility iid source n _ _ | isSource a source && n >= 500 && n <= 520 -> do
       let k = fromJustNote "missing key" $ setToList locationKeys !!? (n - 500)
       push $ PlaceKey (InvestigatorTarget iid) k
@@ -470,3 +474,15 @@ locationEnemiesWithTrait attrs trait = selectList $ enemyAt (toId attrs) <> Enem
 
 instance Be LocationAttrs LocationMatcher where
   be = LocationWithId . toId
+
+veiled :: LocationAttrs -> [Ability] -> [Ability]
+veiled attrs abilities =
+  extend
+    attrs
+    ( restrictedAbility
+        attrs
+        VeiledAbility
+        (exists $ LocationWithId (toId attrs) <> LocationCanBeFlipped <> LocationWithoutClues)
+        (FastAbility Free)
+        : abilities
+    )

@@ -1531,6 +1531,7 @@ library
       Arkham.Helpers.SkillTest
       Arkham.Helpers.Slot
       Arkham.Helpers.Source
+      Arkham.Helpers.Story
       Arkham.Helpers.Tarot
       Arkham.Helpers.Use
       Arkham.Helpers.Window
@@ -2336,6 +2337,7 @@ library
       Arkham.Story.Cards.AMomentsRest
       Arkham.Story.Cards.AnotherWay
       Arkham.Story.Cards.BleakDesolation
+      Arkham.Story.Cards.CrypticSouls
       Arkham.Story.Cards.EngramsOath
       Arkham.Story.Cards.GavriellasFate
       Arkham.Story.Cards.HastursEnd

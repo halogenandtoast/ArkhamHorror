@@ -27,6 +27,11 @@ pattern ResignAbility <- 99
   where
     ResignAbility = 99
 
+pattern VeiledAbility :: Int
+pattern VeiledAbility <- 199
+  where
+    VeiledAbility = 199
+
 pattern AbilityInvestigate :: Int
 pattern AbilityInvestigate <- 101
   where

@@ -76,4 +76,5 @@ allStories =
     , SomeStoryCard theTrialOfKamanThah
     , SomeStoryCard theTrialOfNasht
     , SomeStoryCard theInfestationBegins
+    , SomeStoryCard crypticSouls
     ]

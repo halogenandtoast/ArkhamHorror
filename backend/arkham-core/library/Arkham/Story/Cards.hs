@@ -60,6 +60,7 @@ allStoryCards =
       , theTrialOfKamanThah
       , theTrialOfNasht
       , theInfestationBegins
+      , crypticSouls
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -182,3 +183,6 @@ theTrialOfNasht = story "06058b" "The Trial of Nasht" BeyondTheGatesOfSleep
 
 theInfestationBegins :: CardDef
 theInfestationBegins = story "06078" "The Infestation Begins" WakingNightmare
+
+crypticSouls :: CardDef
+crypticSouls = story "06127b" "Cryptic Souls" TheSearchForKadath

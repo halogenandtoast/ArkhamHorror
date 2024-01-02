@@ -5206,7 +5206,9 @@ ulthar :: CardDef
 ulthar = veiled $ location "06127" "Ulthar" [Skai, City] Heart [Squiggle] TheSearchForKadath
 
 skaiRiver :: CardDef
-skaiRiver = location "06128" "Skai River" [Skai, City] Squiggle [Heart, Triangle] TheSearchForKadath
+skaiRiver =
+  singleSided
+    $ location "06128" "Skai River" [Skai, City] Squiggle [Heart, Triangle] TheSearchForKadath
 
 dylathLeen :: CardDef
 dylathLeen = veiled $ location "06129" "Dylath-Leen" [Skai, City, Port] Triangle [Squiggle] TheSearchForKadath
@@ -5242,7 +5244,8 @@ ilekVad =
 
 forbiddenLands :: CardDef
 forbiddenLands =
-  location "06134" "Forbidden Lands" [Forbidden, Wastes] Diamond [Circle, Square] TheSearchForKadath
+  singleSided
+    $ location "06134" "Forbidden Lands" [Forbidden, Wastes] Diamond [Circle, Square] TheSearchForKadath
 
 zulanThek :: CardDef
 zulanThek =

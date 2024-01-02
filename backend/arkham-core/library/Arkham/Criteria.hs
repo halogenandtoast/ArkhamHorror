@@ -7,14 +7,14 @@ module Arkham.Criteria (
 
 import Arkham.Prelude
 
-import Arkham.CampaignLogKey ( CampaignLogKey )
-import Arkham.Campaigns.TheForgottenAge.Supply ( Supply )
-import Arkham.Capability ( Capabilities, Capable(..) )
-import Arkham.Cost.Status ( CostStatus )
+import Arkham.CampaignLogKey (CampaignLogKey)
+import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
+import Arkham.Capability (Capabilities, Capable (..))
+import Arkham.Cost.Status (CostStatus)
 import Arkham.Criteria.Override
-import Arkham.Direction ( GridDirection )
-import Arkham.GameValue ( GameValue(Static) )
-import Arkham.History.Types ( HistoryType )
+import Arkham.Direction (GridDirection)
+import Arkham.GameValue (GameValue (Static))
+import Arkham.History.Types (HistoryType)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Scenario.Deck
@@ -180,6 +180,7 @@ data Criterion
   | CanMoveThis GridDirection
   | NotYetRecorded CampaignLogKey
   | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
+  | HasScenarioCount ScenarioCountKey ValueMatcher
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

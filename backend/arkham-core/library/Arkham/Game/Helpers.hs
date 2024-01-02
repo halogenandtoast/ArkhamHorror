@@ -1227,6 +1227,9 @@ passesCriteria iid mcard source windows' = \case
     investigators <- selectList iMatcher
     histories <- traverse (getHistory hType) investigators
     anyM (historyMatches historyMatcher) histories
+  Criteria.HasScenarioCount key valueMatcher -> do
+    n <- scenarioCount key
+    gameValueMatches n valueMatcher
   Criteria.NotYetRecorded key -> do
     recorded <- getHasRecord key
     pure $ not recorded

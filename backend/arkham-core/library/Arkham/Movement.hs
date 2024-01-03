@@ -2,10 +2,9 @@
 
 module Arkham.Movement where
 
-import Arkham.Prelude
-
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH

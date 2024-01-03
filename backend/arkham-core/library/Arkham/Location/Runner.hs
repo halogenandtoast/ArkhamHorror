@@ -372,7 +372,7 @@ instance RunMessage LocationAttrs where
       -- free because already paid for by ability
       push $ MoveAction iid locationId Free False
       pure a
-    UseCardAbility iid source 199 _ _ | isSource a source -> do
+    UseCardAbility iid source VeiledAbility _ _ | isSource a source -> do
       push $ Flip iid (toSource a) (toTarget a)
       pure a
     UseCardAbility iid source n _ _ | isSource a source && n >= 500 && n <= 520 -> do
@@ -478,7 +478,7 @@ instance Be LocationAttrs LocationMatcher where
 
 veiled :: LocationAttrs -> [Ability] -> [Ability]
 veiled attrs abilities =
-  extend
+  withRevealedAbilities
     attrs
     ( restrictedAbility
         attrs

@@ -227,6 +227,7 @@ const tarotCardAbility = (card: TarotCard) => {
 const phase = computed(() => props.game.phase)
 const phaseStep = computed(() => props.game.phaseStep)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
+const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 </script>
 
@@ -370,6 +371,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :src="scenarioGuide"
           />
           <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
+          <PoolItem class="signOfTheGods" v-if="signOfTheGods" type="resource" :amount="signOfTheGods" />
           <div class="pool" v-if="hasPool">
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
           </div>
@@ -734,6 +736,12 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   flex-direction: column;
   position: relative;
   .depth {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  .signOfTheGods {
     position: absolute;
     bottom: 0;
     right: 0;

@@ -59,6 +59,14 @@ frame window = do
 timings :: WindowType -> (Window, Window, Window)
 timings wType = (mkWhen wType, mkAtIf wType, mkAfter wType)
 
+batchedTimings :: BatchId -> WindowType -> (Window, Window, Window)
+batchedTimings batchId wType = case timings wType of
+  (whenWindow, atIfWindow, afterWindow) ->
+    ( whenWindow {windowBatchId = Just batchId}
+    , atIfWindow {windowBatchId = Just batchId}
+    , afterWindow {windowBatchId = Just batchId}
+    )
+
 doFrame :: HasGame m => Message -> WindowType -> m [Message]
 doFrame msg window = do
   (before, atIf, after) <- frame window

@@ -928,6 +928,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ chooseOrRunOne player
           $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
       ToLocation destinationLocationId -> do
+        batchId <- getRandom
+
         let
           source = moveSource movement
           iid = investigatorId
@@ -937,10 +939,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (whenMoves, atIfMoves, afterMoves) = timings (Window.Moves iid source mFromLocation destinationLocationId)
           (mWhenLeaving, mAtIfLeaving, mAfterLeaving) = case mFromLocation of
             Just from ->
-              timings (Window.Leaving iid from) & \case
+              batchedTimings batchId (Window.Leaving iid from) & \case
                 (whens, atIfs, afters) -> (Just whens, Just atIfs, Just afters)
             Nothing -> (Nothing, Nothing, Nothing)
-          (whenEntering, atIfEntering, afterEntering) = timings (Window.Entering iid destinationLocationId)
+          (whenEntering, atIfEntering, afterEntering) = batchedTimings batchId (Window.Entering iid destinationLocationId)
 
         -- Windows we need to check as understood:
         -- according to Empirical Hypothesis ruling the order should be like:
@@ -961,8 +963,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         runWhenEntering <- checkWindows [whenEntering]
         runAtIfEntering <- checkWindows [atIfEntering]
         runAfterEnteringMoves <- checkWindows [afterEntering, afterMoves]
-
-        batchId <- getRandom
 
         pushBatched batchId
           $ maybeToList mRunWhenLeaving

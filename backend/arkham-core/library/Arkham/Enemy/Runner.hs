@@ -179,7 +179,7 @@ instance RunMessage EnemyAttrs where
       if lid `notElem` locations'
         then push (toDiscard GameSource eid)
         else do
-          canSwarm <- not <$> withoutModifier a NoInitialSwarm
+          canSwarm <- withoutModifier a NoInitialSwarm
           let swarms = guard canSwarm *> mapMaybe (preview _Swarming) (toList keywords)
 
           case swarms of

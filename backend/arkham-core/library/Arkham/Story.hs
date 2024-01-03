@@ -77,4 +77,11 @@ allStories =
     , SomeStoryCard theTrialOfNasht
     , SomeStoryCard theInfestationBegins
     , SomeStoryCard crypticSouls
+    , SomeStoryCard dreamlikeHorrors
+    , SomeStoryCard endlessSecrets
+    , SomeStoryCard cylindersOfKadatheron
+    , SomeStoryCard theDoomOfSarnath
+    , SomeStoryCard ghostsOfTheDead
+    , SomeStoryCard thePalaceOfRainbows
+    , SomeStoryCard aShrineToTheGods
     ]

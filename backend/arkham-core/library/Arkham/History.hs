@@ -2,7 +2,7 @@ module Arkham.History (module Arkham.History, module Arkham.History.Types) where
 
 import Arkham.Prelude
 
-import Arkham.Card.CardCode
+import Arkham.Card
 import Arkham.Enemy.Types.Attrs
 import Arkham.History.Types
 import Arkham.Id
@@ -26,6 +26,7 @@ data History = History
   , historySuccessfulExplore :: Bool
   , historyActionsCompleted :: Int
   , historySkillTestsPerformed :: [[SkillType]]
+  , historyPlayedCards :: [Card]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
@@ -53,10 +54,11 @@ instance Semigroup History where
       , historySkillTestsPerformed =
           historySkillTestsPerformed h
             <> historySkillTestsPerformed g
+      , historyPlayedCards = historyPlayedCards h <> historyPlayedCards g
       }
 
 instance Monoid History where
-  mempty = History [] [] [] False mempty False 0 []
+  mempty = History [] [] [] False mempty False 0 [] []
 
 insertHistory
   :: InvestigatorId

@@ -18,6 +18,7 @@ import Arkham.Matcher (LocationMatcher (..))
 import Arkham.SkillType
 import Arkham.Token
 import Data.Aeson.TH
+import GHC.Records
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
@@ -46,6 +47,7 @@ data LocationAttrs = LocationAttrs
     -- with the location being revealed and claim there are no clues before they
     -- are placed. TODO: this could be a hasBeenRevealed bool
     locationWithoutClues :: Bool
+  , locationMeta :: Value
   }
   deriving stock (Show, Eq)
 
@@ -63,6 +65,9 @@ locationDamage = countTokens Damage . locationTokens
 
 locationResources :: LocationAttrs -> Int
 locationResources = countTokens Resource . locationTokens
+
+instance HasField "meta" LocationAttrs Value where
+  getField = locationMeta
 
 makeLensesWith suffixedFields ''LocationAttrs
 

@@ -2336,10 +2336,15 @@ library
       Arkham.Story.Cards.AboveAndBelow
       Arkham.Story.Cards.AMomentsRest
       Arkham.Story.Cards.AnotherWay
+      Arkham.Story.Cards.AShrineToTheGods
       Arkham.Story.Cards.BleakDesolation
       Arkham.Story.Cards.CrypticSouls
+      Arkham.Story.Cards.CylindersOfKadatheron
+      Arkham.Story.Cards.DreamlikeHorrors
+      Arkham.Story.Cards.EndlessSecrets
       Arkham.Story.Cards.EngramsOath
       Arkham.Story.Cards.GavriellasFate
+      Arkham.Story.Cards.GhostsOfTheDead
       Arkham.Story.Cards.HastursEnd
       Arkham.Story.Cards.InhabitantOfCarcosa
       Arkham.Story.Cards.JeromesFate
@@ -2357,11 +2362,13 @@ library
       Arkham.Story.Cards.StepsOfThePalace
       Arkham.Story.Cards.TheArchway
       Arkham.Story.Cards.TheCoffin
+      Arkham.Story.Cards.TheDoomOfSarnath
       Arkham.Story.Cards.TheFall
       Arkham.Story.Cards.TheFirstShow
       Arkham.Story.Cards.TheHeightOfTheDepths
       Arkham.Story.Cards.TheInfestationBegins
       Arkham.Story.Cards.TheKingsParade
+      Arkham.Story.Cards.ThePalaceOfRainbows
       Arkham.Story.Cards.ThePattern
       Arkham.Story.Cards.TheTrialOfKamanThah
       Arkham.Story.Cards.TheTrialOfNasht

@@ -4,7 +4,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
-import Arkham.Matcher
 import Arkham.Prelude
 
 newtype AfterHours = AfterHours ActAttrs

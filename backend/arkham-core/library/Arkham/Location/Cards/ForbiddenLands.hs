@@ -6,8 +6,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.SkillTest.Type
-import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
 
 newtype Meta = Meta {skillTestCount :: Int}
@@ -54,10 +52,9 @@ instance RunMessage ForbiddenLands where
           pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 2)
         2 -> do
           canFlip <- toId attrs <=~> LocationCanBeFlipped
-          push $ Flip iid (attrs.ability 1) (toTarget attrs)
+          pushWhen canFlip $ Flip iid (attrs.ability 1) (toTarget attrs)
           pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 0)
         _ -> error "invalid count"
-      pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ assignDamage iid (attrs.ability 1) 1
       pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 0)

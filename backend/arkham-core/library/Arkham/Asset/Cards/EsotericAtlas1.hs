@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.EsotericAtlas1 (
-  esotericAtlas1,
-  EsotericAtlas1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.EsotericAtlas1 (esotericAtlas1, EsotericAtlas1 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype EsotericAtlas1 = EsotericAtlas1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,7 +19,7 @@ instance HasAbilities EsotericAtlas1 where
     [ controlledAbility
         a
         1
-        (exists (LocationWithDistanceFrom 2 (RevealedLocation <> CanEnterLocation You)))
+        (exists $ LocationWithDistanceFrom 2 (RevealedLocation <> CanEnterLocation You))
         $ actionAbilityWithCost (assetUseCost a Secret 1)
     ]
 

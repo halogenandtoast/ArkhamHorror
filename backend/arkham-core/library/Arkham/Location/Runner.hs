@@ -11,6 +11,7 @@ import Arkham.Ability as X hiding (PaidCost)
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Location as X
 import Arkham.Helpers.Message as X hiding (
   DiscoverClues,

@@ -332,6 +332,7 @@ investigator f cardDef Stats {..} =
                 , investigatorStartsWithInHand = []
                 , investigatorCardsUnderneath = []
                 , investigatorSearch = Nothing
+                , investigatorMovement = Nothing
                 , investigatorBondedCards = mempty
                 , investigatorUsedAbilities = mempty
                 , investigatorUsedAdditionalActions = mempty

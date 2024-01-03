@@ -4,12 +4,14 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Effect.Runner
 import Arkham.EffectMetadata
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsTwistingPaths)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Name
 import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
@@ -41,8 +43,34 @@ instance RunMessage ArkhamWoodsTwistingPaths where
         target = InvestigatorTarget iid
         effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
       pushAll
-        [ CreateEffect "01151" effectMetadata (toAbilitySource attrs 1) target
+        [ createCardEffect Cards.arkhamWoodsTwistingPaths effectMetadata (toAbilitySource attrs 1) target
         , beginSkillTest iid (toAbilitySource attrs 1) target #intellect 3
         ]
       pure l
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs
+
+newtype ArkhamWoodsTwistingPathsEffect = ArkhamWoodsTwistingPathsEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+arkhamWoodsTwistingPathsEffect :: EffectArgs -> ArkhamWoodsTwistingPathsEffect
+arkhamWoodsTwistingPathsEffect = cardEffect ArkhamWoodsTwistingPathsEffect Cards.arkhamWoodsTwistingPaths
+
+instance HasModifiersFor ArkhamWoodsTwistingPathsEffect
+
+instance RunMessage ArkhamWoodsTwistingPathsEffect where
+  runMessage msg e@(ArkhamWoodsTwistingPathsEffect attrs) = case msg of
+    PassedThisSkillTest _ (LocationSource lid) -> do
+      arkhamWoodsTwistingPathsEffectId <-
+        getJustLocationByName ("Arkham Woods" <:> "Twisting PathsEffect")
+      when (lid == arkhamWoodsTwistingPathsEffectId)
+        $ case effectMetadata attrs of
+          Just (EffectMessages msgs) -> pushAll (msgs <> [disable attrs])
+          _ -> push $ disable attrs
+      pure e
+    FailedThisSkillTest _ (LocationSource lid) -> do
+      arkhamWoodsTwistingPathsEffectId <-
+        getJustLocationByName ("Arkham Woods" <:> "Twisting PathsEffect")
+      when (lid == arkhamWoodsTwistingPathsEffectId) (push $ disable attrs)
+      pure e
+    _ -> ArkhamWoodsTwistingPathsEffect <$> runMessage msg attrs

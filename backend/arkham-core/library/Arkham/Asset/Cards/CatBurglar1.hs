@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.CatBurglar1 (
-  CatBurglar1 (..),
-  catBurglar1,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.CatBurglar1 (CatBurglar1 (..), catBurglar1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass (IsAsset)
@@ -20,17 +16,14 @@ catBurglar1 :: AssetCard CatBurglar1
 catBurglar1 = ally CatBurglar1 Cards.catBurglar1 (2, 2)
 
 instance HasModifiersFor CatBurglar1 where
-  getModifiersFor (InvestigatorTarget iid) (CatBurglar1 a) =
+  getModifiersFor (InvestigatorTarget iid) (CatBurglar1 a) = do
     pure $ toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CatBurglar1 where
   getAbilities (CatBurglar1 a) =
     [ doesNotProvokeAttacksOfOpportunity
-        $ controlledAbility
-          a
-          1
-          (AnyCriterion [enemyExists EnemyEngagedWithYou, LocationExists AccessibleLocation])
+        $ controlledAbility a 1 (oneOf [exists EnemyEngagedWithYou, exists AccessibleLocation])
         $ actionAbilityWithCost (exhaust a)
     ]
 

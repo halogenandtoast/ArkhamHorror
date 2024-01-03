@@ -1,14 +1,10 @@
-module Arkham.Location.Cards.SkaiRiver
-  ( skaiRiver
-  , SkaiRiver(..)
-  )
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.SkaiRiver (skaiRiver, SkaiRiver (..)) where
 
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SkaiRiver = SkaiRiver LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,8 +15,9 @@ skaiRiver = location SkaiRiver Cards.skaiRiver 2 (Static 0)
 
 instance HasAbilities SkaiRiver where
   getAbilities (SkaiRiver attrs) =
-    getAbilities attrs
-    -- withRevealedAbilities attrs []
+    withRevealedAbilities
+      attrs
+      [mkAbility attrs 1 $ forced $ Leaves #when You $ LocationWithId (toId attrs)]
 
 instance RunMessage SkaiRiver where
   runMessage msg (SkaiRiver attrs) =

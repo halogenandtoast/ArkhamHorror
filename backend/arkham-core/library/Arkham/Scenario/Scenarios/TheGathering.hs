@@ -15,15 +15,10 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message.Lifted
+import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner hiding (
-  assignHorror,
-  findAndDrawEncounterCard,
-  placeLocationCard,
-  story,
- )
+import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheGathering.Story
 import Arkham.Trait qualified as Trait
 
@@ -50,9 +45,10 @@ theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
 instance RunMessage TheGathering where
-  runMessage msg s@(TheGathering attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheGathering attrs) = case msg of
     PreScenarioSetup -> do
-      story theGatheringIntro
+      players <- allPlayers
+      push $ story players theGatheringIntro
       pure s
     Setup -> do
       encounterDeck <-
@@ -65,6 +61,16 @@ instance RunMessage TheGathering where
           , EncounterSet.AncientEvils
           , EncounterSet.ChillingCold
           ]
+      (study, placeStudy) <- placeLocationCard Locations.study
+
+      pushAll
+        [ SetEncounterDeck encounterDeck
+        , SetAgendaDeck
+        , SetActDeck
+        , placeStudy
+        , RevealLocation Nothing study
+        , MoveAllTo (toSource attrs) study
+        ]
 
       setAsideCards <-
         genCards
@@ -78,14 +84,6 @@ instance RunMessage TheGathering where
 
       agendas <- genCards theGatheringAgendaDeck
       acts <- genCards [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
-
-      setEncounterDeck encounterDeck
-      setAgendaDeck
-      setActDeck
-
-      study <- placeLocationCard Locations.study
-      reveal study
-      moveAllTo attrs study
 
       TheGathering
         <$> runMessage
@@ -104,47 +102,58 @@ instance RunMessage TheGathering where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
-        Skull | isHardExpert attrs -> findAndDrawEncounterCard iid (#enemy <> withTrait Trait.Ghoul)
-        Cultist -> assignHorror iid (ChaosTokenSource token) (if isEasyStandard attrs then 1 else 2)
+        Skull | isHardExpert attrs -> push $ findAndDrawEncounterCard iid (#enemy <> withTrait Trait.Ghoul)
+        Cultist -> push $ assignHorror iid (ChaosTokenSource token) (if isEasyStandard attrs then 1 else 2)
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
       lead <- getLeadPlayer
       leadId <- getLeadInvestigatorId
-      let allGainXp = pushAll =<< toGainXp attrs (getXpWithBonus 2)
-      let chooseToAddLita = push $ addCampaignCardToDeckChoice lead [leadId] Assets.litaChantler
+      players <- allPlayers
+      gainXp <- toGainXp attrs $ getXpWithBonus 2
+      let chooseToAddLita = addCampaignCardToDeckChoice lead [leadId] Assets.litaChantler
       case resolution of
-        NoResolution -> do
-          story noResolution
-          record YourHouseIsStillStanding
-          record GhoulPriestIsStillAlive
-          chooseToAddLita
-          allGainXp
-        Resolution 1 -> do
-          story resolution1
-          record YourHouseHasBurnedToTheGround
-          chooseToAddLita
-          sufferMentalTrauma leadId 1
-          allGainXp
-        Resolution 2 -> do
+        NoResolution ->
+          pushAll
+            $ [ story players noResolution
+              , Record YourHouseIsStillStanding
+              , Record GhoulPriestIsStillAlive
+              , chooseToAddLita
+              ]
+            <> gainXp
+            <> [EndOfGame Nothing]
+        Resolution 1 ->
+          pushAll
+            $ [ story players resolution1
+              , Record YourHouseHasBurnedToTheGround
+              , chooseToAddLita
+              , SufferTrauma leadId 0 1
+              ]
+            <> gainXp
+            <> [EndOfGame Nothing]
+        Resolution 2 ->
           -- TODO: Combine gainXP and bonus so modifiers work
-          story resolution2
-          record YourHouseIsStillStanding
-          gainXp leadId attrs 1
-          allGainXp
-        Resolution 3 -> do
-          -- TODO: missing rules
-          -- \* kill non-resigned investigators
-          -- \* end campaign if none left
-          -- \* handle new investigators
-          -- \* handle lead being killed
-          story resolution3
-          record LitaWasForcedToFindOthersToHelpHerCause
-          record YourHouseIsStillStanding
-          record GhoulPriestIsStillAlive
-          chooseToAddLita
+          pushAll
+            $ [ story players resolution2
+              , Record YourHouseIsStillStanding
+              , GainXP leadId (toSource attrs) 1
+              ]
+            <> gainXp
+            <> [EndOfGame Nothing]
+        Resolution 3 ->
+          pushAll
+            -- TODO: missing rules
+            -- \* kill non-resigned investigators
+            -- \* end campaign if none left
+            -- \* handle new investigators
+            -- \* handle lead being killed
+            [ story players resolution3
+            , Record LitaWasForcedToFindOthersToHelpHerCause
+            , Record YourHouseIsStillStanding
+            , Record GhoulPriestIsStillAlive
+            , chooseToAddLita
+            , EndOfGame Nothing
+            ]
         other -> throwIO $ UnknownResolution other
-
-      endOfScenario
       pure s
     _ -> TheGathering <$> runMessage msg attrs

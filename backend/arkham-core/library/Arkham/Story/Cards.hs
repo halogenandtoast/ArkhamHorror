@@ -61,6 +61,13 @@ allStoryCards =
       , theTrialOfNasht
       , theInfestationBegins
       , crypticSouls
+      , dreamlikeHorrors
+      , endlessSecrets
+      , cylindersOfKadatheron
+      , theDoomOfSarnath
+      , ghostsOfTheDead
+      , thePalaceOfRainbows
+      , aShrineToTheGods
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -186,3 +193,24 @@ theInfestationBegins = story "06078" "The Infestation Begins" WakingNightmare
 
 crypticSouls :: CardDef
 crypticSouls = story "06127b" "Cryptic Souls" TheSearchForKadath
+
+dreamlikeHorrors :: CardDef
+dreamlikeHorrors = story "06128b" "Dreamlike Horrors" TheSearchForKadath
+
+endlessSecrets :: CardDef
+endlessSecrets = story "06129b" "Endless Secrets" TheSearchForKadath
+
+cylindersOfKadatheron :: CardDef
+cylindersOfKadatheron = story "06130b" "Cylinders of Kadatheron" TheSearchForKadath
+
+theDoomOfSarnath :: CardDef
+theDoomOfSarnath = story "06131b" "The Doom of Sarnath" TheSearchForKadath
+
+ghostsOfTheDead :: CardDef
+ghostsOfTheDead = story "06132b" "Ghosts of the Dead" TheSearchForKadath
+
+thePalaceOfRainbows :: CardDef
+thePalaceOfRainbows = story "06133b" "The Palace of Rainbows" TheSearchForKadath
+
+aShrineToTheGods :: CardDef
+aShrineToTheGods = story "06134b" "A Shrine to the Gods" TheSearchForKadath

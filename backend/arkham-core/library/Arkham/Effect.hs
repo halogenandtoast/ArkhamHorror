@@ -110,7 +110,6 @@ import Arkham.Investigator.Investigators (
   winifredHabbamockEffect,
  )
 import Arkham.Location.Locations (
-  arkhamWoodsTwistingPathsEffect,
   enchantedWoodsLostWoodsEffect,
   hereticsGravesSpectral_171Effect,
   restaurantEffect,
@@ -247,7 +246,6 @@ allEffects =
     , ("01066", SomeEffect blindingLightEffect)
     , ("01069", SomeEffect blindingLight2Effect)
     , ("01074", SomeEffect baseballBatEffect)
-    , ("01151", SomeEffect arkhamWoodsTwistingPathsEffect)
     , ("02028", SomeEffect riteOfSeekingEffect)
     , ("02031", SomeEffect bindMonster2)
     , ("02100", SomeEffect pushedIntoTheBeyond)

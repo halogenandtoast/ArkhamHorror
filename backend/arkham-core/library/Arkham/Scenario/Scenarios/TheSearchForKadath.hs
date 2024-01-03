@@ -158,8 +158,10 @@ instance RunMessage TheSearchForKadath where
           , Locations.serannian
           , Locations.celephais
           , Locations.hazuthKleg
+          , Locations.cityWhichAppearsOnNoMap
+          , Locations.templeOfUnattainableDesires
           ]
-      let excludes = setAsideCards
+      let excludes = setAsideCards <> [Locations.dylathLeen, Locations.skaiRiver, Locations.ulthar]
 
       encounterDeck <-
         buildEncounterDeckExcluding

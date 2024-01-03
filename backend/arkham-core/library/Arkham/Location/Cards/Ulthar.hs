@@ -20,7 +20,7 @@ instance HasAbilities Ulthar where
 
 instance RunMessage Ulthar where
   runMessage msg (Ulthar attrs) = case msg of
-    Flip iid _ target | isTarget attrs target -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.crypticSouls
       pure . Ulthar $ attrs & canBeFlippedL .~ False
     _ -> Ulthar <$> runMessage msg attrs

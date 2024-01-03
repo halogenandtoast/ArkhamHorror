@@ -59,6 +59,8 @@ data ScenarioLogKey
   | -- | The Depths of Yoth
     CollectedAStrangeLiquid
   | MeddledWithThePast (Labeled InvestigatorId)
+  | -- | The Search for Kadath
+    KnowWhatHappenedToIb
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

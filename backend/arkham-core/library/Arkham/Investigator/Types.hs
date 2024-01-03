@@ -27,6 +27,7 @@ import Arkham.Json
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Movement
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Slot
@@ -144,6 +145,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorStartsWithInHand :: [CardDef]
   , investigatorCardsUnderneath :: [Card]
   , investigatorSearch :: Maybe InvestigatorSearch
+  , investigatorMovement :: Maybe Movement
   , investigatorUsedAbilities :: [UsedAbility]
   , investigatorUsedAdditionalActions :: [AdditionalAction]
   , investigatorMulligansTaken :: Int

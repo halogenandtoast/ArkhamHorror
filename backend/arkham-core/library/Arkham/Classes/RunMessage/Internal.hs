@@ -15,3 +15,5 @@ type Runnable a = (forall m. (HasCallStack, CanRun m) => m a)
 
 class RunMessage a where
   runMessage :: (HasCallStack, CanRun m) => Message -> a -> m a
+
+instance CanRun m => CanRun (QueueT Message m)

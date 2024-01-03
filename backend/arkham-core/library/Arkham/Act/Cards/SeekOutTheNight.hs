@@ -46,14 +46,14 @@ toOption = \case
 
 instance RunMessage SeekOutTheNight where
   runMessage msg a@(SeekOutTheNight attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> runQueueT $ do
       lead <- getLeadPlayer
       n <- scenarioFieldMap ScenarioMeta toResult
+      push $ ShuffleEncounterDiscardBackIn
       let availableRegions = filter (`notElem` regions n) [Oriab, Mnar, TimelessRealm]
       if null availableRegions
         then push R1
         else push $ chooseOrRunOne lead $ map toOption availableRegions
-      push $ ShuffleEncounterDiscardBackIn
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push R1

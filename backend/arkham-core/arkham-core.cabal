@@ -953,7 +953,6 @@ library
       Arkham.Draw.Types
       Arkham.Effect
       Arkham.Effect.Effects
-      Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Effect.Effects.BindMonster2
       Arkham.Effect.Effects.CallingInFavors
       Arkham.Effect.Effects.ChaosTokenEffect
@@ -2099,6 +2098,7 @@ library
       Arkham.Matcher.Patterns
       Arkham.Matcher.Types
       Arkham.Message
+      Arkham.Message.Lifted
       Arkham.Message.Type
       Arkham.Modifier
       Arkham.ModifierData

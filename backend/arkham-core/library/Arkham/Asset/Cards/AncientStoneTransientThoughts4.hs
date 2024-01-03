@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.AncientStoneTransientThoughts4 (
-  ancientStoneTransientThoughts4,
-  AncientStoneTransientThoughts4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.AncientStoneTransientThoughts4 (ancientStoneTransientThoughts4, AncientStoneTransientThoughts4 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype AncientStoneTransientThoughts4 = AncientStoneTransientThoughts4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,10 +18,7 @@ ancientStoneTransientThoughts4 = asset AncientStoneTransientThoughts4 Cards.anci
 
 instance HasAbilities AncientStoneTransientThoughts4 where
   getAbilities (AncientStoneTransientThoughts4 a) =
-    [ restrictedAbility
-        a
-        1
-        (ControlsThis <> InvestigatorExists (You <> InvestigatorCanMove))
+    [ controlledAbility a 1 (exists $ You <> InvestigatorCanMove)
         $ ReactionAbility
           (DrawsCards #when You AnyValue)
           (DynamicUseCost (AssetWithId $ toId a) Secret DrawnCardsValue)

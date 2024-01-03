@@ -41,6 +41,6 @@ instance RunMessage AbbessAllegriaDiBiase where
           push
             $ chooseOrRunOne player
             $ targetLabels connectedLocations (only . Move . move attrs iid)
-        else push $ Move $ move attrs iid abbessLocation
+        else push $ move attrs iid abbessLocation
       pure a
     _ -> AbbessAllegriaDiBiase <$> runMessage msg attrs

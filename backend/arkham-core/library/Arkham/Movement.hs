@@ -28,22 +28,31 @@ uncancellableMove m = m {moveCancelable = False}
 data Destination = ToLocation LocationId | ToLocationMatching LocationMatcher
   deriving stock (Show, Eq)
 
-move :: (Targetable target, Sourceable source) => source -> target -> LocationId -> Movement
-move (toSource -> source) (toTarget -> target) lid =
+move
+  :: (Targetable target, Sourceable source)
+  => source
+  -> target
+  -> LocationId
+  -> Movement
+move (toSource -> moveSource) (toTarget -> moveTarget) lid =
   Movement
-    { moveSource = source
-    , moveTarget = target
+    { moveSource
+    , moveTarget
     , moveDestination = ToLocation lid
     , moveMeans = Direct
     , moveCancelable = True
     }
 
 moveToMatch
-  :: (Targetable target, Sourceable source) => source -> target -> LocationMatcher -> Movement
-moveToMatch (toSource -> source) (toTarget -> target) matcher =
+  :: (Targetable target, Sourceable source)
+  => source
+  -> target
+  -> LocationMatcher
+  -> Movement
+moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher =
   Movement
-    { moveSource = source
-    , moveTarget = target
+    { moveSource
+    , moveTarget
     , moveDestination = ToLocationMatching matcher
     , moveMeans = Direct
     , moveCancelable = True

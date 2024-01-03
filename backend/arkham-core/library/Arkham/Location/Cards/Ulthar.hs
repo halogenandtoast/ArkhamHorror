@@ -13,7 +13,7 @@ newtype Ulthar = Ulthar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ulthar :: LocationCard Ulthar
-ulthar = locationWith Ulthar Cards.ulthar 1 (PerPlayer 1) $ (canBeFlippedL .~ True) . (revealedL .~ True)
+ulthar = locationWith Ulthar Cards.ulthar 1 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities Ulthar where
   getAbilities (Ulthar attrs) = veiled attrs []

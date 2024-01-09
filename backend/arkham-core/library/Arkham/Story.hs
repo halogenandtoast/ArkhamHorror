@@ -84,4 +84,5 @@ allStories =
     , SomeStoryCard ghostsOfTheDead
     , SomeStoryCard thePalaceOfRainbows
     , SomeStoryCard aShrineToTheGods
+    , SomeStoryCard theCryptOfZulanThek
     ]

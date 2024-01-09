@@ -210,6 +210,9 @@ atYourLocation matcher = exists (AtYourLocation <> matcher)
 class Exists a where
   exists :: a -> Criterion
 
+instance Exists EventMatcher where
+  exists = EventExists
+
 instance Exists StoryMatcher where
   exists = StoryExists
 

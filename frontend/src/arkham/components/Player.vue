@@ -120,7 +120,7 @@ const tarotCardAbility = (card: TarotCard) => {
   }
   return choices.value.findIndex((c) => {
     if (c.tag === "AbilityLabel") {
-      return c.ability.source.tag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
+      return c.ability.source.sourceTag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
     }
 
     return false
@@ -206,9 +206,14 @@ const slotImg = (slot: Arkham.Slot) => {
 // }
 
 // global position information for animation
-const rectData = ref ([])
+const rectData = ref<Array<[string, DOMRect]>>([])
 
-function onBeforeEnter(el) {
+function isHtmlElement(el: Element): el is HTMLElement {
+  return el instanceof HTMLElement
+}
+
+function onBeforeEnter(el: Element) {
+  if (!isHtmlElement(el)) { return }
   if(Object.values(el.classList).includes("committed-skills")) {
     return
   }
@@ -218,11 +223,13 @@ function onBeforeEnter(el) {
 
   const data = rectData.value.find(([idx,]) => idx === index)
   if (!data) { return }
-  el.style.opacity = 0
-  el.style.width = 0
+  el.style.opacity = "0"
+  el.style.width = "0"
 }
 
-function onEnter(el, done) {
+function onEnter(el: Element, done: () => void) {
+  if (!isHtmlElement(el)) { return }
+
   if(Object.values(el.classList).includes("committed-skills")) {
     el.removeAttribute("style")
     done();
@@ -237,6 +244,7 @@ function onEnter(el, done) {
     }})
     return
   }
+  
   const data = rectData.value.find(([idx,]) => idx === index)
   rectData.value = rectData.value.filter(([idx,]) => idx !== index)
   if (!data) {
@@ -249,10 +257,10 @@ function onEnter(el, done) {
   const [,rect] = data
   const startX = rect.left - finalRect.left
   const startY = rect.top - finalRect.top
-  const c = el.cloneNode(true)
+  const c = el.cloneNode(true) as HTMLElement
   c.style.position = "fixed"
   c.style.width = rect.width + "px"
-  el.parentNode.insertBefore(c, el)
+  el.parentNode?.insertBefore(c, el)
   const cRect = c.getBoundingClientRect()
   const finalX = finalRect.left - cRect.left
   const tl = gsap.timeline()
@@ -276,7 +284,13 @@ function onEnter(el, done) {
       duration: 0.3
     }, "start")
 }
-function onLeave(el, done) {
+function onLeave(el: Element, done: () => void) {
+  if (!isHtmlElement(el)) { return }
+  if(!el.dataset.index) {
+    console.error("No data-index on element", el)
+    return
+  }
+
   if(Object.values(el.classList).includes("committed-skills")) {
     done();
   }

@@ -3,7 +3,6 @@ import GameDetails from '@/arkham/components/GameDetails.vue';
 import { JsonDecoder } from 'ts.data.json';
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers';
@@ -17,7 +16,7 @@ import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
-import { Card, cardDecoder } from '@/arkham/types/Card'
+import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
 import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/TarotCard'
 import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
@@ -33,7 +32,6 @@ const source = ref(`${window.location.href}/join`) // fix-syntax`
 const props = withDefaults(defineProps<Props>(), { spectate: false })
 
 const debug = useDebug()
-const route = useRoute()
 const store = useCardStore()
 const { copy } = useClipboard({ source })
 
@@ -54,9 +52,8 @@ const gameCardDecoder = JsonDecoder.object<GameCard>(
 const gameCard = ref<GameCard | null>(null)
 const tarotCards = ref<TarotCard[]>([])
 
-const spectate = route.fullPath.endsWith('/spectate')
 const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
-const spectatePrefix = spectate ? "/spectate" : ""
+const spectatePrefix = props.spectate ? "/spectate" : ""
 
 const userStore = useUserStore()
 const socketError = ref(false)
@@ -93,7 +90,15 @@ const uiLock = ref<boolean>(false)
 
 const resultQueue = ref<any>([])
 
-const handleResult = (result) => {
+// TODO: contents should not be string
+type ServerResult =
+  | { tag: "GameError"; contents: string }
+  | { tag: "GameMessage"; contents: string }
+  | { tag: "GameTarot"; contents: string }
+  | { tag: "GameCard"; contents: string }
+  | { tag: "GameUpdate"; contents: string }
+
+const handleResult = (result: ServerResult) => {
   switch(result.tag) {
     case "GameError":
       alert(result.contents)
@@ -165,11 +170,13 @@ watch(uiLock, async () => {
   }
 })
 
+const preloaded = reactive<string[]>([])
+
 function loadAllImages(game: Arkham.Game): Promise<void[]> {
   const images = Object.values(game.cards).map((card) => {
     return new Promise<void>((resolve, reject) => {
-      const { cardCode, isFlipped } = card.contents
-      const suffix = !props.revealed && isFlipped ? 'b' : ''
+      const { cardCode, isFlipped } = toCardContents(card)
+      const suffix = isFlipped ? 'b' : ''
       const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`)
       if (preloaded.includes(url)) return resolve()
       const img = new Image()
@@ -185,7 +192,7 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
   return Promise.all(images)
 }
 
-fetchGame(props.gameId, spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
+fetchGame(props.gameId, props.spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
   loadAllImages(newGame).then(() => {
     game.value = newGame
     solo.value = multiplayerMode === "Solo"
@@ -196,25 +203,25 @@ fetchGame(props.gameId, spectate).then(({ game: newGame, playerId: newPlayerId, 
 })
 
 async function choose(idx: number) {
-  if (idx !== -1 && game.value && !spectate) {
+  if (idx !== -1 && game.value && !props.spectate) {
     send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
   }
 }
 
 async function chooseDeck(deckId: string): Promise<void> {
-  if(game.value && !spectate) {
+  if(game.value && !props.spectate) {
     send(JSON.stringify({tag: 'DeckAnswer', deckId, playerId: playerId.value}))
   }
 }
 
 async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
-  if(game.value && !spectate) {
+  if(game.value && !props.spectate) {
     send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts } }))
   }
 }
 
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
-  if(game.value && !spectate) {
+  if(game.value && !props.spectate) {
     send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts } }))
   }
 }
@@ -223,7 +230,6 @@ function switchInvestigator (newPlayerId: string) { playerId.value = newPlayerId
 
 async function update(state: Arkham.Game) { game.value = state }
 
-const preloaded = reactive([])
 
 function debugExport () {
   fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))

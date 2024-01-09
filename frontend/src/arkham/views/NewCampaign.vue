@@ -102,14 +102,6 @@ const selectedCampaignReturnToId = computed(() => {
   return campaign?.returnToId
 })
 
-const validStandalone = computed(() => {
-  if (gameMode.value === 'Standalone') {
-    return campaignScenarios.value.some((s) => s.id == selectedScenario.value)
-  }
-
-  return true
-})
-
 const disabled = computed(() => {
   if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
     return !(scenario.value && currentCampaignName.value)

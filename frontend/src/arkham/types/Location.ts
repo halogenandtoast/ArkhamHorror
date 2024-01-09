@@ -22,6 +22,7 @@ export type Location = {
   cardCode: string;
   label: string;
   id: string;
+  cardId: string;
   tokens: Tokens;
   shroud: number;
   revealed: boolean;
@@ -44,6 +45,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     cardCode: JsonDecoder.string,
     label: JsonDecoder.string,
     id: JsonDecoder.string,
+    cardId: JsonDecoder.string,
     tokens: tokensDecoder,
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,

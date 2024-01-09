@@ -108,7 +108,7 @@ export const slotTypeDecoder = JsonDecoder.oneOf<SlotType>([
   JsonDecoder.isExactly('AllySlot'),
 ], 'SlotType')
 
-type Slot = {
+export type Slot = {
   tag: SlotType
   empty: boolean
 }

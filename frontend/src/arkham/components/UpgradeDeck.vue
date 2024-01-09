@@ -5,6 +5,7 @@ import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import Prompt from '@/components/Prompt.vue';
 
+// TODO should we pass in the investigator
 export interface Props {
   game: Game
   playerId: string
@@ -20,8 +21,8 @@ const investigator = computed(() => {
     return i.playerId === props.playerId
   })
 })
-const investigatorId = computed(() => investigator.value.id)
-const xp = computed(() => investigator.value.xp)
+const investigatorId = computed(() => investigator.value?.id)
+const xp = computed(() => investigator.value?.xp)
 const skipping = ref(false)
 
 function loadDeck() {
@@ -50,7 +51,7 @@ function pasteDeck(evt: ClipboardEvent) {
 }
 
 async function upgrade() {
-  if (deckUrl.value) {
+  if (deckUrl.value && investigatorId.value) {
     upgradeDeck(props.game.id, investigatorId.value, deckUrl.value).then(() => {
       if(!solo) {
         waiting.value = true
@@ -62,6 +63,7 @@ async function upgrade() {
 }
 
 async function skip() {
+  if (!investigatorId.value) { return }
   upgradeDeck(props.game.id, investigatorId.value).then(() => {
     if(!solo) {
       waiting.value = true
@@ -76,7 +78,7 @@ async function skip() {
     <div>
       <h2>Upgrade Deck ({{xp}} xp)</h2>
       <div v-if="!waiting" class="upgrade-deck">
-        <img class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+        <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
         <div class="fields">
           <input
             type="url"

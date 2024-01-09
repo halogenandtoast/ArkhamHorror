@@ -149,23 +149,6 @@ const hasPool = computed(() => {
   }
 }
 
-.reaction-ability-button {
-  background-color: #A02ECB;
-  &:before {
-    font-family: "arkham";
-    content: "\0059";
-    margin-right: 5px;
-  }
-}
-
-.button{
-  margin-top: 2px;
-  border: 0;
-  color: #fff;
-  border-radius: 4px;
-  border: 1px solid #ff00ff;
-}
-
 .vengeance {
   position: absolute;
   top: 50%;

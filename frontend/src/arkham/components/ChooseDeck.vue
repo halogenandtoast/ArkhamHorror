@@ -211,11 +211,6 @@ h2 {
   text-transform: uppercase;
 }
 
-.difficulties {
-  display: flex;
-  flex-wrap: auto;
-}
-
 input[type=radio] {
   display: none;
   /* margin: 10px; */
@@ -248,31 +243,11 @@ input[type=checkbox] + label {
     background-color: desaturate(#6E8640, 20%);
   }
 
-  &.invert {
-    background: #6E8640;
-    &:hover {
-      background: #6E8640;
-    }
-  }
   border-color: #ddd;
 }
 
 input[type=checkbox]:checked + label {
   background: #6E8640;
-  &.invert {
-    background-color: desaturate(#6E8640, 30%);
-  }
-}
-
-.invert[type=checkbox] + label {
-    background: #6E8640;
-    &:hover {
-      background: #6E8640;
-    }
-}
-
-.invert[type=checkbox]:checked + label {
-  background-color: desaturate(#6E8640, 30%);
 }
 
 header {
@@ -283,83 +258,12 @@ header {
   justify-content: center;
 }
 
-.back-link {
-  font-size: 2em;
-  color: #ff00ff;
-  text-decoration: none;
-}
-
-.options {
-  display: flex;
-  margin-bottom: 10px;
-  label {
-    flex: 1;
-    text-align: center;
-    margin-left: 10px;
-    &:nth-of-type(1) {
-      margin-left: 0;
-    }
-  }
-}
-
-.campaigns {
-  display: grid;
-
-  grid-template-columns: repeat(auto-fill, calc(1 / 4 * 100%));
-
-  img {
-    width: 100%;
-  }
-}
-
-.campaign-box:not(.selected-campaign) {
-  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%);
-}
-
-.scenarios {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, calc(1 / 8 * 100%));
-
-  img {
-    width: 100%;
-  }
-}
-
-.scenario-box:not(.selected-scenario) {
-  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%) sepia(0);
-  transition: filter 1s linear;
-  &:hover {
-    filter: grayscale(100%) sepia(1);
-    transition: filter 1s linear;
-  }
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s ease-in-out;
-}
-
-.slide-enter-to,
-.slide-leave-from {
-  overflow: hidden;
-  max-height: 1000px;
-  opacity: 1;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-}
-
 select::-ms-expand {
   display: none;
 }
 
 select {
+  appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
 }

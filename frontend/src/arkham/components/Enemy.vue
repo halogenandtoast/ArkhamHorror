@@ -245,14 +245,6 @@ watch(abilities, (abilities) => {
   isolation: isolate;
 }
 
-.button{
-  margin-top: 2px;
-  border: 0;
-  color: #fff;
-  border-radius: 4px;
-  border: 1px solid #ff00ff;
-}
-
 .card {
   width: $card-width;
   max-width: $card-width;
@@ -271,14 +263,6 @@ watch(abilities, (abilities) => {
   }
 
   pointer-events: none;
-}
-
-.button{
-  margin-top: 2px;
-  border: 0;
-  color: #fff;
-  border-radius: 4px;
-  border: 1px solid #ff00ff;
 }
 
 .exhausted {

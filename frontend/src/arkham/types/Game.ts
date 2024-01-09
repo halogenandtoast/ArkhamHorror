@@ -171,7 +171,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     skillTestResults: JsonDecoder.nullable(skillTestResultsDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
-    focusedTarotCards: JsonDecoder.array<TarotCard[]>(tarotCardDecoder, 'TarotCard[]'),
+    focusedTarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
     foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
     focusedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     skillTestChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),

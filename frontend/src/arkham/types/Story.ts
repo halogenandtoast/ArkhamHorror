@@ -4,6 +4,7 @@ import { Target, targetDecoder } from '@/arkham/types/Target';
 
 export type Story = {
   id: string
+  cardId: string
   placement: Placement
   otherSide: Target | null
   flipped: boolean
@@ -11,6 +12,7 @@ export type Story = {
 
 export const storyDecoder = JsonDecoder.object<Story>({
   id: JsonDecoder.string,
+  cardId: JsonDecoder.string,
   placement: placementDecoder,
   otherSide: JsonDecoder.nullable(targetDecoder),
   flipped: JsonDecoder.boolean

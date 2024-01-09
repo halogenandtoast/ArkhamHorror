@@ -77,7 +77,7 @@ const questionHash = computed(() => {
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"
-      @choose="$emit('choose', $event)"
+      @choose="choose"
       @update="update"
     />
     <template v-else>

@@ -4,9 +4,7 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
-import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Skill';
 
 export interface Props {
@@ -61,7 +59,7 @@ const abilities = computed(() => {
   return choices.value
     .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, { contents: v, index: i }];
+        return [...acc, { contents: v, displayAsAction: false, index: i }];
       }
 
       return acc;
@@ -77,14 +75,14 @@ const choose = (index: number) => emits('choose', index)
       :src="image"
       :class="{ 'skill--can-interact': cardAction !== -1 }"
       class="card skill"
-      @click="$emit('choose', cardAction)"
+      @click="choose(cardAction)"
     />
     <AbilityButton
       v-for="ability in abilities"
       :key="ability.index"
       :ability="ability.contents"
       :data-image="image"
-      @click="$emit('choose', ability.index)"
+      @click="choose(ability.index)"
       />
   </div>
 </template>

@@ -19,6 +19,7 @@ export const treacheryPlacementDecoder = JsonDecoder.oneOf<TreacheryPlacement>(
 
 export type Treachery = {
   id: string;
+  cardId: string;
   cardCode: string;
   tokens: Tokens;
   placement: TreacheryPlacement;
@@ -26,6 +27,7 @@ export type Treachery = {
 
 export const treacheryDecoder = JsonDecoder.object<Treachery>({
   id: JsonDecoder.string,
+  cardId: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   tokens: tokensDecoder,
   placement: treacheryPlacementDecoder,

@@ -6,6 +6,7 @@ import Cards from '@/arkham/views/Cards.vue';
 import JoinGame from '@/arkham/views/JoinGame.vue';
 import ReplayGame from '@/arkham/views/ReplayGame.vue';
 import NewCampaign from '@/arkham/views/NewCampaign.vue';
+import { RouteLocationNormalized } from 'vue-router';
 
 export default [
   {
@@ -48,7 +49,7 @@ export default [
     name: 'Spectate',
     component: Game,
     meta: { requiresAuth: true, title: "Arkham Horror: Spectate" },
-    props: true,
+    props: (route: RouteLocationNormalized) => ({ ...route.params, spectate: true }),
   },
   {
     path: '/games/:gameId/log',

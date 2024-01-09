@@ -61,7 +61,7 @@ const interactAction = computed(() => choices.value.findIndex(isCardAction));
 
 const canInteract = computed(() => abilities.value.length > 0 || interactAction.value !== -1)
 
-function isAbility(v: Message): v is AbilityMessage {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }

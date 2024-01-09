@@ -8,7 +8,7 @@ import {
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card, toCardContents } from '@/arkham/types/Card';
-import { TarotCard, tarotCardImage, tarotArcanaImage } from '@/arkham/types/TarotCard';
+import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import Act from '@/arkham/components/Act.vue';
@@ -217,7 +217,7 @@ const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scop
 const tarotCardAbility = (card: TarotCard) => {
   return choices.value.findIndex((c) => {
     if (c.tag === "AbilityLabel") {
-      return c.ability.source.tag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
+      return c.ability.source.sourceTag === "TarotSource" && c.ability.source.contents.arcana === card.arcana
     }
 
     return false

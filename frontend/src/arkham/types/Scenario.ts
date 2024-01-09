@@ -11,7 +11,7 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import type { LogContents } from '@/arkham/types/Campaign';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
-import { TarotScope, TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
+import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
 
 export type ScenarioName = {
   title: string;

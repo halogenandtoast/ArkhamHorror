@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import type { CardLabel } from '@/arkham/types/Message';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
 import { imgsrc } from '@/arkham/helpers';
 import { MessageType } from '@/arkham/types/Message';
@@ -47,13 +46,13 @@ const portraitLabelImage = (investigatorId: string) => {
 
 const cardLabels = computed(() =>
   choices.value.
-    flatMap<[CardLabel, number][]>((choice, index) => {
+    flatMap((choice, index) => {
       return choice.tag === "CardLabel" ? [{choice, index}] : []
     }))
 
 const tarotLabels = computed(() =>
   choices.value.
-    flatMap<[TarotLabel, number][]>((choice, index) => {
+    flatMap((choice, index) => {
       return choice.tag === "TarotLabel" ? [{choice, index}] : []
     }))
 

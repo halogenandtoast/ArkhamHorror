@@ -4,7 +4,7 @@ concurrent-tests: false
 system-ghc: true
 install-ghc: false
 resolver: lts-22.4
-compiler: ghc-9.6.3
+compiler: ghc-9.6.4
 
 ghc-options:
   "$locals":

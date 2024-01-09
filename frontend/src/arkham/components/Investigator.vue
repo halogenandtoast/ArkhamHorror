@@ -51,7 +51,7 @@ const investigatorAction = computed(() => {
   return activateAbilityAction.value
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigator.id))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
@@ -76,7 +76,7 @@ const abilities = computed(() => {
     .value
     .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, { contents: v, index: i }];
+        return [...acc, { contents: v, displayAsAction: false, index: i }];
       }
 
       return acc;

@@ -38,14 +38,15 @@ const deckName = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const deckList = ref<string | null>(null)
 
-function loadDeckFromFile(e) {
+function loadDeckFromFile(e: Event) {
   valid.value = false
-  const files = e.target.files || e.dataTransfer.files;
+  const files = (e.target as HTMLInputElement).files || (e as DragEvent).dataTransfer?.files || [];
   const deck = files[0]
   if (deck) {
     const reader = new FileReader()
-    reader.onload = (e) => {
-      let data = JSON.parse(e.target.result)
+    reader.onloadend = (e1: ProgressEvent<FileReader>) => {
+      if(!e1?.target?.result) return
+      let data = JSON.parse(e1.target.result.toString())
       deckList.value = data
       investigator.value = null
       investigatorError.value = null
@@ -133,7 +134,7 @@ function pasteDeck(evt: ClipboardEvent) {
 
 async function createDeck() {
   errors.value = []
-  if (deckId.value && deckName.value && valid.value) {
+  if (deckId.value && deckName.value && valid.value && deckUrl.value) {
     newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
       deckId.value = null
       deckName.value = null

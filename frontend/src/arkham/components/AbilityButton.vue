@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import type { Cost } from '@/arkham/types/Cost';
 import type { AbilityLabel, FightLabel, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
 import type { Ability } from '@/arkham/types/Ability';
+import type { Action } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
 
 const props = defineProps<{
@@ -11,9 +12,11 @@ const props = defineProps<{
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
-const isAction = (action: string) => {
-  if (props.ability?.ability?.displayAsAction ?? false) {
-    return false
+const isAction = (action: Action) => {
+  if (props.ability.tag === MessageType.ABILITY_LABEL) {
+    if (props.ability.ability.displayAsAction ?? false) {
+      return false
+    }
   }
 
   if (props.ability.tag === MessageType.EVADE_LABEL) {
@@ -132,8 +135,10 @@ const isHaunted = computed(() => ability.value && ability.value.type.tag === "Ha
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
 const abilityLabel = computed(() => {
-  if (props.ability?.ability?.displayAsAction ?? false) {
-    return ""
+  if (props.ability.tag === MessageType.ABILITY_LABEL) {
+    if (props.ability.ability.displayAsAction ?? false) {
+      return ""
+    }
   }
 
   if (props.ability.tag === MessageType.EVADE_LABEL) {

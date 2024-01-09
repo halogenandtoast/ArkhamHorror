@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ComputedRef } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { Card } from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), { attached: false })
 
 const emits = defineEmits<{
   choose: [value: number]
+  showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
 }>()
 
 const id = computed(() => props.event.id)
@@ -65,7 +67,7 @@ const abilities = computed(() => {
   return choices.value
     .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, { contents: v, index: i }];
+        return [...acc, { contents: v, displayAsAction: false, index: i }];
       }
 
       return acc;

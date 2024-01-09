@@ -55,8 +55,6 @@ const amountsLabel = computed(() => {
 
 const question = computed(() => props.game.question[props.playerId])
 
-const investigatorName = (iid: string) => props.game.investigators[iid].name.title
-
 const paymentAmountsChoices = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     return question.value.paymentAmountChoices
@@ -210,7 +208,7 @@ const unmetAmountRequirements = computed(() => {
         }
       case 'AmountOneOf':
         {
-          const totals = question.value.amountTargetValue.contents
+          const totals = actual.amountTargetValue.contents
           if (totals.length > 0) {
             const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
             return totals.indexOf(total) === -1

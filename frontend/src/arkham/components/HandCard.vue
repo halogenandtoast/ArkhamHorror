@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, Ref, watch, ref } from 'vue'
+import { computed, inject, Ref } from 'vue'
 import { CardContents, type Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
@@ -64,7 +64,7 @@ const abilities = computed(() => {
     .value
     .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, { contents: v, index: i}];
+        return [...acc, { contents: v, displayAsAction: false, index: i}];
       }
 
       return acc;

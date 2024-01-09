@@ -142,6 +142,24 @@ data CardDef = CardDef
   }
   deriving stock (Show, Eq, Ord, Data)
 
+instance Exists CardDef where
+  exists def = case cdCardType def of
+    AssetType -> exists $ assetIs def
+    EventType -> exists $ eventIs def
+    SkillType -> exists $ skillIs def
+    PlayerTreacheryType -> exists $ treacheryIs def
+    PlayerEnemyType -> exists $ enemyIs def
+    EnemyType -> exists $ enemyIs def
+    LocationType -> exists $ locationIs def
+    EncounterAssetType -> exists $ assetIs def
+    EncounterEventType -> exists $ eventIs def
+    ActType -> error "Not implemented"
+    AgendaType -> error "Not implemented"
+    StoryType -> exists $ storyIs def
+    TreacheryType -> exists $ treacheryIs def
+    InvestigatorType -> exists $ investigatorIs def
+    ScenarioType -> error "Not implemented"
+
 emptyCardDef :: CardCode -> Name -> CardType -> CardDef
 emptyCardDef cCode name cType =
   CardDef

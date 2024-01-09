@@ -10,6 +10,35 @@ many of the rules implemented as possible.
 This is very much a work in progress. Things may break at any time, but if they do,
 please file a bug.
 
+## Features
+
+* Multiplayer up to 4 players
+* Multiplayer solitaire
+* Deck import from ArkhamDB
+
+## Finished Content
+
+### Player Cards
+
+* All player cards through The Dream-Eaters cycle
+* All the standalone investigator cards
+
+### Campaigns
+
+* Night of the Zealot
+  * Return to Night of the Zealot
+* The Dunwich Legacy
+* The Path To Carcosa
+* The Forgotten Age
+* The Circle Undone [Beta]
+* The Dream-Eaters [In Progress]
+
+### Side Stories
+
+* The Curse of the Rougarou
+* Carnevale of Horrors
+* Murder at the Excelsior Hotel [Beta]
+
 ## I just want to try this out on my computer
 
 You will need to install [Docker][docker].
@@ -29,32 +58,6 @@ docker compose down
 docker compose build
 docker compose up
 ```
-
-## Features
-
-* Multiplayer up to 4 players
-* Multiplayer solitaire
-* Deck import from ArkhamDB
-
-## Finished Content
-
-### Player Cards
-
-* All player cards through The Circle Undone deluxe box
-* All the standalone investigator cards
-
-### Campaigns
-
-* Night of the Zealot
-  * Return to Night of the Zealot
-* The Dunwich Legacy
-* The Path To Carcosa
-* The Forgotten Age
-
-### Side Stories
-
-* The Curse of the Rougarou
-* Carnevale of Horrors
 
 ## Local dev
 

@@ -324,7 +324,7 @@ const chooseRecordable = function(setting: CampaignSetting, value: any) {
   filterSettings()
 }
 
-const toggleRecordable = function(setting: { type: string; key: string | number; recordable: any }, value: string) {
+const toggleRecordable = function(setting: CampaignSetting, value: string) {
   if(setting.type === 'Record') {
     const current = campaignLog.value
     const set = current.sets[setting.key]

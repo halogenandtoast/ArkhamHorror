@@ -105,19 +105,17 @@ const forceDisabled = (setting: CampaignSetting, option: ChooseKey) => {
       <div v-else-if="setting.type === 'Record'">
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
-          <template v-for="entry in setting.content" :key="entry.key">
-            <input
-              v-if="settingActive(campaignLog, entry)"
-              type="checkbox"
-              :name="`${step.key}${setting.key}${entry.key}`"
-              :id="`${step.key}${setting.key}${entry.key}`"
-              @change.prevent="$emit('toggle:record', setting, entry.content)"
-              :checked="inSet(setting.key, entry.content)"
-            />
-            <label :for="`${step.key}${setting.key}${entry.key}`">
-              {{toCapitalizedWords(entry.key)}}
-            </label>
-          </template>
+          <input
+            v-if="settingActive(campaignLog, setting.content)"
+            type="checkbox"
+            :name="`${step.key}${setting.key}${setting.content.key}`"
+            :id="`${step.key}${setting.key}${setting.content.key}`"
+            @change.prevent="$emit('toggle:record', setting, setting.content.content)"
+            :checked="inSet(setting.key, setting.content.content)"
+          />
+          <label :for="`${step.key}${setting.key}${setting.content.key}`">
+            {{toCapitalizedWords(setting.content.key)}}
+          </label>
         </div>
       </div>
       <div v-else-if="setting.type === 'CrossOut'">

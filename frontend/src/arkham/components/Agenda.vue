@@ -67,7 +67,7 @@ const abilities = computed(() => {
   return choices.value
     .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, { contents: v, index: i }]
+        return [...acc, { contents: v, displayAsAction: false, index: i }]
       }
 
       return acc

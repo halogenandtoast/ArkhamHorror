@@ -70,11 +70,11 @@ function isAbility(v: Message): v is AbilityLabel {
   return false
 }
 
-const abilities = computed(() => {
+const abilities = computed<AbilityMessage[]>(() => {
   return choices.value
     .reduce<AbilityMessage[]>((acc, v, i) => {
       if (isAbility(v)) {
-        return [...acc, { contents: v, index: i }];
+        return [...acc, { contents: v, displayAsAction: false, index: i }];
       }
 
       return acc;
@@ -82,7 +82,7 @@ const abilities = computed(() => {
 })
 
 const outOfPlayEnemy = computed<Enemy | null>(() => {
-  return Object.values(props.game.outOfPlayEnemies).find(e => e.cardId === id.value)
+  return Object.values(props.game.outOfPlayEnemies).find(e => e.cardId === id.value) ?? null
 })
 
 const tokens = computed(() => {
@@ -106,7 +106,7 @@ const hasPool = computed(() => {
 </script>
 
 <template>
-  <div class="card-container" :data-index="card.id">
+  <div class="card-container" :data-index="id">
     <img
       :class="{'card--can-interact': cardAction !== -1}"
       class="card"

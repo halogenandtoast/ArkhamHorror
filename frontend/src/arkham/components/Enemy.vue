@@ -5,7 +5,7 @@ import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game'
-import { AbilityLabel, AbilityMessage, EvadeLabel, FightLabel, EngageLabel, Message, MessageType } from '@/arkham/types/Message'
+import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -56,7 +56,7 @@ const swarmEnemies = computed(() =>
   Object.values(props.game.enemies).filter((e) => e.placement.tag === 'AsSwarm' && e.placement.swarmHost === props.enemy.id)
 )
 
-function isAbility(v: Message): v is AbilityLabel | FightLabel | EvadeLabel | EngageLabel {
+function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
     return true
   }
@@ -86,16 +86,11 @@ function isAbility(v: Message): v is AbilityLabel | FightLabel | EvadeLabel | En
   return false
 }
 
-const abilities = computed(() => {
-  return choices
-    .value
-    .reduce<AbilityMessage[]>((acc, v, i) => {
-      if (isAbility(v)) {
-        return [...acc, { contents: v, index: i }];
-      }
-
-      return acc;
-    }, []);
+const abilities = computed<AbilityMessage[]>(() => {
+  return choices.value
+    .reduce<AbilityMessage[]>((acc, v, i) =>
+      isAbility(v) ? [...acc, { contents: v, displayAsAction: false, index: i}] : acc
+    , [])
 })
 
 const isExhausted = computed(() => props.enemy.exhausted)

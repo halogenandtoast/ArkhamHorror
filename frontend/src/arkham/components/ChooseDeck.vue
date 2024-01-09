@@ -4,7 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Deck'
-import Investigator from '@/arkham/components/Investigator.vue';
+import type { Investigator } from '@/arkham/types/Investigator'
 
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
@@ -16,11 +16,6 @@ const props = defineProps<{
 }>()
 
 const chooseDeck = inject<(deckId: string) => Promise<void>>('chooseDeck')
-
-const emit = defineEmits<{
-  update: [game: Game]
-  choose: [idx: number]
-}>()
 
 const error = computed(() => {
   if(!deckId.value) {
@@ -72,7 +67,7 @@ async function choose() {
   }
 }
 
-function portraitImage(investigator) {
+function portraitImage(investigator: Investigator) {
   return imgsrc(`portraits/${investigator.cardCode.replace('c', '')}.jpg`)
 }
 
@@ -376,8 +371,6 @@ select {
   height: 100%;
   margin: 0;
 }
-
-
 
 form {
   max-width: 800px;

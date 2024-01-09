@@ -37,7 +37,7 @@ watch(step, currentStep => {
 </script>
 
 <template>
-  <div id="game" v-if="ready && game && investigatorId">
+  <div id="game" v-if="ready && game && playerId">
     <div class="game">
       <Campaign
         v-if="game.campaign"

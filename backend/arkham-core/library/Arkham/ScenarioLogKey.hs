@@ -62,6 +62,7 @@ data ScenarioLogKey
   | -- | The Search for Kadath
     KnowWhatHappenedToIb
   | ObtainedSuppliesFromBaharna
+  | BeseechedTheKing
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

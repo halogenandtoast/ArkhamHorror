@@ -14,7 +14,7 @@ import Arkham.Key
 import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
 import Arkham.LocationSymbol
-import Arkham.Matcher (LocationMatcher (..))
+import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
 import Arkham.SkillType
 import Arkham.Token
 import Data.Aeson.TH
@@ -51,6 +51,13 @@ data LocationAttrs = LocationAttrs
   }
   deriving stock (Show, Eq)
 
+instance IsLocationMatcher LocationAttrs where
+  toLocationMatcher = LocationWithId . locationId
+
+instance AsId LocationAttrs where
+  type IdOf LocationAttrs = LocationId
+  asId = locationId
+
 locationClues :: LocationAttrs -> Int
 locationClues = countTokens Clue . locationTokens
 
@@ -68,6 +75,15 @@ locationResources = countTokens Resource . locationTokens
 
 instance HasField "meta" LocationAttrs Value where
   getField = locationMeta
+
+instance HasField "revealed" LocationAttrs Bool where
+  getField = locationRevealed
+
+instance HasField "clues" LocationAttrs Int where
+  getField = locationClues
+
+instance HasField "keys" LocationAttrs (Set ArkhamKey) where
+  getField = locationKeys
 
 makeLensesWith suffixedFields ''LocationAttrs
 

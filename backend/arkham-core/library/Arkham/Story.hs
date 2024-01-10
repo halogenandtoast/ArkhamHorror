@@ -87,4 +87,5 @@ allStories =
     , SomeStoryCard theCryptOfZulanThek
     , SomeStoryCard waresOfBaharna
     , SomeStoryCard theLikenessOfOld
+    , SomeStoryCard whatRemainsOfTyrrhia
     ]

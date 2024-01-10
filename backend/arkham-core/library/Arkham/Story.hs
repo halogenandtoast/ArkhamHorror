@@ -88,4 +88,5 @@ allStories =
     , SomeStoryCard waresOfBaharna
     , SomeStoryCard theLikenessOfOld
     , SomeStoryCard whatRemainsOfTyrrhia
+    , SomeStoryCard adviceOfTheKing
     ]

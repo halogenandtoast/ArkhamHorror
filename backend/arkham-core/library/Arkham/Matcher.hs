@@ -143,6 +143,11 @@ replaceInvestigatorMatcher = over biplate
 
 handWith :: HasCardCode a => a -> InvestigatorMatcher
 handWith = HandWith . hasCard
+{-# INLINE handWith #-}
+
+noModifier :: ModifierType -> InvestigatorMatcher
+noModifier = InvestigatorWithoutModifier
+{-# INLINE noModifier #-}
 
 -- ** Prey Helpers **
 
@@ -224,9 +229,13 @@ locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher
 locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
 {-# INLINE locationWithoutTreachery #-}
 
-accessibleFrom :: LocationId -> LocationMatcher
-accessibleFrom = AccessibleFrom . LocationWithId
+accessibleFrom :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
+accessibleFrom = AccessibleFrom . LocationWithId . asId
 {-# INLINE accessibleFrom #-}
+
+accessibleTo :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
+accessibleTo = AccessibleTo . LocationWithId . asId
+{-# INLINE accessibleTo #-}
 
 locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher

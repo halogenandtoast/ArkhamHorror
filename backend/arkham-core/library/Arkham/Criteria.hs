@@ -198,6 +198,9 @@ instance Not Criterion where
 instance OneOf Criterion where
   oneOf = AnyCriterion
 
+onLocation :: IsLocationMatcher a => a -> Criterion
+onLocation = OnLocation . toLocationMatcher
+
 cluesOnThis :: Int -> Criterion
 cluesOnThis = CluesOnThis . atLeast
 

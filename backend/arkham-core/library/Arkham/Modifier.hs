@@ -7,7 +7,7 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Uses
-import {-# SOURCE #-} Arkham.Card ( CardCode, Card )
+import {-# SOURCE #-} Arkham.Card (Card, CardCode)
 import Arkham.Card.CardType
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
@@ -47,6 +47,8 @@ data ModifierType
   | AddTrait Trait
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
+  | AdditionalCostToEnter Cost
+  | AdditionalCostToLeave Cost
   | AdditionalStartingUses Int
   | AdditionalStartingCards [Card]
   | AdditionalTargets Int

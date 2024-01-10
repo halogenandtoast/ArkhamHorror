@@ -286,8 +286,8 @@ breakNM n p xs = go n ([], xs)
 (<$$>) = fmap . fmap
 infixl 4 <$$>
 
-withIndex :: [a] -> [(Int, a)]
-withIndex = zip [0 ..]
+withIndex :: MonoFoldable l => l -> [(Int, Element l)]
+withIndex = zip [0 ..] . toList
 
 withIndexN :: Int -> [a] -> [(Int, a)]
 withIndexN n = zip [n ..]

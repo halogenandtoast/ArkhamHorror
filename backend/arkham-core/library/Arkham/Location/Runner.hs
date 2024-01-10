@@ -29,6 +29,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Constants
@@ -46,8 +47,10 @@ import Arkham.Matcher (
   EnemyMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
+  accessibleTo,
   enemyAt,
   investigatorAt,
+  noModifier,
  )
 import Arkham.Message (Message (DiscoverClues, MoveAction, RevealLocation))
 import Arkham.Projection
@@ -430,35 +433,28 @@ withDrawCardUnderneathAction
   => location
   -> [Ability]
 withDrawCardUnderneathAction x =
-  withBaseAbilities attrs [drawCardUnderneathAction attrs | locationRevealed attrs]
+  withBaseAbilities attrs [drawCardUnderneathAction attrs | attrs.revealed]
  where
   attrs = toAttrs x
 
 instance HasAbilities LocationAttrs where
   getAbilities l =
-    [ investigateAbility l 101 mempty (OnLocation $ LocationWithId $ toId l)
+    [ investigateAbility l 101 mempty (onLocation l)
     , restrictedAbility
         l
         102
-        ( OnLocation (AccessibleTo $ LocationWithId $ toId l)
-            <> exists
-              ( You <> InvestigatorWithoutModifier CannotMove <> InvestigatorWithoutModifier (CannotEnter $ toId l)
-              )
-        )
-        $ ActionAbility [Action.Move] moveCost
+        (OnLocation (accessibleTo l) <> exists (You <> can.move <> noModifier (CannotEnter l.id)))
+        $ ActionAbility [#move] moveCost
     ]
       <> [ withTooltip ("Take " <> keyName k <> " key")
-          $ restrictedAbility l (500 + idx) (OnLocation $ LocationWithId $ toId l)
+          $ restrictedAbility l (500 + idx) (onLocation l)
           $ FastAbility Free
-         | locationRevealed l
-         , locationClues l == 0
-         , (idx, k) <- withIndex (toList $ locationKeys l)
+         | l.revealed
+         , l.clues == 0
+         , (idx, k) <- withIndex l.keys
          ]
    where
-    moveCost =
-      if not (locationRevealed l)
-        then locationCostToEnterUnrevealed l
-        else ActionCost 1
+    moveCost = if l.revealed then ActionCost 1 else locationCostToEnterUnrevealed l
 
 getShouldSpawnNonEliteAtConnectingInstead :: HasGame m => LocationAttrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do

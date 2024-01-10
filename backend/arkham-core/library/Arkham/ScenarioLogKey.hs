@@ -61,6 +61,7 @@ data ScenarioLogKey
   | MeddledWithThePast (Labeled InvestigatorId)
   | -- | The Search for Kadath
     KnowWhatHappenedToIb
+  | ObtainedSuppliesFromBaharna
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

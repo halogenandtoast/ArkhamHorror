@@ -89,6 +89,9 @@ instance OneOf TreacheryMatcher where
 class WithTrait a where
   withTrait :: Trait -> a
 
+hasAnyTrait :: (OneOf a, WithTrait a) => [Trait] -> a
+hasAnyTrait traits = oneOf (withTrait <$> traits)
+
 instance WithTrait AssetMatcher where
   withTrait = AssetWithTrait
   {-# INLINE withTrait #-}

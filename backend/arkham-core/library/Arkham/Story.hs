@@ -85,4 +85,5 @@ allStories =
     , SomeStoryCard thePalaceOfRainbows
     , SomeStoryCard aShrineToTheGods
     , SomeStoryCard theCryptOfZulanThek
+    , SomeStoryCard waresOfBaharna
     ]

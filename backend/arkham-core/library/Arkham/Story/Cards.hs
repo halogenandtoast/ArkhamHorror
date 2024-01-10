@@ -69,6 +69,7 @@ allStoryCards =
       , thePalaceOfRainbows
       , aShrineToTheGods
       , theCryptOfZulanThek
+      , waresOfBaharna
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -218,3 +219,6 @@ aShrineToTheGods = story "06134b" "A Shrine to the Gods" TheSearchForKadath
 
 theCryptOfZulanThek :: CardDef
 theCryptOfZulanThek = story "06135b" "The Crypt of Zulan-Thek" TheSearchForKadath
+
+waresOfBaharna :: CardDef
+waresOfBaharna = story "06136b" "Wares of Baharna" TheSearchForKadath

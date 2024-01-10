@@ -1025,6 +1025,11 @@ chooseOrRunOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtAT
 chooseOrRunOneAtATime _ [x] = uiToRun x
 chooseOrRunOneAtATime pid msgs = Ask pid (ChooseOneAtATime msgs)
 
+chooseOrRunOneAtATimeWithLabel :: Text -> PlayerId -> [UI Message] -> Message
+chooseOrRunOneAtATimeWithLabel _ _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
+chooseOrRunOneAtATimeWithLabel _ _ [x] = uiToRun x
+chooseOrRunOneAtATimeWithLabel lbl pid msgs = Ask pid (QuestionLabel lbl Nothing $ ChooseOneAtATime msgs)
+
 chooseSome :: PlayerId -> Text -> [UI Message] -> Message
 chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"
 chooseSome pid doneText msgs = Ask pid (ChooseSome $ Done doneText : msgs)

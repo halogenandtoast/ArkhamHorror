@@ -70,6 +70,7 @@ allStoryCards =
       , aShrineToTheGods
       , theCryptOfZulanThek
       , waresOfBaharna
+      , theLikenessOfOld
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -222,3 +223,6 @@ theCryptOfZulanThek = story "06135b" "The Crypt of Zulan-Thek" TheSearchForKadat
 
 waresOfBaharna :: CardDef
 waresOfBaharna = story "06136b" "Wares of Baharna" TheSearchForKadath
+
+theLikenessOfOld :: CardDef
+theLikenessOfOld = story "06137b" "The Likeness of Old" TheSearchForKadath

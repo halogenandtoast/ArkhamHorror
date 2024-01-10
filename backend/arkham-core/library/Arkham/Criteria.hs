@@ -192,6 +192,9 @@ data Criterion
   | AffectedByTarot
   deriving stock (Show, Eq, Ord, Data)
 
+instance Not Criterion where
+  not_ = Negate
+
 instance OneOf Criterion where
   oneOf = AnyCriterion
 

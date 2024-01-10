@@ -86,4 +86,5 @@ allStories =
     , SomeStoryCard aShrineToTheGods
     , SomeStoryCard theCryptOfZulanThek
     , SomeStoryCard waresOfBaharna
+    , SomeStoryCard theLikenessOfOld
     ]

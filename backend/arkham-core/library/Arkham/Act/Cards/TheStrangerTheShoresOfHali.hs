@@ -13,10 +13,10 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Trait
+import Arkham.Window (getBatchId)
 
 newtype TheStrangerTheShoresOfHali = TheStrangerTheShoresOfHali ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -69,16 +69,13 @@ instance HasAbilities TheStrangerTheShoresOfHaliEffect where
 
 instance RunMessage TheStrangerTheShoresOfHaliEffect where
   runMessage msg e@(TheStrangerTheShoresOfHaliEffect attrs) = case msg of
-    UseThisAbility iid (isProxySource attrs -> True) 1 -> do
-      push $ beginSkillTest iid attrs iid #agility 2
+    UseCardAbility iid (isProxySource attrs -> True) 1 (getBatchId -> batchId) _ -> do
+      push $ beginSkillTest iid attrs (BatchTarget batchId) #agility 2
       pure e
-    FailedSkillTest _ _ (isSource attrs -> True) (Initiator (InvestigatorTarget iid)) _ _ -> do
-      popMessageMatching_ \case
-        MoveFrom _ iid' _ -> iid' == iid
-        _ -> False
-      popMessageMatching_ \case
-        MoveTo movement -> moveTarget movement == toTarget iid
-        _ -> False
-      push $ assignDamage iid attrs 1
+    FailedSkillTest iid _ (isSource attrs -> True) Initiator {} _ _ -> do
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Just (BatchTarget batchId) -> pushAll [assignDamage iid attrs 1, IgnoreBatch batchId]
+        _ -> error "Invalid target"
       pure e
     _ -> TheStrangerTheShoresOfHaliEffect <$> runMessage msg attrs

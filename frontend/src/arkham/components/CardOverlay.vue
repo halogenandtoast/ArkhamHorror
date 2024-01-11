@@ -48,9 +48,9 @@ const getPosition = (el: HTMLElement) => {
 
   const bottom = top + height
 
-  const newTop = bottom > window.innerHeight ?
+  const newTop = Math.max(0, bottom > window.innerHeight ?
     (rotated ? rect.bottom - height + rect.height : rect.bottom - height) + window.scrollY - 40 :
-    top
+    top)
 
   return { top: newTop, left: rect.left + window.scrollX + rect.width + 10 }
 }

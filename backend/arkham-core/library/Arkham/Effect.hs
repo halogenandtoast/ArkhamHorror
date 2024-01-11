@@ -22,7 +22,11 @@ import Arkham.Window (Window)
 
 -- start importing directly
 
-import Arkham.Act.Acts (infiltratingTheLodgeEffect, theYithianRelicEffect)
+import Arkham.Act.Acts (
+  infiltratingTheLodgeEffect,
+  theStrangerTheShoresOfHaliEffect,
+  theYithianRelicEffect,
+ )
 import Arkham.Agenda.Agendas (lostMemoriesEffect, theLoversVIEffect, theRedDepthsEffect)
 import Arkham.Asset.Assets (
   aceOfRods1Effect,
@@ -272,7 +276,7 @@ allEffects =
     , ("03033", SomeEffect uncageTheSoulEffect)
     , ("03047a", SomeEffect theStrangerACityAflame)
     , ("03047b", SomeEffect theStrangerThePathIsMine)
-    , ("03047c", SomeEffect theStrangerTheShoresOfHali)
+    , ("03047c", SomeEffect theStrangerTheShoresOfHaliEffect)
     , ("03100", SomeEffect theKingsEdict)
     , ("03141", SomeEffect mrPeabody)
     , ("03149", SomeEffect charlesRossEsqEffect)

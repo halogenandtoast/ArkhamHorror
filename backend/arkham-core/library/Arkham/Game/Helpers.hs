@@ -2981,10 +2981,15 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.YourLocation -> do
       yourLocationId <- field InvestigatorLocation investigatorId
       pure $ Just locationId == yourLocationId
-    Matcher.ThisLocation -> case source of
-      (LocationSource lid) -> pure $ lid == locationId
-      (ProxySource (LocationSource lid) _) -> pure $ lid == locationId
-      _ -> error "Invalid source for ThisLocation"
+    Matcher.ThisLocation ->
+      let
+        go = \case
+          LocationSource lid -> pure $ lid == locationId
+          ProxySource s _ -> go s
+          AbilitySource s _ -> go s
+          _ -> error $ "Invalid source for ThisLocation: " <> show source
+       in
+        go source
     Matcher.NotYourLocation -> do
       yourLocationId <- field InvestigatorLocation investigatorId
       pure $ Just locationId /= yourLocationId

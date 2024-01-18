@@ -1089,6 +1089,9 @@ instance IsLabel "investigate" ActionMatcher where
 instance IsLabel "move" ActionMatcher where
   fromLabel = ActionIs #move
 
+instance IsLabel "parley" ActionMatcher where
+  fromLabel = ActionIs #parley
+
 instance IsLabel "play" ActionMatcher where
   fromLabel = ActionIs #play
 

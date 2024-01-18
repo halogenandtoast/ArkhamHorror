@@ -15,9 +15,20 @@ packages:
     version: 1.2.0.1
   original:
     url: https://github.com/halogenandtoast/monad-validate/archive/e5f36d4a82875c09c6000fed8f8ced50e21b75ce.tar.gz
+- completed:
+    name: esqueleto
+    pantry-tree:
+      sha256: e2a5a12c0d34d80c40d7608e6353938385f72d2ca80870a8943a25d5a19fa27c
+      size: 5824
+    sha256: 280ff9a7e0bfc83a3d9ac0a254452cb8f4bbbc9b4caebf6b68d945b0fbf54977
+    size: 435879
+    url: https://github.com/MercuryTechnologies/esqueleto/archive/251fac46b3e1d10748cbb095724df50bb5f26fea.tar.gz
+    version: 3.5.11.0
+  original:
+    url: https://github.com/MercuryTechnologies/esqueleto/archive/251fac46b3e1d10748cbb095724df50bb5f26fea.tar.gz
 snapshots:
 - completed:
-    sha256: 8b211c5a6aad3787e023dfddaf7de7868968e4f240ecedf14ad1c5b2199046ca
-    size: 714097
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/4.yaml
-  original: lts-22.4
+    sha256: ebdaf8d4d6b365aac63aa06e57053313953d7a37d3eb84b0bbf5398734044952
+    size: 557524
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/1/17.yaml
+  original: nightly-2024-01-17

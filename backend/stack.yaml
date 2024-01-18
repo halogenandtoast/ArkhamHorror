@@ -3,8 +3,8 @@ require-stack-version: ">= 2.13.1"
 concurrent-tests: false
 system-ghc: true
 install-ghc: false
-resolver: lts-22.4
-compiler: ghc-9.6.4
+resolver: nightly-2024-01-17
+compiler: ghc-9.8.1
 
 ghc-options:
   "$locals":
@@ -40,3 +40,5 @@ allow-newer: true
 extra-deps:
 - github: halogenandtoast/monad-validate
   commit: e5f36d4a82875c09c6000fed8f8ced50e21b75ce
+- github: MercuryTechnologies/esqueleto
+  commit: 251fac46b3e1d10748cbb095724df50bb5f26fea

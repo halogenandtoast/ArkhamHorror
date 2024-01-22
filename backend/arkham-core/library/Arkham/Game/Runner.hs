@@ -1692,6 +1692,7 @@ runGameMessage msg g = case msg of
                       $ SkillLabel skillType []
                       : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType skillType) (ToSkillType skillType')]
                         | skillType' <- setToList availableSkills
+                        , skillType' /= skillType
                         ]
                   ]
                     <> windows'
@@ -1716,6 +1717,7 @@ runGameMessage msg g = case msg of
                           $ SkillLabel base []
                           : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType base) (ToSkillType skillType')]
                             | skillType' <- skillsTypes
+                            , skillType' /= base
                             ]
                     )
                     skillsWithChoice

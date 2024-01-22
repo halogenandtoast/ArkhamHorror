@@ -184,12 +184,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           & (completedAgendaStackL . at n ?~ remaining)
       _ -> error "Invalid agenda deck to reset"
   AdvanceActDeck n _ -> do
-    let
-      completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
+    let completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
     (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : y : ys) -> do
-        let fromActId = ActId (toCardCode x)
-        push (ReplaceAct fromActId y)
+        let fromActId = ActId $ toCardCode x
+        push $ ReplaceAct fromActId y
         pure (x, y : ys)
       _ -> error "Can not advance act deck"
     pure
@@ -217,8 +216,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (agendaStackL . at n ?~ stack)
       & (setAsideCardsL %~ filter (`notElem` stack))
   AdvanceToAct n actDef newActSide _ -> do
-    let
-      completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
+    let completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
     (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : ys) -> do
         let fromActId = ActId (toCardCode x)
@@ -226,10 +224,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           Nothing -> error $ "Missing act: " <> show actDef
           Just toAct -> do
             let toActId = ActId (toCardCode toAct)
-            when
-              (newActSide == Act.B)
-              (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
-            push (ReplaceAct fromActId toAct)
+            pushWhen (newActSide == Act.B)
+              $ AdvanceAct toActId (toSource a) AdvancedWithOther
+            push $ ReplaceAct fromActId toAct
             pure
               ( x
               , filter

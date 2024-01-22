@@ -181,8 +181,8 @@ instance RunMessage TheMidnightMasks where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       push
         $ if isEasyStandard attrs
-          then InvestigatorPlaceAllCluesOnLocation iid (ChaosTokenEffectSource Tablet)
-          else InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
+          then InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
+          else InvestigatorPlaceAllCluesOnLocation iid (ChaosTokenEffectSource Tablet)
       pure s
     ScenarioResolution NoResolution -> do
       push R1

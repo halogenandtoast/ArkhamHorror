@@ -1,15 +1,12 @@
 module Arkham.Location.Cards.Ballroom (ballroom, Ballroom (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype Ballroom = Ballroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,7 +21,8 @@ instance HasAbilities Ballroom where
       attrs
       [ groupLimit PerPhase
           $ restrictedAbility attrs 1 Here
-          $ freeReaction (PerformAction #after You #parley)
+          $ freeReaction
+          $ PerformAction #after You #parley
       ]
 
 instance RunMessage Ballroom where

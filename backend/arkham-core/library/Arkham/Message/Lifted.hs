@@ -1,17 +1,21 @@
-module Arkham.Message.Lifted where
+module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Helpers
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Prelude
+import Arkham.SkillType qualified as SkillType
 import Arkham.Source
+import Arkham.Target
 
 setEncounterDeck :: HasQueue Message m => Deck EncounterCard -> QueueT Message m ()
 setEncounterDeck = push . SetEncounterDeck
@@ -63,3 +67,13 @@ assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid sourc
 findAndDrawEncounterCard
   :: HasQueue Message m => InvestigatorId -> CardMatcher -> QueueT Message m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
+
+beginSkillTest
+  :: (HasQueue Message m, Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType.SkillType
+  -> Int
+  -> QueueT Message m ()
+beginSkillTest iid source target sType n = push $ Msg.beginSkillTest iid source target sType n

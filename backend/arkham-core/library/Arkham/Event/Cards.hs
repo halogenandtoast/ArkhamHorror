@@ -1454,6 +1454,7 @@ sceneOfTheCrime =
   (event "04103" "Scene of the Crime" 2 Guardian)
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = setFromList [Insight, Bold]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdCriteria = Just $ Criteria.Criteria [Criteria.FirstAction, Criteria.ClueOnLocation]
     }
 

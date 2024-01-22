@@ -1,19 +1,14 @@
-module Arkham.Enemy.Cards.JosefMeiger (
-  josefMeiger,
-  JosefMeiger (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.JosefMeiger (josefMeiger, JosefMeiger (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Runner hiding (beginSkillTest)
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Message.Lifted
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 import Arkham.Trait (Trait (SilverTwilight))
 
@@ -31,33 +26,22 @@ instance HasAbilities JosefMeiger where
       [ restrictedAbility
           a
           1
-          ( OnSameLocation
-              <> Negate
-                ( EnemyCriteria
-                    $ EnemyExists
-                    $ EnemyWithTrait SilverTwilight
-                    <> EnemyWithAnyDoom
-                    <> NotEnemy (EnemyWithId $ toId a)
-                )
-          )
-          $ ActionAbility [Action.Parley]
-          $ ActionCost 1
+          (OnSameLocation <> notExists (withTrait SilverTwilight <> EnemyWithAnyDoom <> not_ (be a)))
+          parleyAction_
       ]
 
 instance RunMessage JosefMeiger where
   runMessage msg e@(JosefMeiger attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid attrs attrs SkillIntellect 4
+    UseThisAbility iid (isSource attrs -> True) 1 -> runQueueT do
+      beginSkillTest iid (attrs.ability 1) attrs #intellect 4
       pure e
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
-        pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Flip iid (toSource attrs) (toTarget attrs)
-        pure e
-    Flip iid _ target | isTarget attrs target -> do
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
+      pure e
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ Flip iid (attrs.ability 1) (toTarget attrs)
+      pure e
+    Flip iid _ (isTarget attrs -> True) -> do
       josefsPlan <- genCard Story.josefsPlan
       push $ ReadStory iid josefsPlan ResolveIt (Just $ toTarget attrs)
       pure e

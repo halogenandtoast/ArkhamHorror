@@ -216,6 +216,9 @@ atYourLocation matcher = exists (AtYourLocation <> matcher)
 class Exists a where
   exists :: a -> Criterion
 
+notExists :: Exists a => a -> Criterion
+notExists = not_ . exists
+
 instance Exists EventMatcher where
   exists = EventExists
 

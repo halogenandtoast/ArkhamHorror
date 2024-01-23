@@ -12,6 +12,7 @@ import Event from '@/arkham/components/Event.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import { Card } from '../types/Card';
@@ -150,90 +151,98 @@ watch(abilities, (abilities) => {
     showAbilities.value = false
   }
 })
+
+const assetStory = computed(() => {
+  const { stories } = props.game
+  return Object.values(stories).find((s) => s.otherSide?.contents === props.asset.id)
+})
 </script>
 
 <template>
-  <div class="asset" :data-index="asset.cardId">
-    <div class="card-frame">
-      <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, exhausted}">
-        <img
-          :data-id="id"
-          :src="image"
-          class="card"
-          @click="clicked"
-        />
-      </div>
-      <div v-if="hasPool" class="pool">
-        <div class="keys" v-if="keys.length > 0">
-          <Key v-for="key in keys" :key="key" :name="key" />
+  <div class="asset--outer">
+    <Story v-if="assetStory" :story="assetStory" :game="game" :playerId="playerId" @choose="choose"/>
+    <div v-else class="asset" :data-index="asset.cardId">
+      <div class="card-frame">
+        <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, exhausted}">
+          <img
+            :data-id="id"
+            :src="image"
+            class="card"
+            @click="clicked"
+          />
         </div>
-        <template v-for="[use, amount] in Object.entries(asset.uses)" :key="use">
+        <div v-if="hasPool" class="pool">
+          <div class="keys" v-if="keys.length > 0">
+            <Key v-for="key in keys" :key="key" :name="key" />
+          </div>
+          <template v-for="[use, amount] in Object.entries(asset.uses)" :key="use">
+            <PoolItem
+              v-if="amount > 0"
+              type="resource"
+              :amount="amount"
+            />
+          </template>
           <PoolItem
-            v-if="amount > 0"
-            type="resource"
-            :amount="amount"
+            v-if="asset.health !== null || (damage || 0) > 0"
+            type="health"
+            :amount="damage || 0"
+            :class="{ 'health--can-interact': healthAction !== -1 }"
+            @choose="choose(healthAction)"
           />
-        </template>
-        <PoolItem
-          v-if="asset.health !== null || (damage || 0) > 0"
-          type="health"
-          :amount="damage || 0"
-          :class="{ 'health--can-interact': healthAction !== -1 }"
-          @choose="choose(healthAction)"
-        />
-        <PoolItem
-          v-if="asset.sanity !== null || (horror || 0) > 0"
-          type="sanity"
-          :amount="horror || 0"
-          :class="{ 'sanity--can-interact': sanityAction !== -1 }"
-          @choose="choose(sanityAction)"
-        />
-        <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-        <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-        <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-        <PoolItem v-if="offerings && offerings > 0" type="resource" :amount="offerings" />
-        <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
-      </div>
+          <PoolItem
+            v-if="asset.sanity !== null || (horror || 0) > 0"
+            type="sanity"
+            :amount="horror || 0"
+            :class="{ 'sanity--can-interact': sanityAction !== -1 }"
+            @choose="choose(sanityAction)"
+          />
+          <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="offerings && offerings > 0" type="resource" :amount="offerings" />
+          <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
+        </div>
 
-      <div v-if="showAbilities" class="abilities" :data-image="image">
-        <AbilityButton
-          v-for="ability in abilities"
-          :key="ability.index"
-          :ability="ability.contents"
-          @click="chooseAbility(ability.index)"
-          />
+        <div v-if="showAbilities" class="abilities" :data-image="image">
+          <AbilityButton
+            v-for="ability in abilities"
+            :key="ability.index"
+            :ability="ability.contents"
+            @click="chooseAbility(ability.index)"
+            />
+        </div>
       </div>
+      <Event
+        v-for="eventId in asset.events"
+        :event="game.events[eventId]"
+        :game="game"
+        :playerId="playerId"
+        :key="eventId"
+        @choose="$emit('choose', $event)"
+      />
+      <Treachery
+        v-for="treacheryId in asset.treacheries"
+        :treachery="game.treacheries[treacheryId]"
+        :game="game"
+        :attached="true"
+        :playerId="playerId"
+        :key="treacheryId"
+        @choose="$emit('choose', $event)"
+      />
+      <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+      <template v-if="debug.active">
+        <button v-if="!asset.owner" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
+        <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">Discard</button>
+      </template>
+      <Asset
+        v-for="assetId in asset.assets"
+        :asset="game.assets[assetId]"
+        :game="game"
+        :playerId="playerId"
+        :key="assetId"
+        @choose="$emit('choose', $event)"
+      />
     </div>
-    <Event
-      v-for="eventId in asset.events"
-      :event="game.events[eventId]"
-      :game="game"
-      :playerId="playerId"
-      :key="eventId"
-      @choose="$emit('choose', $event)"
-    />
-    <Treachery
-      v-for="treacheryId in asset.treacheries"
-      :treachery="game.treacheries[treacheryId]"
-      :game="game"
-      :attached="true"
-      :playerId="playerId"
-      :key="treacheryId"
-      @choose="$emit('choose', $event)"
-    />
-    <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
-    <template v-if="debug.active">
-      <button v-if="!asset.owner" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
-      <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">Discard</button>
-    </template>
-    <Asset
-      v-for="assetId in asset.assets"
-      :asset="game.assets[assetId]"
-      :game="game"
-      :playerId="playerId"
-      :key="assetId"
-      @choose="$emit('choose', $event)"
-    />
   </div>
 </template>
 

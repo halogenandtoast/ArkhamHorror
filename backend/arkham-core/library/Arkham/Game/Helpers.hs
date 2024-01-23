@@ -561,15 +561,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
       else do
         takenActions <- field InvestigatorActionsTaken iid
         performedActions <- field InvestigatorActionsPerformed iid
-        let
-          modifiedActionCost =
-            foldr (applyActionCostModifier takenActions performedActions actions) n modifiers
+        let modifiedActionCost = foldr (applyActionCostModifier takenActions performedActions actions) n modifiers
         additionalActions <- field InvestigatorAdditionalActions iid
-        additionalActionCount <-
-          length
-            <$> filterM
-              (additionalActionCovers source actions)
-              additionalActions
+        additionalActionCount <- countM (additionalActionCovers source actions) additionalActions
         actionCount <- field InvestigatorRemainingActions iid
         pure $ (actionCount + additionalActionCount) >= modifiedActionCost
   AssetClueCost _ aMatcher gv -> do

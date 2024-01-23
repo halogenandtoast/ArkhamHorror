@@ -1582,7 +1582,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId -> do
     pure $ a & mentalTraumaL .~ investigatorSanity
-  CheckDefeated source (isTarget a -> True) -> do
+  CheckDefeated source (isTarget a -> True) | not (a ^. defeatedL || a ^. resignedL) -> do
     facingDefeat <- getFacingDefeat a
     if facingDefeat
       then do

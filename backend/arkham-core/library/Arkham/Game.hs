@@ -56,7 +56,7 @@ import Arkham.Game.Helpers hiding (
  )
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Game.Json ()
-import Arkham.Game.Runner ()
+import Arkham.Game.Runner (handleActionDiff)
 import Arkham.Game.Settings
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
@@ -3761,96 +3761,108 @@ runMessages
 runMessages mLogger = do
   g <- readGame
   debugLevel <- getDebugLevel
-  when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
-
-  unless (g ^. gameStateL /= IsActive) $ do
-    mmsg <- popMessage
-    case mmsg of
-      Nothing -> case gamePhase g of
-        CampaignPhase {} -> pure ()
-        ResolutionPhase {} -> pure ()
-        MythosPhase {} -> pure ()
-        EnemyPhase {} -> pure ()
-        UpkeepPhase {} -> pure ()
-        InvestigationPhase {} | not (gameRunWindows g) -> pure ()
-        InvestigationPhase {} -> do
-          mTurnInvestigator <-
-            runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
-          let
-            doneWithRound =
-              or
-                . sequence
-                  [ attr investigatorEndedTurn
-                  , attr investigatorResigned
-                  , attr investigatorDefeated
-                  ]
-          if all doneWithRound mTurnInvestigator
-            then do
-              playingInvestigators <-
-                runWithEnv
-                  $ filterM
-                    (fmap (not . doneWithRound) . getInvestigator)
-                    (gamePlayerOrder g)
-              case playingInvestigators of
-                [] -> pushEnd EndInvestigation
-                [x] -> push $ ChoosePlayer x SetTurnPlayer
-                xs -> do
-                  player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
-                  push
-                    $ questionLabel "Choose player to take turn" player
-                    $ ChooseOne
-                      [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
-                      | iid <- xs
+  runReaderT (go debugLevel) g
+ where
+  go debugLevel = do
+    g <- lift readGame
+    lift $ when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
+    unless (g ^. gameStateL /= IsActive) $ do
+      mmsg <- lift popMessage
+      case mmsg of
+        Nothing -> do
+          case gamePhase g of
+            CampaignPhase {} -> pure ()
+            ResolutionPhase {} -> pure ()
+            MythosPhase {} -> pure ()
+            EnemyPhase {} -> pure ()
+            UpkeepPhase {} -> pure ()
+            InvestigationPhase {} | not (gameRunWindows g) -> pure ()
+            InvestigationPhase {} -> do
+              mTurnInvestigator <-
+                lift $ runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
+              let
+                doneWithRound =
+                  or
+                    . sequence
+                      [ attr investigatorEndedTurn
+                      , attr investigatorResigned
+                      , attr investigatorDefeated
                       ]
+              if all doneWithRound mTurnInvestigator
+                then do
+                  playingInvestigators <-
+                    lift
+                      $ runWithEnv
+                      $ filterM
+                        (fmap (not . doneWithRound) . getInvestigator)
+                        (gamePlayerOrder g)
+                  case playingInvestigators of
+                    [] -> lift $ pushEnd EndInvestigation
+                    [x] -> lift $ push $ ChoosePlayer x SetTurnPlayer
+                    xs -> do
+                      player <- lift $ runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
+                      lift
+                        $ push
+                        $ questionLabel "Choose player to take turn" player
+                        $ ChooseOne
+                          [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
+                          | iid <- xs
+                          ]
 
-              runMessages mLogger
-            else do
-              let turnPlayer = fromJustNote "verified above" mTurnInvestigator
-              pushAllEnd
-                [ Msg.PhaseStep
-                    (InvestigationPhaseStep InvestigatorTakesActionStep)
-                    [PlayerWindow (toId turnPlayer) [] False]
-                ]
-                >> runMessages mLogger
-      Just msg -> do
-        when (debugLevel == 1) $ do
-          pPrint msg
-          putStrLn "\n"
+                  go debugLevel
+                else do
+                  let turnPlayer = fromJustNote "verified above" mTurnInvestigator
+                  lift
+                    ( pushAllEnd
+                        [ Msg.PhaseStep
+                            (InvestigationPhaseStep InvestigatorTakesActionStep)
+                            [PlayerWindow (toId turnPlayer) [] False]
+                        ]
+                    )
+                    >> go debugLevel
+        Just msg -> do
+          when (debugLevel == 1) $ do
+            pPrint msg
+            putStrLn "\n"
 
-        for_ mLogger $ liftIO . ($ msg)
+          for_ mLogger $ liftIO . ($ msg)
 
-        case msg of
-          Ask pid q -> do
-            runWithEnv
-              ( toExternalGame
-                  (g & activePlayerIdL .~ pid)
-                  (singletonMap pid q)
-              )
-              >>= putGame
-          AskMap askMap -> runWithEnv (toExternalGame g askMap) >>= putGame
-          RunWindow {} | not (gameRunWindows g) -> runMessages mLogger
-          CheckWindow {} | not (gameRunWindows g) -> runMessages mLogger
-          _ -> do
-            -- Hidden Library handling
-            -- > While an enemy is moving, Hidden Library gains the Passageway trait.
-            -- Therefor we must track the "while" aspect
-            case msg of
-              HunterMove eid -> overGame $ enemyMovingL ?~ eid
-              WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
-              CheckWindow _ (getEvadedEnemy -> Just eid) ->
-                overGame $ enemyEvadingL ?~ eid
-              RunWindow _ (getEvadedEnemy -> Just eid) ->
-                overGame $ enemyEvadingL ?~ eid
-              _ -> pure ()
-            runWithEnv
-              ( getGame
-                  >>= runMessage msg
-                  >>= preloadModifiers
-                  >>= handleTraitRestrictedModifiers
-                  >>= handleBlanked
-              )
-              >>= putGame
-            runMessages mLogger
+          oldG <- ask
+          case msg of
+            Ask pid q -> lift do
+              runWithEnv
+                ( toExternalGame
+                    (g & activePlayerIdL .~ pid)
+                    (singletonMap pid q)
+                )
+                >>= putGame
+                . handleActionDiff oldG
+            AskMap askMap -> lift do
+              runWithEnv (toExternalGame g askMap) >>= putGame . handleActionDiff oldG
+            RunWindow {} | not (gameRunWindows g) -> go debugLevel
+            CheckWindow {} | not (gameRunWindows g) -> go debugLevel
+            _ -> do
+              -- Hidden Library handling
+              -- > While an enemy is moving, Hidden Library gains the Passageway trait.
+              -- Therefor we must track the "while" aspect
+              case msg of
+                HunterMove eid -> lift $ overGame $ enemyMovingL ?~ eid
+                WillMoveEnemy eid _ -> lift $ overGame $ enemyMovingL ?~ eid
+                CheckWindow _ (getEvadedEnemy -> Just eid) ->
+                  lift $ overGame $ enemyEvadingL ?~ eid
+                RunWindow _ (getEvadedEnemy -> Just eid) ->
+                  lift $ overGame $ enemyEvadingL ?~ eid
+                _ -> pure ()
+              lift
+                $ runWithEnv
+                  ( getGame
+                      >>= runMessage msg
+                      >>= preloadModifiers
+                      >>= handleTraitRestrictedModifiers
+                      >>= handleBlanked
+                  )
+                >>= putGame
+              go debugLevel
 
 getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator =

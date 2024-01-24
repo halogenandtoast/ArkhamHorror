@@ -2400,9 +2400,12 @@ instance RunMessage Game where
         >>= (activeCostL . traverse) (runMessage msg)
         >>= runGameMessage msg
       )
-      <&> handleActionDiff g
-      . set enemyMovingL Nothing
+      <&> set enemyMovingL Nothing
       . set enemyEvadingL Nothing
+
+-- <&> handleActionDiff g
+-- . set enemyMovingL Nothing
+-- . set enemyEvadingL Nothing
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
@@ -2427,5 +2430,6 @@ runPreGameMessage msg g = case msg of
 
 handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new
-  | gameInAction new = new & actionDiffL %~ (diff new old :)
+  | gameInAction new =
+      new & actionDiffL %~ (diff (new & actionDiffL .~ []) (old & actionDiffL .~ []) :)
   | otherwise = new

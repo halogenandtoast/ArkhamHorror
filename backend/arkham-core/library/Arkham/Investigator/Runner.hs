@@ -2238,10 +2238,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                         pure $ (skillDifficulty - investigatorResources a) >= n
                 prevented = flip any modifiers' $ \case
                   CanOnlyUseCardsInRole role ->
-                    null
-                      $ intersect
-                        (cdClassSymbols $ toCardDef card)
-                        (setFromList [Neutral, role])
+                    null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
                   CannotCommitCards matcher -> cardMatch card matcher
                   _ -> False
               passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
@@ -2249,11 +2246,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               icons <- iconsForCard (toCard card)
 
               pure
-                $ PlayerCard card
-                `notElem` committedCards
-                && (any (`member` skillIcons) icons || (null icons && toCardType card == SkillType))
-                && passesCommitRestrictions
-                && not prevented
+                $ and
+                  [ PlayerCard card `notElem` committedCards
+                  , or
+                      [ any (`member` skillIcons) icons
+                      , and [null icons, toCardType card == SkillType]
+                      ]
+                  , passesCommitRestrictions
+                  , not prevented
+                  ]
             EncounterCard card ->
               pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef card)
             VengeanceCard _ -> error "vengeance card"
@@ -2318,7 +2319,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               filterM (field TreacheryCanBeCommitted)
                 =<< selectList (treacheryInHandOf investigatorId)
             treacheryCards <- traverse (field TreacheryCard) committableTreacheries
-            flip filterM (investigatorHand <> treacheryCards) $ \case
+            let asIfInHandForCommit = mapMaybe (preview _CanCommitToSkillTestsAsIfInHand) modifiers'
+            flip filterM (asIfInHandForCommit <> investigatorHand <> treacheryCards) $ \case
               PlayerCard card -> do
                 let
                   passesCommitRestriction = \case
@@ -2348,6 +2350,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   prevented = flip any modifiers' $ \case
                     CanOnlyUseCardsInRole role ->
                       null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
+                    CannotCommitCards matcher -> cardMatch card matcher
                     _ -> False
                 passesCriterias <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
                 icons <- iconsForCard (toCard card)

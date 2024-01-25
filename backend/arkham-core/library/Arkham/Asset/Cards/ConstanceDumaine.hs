@@ -18,7 +18,7 @@ constanceDumaine = asset ConstanceDumaine Cards.constanceDumaine
 instance HasAbilities ConstanceDumaine where
   getAbilities (ConstanceDumaine a) =
     [ restrictedAbility a 1 OnSameLocation parleyAction_
-    , mkAbility a 2 $ forced $ LastClueRemovedFromAsset #when $ AssetWithId $ toId a
+    , groupLimit PerGame $ mkAbility a 2 $ forced $ LastClueRemovedFromAsset #when $ AssetWithId $ toId a
     ]
 
 instance RunMessage ConstanceDumaine where

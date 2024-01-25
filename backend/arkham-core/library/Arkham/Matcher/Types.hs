@@ -446,6 +446,9 @@ instance Be InvestigatorMatcher InvestigatorMatcher where
 instance Be LocationMatcher LocationMatcher where
   be = id
 
+instance Be LocationId LocationMatcher where
+  be = LocationWithId
+
 instance IsString LocationMatcher where
   fromString = LocationWithTitle . fromString
 

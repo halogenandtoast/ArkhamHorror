@@ -140,6 +140,7 @@ import Arkham.Story.Stories (
 import Arkham.Treachery.Treacheries (
   arcaneBarrierEffect,
   chillingPresenceEffect,
+  mesmerizeEffect,
   mysteriesOfTheLodgeEffect,
   whispersOfHypnosEffect,
  )
@@ -382,7 +383,7 @@ allEffects =
     , ("81001", SomeEffect curseOfTheRougarouTabletToken)
     , ("81007", SomeEffect cursedShores)
     , ("82026", SomeEffect gildedVolto)
-    , ("82035", SomeEffect mesmerize)
+    , ("82035", SomeEffect mesmerizeEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
     , ("90002", SomeEffect daisysToteBagAdvanced)

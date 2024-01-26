@@ -244,7 +244,7 @@ function onEnter(el: Element, done: () => void) {
     }})
     return
   }
-  
+
   const data = rectData.value.find(([idx,]) => idx === index)
   rectData.value = rectData.value.filter(([idx,]) => idx !== index)
   if (!data) {
@@ -286,14 +286,16 @@ function onEnter(el: Element, done: () => void) {
 }
 function onLeave(el: Element, done: () => void) {
   if (!isHtmlElement(el)) { return }
+  if(Object.values(el.classList).includes("committed-skills")) {
+    done();
+    return
+  }
   if(!el.dataset.index) {
     console.error("No data-index on element", el)
+    done()
     return
   }
 
-  if(Object.values(el.classList).includes("committed-skills")) {
-    done();
-  }
   rectData.value = [...rectData.value, [el.dataset.index, el.getBoundingClientRect()]]
   gsap.to(el, {
     startAt: { opacity: 0 },
@@ -308,7 +310,7 @@ function onLeave(el: Element, done: () => void) {
 <template>
   <div class="player-cards">
     <transition name="grow">
-    <transition-group tag="section" class="in-play" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+      <transition-group tag="section" class="in-play" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
 
         <template v-if="tarotCards.length > 0">
           <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana">
@@ -341,6 +343,7 @@ function onLeave(el: Element, done: () => void) {
           :game="game"
           :playerId="playerId"
           :key="asset"
+          :data-index="game.assets[asset].cardId"
           @choose="$emit('choose', $event)"
           @showCards="doShowCards"
         />
@@ -391,7 +394,7 @@ function onLeave(el: Element, done: () => void) {
           <img :src="slotImg(slot)" />
         </div>
 
-        <div v-if="committedCards.length > 0" class="committed-skills">
+        <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
           <h2>Committed Skills</h2>
           <CommittedSkills
             :game="game"

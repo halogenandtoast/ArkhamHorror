@@ -78,3 +78,9 @@ data:
 	curl https://arkhamdb.com/api/public/cards/?encounter=1 > cards.json && \
 	curl https://arkhamdb.com/api/public/packs/ | jq ".[].code" | xargs sh -c 'for arg do mkdir $$arg; curl https://arkhamdb.com/api/public/cards/$$arg > $$arg/cards.json; done' \
 	for f in `find ./ -name *json`; do echo $f ; python -mjson.tool $f > /tmp/1 && cp /tmp/1 $f ; done \
+
+.PHONY: eventlog
+eventlog:
+	cd arkham-api && \
+		nix run -f https://github.com/mpickering/eventlog2html/archive/master.tar.gz eventlog2html arkham-api.eventlog && \
+		open arkham-api.eventlog.html

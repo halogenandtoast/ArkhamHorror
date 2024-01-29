@@ -22,6 +22,7 @@ newtype QueueT msg m a = QueueT {unQueueT :: ReaderT (Queue msg) m a}
 
 instance MonadIO m => HasQueue msg (QueueT msg m) where
   messageQueue = ask
+  pushAll (reverse -> msgs) = withQueue_ (msgs <>)
 
 instance HasGameLogger m => HasGameLogger (QueueT msg m) where
   getLogger = do
@@ -37,6 +38,8 @@ newtype Queue msg = Queue {queueToRef :: IORef [msg]}
 
 class MonadIO m => HasQueue msg m | m -> msg where
   messageQueue :: m (Queue msg)
+  pushAll :: [msg] -> m ()
+  pushAll = withQueue_ . (<>)
 
 newQueue :: MonadIO m => [msg] -> m (Queue msg)
 newQueue msgs = Queue <$> newIORef msgs
@@ -80,8 +83,8 @@ pushAllEnd msgs = withQueue \queue -> (queue <> msgs, ())
 push :: HasQueue msg m => msg -> m ()
 push = pushAll . pure
 
-pushAll :: HasQueue msg m => [msg] -> m ()
-pushAll msgs = withQueue \queue -> (msgs <> queue, ())
+-- pushAll :: HasQueue msg m => [msg] -> m ()
+-- pushAll msgs = withQueue \queue -> (msgs <> queue, ())
 
 replaceMessage :: (HasQueue msg m, Eq msg) => msg -> [msg] -> m ()
 replaceMessage msg replacement = replaceMessageMatching (== msg) (const replacement)

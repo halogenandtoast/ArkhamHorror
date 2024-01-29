@@ -521,6 +521,10 @@ i.action {
   margin-left: 10px;
   display: flex;
   flex-direction: column;
+
+  @media (prefers-color-scheme: light) {
+    color: #efefef;
+  }
 }
 
 .plus-button {

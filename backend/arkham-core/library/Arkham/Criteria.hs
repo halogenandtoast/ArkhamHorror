@@ -109,6 +109,11 @@ pattern InYourThreatArea <- InThreatAreaOf You
   where
     InYourThreatArea = InThreatAreaOf You
 
+pattern DuringAnySkillTest :: Criterion
+pattern DuringAnySkillTest <- DuringSkillTest AnySkillTest
+  where
+    DuringAnySkillTest = DuringSkillTest AnySkillTest
+
 data Criterion
   = AssetExists AssetMatcher
   | EventExists EventMatcher

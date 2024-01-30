@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.AgencyBackup5 (
-  agencyBackup5,
-  AgencyBackup5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.AgencyBackup5 (agencyBackup5, AgencyBackup5 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +7,7 @@ import Arkham.DamageEffect
 import Arkham.Discover
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype AgencyBackup5 = AgencyBackup5 AssetAttrs
@@ -37,7 +33,7 @@ instance HasAbilities AgencyBackup5 where
         "{fast} Exhaust Agency Backup and deal 1 damage to it: Deal 1 damage to an enemy at your location."
         $ fastAbility a 1 (exhaust a <> DamageCost (toSource a) (toTarget a) 1)
         $ ControlsThis
-        <> enemyExists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource a))
+        <> exists (at_ YourLocation <> EnemyCanBeDamagedBySource (toSource a))
         <> CanDealDamage
     , withTooltip
         "{fast} Exhaust Agency Backup and deal 1 horror to it: Discover 1 clue at your location."
@@ -50,16 +46,13 @@ instance HasAbilities AgencyBackup5 where
 instance RunMessage AgencyBackup5 where
   runMessage msg a@(AgencyBackup5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
+      let source = attrs.ability 1
       targets <- selectList $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
       player <- getPlayer iid
       push
-        . chooseOne player
-        $ [ targetLabel target [EnemyDamage target $ nonAttack source 1]
-          | target <- targets
-          ]
+        $ chooseOne player [targetLabel target [EnemyDamage target $ nonAttack source 1] | target <- targets]
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 2) 1
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ discoverAtYourLocation iid (attrs.ability 2) 1
       pure a
     _ -> AgencyBackup5 <$> runMessage msg attrs

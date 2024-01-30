@@ -1,16 +1,10 @@
-module Arkham.Asset.Cards.SpringfieldM19034 (
-  springfieldM19034,
-  SpringfieldM19034 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.SpringfieldM19034 (springfieldM19034, SpringfieldM19034 (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,33 +16,16 @@ springfieldM19034 = asset SpringfieldM19034 Cards.springfieldM19034
 -- TODO: Can't fight enemies engaged, see Telescopic Sight (3)
 instance HasAbilities SpringfieldM19034 where
   getAbilities (SpringfieldM19034 a) =
-    [ restrictedAbility
-        a
-        1
-        ( ControlsThis
-            <> EnemyCriteria (EnemyExists $ CanFightEnemy (toAbilitySource a 1) <> NotEnemy EnemyEngagedWithYou)
-        )
-        $ ActionAbility ([Action.Fight])
-        $ ActionCost 1
-        <> UseCost (AssetWithId $ toId a) Ammo 1
+    [ controlledAbility a 1 (exists $ CanFightEnemy (a.ability 1) <> not_ EnemyEngagedWithYou)
+        $ fightAction (assetUseCost a Ammo 1)
     ]
 
 instance RunMessage SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ pushAll
-              [ skillTestModifiers
-                  attrs
-                  (InvestigatorTarget iid)
-                  [DamageDealt 2, SkillModifier SkillCombat 3]
-              , ChooseFightEnemy
-                  iid
-                  source
-                  Nothing
-                  SkillCombat
-                  EnemyNotEngagedWithYou
-                  False
-              ]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      pushAll
+        [ skillTestModifiers attrs iid [DamageDealt 2, SkillModifier #combat 3]
+        , ChooseFightEnemy iid (attrs.ability 1) Nothing #combat EnemyNotEngagedWithYou False
+        ]
+      pure a
     _ -> SpringfieldM19034 <$> runMessage msg attrs

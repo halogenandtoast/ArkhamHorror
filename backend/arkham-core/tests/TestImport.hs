@@ -166,7 +166,14 @@ cloneTestApp testApp = do
       }
 
 newtype TestAppT a = TestAppT {unTestAppT :: StateT TestApp IO a}
-  deriving newtype (MonadState TestApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)
+  deriving newtype
+    (MonadState TestApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom, MonadUnliftIO)
+
+-- Bad instance, only exists for timeout functionality
+instance MonadUnliftIO m => MonadUnliftIO (StateT TestApp m) where
+  withRunInIO inner =
+    get >>= \st -> StateT $ \_ ->
+      withRunInIO $ \runInIO -> (,st) <$> inner (runInIO . flip evalStateT st)
 
 instance HasDebugLevel TestAppT where
   getDebugLevel = liftIO . readIORef =<< gets debugLevel
@@ -708,6 +715,35 @@ We use jenny barnes because she has no direct interaction with the game state
 -}
 gameTest :: (Investigator -> TestAppT ()) -> IO ()
 gameTest = gameTestWith Investigators.jennyBarnes
+
+data ArkhamExport = ArkhamExport
+  { campaignPlayers :: [InvestigatorId]
+  , campaignData :: ArkhamGameExportData
+  }
+  deriving stock (Generic)
+  deriving anyclass (FromJSON)
+
+newtype ArkhamGameExportData = ArkhamGameExportData {currentData :: Game}
+  deriving stock (Generic)
+  deriving anyclass (FromJSON)
+
+gameTestFromFile :: FilePath -> (Investigator -> TestAppT ()) -> IO ()
+gameTestFromFile fp body = do
+  export <- fromJustNote "failed to parse file" <$> decodeFileStrict' ("tests/" <> fp)
+  let ArkhamGameExportData {..} = campaignData export
+  let
+    investigatorId = case campaignPlayers export of
+      (iid : _) -> iid
+      [] -> error "expected at least one investigator"
+  let g = currentData
+  investigator <- runReaderT (getInvestigator investigatorId) g
+  gameRef <- newIORef g
+  queueRef <- newQueue []
+  genRef <- newIORef $ mkStdGen (gameSeed g)
+  debugLevelRef <- newIORef 0
+  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef
+  runReaderT (overGameM preloadModifiers) testApp
+  runTestApp testApp (body investigator)
 
 gameTestWith :: CardDef -> (Investigator -> TestAppT ()) -> IO ()
 gameTestWith investigatorDef body = do

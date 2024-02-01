@@ -7,7 +7,7 @@ import Arkham.Asset.Runner
 
 newtype CherishedKeepsake = CherishedKeepsake AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cherishedKeepsake :: AssetCard CherishedKeepsake
 cherishedKeepsake =

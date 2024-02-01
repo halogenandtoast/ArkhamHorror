@@ -20,7 +20,7 @@ import Arkham.Projection
 
 newtype HarlansCurseHarlanEarnstone = HarlansCurseHarlanEarnstone ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 harlansCurseHarlanEarnstone :: ActCard HarlansCurseHarlanEarnstone
 harlansCurseHarlanEarnstone =

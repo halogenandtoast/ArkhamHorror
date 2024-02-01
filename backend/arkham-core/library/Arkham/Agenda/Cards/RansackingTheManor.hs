@@ -21,7 +21,7 @@ import Arkham.Window qualified as Window
 
 newtype RansackingTheManor = RansackingTheManor AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ransackingTheManor :: AgendaCard RansackingTheManor
 ransackingTheManor =

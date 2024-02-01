@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype Blackjack = Blackjack AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 blackjack :: AssetCard Blackjack
 blackjack = asset Blackjack Cards.blackjack

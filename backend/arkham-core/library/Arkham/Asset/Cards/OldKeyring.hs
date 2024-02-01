@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype OldKeyring = OldKeyring AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 oldKeyring :: AssetCard OldKeyring
 oldKeyring = assetWith OldKeyring Cards.oldKeyring (whenNoUsesL ?~ DiscardWhenNoUses)

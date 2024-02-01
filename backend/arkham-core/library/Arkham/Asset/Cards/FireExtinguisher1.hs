@@ -10,7 +10,7 @@ import Arkham.SkillType
 
 newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fireExtinguisher1 :: AssetCard FireExtinguisher1
 fireExtinguisher1 = asset FireExtinguisher1 Cards.fireExtinguisher1

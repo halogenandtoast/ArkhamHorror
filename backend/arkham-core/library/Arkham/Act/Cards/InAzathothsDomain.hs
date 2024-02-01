@@ -29,7 +29,7 @@ import Data.List.Extra qualified as List
 
 newtype InAzathothsDomain = InAzathothsDomain ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 inAzathothsDomain :: ActCard InAzathothsDomain
 inAzathothsDomain =

@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 data Ability
 
+instance NoThunks Ability
 instance Data Ability
 instance Show Ability
 instance Eq Ability

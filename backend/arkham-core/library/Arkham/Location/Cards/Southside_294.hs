@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Power))
 
 newtype Southside_294 = Southside_294 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 southside_294 :: LocationCard Southside_294
 southside_294 = location Southside_294 Cards.southside_294 1 (Static 0)

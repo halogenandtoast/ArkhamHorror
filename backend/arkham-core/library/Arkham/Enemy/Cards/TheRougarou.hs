@@ -17,11 +17,11 @@ import Arkham.Timing qualified as Timing
 
 newtype TheRougarouMetadata = TheRougarouMetadata {damagePerPhase :: Int}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theRougarou :: EnemyCard TheRougarou
 theRougarou =

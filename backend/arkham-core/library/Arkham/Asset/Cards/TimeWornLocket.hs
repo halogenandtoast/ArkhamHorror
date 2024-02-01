@@ -14,7 +14,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype TimeWornLocket = TimeWornLocket AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 timeWornLocket :: AssetCard TimeWornLocket
 timeWornLocket = asset TimeWornLocket Cards.timeWornLocket

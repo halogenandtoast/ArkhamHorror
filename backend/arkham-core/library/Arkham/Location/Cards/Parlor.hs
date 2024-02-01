@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype Parlor = Parlor LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 parlor :: LocationCard Parlor
 parlor = location Parlor Cards.parlor 2 (Static 0)

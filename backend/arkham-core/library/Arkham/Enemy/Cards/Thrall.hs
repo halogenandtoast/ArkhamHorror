@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Thrall = Thrall EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 thrall :: EnemyCard Thrall
 thrall =

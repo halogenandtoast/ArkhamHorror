@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype LightlessShadow = LightlessShadow TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lightlessShadow :: TreacheryCard LightlessShadow
 lightlessShadow = treachery LightlessShadow Cards.lightlessShadow

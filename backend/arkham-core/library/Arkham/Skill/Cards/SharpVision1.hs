@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype SharpVision1 = SharpVision1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sharpVision1 :: SkillCard SharpVision1
 sharpVision1 = skill SharpVision1 Cards.sharpVision1

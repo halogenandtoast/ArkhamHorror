@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype QuietHalls = QuietHalls AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 quietHalls :: AgendaCard QuietHalls
 quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)

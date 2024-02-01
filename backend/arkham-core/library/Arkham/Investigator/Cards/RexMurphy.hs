@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 rexMurphy :: InvestigatorCard RexMurphy
 rexMurphy =

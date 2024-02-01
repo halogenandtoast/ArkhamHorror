@@ -15,7 +15,7 @@ import Arkham.Window (defaultWindows)
 
 newtype TheWorldXXI3 = TheWorldXXI3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theWorldXxi3 :: AssetCard TheWorldXXI3
 theWorldXxi3 = asset TheWorldXXI3 Cards.theWorldXxi3

@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype VastExpanse = VastExpanse TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 vastExpanse :: TreacheryCard VastExpanse
 vastExpanse = treachery VastExpanse Cards.vastExpanse

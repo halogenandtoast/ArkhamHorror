@@ -13,7 +13,7 @@ import Arkham.Skill.Runner
 
 newtype Overpower2 = Overpower2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 overpower2 :: SkillCard Overpower2
 overpower2 =

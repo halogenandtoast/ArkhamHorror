@@ -11,7 +11,7 @@ import Arkham.Helpers.Investigator
 
 newtype MeatCleaver = MeatCleaver EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 meatCleaver :: EffectArgs -> MeatCleaver
 meatCleaver = MeatCleaver . uncurry4 (baseAttrs "05114")

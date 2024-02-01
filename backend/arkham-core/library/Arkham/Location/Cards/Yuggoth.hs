@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype Yuggoth = Yuggoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 yuggoth :: LocationCard Yuggoth
 yuggoth = location Yuggoth Cards.yuggoth 2 (Static 3)

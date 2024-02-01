@@ -10,7 +10,7 @@ import Arkham.Treachery.Runner
 
 newtype Amnesia = Amnesia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 amnesia :: TreacheryCard Amnesia
 amnesia = treachery Amnesia Cards.amnesia

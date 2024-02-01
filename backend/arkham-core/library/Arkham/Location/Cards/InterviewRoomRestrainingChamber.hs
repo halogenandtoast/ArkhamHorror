@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype InterviewRoomRestrainingChamber = InterviewRoomRestrainingChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 interviewRoomRestrainingChamber :: LocationCard InterviewRoomRestrainingChamber
 interviewRoomRestrainingChamber =

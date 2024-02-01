@@ -19,7 +19,7 @@ import Arkham.SkillType
 
 newtype ActOfDesperation = ActOfDesperation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 actOfDesperation :: EventCard ActOfDesperation
 actOfDesperation = event ActOfDesperation Cards.actOfDesperation
@@ -59,7 +59,7 @@ instance RunMessage ActOfDesperation where
 
 newtype ActOfDesperationEffect = ActOfDesperationEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 actOfDesperationEffect :: EffectArgs -> ActOfDesperationEffect
 actOfDesperationEffect =

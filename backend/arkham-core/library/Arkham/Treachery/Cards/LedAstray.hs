@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype LedAstray = LedAstray TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ledAstray :: TreacheryCard LedAstray
 ledAstray = treachery LedAstray Cards.ledAstray

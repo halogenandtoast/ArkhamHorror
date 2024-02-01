@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 destroyedPath :: LocationCard DestroyedPath
 destroyedPath = location DestroyedPath Cards.destroyedPath 3 (Static 0)

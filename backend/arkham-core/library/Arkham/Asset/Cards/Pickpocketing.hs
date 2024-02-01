@@ -13,7 +13,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype Pickpocketing = Pickpocketing AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pickpocketing :: AssetCard Pickpocketing
 pickpocketing = asset Pickpocketing Cards.pickpocketing

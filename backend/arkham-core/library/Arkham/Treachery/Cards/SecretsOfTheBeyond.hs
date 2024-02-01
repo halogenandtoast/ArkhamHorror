@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype SecretsOfTheBeyond = SecretsOfTheBeyond TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 secretsOfTheBeyond :: TreacheryCard SecretsOfTheBeyond
 secretsOfTheBeyond = treachery SecretsOfTheBeyond Cards.secretsOfTheBeyond

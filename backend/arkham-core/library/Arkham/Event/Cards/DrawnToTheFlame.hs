@@ -9,7 +9,7 @@ import Arkham.Event.Runner
 
 newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 drawnToTheFlame :: EventCard DrawnToTheFlame
 drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame

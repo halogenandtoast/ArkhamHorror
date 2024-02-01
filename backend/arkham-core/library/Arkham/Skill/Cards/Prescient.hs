@@ -22,7 +22,7 @@ import Arkham.Trait (Trait (Spell))
 
 newtype Prescient = Prescient SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 prescient :: SkillCard Prescient
 prescient = skill Prescient Cards.prescient
@@ -49,7 +49,7 @@ instance RunMessage Prescient where
 
 newtype PrescientEffect = PrescientEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 prescientEffect :: EffectArgs -> PrescientEffect
 prescientEffect = cardEffect PrescientEffect Cards.prescient

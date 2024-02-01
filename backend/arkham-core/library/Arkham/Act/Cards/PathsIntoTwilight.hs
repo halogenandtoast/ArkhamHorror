@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype PathsIntoTwilight = PathsIntoTwilight ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 pathsIntoTwilight :: ActCard PathsIntoTwilight
 pathsIntoTwilight =

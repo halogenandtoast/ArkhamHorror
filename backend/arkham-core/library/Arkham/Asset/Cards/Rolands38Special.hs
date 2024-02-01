@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 rolands38Special :: AssetCard Rolands38Special
 rolands38Special = asset Rolands38Special Cards.rolands38Special

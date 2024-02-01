@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype DavidRenfield = DavidRenfield AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 davidRenfield :: AssetCard DavidRenfield
 davidRenfield = ally DavidRenfield Cards.davidRenfield (2, 1)

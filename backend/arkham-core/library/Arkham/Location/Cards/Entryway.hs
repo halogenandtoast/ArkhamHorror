@@ -21,7 +21,7 @@ import Arkham.Scenario.Deck
 
 newtype Entryway = Entryway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 entryway :: LocationCard Entryway
 entryway =

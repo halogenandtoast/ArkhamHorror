@@ -14,7 +14,7 @@ import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype Southside_295 = Southside_295 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 southside_295 :: LocationCard Southside_295
 southside_295 = location Southside_295 Cards.southside_295 2 (Static 0)

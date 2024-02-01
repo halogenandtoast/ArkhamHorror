@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype JazzMulligan = JazzMulligan AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jazzMulligan :: AssetCard JazzMulligan
 jazzMulligan =

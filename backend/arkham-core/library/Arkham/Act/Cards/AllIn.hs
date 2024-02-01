@@ -14,7 +14,7 @@ import Arkham.Resolution
 
 newtype AllIn = AllIn ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 allIn :: ActCard AllIn
 allIn = act (3, A) AllIn Cards.allIn Nothing

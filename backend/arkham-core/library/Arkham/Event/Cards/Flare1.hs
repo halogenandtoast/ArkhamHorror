@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, Targetable, Sourceable)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, Targetable, Sourceable)
 
 flare1 :: EventCard Flare1
 flare1 = event Flare1 Cards.flare1

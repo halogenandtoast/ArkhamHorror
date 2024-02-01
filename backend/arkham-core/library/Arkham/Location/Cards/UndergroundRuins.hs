@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype UndergroundRuins = UndergroundRuins LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 undergroundRuins :: LocationCard UndergroundRuins
 undergroundRuins =

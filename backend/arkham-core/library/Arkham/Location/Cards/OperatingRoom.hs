@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype OperatingRoom = OperatingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 operatingRoom :: LocationCard OperatingRoom
 operatingRoom = location OperatingRoom Cards.operatingRoom 2 (PerPlayer 1)

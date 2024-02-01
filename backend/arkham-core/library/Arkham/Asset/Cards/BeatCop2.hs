@@ -12,7 +12,7 @@ import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype BeatCop2 = BeatCop2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 beatCop2 :: AssetCard BeatCop2
 beatCop2 = ally BeatCop2 Cards.beatCop2 (3, 2)

@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype BeneathTheLodge = BeneathTheLodge TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 beneathTheLodge :: TreacheryCard BeneathTheLodge
 beneathTheLodge = treachery BeneathTheLodge Cards.beneathTheLodge

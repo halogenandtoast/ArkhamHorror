@@ -7,7 +7,7 @@ import Arkham.Asset.Runner
 
 newtype LeoDeLuca = LeoDeLuca AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 leoDeLuca :: AssetCard LeoDeLuca
 leoDeLuca = ally LeoDeLuca Cards.leoDeLuca (2, 2)

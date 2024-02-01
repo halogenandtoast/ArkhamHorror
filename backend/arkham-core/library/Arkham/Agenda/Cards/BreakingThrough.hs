@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BreakingThrough = BreakingThrough AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 breakingThrough :: AgendaCard BreakingThrough
 breakingThrough =

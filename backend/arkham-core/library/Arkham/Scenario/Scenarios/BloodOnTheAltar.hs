@@ -33,12 +33,12 @@ import Arkham.Token
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata {sacrifices :: [Card]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
   deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, Eq)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty =

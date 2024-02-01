@@ -23,7 +23,8 @@ data EncounterCard = MkEncounterCard
   , ecAddedPeril :: Bool
   , ecOwner :: Maybe InvestigatorId
   }
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance HasCardCode EncounterCard where
   toCardCode = ecCardCode

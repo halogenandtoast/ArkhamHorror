@@ -15,7 +15,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype BehindTheCurtain = BehindTheCurtain AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 behindTheCurtain :: AgendaCard BehindTheCurtain
 behindTheCurtain =

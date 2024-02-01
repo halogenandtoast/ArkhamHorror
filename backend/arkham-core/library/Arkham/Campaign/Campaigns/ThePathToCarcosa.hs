@@ -20,7 +20,7 @@ import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor, NoThunks)
 
 instance IsCampaign ThePathToCarcosa where
   nextStep a = case campaignStep (toAttrs a) of

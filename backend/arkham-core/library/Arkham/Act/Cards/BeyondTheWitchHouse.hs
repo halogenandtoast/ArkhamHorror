@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype BeyondTheWitchHouse = BeyondTheWitchHouse ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 beyondTheWitchHouse :: ActCard BeyondTheWitchHouse
 beyondTheWitchHouse =

@@ -37,7 +37,7 @@ import Control.Lens (over)
 
 newtype TheCityOfArchives = TheCityOfArchives ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theCityOfArchives :: Difficulty -> TheCityOfArchives
 theCityOfArchives difficulty =

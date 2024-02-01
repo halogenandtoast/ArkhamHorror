@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheRedDepths = TheRedDepths AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theRedDepths :: AgendaCard TheRedDepths
 theRedDepths = agenda (6, A) TheRedDepths Cards.theRedDepths (Static 5)
@@ -61,7 +61,7 @@ instance RunMessage TheRedDepths where
 
 newtype TheRedDepthsEffect = TheRedDepthsEffect EffectAttrs
   deriving anyclass (HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theRedDepthsEffect :: EffectArgs -> TheRedDepthsEffect
 theRedDepthsEffect = cardEffect TheRedDepthsEffect Cards.theRedDepths

@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype KeenEye3 = KeenEye3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 keenEye3 :: AssetCard KeenEye3
 keenEye3 = asset KeenEye3 Cards.keenEye3

@@ -20,7 +20,7 @@ import Arkham.Placement
 
 newtype LostMemories = LostMemories AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lostMemories :: AgendaCard LostMemories
 lostMemories = agenda (2, A) LostMemories Cards.lostMemories (Static 7)
@@ -69,7 +69,7 @@ instance RunMessage LostMemories where
 
 newtype LostMemoriesEffect = LostMemoriesEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lostMemoriesEffect :: EffectArgs -> LostMemoriesEffect
 lostMemoriesEffect = cardEffect LostMemoriesEffect Cards.lostMemories

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GrandGuignol = GrandGuignol LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 grandGuignol :: LocationCard GrandGuignol
 grandGuignol = location GrandGuignol Cards.grandGuignol 3 (PerPlayer 1)

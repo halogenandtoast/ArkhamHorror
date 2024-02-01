@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype BalconyAtDeathsDoorstep = BalconyAtDeathsDoorstep LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 balconyAtDeathsDoorstep :: LocationCard BalconyAtDeathsDoorstep
 balconyAtDeathsDoorstep =

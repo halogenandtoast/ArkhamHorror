@@ -13,11 +13,11 @@ import Arkham.SkillType
 
 newtype Metadata = Metadata {successTriggered :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype RelicOfAgesForestallingTheFuture = RelicOfAgesForestallingTheFuture (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 relicOfAgesForestallingTheFuture :: AssetCard RelicOfAgesForestallingTheFuture
 relicOfAgesForestallingTheFuture =

@@ -14,7 +14,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype AlienDevice = AlienDevice AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 alienDevice :: AssetCard AlienDevice
 alienDevice = asset AlienDevice Cards.alienDevice

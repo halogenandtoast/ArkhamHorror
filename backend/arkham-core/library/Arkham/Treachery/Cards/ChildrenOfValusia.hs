@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype ChildrenOfValusia = ChildrenOfValusia TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 childrenOfValusia :: TreacheryCard ChildrenOfValusia
 childrenOfValusia = treachery ChildrenOfValusia Cards.childrenOfValusia

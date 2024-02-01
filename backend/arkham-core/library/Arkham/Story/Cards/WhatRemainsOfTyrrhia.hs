@@ -7,7 +7,7 @@ import Arkham.Story.Runner
 
 newtype WhatRemainsOfTyrrhia = WhatRemainsOfTyrrhia StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 whatRemainsOfTyrrhia :: StoryCard WhatRemainsOfTyrrhia
 whatRemainsOfTyrrhia = story WhatRemainsOfTyrrhia Cards.whatRemainsOfTyrrhia

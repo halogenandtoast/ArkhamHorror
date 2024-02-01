@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype Mesmerize = Mesmerize TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mesmerize :: TreacheryCard Mesmerize
 mesmerize = treachery Mesmerize Cards.mesmerize
@@ -44,7 +44,7 @@ instance RunMessage Mesmerize where
 
 newtype MesmerizeEffect = MesmerizeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mesmerizeEffect :: EffectArgs -> MesmerizeEffect
 mesmerizeEffect = cardEffect MesmerizeEffect Cards.mesmerize

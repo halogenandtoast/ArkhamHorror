@@ -9,7 +9,7 @@ import Arkham.Treachery.Runner hiding (treacheryInThreatAreaOf)
 
 newtype BeyondTheVeil = BeyondTheVeil TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 beyondTheVeil :: TreacheryCard BeyondTheVeil
 beyondTheVeil = treachery BeyondTheVeil Cards.beyondTheVeil

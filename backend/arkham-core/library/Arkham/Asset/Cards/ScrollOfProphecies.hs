@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 scrollOfProphecies :: AssetCard ScrollOfProphecies
 scrollOfProphecies = asset ScrollOfProphecies Cards.scrollOfProphecies

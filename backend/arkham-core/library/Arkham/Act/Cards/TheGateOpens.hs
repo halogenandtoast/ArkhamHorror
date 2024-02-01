@@ -13,7 +13,7 @@ import Arkham.Resolution
 
 newtype TheGateOpens = TheGateOpens ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 theGateOpens :: ActCard TheGateOpens
 theGateOpens =

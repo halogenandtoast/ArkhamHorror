@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 springfieldM19034 :: AssetCard SpringfieldM19034
 springfieldM19034 = asset SpringfieldM19034 Cards.springfieldM19034

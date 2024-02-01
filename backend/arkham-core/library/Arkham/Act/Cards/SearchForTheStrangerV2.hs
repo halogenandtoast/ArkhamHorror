@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype SearchForTheStrangerV2 = SearchForTheStrangerV2 ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 searchForTheStrangerV2 :: ActCard SearchForTheStrangerV2
 searchForTheStrangerV2 =

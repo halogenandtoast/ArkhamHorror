@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype AnatomicalDiagrams = AnatomicalDiagrams EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 anatomicalDiagrams :: EventCard AnatomicalDiagrams
 anatomicalDiagrams = event AnatomicalDiagrams Cards.anatomicalDiagrams

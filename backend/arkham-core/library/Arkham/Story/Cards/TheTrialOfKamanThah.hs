@@ -10,7 +10,7 @@ import Arkham.Story.Runner
 
 newtype TheTrialOfKamanThah = TheTrialOfKamanThah StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theTrialOfKamanThah :: StoryCard TheTrialOfKamanThah
 theTrialOfKamanThah = story TheTrialOfKamanThah Cards.theTrialOfKamanThah

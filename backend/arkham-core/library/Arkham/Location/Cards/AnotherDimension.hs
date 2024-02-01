@@ -18,7 +18,7 @@ import Arkham.Window
 
 newtype AnotherDimension = AnotherDimension LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 anotherDimension :: LocationCard AnotherDimension
 anotherDimension =

@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (InvestigatorDefeated)
 
 newtype EmpireOfTheUndead = EmpireOfTheUndead AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 empireOfTheUndead :: AgendaCard EmpireOfTheUndead
 empireOfTheUndead =

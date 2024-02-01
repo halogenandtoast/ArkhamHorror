@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype UnboundBeast = UnboundBeast EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 unboundBeast :: EnemyCard UnboundBeast
 unboundBeast =

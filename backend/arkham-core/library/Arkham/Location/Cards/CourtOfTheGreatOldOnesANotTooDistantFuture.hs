@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 newtype CourtOfTheGreatOldOnesANotTooDistantFuture
   = CourtOfTheGreatOldOnesANotTooDistantFuture LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 courtOfTheGreatOldOnesANotTooDistantFuture
   :: LocationCard CourtOfTheGreatOldOnesANotTooDistantFuture

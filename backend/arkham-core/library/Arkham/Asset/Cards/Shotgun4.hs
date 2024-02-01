@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shotgun4 :: AssetCard Shotgun4
 shotgun4 = asset Shotgun4 Cards.shotgun4

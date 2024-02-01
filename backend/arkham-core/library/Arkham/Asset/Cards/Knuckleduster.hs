@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype Knuckleduster = Knuckleduster AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 knuckleduster :: AssetCard Knuckleduster
 knuckleduster = asset Knuckleduster Cards.knuckleduster

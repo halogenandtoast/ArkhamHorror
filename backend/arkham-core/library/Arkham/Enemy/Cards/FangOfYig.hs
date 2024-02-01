@@ -13,7 +13,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype FangOfYig = FangOfYig EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 fangOfYig :: EnemyCard FangOfYig
 fangOfYig =

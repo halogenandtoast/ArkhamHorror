@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype DelveTooDeep = DelveTooDeep EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 delveTooDeep :: EventCard DelveTooDeep
 delveTooDeep = event DelveTooDeep Cards.delveTooDeep

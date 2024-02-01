@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype DejaVu5 = DejaVu5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dejaVu5 :: AssetCard DejaVu5
 dejaVu5 =

@@ -25,7 +25,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheYithianRelic = TheYithianRelic ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theYithianRelic :: ActCard TheYithianRelic
 theYithianRelic = act (3, A) TheYithianRelic Cards.theYithianRelic Nothing
@@ -104,7 +104,7 @@ instance RunMessage TheYithianRelic where
 
 newtype TheYithianRelicEffect = TheYithianRelicEffect EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theYithianRelicEffect :: EffectArgs -> TheYithianRelicEffect
 theYithianRelicEffect = cardEffect TheYithianRelicEffect Cards.theYithianRelic

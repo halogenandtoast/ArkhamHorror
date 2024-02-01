@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ToothOfEztli = ToothOfEztli AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 toothOfEztli :: AssetCard ToothOfEztli
 toothOfEztli = asset ToothOfEztli Cards.toothOfEztli

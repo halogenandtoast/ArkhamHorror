@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype Ballroom = Ballroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ballroom :: LocationCard Ballroom
 ballroom = location Ballroom Cards.ballroom 4 (Static 0)

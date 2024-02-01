@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype Machete = Machete AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 machete :: AssetCard Machete
 machete = asset Machete Cards.machete

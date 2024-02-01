@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 congregationalChurch_209 :: LocationCard CongregationalChurch_209
 congregationalChurch_209 =

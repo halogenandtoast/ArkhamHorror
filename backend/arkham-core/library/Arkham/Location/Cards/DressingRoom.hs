@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype DressingRoom = DressingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dressingRoom :: LocationCard DressingRoom
 dressingRoom = location DressingRoom Cards.dressingRoom 4 (Static 0)

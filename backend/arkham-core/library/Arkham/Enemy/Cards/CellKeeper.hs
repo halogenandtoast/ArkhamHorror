@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Sanctum))
 
 newtype CellKeeper = CellKeeper EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cellKeeper :: EnemyCard CellKeeper
 cellKeeper =

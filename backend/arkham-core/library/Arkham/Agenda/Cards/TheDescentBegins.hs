@@ -13,7 +13,7 @@ import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype TheDescentBegins = TheDescentBegins AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theDescentBegins :: AgendaCard TheDescentBegins
 theDescentBegins =

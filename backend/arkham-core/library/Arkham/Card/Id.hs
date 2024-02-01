@@ -1,11 +1,12 @@
 module Arkham.Card.Id (CardId, nullCardId, unsafeMakeCardId, unsafeCardIdToUUID) where
 
+import Arkham.Id ()
 import Arkham.Prelude
 import Data.UUID (nil)
 
 newtype CardId = CardId UUID
   deriving stock (Data)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, NoThunks)
 
 -- exports the constructor, but we only want to use this in CardGen
 unsafeMakeCardId :: UUID -> CardId

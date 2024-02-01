@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype DanielChesterfield = DanielChesterfield AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 danielChesterfield :: AssetCard DanielChesterfield
 danielChesterfield = ally DanielChesterfield Cards.danielChesterfield (1, 3)

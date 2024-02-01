@@ -22,7 +22,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype BloodRite = BloodRite EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 bloodRite :: EventCard BloodRite
 bloodRite = event BloodRite Cards.bloodRite

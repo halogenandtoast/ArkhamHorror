@@ -49,7 +49,8 @@ data LocationAttrs = LocationAttrs
     locationWithoutClues :: Bool
   , locationMeta :: Value
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance IsLocationMatcher LocationAttrs where
   toLocationMatcher = LocationWithId . locationId

@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype HangmansHillShroudedInMystery = HangmansHillShroudedInMystery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hangmansHillShroudedInMystery :: LocationCard HangmansHillShroudedInMystery
 hangmansHillShroudedInMystery = location HangmansHillShroudedInMystery Cards.hangmansHillShroudedInMystery 4 (PerPlayer 1)

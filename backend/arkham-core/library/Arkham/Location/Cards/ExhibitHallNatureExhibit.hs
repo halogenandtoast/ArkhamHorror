@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 exhibitHallNatureExhibit :: LocationCard ExhibitHallNatureExhibit
 exhibitHallNatureExhibit =

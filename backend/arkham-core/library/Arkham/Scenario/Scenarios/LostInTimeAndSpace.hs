@@ -35,7 +35,7 @@ import Arkham.Trait hiding (Cultist)
 
 newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lostInTimeAndSpace :: Difficulty -> LostInTimeAndSpace
 lostInTimeAndSpace difficulty =

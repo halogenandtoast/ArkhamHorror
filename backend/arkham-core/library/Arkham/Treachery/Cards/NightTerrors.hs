@@ -10,7 +10,7 @@ import Arkham.Treachery.Runner
 
 newtype NightTerrors = NightTerrors TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 nightTerrors :: TreacheryCard NightTerrors
 nightTerrors = treachery NightTerrors Cards.nightTerrors

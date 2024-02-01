@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ProtectiveIncantation1 = ProtectiveIncantation1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 protectiveIncantation1 :: AssetCard ProtectiveIncantation1
 protectiveIncantation1 =

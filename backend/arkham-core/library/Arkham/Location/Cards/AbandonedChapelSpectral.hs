@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype AbandonedChapelSpectral = AbandonedChapelSpectral LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 abandonedChapelSpectral :: LocationCard AbandonedChapelSpectral
 abandonedChapelSpectral = location AbandonedChapelSpectral Cards.abandonedChapelSpectral 2 (Static 0)

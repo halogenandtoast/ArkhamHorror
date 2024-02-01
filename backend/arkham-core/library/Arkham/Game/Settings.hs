@@ -6,7 +6,7 @@ data Settings = Settings
   { settingsAbilitiesCannotReactToThemselves :: Bool -- Grotesque Statue FAQ (September 2023)
   }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 defaultSettings :: Settings
 defaultSettings =

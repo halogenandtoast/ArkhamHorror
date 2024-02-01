@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype ArchaicGlyphsMarkingsOfIsis3 = ArchaicGlyphsMarkingsOfIsis3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasAbilities ArchaicGlyphsMarkingsOfIsis3 where
   getAbilities (ArchaicGlyphsMarkingsOfIsis3 a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]

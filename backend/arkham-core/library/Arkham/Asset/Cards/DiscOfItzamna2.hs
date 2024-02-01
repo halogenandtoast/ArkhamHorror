@@ -9,7 +9,7 @@ import Arkham.Matcher
 
 newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 discOfItzamna2 :: AssetCard DiscOfItzamna2
 discOfItzamna2 = asset DiscOfItzamna2 Cards.discOfItzamna2

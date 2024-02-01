@@ -12,7 +12,7 @@ import Arkham.Asset.Runner
 
 newtype BloodstainedDagger = BloodstainedDagger AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 bloodstainedDagger :: AssetCard BloodstainedDagger
 bloodstainedDagger =

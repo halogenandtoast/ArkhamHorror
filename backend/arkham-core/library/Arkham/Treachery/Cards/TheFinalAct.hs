@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype TheFinalAct = TheFinalAct TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theFinalAct :: TreacheryCard TheFinalAct
 theFinalAct = treachery TheFinalAct Cards.theFinalAct

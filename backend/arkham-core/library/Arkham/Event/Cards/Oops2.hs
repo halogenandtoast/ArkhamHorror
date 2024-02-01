@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype Oops2 = Oops2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 oops2 :: EventCard Oops2
 oops2 = event Oops2 Cards.oops2

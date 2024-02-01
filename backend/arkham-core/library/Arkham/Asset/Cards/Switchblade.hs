@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype Switchblade = Switchblade AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 switchblade :: AssetCard Switchblade
 switchblade = asset Switchblade Cards.switchblade

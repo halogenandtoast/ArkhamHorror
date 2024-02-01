@@ -20,7 +20,7 @@ import Arkham.Trait (Trait (Witch))
 
 newtype BeyondTheMistV1 = BeyondTheMistV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 beyondTheMistV1 :: ActCard BeyondTheMistV1
 beyondTheMistV1 = act (3, A) BeyondTheMistV1 Cards.beyondTheMistV1 Nothing

@@ -11,7 +11,7 @@ import Arkham.Game.Helpers
 
 newtype LeMarais218 = LeMarais218 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 leMarais218 :: EffectArgs -> LeMarais218
 leMarais218 = LeMarais218 . uncurry4 (baseAttrs "03218")

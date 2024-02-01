@@ -47,7 +47,7 @@ import Arkham.Window qualified as Window
 
 newtype TheBoundaryBeyond = TheBoundaryBeyond ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 {- | The Boundary Beyond
 For the location layout we make use of the location symbols rather than the

@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype ThePriceOfFailure = ThePriceOfFailure TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thePriceOfFailure :: TreacheryCard ThePriceOfFailure
 thePriceOfFailure = treachery ThePriceOfFailure Cards.thePriceOfFailure

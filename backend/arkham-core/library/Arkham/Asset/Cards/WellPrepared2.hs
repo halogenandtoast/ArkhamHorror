@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype WellPrepared2 = WellPrepared2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wellPrepared2 :: AssetCard WellPrepared2
 wellPrepared2 = asset WellPrepared2 Cards.wellPrepared2

@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype The13thVision = The13thVision TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 the13thVision :: TreacheryCard The13thVision
 the13thVision = treachery The13thVision Cards.the13thVision

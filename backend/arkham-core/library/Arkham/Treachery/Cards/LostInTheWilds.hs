@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype LostInTheWilds = LostInTheWilds TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lostInTheWilds :: TreacheryCard LostInTheWilds
 lostInTheWilds = treachery LostInTheWilds Cards.lostInTheWilds

@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype WhispersInTheDark = WhispersInTheDark TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 whispersInTheDark :: TreacheryCard WhispersInTheDark
 whispersInTheDark = treachery WhispersInTheDark Cards.whispersInTheDark

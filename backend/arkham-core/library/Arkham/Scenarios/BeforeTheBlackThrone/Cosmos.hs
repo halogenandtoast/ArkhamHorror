@@ -16,12 +16,12 @@ nTimes n f = f . nTimes (n - 1) f
 
 data Pos = Pos Int Int
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 -- Todo hardcode a and b, store location id for empty space
 data CosmosLocation a b = EmptySpace Pos a | CosmosLocation Pos b
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 cosmosLocationToPosition :: CosmosLocation a b -> Pos
 cosmosLocationToPosition (EmptySpace pos _) = pos
@@ -37,7 +37,7 @@ data CosmosRow a b
       (Maybe (CosmosLocation a b))
       (Seq (Maybe (CosmosLocation a b)))
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 initCosmos :: Cosmos a b
 initCosmos = Cosmos (Seq.singleton initRow) initRow (Seq.singleton initRow)
@@ -56,7 +56,7 @@ data Cosmos a b = Cosmos
   , cosmosBelow :: Seq (CosmosRow a b)
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 -- First check do we need to extend cosmos in a direction, if so extend
 -- Then find the correct row to insert

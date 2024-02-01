@@ -12,7 +12,7 @@ import Arkham.Token qualified as Token
 
 newtype Tonys38LongColt = Tonys38LongColt AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tonys38LongColt :: AssetCard Tonys38LongColt
 tonys38LongColt = asset Tonys38LongColt Cards.tonys38LongColt

@@ -28,7 +28,7 @@ import Data.List.Extra qualified as List
 
 newtype TheCosmosBeckons = TheCosmosBeckons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theCosmosBeckons :: ActCard TheCosmosBeckons
 theCosmosBeckons =

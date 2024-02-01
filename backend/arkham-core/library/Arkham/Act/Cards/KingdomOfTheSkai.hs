@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype KingdomOfTheSkai = KingdomOfTheSkai ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 kingdomOfTheSkai :: ActCard KingdomOfTheSkai
 kingdomOfTheSkai =

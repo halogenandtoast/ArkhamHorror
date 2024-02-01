@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 data Entities
 
+instance NoThunks Entities
 instance Monoid Entities
 instance Eq Entities
 instance Show Entities
@@ -15,4 +16,4 @@ instance HasAbilities Entities
 type EntityMap a = Map (EntityId a) a
 
 addCardEntityWith
-  :: InvestigatorId -> (forall a. (Typeable a) => a -> a) -> Entities -> Card -> Entities
+  :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities

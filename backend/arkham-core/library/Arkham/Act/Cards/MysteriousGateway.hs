@@ -12,7 +12,7 @@ import Arkham.Movement
 
 newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 mysteriousGateway :: ActCard MysteriousGateway
 mysteriousGateway =

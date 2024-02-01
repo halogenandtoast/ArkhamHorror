@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Humanoid, Police))
 
 newtype SpecialInvestigation = SpecialInvestigation AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 specialInvestigation :: AgendaCard SpecialInvestigation
 specialInvestigation = agenda (2, A) SpecialInvestigation Cards.specialInvestigation (Static 12)

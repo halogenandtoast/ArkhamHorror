@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype Shrivelling = Shrivelling AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shrivelling :: AssetCard Shrivelling
 shrivelling = asset Shrivelling Cards.shrivelling
@@ -42,7 +42,7 @@ instance RunMessage Shrivelling where
 
 newtype ShrivellingEffect = ShrivellingEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shrivellingEffect :: EffectArgs -> ShrivellingEffect
 shrivellingEffect = cardEffect ShrivellingEffect Cards.shrivelling

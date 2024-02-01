@@ -9,7 +9,8 @@ import Arkham.Trait
 import Data.Aeson.TH
 
 data CanIgnoreAbilityLimit = CanIgnoreAbilityLimit | CanNotIgnoreAbilityLimit
-  deriving stock (Eq, Data)
+  deriving stock (Eq, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data AbilityLimit
   = PerInvestigatorLimit AbilityLimitType Int
@@ -17,7 +18,8 @@ data AbilityLimit
   | GroupLimit AbilityLimitType Int
   | MaxPer CardDef AbilityLimitType Int
   | NoLimit
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 abilityLimitType :: AbilityLimit -> Maybe AbilityLimitType
 abilityLimitType (PerInvestigatorLimit t _) = Just t
@@ -43,7 +45,8 @@ data AbilityLimitType
   | PerSearch Trait
   | PerDepthLevel
   | PerCampaign
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''AbilityLimitType)
 $(deriveJSON defaultOptions ''AbilityLimit)

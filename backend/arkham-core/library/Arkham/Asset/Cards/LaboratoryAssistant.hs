@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 laboratoryAssistant :: AssetCard LaboratoryAssistant
 laboratoryAssistant = ally LaboratoryAssistant Cards.laboratoryAssistant (1, 2)

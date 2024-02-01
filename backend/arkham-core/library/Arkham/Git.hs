@@ -16,7 +16,7 @@ import System.Exit (ExitCode (..))
 import System.Process (readProcessWithExitCode)
 
 newtype GitSha = GitSha {unGitSha :: Text}
-  deriving newtype (Show, Eq, ToJSON, FromJSON, IsString)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, IsString, NoThunks)
 
 {- | The Git commit hash of HEAD at compile time. Attempts to read the
 @GIT_SHA1@ environment variable and otherwise runs @git rev-parse HEAD@.

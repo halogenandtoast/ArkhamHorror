@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Practiced))
 
 newtype PracticeMakesPerfect = PracticeMakesPerfect EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 practiceMakesPerfect :: EventCard PracticeMakesPerfect
 practiceMakesPerfect = event PracticeMakesPerfect Cards.practiceMakesPerfect

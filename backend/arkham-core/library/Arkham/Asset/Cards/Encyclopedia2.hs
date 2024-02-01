@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype Encyclopedia2 = Encyclopedia2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 encyclopedia2 :: AssetCard Encyclopedia2
 encyclopedia2 = asset Encyclopedia2 Cards.encyclopedia2

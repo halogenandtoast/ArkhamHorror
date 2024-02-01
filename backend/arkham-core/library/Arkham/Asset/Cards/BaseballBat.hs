@@ -15,7 +15,7 @@ import Arkham.Effect.Runner
 
 newtype BaseballBat = BaseballBat AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 baseballBat :: AssetCard BaseballBat
 baseballBat = asset BaseballBat Cards.baseballBat
@@ -46,7 +46,7 @@ instance RunMessage BaseballBat where
 
 newtype BaseballBatEffect = BaseballBatEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 baseballBatEffect :: EffectArgs -> BaseballBatEffect
 baseballBatEffect = cardEffect BaseballBatEffect Cards.baseballBat

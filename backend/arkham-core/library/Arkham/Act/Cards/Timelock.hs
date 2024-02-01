@@ -21,7 +21,7 @@ import Arkham.Trait (Trait (Shattered))
 
 newtype Timelock = Timelock ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 timelock :: ActCard Timelock
 timelock = act (4, A) Timelock Cards.timelock Nothing

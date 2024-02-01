@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype FortyFiveAutomatic2 = FortyFiveAutomatic2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fortyFiveAutomatic2 :: AssetCard FortyFiveAutomatic2
 fortyFiveAutomatic2 = asset FortyFiveAutomatic2 Cards.fortyFiveAutomatic2

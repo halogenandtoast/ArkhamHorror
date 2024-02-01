@@ -14,7 +14,7 @@ import Arkham.Placement
 
 newtype Trusted = Trusted EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 trusted :: EventCard Trusted
 trusted = event Trusted Cards.trusted

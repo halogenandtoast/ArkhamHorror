@@ -12,7 +12,7 @@ import Arkham.SkillType
 
 newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theNecronomiconOlausWormiusTranslation
   :: AssetCard TheNecronomiconOlausWormiusTranslation

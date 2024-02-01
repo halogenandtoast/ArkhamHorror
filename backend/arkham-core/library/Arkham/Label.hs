@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 newtype Label = Label {unLabel :: Text}
   deriving stock (Data)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, IsString)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, IsString, NoThunks)
 
 mkLabel :: Text -> Label
 mkLabel = Label

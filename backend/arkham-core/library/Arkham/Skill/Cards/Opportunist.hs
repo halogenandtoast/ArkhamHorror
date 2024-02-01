@@ -12,7 +12,7 @@ import Arkham.Skill.Runner
 
 newtype Opportunist = Opportunist SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 opportunist :: SkillCard Opportunist
 opportunist = skill Opportunist Cards.opportunist

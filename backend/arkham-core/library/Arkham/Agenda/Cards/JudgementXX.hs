@@ -23,7 +23,7 @@ import Arkham.Window qualified as Window
 
 newtype JudgementXX = JudgementXX AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 judgementXX :: AgendaCard JudgementXX
 judgementXX = agenda (1, A) JudgementXX Cards.judgementXX (Static 12)

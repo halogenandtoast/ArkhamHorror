@@ -15,7 +15,7 @@ import Arkham.Prelude
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 expeditionIntoTheWild :: AgendaCard ExpeditionIntoTheWild
 expeditionIntoTheWild = agenda (1, A) ExpeditionIntoTheWild Cards.expeditionIntoTheWild (Static 6)

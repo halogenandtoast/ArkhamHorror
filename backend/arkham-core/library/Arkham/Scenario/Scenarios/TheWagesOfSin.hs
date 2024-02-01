@@ -37,7 +37,7 @@ import Arkham.Trait (Trait (Spectral), toTraits)
 
 newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
   deriving anyclass (IsScenario)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasModifiersFor TheWagesOfSin where
   getModifiersFor (InvestigatorTarget iid) (TheWagesOfSin a) = do

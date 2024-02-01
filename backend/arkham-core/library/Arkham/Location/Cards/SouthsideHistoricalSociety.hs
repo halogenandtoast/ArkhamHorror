@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 southsideHistoricalSociety :: LocationCard SouthsideHistoricalSociety
 southsideHistoricalSociety = location SouthsideHistoricalSociety Cards.southsideHistoricalSociety 3 (PerPlayer 1)

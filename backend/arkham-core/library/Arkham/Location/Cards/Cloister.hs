@@ -16,7 +16,7 @@ import Arkham.ScenarioLogKey
 
 newtype Cloister = Cloister LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cloister :: LocationCard Cloister
 cloister = location Cloister Cards.cloister 2 (PerPlayer 1)

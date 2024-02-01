@@ -16,7 +16,7 @@ import Arkham.Window (defaultWindows)
 
 newtype Dendromorphosis = Dendromorphosis AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dendromorphosis :: AssetCard Dendromorphosis
 dendromorphosis =

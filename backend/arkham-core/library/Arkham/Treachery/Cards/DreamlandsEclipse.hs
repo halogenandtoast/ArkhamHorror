@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype DreamlandsEclipse = DreamlandsEclipse TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dreamlandsEclipse :: TreacheryCard DreamlandsEclipse
 dreamlandsEclipse = treachery DreamlandsEclipse Cards.dreamlandsEclipse

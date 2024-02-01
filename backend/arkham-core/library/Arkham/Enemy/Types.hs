@@ -43,6 +43,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -81,6 +82,7 @@ data instance Field Enemy :: Type -> Type where
 
 deriving stock instance Show (Field Enemy typ)
 deriving stock instance Ord (Field Enemy typ)
+deriving via AllowThunk (Field Enemy typ) instance NoThunks (Field Enemy typ)
 
 instance ToJSON (Field Enemy typ) where
   toJSON = toJSON . show
@@ -254,6 +256,11 @@ instance HasField "ability" EnemyAttrs (Int -> Source) where
   getField = toAbilitySource
 
 data Enemy = forall a. IsEnemy a => Enemy a
+
+instance NoThunks Enemy where
+  noThunks ctx (Enemy a) = noThunks ctx a
+  wNoThunks ctx (Enemy a) = wNoThunks ctx a
+  showTypeOf _ = "Enemy"
 
 instance HasField "id" Enemy EnemyId where
   getField (Enemy e) = attr enemyId e

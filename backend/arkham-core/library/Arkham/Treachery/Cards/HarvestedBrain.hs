@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype HarvestedBrain = HarvestedBrain TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 harvestedBrain :: TreacheryCard HarvestedBrain
 harvestedBrain = treachery HarvestedBrain Cards.harvestedBrain

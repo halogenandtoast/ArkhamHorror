@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aquinnah1 :: AssetCard Aquinnah1
 aquinnah1 = ally Aquinnah1 Cards.aquinnah1 (1, 4)

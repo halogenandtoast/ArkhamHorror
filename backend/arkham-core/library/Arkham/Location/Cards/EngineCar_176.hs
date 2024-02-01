@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype EngineCar_176 = EngineCar_176 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 engineCar_176 :: LocationCard EngineCar_176
 engineCar_176 =

@@ -9,7 +9,7 @@ import Arkham.Projection
 
 newtype SearchForTheTruth = SearchForTheTruth EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 searchForTheTruth :: EventCard SearchForTheTruth
 searchForTheTruth = event SearchForTheTruth Cards.searchForTheTruth

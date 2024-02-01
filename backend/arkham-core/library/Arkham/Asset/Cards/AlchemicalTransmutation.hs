@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype AlchemicalTransmutation = AlchemicalTransmutation AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 alchemicalTransmutation :: AssetCard AlchemicalTransmutation
 alchemicalTransmutation = asset AlchemicalTransmutation Cards.alchemicalTransmutation
@@ -42,7 +42,7 @@ instance RunMessage AlchemicalTransmutation where
 
 newtype AlchemicalTransmutationEffect = AlchemicalTransmutationEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 alchemicalTransmutationEffect :: EffectArgs -> AlchemicalTransmutationEffect
 alchemicalTransmutationEffect = cardEffect AlchemicalTransmutationEffect Cards.alchemicalTransmutation

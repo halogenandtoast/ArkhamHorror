@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype LowOnSupplies = LowOnSupplies TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lowOnSupplies :: TreacheryCard LowOnSupplies
 lowOnSupplies = treachery LowOnSupplies Cards.lowOnSupplies

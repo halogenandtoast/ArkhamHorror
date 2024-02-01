@@ -23,10 +23,12 @@ data Component
   = InvestigatorComponent {investigatorId :: InvestigatorId, tokenType :: GameTokenType}
   | InvestigatorDeckComponent {investigatorId :: InvestigatorId}
   | AssetComponent {assetId :: AssetId, tokenType :: GameTokenType}
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | DoomToken
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 pattern DamageLabel :: InvestigatorId -> [msg] -> UI msg
 pattern DamageLabel iid msgs <- ComponentLabel (InvestigatorComponent iid DamageToken) msgs
@@ -74,7 +76,8 @@ data UI msg
   | ChaosTokenGroupChoice {source :: Source, investigatorId :: InvestigatorId, step :: ChaosBagStep}
   | EffectActionButton {tooltip :: Tooltip, effectId :: EffectId, messages :: [msg]}
   | Done {label :: Text}
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
   { investigatorId :: InvestigatorId
@@ -83,17 +86,20 @@ data PaymentAmountChoice msg = PaymentAmountChoice
   , title :: Text
   , message :: msg
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 data AmountChoice = AmountChoice
   { label :: Text
   , minBound :: Int
   , maxBound :: Int
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarget Int | AmountOneOf [Int]
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 data Question msg
   = ChooseOne {choices :: [UI msg]}
@@ -127,10 +133,12 @@ data Question msg
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
   | PickCampaignSettings
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 targetLabel
   :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))

@@ -12,7 +12,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside
 arkhamWoodsLakeside = location ArkhamWoodsLakeside Cards.arkhamWoodsLakeside 2 (PerPlayer 1)

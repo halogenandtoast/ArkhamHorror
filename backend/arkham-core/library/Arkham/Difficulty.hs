@@ -8,7 +8,7 @@ data Difficulty
   | Hard
   | Expert
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 fromDifficulty :: a -> a -> a -> a -> Difficulty -> a
 fromDifficulty easy standard hard expert = \case

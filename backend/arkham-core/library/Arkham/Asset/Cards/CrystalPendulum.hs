@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype CrystalPendulum = CrystalPendulum AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crystalPendulum :: AssetCard CrystalPendulum
 crystalPendulum = asset CrystalPendulum Cards.crystalPendulum
@@ -49,7 +49,7 @@ instance RunMessage CrystalPendulum where
 
 newtype CrystalPendulumEffect = CrystalPendulumEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crystalPendulumEffect :: EffectArgs -> CrystalPendulumEffect
 crystalPendulumEffect = cardEffect CrystalPendulumEffect Cards.crystalPendulum

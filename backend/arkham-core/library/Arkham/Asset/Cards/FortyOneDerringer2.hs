@@ -14,11 +14,11 @@ import Arkham.SkillType
 
 newtype Metadata = Metadata {gotExtraAction :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype FortyOneDerringer2 = FortyOneDerringer2 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fortyOneDerringer2 :: AssetCard FortyOneDerringer2
 fortyOneDerringer2 =

@@ -14,7 +14,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype SinisterSolution = SinisterSolution AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sinisterSolution :: AssetCard SinisterSolution
 sinisterSolution = asset SinisterSolution Cards.sinisterSolution

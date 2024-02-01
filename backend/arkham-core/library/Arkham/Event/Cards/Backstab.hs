@@ -10,7 +10,7 @@ import Arkham.Event.Runner
 
 newtype Backstab = Backstab EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 backstab :: EventCard Backstab
 backstab = event Backstab Cards.backstab

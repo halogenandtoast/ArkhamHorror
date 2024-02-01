@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype EmpowerSelfStamina2 = EmpowerSelfStamina2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 empowerSelfStamina2 :: AssetCard EmpowerSelfStamina2
 empowerSelfStamina2 = asset EmpowerSelfStamina2 Cards.empowerSelfStamina2

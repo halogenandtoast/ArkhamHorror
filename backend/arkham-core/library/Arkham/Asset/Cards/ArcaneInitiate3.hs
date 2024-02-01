@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype ArcaneInitiate3 = ArcaneInitiate3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arcaneInitiate3 :: AssetCard ArcaneInitiate3
 arcaneInitiate3 = ally ArcaneInitiate3 Cards.arcaneInitiate3 (1, 3)

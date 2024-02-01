@@ -23,7 +23,7 @@ import Data.Map.Strict qualified as Map
 
 newtype LostInTheWoods = LostInTheWoods ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasModifiersFor LostInTheWoods where
   getModifiersFor (LocationTarget lid) (LostInTheWoods a) = do

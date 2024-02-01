@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Elite))
 
 newtype OtherworldCodex2 = OtherworldCodex2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 otherworldCodex2 :: AssetCard OtherworldCodex2
 otherworldCodex2 = asset OtherworldCodex2 Cards.otherworldCodex2

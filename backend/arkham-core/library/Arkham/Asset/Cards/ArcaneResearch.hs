@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype ArcaneResearch = ArcaneResearch AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arcaneResearch :: AssetCard ArcaneResearch
 arcaneResearch = asset ArcaneResearch Cards.arcaneResearch

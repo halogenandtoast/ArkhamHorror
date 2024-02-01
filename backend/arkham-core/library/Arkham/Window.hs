@@ -28,14 +28,16 @@ import Data.Aeson.TH
 import GHC.Records
 
 data Result b a = Success a | Failure b
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data Window = Window
   { windowTiming :: Timing
   , windowType :: WindowType
   , windowBatchId :: Maybe BatchId
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 instance HasField "timing" Window Timing where
   getField = windowTiming
@@ -227,7 +229,8 @@ data WindowType
   | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
   | -- used to avoid checking a window
     DoNotCheckWindow
-  deriving stock (Show, Ord, Eq)
+  deriving stock (Show, Ord, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 $( do
     result <- deriveJSON defaultOptions ''Result

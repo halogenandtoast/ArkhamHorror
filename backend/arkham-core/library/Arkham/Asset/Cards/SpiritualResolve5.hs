@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype SpiritualResolve5 = SpiritualResolve5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 spiritualResolve5 :: AssetCard SpiritualResolve5
 spiritualResolve5 = assetWith SpiritualResolve5 Cards.spiritualResolve5 $ (healthL ?~ 3) . (sanityL ?~ 3)

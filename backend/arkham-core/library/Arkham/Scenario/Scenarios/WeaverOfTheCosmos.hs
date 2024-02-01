@@ -13,7 +13,7 @@ import Arkham.Scenario.Runner
 
 newtype WeaverOfTheCosmos = WeaverOfTheCosmos ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 weaverOfTheCosmos :: Difficulty -> WeaverOfTheCosmos
 weaverOfTheCosmos difficulty =

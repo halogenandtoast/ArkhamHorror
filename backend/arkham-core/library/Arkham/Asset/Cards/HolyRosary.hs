@@ -7,7 +7,7 @@ import Arkham.Asset.Runner
 
 newtype HolyRosary = HolyRosary AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 holyRosary :: AssetCard HolyRosary
 holyRosary = assetWith HolyRosary Cards.holyRosary (sanityL ?~ 2)

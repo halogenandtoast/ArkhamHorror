@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype HallOfIdolatry = HallOfIdolatry LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hallOfIdolatry :: LocationCard HallOfIdolatry
 hallOfIdolatry = location HallOfIdolatry Cards.hallOfIdolatry 3 (PerPlayer 2)

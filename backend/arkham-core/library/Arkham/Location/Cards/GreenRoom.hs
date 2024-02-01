@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 
 newtype GreenRoom = GreenRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 greenRoom :: LocationCard GreenRoom
 greenRoom = location GreenRoom Cards.greenRoom 5 (PerPlayer 1)

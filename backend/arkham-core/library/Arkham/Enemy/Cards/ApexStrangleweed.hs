@@ -11,7 +11,7 @@ import Arkham.Prelude
 
 newtype ApexStrangleweed = ApexStrangleweed EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 apexStrangleweed :: EnemyCard ApexStrangleweed
 apexStrangleweed = enemy ApexStrangleweed Cards.apexStrangleweed (3, Static 6, 3) (1, 1)

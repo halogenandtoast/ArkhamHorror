@@ -17,7 +17,7 @@ import Arkham.Token qualified as Token
 
 newtype HarbingerOfValusia = HarbingerOfValusia EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 harbingerOfValusia :: EnemyCard HarbingerOfValusia
 harbingerOfValusia =

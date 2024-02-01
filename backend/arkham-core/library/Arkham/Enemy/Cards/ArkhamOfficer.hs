@@ -16,7 +16,7 @@ import Arkham.Token
 
 newtype ArkhamOfficer = ArkhamOfficer EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arkhamOfficer :: EnemyCard ArkhamOfficer
 arkhamOfficer = enemy ArkhamOfficer Cards.arkhamOfficer (3, Static 3, 2) (1, 0)

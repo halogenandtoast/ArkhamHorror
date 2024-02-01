@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LuckyCigaretteCase = LuckyCigaretteCase AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 luckyCigaretteCase :: AssetCard LuckyCigaretteCase
 luckyCigaretteCase = asset LuckyCigaretteCase Cards.luckyCigaretteCase

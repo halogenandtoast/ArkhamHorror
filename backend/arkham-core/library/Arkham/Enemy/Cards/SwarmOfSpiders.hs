@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype SwarmOfSpiders = SwarmOfSpiders EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 swarmOfSpiders :: EnemyCard SwarmOfSpiders
 swarmOfSpiders = enemy SwarmOfSpiders Cards.swarmOfSpiders (1, Static 1, 0) (1, 0)

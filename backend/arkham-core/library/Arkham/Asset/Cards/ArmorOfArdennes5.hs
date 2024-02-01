@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype ArmorOfArdennes5 = ArmorOfArdennes5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 armorOfArdennes5 :: AssetCard ArmorOfArdennes5
 armorOfArdennes5 =

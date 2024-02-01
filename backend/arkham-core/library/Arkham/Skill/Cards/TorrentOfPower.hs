@@ -18,7 +18,7 @@ import Arkham.SkillType
 
 newtype TorrentOfPower = TorrentOfPower SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 torrentOfPower :: SkillCard TorrentOfPower
 torrentOfPower =

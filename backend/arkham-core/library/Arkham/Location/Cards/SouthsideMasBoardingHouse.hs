@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 southsideMasBoardingHouse :: LocationCard SouthsideMasBoardingHouse
 southsideMasBoardingHouse = location SouthsideMasBoardingHouse Cards.southsideMasBoardingHouse 2 (PerPlayer 1)

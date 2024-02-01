@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype WalterGilmansRoom = WalterGilmansRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 walterGilmansRoom :: LocationCard WalterGilmansRoom
 walterGilmansRoom =

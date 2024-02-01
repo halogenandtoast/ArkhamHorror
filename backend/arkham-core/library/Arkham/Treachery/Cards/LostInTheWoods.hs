@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype LostInTheWoods = LostInTheWoods TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lostInTheWoods :: TreacheryCard LostInTheWoods
 lostInTheWoods = treachery LostInTheWoods Cards.lostInTheWoods

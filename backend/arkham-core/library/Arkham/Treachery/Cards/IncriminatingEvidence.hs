@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype IncriminatingEvidence = IncriminatingEvidence TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 incriminatingEvidence :: TreacheryCard IncriminatingEvidence
 incriminatingEvidence = treachery IncriminatingEvidence Cards.incriminatingEvidence

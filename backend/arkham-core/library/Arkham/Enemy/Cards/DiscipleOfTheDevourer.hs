@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 discipleOfTheDevourer :: EnemyCard DiscipleOfTheDevourer
 discipleOfTheDevourer =

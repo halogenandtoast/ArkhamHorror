@@ -15,7 +15,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype KamanThah = KamanThah EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 kamanThah :: EnemyCard KamanThah
 kamanThah = enemy KamanThah Cards.kamanThah (2, Static 3, 2) (1, 0)

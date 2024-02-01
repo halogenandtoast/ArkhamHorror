@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype LeatherJacket = LeatherJacket AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 leatherJacket :: AssetCard LeatherJacket
 leatherJacket =

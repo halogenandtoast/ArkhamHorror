@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AccademiaBridge = AccademiaBridge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 accademiaBridge :: LocationCard AccademiaBridge
 accademiaBridge =

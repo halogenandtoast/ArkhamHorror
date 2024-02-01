@@ -21,7 +21,7 @@ import Arkham.Trait (Trait (Void))
 
 newtype CourtOfTheGreatOldOnes = CourtOfTheGreatOldOnes LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 courtOfTheGreatOldOnes :: LocationCard CourtOfTheGreatOldOnes
 courtOfTheGreatOldOnes =

@@ -17,7 +17,7 @@ import Arkham.Window
 
 newtype IfItBleeds = IfItBleeds EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ifItBleeds :: EventCard IfItBleeds
 ifItBleeds = event IfItBleeds Cards.ifItBleeds

@@ -10,7 +10,7 @@ import Arkham.Projection
 
 newtype DarioElAmin = DarioElAmin AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 darioElAmin :: AssetCard DarioElAmin
 darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)

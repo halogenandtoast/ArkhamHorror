@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype TheTrueCulpritV1 = TheTrueCulpritV1 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theTrueCulpritV1 :: AgendaCard TheTrueCulpritV1
 theTrueCulpritV1 = agenda (3, A) TheTrueCulpritV1 Cards.theTrueCulpritV1 (Static 6)

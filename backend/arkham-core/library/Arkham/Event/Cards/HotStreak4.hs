@@ -8,7 +8,7 @@ import Arkham.Event.Runner
 
 newtype HotStreak4 = HotStreak4 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hotStreak4 :: EventCard HotStreak4
 hotStreak4 = event HotStreak4 Cards.hotStreak4

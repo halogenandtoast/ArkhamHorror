@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tenAcreMeadow_246 :: LocationCard TenAcreMeadow_246
 tenAcreMeadow_246 =

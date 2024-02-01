@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype EntryHallSpectral = EntryHallSpectral LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 entryHallSpectral :: LocationCard EntryHallSpectral
 entryHallSpectral =

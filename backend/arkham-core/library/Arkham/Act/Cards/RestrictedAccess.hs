@@ -15,7 +15,7 @@ import Arkham.ScenarioLogKey
 
 newtype RestrictedAccess = RestrictedAccess ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 restrictedAccess :: ActCard RestrictedAccess
 restrictedAccess = act (2, A) RestrictedAccess Cards.restrictedAccess Nothing

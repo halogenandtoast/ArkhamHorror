@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype LodgeEnforcer = LodgeEnforcer EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 lodgeEnforcer :: EnemyCard LodgeEnforcer
 lodgeEnforcer =

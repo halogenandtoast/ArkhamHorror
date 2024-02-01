@@ -39,6 +39,8 @@ instance Eq (SomeField a) where
 instance ToJSON (SomeField a) where
   toJSON (SomeField f) = toJSON f
 
+deriving via AllowThunk (SomeField a) instance NoThunks (SomeField a)
+
 data Update a where
   Update
     :: (Show typ, Eq typ, Typeable typ, FromJSON typ, ToJSON typ, Show (Field a typ), ToJSON (Field a typ))
@@ -55,6 +57,8 @@ data Update a where
     => Field a Int
     -> Int
     -> Update a
+
+deriving via AllowThunk (Update a) instance NoThunks (Update a)
 
 instance Show (Update a) where
   show (Update f v) = show f <> " = " <> show v

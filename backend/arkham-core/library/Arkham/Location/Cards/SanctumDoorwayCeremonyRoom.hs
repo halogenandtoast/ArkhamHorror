@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype SanctumDoorwayCeremonyRoom = SanctumDoorwayCeremonyRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sanctumDoorwayCeremonyRoom :: LocationCard SanctumDoorwayCeremonyRoom
 sanctumDoorwayCeremonyRoom = location SanctumDoorwayCeremonyRoom Cards.sanctumDoorwayCeremonyRoom 3 (PerPlayer 2)

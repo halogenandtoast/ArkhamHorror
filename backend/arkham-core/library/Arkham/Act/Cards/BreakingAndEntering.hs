@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 breakingAndEntering :: ActCard BreakingAndEntering
 breakingAndEntering =

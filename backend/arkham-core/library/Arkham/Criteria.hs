@@ -24,7 +24,8 @@ import Arkham.Zone
 import Data.Aeson.TH
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 pattern AnyHorrorOnThis :: Criterion
 pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0))
@@ -195,7 +196,8 @@ data Criterion
   | Negate Criterion
   | DuringAction
   | AffectedByTarot
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance Not Criterion where
   not_ = Negate
@@ -284,7 +286,8 @@ data EnemyCriterion
   | EnemyExistsAtAttachedLocation EnemyMatcher
   | ThisEnemy EnemyMatcher
   | EnemyMatchesCriteria [EnemyCriterion]
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
@@ -294,7 +297,8 @@ instance Semigroup EnemyCriterion where
   x <> y = EnemyMatchesCriteria [x, y]
 
 data UnderZone = UnderActDeck | UnderAgendaDeck | UnderZones [UnderZone]
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance Semigroup UnderZone where
   UnderZones xs <> UnderZones ys = UnderZones $ xs <> ys

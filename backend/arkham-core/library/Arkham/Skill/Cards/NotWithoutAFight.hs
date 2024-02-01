@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype NotWithoutAFight = NotWithoutAFight SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 notWithoutAFight :: SkillCard NotWithoutAFight
 notWithoutAFight = skill NotWithoutAFight Cards.notWithoutAFight

@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 
 newtype AlmaHill = AlmaHill EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 almaHill :: EnemyCard AlmaHill
 almaHill = enemyWith AlmaHill Cards.almaHill (3, Static 3, 3) (0, 2) $ spawnAtL ?~ "Southside"

@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype Persuasion = Persuasion EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 persuasion :: EventCard Persuasion
 persuasion = event Persuasion Cards.persuasion

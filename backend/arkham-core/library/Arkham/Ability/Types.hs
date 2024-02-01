@@ -28,7 +28,8 @@ data Ability = Ability
   , abilityCanBeCancelled :: Bool
   , abilityDisplayAsAction :: Bool
   }
-  deriving stock (Show, Ord, Data)
+  deriving stock (Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data AbilityMetadata
   = IntMetadata Int
@@ -37,7 +38,8 @@ data AbilityMetadata
   | EncounterCardMetadata EncounterCard
   | SkillChoiceMetadata SkillType
   | NoAbilityMetadata
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance Eq Ability where
   a == b =

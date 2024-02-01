@@ -14,7 +14,7 @@ import Arkham.Message (Message (EnemyDefeated))
 
 newtype CoupDeGrace = CoupDeGrace EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 coupDeGrace :: EventCard CoupDeGrace
 coupDeGrace = event CoupDeGrace Cards.coupDeGrace

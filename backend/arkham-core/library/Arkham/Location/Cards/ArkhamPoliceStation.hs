@@ -11,7 +11,7 @@ import Arkham.Trait
 
 newtype ArkhamPoliceStation = ArkhamPoliceStation LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arkhamPoliceStation :: LocationCard ArkhamPoliceStation
 arkhamPoliceStation = location ArkhamPoliceStation Cards.arkhamPoliceStation 3 (PerPlayer 2)

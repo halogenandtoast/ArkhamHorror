@@ -19,7 +19,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype SoothingMelody = SoothingMelody EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 soothingMelody :: EventCard SoothingMelody
 soothingMelody =

@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Ancient))
 
 newtype HandOfTheBrotherhood = HandOfTheBrotherhood EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 handOfTheBrotherhood :: EnemyCard HandOfTheBrotherhood
 handOfTheBrotherhood =

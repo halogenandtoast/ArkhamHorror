@@ -20,7 +20,7 @@ import Arkham.Treachery.Runner
 
 newtype GiftOfMadnessMisery = GiftOfMadnessMisery TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 giftOfMadnessMisery :: TreacheryCard GiftOfMadnessMisery
 giftOfMadnessMisery = treachery GiftOfMadnessMisery Cards.giftOfMadnessMisery

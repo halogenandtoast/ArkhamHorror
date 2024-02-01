@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype VaultOfKnowledge = VaultOfKnowledge AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 vaultOfKnowledge :: AssetCard VaultOfKnowledge
 vaultOfKnowledge = asset VaultOfKnowledge Cards.vaultOfKnowledge

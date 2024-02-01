@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype EscapeTheCage = EscapeTheCage ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 escapeTheCage :: ActCard EscapeTheCage
 escapeTheCage = act (3, A) EscapeTheCage Cards.escapeTheCage Nothing

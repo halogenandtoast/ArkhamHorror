@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ATearInThePath = ATearInThePath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aTearInThePath :: LocationCard ATearInThePath
 aTearInThePath = location ATearInThePath Cards.aTearInThePath 3 (PerPlayer 1)

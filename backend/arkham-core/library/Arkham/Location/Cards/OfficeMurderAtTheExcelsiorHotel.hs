@@ -21,7 +21,7 @@ import Arkham.Projection
 
 newtype OfficeMurderAtTheExcelsiorHotel = OfficeMurderAtTheExcelsiorHotel LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 officeMurderAtTheExcelsiorHotel :: LocationCard OfficeMurderAtTheExcelsiorHotel
 officeMurderAtTheExcelsiorHotel = location OfficeMurderAtTheExcelsiorHotel Cards.officeMurderAtTheExcelsiorHotel 3 (PerPlayer 2)

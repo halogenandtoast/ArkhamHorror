@@ -36,7 +36,7 @@ import Arkham.Window qualified as Window
 
 newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theUntamedWilds :: Difficulty -> TheUntamedWilds
 theUntamedWilds difficulty =

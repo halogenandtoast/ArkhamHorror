@@ -10,7 +10,7 @@ import Arkham.Projection
 
 newtype WendysAmulet = WendysAmulet AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wendysAmulet :: AssetCard WendysAmulet
 wendysAmulet = asset WendysAmulet Cards.wendysAmulet

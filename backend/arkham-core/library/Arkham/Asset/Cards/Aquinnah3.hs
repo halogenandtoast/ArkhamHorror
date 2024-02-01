@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Aquinnah3 = Aquinnah3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aquinnah3 :: AssetCard Aquinnah3
 aquinnah3 = ally Aquinnah3 Cards.aquinnah3 (1, 4)

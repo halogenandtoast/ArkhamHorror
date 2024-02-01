@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype EnchantedBladeMystic3 = EnchantedBladeMystic3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 enchantedBladeMystic3 :: AssetCard EnchantedBladeMystic3
 enchantedBladeMystic3 = asset EnchantedBladeMystic3 Cards.enchantedBladeMystic3

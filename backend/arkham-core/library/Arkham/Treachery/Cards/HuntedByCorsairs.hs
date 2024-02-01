@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype HuntedByCorsairs = HuntedByCorsairs TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 huntedByCorsairs :: TreacheryCard HuntedByCorsairs
 huntedByCorsairs = treachery HuntedByCorsairs Cards.huntedByCorsairs

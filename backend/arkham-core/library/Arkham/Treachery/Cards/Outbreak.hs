@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype Outbreak = Outbreak TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 outbreak :: TreacheryCard Outbreak
 outbreak = treachery Outbreak Cards.outbreak

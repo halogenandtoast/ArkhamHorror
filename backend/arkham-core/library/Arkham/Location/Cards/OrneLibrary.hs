@@ -10,7 +10,7 @@ import Arkham.Location.Runner
 
 newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 orneLibrary :: LocationCard OrneLibrary
 orneLibrary = location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1)

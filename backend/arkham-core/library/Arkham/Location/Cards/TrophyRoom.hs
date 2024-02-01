@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype TrophyRoom = TrophyRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 trophyRoom :: LocationCard TrophyRoom
 trophyRoom = location TrophyRoom Cards.trophyRoom 2 (Static 0)

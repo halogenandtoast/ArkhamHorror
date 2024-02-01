@@ -24,7 +24,7 @@ import Arkham.Window qualified as Window
 
 newtype TelescopicSight3 = TelescopicSight3 EventAttrs
   deriving anyclass (IsEvent)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 telescopicSight3 :: EventCard TelescopicSight3
 telescopicSight3 = event TelescopicSight3 Cards.telescopicSight3
@@ -102,7 +102,7 @@ instance RunMessage TelescopicSight3 where
 
 newtype TelescopicSight3Effect = TelescopicSight3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 telescopicSight3Effect :: EffectArgs -> TelescopicSight3Effect
 telescopicSight3Effect =

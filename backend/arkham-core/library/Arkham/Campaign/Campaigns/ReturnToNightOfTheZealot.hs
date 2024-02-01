@@ -11,7 +11,7 @@ import Arkham.Difficulty
 import Arkham.Id
 
 newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor, NoThunks)
 
 instance IsCampaign ReturnToNightOfTheZealot where
   nextStep a = case campaignStep (toAttrs a) of

@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype FateOfAllFools = FateOfAllFools TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fateOfAllFools :: TreacheryCard FateOfAllFools
 fateOfAllFools = treachery FateOfAllFools Cards.fateOfAllFools

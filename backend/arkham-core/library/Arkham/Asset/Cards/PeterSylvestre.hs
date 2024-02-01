@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype PeterSylvestre = PeterSylvestre AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 peterSylvestre :: AssetCard PeterSylvestre
 peterSylvestre = ally PeterSylvestre Cards.peterSylvestre (1, 2)

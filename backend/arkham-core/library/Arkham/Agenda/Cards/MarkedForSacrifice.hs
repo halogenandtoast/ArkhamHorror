@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype MarkedForSacrifice = MarkedForSacrifice AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 markedForSacrifice :: AgendaCard MarkedForSacrifice
 markedForSacrifice =

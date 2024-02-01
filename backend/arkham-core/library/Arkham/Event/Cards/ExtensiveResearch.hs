@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype ExtensiveResearch = ExtensiveResearch EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 extensiveResearch :: EventCard ExtensiveResearch
 extensiveResearch = event ExtensiveResearch Cards.extensiveResearch

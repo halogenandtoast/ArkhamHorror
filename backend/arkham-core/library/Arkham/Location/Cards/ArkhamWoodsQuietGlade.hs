@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arkhamWoodsQuietGlade :: LocationCard ArkhamWoodsQuietGlade
 arkhamWoodsQuietGlade =

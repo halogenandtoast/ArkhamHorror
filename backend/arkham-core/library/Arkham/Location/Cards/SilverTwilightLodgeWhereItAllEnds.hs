@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype SilverTwilightLodgeWhereItAllEnds = SilverTwilightLodgeWhereItAllEnds LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 silverTwilightLodgeWhereItAllEnds :: LocationCard SilverTwilightLodgeWhereItAllEnds
 silverTwilightLodgeWhereItAllEnds = location SilverTwilightLodgeWhereItAllEnds Cards.silverTwilightLodgeWhereItAllEnds 2 (Static 0)

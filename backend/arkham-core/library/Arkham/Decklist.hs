@@ -19,7 +19,7 @@ import Text.Read (read)
 type Parser = ParsecT Text () Identity
 
 loadDecklist :: CardGen m => ArkhamDBDecklist -> m (InvestigatorId, [PlayerCard])
-loadDecklist decklist = (investigatorId,) <$> loadDecklistCards decklist
+loadDecklist !decklist = (investigatorId,) <$> loadDecklistCards decklist
  where
   investigatorId = case meta decklist of
     Nothing -> investigator_code decklist
@@ -41,8 +41,8 @@ decklistInvestigatorId decklist = case meta decklist of
         else alternate_front
 
 loadDecklistCards :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
-loadDecklistCards decklist = do
-  results <- forM (Map.toList $ slots decklist) $ \(cardCode, count') ->
+loadDecklistCards !decklist = do
+  !results <- for (Map.toList $ slots decklist) $ \(cardCode, count') ->
     replicateM
       count'
       ( genPlayerCardWith (lookupPlayerCardDef cardCode)

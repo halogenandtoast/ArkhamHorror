@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype StudentUnion = StudentUnion LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 studentUnion :: LocationCard StudentUnion
 studentUnion = location StudentUnion Cards.studentUnion 1 (Static 2)

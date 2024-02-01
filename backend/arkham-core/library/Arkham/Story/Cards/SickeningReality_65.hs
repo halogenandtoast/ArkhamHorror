@@ -14,7 +14,7 @@ import Arkham.Token
 
 newtype SickeningReality_65 = SickeningReality_65 StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sickeningReality_65 :: StoryCard SickeningReality_65
 sickeningReality_65 = story SickeningReality_65 Cards.sickeningReality_65

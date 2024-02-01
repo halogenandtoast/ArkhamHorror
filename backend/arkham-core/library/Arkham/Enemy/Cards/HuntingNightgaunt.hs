@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 
 newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 huntingNightgaunt :: EnemyCard HuntingNightgaunt
 huntingNightgaunt = enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)

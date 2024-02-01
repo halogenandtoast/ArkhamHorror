@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype StormOfSpirits = StormOfSpirits EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 stormOfSpirits :: EventCard StormOfSpirits
 stormOfSpirits = event StormOfSpirits Cards.stormOfSpirits
@@ -45,7 +45,7 @@ instance RunMessage StormOfSpirits where
 
 newtype StormOfSpiritsEffect = StormOfSpiritsEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 stormOfSpiritsEffect :: EffectArgs -> StormOfSpiritsEffect
 stormOfSpiritsEffect = cardEffect StormOfSpiritsEffect Cards.stormOfSpirits

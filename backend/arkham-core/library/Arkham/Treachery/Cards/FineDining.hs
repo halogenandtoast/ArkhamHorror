@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype FineDining = FineDining TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fineDining :: TreacheryCard FineDining
 fineDining = treachery FineDining Cards.fineDining

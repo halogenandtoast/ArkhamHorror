@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype TheYellowSign = TheYellowSign TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theYellowSign :: TreacheryCard TheYellowSign
 theYellowSign = treachery TheYellowSign Cards.theYellowSign

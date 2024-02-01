@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype HistoricalSocietyMeetingRoom = HistoricalSocietyMeetingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 historicalSocietyMeetingRoom :: LocationCard HistoricalSocietyMeetingRoom
 historicalSocietyMeetingRoom =

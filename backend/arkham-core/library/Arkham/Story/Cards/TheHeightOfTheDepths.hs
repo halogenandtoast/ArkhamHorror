@@ -14,7 +14,7 @@ import Arkham.Story.Runner
 
 newtype TheHeightOfTheDepths = TheHeightOfTheDepths StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theHeightOfTheDepths :: StoryCard TheHeightOfTheDepths
 theHeightOfTheDepths = story TheHeightOfTheDepths Cards.theHeightOfTheDepths

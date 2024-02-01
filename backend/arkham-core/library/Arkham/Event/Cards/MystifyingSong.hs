@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype MystifyingSong = MystifyingSong EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mystifyingSong :: EventCard MystifyingSong
 mystifyingSong =
@@ -43,7 +43,7 @@ instance RunMessage MystifyingSong where
 
 newtype MystifyingSongEffect = MystifyingSongEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mystifyingSongEffect :: EffectArgs -> MystifyingSongEffect
 mystifyingSongEffect = cardEffect MystifyingSongEffect Cards.mystifyingSong

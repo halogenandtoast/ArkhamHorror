@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype ArousingSuspicions = ArousingSuspicions TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arousingSuspicions :: TreacheryCard ArousingSuspicions
 arousingSuspicions = treachery ArousingSuspicions Cards.arousingSuspicions

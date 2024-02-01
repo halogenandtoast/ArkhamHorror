@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype Bloodlust = Bloodlust TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 bloodlust :: TreacheryCard Bloodlust
 bloodlust = treachery Bloodlust Cards.bloodlust

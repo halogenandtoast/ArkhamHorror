@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype CuriositieShoppe = CuriositieShoppe LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 curiositieShoppe :: LocationCard CuriositieShoppe
 curiositieShoppe =

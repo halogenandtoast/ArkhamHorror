@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype MandyThompson = MandyThompson InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mandyThompson :: InvestigatorCard MandyThompson
 mandyThompson =

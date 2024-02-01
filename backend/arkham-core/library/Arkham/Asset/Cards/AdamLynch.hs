@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype AdamLynch = AdamLynch AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 adamLynch :: AssetCard AdamLynch
 adamLynch =

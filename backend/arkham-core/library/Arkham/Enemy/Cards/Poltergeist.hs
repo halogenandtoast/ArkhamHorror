@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype Poltergeist = Poltergeist EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 poltergeist :: EnemyCard Poltergeist
 poltergeist = enemy Poltergeist Cards.poltergeist (3, Static 2, 4) (0, 2)

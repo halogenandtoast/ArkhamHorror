@@ -10,7 +10,7 @@ import Arkham.Story.Runner
 
 newtype AdviceOfTheKing = AdviceOfTheKing StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 adviceOfTheKing :: StoryCard AdviceOfTheKing
 adviceOfTheKing = story AdviceOfTheKing Cards.adviceOfTheKing

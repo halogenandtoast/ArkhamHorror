@@ -20,7 +20,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype LetTheStormRageTheFloodBelow = LetTheStormRageTheFloodBelow AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 letTheStormRageTheFloodBelow :: AgendaCard LetTheStormRageTheFloodBelow
 letTheStormRageTheFloodBelow =

@@ -19,7 +19,7 @@ import Arkham.Token qualified as Token
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 huntingHorror :: EnemyCard HuntingHorror
 huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)

@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mysteriousChanting :: TreacheryCard MysteriousChanting
 mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting

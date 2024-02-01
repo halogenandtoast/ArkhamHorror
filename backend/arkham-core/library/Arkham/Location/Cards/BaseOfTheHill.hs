@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 baseOfTheHill :: LocationCard BaseOfTheHill
 baseOfTheHill =

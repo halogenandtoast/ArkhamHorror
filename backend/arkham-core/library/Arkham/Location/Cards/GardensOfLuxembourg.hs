@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype GardensOfLuxembourg = GardensOfLuxembourg LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 gardensOfLuxembourg :: LocationCard GardensOfLuxembourg
 gardensOfLuxembourg =

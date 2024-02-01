@@ -17,7 +17,7 @@ import Arkham.Movement
 
 newtype PendantOfTheQueen = PendantOfTheQueen AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pendantOfTheQueen :: AssetCard PendantOfTheQueen
 pendantOfTheQueen = assetWith PendantOfTheQueen Cards.pendantOfTheQueen $ whenNoUsesL ?~ NotifySelfOfNoUses

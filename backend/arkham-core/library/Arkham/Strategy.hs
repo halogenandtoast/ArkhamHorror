@@ -17,7 +17,8 @@ data DamageStrategy
   | DamageEvenly
   | -- Hastur has specific damage rules
     DamageFromHastur
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data ZoneReturnStrategy
   = PutBackInAnyOrder
@@ -25,7 +26,8 @@ data ZoneReturnStrategy
   | PutBack
   | DiscardRest
   | RemoveRestFromGame
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 -- NOTE: INT must be the number of targets to resolve
 data FoundCardsStrategy
@@ -39,7 +41,8 @@ data FoundCardsStrategy
   | RemoveFoundFromGame InvestigatorId Int
   | DrawOrCommitFound InvestigatorId Int
   | DrawOrPlayFound InvestigatorId Int
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 defer :: Target -> FoundCardsStrategy
 defer = DeferSearchedToTarget
@@ -48,12 +51,14 @@ data AfterPlayStrategy
   = DiscardThis
   | RemoveThisFromGame
   | ShuffleThisBackIntoDeck
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data ChosenCardStrategy
   = LeaveChosenCard
   | RemoveChosenCardFromGame
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 fromTopOfDeck :: Int -> (Zone, ZoneReturnStrategy)
 fromTopOfDeck n = (FromTopOfDeck n, ShuffleBackIn)

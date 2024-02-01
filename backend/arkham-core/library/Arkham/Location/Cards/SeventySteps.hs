@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype SeventySteps = SeventySteps LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 seventySteps :: LocationCard SeventySteps
 seventySteps = location SeventySteps Cards.seventySteps 1 (PerPlayer 1)

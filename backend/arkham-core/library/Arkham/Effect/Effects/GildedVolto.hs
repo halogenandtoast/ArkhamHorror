@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype GildedVolto = GildedVolto EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 gildedVolto :: EffectArgs -> GildedVolto
 gildedVolto = GildedVolto . uncurry4 (baseAttrs "82026")

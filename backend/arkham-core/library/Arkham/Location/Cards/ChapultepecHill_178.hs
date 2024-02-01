@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ChapultepecHill_178 = ChapultepecHill_178 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chapultepecHill_178 :: LocationCard ChapultepecHill_178
 chapultepecHill_178 =

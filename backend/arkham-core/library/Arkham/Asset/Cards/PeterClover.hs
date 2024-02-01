@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype PeterClover = PeterClover AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 peterClover :: AssetCard PeterClover
 peterClover =

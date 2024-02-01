@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype Eavesdrop = Eavesdrop EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 eavesdrop :: EventCard Eavesdrop
 eavesdrop = event Eavesdrop Cards.eavesdrop

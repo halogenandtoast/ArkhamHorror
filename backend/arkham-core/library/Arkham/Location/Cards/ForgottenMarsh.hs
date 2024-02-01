@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ForgottenMarsh = ForgottenMarsh LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 forgottenMarsh :: LocationCard ForgottenMarsh
 forgottenMarsh = location ForgottenMarsh Cards.forgottenMarsh 2 (Static 0)

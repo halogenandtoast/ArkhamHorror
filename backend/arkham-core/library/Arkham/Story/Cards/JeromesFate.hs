@@ -25,7 +25,7 @@ import Arkham.Story.Runner
 
 newtype JeromesFate = JeromesFate StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jeromesFate :: StoryCard JeromesFate
 jeromesFate = story JeromesFate Cards.jeromesFate
@@ -70,7 +70,7 @@ instance RunMessage JeromesFate where
 
 newtype JeromesFateEffect = JeromesFateEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jeromesFateEffect :: EffectArgs -> JeromesFateEffect
 jeromesFateEffect = cardEffect JeromesFateEffect Cards.jeromesFate

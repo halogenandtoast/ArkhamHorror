@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype Obsessive = Obsessive TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 obsessive :: TreacheryCard Obsessive
 obsessive = treachery Obsessive Cards.obsessive

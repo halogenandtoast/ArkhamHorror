@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 holeInTheWall :: LocationCard HoleInTheWall
 holeInTheWall = location HoleInTheWall Cards.holeInTheWall 1 (Static 0)

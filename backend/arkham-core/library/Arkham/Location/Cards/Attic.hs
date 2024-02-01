@@ -11,7 +11,7 @@ import Arkham.Matcher
 
 newtype Attic = Attic LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 attic :: LocationCard Attic
 attic = location Attic Cards.attic 1 (PerPlayer 2)

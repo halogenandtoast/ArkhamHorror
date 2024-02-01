@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Charm, Relic, Spell))
 
 newtype VengefulSpecter = VengefulSpecter EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 vengefulSpecter :: EnemyCard VengefulSpecter
 vengefulSpecter = enemy VengefulSpecter Cards.vengefulSpecter (4, PerPlayer 4, 5) (0, 2)

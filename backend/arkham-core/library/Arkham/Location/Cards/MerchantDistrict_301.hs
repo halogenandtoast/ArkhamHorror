@@ -14,7 +14,7 @@ import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype MerchantDistrict_301 = MerchantDistrict_301 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 merchantDistrict_301 :: LocationCard MerchantDistrict_301
 merchantDistrict_301 = location MerchantDistrict_301 Cards.merchantDistrict_301 3 (Static 0)

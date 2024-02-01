@@ -20,7 +20,7 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype DiningRoom = DiningRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 diningRoom :: LocationCard DiningRoom
 diningRoom = location DiningRoom Cards.diningRoom 2 (Static 0)

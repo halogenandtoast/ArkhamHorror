@@ -13,7 +13,7 @@ import Arkham.Capability
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 strangeSolution :: AssetCard StrangeSolution
 strangeSolution = asset StrangeSolution Cards.strangeSolution

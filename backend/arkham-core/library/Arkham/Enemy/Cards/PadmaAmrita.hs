@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Ancient))
 
 newtype PadmaAmrita = PadmaAmrita EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 padmaAmrita :: EnemyCard PadmaAmrita
 padmaAmrita = enemy PadmaAmrita Cards.padmaAmrita (5, PerPlayer 3, 3) (0, 0)

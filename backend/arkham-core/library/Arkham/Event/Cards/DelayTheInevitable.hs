@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype DelayTheInevitable = DelayTheInevitable EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 delayTheInevitable :: EventCard DelayTheInevitable
 delayTheInevitable = event DelayTheInevitable Cards.delayTheInevitable

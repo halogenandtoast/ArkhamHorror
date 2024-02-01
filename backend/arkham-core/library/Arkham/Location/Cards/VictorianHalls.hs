@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype VictorianHalls = VictorianHalls LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 victorianHalls :: LocationCard VictorianHalls
 victorianHalls = location VictorianHalls Cards.victorianHalls 4 (Static 0)

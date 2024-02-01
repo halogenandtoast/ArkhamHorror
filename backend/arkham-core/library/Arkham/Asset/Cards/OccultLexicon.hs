@@ -10,7 +10,7 @@ import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 occultLexicon :: AssetCard OccultLexicon
 occultLexicon = asset OccultLexicon Cards.occultLexicon

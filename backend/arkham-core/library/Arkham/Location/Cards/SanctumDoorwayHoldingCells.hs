@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Cultist))
 
 newtype SanctumDoorwayHoldingCells = SanctumDoorwayHoldingCells LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sanctumDoorwayHoldingCells :: LocationCard SanctumDoorwayHoldingCells
 sanctumDoorwayHoldingCells = location SanctumDoorwayHoldingCells Cards.sanctumDoorwayHoldingCells 1 (PerPlayer 1)

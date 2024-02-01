@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype ChapultepecHill_179 = ChapultepecHill_179 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chapultepecHill_179 :: LocationCard ChapultepecHill_179
 chapultepecHill_179 =

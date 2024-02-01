@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ladyEsprit :: AssetCard LadyEsprit
 ladyEsprit = allyWith LadyEsprit Cards.ladyEsprit (2, 4) (isStoryL .~ True)

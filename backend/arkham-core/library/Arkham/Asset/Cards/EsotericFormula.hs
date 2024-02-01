@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype EsotericFormula = EsotericFormula AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 esotericFormula :: AssetCard EsotericFormula
 esotericFormula = asset EsotericFormula Cards.esotericFormula

@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 
 newtype Broadmoor = Broadmoor LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 broadmoor :: LocationCard Broadmoor
 broadmoor = location Broadmoor Cards.broadmoor 3 (PerPlayer 1)

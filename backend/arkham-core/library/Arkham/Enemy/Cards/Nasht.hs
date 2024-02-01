@@ -15,7 +15,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Nasht = Nasht EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 nasht :: EnemyCard Nasht
 nasht = enemy Nasht Cards.nasht (2, Static 3, 2) (0, 1)

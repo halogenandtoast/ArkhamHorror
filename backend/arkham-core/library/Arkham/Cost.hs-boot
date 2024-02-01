@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 data Cost
 
+instance NoThunks Cost
 instance Data Cost
 instance Show Cost
 instance Eq Cost

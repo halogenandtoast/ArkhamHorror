@@ -25,6 +25,8 @@ deriving stock instance Show (SCardType a)
 deriving stock instance Eq (SCardType a)
 deriving stock instance Ord (SCardType a)
 
+deriving via AllowThunk (SCardType a) instance NoThunks (SCardType a)
+
 data SomeSCardType where
   SomeSCardType :: SCardType a -> SomeSCardType
 
@@ -124,10 +126,12 @@ data CardType
   | StoryType
   | InvestigatorType
   | ScenarioType
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data CardSubType = Weakness | BasicWeakness
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 encounterCardTypes :: [CardType]
 encounterCardTypes =

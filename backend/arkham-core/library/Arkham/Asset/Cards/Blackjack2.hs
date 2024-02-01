@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype Blackjack2 = Blackjack2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 blackjack2 :: AssetCard Blackjack2
 blackjack2 =

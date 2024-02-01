@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype ShrewdAnalysis = ShrewdAnalysis AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shrewdAnalysis :: AssetCard ShrewdAnalysis
 shrewdAnalysis = asset ShrewdAnalysis Cards.shrewdAnalysis

@@ -21,7 +21,7 @@ import Arkham.Skill.Runner
 
 newtype Copycat3 = Copycat3 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 copycat3 :: SkillCard Copycat3
 copycat3 = skill Copycat3 Cards.copycat3
@@ -65,7 +65,7 @@ instance RunMessage Copycat3 where
 
 newtype Copycat3Effect = Copycat3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 copycat3Effect :: EffectArgs -> Copycat3Effect
 copycat3Effect = cardEffect Copycat3Effect Cards.copycat3

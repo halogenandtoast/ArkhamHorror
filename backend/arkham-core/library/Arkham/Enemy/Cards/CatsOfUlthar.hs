@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype CatsOfUlthar = CatsOfUlthar EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 catsOfUlthar :: EnemyCard CatsOfUlthar
 catsOfUlthar = enemy CatsOfUlthar Cards.catsOfUlthar (1, Static 1, 1) (1, 0)

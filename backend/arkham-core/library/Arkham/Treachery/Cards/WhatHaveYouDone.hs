@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype WhatHaveYouDone = WhatHaveYouDone TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 whatHaveYouDone :: TreacheryCard WhatHaveYouDone
 whatHaveYouDone = treachery WhatHaveYouDone Cards.whatHaveYouDone

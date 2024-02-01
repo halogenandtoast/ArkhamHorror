@@ -10,11 +10,11 @@ import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata {active :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype RexsCurse = RexsCurse (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 rexsCurse :: TreacheryCard RexsCurse
 rexsCurse = treachery (RexsCurse . (`with` Metadata False)) Cards.rexsCurse

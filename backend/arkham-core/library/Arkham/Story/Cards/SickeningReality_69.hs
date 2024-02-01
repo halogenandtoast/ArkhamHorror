@@ -10,7 +10,7 @@ import Arkham.Story.Runner
 
 newtype SickeningReality_69 = SickeningReality_69 StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sickeningReality_69 :: StoryCard SickeningReality_69
 sickeningReality_69 = story SickeningReality_69 Cards.sickeningReality_69

@@ -10,7 +10,7 @@ import Arkham.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 billyCooper :: EnemyCard BillyCooper
 billyCooper = enemyWith BillyCooper Cards.billyCooper (5, Static 4, 2) (2, 0) (spawnAtL ?~ SpawnAt "Easttown")

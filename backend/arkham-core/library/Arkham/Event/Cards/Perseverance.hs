@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype Perseverance = Perseverance EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 perseverance :: EventCard Perseverance
 perseverance = event Perseverance Cards.perseverance

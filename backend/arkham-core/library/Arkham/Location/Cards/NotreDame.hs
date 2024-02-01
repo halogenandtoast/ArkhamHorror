@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype NotreDame = NotreDame LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 notreDame :: LocationCard NotreDame
 notreDame = location NotreDame Cards.notreDame 3 (PerPlayer 1)

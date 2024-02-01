@@ -12,11 +12,11 @@ import Arkham.Matcher
 
 newtype Metadata = Metadata {abilityTriggered :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype ColtVestPocket2 = ColtVestPocket2 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 coltVestPocket2 :: AssetCard ColtVestPocket2
 coltVestPocket2 =

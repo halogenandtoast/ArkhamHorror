@@ -16,7 +16,7 @@ import Arkham.Prelude
 
 newtype TheJunglesHeart = TheJunglesHeart AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theJunglesHeart :: AgendaCard TheJunglesHeart
 theJunglesHeart = agenda (1, A) TheJunglesHeart Cards.theJunglesHeart (Static 5)

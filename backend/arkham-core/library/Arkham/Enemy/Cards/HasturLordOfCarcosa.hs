@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype HasturLordOfCarcosa = HasturLordOfCarcosa EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 hasturLordOfCarcosa :: EnemyCard HasturLordOfCarcosa
 hasturLordOfCarcosa =

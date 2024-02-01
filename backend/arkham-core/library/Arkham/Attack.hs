@@ -11,7 +11,8 @@ import Arkham.Target
 import Data.Aeson.TH
 
 data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data EnemyAttackDetails = EnemyAttackDetails
   { attackTarget :: Target
@@ -22,7 +23,8 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackSource :: Source
   , attackCanBeCanceled :: Bool
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 enemyAttack
   :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy)

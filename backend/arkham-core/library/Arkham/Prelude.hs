@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Prelude (
   module X,
   module Arkham.Prelude,
@@ -66,11 +68,13 @@ import Data.Text.Lazy.Builder
 import Data.UUID as X (UUID)
 import GHC.Stack as X
 import Language.Haskell.TH hiding (location)
+import NoThunks.Class as X
 import Safe as X (fromJustNote)
 import System.Random.Shuffle as X
 
 import Data.Foldable (Foldable (foldMap), foldlM)
 import Data.List.NonEmpty qualified as NE
+import Data.These
 
 class Not a where
   not_ :: a -> a
@@ -206,6 +210,9 @@ deleteFirstMatch f (a' : as) | f a' = as
 deleteFirstMatch f (b' : as) = b' : deleteFirstMatch f as
 
 data With a b = With a b
+  deriving stock (Generic)
+
+instance (NoThunks a, NoThunks b) => NoThunks (With a b)
 
 instance (Eq a, Eq b) => Eq (With a b) where
   With a1 b1 == With a2 b2 = a1 == a2 && b1 == b2
@@ -297,7 +304,7 @@ withIndex1 = withIndexN 1
 
 newtype Max0 a = Max0 {getMax0 :: a}
   deriving stock (Eq, Ord, Show, Read, Generic)
-  deriving anyclass (Hashable, ToJSON, FromJSON)
+  deriving anyclass (Hashable, ToJSON, FromJSON, NoThunks)
 
 instance (Ord a, Num a) => Semigroup (Max0 a) where
   Max0 a <> Max0 b = Max0 $ max 0 (max a b)
@@ -363,3 +370,8 @@ toResult :: FromJSON a => Value -> a
 toResult x = case fromJSON x of
   Success a -> a
   Error e -> error $ "result failure: " <> e
+
+deriving anyclass instance (NoThunks a, NoThunks b) => NoThunks (These a b)
+
+deriving newtype instance NoThunks a => NoThunks (Min a)
+deriving via AllowThunk Value instance NoThunks Value

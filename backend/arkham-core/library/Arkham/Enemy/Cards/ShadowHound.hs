@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ShadowHound = ShadowHound EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shadowHound :: EnemyCard ShadowHound
 shadowHound =

@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theZealotsSeal :: TreacheryCard TheZealotsSeal
 theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal

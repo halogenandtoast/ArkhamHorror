@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Intrepid = Intrepid AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 intrepid :: AssetCard Intrepid
 intrepid = asset Intrepid Cards.intrepid

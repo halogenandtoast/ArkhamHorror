@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype AceOfRods1 = AceOfRods1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aceOfRods1 :: AssetCard AceOfRods1
 aceOfRods1 = asset AceOfRods1 Cards.aceOfRods1
@@ -42,11 +42,11 @@ instance RunMessage AceOfRods1 where
 
 newtype Meta = Meta {active :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype AceOfRods1Effect = AceOfRods1Effect (EffectAttrs `With` Meta)
   deriving anyclass (IsEffect, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aceOfRods1Effect :: EffectArgs -> AceOfRods1Effect
 aceOfRods1Effect =

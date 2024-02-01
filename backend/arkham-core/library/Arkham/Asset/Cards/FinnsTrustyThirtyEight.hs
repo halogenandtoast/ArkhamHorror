@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype FinnsTrustyThirtyEight = FinnsTrustyThirtyEight AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 finnsTrustyThirtyEight :: AssetCard FinnsTrustyThirtyEight
 finnsTrustyThirtyEight =

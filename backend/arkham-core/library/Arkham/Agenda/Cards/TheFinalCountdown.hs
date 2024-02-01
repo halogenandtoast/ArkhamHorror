@@ -18,7 +18,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheFinalCountdown = TheFinalCountdown AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theFinalCountdown :: AgendaCard TheFinalCountdown
 theFinalCountdown =

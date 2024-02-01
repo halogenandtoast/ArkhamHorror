@@ -16,7 +16,7 @@ import Arkham.Location.Runner
 
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ascendingPath :: LocationCard AscendingPath
 ascendingPath =

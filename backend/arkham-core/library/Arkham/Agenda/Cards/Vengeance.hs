@@ -17,7 +17,7 @@ import Data.List (cycle)
 
 newtype Vengeance = Vengeance AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 vengeance :: AgendaCard Vengeance
 vengeance =

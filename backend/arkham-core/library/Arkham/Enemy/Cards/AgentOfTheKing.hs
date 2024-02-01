@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 agentOfTheKing :: EnemyCard AgentOfTheKing
 agentOfTheKing =

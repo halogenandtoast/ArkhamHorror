@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype HasturTheKingInYellow = HasturTheKingInYellow EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hasturTheKingInYellow :: EnemyCard HasturTheKingInYellow
 hasturTheKingInYellow =

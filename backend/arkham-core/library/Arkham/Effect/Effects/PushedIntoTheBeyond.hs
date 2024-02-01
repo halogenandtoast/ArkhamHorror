@@ -12,7 +12,7 @@ import Arkham.Exception
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pushedIntoTheBeyond :: EffectArgs -> PushedIntoTheBeyond
 pushedIntoTheBeyond = PushedIntoTheBeyond . uncurry4 (baseAttrs "02100")

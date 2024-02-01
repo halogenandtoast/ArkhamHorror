@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 umordhothsHunger :: TreacheryCard UmordhothsHunger
 umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger

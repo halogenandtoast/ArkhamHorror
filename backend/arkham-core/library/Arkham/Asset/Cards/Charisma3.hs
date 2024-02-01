@@ -11,7 +11,7 @@ import Arkham.Card
 
 newtype Charisma3 = Charisma3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 charisma3 :: AssetCard Charisma3
 charisma3 = asset Charisma3 Cards.charisma3

@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype Clairvoyance5 = Clairvoyance5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 clairvoyance5 :: AssetCard Clairvoyance5
 clairvoyance5 = asset Clairvoyance5 Cards.clairvoyance5
@@ -43,7 +43,7 @@ instance RunMessage Clairvoyance5 where
 
 newtype Clairvoyance5Effect = Clairvoyance5Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 clairvoyance5Effect :: EffectArgs -> Clairvoyance5Effect
 clairvoyance5Effect = cardEffect Clairvoyance5Effect Cards.clairvoyance5

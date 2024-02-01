@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype LodgeGatesMembersOnly = LodgeGatesMembersOnly LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lodgeGatesMembersOnly :: LocationCard LodgeGatesMembersOnly
 lodgeGatesMembersOnly = location LodgeGatesMembersOnly Cards.lodgeGatesMembersOnly 2 (PerPlayer 1)

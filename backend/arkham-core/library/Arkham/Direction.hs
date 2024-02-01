@@ -9,10 +9,12 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 data Direction = Above | Below | LeftOf | RightOf
-  deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
+  deriving stock (Show, Eq, Ord, Enum, Bounded, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data GridDirection = GridUp | GridDown | GridLeft | GridRight
-  deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
+  deriving stock (Show, Eq, Ord, Enum, Bounded, Data, Generic)
+  deriving anyclass (NoThunks)
 
 oppositeDirection :: GridDirection -> GridDirection
 oppositeDirection = \case

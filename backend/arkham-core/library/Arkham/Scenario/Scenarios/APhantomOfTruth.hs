@@ -31,7 +31,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype APhantomOfTruth = APhantomOfTruth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aPhantomOfTruth :: Difficulty -> APhantomOfTruth
 aPhantomOfTruth difficulty =

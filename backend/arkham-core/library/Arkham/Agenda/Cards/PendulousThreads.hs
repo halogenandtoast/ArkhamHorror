@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype PendulousThreads = PendulousThreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pendulousThreads :: AgendaCard PendulousThreads
 pendulousThreads =

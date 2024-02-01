@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype ScroungeForSupplies = ScroungeForSupplies EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 scroungeForSupplies :: EventCard ScroungeForSupplies
 scroungeForSupplies = event ScroungeForSupplies Cards.scroungeForSupplies

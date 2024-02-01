@@ -15,7 +15,7 @@ import Arkham.Resolution
 
 newtype MadnessDies = MadnessDies AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 madnessDies :: AgendaCard MadnessDies
 madnessDies = agenda (3, A) MadnessDies Cards.madnessDies (Static 9)

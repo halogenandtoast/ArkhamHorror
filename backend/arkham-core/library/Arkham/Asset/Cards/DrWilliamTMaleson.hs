@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 drWilliamTMaleson :: AssetCard DrWilliamTMaleson
 drWilliamTMaleson = ally DrWilliamTMaleson Cards.drWilliamTMaleson (2, 2)

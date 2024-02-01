@@ -12,7 +12,7 @@ import Arkham.Window qualified as Window
 
 newtype DiscOfItzamna = DiscOfItzamna AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 discOfItzamna :: AssetCard DiscOfItzamna
 discOfItzamna = asset DiscOfItzamna Cards.discOfItzamna

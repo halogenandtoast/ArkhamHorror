@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Encore = Encore AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 encore :: AgendaCard Encore
 encore = agenda (2, A) Encore Cards.encore (Static 6)

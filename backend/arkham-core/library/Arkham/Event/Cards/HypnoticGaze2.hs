@@ -22,11 +22,11 @@ import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype HypnoticGaze2 = HypnoticGaze2 (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hypnoticGaze2 :: EventCard HypnoticGaze2
 hypnoticGaze2 =

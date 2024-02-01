@@ -16,7 +16,7 @@ data CampaignStep
   | InvestigatorCampaignStep InvestigatorId CampaignStep
   | ResupplyPoint
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data InterludeKey
   = DanielSurvived
@@ -28,4 +28,4 @@ data InterludeKey
   | ThePriceOfProgress5
   | ThePriceOfProgress6
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)

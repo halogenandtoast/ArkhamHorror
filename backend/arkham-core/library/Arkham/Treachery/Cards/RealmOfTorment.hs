@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype RealmOfTorment = RealmOfTorment TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 realmOfTorment :: TreacheryCard RealmOfTorment
 realmOfTorment = treachery RealmOfTorment Cards.realmOfTorment

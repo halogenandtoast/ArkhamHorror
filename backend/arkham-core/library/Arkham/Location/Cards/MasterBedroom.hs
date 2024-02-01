@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype MasterBedroom = MasterBedroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 masterBedroom :: LocationCard MasterBedroom
 masterBedroom = location MasterBedroom Cards.masterBedroom 3 (PerPlayer 1)

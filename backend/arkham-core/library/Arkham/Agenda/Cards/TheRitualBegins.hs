@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theRitualBegins :: AgendaCard TheRitualBegins
 theRitualBegins =

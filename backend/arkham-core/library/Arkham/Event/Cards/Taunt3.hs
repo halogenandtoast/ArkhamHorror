@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype Taunt3 = Taunt3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 taunt3 :: EventCard Taunt3
 taunt3 = event Taunt3 Cards.taunt3

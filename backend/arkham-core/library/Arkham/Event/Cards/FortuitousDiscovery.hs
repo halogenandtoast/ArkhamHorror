@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype FortuitousDiscovery = FortuitousDiscovery EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fortuitousDiscovery :: EventCard FortuitousDiscovery
 fortuitousDiscovery =

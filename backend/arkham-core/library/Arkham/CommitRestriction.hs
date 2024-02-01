@@ -20,6 +20,7 @@ data CommitRestriction
   | OnlyCardCommittedToTest
   | MustBeCommittedToYourTest
   | OnlyInvestigator InvestigatorMatcher
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''CommitRestriction)

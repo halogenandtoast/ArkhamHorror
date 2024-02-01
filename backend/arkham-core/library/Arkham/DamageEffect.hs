@@ -14,7 +14,8 @@ data DamageAssignment = DamageAssignment
   , damageAssignmentDirect :: Bool
   , damageAssignmentDelayed :: Bool
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 attack :: Sourceable a => a -> Int -> DamageAssignment
 attack a n =
@@ -56,7 +57,8 @@ data DamageEffect
   = AttackDamageEffect
   | NonAttackDamageEffect
   | StoryCardDamageEffect
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''DamageEffect)
 $(deriveJSON defaultOptions ''DamageAssignment)

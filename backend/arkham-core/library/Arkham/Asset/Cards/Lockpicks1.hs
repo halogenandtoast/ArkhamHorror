@@ -14,7 +14,7 @@ import Arkham.Investigate
 
 newtype Lockpicks1 = Lockpicks1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lockpicks1 :: AssetCard Lockpicks1
 lockpicks1 = asset Lockpicks1 Cards.lockpicks1
@@ -32,7 +32,7 @@ instance RunMessage Lockpicks1 where
 
 newtype Lockpicks1Effect = Lockpicks1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lockpicks1Effect :: EffectArgs -> Lockpicks1Effect
 lockpicks1Effect = Lockpicks1Effect . uncurry4 (baseAttrs "03031Effect")

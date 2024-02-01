@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Item))
 
 newtype AbleBodied = AbleBodied SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ableBodied :: SkillCard AbleBodied
 ableBodied =

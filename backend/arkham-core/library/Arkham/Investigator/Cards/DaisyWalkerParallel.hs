@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass (IsInvestigator)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 daisyWalkerParallel :: InvestigatorCard DaisyWalkerParallel
 daisyWalkerParallel =

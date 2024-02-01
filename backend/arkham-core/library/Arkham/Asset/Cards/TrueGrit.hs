@@ -12,7 +12,7 @@ import Arkham.Projection
 
 newtype TrueGrit = TrueGrit AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 trueGrit :: AssetCard TrueGrit
 trueGrit = assetWith TrueGrit Cards.trueGrit (healthL ?~ 3)

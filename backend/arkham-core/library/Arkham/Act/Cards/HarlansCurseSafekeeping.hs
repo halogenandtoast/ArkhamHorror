@@ -20,7 +20,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype HarlansCurseSafekeeping = HarlansCurseSafekeeping ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 harlansCurseSafekeeping :: ActCard HarlansCurseSafekeeping
 harlansCurseSafekeeping =

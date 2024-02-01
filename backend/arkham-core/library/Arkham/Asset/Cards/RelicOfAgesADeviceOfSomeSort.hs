@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype RelicOfAgesADeviceOfSomeSort = RelicOfAgesADeviceOfSomeSort AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 relicOfAgesADeviceOfSomeSort :: AssetCard RelicOfAgesADeviceOfSomeSort
 relicOfAgesADeviceOfSomeSort =

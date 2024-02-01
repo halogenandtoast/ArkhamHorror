@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype ThroughTheGates = ThroughTheGates TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 throughTheGates :: TreacheryCard ThroughTheGates
 throughTheGates = treachery ThroughTheGates Cards.throughTheGates

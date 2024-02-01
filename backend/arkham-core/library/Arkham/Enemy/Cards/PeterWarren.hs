@@ -13,7 +13,7 @@ import Arkham.Enemy.Runner
 
 newtype PeterWarren = PeterWarren EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 peterWarren :: EnemyCard PeterWarren
 peterWarren =

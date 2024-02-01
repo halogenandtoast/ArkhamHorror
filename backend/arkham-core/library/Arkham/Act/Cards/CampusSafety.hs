@@ -8,7 +8,7 @@ import Arkham.Classes
 
 newtype CampusSafety = CampusSafety ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 campusSafety :: ActCard CampusSafety
 campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing

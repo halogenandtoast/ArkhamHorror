@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype JosefMeiger = JosefMeiger EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 josefMeiger :: EnemyCard JosefMeiger
 josefMeiger = enemy JosefMeiger Cards.josefMeiger (3, Static 3, 3) (1, 1)

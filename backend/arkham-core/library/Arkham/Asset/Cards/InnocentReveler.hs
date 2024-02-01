@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype InnocentReveler = InnocentReveler AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 innocentReveler :: AssetCard InnocentReveler
 innocentReveler =

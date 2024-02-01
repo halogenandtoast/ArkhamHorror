@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype ForcedLearning = ForcedLearning AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 forcedLearning :: AssetCard ForcedLearning
 forcedLearning = asset ForcedLearning Cards.forcedLearning

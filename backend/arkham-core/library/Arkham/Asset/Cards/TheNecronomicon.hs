@@ -13,7 +13,7 @@ import Arkham.Token
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theNecronomicon :: AssetCard TheNecronomicon
 theNecronomicon =

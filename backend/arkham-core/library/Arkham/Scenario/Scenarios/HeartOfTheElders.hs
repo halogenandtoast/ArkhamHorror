@@ -41,18 +41,18 @@ import Arkham.Window qualified as Window
 
 data ScenarioStep = One | Two
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data Metadata = Metadata
   { scenarioStep :: ScenarioStep
   , reachedAct2 :: Bool
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype HeartOfTheElders = HeartOfTheElders (ScenarioAttrs `With` Metadata)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 heartOfTheElders :: Difficulty -> HeartOfTheElders
 heartOfTheElders difficulty =

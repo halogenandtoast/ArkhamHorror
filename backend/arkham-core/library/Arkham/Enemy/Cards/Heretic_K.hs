@@ -14,11 +14,11 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Metadata = Metadata {hasBeenRevealed :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype Heretic_K = Heretic_K (EnemyAttrs `With` Metadata)
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 heretic_K :: EnemyCard Heretic_K
 heretic_K = enemy (Heretic_K . (`with` Metadata False)) Cards.heretic_K (4, Static 2, 3) (1, 1)

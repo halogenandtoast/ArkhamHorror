@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype Kleptomania = Kleptomania AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 kleptomania :: AssetCard Kleptomania
 kleptomania = asset Kleptomania Cards.kleptomania

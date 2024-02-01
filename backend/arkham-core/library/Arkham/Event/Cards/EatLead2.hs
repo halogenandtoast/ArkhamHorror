@@ -22,11 +22,11 @@ import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {asset :: Maybe AssetId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype EatLead2 = EatLead2 (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 eatLead2 :: EventCard EatLead2
 eatLead2 = event (EatLead2 . (`With` Metadata Nothing)) Cards.eatLead2

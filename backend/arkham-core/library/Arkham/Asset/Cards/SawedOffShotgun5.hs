@@ -13,7 +13,7 @@ import Arkham.EffectMetadata
 
 newtype SawedOffShotgun5 = SawedOffShotgun5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sawedOffShotgun5 :: AssetCard SawedOffShotgun5
 sawedOffShotgun5 = asset SawedOffShotgun5 Cards.sawedOffShotgun5

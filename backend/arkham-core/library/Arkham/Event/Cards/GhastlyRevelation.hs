@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype GhastlyRevelation = GhastlyRevelation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ghastlyRevelation :: EventCard GhastlyRevelation
 ghastlyRevelation = event GhastlyRevelation Cards.ghastlyRevelation

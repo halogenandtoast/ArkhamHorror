@@ -10,7 +10,7 @@ import Arkham.Matcher
 
 newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 disruptingTheRitual :: ActCard DisruptingTheRitual
 disruptingTheRitual =

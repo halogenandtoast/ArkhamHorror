@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype AngeredSpirits = AngeredSpirits TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 angeredSpirits :: TreacheryCard AngeredSpirits
 angeredSpirits = treachery AngeredSpirits Cards.angeredSpirits

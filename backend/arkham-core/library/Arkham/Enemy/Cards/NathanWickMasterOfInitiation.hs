@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype NathanWickMasterOfInitiation = NathanWickMasterOfInitiation EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 nathanWickMasterOfInitiation :: EnemyCard NathanWickMasterOfInitiation
 nathanWickMasterOfInitiation = enemy NathanWickMasterOfInitiation Cards.nathanWickMasterOfInitiation (3, Static 5, 4) (1, 1)

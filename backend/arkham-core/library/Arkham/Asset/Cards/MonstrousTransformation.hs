@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 monstrousTransformation :: AssetCard MonstrousTransformation
 monstrousTransformation =

@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype EnchantedWoodsMysticalForest = EnchantedWoodsMysticalForest LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 enchantedWoodsMysticalForest :: LocationCard EnchantedWoodsMysticalForest
 enchantedWoodsMysticalForest = location EnchantedWoodsMysticalForest Cards.enchantedWoodsMysticalForest 4 (PerPlayer 1)

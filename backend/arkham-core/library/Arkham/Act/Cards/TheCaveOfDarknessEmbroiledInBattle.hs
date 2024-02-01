@@ -21,7 +21,7 @@ import Arkham.Trait
 
 newtype TheCaveOfDarknessEmbroiledInBattle = TheCaveOfDarknessEmbroiledInBattle ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasAbilities TheCaveOfDarknessEmbroiledInBattle where
   getAbilities (TheCaveOfDarknessEmbroiledInBattle attrs) =

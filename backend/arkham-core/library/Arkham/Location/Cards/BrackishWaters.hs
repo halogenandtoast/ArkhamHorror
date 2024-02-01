@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype BrackishWaters = BrackishWaters LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 brackishWaters :: LocationCard BrackishWaters
 brackishWaters = location BrackishWaters Cards.brackishWaters 1 (Static 0)

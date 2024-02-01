@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RuinsOfCarcosaInhabitantOfCarcosa = RuinsOfCarcosaInhabitantOfCarcosa LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ruinsOfCarcosaInhabitantOfCarcosa
   :: LocationCard RuinsOfCarcosaInhabitantOfCarcosa

@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 zoeySamaras :: InvestigatorCard ZoeySamaras
 zoeySamaras =

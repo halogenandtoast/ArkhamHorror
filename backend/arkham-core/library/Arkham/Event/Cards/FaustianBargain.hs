@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype FaustianBargain = FaustianBargain EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 faustianBargain :: EventCard FaustianBargain
 faustianBargain = event FaustianBargain Cards.faustianBargain

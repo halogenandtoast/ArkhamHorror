@@ -24,7 +24,7 @@ import Arkham.Timing qualified as Timing
 
 newtype InfiltratingTheLodge = InfiltratingTheLodge ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 infiltratingTheLodge :: ActCard InfiltratingTheLodge
 infiltratingTheLodge =
@@ -77,7 +77,7 @@ instance RunMessage InfiltratingTheLodge where
 
 newtype InfiltratingTheLodgeEffect = InfiltratingTheLodgeEffect EffectAttrs
   deriving anyclass (HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasAbilities InfiltratingTheLodgeEffect where
   getAbilities (InfiltratingTheLodgeEffect attrs) =

@@ -16,7 +16,7 @@ import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype ATearInReality = ATearInReality AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aTearInReality :: AgendaCard ATearInReality
 aTearInReality = agenda (1, A) ATearInReality Cards.aTearInReality (Static 4)

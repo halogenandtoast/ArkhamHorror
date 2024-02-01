@@ -14,7 +14,7 @@ data ClassSymbol
   | Neutral
   | Mythos
   deriving stock (Show, Eq, Generic, Bounded, Enum, Ord, Data)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON, Hashable, NoThunks)
 
 instance IsLabel "neutral" ClassSymbol where
   fromLabel = Neutral

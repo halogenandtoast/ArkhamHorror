@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 psychopompsSong :: TreacheryCard PsychopompsSong
 psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong

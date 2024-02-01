@@ -11,7 +11,7 @@ import Arkham.Projection
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 acolyteOfUmordhoth :: EnemyCard AcolyteOfUmordhoth
 acolyteOfUmordhoth =

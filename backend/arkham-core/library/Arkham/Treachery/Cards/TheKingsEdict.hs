@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype TheKingsEdict = TheKingsEdict TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theKingsEdict :: TreacheryCard TheKingsEdict
 theKingsEdict = treachery TheKingsEdict Cards.theKingsEdict

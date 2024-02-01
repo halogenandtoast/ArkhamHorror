@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype PhysicalTraining4 = PhysicalTraining4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 physicalTraining4 :: AssetCard PhysicalTraining4
 physicalTraining4 = asset PhysicalTraining4 Cards.physicalTraining4

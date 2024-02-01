@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype TorturousChords = TorturousChords TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 torturousChords :: TreacheryCard TorturousChords
 torturousChords = treachery TorturousChords Cards.torturousChords

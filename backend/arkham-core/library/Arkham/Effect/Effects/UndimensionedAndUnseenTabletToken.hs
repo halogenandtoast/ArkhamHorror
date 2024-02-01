@@ -17,7 +17,7 @@ import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype UndimensionedAndUnseenTabletToken = UndimensionedAndUnseenTabletToken EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 undimensionedAndUnseenTabletToken
   :: EffectArgs -> UndimensionedAndUnseenTabletToken

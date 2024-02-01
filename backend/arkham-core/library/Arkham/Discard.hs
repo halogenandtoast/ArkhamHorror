@@ -9,7 +9,7 @@ import Arkham.Target
 
 data DiscardStrategy = DiscardChoose | DiscardRandom
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data HandDiscard msg = HandDiscard
   { discardStrategy :: DiscardStrategy
@@ -21,4 +21,4 @@ data HandDiscard msg = HandDiscard
   , discardThen :: Maybe msg
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)

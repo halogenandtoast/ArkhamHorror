@@ -19,7 +19,7 @@ import Arkham.Projection
 
 newtype Room245 = Room245 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 room245 :: LocationCard Room245
 room245 = locationWith Room245 Cards.room245 2 (PerPlayer 1) (labelL .~ "room245")

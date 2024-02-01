@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ReturnToAttic = ReturnToAttic LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 returnToAttic :: LocationCard ReturnToAttic
 returnToAttic = location ReturnToAttic Cards.returnToAttic 3 (PerPlayer 1)

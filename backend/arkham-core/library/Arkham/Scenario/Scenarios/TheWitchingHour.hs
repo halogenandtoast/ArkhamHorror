@@ -35,7 +35,7 @@ import Data.Map.Strict qualified as Map
 
 newtype TheWitchingHour = TheWitchingHour ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theWitchingHour :: Difficulty -> TheWitchingHour
 theWitchingHour difficulty =

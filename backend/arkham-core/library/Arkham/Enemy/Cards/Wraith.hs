@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 
 newtype Wraith = Wraith EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 wraith :: EnemyCard Wraith
 wraith = enemy Wraith Cards.wraith (2, Static 2, 2) (0, 2)

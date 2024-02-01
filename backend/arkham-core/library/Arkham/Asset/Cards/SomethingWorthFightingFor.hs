@@ -12,7 +12,7 @@ import Arkham.Projection
 
 newtype SomethingWorthFightingFor = SomethingWorthFightingFor AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 somethingWorthFightingFor :: AssetCard SomethingWorthFightingFor
 somethingWorthFightingFor =

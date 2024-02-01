@@ -27,6 +27,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -55,6 +56,7 @@ data SkillAttrs = SkillAttrs
   , skillPlacement :: Placement
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance HasField "controller" SkillAttrs InvestigatorId where
   getField = skillOwner
@@ -135,6 +137,11 @@ skill f cardDef =
     }
 
 data Skill = forall a. IsSkill a => Skill a
+
+instance NoThunks Skill where
+  noThunks ctx (Skill a) = noThunks ctx a
+  wNoThunks ctx (Skill a) = wNoThunks ctx a
+  showTypeOf _ = "Skill"
 
 instance Eq Skill where
   Skill (a :: a) == Skill (b :: b) = case eqT @a @b of

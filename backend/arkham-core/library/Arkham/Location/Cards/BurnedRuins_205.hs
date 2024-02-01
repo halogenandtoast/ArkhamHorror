@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BurnedRuins_205 = BurnedRuins_205 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 burnedRuins_205 :: LocationCard BurnedRuins_205
 burnedRuins_205 = location BurnedRuins_205 Cards.burnedRuins_205 2 (Static 3)

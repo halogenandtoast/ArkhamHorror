@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AllIsOne = AllIsOne AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 allIsOne :: AgendaCard AllIsOne
 allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)

@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype MysteriousRaven = MysteriousRaven AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mysteriousRaven :: AssetCard MysteriousRaven
 mysteriousRaven =

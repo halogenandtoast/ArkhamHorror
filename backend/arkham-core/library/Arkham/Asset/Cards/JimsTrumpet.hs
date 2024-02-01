@@ -11,7 +11,7 @@ import Arkham.Prelude
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jimsTrumpet :: AssetCard JimsTrumpet
 jimsTrumpet = asset JimsTrumpet Cards.jimsTrumpet

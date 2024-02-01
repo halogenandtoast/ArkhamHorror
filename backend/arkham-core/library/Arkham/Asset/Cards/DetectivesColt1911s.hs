@@ -20,7 +20,7 @@ import Arkham.Trait (Trait (Insight, Tool))
 
 newtype DetectivesColt1911s = DetectivesColt1911s AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 detectivesColt1911s :: AssetCard DetectivesColt1911s
 detectivesColt1911s = asset DetectivesColt1911s Cards.detectivesColt1911s

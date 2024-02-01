@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype ThePaintedWorld = ThePaintedWorld EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thePaintedWorld :: EffectArgs -> ThePaintedWorld
 thePaintedWorld = ThePaintedWorld . uncurry4 (baseAttrs "03012")

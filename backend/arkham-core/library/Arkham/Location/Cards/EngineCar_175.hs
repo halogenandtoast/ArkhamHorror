@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype EngineCar_175 = EngineCar_175 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 engineCar_175 :: LocationCard EngineCar_175
 engineCar_175 =

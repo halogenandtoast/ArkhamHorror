@@ -12,7 +12,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype AgentsOfTheOuterGods = AgentsOfTheOuterGods AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 agentsOfTheOuterGods :: AgendaCard AgentsOfTheOuterGods
 agentsOfTheOuterGods = agenda (2, A) AgentsOfTheOuterGods Cards.agentsOfTheOuterGods (Static 9)

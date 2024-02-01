@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype AncestralFear = AncestralFear TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ancestralFear :: TreacheryCard AncestralFear
 ancestralFear = treachery AncestralFear Cards.ancestralFear

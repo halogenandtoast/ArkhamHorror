@@ -10,7 +10,7 @@ import Arkham.Story.Cards qualified as Stories
 
 newtype DrShivaniMaheswaran = DrShivaniMaheswaran AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 drShivaniMaheswaran :: AssetCard DrShivaniMaheswaran
 drShivaniMaheswaran = ally DrShivaniMaheswaran Cards.drShivaniMaheswaran (1, 3)

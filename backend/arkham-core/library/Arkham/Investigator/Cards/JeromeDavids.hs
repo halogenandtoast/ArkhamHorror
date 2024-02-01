@@ -19,7 +19,7 @@ import Arkham.Skill.Cards qualified as Cards
 newtype JeromeDavids = JeromeDavids InvestigatorAttrs
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
-  deriving newtype (Entity)
+  deriving newtype (Entity, NoThunks)
 
 jeromeDavids :: InvestigatorCard JeromeDavids
 jeromeDavids =

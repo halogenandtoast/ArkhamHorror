@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype TidalTerror = TidalTerror EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 tidalTerror :: EnemyCard TidalTerror
 tidalTerror =

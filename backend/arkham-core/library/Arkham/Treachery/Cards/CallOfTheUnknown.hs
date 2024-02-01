@@ -18,11 +18,11 @@ import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata {chosenLocation :: Maybe LocationId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype CallOfTheUnknown = CallOfTheUnknown (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 callOfTheUnknown :: TreacheryCard CallOfTheUnknown
 callOfTheUnknown =

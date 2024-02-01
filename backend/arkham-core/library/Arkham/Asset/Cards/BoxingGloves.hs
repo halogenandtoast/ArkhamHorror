@@ -12,7 +12,7 @@ import Arkham.Trait
 
 newtype BoxingGloves = BoxingGloves AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 boxingGloves :: AssetCard BoxingGloves
 boxingGloves = asset BoxingGloves Cards.boxingGloves

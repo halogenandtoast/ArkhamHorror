@@ -20,7 +20,7 @@ import Data.List qualified as List
 
 newtype WhatMustBeDone = WhatMustBeDone ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 whatMustBeDone :: ActCard WhatMustBeDone
 whatMustBeDone = act (3, A) WhatMustBeDone Cards.whatMustBeDone Nothing

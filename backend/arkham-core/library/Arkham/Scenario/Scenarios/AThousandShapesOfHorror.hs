@@ -13,7 +13,7 @@ import Arkham.Scenario.Runner
 
 newtype AThousandShapesOfHorror = AThousandShapesOfHorror ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aThousandShapesOfHorror :: Difficulty -> AThousandShapesOfHorror
 aThousandShapesOfHorror difficulty =

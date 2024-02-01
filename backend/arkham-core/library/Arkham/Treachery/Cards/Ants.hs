@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype Ants = Ants TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ants :: TreacheryCard Ants
 ants = treachery Ants Cards.ants

@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype VoiceOfTheJungle = VoiceOfTheJungle TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 voiceOfTheJungle :: TreacheryCard VoiceOfTheJungle
 voiceOfTheJungle = treachery VoiceOfTheJungle Cards.voiceOfTheJungle

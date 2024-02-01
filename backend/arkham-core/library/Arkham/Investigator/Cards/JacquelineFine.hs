@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype JacquelineFine = JacquelineFine InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jacquelineFine :: InvestigatorCard JacquelineFine
 jacquelineFine =

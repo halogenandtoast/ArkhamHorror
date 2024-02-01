@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RuinsOfEztli = RuinsOfEztli LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ruinsOfEztli :: LocationCard RuinsOfEztli
 ruinsOfEztli = location RuinsOfEztli Cards.ruinsOfEztli 3 (PerPlayer 2)

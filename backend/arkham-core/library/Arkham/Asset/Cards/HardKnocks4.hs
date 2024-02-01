@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype HardKnocks4 = HardKnocks4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hardKnocks4 :: AssetCard HardKnocks4
 hardKnocks4 = asset HardKnocks4 Cards.hardKnocks4

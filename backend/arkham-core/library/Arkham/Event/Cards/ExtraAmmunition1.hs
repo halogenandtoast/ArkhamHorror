@@ -12,7 +12,7 @@ import Arkham.Trait
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 extraAmmunition1 :: EventCard ExtraAmmunition1
 extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1

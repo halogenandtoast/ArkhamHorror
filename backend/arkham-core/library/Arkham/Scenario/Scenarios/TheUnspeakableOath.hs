@@ -37,7 +37,7 @@ import Arkham.Window qualified as Window
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theUnspeakableOath :: Difficulty -> TheUnspeakableOath
 theUnspeakableOath difficulty =

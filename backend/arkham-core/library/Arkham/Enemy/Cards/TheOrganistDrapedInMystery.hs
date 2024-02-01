@@ -15,7 +15,7 @@ import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasModifiersFor TheOrganistDrapedInMystery where
   getModifiersFor target (TheOrganistDrapedInMystery attrs) | isTarget attrs target = do

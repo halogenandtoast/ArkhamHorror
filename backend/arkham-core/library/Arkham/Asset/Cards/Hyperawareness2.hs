@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype Hyperawareness2 = Hyperawareness2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hyperawareness2 :: AssetCard Hyperawareness2
 hyperawareness2 = asset Hyperawareness2 Cards.hyperawareness2

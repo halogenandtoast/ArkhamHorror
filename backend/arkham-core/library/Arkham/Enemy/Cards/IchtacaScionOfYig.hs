@@ -21,7 +21,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype IchtacaScionOfYig = IchtacaScionOfYig EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ichtacaScionOfYig :: EnemyCard IchtacaScionOfYig
 ichtacaScionOfYig =
@@ -67,7 +67,7 @@ instance RunMessage IchtacaScionOfYig where
 
 newtype IchtacaScionOfYigEffect = IchtacaScionOfYigEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ichtacaScionOfYigEffect :: EffectArgs -> IchtacaScionOfYigEffect
 ichtacaScionOfYigEffect =

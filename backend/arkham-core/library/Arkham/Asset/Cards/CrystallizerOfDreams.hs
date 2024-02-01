@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype CrystallizerOfDreams = CrystallizerOfDreams AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crystallizerOfDreams :: AssetCard CrystallizerOfDreams
 crystallizerOfDreams = asset CrystallizerOfDreams Cards.crystallizerOfDreams

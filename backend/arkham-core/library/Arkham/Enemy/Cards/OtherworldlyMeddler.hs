@@ -15,7 +15,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype OtherworldlyMeddler = OtherworldlyMeddler EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 otherworldlyMeddler :: EnemyCard OtherworldlyMeddler
 otherworldlyMeddler = enemy OtherworldlyMeddler Cards.otherworldlyMeddler (4, PerPlayer 5, 3) (2, 2)

@@ -16,7 +16,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype BleakPlainsBleakDesolation = BleakPlainsBleakDesolation LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 bleakPlainsBleakDesolation :: LocationCard BleakPlainsBleakDesolation
 bleakPlainsBleakDesolation =

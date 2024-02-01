@@ -19,7 +19,7 @@ import Arkham.Trait (Trait (Spectral))
 
 newtype DeathsApproach = DeathsApproach AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 -- Errata: The text on this card should read: "Locations cannot be flipped to their non-spectral side"
 --

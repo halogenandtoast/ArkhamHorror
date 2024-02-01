@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Spell))
 
 newtype WordOfCommand2 = WordOfCommand2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wordOfCommand2 :: EventCard WordOfCommand2
 wordOfCommand2 = event WordOfCommand2 Cards.wordOfCommand2

@@ -266,11 +266,11 @@ startsWithInHand cards = fmap (overAttrs (startsWithInHandL <>~ cards))
 
 investigator
   :: (InvestigatorAttrs -> a) -> CardDef -> Stats -> CardBuilder PlayerId a
-investigator f cardDef Stats {..} =
-  let iid = InvestigatorId (cdCardCode cardDef)
+investigator f !cardDef !Stats {..} =
+  let !iid = InvestigatorId (cdCardCode cardDef)
    in CardBuilder
         { cbCardCode = cdCardCode cardDef
-        , cbCardBuilder = \_ pid ->
+        , cbCardBuilder = \_ !pid ->
             f
               $ InvestigatorAttrs
                 { investigatorId = iid

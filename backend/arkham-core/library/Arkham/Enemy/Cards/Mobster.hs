@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Mobster = Mobster EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mobster :: EnemyCard Mobster
 mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)

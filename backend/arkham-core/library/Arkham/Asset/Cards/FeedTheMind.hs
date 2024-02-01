@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype FeedTheMind = FeedTheMind AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 feedTheMind :: AssetCard FeedTheMind
 feedTheMind = asset FeedTheMind Cards.feedTheMind

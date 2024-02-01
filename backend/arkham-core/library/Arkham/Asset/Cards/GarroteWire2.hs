@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (DuringTurn)
 
 newtype GarroteWire2 = GarroteWire2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 garroteWire2 :: AssetCard GarroteWire2
 garroteWire2 = asset GarroteWire2 Cards.garroteWire2

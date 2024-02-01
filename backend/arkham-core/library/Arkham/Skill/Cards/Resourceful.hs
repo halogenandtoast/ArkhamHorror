@@ -15,7 +15,7 @@ import Arkham.Skill.Runner
 
 newtype Resourceful = Resourceful SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 resourceful :: SkillCard Resourceful
 resourceful = skill Resourceful Cards.resourceful

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype SnappedThreads = SnappedThreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 snappedThreads :: AgendaCard SnappedThreads
 snappedThreads = agenda (3, A) SnappedThreads Cards.snappedThreads (Static 12)

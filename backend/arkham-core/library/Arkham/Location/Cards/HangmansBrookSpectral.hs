@@ -18,7 +18,7 @@ import Arkham.Matcher
 
 newtype HangmansBrookSpectral = HangmansBrookSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hangmansBrookSpectral :: LocationCard HangmansBrookSpectral
 hangmansBrookSpectral = location HangmansBrookSpectral Cards.hangmansBrookSpectral 1 (Static 0)

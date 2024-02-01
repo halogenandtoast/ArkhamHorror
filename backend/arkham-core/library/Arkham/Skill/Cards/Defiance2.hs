@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype Defiance2 = Defiance2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 defiance2 :: SkillCard Defiance2
 defiance2 = skill Defiance2 Cards.defiance2
@@ -34,7 +34,7 @@ instance RunMessage Defiance2 where
 
 newtype Defiance2Effect = Defiance2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 defiance2Effect :: EffectArgs -> Defiance2Effect
 defiance2Effect = cardEffect Defiance2Effect Cards.defiance2

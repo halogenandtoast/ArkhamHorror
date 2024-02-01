@@ -39,7 +39,7 @@ import Arkham.Window qualified as Window
 
 newtype TurnBackTime = TurnBackTime ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 turnBackTime :: Difficulty -> TurnBackTime
 turnBackTime difficulty =

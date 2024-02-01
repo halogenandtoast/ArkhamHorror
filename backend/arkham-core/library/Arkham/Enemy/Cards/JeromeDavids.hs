@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype JeromeDavids = JeromeDavids EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jeromeDavids :: EnemyCard JeromeDavids
 jeromeDavids = enemy JeromeDavids Cards.jeromeDavids (4, Static 4, 4) (1, 1)

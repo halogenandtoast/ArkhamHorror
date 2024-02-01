@@ -16,11 +16,11 @@ import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {beingDiscarded :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype OnYourOwn3 = OnYourOwn3 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 onYourOwn3 :: AssetCard OnYourOwn3
 onYourOwn3 = asset (OnYourOwn3 . (`with` Metadata False)) Cards.onYourOwn3

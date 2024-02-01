@@ -13,7 +13,7 @@ import Arkham.Resolution
 
 newtype Dormitories = Dormitories LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dormitories :: LocationCard Dormitories
 dormitories = location Dormitories Cards.dormitories 1 (PerPlayer 3)

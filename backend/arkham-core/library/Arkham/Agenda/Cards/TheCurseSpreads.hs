@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype TheCurseSpreads = TheCurseSpreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theCurseSpreads :: AgendaCard TheCurseSpreads
 theCurseSpreads = agenda (3, A) TheCurseSpreads Cards.theCurseSpreads (Static 8)

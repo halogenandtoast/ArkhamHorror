@@ -14,7 +14,7 @@ import Arkham.Token
 
 newtype JessicaHyde1 = JessicaHyde1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jessicaHyde1 :: AssetCard JessicaHyde1
 jessicaHyde1 =

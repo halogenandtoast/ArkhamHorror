@@ -20,7 +20,7 @@ import Arkham.Treachery.Runner
 
 newtype SpectralMist = SpectralMist TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 spectralMist :: TreacheryCard SpectralMist
 spectralMist = treachery SpectralMist Cards.spectralMist

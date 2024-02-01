@@ -14,7 +14,7 @@ import Arkham.Placement
 
 newtype TheBarrier = TheBarrier ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theBarrier :: ActCard TheBarrier
 theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing

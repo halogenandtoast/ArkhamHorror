@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype CursedShores = CursedShores LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cursedShores :: LocationCard CursedShores
 cursedShores = location CursedShores Cards.cursedShores 1 (Static 0)

@@ -13,7 +13,7 @@ import Arkham.Resolution
 
 newtype TimeCollapsing = TimeCollapsing AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 timeCollapsing :: AgendaCard TimeCollapsing
 timeCollapsing = agenda (3, A) TimeCollapsing Cards.timeCollapsing (Static 6)

@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype CrystalPillars = CrystalPillars LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crystalPillars :: LocationCard CrystalPillars
 crystalPillars = location CrystalPillars Cards.crystalPillars 1 (PerPlayer 2)

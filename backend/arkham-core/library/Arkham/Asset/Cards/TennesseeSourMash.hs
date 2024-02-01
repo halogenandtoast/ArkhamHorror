@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype TennesseeSourMash = TennesseeSourMash AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tennesseeSourMash :: AssetCard TennesseeSourMash
 tennesseeSourMash = asset TennesseeSourMash Cards.tennesseeSourMash

@@ -13,11 +13,11 @@ import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata {moveAfterTest :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype UrsulaDowns = UrsulaDowns (InvestigatorAttrs `With` Metadata)
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ursulaDowns :: InvestigatorCard UrsulaDowns
 ursulaDowns =

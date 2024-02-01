@@ -11,7 +11,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Kadatheron = Kadatheron LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 kadatheron :: LocationCard Kadatheron
 kadatheron = locationWith Kadatheron Cards.kadatheron 5 (PerPlayer 1) (canBeFlippedL .~ True)

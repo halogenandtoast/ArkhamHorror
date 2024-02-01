@@ -14,7 +14,8 @@ data SlotType
   | AccessorySlot
   | ArcaneSlot
   | TarotSlot
-  deriving stock (Show, Ord, Eq, Bounded, Enum, Data)
+  deriving stock (Show, Ord, Eq, Bounded, Enum, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance IsLabel "hand" SlotType where
   fromLabel = HandSlot

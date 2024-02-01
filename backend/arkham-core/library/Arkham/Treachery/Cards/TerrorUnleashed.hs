@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype TerrorUnleashed = TerrorUnleashed TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 terrorUnleashed :: TreacheryCard TerrorUnleashed
 terrorUnleashed = treachery TerrorUnleashed Cards.terrorUnleashed

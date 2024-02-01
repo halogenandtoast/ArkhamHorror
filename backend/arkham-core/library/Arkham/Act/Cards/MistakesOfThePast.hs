@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype MistakesOfThePast = MistakesOfThePast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 mistakesOfThePast :: ActCard MistakesOfThePast
 mistakesOfThePast =

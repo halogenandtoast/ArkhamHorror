@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Relic, Spectral, Spell))
 
 newtype MalevolentSpirit = MalevolentSpirit EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 malevolentSpirit :: EnemyCard MalevolentSpirit
 malevolentSpirit =

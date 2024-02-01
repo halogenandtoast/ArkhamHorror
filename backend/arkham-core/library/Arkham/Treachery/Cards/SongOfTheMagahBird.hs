@@ -8,7 +8,7 @@ import Arkham.Treachery.Runner
 
 newtype SongOfTheMagahBird = SongOfTheMagahBird TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 songOfTheMagahBird :: TreacheryCard SongOfTheMagahBird
 songOfTheMagahBird = treachery SongOfTheMagahBird Cards.songOfTheMagahBird

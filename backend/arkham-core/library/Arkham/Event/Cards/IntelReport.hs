@@ -20,7 +20,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype IntelReport = IntelReport EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 intelReport :: EventCard IntelReport
 intelReport = event IntelReport Cards.intelReport

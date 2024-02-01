@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype Psychosis = Psychosis TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 psychosis :: TreacheryCard Psychosis
 psychosis = treachery Psychosis Cards.psychosis

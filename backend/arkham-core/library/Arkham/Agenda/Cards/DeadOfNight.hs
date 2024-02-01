@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype DeadOfNight = DeadOfNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 deadOfNight :: AgendaCard DeadOfNight
 deadOfNight = agenda (2, A) DeadOfNight Cards.deadOfNight (Static 3)

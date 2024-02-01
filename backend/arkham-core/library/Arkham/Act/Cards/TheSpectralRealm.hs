@@ -12,7 +12,7 @@ import Arkham.Matcher hiding (RevealLocation)
 
 newtype TheSpectralRealm = TheSpectralRealm ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 theSpectralRealm :: ActCard TheSpectralRealm
 theSpectralRealm =

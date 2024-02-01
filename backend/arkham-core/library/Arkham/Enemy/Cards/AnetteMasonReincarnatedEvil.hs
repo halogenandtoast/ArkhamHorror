@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AnetteMasonReincarnatedEvil = AnetteMasonReincarnatedEvil EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 anetteMasonReincarnatedEvil :: EnemyCard AnetteMasonReincarnatedEvil
 anetteMasonReincarnatedEvil =

@@ -20,7 +20,7 @@ data Slot
   = Slot {source :: Source, assets :: [AssetId]}
   | RestrictedSlot {source :: Source, matcher :: CardMatcher, assets :: [AssetId]}
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 slotSource :: Slot -> Source
 slotSource (Slot source _) = source

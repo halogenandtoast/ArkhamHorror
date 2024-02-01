@@ -22,7 +22,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleDecayedWillow = UnvisitedIsleDecayedWillow LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unvisitedIsleDecayedWillow :: LocationCard UnvisitedIsleDecayedWillow
 unvisitedIsleDecayedWillow = location UnvisitedIsleDecayedWillow Cards.unvisitedIsleDecayedWillow 4 (PerPlayer 2)

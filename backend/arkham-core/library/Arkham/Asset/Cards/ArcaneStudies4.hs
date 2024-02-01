@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype ArcaneStudies4 = ArcaneStudies4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arcaneStudies4 :: AssetCard ArcaneStudies4
 arcaneStudies4 = asset ArcaneStudies4 Cards.arcaneStudies4

@@ -17,7 +17,7 @@ import Arkham.SkillType ()
 
 newtype FrenchHill_290 = FrenchHill_290 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 frenchHill_290 :: LocationCard FrenchHill_290
 frenchHill_290 = location FrenchHill_290 Cards.frenchHill_290 3 (Static 0)

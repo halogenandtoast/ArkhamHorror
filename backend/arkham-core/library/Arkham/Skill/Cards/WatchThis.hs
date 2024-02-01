@@ -13,7 +13,7 @@ import Arkham.Skill.Runner
 
 newtype WatchThis = WatchThis SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 watchThis :: SkillCard WatchThis
 watchThis =

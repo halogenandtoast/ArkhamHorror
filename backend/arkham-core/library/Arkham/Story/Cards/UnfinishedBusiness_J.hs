@@ -23,7 +23,7 @@ import Arkham.Trait (Trait (Spectral))
 
 newtype UnfinishedBusiness_J = UnfinishedBusiness_J StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unfinishedBusiness_J :: StoryCard UnfinishedBusiness_J
 unfinishedBusiness_J = story UnfinishedBusiness_J Cards.unfinishedBusiness_J
@@ -72,7 +72,7 @@ instance RunMessage UnfinishedBusiness_J where
 
 newtype UnfinishedBusiness_JEffect = UnfinishedBusiness_JEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unfinishedBusiness_JEffect :: EffectArgs -> UnfinishedBusiness_JEffect
 unfinishedBusiness_JEffect = cardEffect UnfinishedBusiness_JEffect Cards.unfinishedBusiness_J

@@ -11,7 +11,7 @@ import Arkham.Window (getBatchId)
 
 newtype SkaiRiver = SkaiRiver LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 skaiRiver :: LocationCard SkaiRiver
 skaiRiver = locationWith SkaiRiver Cards.skaiRiver 2 (Static 0) (canBeFlippedL .~ True)

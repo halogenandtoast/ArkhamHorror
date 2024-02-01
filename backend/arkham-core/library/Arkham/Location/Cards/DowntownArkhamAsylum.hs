@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 downtownArkhamAsylum :: LocationCard DowntownArkhamAsylum
 downtownArkhamAsylum = location DowntownArkhamAsylum Cards.downtownArkhamAsylum 4 (PerPlayer 2)

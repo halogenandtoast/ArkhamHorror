@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype PayDay1 = PayDay1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 payDay1 :: EventCard PayDay1
 payDay1 = event PayDay1 Cards.payDay1

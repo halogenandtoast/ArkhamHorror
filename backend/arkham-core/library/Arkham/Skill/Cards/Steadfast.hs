@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype Steadfast = Steadfast SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 steadfast :: SkillCard Steadfast
 steadfast = skill Steadfast Cards.steadfast

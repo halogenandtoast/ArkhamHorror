@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 
 newtype TempleOfTheFang = TempleOfTheFang LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 templeOfTheFang :: LocationCard TempleOfTheFang
 templeOfTheFang =

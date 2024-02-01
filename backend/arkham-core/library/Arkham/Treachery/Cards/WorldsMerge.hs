@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype WorldsMerge = WorldsMerge TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 worldsMerge :: TreacheryCard WorldsMerge
 worldsMerge = treachery WorldsMerge Cards.worldsMerge

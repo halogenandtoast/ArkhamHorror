@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype TheNecronomiconPetrusDeDaciaTranslation5 = TheNecronomiconPetrusDeDaciaTranslation5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theNecronomiconPetrusDeDaciaTranslation5
   :: AssetCard TheNecronomiconPetrusDeDaciaTranslation5

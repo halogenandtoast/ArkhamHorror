@@ -16,7 +16,7 @@ import Arkham.Zone
 
 newtype SmuggledGoods = SmuggledGoods EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 smuggledGoods :: EventCard SmuggledGoods
 smuggledGoods = event SmuggledGoods Cards.smuggledGoods

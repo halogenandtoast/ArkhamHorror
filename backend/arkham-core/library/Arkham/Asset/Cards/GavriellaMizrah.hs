@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype GavriellaMizrah = GavriellaMizrah AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 gavriellaMizrah :: AssetCard GavriellaMizrah
 gavriellaMizrah = allyWith GavriellaMizrah Cards.gavriellaMizrah (4, 1) (isStoryL .~ True)

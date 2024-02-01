@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype StrangeSigns = StrangeSigns TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 strangeSigns :: TreacheryCard StrangeSigns
 strangeSigns = treachery StrangeSigns Cards.strangeSigns

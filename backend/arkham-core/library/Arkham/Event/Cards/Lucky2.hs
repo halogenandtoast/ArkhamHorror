@@ -9,7 +9,7 @@ import Arkham.Helpers.Modifiers
 
 newtype Lucky2 = Lucky2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lucky2 :: EventCard Lucky2
 lucky2 = event Lucky2 Cards.lucky2

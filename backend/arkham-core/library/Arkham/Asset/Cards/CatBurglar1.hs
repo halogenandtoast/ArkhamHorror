@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 catBurglar1 :: AssetCard CatBurglar1
 catBurglar1 = ally CatBurglar1 Cards.catBurglar1 (2, 2)

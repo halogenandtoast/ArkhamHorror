@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 inTheKnow1 :: AssetCard InTheKnow1
 inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1

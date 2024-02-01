@@ -30,6 +30,7 @@ class
   ( Typeable a
   , Show a
   , Eq a
+  , NoThunks a
   , ToJSON a
   , FromJSON a
   , HasModifiersFor a
@@ -64,6 +65,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance HasModifiersFor CampaignAttrs where
   getModifiersFor (InvestigatorTarget iid) attrs =
@@ -75,25 +77,25 @@ instance Sourceable CampaignAttrs where
 
 completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
-  lens campaignCompletedSteps $ \m x -> m {campaignCompletedSteps = x}
+  lens campaignCompletedSteps $ \m !x -> m {campaignCompletedSteps = x}
 
 chaosBagL :: Lens' CampaignAttrs [ChaosTokenFace]
-chaosBagL = lens campaignChaosBag $ \m x -> m {campaignChaosBag = x}
+chaosBagL = lens campaignChaosBag $ \m !x -> m {campaignChaosBag = x}
 
 storyCardsL :: Lens' CampaignAttrs (Map InvestigatorId [PlayerCard])
-storyCardsL = lens campaignStoryCards $ \m x -> m {campaignStoryCards = x}
+storyCardsL = lens campaignStoryCards $ \m !x -> m {campaignStoryCards = x}
 
 decksL :: Lens' CampaignAttrs (Map InvestigatorId (Deck PlayerCard))
-decksL = lens campaignDecks $ \m x -> m {campaignDecks = x}
+decksL = lens campaignDecks $ \m !x -> m {campaignDecks = x}
 
 logL :: Lens' CampaignAttrs CampaignLog
-logL = lens campaignLog $ \m x -> m {campaignLog = x}
+logL = lens campaignLog $ \m !x -> m {campaignLog = x}
 
 stepL :: Lens' CampaignAttrs CampaignStep
-stepL = lens campaignStep $ \m x -> m {campaignStep = x}
+stepL = lens campaignStep $ \m !x -> m {campaignStep = x}
 
 metaL :: Lens' CampaignAttrs Value
-metaL = lens campaignMeta $ \m x -> m {campaignMeta = x}
+metaL = lens campaignMeta $ \m !x -> m {campaignMeta = x}
 
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
@@ -132,21 +134,19 @@ instance FromJSON CampaignAttrs where
 
 addRandomBasicWeaknessIfNeeded
   :: MonadRandom m => Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
-addRandomBasicWeaknessIfNeeded playerCount deck = do
+addRandomBasicWeaknessIfNeeded !playerCount !deck = do
   let
     weaknessFilter =
       if playerCount < 2
         then notElem MultiplayerOnly . cdDeckRestrictions
         else const True
   runWriterT $ do
-    Deck <$> flip
-      filterM
-      (unDeck deck)
-      \card -> do
-        when
-          (toCardDef card == randomWeakness)
-          (sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses) >>= tell . pure)
-        pure $ toCardDef card /= randomWeakness
+    !deck' <- flip filterM (unDeck deck) \card -> do
+      when
+        (toCardDef card == randomWeakness)
+        (sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses) >>= tell . pure)
+      pure $ toCardDef card /= randomWeakness
+    pure $ Deck deck'
 
 campaignWith
   :: (CampaignAttrs -> a)
@@ -165,7 +165,7 @@ campaign
   -> Difficulty
   -> [ChaosTokenFace]
   -> a
-campaign f campaignId' name difficulty chaosBagContents =
+campaign f !campaignId' !name !difficulty !chaosBagContents =
   f
     $ CampaignAttrs
       { campaignId = campaignId'
@@ -187,12 +187,17 @@ instance Entity Campaign where
   type EntityAttrs Campaign = CampaignAttrs
   toId = toId . toAttrs
   toAttrs (Campaign a) = toAttrs a
-  overAttrs f (Campaign a) = Campaign $ overAttrs f a
+  overAttrs f (Campaign a) = let !result = overAttrs f a in Campaign result
 
 instance Targetable Campaign where
   toTarget _ = CampaignTarget
 
 data Campaign = forall a. IsCampaign a => Campaign a
+
+instance NoThunks Campaign where
+  noThunks ctx (Campaign a) = noThunks ctx a
+  wNoThunks ctx (Campaign a) = wNoThunks ctx a
+  showTypeOf _ = "Campaign"
 
 instance HasAbilities Campaign where
   getAbilities _ = []

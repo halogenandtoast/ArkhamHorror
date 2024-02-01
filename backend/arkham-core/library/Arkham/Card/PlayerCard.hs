@@ -23,7 +23,8 @@ data PlayerCard = MkPlayerCard
   , pcOriginalCardCode :: CardCode
   , pcCustomizations :: IntMap Int
   }
-  deriving stock (Show, Ord, Data)
+  deriving stock (Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2
@@ -51,7 +52,7 @@ instance HasOriginalCardCode PlayerCard where
   toOriginalCardCode = pcOriginalCardCode
 
 lookupPlayerCard :: CardDef -> CardId -> PlayerCard
-lookupPlayerCard cardDef cardId =
+lookupPlayerCard !cardDef !cardId =
   MkPlayerCard
     { pcId = cardId
     , pcCardCode = toCardCode cardDef
@@ -61,6 +62,6 @@ lookupPlayerCard cardDef cardId =
     }
 
 setPlayerCardOwner :: InvestigatorId -> PlayerCard -> PlayerCard
-setPlayerCardOwner iid pc = pc {pcOwner = Just iid}
+setPlayerCardOwner !iid !pc = pc {pcOwner = Just iid}
 
 $(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)

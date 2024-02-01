@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chaosInTheCloverClub :: AgendaCard ChaosInTheCloverClub
 chaosInTheCloverClub =

@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype WizardOfTheOrder = WizardOfTheOrder EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wizardOfTheOrder :: EnemyCard WizardOfTheOrder
 wizardOfTheOrder =

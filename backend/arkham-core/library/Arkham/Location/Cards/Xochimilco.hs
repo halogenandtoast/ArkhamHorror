@@ -11,7 +11,7 @@ import Arkham.Prelude
 
 newtype Xochimilco = Xochimilco LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 xochimilco :: LocationCard Xochimilco
 xochimilco =

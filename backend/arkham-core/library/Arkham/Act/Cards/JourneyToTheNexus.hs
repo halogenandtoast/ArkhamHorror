@@ -18,7 +18,7 @@ import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype JourneyToTheNexus = JourneyToTheNexus ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasAbilities JourneyToTheNexus where
   getAbilities (JourneyToTheNexus a) =

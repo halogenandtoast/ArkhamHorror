@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype Chainsaw4 = Chainsaw4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chainsaw4 :: AssetCard Chainsaw4
 chainsaw4 = asset Chainsaw4 Cards.chainsaw4

@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype CallToOrder = CallToOrder TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 callToOrder :: TreacheryCard CallToOrder
 callToOrder = treachery CallToOrder Cards.callToOrder

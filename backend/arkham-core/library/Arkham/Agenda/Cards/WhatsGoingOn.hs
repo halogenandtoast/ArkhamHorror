@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 whatsGoingOn :: AgendaCard WhatsGoingOn
 whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)

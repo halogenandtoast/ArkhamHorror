@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype Prophesy = Prophesy SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 prophesy :: SkillCard Prophesy
 prophesy =

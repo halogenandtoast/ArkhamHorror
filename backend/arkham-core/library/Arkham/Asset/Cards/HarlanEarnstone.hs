@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype HarlanEarnstone = HarlanEarnstone AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 harlanEarnstone :: AssetCard HarlanEarnstone
 harlanEarnstone = asset HarlanEarnstone Cards.harlanEarnstone

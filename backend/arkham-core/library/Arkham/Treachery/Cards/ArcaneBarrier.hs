@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arcaneBarrier :: TreacheryCard ArcaneBarrier
 arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
@@ -43,7 +43,7 @@ instance RunMessage ArcaneBarrier where
 
 newtype ArcaneBarrierEffect = ArcaneBarrierEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arcaneBarrierEffect :: EffectArgs -> ArcaneBarrierEffect
 arcaneBarrierEffect = cardEffect ArcaneBarrierEffect Cards.arcaneBarrier

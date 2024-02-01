@@ -9,7 +9,7 @@ import Arkham.Investigator.Runner
 
 newtype JimCulver = JimCulver InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jimCulver :: InvestigatorCard JimCulver
 jimCulver =

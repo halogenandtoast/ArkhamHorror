@@ -18,7 +18,7 @@ import Arkham.Investigate
 
 newtype Pilfer3 = Pilfer3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pilfer3 :: EventCard Pilfer3
 pilfer3 = event Pilfer3 Cards.pilfer3
@@ -39,7 +39,7 @@ instance RunMessage Pilfer3 where
 
 newtype Pilfer3Effect = Pilfer3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pilfer3Effect :: EffectArgs -> Pilfer3Effect
 pilfer3Effect = cardEffect Pilfer3Effect Cards.pilfer3

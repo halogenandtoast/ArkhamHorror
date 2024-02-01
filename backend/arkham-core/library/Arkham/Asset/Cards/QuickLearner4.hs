@@ -15,7 +15,7 @@ import Arkham.SkillTest.Base
 
 newtype QuickLearner4 = QuickLearner4 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 quickLearner4 :: AssetCard QuickLearner4
 quickLearner4 =

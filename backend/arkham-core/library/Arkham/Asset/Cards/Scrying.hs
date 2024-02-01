@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype Scrying = Scrying AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 scrying :: AssetCard Scrying
 scrying = asset Scrying Cards.scrying

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype MessHall = MessHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 messHall :: LocationCard MessHall
 messHall = location MessHall Cards.messHall 2 (PerPlayer 2)

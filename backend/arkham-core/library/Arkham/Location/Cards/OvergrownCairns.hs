@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype OvergrownCairns = OvergrownCairns LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 overgrownCairns :: LocationCard OvergrownCairns
 overgrownCairns = location OvergrownCairns Cards.overgrownCairns 4 (Static 0)

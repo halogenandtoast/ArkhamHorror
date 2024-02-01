@@ -14,7 +14,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AtTheExhibitTheBrotherhoodsPlot = AtTheExhibitTheBrotherhoodsPlot ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 atTheExhibitTheBrotherhoodsPlot :: ActCard AtTheExhibitTheBrotherhoodsPlot
 atTheExhibitTheBrotherhoodsPlot = act (2, A) AtTheExhibitTheBrotherhoodsPlot Cards.atTheExhibitTheBrotherhoodsPlot Nothing

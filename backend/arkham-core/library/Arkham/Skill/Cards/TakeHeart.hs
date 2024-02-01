@@ -12,7 +12,7 @@ import Arkham.Skill.Runner
 
 newtype TakeHeart = TakeHeart SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 takeHeart :: SkillCard TakeHeart
 takeHeart = skill TakeHeart Cards.takeHeart

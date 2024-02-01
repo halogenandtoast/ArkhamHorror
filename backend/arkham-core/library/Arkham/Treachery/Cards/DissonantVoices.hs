@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype DissonantVoices = DissonantVoices TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dissonantVoices :: TreacheryCard DissonantVoices
 dissonantVoices = treachery DissonantVoices Cards.dissonantVoices

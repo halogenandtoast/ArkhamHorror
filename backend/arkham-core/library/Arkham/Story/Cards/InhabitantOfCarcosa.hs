@@ -14,7 +14,7 @@ import Arkham.Story.Runner
 
 newtype InhabitantOfCarcosa = InhabitantOfCarcosa StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 inhabitantOfCarcosa :: StoryCard InhabitantOfCarcosa
 inhabitantOfCarcosa = story InhabitantOfCarcosa Cards.inhabitantOfCarcosa

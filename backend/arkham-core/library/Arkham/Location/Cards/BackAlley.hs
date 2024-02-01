@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype BackAlley = BackAlley LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 backAlley :: LocationCard BackAlley
 backAlley = location BackAlley Cards.backAlley 1 (PerPlayer 1)

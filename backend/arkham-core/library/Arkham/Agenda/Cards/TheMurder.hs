@@ -19,7 +19,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheMurder = TheMurder AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theMurder :: AgendaCard TheMurder
 theMurder = agenda (1, A) TheMurder Cards.theMurder (Static 3)

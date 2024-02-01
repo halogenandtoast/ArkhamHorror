@@ -17,7 +17,7 @@ import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 whateleyRuins_251 :: LocationCard WhateleyRuins_251
 whateleyRuins_251 = location WhateleyRuins_251 Cards.whateleyRuins_251 2 (PerPlayer 2)

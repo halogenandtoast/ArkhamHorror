@@ -27,6 +27,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -65,6 +66,7 @@ data EffectAttrs = EffectAttrs
   , effectExtraMetadata :: Value
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
@@ -162,6 +164,11 @@ instance Sourceable EffectAttrs where
   isSource _ _ = False
 
 data Effect = forall a. IsEffect a => Effect a
+
+instance NoThunks Effect where
+  noThunks ctx (Effect a) = noThunks ctx a
+  wNoThunks ctx (Effect a) = wNoThunks ctx a
+  showTypeOf _ = "Effect"
 
 instance Eq Effect where
   (Effect (a :: a)) == (Effect (b :: b)) = case eqT @a @b of

@@ -20,7 +20,7 @@ import Arkham.Window
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thePaintedWorld :: EventCard ThePaintedWorld
 thePaintedWorld = eventWith ThePaintedWorld Cards.thePaintedWorld $ afterPlayL .~ RemoveThisFromGame

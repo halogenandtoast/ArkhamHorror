@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype ChapelAtticSpectral_176 = ChapelAtticSpectral_176 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chapelAtticSpectral_176 :: LocationCard ChapelAtticSpectral_176
 chapelAtticSpectral_176 = location ChapelAtticSpectral_176 Cards.chapelAtticSpectral_176 8 (Static 0)

@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype FeedTheMind3 = FeedTheMind3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 feedTheMind3 :: AssetCard FeedTheMind3
 feedTheMind3 = asset FeedTheMind3 Cards.feedTheMind3

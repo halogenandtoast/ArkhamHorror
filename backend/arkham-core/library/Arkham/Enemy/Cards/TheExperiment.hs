@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype TheExperiment = TheExperiment EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theExperiment :: EnemyCard TheExperiment
 theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)

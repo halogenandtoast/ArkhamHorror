@@ -15,7 +15,7 @@ import Arkham.Story.Runner
 
 newtype TheArchway = TheArchway StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theArchway :: StoryCard TheArchway
 theArchway = story TheArchway Cards.theArchway

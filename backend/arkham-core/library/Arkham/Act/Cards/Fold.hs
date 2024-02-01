@@ -19,7 +19,7 @@ import Arkham.SkillType
 
 newtype Fold = Fold ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing

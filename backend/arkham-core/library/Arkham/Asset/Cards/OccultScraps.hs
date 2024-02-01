@@ -12,7 +12,7 @@ import Arkham.Placement
 
 newtype OccultScraps = OccultScraps AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 occultScraps :: AssetCard OccultScraps
 occultScraps = asset OccultScraps Cards.occultScraps

@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype AnotherDayAnotherDollar3 = AnotherDayAnotherDollar3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 anotherDayAnotherDollar3 :: AssetCard AnotherDayAnotherDollar3
 anotherDayAnotherDollar3 =

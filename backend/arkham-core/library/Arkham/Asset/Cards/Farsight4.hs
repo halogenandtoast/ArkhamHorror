@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype Farsight4 = Farsight4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 farsight4 :: AssetCard Farsight4
 farsight4 = asset Farsight4 Cards.farsight4

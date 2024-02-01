@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype ShellShock = ShellShock TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shellShock :: TreacheryCard ShellShock
 shellShock = treachery ShellShock Cards.shellShock

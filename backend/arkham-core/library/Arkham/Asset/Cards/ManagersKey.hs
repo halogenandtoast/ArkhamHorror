@@ -14,7 +14,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype ManagersKey = ManagersKey AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 managersKey :: AssetCard ManagersKey
 managersKey = asset ManagersKey Cards.managersKey

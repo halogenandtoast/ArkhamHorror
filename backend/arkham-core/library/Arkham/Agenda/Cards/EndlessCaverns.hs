@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype EndlessCaverns = EndlessCaverns AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 endlessCaverns :: AgendaCard EndlessCaverns
 endlessCaverns = agenda (3, A) EndlessCaverns Cards.endlessCaverns (Static 4)

@@ -9,7 +9,7 @@ import Arkham.Story.Runner
 
 newtype ThePalaceOfRainbows = ThePalaceOfRainbows StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thePalaceOfRainbows :: StoryCard ThePalaceOfRainbows
 thePalaceOfRainbows = story ThePalaceOfRainbows Cards.thePalaceOfRainbows

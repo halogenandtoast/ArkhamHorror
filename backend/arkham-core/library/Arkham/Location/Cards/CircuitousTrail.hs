@@ -18,7 +18,7 @@ import Data.Semigroup
 
 newtype CircuitousTrail = CircuitousTrail LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 circuitousTrail :: LocationCard CircuitousTrail
 circuitousTrail = location CircuitousTrail Cards.circuitousTrail 1 (PerPlayer 1)

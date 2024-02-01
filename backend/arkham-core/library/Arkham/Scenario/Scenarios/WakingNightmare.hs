@@ -27,7 +27,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype WakingNightmare = WakingNightmare ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wakingNightmare :: Difficulty -> WakingNightmare
 wakingNightmare difficulty =

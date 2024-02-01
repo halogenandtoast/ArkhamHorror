@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 data AgendaAdvancementReason = DoomThreshold
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''AgendaAdvancementReason)

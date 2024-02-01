@@ -37,7 +37,7 @@ import Data.IntMap.Strict qualified as IntMap
 
 newtype ThreadsOfFate = ThreadsOfFate ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 threadsOfFate :: Difficulty -> ThreadsOfFate
 threadsOfFate difficulty =

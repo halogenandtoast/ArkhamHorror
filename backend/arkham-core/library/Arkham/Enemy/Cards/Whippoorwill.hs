@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 whippoorwill :: EnemyCard Whippoorwill
 whippoorwill = enemy Whippoorwill Cards.whippoorwill (2, Static 1, 4) (0, 1)

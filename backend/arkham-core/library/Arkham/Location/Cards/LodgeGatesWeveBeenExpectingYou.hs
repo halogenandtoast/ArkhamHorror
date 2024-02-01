@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype LodgeGatesWeveBeenExpectingYou = LodgeGatesWeveBeenExpectingYou LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lodgeGatesWeveBeenExpectingYou :: LocationCard LodgeGatesWeveBeenExpectingYou
 lodgeGatesWeveBeenExpectingYou = location LodgeGatesWeveBeenExpectingYou Cards.lodgeGatesWeveBeenExpectingYou 2 (Static 0)

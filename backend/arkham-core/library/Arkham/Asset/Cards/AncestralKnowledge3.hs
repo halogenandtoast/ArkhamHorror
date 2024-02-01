@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AncestralKnowledge3 = AncestralKnowledge3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ancestralKnowledge3 :: AssetCard AncestralKnowledge3
 ancestralKnowledge3 = asset AncestralKnowledge3 Cards.ancestralKnowledge3

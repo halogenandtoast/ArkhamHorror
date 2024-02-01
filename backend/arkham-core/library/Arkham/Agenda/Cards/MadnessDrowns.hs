@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype MadnessDrowns = MadnessDrowns AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 madnessDrowns :: AgendaCard MadnessDrowns
 madnessDrowns = agenda (2, A) MadnessDrowns Cards.madnessDrowns (Static 7)

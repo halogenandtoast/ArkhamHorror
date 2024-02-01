@@ -20,7 +20,7 @@ import Arkham.Scenarios.TheMidnightMasks.Story
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, Eq)
 
 returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
 returnToTheMidnightMasks difficulty =

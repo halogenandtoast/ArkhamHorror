@@ -15,7 +15,7 @@ import Arkham.Token
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 corpseTaker :: EnemyCard CorpseTaker
 corpseTaker =

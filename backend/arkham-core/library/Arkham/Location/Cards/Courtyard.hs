@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Courtyard = Courtyard LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 courtyard :: LocationCard Courtyard
 courtyard = location Courtyard Cards.courtyard 5 (Static 0)

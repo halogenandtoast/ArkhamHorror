@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype TheCouncilsCoffer2 = TheCouncilsCoffer2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theCouncilsCoffer2 :: AssetCard TheCouncilsCoffer2
 theCouncilsCoffer2 = asset TheCouncilsCoffer2 Cards.theCouncilsCoffer2

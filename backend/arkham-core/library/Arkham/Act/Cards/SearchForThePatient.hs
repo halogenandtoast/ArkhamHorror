@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype SearchForThePatient = SearchForThePatient ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 searchForThePatient :: ActCard SearchForThePatient
 searchForThePatient = act (2, A) SearchForThePatient Cards.searchForThePatient Nothing

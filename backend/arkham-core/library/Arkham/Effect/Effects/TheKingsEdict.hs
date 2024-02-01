@@ -13,20 +13,16 @@ import Arkham.Projection
 
 newtype TheKingsEdict = TheKingsEdict EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theKingsEdict :: EffectArgs -> TheKingsEdict
 theKingsEdict = TheKingsEdict . uncurry4 (baseAttrs "03100")
 
 instance HasModifiersFor TheKingsEdict where
-  getModifiersFor target@(EnemyTarget eid) (TheKingsEdict a)
-    | target == effectTarget a = do
-        clueCount <- field EnemyClues eid
-        doomCount <- field EnemyDoom eid
-        pure
-          $ toModifiers
-            a
-            [EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0]
+  getModifiersFor target@(EnemyTarget eid) (TheKingsEdict a) | target == effectTarget a = do
+    clueCount <- field EnemyClues eid
+    doomCount <- field EnemyDoom eid
+    pure $ toModifiers a [EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheKingsEdict where

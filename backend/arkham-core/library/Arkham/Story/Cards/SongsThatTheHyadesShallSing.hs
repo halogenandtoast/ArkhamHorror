@@ -14,7 +14,7 @@ import Arkham.Story.Runner
 
 newtype SongsThatTheHyadesShallSing = SongsThatTheHyadesShallSing StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 songsThatTheHyadesShallSing :: StoryCard SongsThatTheHyadesShallSing
 songsThatTheHyadesShallSing = story SongsThatTheHyadesShallSing Cards.songsThatTheHyadesShallSing

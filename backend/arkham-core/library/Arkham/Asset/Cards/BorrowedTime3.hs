@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BorrowedTime3 = BorrowedTime3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 borrowedTime3 :: AssetCard BorrowedTime3
 borrowedTime3 = asset BorrowedTime3 Cards.borrowedTime3

@@ -11,7 +11,7 @@ import Arkham.Effect.Runner
 
 newtype Deduction2 = Deduction2 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 deduction2 :: EffectArgs -> Deduction2
 deduction2 = Deduction2 . uncurry4 (baseAttrs "02150")

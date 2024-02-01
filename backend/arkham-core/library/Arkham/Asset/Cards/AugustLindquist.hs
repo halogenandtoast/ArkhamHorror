@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype AugustLindquist = AugustLindquist AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 augustLindquist :: AssetCard AugustLindquist
 augustLindquist =

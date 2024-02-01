@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype GraveLightSpectral = GraveLightSpectral TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 graveLightSpectral :: TreacheryCard GraveLightSpectral
 graveLightSpectral = treachery GraveLightSpectral Cards.graveLightSpectral

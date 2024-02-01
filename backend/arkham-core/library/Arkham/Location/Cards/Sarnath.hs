@@ -12,7 +12,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Sarnath = Sarnath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sarnath :: LocationCard Sarnath
 sarnath = locationWith Sarnath Cards.sarnath 3 (PerPlayer 1) (canBeFlippedL .~ True)

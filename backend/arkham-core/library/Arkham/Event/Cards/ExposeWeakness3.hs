@@ -19,7 +19,7 @@ import Arkham.SkillType
 
 newtype ExposeWeakness3 = ExposeWeakness3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 exposeWeakness3 :: EventCard ExposeWeakness3
 exposeWeakness3 = event ExposeWeakness3 Cards.exposeWeakness3
@@ -66,7 +66,7 @@ instance RunMessage ExposeWeakness3 where
 
 newtype ExposeWeakness3Effect = ExposeWeakness3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 exposeWeakness3Effect :: EffectArgs -> ExposeWeakness3Effect
 exposeWeakness3Effect = cardEffect ExposeWeakness3Effect Cards.exposeWeakness3

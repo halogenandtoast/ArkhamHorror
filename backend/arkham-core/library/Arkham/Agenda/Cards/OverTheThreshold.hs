@@ -19,7 +19,7 @@ import Arkham.Trait (Trait (Humanoid, SilverTwilight, Spectral), toTraits)
 
 newtype OverTheThreshold = OverTheThreshold AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasModifiersFor OverTheThreshold where
   getModifiersFor (EnemyTarget eid) (OverTheThreshold a) = do

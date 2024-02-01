@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 slimeCoveredDhole :: EnemyCard SlimeCoveredDhole
 slimeCoveredDhole =

@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 prestonFairmont :: InvestigatorCard PrestonFairmont
 prestonFairmont =

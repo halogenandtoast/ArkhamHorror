@@ -21,7 +21,8 @@ data SkillTestBaseValue
   | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
   | StaticBaseValue Int
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
@@ -42,7 +43,8 @@ data SkillTest = SkillTest
   , skillTestIsRevelation :: Bool
   , skillTestIconValues :: Map SkillIcon Int
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 allSkillTestChaosTokens :: SkillTest -> [ChaosToken]
 allSkillTestChaosTokens SkillTest {..} =
@@ -66,7 +68,8 @@ data SkillTestResultsData = SkillTestResultsData
   , skillTestResultsResultModifiers :: Maybe Int
   , skillTestResultsSuccess :: Bool
   }
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 initSkillTest
   :: (Sourceable source, Targetable target)

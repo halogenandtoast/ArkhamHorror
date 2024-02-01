@@ -12,7 +12,7 @@ import Arkham.Effect.Runner
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 daisysToteBagAdvanced :: EffectArgs -> DaisysToteBagAdvanced
 daisysToteBagAdvanced = DaisysToteBagAdvanced . uncurry4 (baseAttrs "90002")

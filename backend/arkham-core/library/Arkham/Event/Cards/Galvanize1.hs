@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype Galvanize1 = Galvanize1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 galvanize1 :: EventCard Galvanize1
 galvanize1 = event Galvanize1 Cards.galvanize1

@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype Hoods = Hoods EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hoods :: EnemyCard Hoods
 hoods = enemy Hoods Cards.hoods (3, Static 3, 3) (1, 1)

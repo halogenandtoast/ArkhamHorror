@@ -11,7 +11,7 @@ import Arkham.SkillType
 
 newtype CrumblingPrecipice = CrumblingPrecipice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crumblingPrecipice :: LocationCard CrumblingPrecipice
 crumblingPrecipice = symbolLabel $ location CrumblingPrecipice Cards.crumblingPrecipice 4 (Static 0)

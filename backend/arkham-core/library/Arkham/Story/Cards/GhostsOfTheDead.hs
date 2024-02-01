@@ -7,7 +7,7 @@ import Arkham.Story.Runner
 
 newtype GhostsOfTheDead = GhostsOfTheDead StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ghostsOfTheDead :: StoryCard GhostsOfTheDead
 ghostsOfTheDead = story GhostsOfTheDead Cards.ghostsOfTheDead

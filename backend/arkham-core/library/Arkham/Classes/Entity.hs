@@ -19,7 +19,7 @@ attr f = f . toAttrs
 {-# INLINE attr #-}
 
 updateAttrs :: Entity a => a -> (EntityAttrs a -> EntityAttrs a) -> a
-updateAttrs a f = overAttrs f a
+updateAttrs a f = let !result = overAttrs f a in result
 
 patchEntity :: Entity a => a -> EntityAttrs a -> a
 patchEntity a attrs = overAttrs (const attrs) a

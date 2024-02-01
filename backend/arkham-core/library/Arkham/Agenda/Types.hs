@@ -29,6 +29,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -62,6 +63,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaUsedWheelOfFortuneX :: Bool
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance ToJSON AgendaAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "agenda"
@@ -137,6 +139,11 @@ instance HasCardDef AgendaAttrs where
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
 data Agenda = forall a. IsAgenda a => Agenda a
+
+instance NoThunks Agenda where
+  noThunks ctx (Agenda a) = noThunks ctx a
+  wNoThunks ctx (Agenda a) = wNoThunks ctx a
+  showTypeOf _ = "Agenda"
 
 instance Eq Agenda where
   (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of

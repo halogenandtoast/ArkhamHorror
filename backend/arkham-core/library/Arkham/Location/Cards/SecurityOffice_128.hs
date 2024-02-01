@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 
 newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 securityOffice_128 :: LocationCard SecurityOffice_128
 securityOffice_128 =

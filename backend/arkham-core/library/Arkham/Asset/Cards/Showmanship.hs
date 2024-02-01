@@ -22,7 +22,7 @@ import Arkham.Window (Window (..), WindowType (EnterPlay))
 
 newtype Showmanship = Showmanship AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 showmanship :: AssetCard Showmanship
 showmanship =
@@ -51,7 +51,7 @@ instance RunMessage Showmanship where
 
 newtype ShowmanshipEffect = ShowmanshipEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 showmanshipEffect :: EffectArgs -> ShowmanshipEffect
 showmanshipEffect = cardEffect ShowmanshipEffect Cards.showmanship

@@ -15,7 +15,7 @@ import Arkham.Movement
 
 newtype HallsOfPnakotusNorthernCorridors = HallsOfPnakotusNorthernCorridors LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hallsOfPnakotusNorthernCorridors
   :: LocationCard HallsOfPnakotusNorthernCorridors

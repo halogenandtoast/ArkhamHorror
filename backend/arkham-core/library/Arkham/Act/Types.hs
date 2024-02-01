@@ -26,6 +26,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -58,6 +59,7 @@ data ActAttrs = ActAttrs
   , actMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance HasField "ability" ActAttrs (Int -> Source) where
   getField = toAbilitySource
@@ -160,6 +162,11 @@ instance HasAbilities ActAttrs where
     Nothing -> []
 
 data Act = forall a. IsAct a => Act a
+
+instance NoThunks Act where
+  noThunks ctx (Act a) = noThunks ctx a
+  wNoThunks ctx (Act a) = wNoThunks ctx a
+  showTypeOf _ = "Act"
 
 instance Eq Act where
   (Act (a :: a)) == (Act (b :: b)) = case eqT @a @b of

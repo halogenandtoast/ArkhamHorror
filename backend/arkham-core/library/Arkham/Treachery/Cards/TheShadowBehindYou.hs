@@ -17,11 +17,11 @@ import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata {hasUsedAbility :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype TheShadowBehindYou = TheShadowBehindYou (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theShadowBehindYou :: TreacheryCard TheShadowBehindYou
 theShadowBehindYou =

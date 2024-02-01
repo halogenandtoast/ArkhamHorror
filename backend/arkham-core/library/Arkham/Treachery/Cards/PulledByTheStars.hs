@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype PulledByTheStars = PulledByTheStars TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pulledByTheStars :: TreacheryCard PulledByTheStars
 pulledByTheStars = treachery PulledByTheStars Cards.pulledByTheStars

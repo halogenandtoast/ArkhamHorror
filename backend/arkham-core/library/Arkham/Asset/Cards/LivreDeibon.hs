@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype LivreDeibon = LivreDeibon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 livreDeibon :: AssetCard LivreDeibon
 livreDeibon = asset LivreDeibon Cards.livreDeibon

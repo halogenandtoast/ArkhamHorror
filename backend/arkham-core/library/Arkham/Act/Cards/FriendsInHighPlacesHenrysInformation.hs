@@ -18,7 +18,7 @@ import Arkham.Placement
 
 newtype FriendsInHighPlacesHenrysInformation = FriendsInHighPlacesHenrysInformation ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 friendsInHighPlacesHenrysInformation
   :: ActCard FriendsInHighPlacesHenrysInformation

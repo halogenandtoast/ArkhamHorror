@@ -16,7 +16,7 @@ import Arkham.Message
 
 newtype LodgeCellarMembersOnly = LodgeCellarMembersOnly LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lodgeCellarMembersOnly :: LocationCard LodgeCellarMembersOnly
 lodgeCellarMembersOnly = location LodgeCellarMembersOnly Cards.lodgeCellarMembersOnly 3 (Static 0)

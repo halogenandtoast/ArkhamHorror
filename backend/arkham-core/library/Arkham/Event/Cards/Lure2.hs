@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Lure2 = Lure2 EventAttrs
   deriving anyclass (IsEvent)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lure2 :: EventCard Lure2
 lure2 = event Lure2 Cards.lure2

@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype WallsClosingIn = WallsClosingIn TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wallsClosingIn :: TreacheryCard WallsClosingIn
 wallsClosingIn = treachery WallsClosingIn Cards.wallsClosingIn

@@ -12,7 +12,7 @@ import Arkham.Event.Runner
 
 newtype FightOrFlight = FightOrFlight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fightOrFlight :: EventCard FightOrFlight
 fightOrFlight = event FightOrFlight Cards.fightOrFlight

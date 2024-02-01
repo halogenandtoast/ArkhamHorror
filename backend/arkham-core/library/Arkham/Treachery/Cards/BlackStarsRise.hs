@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype BlackStarsRise = BlackStarsRise TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 blackStarsRise :: TreacheryCard BlackStarsRise
 blackStarsRise = treachery BlackStarsRise Cards.blackStarsRise

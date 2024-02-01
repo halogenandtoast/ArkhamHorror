@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 data AbilityMatcher
 
+instance NoThunks AbilityMatcher
 instance Data AbilityMatcher
 instance ToJSON AbilityMatcher
 instance FromJSON AbilityMatcher
@@ -13,6 +14,7 @@ instance Ord AbilityMatcher
 
 data AssetMatcher
 
+instance NoThunks AssetMatcher
 instance Data AssetMatcher
 instance ToJSON AssetMatcher
 instance FromJSON AssetMatcher
@@ -22,6 +24,7 @@ instance Ord AssetMatcher
 
 data LocationMatcher
 
+instance NoThunks LocationMatcher
 instance Data LocationMatcher
 instance ToJSON LocationMatcher
 instance FromJSON LocationMatcher
@@ -31,6 +34,7 @@ instance Ord LocationMatcher
 
 data CardMatcher
 
+instance NoThunks CardMatcher
 instance Data CardMatcher
 instance ToJSON CardMatcher
 instance FromJSON CardMatcher
@@ -40,6 +44,7 @@ instance Ord CardMatcher
 
 data InvestigatorMatcher
 
+instance NoThunks InvestigatorMatcher
 instance Data InvestigatorMatcher
 instance ToJSON InvestigatorMatcher
 instance FromJSON InvestigatorMatcher
@@ -49,6 +54,7 @@ instance Ord InvestigatorMatcher
 
 data SourceMatcher
 
+instance NoThunks SourceMatcher
 instance Data SourceMatcher
 instance ToJSON SourceMatcher
 instance FromJSON SourceMatcher
@@ -58,6 +64,7 @@ instance Ord SourceMatcher
 
 data EnemyMatcher
 
+instance NoThunks EnemyMatcher
 instance Data EnemyMatcher
 instance ToJSON EnemyMatcher
 instance FromJSON EnemyMatcher
@@ -67,6 +74,7 @@ instance Ord EnemyMatcher
 
 data ChaosTokenMatcher
 
+instance NoThunks ChaosTokenMatcher
 instance Data ChaosTokenMatcher
 instance ToJSON ChaosTokenMatcher
 instance FromJSON ChaosTokenMatcher
@@ -76,6 +84,7 @@ instance Ord ChaosTokenMatcher
 
 data PreyMatcher
 
+instance NoThunks PreyMatcher
 instance Data PreyMatcher
 instance ToJSON PreyMatcher
 instance FromJSON PreyMatcher
@@ -85,10 +94,12 @@ instance Ord PreyMatcher
 
 data ActionMatcher
 
+instance NoThunks ActionMatcher
 instance Data ActionMatcher
 
 data AspectMatcher
 
+instance NoThunks AspectMatcher
 instance Data AspectMatcher
 instance ToJSON AspectMatcher
 instance FromJSON AspectMatcher

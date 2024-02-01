@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype EnchantedWoodsStoneTrapdoor = EnchantedWoodsStoneTrapdoor LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 enchantedWoodsStoneTrapdoor :: LocationCard EnchantedWoodsStoneTrapdoor
 enchantedWoodsStoneTrapdoor = location EnchantedWoodsStoneTrapdoor Cards.enchantedWoodsStoneTrapdoor 2 (PerPlayer 1)

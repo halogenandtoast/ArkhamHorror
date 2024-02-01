@@ -21,7 +21,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RuinsOfNewYork = RuinsOfNewYork LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ruinsOfNewYork :: LocationCard RuinsOfNewYork
 ruinsOfNewYork = location RuinsOfNewYork Cards.ruinsOfNewYork 1 (Static 3)

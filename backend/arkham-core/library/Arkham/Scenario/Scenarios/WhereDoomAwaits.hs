@@ -34,7 +34,7 @@ import Data.Maybe (fromJust)
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 whereDoomAwaits :: Difficulty -> WhereDoomAwaits
 whereDoomAwaits difficulty =

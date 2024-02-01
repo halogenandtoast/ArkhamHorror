@@ -114,7 +114,7 @@ storyWithChooseOne lead pids flavor choices =
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON, NoThunks)
 
 instance IsLabel "clues" AdvancementMethod where
   fromLabel = AdvancedWithClues
@@ -124,7 +124,7 @@ instance IsLabel "other" AdvancementMethod where
 
 data AgendaAdvancementMethod = AgendaAdvancedWithDoom | AgendaAdvancedWithOther
   deriving stock (Generic, Eq, Show)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON, NoThunks)
 
 instance IsLabel "doom" AgendaAdvancementMethod where
   fromLabel = AgendaAdvancedWithDoom
@@ -223,7 +223,7 @@ createCardEffect def mMeta (toSource -> source) (toTarget -> target) = CreateEff
 
 data AbilityRef = AbilityRef Source Int
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 getChoiceAmount :: Text -> [(Text, Int)] -> Int
 getChoiceAmount key choices =
@@ -271,27 +271,27 @@ instance IsMessage Discover where
 
 data ReplaceStrategy = DefaultReplace | Swap
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data StoryMode = ResolveIt | DoNotResolveIt
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data IncludeDiscard = IncludeDiscard | ExcludeDiscard
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data SearchType = Searching | Looking
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype FromSkillType = FromSkillType SkillType
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype ToSkillType = ToSkillType SkillType
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 pattern BeginSkillTest :: SkillTest -> Message
 pattern BeginSkillTest skillTest <- BeginSkillTestWithPreMessages' [] skillTest
@@ -966,7 +966,8 @@ data Message
   | DoBatch BatchId Message
   | -- UI
     ClearUI
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''Message)
 

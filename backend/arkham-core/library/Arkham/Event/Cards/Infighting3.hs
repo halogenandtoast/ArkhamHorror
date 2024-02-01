@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype Infighting3 = Infighting3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 infighting3 :: EventCard Infighting3
 infighting3 = event Infighting3 Cards.infighting3

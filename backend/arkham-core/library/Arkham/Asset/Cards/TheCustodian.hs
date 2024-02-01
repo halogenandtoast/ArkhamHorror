@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype TheCustodian = TheCustodian AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theCustodian :: AssetCard TheCustodian
 theCustodian = asset TheCustodian Cards.theCustodian

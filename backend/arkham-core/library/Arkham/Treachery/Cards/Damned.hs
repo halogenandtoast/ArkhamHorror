@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype Damned = Damned TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 damned :: TreacheryCard Damned
 damned = treachery Damned Cards.damned

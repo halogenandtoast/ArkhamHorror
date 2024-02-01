@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype SpiderOfLeng = SpiderOfLeng EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 spiderOfLeng :: EnemyCard SpiderOfLeng
 spiderOfLeng = enemy SpiderOfLeng Cards.spiderOfLeng (3, Static 4, 3) (1, 1)

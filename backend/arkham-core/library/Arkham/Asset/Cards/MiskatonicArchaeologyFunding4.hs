@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Miskatonic))
 
 newtype MiskatonicArchaeologyFunding4 = MiskatonicArchaeologyFunding4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 miskatonicArchaeologyFunding4 :: AssetCard MiskatonicArchaeologyFunding4
 miskatonicArchaeologyFunding4 =
@@ -54,7 +54,7 @@ instance RunMessage MiskatonicArchaeologyFunding4 where
 
 newtype MiskatonicArchaeologyFunding4Effect = MiskatonicArchaeologyFunding4Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 miskatonicArchaeologyFunding4Effect
   :: EffectArgs -> MiskatonicArchaeologyFunding4Effect

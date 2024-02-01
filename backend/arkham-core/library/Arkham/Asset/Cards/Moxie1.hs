@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype Moxie1 = Moxie1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 moxie1 :: AssetCard Moxie1
 moxie1 = assetWith Moxie1 Cards.moxie1 (sanityL ?~ 1)

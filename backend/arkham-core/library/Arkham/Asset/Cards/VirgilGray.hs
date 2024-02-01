@@ -6,7 +6,7 @@ import Arkham.Asset.Runner
 
 newtype VirgilGray = VirgilGray AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 virgilGray :: AssetCard VirgilGray
 virgilGray =

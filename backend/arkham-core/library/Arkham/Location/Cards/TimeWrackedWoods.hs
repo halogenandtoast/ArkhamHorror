@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype TimeWrackedWoods = TimeWrackedWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 timeWrackedWoods :: LocationCard TimeWrackedWoods
 timeWrackedWoods =

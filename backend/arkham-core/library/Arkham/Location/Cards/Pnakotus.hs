@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype Pnakotus = Pnakotus LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pnakotus :: LocationCard Pnakotus
 pnakotus = location Pnakotus Cards.pnakotus 2 (Static 3)

@@ -21,7 +21,7 @@ import Arkham.Trait
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 facultyOfficesTheNightIsStillYoung
   :: LocationCard FacultyOfficesTheNightIsStillYoung

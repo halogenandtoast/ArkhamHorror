@@ -21,7 +21,7 @@ import Arkham.Timing qualified as Timing
 
 newtype IchtacaTheForgottenGuardian = IchtacaTheForgottenGuardian AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ichtacaTheForgottenGuardian :: AssetCard IchtacaTheForgottenGuardian
 ichtacaTheForgottenGuardian =

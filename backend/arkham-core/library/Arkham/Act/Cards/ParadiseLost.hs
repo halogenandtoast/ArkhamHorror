@@ -21,7 +21,7 @@ import Arkham.Trait (Trait (Shattered))
 
 newtype ParadiseLost = ParadiseLost ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 paradiseLost :: ActCard ParadiseLost
 paradiseLost = act (4, A) ParadiseLost Cards.paradiseLost Nothing

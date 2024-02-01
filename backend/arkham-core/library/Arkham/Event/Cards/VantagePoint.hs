@@ -18,7 +18,7 @@ import Arkham.Window hiding (EndTurn)
 
 newtype VantagePoint = VantagePoint EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 vantagePoint :: EventCard VantagePoint
 vantagePoint = event VantagePoint Cards.vantagePoint
@@ -53,7 +53,7 @@ instance RunMessage VantagePoint where
 
 newtype VantagePointEffect = VantagePointEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 vantagePointEffect :: EffectArgs -> VantagePointEffect
 vantagePointEffect = cardEffect VantagePointEffect Cards.vantagePoint

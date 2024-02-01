@@ -41,7 +41,7 @@ import Arkham.Zone
 
 newtype UnionAndDisillusion = UnionAndDisillusion ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unionAndDisillusion :: Difficulty -> UnionAndDisillusion
 unionAndDisillusion difficulty =

@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Geist))
 
 newtype SpectralWeb = SpectralWeb AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 spectralWeb :: AssetCard SpectralWeb
 spectralWeb =

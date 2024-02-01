@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype RelicOfAgesUnleashTheTimestream = RelicOfAgesUnleashTheTimestream AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 relicOfAgesUnleashTheTimestream :: AssetCard RelicOfAgesUnleashTheTimestream
 relicOfAgesUnleashTheTimestream =

@@ -16,7 +16,7 @@ import Arkham.Prelude
 
 newtype TheChamberOfStillRemains = TheChamberOfStillRemains ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasAbilities TheChamberOfStillRemains where
   getAbilities (TheChamberOfStillRemains a) = withBaseAbilities a [mkAbility a 1 exploreAction_]

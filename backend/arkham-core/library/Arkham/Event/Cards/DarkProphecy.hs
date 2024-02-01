@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype DarkProphecy = DarkProphecy EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 darkProphecy :: EventCard DarkProphecy
 darkProphecy = event DarkProphecy Cards.darkProphecy

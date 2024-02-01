@@ -14,7 +14,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype DarkSpires = DarkSpires LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 darkSpires :: LocationCard DarkSpires
 darkSpires =

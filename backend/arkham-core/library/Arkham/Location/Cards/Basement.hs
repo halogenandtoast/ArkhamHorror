@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Humanoid))
 
 newtype Basement = Basement LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 basement :: LocationCard Basement
 basement = location Basement Cards.basement 4 (PerPlayer 1)

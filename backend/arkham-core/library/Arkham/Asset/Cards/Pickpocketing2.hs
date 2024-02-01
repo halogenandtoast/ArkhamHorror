@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Pickpocketing2 = Pickpocketing2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pickpocketing2 :: AssetCard Pickpocketing2
 pickpocketing2 = asset Pickpocketing2 Cards.pickpocketing2

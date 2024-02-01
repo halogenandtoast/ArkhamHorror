@@ -20,7 +20,7 @@ import Arkham.Trait
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 stepsOfYhagharl :: LocationCard StepsOfYhagharl
 stepsOfYhagharl =

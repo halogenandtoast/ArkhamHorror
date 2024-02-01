@@ -7,7 +7,7 @@ import Arkham.Story.Runner
 
 newtype TheDoomOfSarnath = TheDoomOfSarnath StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theDoomOfSarnath :: StoryCard TheDoomOfSarnath
 theDoomOfSarnath = story TheDoomOfSarnath Cards.theDoomOfSarnath

@@ -9,7 +9,7 @@ import Arkham.Matcher
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 magnifyingGlass1 :: AssetCard MagnifyingGlass1
 magnifyingGlass1 = asset MagnifyingGlass1 Cards.magnifyingGlass1

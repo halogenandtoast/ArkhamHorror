@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype CallingInFavors = CallingInFavors EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 callingInFavors :: EffectArgs -> CallingInFavors
 callingInFavors = CallingInFavors . uncurry4 (baseAttrs "03158")

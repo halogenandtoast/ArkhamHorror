@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype DoubleDouble4 = DoubleDouble4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 doubleDouble4 :: AssetCard DoubleDouble4
 doubleDouble4 = asset DoubleDouble4 Cards.doubleDouble4

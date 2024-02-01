@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype MindsEye2 = MindsEye2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mindsEye2 :: AssetCard MindsEye2
 mindsEye2 = asset MindsEye2 Cards.mindsEye2

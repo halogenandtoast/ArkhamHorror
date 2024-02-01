@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LakeXochimilco_183 = LakeXochimilco_183 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lakeXochimilco_183 :: LocationCard LakeXochimilco_183
 lakeXochimilco_183 =

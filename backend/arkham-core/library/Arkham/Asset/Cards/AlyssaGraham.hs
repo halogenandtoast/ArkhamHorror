@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 alyssaGraham :: AssetCard AlyssaGraham
 alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)

@@ -11,7 +11,7 @@ import Arkham.Window (getBatchId)
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 arkhamWoodsTwistingPaths :: LocationCard ArkhamWoodsTwistingPaths
 arkhamWoodsTwistingPaths = location ArkhamWoodsTwistingPaths Cards.arkhamWoodsTwistingPaths 3 (PerPlayer 1)

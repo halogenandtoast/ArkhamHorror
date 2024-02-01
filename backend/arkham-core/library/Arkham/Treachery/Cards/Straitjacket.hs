@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype Straitjacket = Straitjacket TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 straitjacket :: TreacheryCard Straitjacket
 straitjacket = treachery Straitjacket Cards.straitjacket

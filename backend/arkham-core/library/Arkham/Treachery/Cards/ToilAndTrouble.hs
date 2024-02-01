@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype ToilAndTrouble = ToilAndTrouble TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 toilAndTrouble :: TreacheryCard ToilAndTrouble
 toilAndTrouble = treachery ToilAndTrouble Cards.toilAndTrouble

@@ -15,7 +15,7 @@ import Arkham.ScenarioLogKey
 
 newtype YithianOrrery = YithianOrrery LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 yithianOrrery :: LocationCard YithianOrrery
 yithianOrrery = location YithianOrrery Cards.yithianOrrery 4 (PerPlayer 1)

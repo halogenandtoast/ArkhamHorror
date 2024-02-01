@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype ShatteredAges = ShatteredAges TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shatteredAges :: TreacheryCard ShatteredAges
 shatteredAges = treachery ShatteredAges Cards.shatteredAges

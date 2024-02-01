@@ -19,7 +19,7 @@ import Arkham.Skill.Cards qualified as Skills
 
 newtype DreamDiaryDreamsOfAChild3 = DreamDiaryDreamsOfAChild3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dreamDiaryDreamsOfAChild3 :: AssetCard DreamDiaryDreamsOfAChild3
 dreamDiaryDreamsOfAChild3 =

@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype Garden = Garden LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 garden :: LocationCard Garden
 garden = location Garden Cards.garden 3 (PerPlayer 1)

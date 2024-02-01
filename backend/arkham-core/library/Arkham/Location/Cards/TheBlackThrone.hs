@@ -19,7 +19,7 @@ import Arkham.Projection
 
 newtype TheBlackThrone = TheBlackThrone LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theBlackThrone :: LocationCard TheBlackThrone
 theBlackThrone =

@@ -22,7 +22,7 @@ import Arkham.Trait
 
 newtype TheBarrierIsThin = TheBarrierIsThin AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theBarrierIsThin :: AgendaCard TheBarrierIsThin
 theBarrierIsThin =

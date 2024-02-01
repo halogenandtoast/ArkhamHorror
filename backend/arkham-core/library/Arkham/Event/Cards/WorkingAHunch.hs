@@ -12,7 +12,7 @@ import Arkham.Projection
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 workingAHunch :: EventCard WorkingAHunch
 workingAHunch = event WorkingAHunch Cards.workingAHunch

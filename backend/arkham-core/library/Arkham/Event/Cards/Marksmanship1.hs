@@ -39,7 +39,7 @@ import Arkham.Window qualified as Window
 
 newtype Marksmanship1 = Marksmanship1 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 marksmanship1 :: EventCard Marksmanship1
 marksmanship1 = event Marksmanship1 Cards.marksmanship1
@@ -93,7 +93,7 @@ instance RunMessage Marksmanship1 where
 
 newtype Marksmanship1Effect = Marksmanship1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 marksmanship1Effect :: EffectArgs -> Marksmanship1Effect
 marksmanship1Effect = cardEffect Marksmanship1Effect Cards.marksmanship1

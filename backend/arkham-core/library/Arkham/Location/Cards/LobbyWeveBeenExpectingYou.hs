@@ -16,7 +16,7 @@ import Arkham.Message
 
 newtype LobbyWeveBeenExpectingYou = LobbyWeveBeenExpectingYou LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lobbyWeveBeenExpectingYou :: LocationCard LobbyWeveBeenExpectingYou
 lobbyWeveBeenExpectingYou = location LobbyWeveBeenExpectingYou Cards.lobbyWeveBeenExpectingYou 3 (Static 0)

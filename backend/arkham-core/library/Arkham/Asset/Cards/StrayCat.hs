@@ -12,7 +12,7 @@ import Arkham.Matcher hiding (EnemyEvaded)
 
 newtype StrayCat = StrayCat AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 strayCat :: AssetCard StrayCat
 strayCat = ally StrayCat Cards.strayCat (1, 0)

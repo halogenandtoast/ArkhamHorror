@@ -24,7 +24,7 @@ import Arkham.Trait (Trait (Hex, Shattered))
 
 newtype SearchForTheBrotherhood = SearchForTheBrotherhood ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 searchForTheBrotherhood :: ActCard SearchForTheBrotherhood
 searchForTheBrotherhood =

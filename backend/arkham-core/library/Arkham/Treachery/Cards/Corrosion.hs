@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype Corrosion = Corrosion TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 corrosion :: TreacheryCard Corrosion
 corrosion = treachery Corrosion Cards.corrosion

@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype BishopsBrook_203 = BishopsBrook_203 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 bishopsBrook_203 :: LocationCard BishopsBrook_203
 bishopsBrook_203 = location BishopsBrook_203 Cards.bishopsBrook_203 3 (Static 2)

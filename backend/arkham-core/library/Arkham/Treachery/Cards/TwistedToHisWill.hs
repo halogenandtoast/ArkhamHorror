@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype TwistedToHisWill = TwistedToHisWill TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 twistedToHisWill :: TreacheryCard TwistedToHisWill
 twistedToHisWill = treachery TwistedToHisWill Cards.twistedToHisWill

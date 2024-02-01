@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype PackOfVooniths = PackOfVooniths EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 packOfVooniths :: EnemyCard PackOfVooniths
 packOfVooniths = enemy PackOfVooniths Cards.packOfVooniths (1, Static 2, 1) (1, 1)

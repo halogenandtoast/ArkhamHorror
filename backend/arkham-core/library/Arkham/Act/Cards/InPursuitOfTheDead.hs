@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Spectral))
 
 newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 -- Errata: The text on this card should read: "Locations cannot be flipped to their spectral side"
 --

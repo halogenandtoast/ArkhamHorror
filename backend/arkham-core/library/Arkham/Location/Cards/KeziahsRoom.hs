@@ -18,11 +18,11 @@ import Arkham.Timing qualified as Timing
 
 newtype Metadata = Metadata {revealTopCard :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype KeziahsRoom = KeziahsRoom (LocationAttrs `With` Metadata)
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 keziahsRoom :: LocationCard KeziahsRoom
 keziahsRoom =

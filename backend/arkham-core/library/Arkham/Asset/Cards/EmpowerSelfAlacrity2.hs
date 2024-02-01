@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype EmpowerSelfAlacrity2 = EmpowerSelfAlacrity2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 empowerSelfAlacrity2 :: AssetCard EmpowerSelfAlacrity2
 empowerSelfAlacrity2 =

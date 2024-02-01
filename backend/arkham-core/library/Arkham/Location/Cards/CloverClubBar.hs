@@ -17,7 +17,7 @@ import Arkham.ScenarioLogKey
 
 newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cloverClubBar :: LocationCard CloverClubBar
 cloverClubBar = location CloverClubBar Cards.cloverClubBar 3 (Static 0)

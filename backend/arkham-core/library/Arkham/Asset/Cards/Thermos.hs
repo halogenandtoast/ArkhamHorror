@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype Thermos = Thermos AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thermos :: AssetCard Thermos
 thermos = asset Thermos Cards.thermos

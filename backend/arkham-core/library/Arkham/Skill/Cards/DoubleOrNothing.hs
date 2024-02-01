@@ -12,7 +12,7 @@ import Arkham.Skill.Runner
 
 newtype DoubleOrNothing = DoubleOrNothing SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 doubleOrNothing :: SkillCard DoubleOrNothing
 doubleOrNothing = skill DoubleOrNothing Cards.doubleOrNothing

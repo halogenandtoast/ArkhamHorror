@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype RookieMistake = RookieMistake TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 rookieMistake :: TreacheryCard RookieMistake
 rookieMistake = treachery RookieMistake Cards.rookieMistake

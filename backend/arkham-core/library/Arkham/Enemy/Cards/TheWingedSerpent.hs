@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheWingedSerpent = TheWingedSerpent EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theWingedSerpent :: EnemyCard TheWingedSerpent
 theWingedSerpent =

@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype Improvisation = Improvisation EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 improvisation :: EffectArgs -> Improvisation
 improvisation = Improvisation . uncurry4 (baseAttrs "03018")

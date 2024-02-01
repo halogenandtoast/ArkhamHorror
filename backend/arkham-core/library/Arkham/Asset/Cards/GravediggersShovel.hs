@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype GravediggersShovel = GravediggersShovel AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 gravediggersShovel :: AssetCard GravediggersShovel
 gravediggersShovel = asset GravediggersShovel Cards.gravediggersShovel

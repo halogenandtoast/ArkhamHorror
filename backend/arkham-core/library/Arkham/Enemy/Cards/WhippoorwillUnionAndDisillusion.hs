@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 
 newtype WhippoorwillUnionAndDisillusion = WhippoorwillUnionAndDisillusion Whippoorwill
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities, HasModifiersFor)
 
 whippoorwillUnionAndDisillusion :: EnemyCard WhippoorwillUnionAndDisillusion
 whippoorwillUnionAndDisillusion =

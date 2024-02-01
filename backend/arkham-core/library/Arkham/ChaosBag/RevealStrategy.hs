@@ -9,6 +9,7 @@ import Data.Aeson.TH
 data RevealStrategy
   = Reveal Int
   | RevealAndChoose Int Int
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''RevealStrategy)

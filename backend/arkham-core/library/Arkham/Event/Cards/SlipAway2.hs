@@ -21,7 +21,7 @@ import Arkham.SkillType
 
 newtype SlipAway2 = SlipAway2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 slipAway2 :: EventCard SlipAway2
 slipAway2 = event SlipAway2 Cards.slipAway2
@@ -49,7 +49,7 @@ instance RunMessage SlipAway2 where
 
 newtype SlipAway2Effect = SlipAway2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 slipAway2Effect :: EffectArgs -> SlipAway2Effect
 slipAway2Effect = cardEffect SlipAway2Effect Cards.slipAway2

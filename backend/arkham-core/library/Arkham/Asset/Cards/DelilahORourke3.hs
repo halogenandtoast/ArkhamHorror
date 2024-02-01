@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype DelilahORourke3 = DelilahORourke3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 delilahORourke3 :: AssetCard DelilahORourke3
 delilahORourke3 = ally DelilahORourke3 Cards.delilahORourke3 (3, 2)

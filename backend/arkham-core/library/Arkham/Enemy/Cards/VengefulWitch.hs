@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype VengefulWitch = VengefulWitch EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 vengefulWitch :: EnemyCard VengefulWitch
 vengefulWitch =

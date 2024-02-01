@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype MauserC962 = MauserC962 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mauserC962 :: AssetCard MauserC962
 mauserC962 = asset MauserC962 Cards.mauserC962

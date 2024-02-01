@@ -14,7 +14,7 @@ import Arkham.Window
 
 newtype DumbLuck2 = DumbLuck2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dumbLuck2 :: EventCard DumbLuck2
 dumbLuck2 = event DumbLuck2 Cards.dumbLuck2

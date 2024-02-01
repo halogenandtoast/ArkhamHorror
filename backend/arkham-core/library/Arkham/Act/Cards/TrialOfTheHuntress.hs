@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype TrialOfTheHuntress = TrialOfTheHuntress ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 trialOfTheHuntress :: ActCard TrialOfTheHuntress
 trialOfTheHuntress =

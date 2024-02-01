@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype PoisonousSpores = PoisonousSpores TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 poisonousSpores :: TreacheryCard PoisonousSpores
 poisonousSpores = treachery PoisonousSpores Cards.poisonousSpores

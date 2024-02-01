@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype TerribleSecret = TerribleSecret TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 terribleSecret :: TreacheryCard TerribleSecret
 terribleSecret = treachery TerribleSecret Cards.terribleSecret

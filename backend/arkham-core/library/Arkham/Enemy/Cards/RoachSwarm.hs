@@ -14,7 +14,7 @@ import Arkham.Modifier qualified as Modifier
 
 newtype RoachSwarm = RoachSwarm EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 roachSwarm :: EnemyCard RoachSwarm
 roachSwarm = enemy RoachSwarm Cards.roachSwarm (0, Static 2, 3) (1, 0)

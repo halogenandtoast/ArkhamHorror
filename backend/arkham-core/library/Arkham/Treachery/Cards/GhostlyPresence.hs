@@ -17,7 +17,7 @@ import Arkham.Zone
 
 newtype GhostlyPresence = GhostlyPresence TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ghostlyPresence :: TreacheryCard GhostlyPresence
 ghostlyPresence = treachery GhostlyPresence Cards.ghostlyPresence

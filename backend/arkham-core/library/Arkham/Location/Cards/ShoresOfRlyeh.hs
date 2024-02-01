@@ -21,7 +21,7 @@ import Arkham.Treachery.Types (Field (..))
 
 newtype ShoresOfRlyeh = ShoresOfRlyeh LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shoresOfRlyeh :: LocationCard ShoresOfRlyeh
 shoresOfRlyeh = location ShoresOfRlyeh Cards.shoresOfRlyeh 1 (Static 2)

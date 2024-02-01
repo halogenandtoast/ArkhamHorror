@@ -18,7 +18,7 @@ import Control.Monad.Extra (findM)
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tearThroughSpace :: LocationCard TearThroughSpace
 tearThroughSpace =

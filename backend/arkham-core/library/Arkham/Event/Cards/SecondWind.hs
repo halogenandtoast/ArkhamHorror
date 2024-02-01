@@ -13,7 +13,7 @@ import Arkham.History
 
 newtype SecondWind = SecondWind EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 secondWind :: EventCard SecondWind
 secondWind = event SecondWind Cards.secondWind

@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype CurseOfYig = CurseOfYig TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 curseOfYig :: TreacheryCard CurseOfYig
 curseOfYig = treachery CurseOfYig Cards.curseOfYig

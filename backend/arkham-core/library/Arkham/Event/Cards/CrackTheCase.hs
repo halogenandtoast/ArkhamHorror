@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype CrackTheCase = CrackTheCase EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crackTheCase :: EventCard CrackTheCase
 crackTheCase = event CrackTheCase Cards.crackTheCase

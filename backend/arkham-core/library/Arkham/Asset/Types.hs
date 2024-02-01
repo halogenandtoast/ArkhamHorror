@@ -34,6 +34,11 @@ import GHC.Records
 
 data Asset = forall a. IsAsset a => Asset a
 
+instance NoThunks Asset where
+  noThunks ctx (Asset a) = noThunks ctx a
+  wNoThunks ctx (Asset a) = wNoThunks ctx a
+  showTypeOf _ = "Asset"
+
 instance Data Asset where
   gunfold _ _ _ = error "gunfold(Asset)"
   toConstr _ = error "toConstr(Asset)"
@@ -123,6 +128,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -211,7 +217,7 @@ instance FromJSON (SomeField Asset) where
 
 data WhenNoUses = DiscardWhenNoUses | ReturnToHandWhenNoUses | NotifySelfOfNoUses
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
@@ -240,6 +246,7 @@ data AssetAttrs = AssetAttrs
   , assetMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance Is AssetAttrs AssetId where
   is = (==) . toId

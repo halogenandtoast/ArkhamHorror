@@ -20,7 +20,7 @@ import Arkham.Trait (Trait (Hex))
 
 newtype ChapelCryptSpectral_174 = ChapelCryptSpectral_174 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chapelCryptSpectral_174 :: LocationCard ChapelCryptSpectral_174
 chapelCryptSpectral_174 = location ChapelCryptSpectral_174 Cards.chapelCryptSpectral_174 6 (Static 0)

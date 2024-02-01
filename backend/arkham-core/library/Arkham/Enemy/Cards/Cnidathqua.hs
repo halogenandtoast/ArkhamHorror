@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cnidathqua :: EnemyCard Cnidathqua
 cnidathqua =

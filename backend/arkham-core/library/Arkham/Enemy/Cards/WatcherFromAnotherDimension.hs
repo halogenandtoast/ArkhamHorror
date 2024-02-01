@@ -17,7 +17,7 @@ import Arkham.Placement
 
 newtype WatcherFromAnotherDimension = WatcherFromAnotherDimension EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 watcherFromAnotherDimension :: EnemyCard WatcherFromAnotherDimension
 watcherFromAnotherDimension =

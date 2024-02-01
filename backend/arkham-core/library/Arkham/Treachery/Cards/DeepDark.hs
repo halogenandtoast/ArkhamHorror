@@ -17,11 +17,11 @@ import Data.Map.Strict qualified as Map
 
 newtype Metadata = Metadata {investigatorLocationsClues :: Map InvestigatorId (Set LocationId)}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype DeepDark = DeepDark (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 deepDark :: TreacheryCard DeepDark
 deepDark = treachery (DeepDark . (`with` Metadata mempty)) Cards.deepDark

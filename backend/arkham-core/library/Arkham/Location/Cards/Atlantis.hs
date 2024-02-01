@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Atlantis = Atlantis LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 atlantis :: LocationCard Atlantis
 atlantis = location Atlantis Cards.atlantis 3 (Static 2)

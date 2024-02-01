@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype TommyMalloy = TommyMalloy EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tommyMalloy :: EnemyCard TommyMalloy
 tommyMalloy =
@@ -46,7 +46,7 @@ instance RunMessage TommyMalloy where
 
 newtype TommyMalloyEffect = TommyMalloyEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tommyMalloyEffect :: EffectArgs -> TommyMalloyEffect
 tommyMalloyEffect = cardEffect TommyMalloyEffect Cards.tommyMalloy

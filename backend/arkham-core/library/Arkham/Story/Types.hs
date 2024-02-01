@@ -25,6 +25,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -51,6 +52,7 @@ data StoryAttrs = StoryAttrs
   , storyRemoveAfterResolution :: Bool
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 storyWith
   :: (StoryAttrs -> a)
@@ -128,6 +130,11 @@ instance Sourceable StoryAttrs where
   isSource _ _ = False
 
 data Story = forall a. IsStory a => Story a
+
+instance NoThunks Story where
+  noThunks ctx (Story a) = noThunks ctx a
+  wNoThunks ctx (Story a) = wNoThunks ctx a
+  showTypeOf _ = "Story"
 
 instance Eq Story where
   (Story (a :: a)) == (Story (b :: b)) = case eqT @a @b of

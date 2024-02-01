@@ -16,7 +16,7 @@ import Arkham.Window (getBatchId)
 
 newtype FoyerMurderAtTheExcelsiorHotel = FoyerMurderAtTheExcelsiorHotel LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 foyerMurderAtTheExcelsiorHotel :: LocationCard FoyerMurderAtTheExcelsiorHotel
 foyerMurderAtTheExcelsiorHotel = location FoyerMurderAtTheExcelsiorHotel Cards.foyerMurderAtTheExcelsiorHotel 2 (PerPlayer 1)

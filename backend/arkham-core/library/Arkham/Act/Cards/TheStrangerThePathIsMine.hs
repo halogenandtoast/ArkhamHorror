@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheStrangerThePathIsMine = TheStrangerThePathIsMine ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theStrangerThePathIsMine :: ActCard TheStrangerThePathIsMine
 theStrangerThePathIsMine =

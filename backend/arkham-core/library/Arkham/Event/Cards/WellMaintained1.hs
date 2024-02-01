@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Item, Upgrade))
 
 newtype WellMaintained1 = WellMaintained1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wellMaintained1 :: EventCard WellMaintained1
 wellMaintained1 = event WellMaintained1 Cards.wellMaintained1

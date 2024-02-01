@@ -9,7 +9,7 @@ import Arkham.Matcher
 
 newtype LookWhatIFound2 = LookWhatIFound2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lookWhatIFound2 :: EventCard LookWhatIFound2
 lookWhatIFound2 = event LookWhatIFound2 Cards.lookWhatIFound2

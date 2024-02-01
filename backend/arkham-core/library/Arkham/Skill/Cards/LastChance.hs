@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype LastChance = LastChance SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lastChance :: SkillCard LastChance
 lastChance = skill LastChance Cards.lastChance

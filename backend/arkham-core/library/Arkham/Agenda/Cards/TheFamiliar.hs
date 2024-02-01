@@ -21,7 +21,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheFamiliar = TheFamiliar AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theFamiliar :: AgendaCard TheFamiliar
 theFamiliar = agenda (2, A) TheFamiliar Cards.theFamiliar (Static 6)

@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype ThePath = ThePath ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thePath :: ActCard ThePath
 thePath = act (4, A) ThePath Cards.thePath (Just $ GroupClueCost (PerPlayer 5) "The Enchanted Path")

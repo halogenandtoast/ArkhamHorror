@@ -16,7 +16,7 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype CultistOfTheEnclave = CultistOfTheEnclave EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cultistOfTheEnclave :: EnemyCard CultistOfTheEnclave
 cultistOfTheEnclave =

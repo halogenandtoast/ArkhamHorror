@@ -15,11 +15,11 @@ import Arkham.SkillTest.Base
 
 newtype Metadata = Metadata {isFirst :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype OneTwoPunch5 = OneTwoPunch5 (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 oneTwoPunch5 :: EventCard OneTwoPunch5
 oneTwoPunch5 = event (OneTwoPunch5 . (`with` Metadata True)) Cards.oneTwoPunch5

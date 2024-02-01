@@ -10,7 +10,7 @@ import Arkham.Treachery.Runner
 
 newtype WillOfTheSpiderMother = WillOfTheSpiderMother TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 willOfTheSpiderMother :: TreacheryCard WillOfTheSpiderMother
 willOfTheSpiderMother = treachery WillOfTheSpiderMother Cards.willOfTheSpiderMother

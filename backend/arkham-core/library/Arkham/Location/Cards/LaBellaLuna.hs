@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 laBellaLuna :: LocationCard LaBellaLuna
 laBellaLuna = location LaBellaLuna Cards.laBellaLuna 2 (PerPlayer 1)

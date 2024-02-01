@@ -14,7 +14,8 @@ data Phase
   | UpkeepPhase
   | ResolutionPhase
   | CampaignPhase
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance IsLabel "mythos" Phase where
   fromLabel = MythosPhase
@@ -33,7 +34,8 @@ data PhaseStep
   | InvestigationPhaseStep InvestigationPhaseStep
   | EnemyPhaseStep EnemyPhaseStep
   | UpkeepPhaseStep UpkeepPhaseStep
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 isMythosPhase :: Phase -> Bool
 isMythosPhase MythosPhase = True
@@ -46,7 +48,8 @@ data MythosPhaseStep
   | EachInvestigatorDrawsEncounterCardStep -- 1.4
   | MythosPhaseWindow -- fast player window
   | MythosPhaseEndsStep -- 1.5
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data InvestigationPhaseStep
   = InvestigationPhaseBeginsStep -- 2.1
@@ -56,7 +59,8 @@ data InvestigationPhaseStep
   | InvestigatorTakesActionStep -- 2.2.1
   | InvestigatorsTurnEndsStep -- 2.2.2
   | InvestigationPhaseEndsStep -- 2.3
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data EnemyPhaseStep
   = EnemyPhaseBeginsStep -- 3.1
@@ -65,7 +69,8 @@ data EnemyPhaseStep
   | ResolveAttacksStep -- 3.3
   | AfterResolveAttacksWindow -- fast player window
   | EnemyPhaseEndsStep -- 3.4
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data UpkeepPhaseStep
   = UpkeepPhaseBeginsStep -- 4.1
@@ -75,7 +80,8 @@ data UpkeepPhaseStep
   | DrawCardAndGainResourceStep -- 4.4
   | CheckHandSizeStep -- 4.5
   | UpkeepPhaseEndsStep -- 4.6
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $( do
     phase <- deriveJSON defaultOptions ''Phase

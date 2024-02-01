@@ -13,7 +13,7 @@ import Arkham.Placement
 
 newtype TheTowerXVI = TheTowerXVI AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theTowerXVI :: AssetCard TheTowerXVI
 theTowerXVI =

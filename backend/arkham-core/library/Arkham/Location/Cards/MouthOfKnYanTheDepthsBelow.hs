@@ -18,7 +18,7 @@ import Arkham.Scenario.Deck
 
 newtype MouthOfKnYanTheDepthsBelow = MouthOfKnYanTheDepthsBelow LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mouthOfKnYanTheDepthsBelow :: LocationCard MouthOfKnYanTheDepthsBelow
 mouthOfKnYanTheDepthsBelow =

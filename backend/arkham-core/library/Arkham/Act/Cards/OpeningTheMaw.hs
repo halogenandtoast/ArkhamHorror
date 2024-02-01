@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype OpeningTheMaw = OpeningTheMaw ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 openingTheMaw :: ActCard OpeningTheMaw
 openingTheMaw = act (2, A) OpeningTheMaw Cards.openingTheMaw Nothing

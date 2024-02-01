@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype SchoffnersCatalogue = SchoffnersCatalogue AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 schoffnersCatalogue :: AssetCard SchoffnersCatalogue
 schoffnersCatalogue = assetWith SchoffnersCatalogue Cards.schoffnersCatalogue discardWhenNoUses

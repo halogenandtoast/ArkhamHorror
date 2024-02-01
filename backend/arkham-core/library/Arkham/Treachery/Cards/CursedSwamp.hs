@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype CursedSwamp = CursedSwamp TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cursedSwamp :: TreacheryCard CursedSwamp
 cursedSwamp = treachery CursedSwamp Cards.cursedSwamp

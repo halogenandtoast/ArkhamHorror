@@ -16,7 +16,7 @@ import Arkham.Token
 
 newtype TonysQuarry = TonysQuarry EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tonysQuarry :: EnemyCard TonysQuarry
 tonysQuarry =

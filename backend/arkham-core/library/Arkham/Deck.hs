@@ -18,7 +18,8 @@ data DeckSignifier
   | ScenarioDeckByKey ScenarioDeckKey
   | InvestigatorDeckByKey InvestigatorId InvestigatorDeckKey
   | EncounterDeckByKey ScenarioEncounterDeckKey
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 class IsDeck a where
   toDeck :: a -> DeckSignifier

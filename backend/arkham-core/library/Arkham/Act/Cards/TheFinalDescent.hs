@@ -19,7 +19,7 @@ import Arkham.Trait (Trait (Steps))
 
 newtype TheFinalDescent = TheFinalDescent ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theFinalDescent :: ActCard TheFinalDescent
 theFinalDescent = act (3, A) TheFinalDescent Cards.theFinalDescent Nothing

@@ -23,7 +23,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleStandingStones = UnvisitedIsleStandingStones LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unvisitedIsleStandingStones :: LocationCard UnvisitedIsleStandingStones
 unvisitedIsleStandingStones = location UnvisitedIsleStandingStones Cards.unvisitedIsleStandingStones 3 (PerPlayer 2)
@@ -66,7 +66,7 @@ instance RunMessage UnvisitedIsleStandingStones where
 
 newtype UnvisitedIsleStandingStonesEffect = UnvisitedIsleStandingStonesEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unvisitedIsleStandingStonesEffect :: EffectArgs -> UnvisitedIsleStandingStonesEffect
 unvisitedIsleStandingStonesEffect = cardEffect UnvisitedIsleStandingStonesEffect Cards.unvisitedIsleStandingStones

@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype DreamGateWondrousJourney = DreamGateWondrousJourney LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dreamGateWondrousJourney :: LocationCard DreamGateWondrousJourney
 dreamGateWondrousJourney =

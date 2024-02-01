@@ -10,7 +10,7 @@ import Arkham.Effect.Runner
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tenAcreMeadow_246 :: EffectArgs -> TenAcreMeadow_246
 tenAcreMeadow_246 = TenAcreMeadow_246 . uncurry4 (baseAttrs "02246")

@@ -13,7 +13,7 @@ import Arkham.Window qualified as Window
 
 newtype SongOfTheDead2 = SongOfTheDead2 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 songOfTheDead2 :: EffectArgs -> SongOfTheDead2
 songOfTheDead2 = SongOfTheDead2 . uncurry4 (baseAttrs "02112")

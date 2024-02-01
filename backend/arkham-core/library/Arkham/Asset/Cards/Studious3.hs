@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype Studious3 = Studious3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 studious3 :: AssetCard Studious3
 studious3 = asset Studious3 Cards.studious3

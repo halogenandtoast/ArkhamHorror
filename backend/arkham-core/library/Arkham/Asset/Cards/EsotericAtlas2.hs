@@ -13,7 +13,7 @@ import Arkham.Movement
 
 newtype EsotericAtlas2 = EsotericAtlas2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 esotericAtlas2 :: AssetCard EsotericAtlas2
 esotericAtlas2 = asset EsotericAtlas2 Cards.esotericAtlas2

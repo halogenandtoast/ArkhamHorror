@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype DrawingTheSign = DrawingTheSign TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 drawingTheSign :: TreacheryCard DrawingTheSign
 drawingTheSign = treachery DrawingTheSign Cards.drawingTheSign

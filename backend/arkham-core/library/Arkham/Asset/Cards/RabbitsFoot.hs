@@ -9,7 +9,7 @@ import Arkham.Matcher
 
 newtype RabbitsFoot = RabbitsFoot AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 rabbitsFoot :: AssetCard RabbitsFoot
 rabbitsFoot = asset RabbitsFoot Cards.rabbitsFoot

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TemploMayor_175 = TemploMayor_175 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 temploMayor_175 :: LocationCard TemploMayor_175
 temploMayor_175 =

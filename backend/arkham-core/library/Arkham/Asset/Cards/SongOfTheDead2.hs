@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 songOfTheDead2 :: AssetCard SongOfTheDead2
 songOfTheDead2 = asset SongOfTheDead2 Cards.songOfTheDead2

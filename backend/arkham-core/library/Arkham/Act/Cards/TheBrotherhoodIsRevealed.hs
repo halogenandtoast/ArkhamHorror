@@ -20,11 +20,11 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype Metadata = Metadata {mariaDeSilvasLocation :: Maybe LocationId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype TheBrotherhoodIsRevealed = TheBrotherhoodIsRevealed (ActAttrs `With` Metadata)
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theBrotherhoodIsRevealed :: ActCard TheBrotherhoodIsRevealed
 theBrotherhoodIsRevealed =

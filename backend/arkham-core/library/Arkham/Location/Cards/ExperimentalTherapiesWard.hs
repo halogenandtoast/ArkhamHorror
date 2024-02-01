@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype ExperimentalTherapiesWard = ExperimentalTherapiesWard LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 experimentalTherapiesWard :: LocationCard ExperimentalTherapiesWard
 experimentalTherapiesWard = location ExperimentalTherapiesWard Cards.experimentalTherapiesWard 4 (PerPlayer 2)

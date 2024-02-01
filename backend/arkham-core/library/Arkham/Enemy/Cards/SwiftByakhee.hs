@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 
 newtype SwiftByakhee = SwiftByakhee EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 swiftByakhee :: EnemyCard SwiftByakhee
 swiftByakhee =

@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BlackCave = BlackCave LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 blackCave :: LocationCard BlackCave
 blackCave = location BlackCave Cards.blackCave 3 (PerPlayer 2)

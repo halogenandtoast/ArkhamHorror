@@ -12,7 +12,7 @@ import Arkham.Card
 
 newtype Straitjacket = Straitjacket AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 straitjacket :: AssetCard Straitjacket
 straitjacket =

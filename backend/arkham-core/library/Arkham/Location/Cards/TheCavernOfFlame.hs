@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype TheCavernOfFlame = TheCavernOfFlame LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theCavernOfFlame :: LocationCard TheCavernOfFlame
 theCavernOfFlame = location TheCavernOfFlame Cards.theCavernOfFlame 9 (Static 0)

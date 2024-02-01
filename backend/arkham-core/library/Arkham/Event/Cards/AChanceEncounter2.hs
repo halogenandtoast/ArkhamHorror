@@ -18,7 +18,7 @@ import Arkham.Window (defaultWindows)
 
 newtype AChanceEncounter2 = AChanceEncounter2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aChanceEncounter2 :: EventCard AChanceEncounter2
 aChanceEncounter2 = event AChanceEncounter2 Cards.aChanceEncounter2

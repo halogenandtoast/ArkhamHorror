@@ -21,7 +21,7 @@ import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 
 newtype FlightIntoOblivion = FlightIntoOblivion LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 flightIntoOblivion :: LocationCard FlightIntoOblivion
 flightIntoOblivion =

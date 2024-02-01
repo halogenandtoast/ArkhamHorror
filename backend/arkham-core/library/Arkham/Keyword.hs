@@ -33,7 +33,8 @@ data Keyword
   | Swarming GameValue
   | Veiled
   | Customizable
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 class HasKeywords a where
   toKeywords :: a -> Set Keyword

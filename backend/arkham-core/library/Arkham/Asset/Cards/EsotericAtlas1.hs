@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype EsotericAtlas1 = EsotericAtlas1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 esotericAtlas1 :: AssetCard EsotericAtlas1
 esotericAtlas1 = asset EsotericAtlas1 Cards.esotericAtlas1

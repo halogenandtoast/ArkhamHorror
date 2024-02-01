@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype BearTrap = BearTrap AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 bearTrap :: AssetCard BearTrap
 bearTrap = assetWith BearTrap Cards.bearTrap (isStoryL .~ True)

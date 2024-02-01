@@ -19,7 +19,7 @@ import Arkham.Scenario.Deck
 
 newtype ExpeditionCamp = ExpeditionCamp LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 expeditionCamp :: LocationCard ExpeditionCamp
 expeditionCamp = location ExpeditionCamp Cards.expeditionCamp 1 (Static 0)

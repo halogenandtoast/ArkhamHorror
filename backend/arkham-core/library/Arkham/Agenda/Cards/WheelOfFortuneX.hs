@@ -27,11 +27,11 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype Metadata = Metadata {locationsMoved :: [LocationId]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype WheelOfFortuneX = WheelOfFortuneX (AgendaAttrs `With` Metadata)
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wheelOfFortuneX :: AgendaCard WheelOfFortuneX
 wheelOfFortuneX =

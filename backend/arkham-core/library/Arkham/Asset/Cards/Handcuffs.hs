@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Humanoid))
 
 newtype Handcuffs = Handcuffs AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 handcuffs :: AssetCard Handcuffs
 handcuffs = asset Handcuffs Cards.handcuffs

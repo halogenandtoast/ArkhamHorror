@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype PhysicalTraining = PhysicalTraining AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 physicalTraining :: AssetCard PhysicalTraining
 physicalTraining = asset PhysicalTraining Cards.physicalTraining

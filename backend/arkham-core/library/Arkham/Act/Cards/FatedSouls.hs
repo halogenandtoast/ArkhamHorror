@@ -19,7 +19,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype FatedSouls = FatedSouls ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 instance HasModifiersFor FatedSouls where
   getModifiersFor (InvestigatorTarget _) (FatedSouls attrs) = do

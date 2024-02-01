@@ -17,11 +17,11 @@ import Arkham.Window
 
 newtype Metadata = Metadata {inUse :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype CityOfTheUnseen = CityOfTheUnseen (LocationAttrs `With` Metadata)
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cityOfTheUnseen :: LocationCard CityOfTheUnseen
 cityOfTheUnseen =

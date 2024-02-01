@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheThingThatFollows = TheThingThatFollows EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theThingThatFollows :: EnemyCard TheThingThatFollows
 theThingThatFollows =

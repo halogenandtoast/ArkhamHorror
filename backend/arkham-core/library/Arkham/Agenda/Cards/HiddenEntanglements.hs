@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (WindowMatcher (InvestigatorDefeated))
 
 newtype HiddenEntanglements = HiddenEntanglements AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hiddenEntanglements :: AgendaCard HiddenEntanglements
 hiddenEntanglements =

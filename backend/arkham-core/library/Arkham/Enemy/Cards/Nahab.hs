@@ -17,7 +17,7 @@ import Arkham.Token
 
 newtype Nahab = Nahab EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 nahab :: EnemyCard Nahab
 nahab = enemy Nahab Cards.nahab (1, PerPlayer 1, 3) (1, 2)

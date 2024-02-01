@@ -24,7 +24,7 @@ import Arkham.Window qualified as Window
 
 newtype RitaYoung = RitaYoung InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ritaYoung :: InvestigatorCard RitaYoung
 ritaYoung =
@@ -82,7 +82,7 @@ instance RunMessage RitaYoung where
 
 newtype RitaYoungElderSignEffect = RitaYoungElderSignEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ritaYoungElderSignEffect :: EffectArgs -> RitaYoungElderSignEffect
 ritaYoungElderSignEffect = cardEffect RitaYoungElderSignEffect Cards.ritaYoung

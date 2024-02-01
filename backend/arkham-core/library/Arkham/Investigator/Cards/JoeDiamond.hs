@@ -26,11 +26,11 @@ import Data.Map.Strict qualified as Map
 
 newtype Metadata = Metadata {revealedHunchCard :: Maybe CardId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype JoeDiamond = JoeDiamond (InvestigatorAttrs `With` Metadata)
   deriving anyclass (IsInvestigator)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 joeDiamond :: InvestigatorCard JoeDiamond
 joeDiamond =

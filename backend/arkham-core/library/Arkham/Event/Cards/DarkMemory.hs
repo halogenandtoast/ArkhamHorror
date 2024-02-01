@@ -11,7 +11,7 @@ import Arkham.Matcher
 
 newtype DarkMemory = DarkMemory EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 darkMemory :: EventCard DarkMemory
 darkMemory = event DarkMemory Cards.darkMemory

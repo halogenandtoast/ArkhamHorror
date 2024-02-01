@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype TheStarsAreRight = TheStarsAreRight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theStarsAreRight :: EventCard TheStarsAreRight
 theStarsAreRight =

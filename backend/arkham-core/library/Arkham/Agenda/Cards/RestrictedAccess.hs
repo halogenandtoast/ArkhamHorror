@@ -18,7 +18,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 restrictedAccess :: AgendaCard RestrictedAccess
 restrictedAccess =

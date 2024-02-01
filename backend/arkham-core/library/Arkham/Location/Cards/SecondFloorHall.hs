@@ -17,7 +17,7 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype SecondFloorHall = SecondFloorHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 secondFloorHall :: LocationCard SecondFloorHall
 secondFloorHall = location SecondFloorHall Cards.secondFloorHall 2 (PerPlayer 1)

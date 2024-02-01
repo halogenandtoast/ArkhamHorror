@@ -18,7 +18,7 @@ import Arkham.SkillType
 
 newtype CheapShot2 = CheapShot2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cheapShot2 :: EventCard CheapShot2
 cheapShot2 = event CheapShot2 Cards.cheapShot2
@@ -44,7 +44,7 @@ instance RunMessage CheapShot2 where
 
 newtype CheapShot2Effect = CheapShot2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cheapShot2Effect :: EffectArgs -> CheapShot2Effect
 cheapShot2Effect = cardEffect CheapShot2Effect Cards.cheapShot2

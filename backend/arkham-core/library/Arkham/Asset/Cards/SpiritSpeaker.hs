@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker

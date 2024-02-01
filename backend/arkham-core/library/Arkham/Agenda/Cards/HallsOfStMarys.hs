@@ -19,7 +19,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype HallsOfStMarys = HallsOfStMarys AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hallsOfStMarys :: AgendaCard HallsOfStMarys
 hallsOfStMarys = agenda (1, A) HallsOfStMarys Cards.hallsOfStMarys (Static 2)

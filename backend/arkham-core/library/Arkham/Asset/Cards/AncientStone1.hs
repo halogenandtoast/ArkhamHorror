@@ -19,7 +19,7 @@ import Arkham.SkillTest.Base
 
 newtype AncientStone1 = AncientStone1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ancientStone1 :: AssetCard AncientStone1
 ancientStone1 = asset AncientStone1 Cards.ancientStone1

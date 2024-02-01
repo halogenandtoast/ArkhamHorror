@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 securityOffice_129 :: LocationCard SecurityOffice_129
 securityOffice_129 =

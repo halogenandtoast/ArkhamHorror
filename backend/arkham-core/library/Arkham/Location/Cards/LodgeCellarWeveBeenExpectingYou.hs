@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LodgeCellarWeveBeenExpectingYou = LodgeCellarWeveBeenExpectingYou LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lodgeCellarWeveBeenExpectingYou :: LocationCard LodgeCellarWeveBeenExpectingYou
 lodgeCellarWeveBeenExpectingYou = location LodgeCellarWeveBeenExpectingYou Cards.lodgeCellarWeveBeenExpectingYou 3 (PerPlayer 1)

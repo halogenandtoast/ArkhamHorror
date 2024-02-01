@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype TemploMayor_174 = TemploMayor_174 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 temploMayor_174 :: LocationCard TemploMayor_174
 temploMayor_174 =

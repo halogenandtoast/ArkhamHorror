@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Staff))
 
 newtype TheTrueCulpritV3 = TheTrueCulpritV3 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theTrueCulpritV3 :: AgendaCard TheTrueCulpritV3
 theTrueCulpritV3 = agenda (3, A) TheTrueCulpritV3 Cards.theTrueCulpritV3 (Static 6)

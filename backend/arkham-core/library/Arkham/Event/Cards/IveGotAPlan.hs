@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype IveGotAPlan = IveGotAPlan EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 iveGotAPlan :: EventCard IveGotAPlan
 iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan

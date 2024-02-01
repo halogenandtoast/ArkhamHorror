@@ -19,7 +19,7 @@ import Arkham.Projection
 
 newtype EmpiricalHypothesis = EmpiricalHypothesis AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 empiricalHypothesis :: AssetCard EmpiricalHypothesis
 empiricalHypothesis = assetWith EmpiricalHypothesis Cards.empiricalHypothesis (metaL .~ toJSON @[Int] [])
@@ -145,7 +145,7 @@ data EmpiricalHypothesisEffectMetadata = EmpiricalHypothesisEffectMetadata
 
 newtype EmpiricalHypothesisEffect = EmpiricalHypothesisEffect EffectAttrs
   deriving anyclass (IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 empiricalHypothesisEffect :: EffectArgs -> EmpiricalHypothesisEffect
 empiricalHypothesisEffect =

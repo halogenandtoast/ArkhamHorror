@@ -14,11 +14,11 @@ import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata {difficultyReduction :: Int}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype Entombed = Entombed (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 entombed :: TreacheryCard Entombed
 entombed = treachery (Entombed . (`With` Metadata 0)) Cards.entombed

@@ -10,7 +10,7 @@ import Arkham.Difficulty
 import Arkham.Helpers.Query
 
 newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor, NoThunks)
 
 instance IsCampaign NightOfTheZealot where
   nextStep a = case campaignStep (toAttrs a) of

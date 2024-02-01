@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dreamsOfRlyeh :: TreacheryCard DreamsOfRlyeh
 dreamsOfRlyeh = treachery DreamsOfRlyeh Cards.dreamsOfRlyeh

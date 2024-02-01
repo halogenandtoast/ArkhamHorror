@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype UntilTheEndOfTime = UntilTheEndOfTime AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 untilTheEndOfTime :: AssetCard UntilTheEndOfTime
 untilTheEndOfTime =

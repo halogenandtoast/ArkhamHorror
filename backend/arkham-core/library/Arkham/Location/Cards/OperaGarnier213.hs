@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 
 newtype OperaGarnier213 = OperaGarnier213 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 operaGarnier213 :: LocationCard OperaGarnier213
 operaGarnier213 =

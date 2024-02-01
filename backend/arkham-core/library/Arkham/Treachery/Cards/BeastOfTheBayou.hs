@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 beastOfTheBayou :: TreacheryCard BeastOfTheBayou
 beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou

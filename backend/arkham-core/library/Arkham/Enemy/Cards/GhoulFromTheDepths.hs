@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype GhoulFromTheDepths = GhoulFromTheDepths EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 ghoulFromTheDepths :: EnemyCard GhoulFromTheDepths
 ghoulFromTheDepths =

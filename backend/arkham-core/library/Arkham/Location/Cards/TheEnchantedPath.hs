@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype TheEnchantedPath = TheEnchantedPath LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theEnchantedPath :: LocationCard TheEnchantedPath
 theEnchantedPath =

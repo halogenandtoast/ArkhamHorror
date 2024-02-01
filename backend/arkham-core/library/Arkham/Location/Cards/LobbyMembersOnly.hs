@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LobbyMembersOnly = LobbyMembersOnly LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lobbyMembersOnly :: LocationCard LobbyMembersOnly
 lobbyMembersOnly = location LobbyMembersOnly Cards.lobbyMembersOnly 3 (PerPlayer 1)

@@ -15,7 +15,7 @@ import Arkham.Skill.Runner
 
 newtype Enraptured = Enraptured SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 enraptured :: SkillCard Enraptured
 enraptured = skill Enraptured Cards.enraptured

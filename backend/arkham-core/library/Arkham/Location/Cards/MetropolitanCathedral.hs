@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype MetropolitanCathedral = MetropolitanCathedral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 metropolitanCathedral :: LocationCard MetropolitanCathedral
 metropolitanCathedral = locationWith MetropolitanCathedral Cards.metropolitanCathedral 3 (Static 0) (labelL .~ "square")

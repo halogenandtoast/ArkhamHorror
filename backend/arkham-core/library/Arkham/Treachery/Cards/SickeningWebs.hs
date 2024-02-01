@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype SickeningWebs = SickeningWebs TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sickeningWebs :: TreacheryCard SickeningWebs
 sickeningWebs = treachery SickeningWebs Cards.sickeningWebs

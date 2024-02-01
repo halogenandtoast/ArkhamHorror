@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyHistoricalMuseum_132 = HistoricalSocietyHistoricalMuseum_132 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 historicalSocietyHistoricalMuseum_132
   :: LocationCard HistoricalSocietyHistoricalMuseum_132

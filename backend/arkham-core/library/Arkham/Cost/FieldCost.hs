@@ -36,6 +36,7 @@ data FieldCost where
     -> FieldCost
 
 deriving stock instance Show FieldCost
+deriving via AllowThunk FieldCost instance NoThunks FieldCost
 
 instance Data FieldCost where
   gunfold _ _ _ = error "gunfold(FieldCost)"
@@ -99,6 +100,7 @@ data MaybeFieldCost where
     -> MaybeFieldCost
 
 deriving stock instance Show MaybeFieldCost
+deriving via AllowThunk MaybeFieldCost instance NoThunks MaybeFieldCost
 
 instance Data MaybeFieldCost where
   gunfold _ _ _ = error "gunfold(MaybeFieldCost)"

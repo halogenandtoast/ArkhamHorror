@@ -16,7 +16,7 @@ import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype HospitalOfHorrors = HospitalOfHorrors AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hospitalOfHorrors :: AgendaCard HospitalOfHorrors
 hospitalOfHorrors = agenda (3, A) HospitalOfHorrors Cards.hospitalOfHorrors (Static 8)

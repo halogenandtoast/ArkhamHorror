@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype AGlimmerOfHope = AGlimmerOfHope EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aGlimmerOfHope :: EventCard AGlimmerOfHope
 aGlimmerOfHope = event AGlimmerOfHope Cards.aGlimmerOfHope

@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype QuickStudy2 = QuickStudy2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 quickStudy2 :: AssetCard QuickStudy2
 quickStudy2 = asset QuickStudy2 Cards.quickStudy2

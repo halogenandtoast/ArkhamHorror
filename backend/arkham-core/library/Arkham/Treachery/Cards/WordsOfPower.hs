@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype WordsOfPower = WordsOfPower TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wordsOfPower :: TreacheryCard WordsOfPower
 wordsOfPower = treachery WordsOfPower Cards.wordsOfPower

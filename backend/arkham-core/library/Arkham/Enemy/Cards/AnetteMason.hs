@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype AnetteMason = AnetteMason EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 anetteMason :: EnemyCard AnetteMason
 anetteMason = enemy AnetteMason Cards.anetteMason (4, PerPlayer 4, 4) (1, 1)

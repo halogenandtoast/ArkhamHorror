@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype Adaptable1 = Adaptable1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 adaptable1 :: AssetCard Adaptable1
 adaptable1 = asset Adaptable1 Cards.adaptable1

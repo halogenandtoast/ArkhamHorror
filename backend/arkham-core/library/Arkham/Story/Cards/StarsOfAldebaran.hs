@@ -16,7 +16,7 @@ import Arkham.Story.Runner
 
 newtype StarsOfAldebaran = StarsOfAldebaran StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 starsOfAldebaran :: StoryCard StarsOfAldebaran
 starsOfAldebaran = story StarsOfAldebaran Cards.starsOfAldebaran

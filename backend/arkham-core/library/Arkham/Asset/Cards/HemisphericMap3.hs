@@ -12,7 +12,7 @@ import Arkham.SkillType
 
 newtype HemisphericMap3 = HemisphericMap3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasModifiersFor HemisphericMap3 where
   getModifiersFor (InvestigatorTarget iid) (HemisphericMap3 a)

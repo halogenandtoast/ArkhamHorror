@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype Courage = Courage AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 courage :: AssetCard Courage
 courage = assetWith Courage Cards.courage (sanityL ?~ 2)

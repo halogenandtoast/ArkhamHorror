@@ -13,7 +13,7 @@ import Arkham.Skill.Runner
 
 newtype Perception2 = Perception2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 perception2 :: SkillCard Perception2
 perception2 =

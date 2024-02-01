@@ -13,7 +13,7 @@ import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 
 newtype SavioCorvi = SavioCorvi EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 savioCorvi :: EnemyCard SavioCorvi
 savioCorvi = enemy SavioCorvi Cards.savioCorvi (3, Static 5, 3) (1, 1)

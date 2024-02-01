@@ -22,7 +22,7 @@ import Arkham.Window
 
 newtype EideticMemory3 = EideticMemory3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 eideticMemory3 :: EventCard EideticMemory3
 eideticMemory3 =

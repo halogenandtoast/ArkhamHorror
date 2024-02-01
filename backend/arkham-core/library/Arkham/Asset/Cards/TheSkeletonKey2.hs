@@ -13,7 +13,7 @@ import Arkham.Placement
 
 newtype TheSkeletonKey2 = TheSkeletonKey2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theSkeletonKey2 :: AssetCard TheSkeletonKey2
 theSkeletonKey2 = asset TheSkeletonKey2 Cards.theSkeletonKey2

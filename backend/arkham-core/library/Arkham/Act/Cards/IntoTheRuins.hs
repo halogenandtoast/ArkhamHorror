@@ -16,7 +16,7 @@ import Arkham.Scenario.Deck
 
 newtype IntoTheRuins = IntoTheRuins ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 intoTheRuins :: ActCard IntoTheRuins
 intoTheRuins = act (1, A) IntoTheRuins Cards.intoTheRuins (Just $ GroupClueCost (PerPlayer 3) Anywhere)

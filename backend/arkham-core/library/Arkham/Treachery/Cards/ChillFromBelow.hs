@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype ChillFromBelow = ChillFromBelow TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chillFromBelow :: TreacheryCard ChillFromBelow
 chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow

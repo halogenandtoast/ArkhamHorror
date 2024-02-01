@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype EyesInTheWalls = EyesInTheWalls TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 eyesInTheWalls :: TreacheryCard EyesInTheWalls
 eyesInTheWalls = treachery EyesInTheWalls Cards.eyesInTheWalls

@@ -2728,6 +2728,7 @@ library
     , lens
     , monoidal-containers
     , mtl >=2.3.1
+    , nothunks
     , parsec
     , pretty-simple
     , process

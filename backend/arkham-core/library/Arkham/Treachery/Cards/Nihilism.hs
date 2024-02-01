@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner hiding (IgnoreChaosToken)
 
 newtype Nihilism = Nihilism TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 nihilism :: TreacheryCard Nihilism
 nihilism = treachery Nihilism Cards.nihilism

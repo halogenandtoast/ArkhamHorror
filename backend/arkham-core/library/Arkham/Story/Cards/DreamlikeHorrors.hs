@@ -10,7 +10,7 @@ import Arkham.Trait (Trait (Creature))
 
 newtype DreamlikeHorrors = DreamlikeHorrors StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dreamlikeHorrors :: StoryCard DreamlikeHorrors
 dreamlikeHorrors = story DreamlikeHorrors Cards.dreamlikeHorrors

@@ -15,7 +15,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype ThreeFates = ThreeFates AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 threeFates :: AgendaCard ThreeFates
 threeFates = agenda (1, A) ThreeFates Cards.threeFates (Static 6)

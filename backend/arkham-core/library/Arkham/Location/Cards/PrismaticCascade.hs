@@ -19,7 +19,7 @@ import Control.Monad.Extra (findM)
 
 newtype PrismaticCascade = PrismaticCascade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 prismaticCascade :: LocationCard PrismaticCascade
 prismaticCascade =

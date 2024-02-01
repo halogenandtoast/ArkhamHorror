@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype UnspeakableOathBloodthirst = UnspeakableOathBloodthirst TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unspeakableOathBloodthirst :: TreacheryCard UnspeakableOathBloodthirst
 unspeakableOathBloodthirst = treachery UnspeakableOathBloodthirst Cards.unspeakableOathBloodthirst

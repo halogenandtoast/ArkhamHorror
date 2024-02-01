@@ -11,7 +11,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype MtNgranek = MtNgranek LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mtNgranek :: LocationCard MtNgranek
 mtNgranek = location MtNgranek Cards.mtNgranek 3 (PerPlayer 1)

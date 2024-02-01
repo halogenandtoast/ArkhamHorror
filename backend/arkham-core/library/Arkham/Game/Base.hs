@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game.Base where
 
@@ -28,8 +29,15 @@ import GHC.Records
 
 type GameMode = These Campaign Scenario
 
+deriving anyclass instance NoThunks Diff.Patch
+deriving anyclass instance NoThunks Diff.Operation
+deriving anyclass instance NoThunks Diff.Pointer
+deriving anyclass instance NoThunks Diff.Key
+deriving via AllowThunk Key instance NoThunks Key
+
 data GameState = IsPending [PlayerId] | IsActive | IsOver
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (NoThunks)
 
 data Game = Game
   { gamePhaseHistory :: Map InvestigatorId History
@@ -98,7 +106,8 @@ data Game = Game
     gamePerformTarotReadings :: Bool
   , gameCurrentBatchId :: Maybe BatchId
   }
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (NoThunks)
 
 makeLensesWith suffixedFields ''Game
 

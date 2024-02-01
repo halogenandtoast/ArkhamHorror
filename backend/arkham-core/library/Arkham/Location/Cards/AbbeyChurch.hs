@@ -13,7 +13,7 @@ import Arkham.Prelude
 
 newtype AbbeyChurch = AbbeyChurch LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 abbeyChurch :: LocationCard AbbeyChurch
 abbeyChurch =

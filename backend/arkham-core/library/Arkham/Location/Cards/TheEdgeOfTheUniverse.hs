@@ -18,7 +18,7 @@ import Arkham.Phase
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theEdgeOfTheUniverse :: LocationCard TheEdgeOfTheUniverse
 theEdgeOfTheUniverse =

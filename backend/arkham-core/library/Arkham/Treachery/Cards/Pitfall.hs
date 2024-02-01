@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype Pitfall = Pitfall TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pitfall :: TreacheryCard Pitfall
 pitfall = treachery Pitfall Cards.pitfall

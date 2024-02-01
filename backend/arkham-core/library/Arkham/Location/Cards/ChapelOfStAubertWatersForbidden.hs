@@ -15,7 +15,7 @@ import Arkham.ScenarioLogKey
 
 newtype ChapelOfStAubertWatersForbidden = ChapelOfStAubertWatersForbidden LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chapelOfStAubertWatersForbidden :: LocationCard ChapelOfStAubertWatersForbidden
 chapelOfStAubertWatersForbidden =

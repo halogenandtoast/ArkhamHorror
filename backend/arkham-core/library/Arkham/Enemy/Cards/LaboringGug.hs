@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype LaboringGug = LaboringGug EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 laboringGug :: EnemyCard LaboringGug
 laboringGug = enemy LaboringGug Cards.laboringGug (5, Static 5, 2) (3, 1)

@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype WatchersGrasp = WatchersGrasp TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 watchersGrasp :: TreacheryCard WatchersGrasp
 watchersGrasp = treachery WatchersGrasp Cards.watchersGrasp

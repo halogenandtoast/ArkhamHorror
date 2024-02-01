@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype FalseLead = FalseLead TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 falseLead :: TreacheryCard FalseLead
 falseLead = treachery FalseLead Cards.falseLead

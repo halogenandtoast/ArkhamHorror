@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype SecretsBetterLeftHidden = SecretsBetterLeftHidden AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 secretsBetterLeftHidden :: AgendaCard SecretsBetterLeftHidden
 secretsBetterLeftHidden =

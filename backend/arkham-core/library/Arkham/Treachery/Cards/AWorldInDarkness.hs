@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype AWorldInDarkness = AWorldInDarkness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aWorldInDarkness :: TreacheryCard AWorldInDarkness
 aWorldInDarkness = treachery AWorldInDarkness Cards.aWorldInDarkness

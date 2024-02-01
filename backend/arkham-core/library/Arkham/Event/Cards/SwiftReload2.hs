@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Firearm))
 
 newtype SwiftReload2 = SwiftReload2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 swiftReload2 :: EventCard SwiftReload2
 swiftReload2 = event SwiftReload2 Cards.swiftReload2

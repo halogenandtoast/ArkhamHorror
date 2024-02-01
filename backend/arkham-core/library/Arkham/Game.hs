@@ -3710,11 +3710,15 @@ readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game
 readGame = view gameRefL >>= (`atomicModifyIORef'` dupe)
 
 putGame :: (MonadIO m, MonadReader env m, HasGameRef env) => Game -> m ()
-putGame g = do
+putGame !g = do
   -- we want to retain the card database between puts
   ref <- view gameRefL
   g' <- readGame
-  atomicWriteIORef ref $ g {gameCards = gameCards g' <> gameCards g}
+  let !g'' = g {gameCards = gameCards g' <> gameCards g}
+  mThunk <- liftIO $ noThunks [] g''
+  case mThunk of
+    Nothing -> liftIO $ atomicWriteIORef ref g''
+    Just thunk -> error $ "putGame: " <> show thunk
 
 overGameReader :: (MonadIO m, HasGame m) => Reader Game a -> m a
 overGameReader body = runReader body <$> getGame

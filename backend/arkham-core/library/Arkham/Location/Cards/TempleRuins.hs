@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype TempleRuins = TempleRuins LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 templeRuins :: LocationCard TempleRuins
 templeRuins = locationWith TempleRuins Cards.templeRuins 4 (Static 0) (labelL .~ "circle")

@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype LucidDreaming2 = LucidDreaming2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lucidDreaming2 :: EventCard LucidDreaming2
 lucidDreaming2 = event LucidDreaming2 Cards.lucidDreaming2

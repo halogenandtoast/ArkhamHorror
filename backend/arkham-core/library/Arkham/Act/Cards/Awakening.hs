@@ -14,7 +14,7 @@ import Arkham.Name
 
 newtype Awakening = Awakening ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 awakening :: ActCard Awakening
 awakening =

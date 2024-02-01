@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype SwallowedSky = SwallowedSky AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 swallowedSky :: AgendaCard SwallowedSky
 swallowedSky = agenda (3, C) SwallowedSky Cards.swallowedSky (Static 8)

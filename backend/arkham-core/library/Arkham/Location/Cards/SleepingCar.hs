@@ -17,7 +17,7 @@ import Arkham.ScenarioLogKey
 
 newtype SleepingCar = SleepingCar LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sleepingCar :: LocationCard SleepingCar
 sleepingCar =

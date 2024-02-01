@@ -14,7 +14,7 @@ import Arkham.Prelude
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 alchemyLabs :: LocationCard AlchemyLabs
 alchemyLabs = location AlchemyLabs Cards.alchemyLabs 5 (Static 0)

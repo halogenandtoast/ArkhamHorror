@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 
 newtype TempleOfUnattainableDesires = TempleOfUnattainableDesires LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 templeOfUnattainableDesires :: LocationCard TempleOfUnattainableDesires
 templeOfUnattainableDesires = location TempleOfUnattainableDesires Cards.templeOfUnattainableDesires 3 (PerPlayer 1)

@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype DauntlessSpirit1 = DauntlessSpirit1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dauntlessSpirit1 :: SkillCard DauntlessSpirit1
 dauntlessSpirit1 = skill DauntlessSpirit1 Cards.dauntlessSpirit1

@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype ATearInTime = ATearInTime TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aTearInTime :: TreacheryCard ATearInTime
 aTearInTime = treachery ATearInTime Cards.aTearInTime

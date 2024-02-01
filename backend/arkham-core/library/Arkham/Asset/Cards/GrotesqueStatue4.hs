@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
 grotesqueStatue4 = assetWith GrotesqueStatue4 Cards.grotesqueStatue4 (whenNoUsesL ?~ DiscardWhenNoUses)

@@ -16,7 +16,7 @@ import Arkham.Prelude
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 letMeHandleThis :: EventCard LetMeHandleThis
 letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
@@ -64,7 +64,7 @@ instance RunMessage LetMeHandleThis where
 
 newtype LetMeHandleThisEffect = LetMeHandleThisEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 letMeHandleThisEffect :: EffectArgs -> LetMeHandleThisEffect
 letMeHandleThisEffect = cardEffect LetMeHandleThisEffect Cards.letMeHandleThis

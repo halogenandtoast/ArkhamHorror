@@ -23,7 +23,7 @@ import Data.Aeson.KeyMap ((!?))
 
 newtype TheInfestationBegins = TheInfestationBegins StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theInfestationBegins :: StoryCard TheInfestationBegins
 theInfestationBegins = story TheInfestationBegins Cards.theInfestationBegins

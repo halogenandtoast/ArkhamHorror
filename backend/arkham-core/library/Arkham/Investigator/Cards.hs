@@ -10,7 +10,7 @@ import Arkham.Name
 import Arkham.Trait hiding (Supply)
 
 investigator :: CardCode -> Name -> ClassSymbol -> [Trait] -> CardDef
-investigator cardCode name classSymbol traits =
+investigator !cardCode !name !classSymbol !traits =
   (emptyCardDef cardCode name InvestigatorType)
     { cdClassSymbols = singleton classSymbol
     , cdCardTraits = setFromList traits
@@ -75,7 +75,7 @@ withAlternate :: CardCode -> CardDef -> CardDef
 withAlternate ccode = withAlternates [ccode]
 
 withAlternates :: [CardCode] -> CardDef -> CardDef
-withAlternates ccodes def = def {cdAlternateCardCodes = ccodes}
+withAlternates !ccodes !def = def {cdAlternateCardCodes = ccodes}
 
 rolandBanks :: CardDef
 rolandBanks =

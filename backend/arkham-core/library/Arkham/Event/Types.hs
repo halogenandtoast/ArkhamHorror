@@ -31,6 +31,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -81,6 +82,7 @@ data EventAttrs = EventAttrs
   , eventTarget :: Maybe Target
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
@@ -171,6 +173,11 @@ instance Sourceable EventAttrs where
   isSource _ _ = False
 
 data Event = forall a. IsEvent a => Event a
+
+instance NoThunks Event where
+  noThunks ctx (Event a) = noThunks ctx a
+  wNoThunks ctx (Event a) = wNoThunks ctx a
+  showTypeOf _ = "Event"
 
 instance HasField "placement" Event Placement where
   getField (Event a) = (toAttrs a).placement

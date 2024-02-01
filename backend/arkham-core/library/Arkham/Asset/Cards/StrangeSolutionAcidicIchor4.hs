@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 strangeSolutionAcidicIchor4 :: AssetCard StrangeSolutionAcidicIchor4
 strangeSolutionAcidicIchor4 =

@@ -14,7 +14,7 @@ import Arkham.Investigate
 
 newtype RiteOfSeeking2 = RiteOfSeeking2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 riteOfSeeking2 :: AssetCard RiteOfSeeking2
 riteOfSeeking2 = asset RiteOfSeeking2 Cards.riteOfSeeking2

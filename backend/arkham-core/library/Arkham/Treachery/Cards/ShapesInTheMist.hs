@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype ShapesInTheMist = ShapesInTheMist TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shapesInTheMist :: TreacheryCard ShapesInTheMist
 shapesInTheMist = treachery ShapesInTheMist Cards.shapesInTheMist

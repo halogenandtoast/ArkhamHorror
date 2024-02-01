@@ -17,11 +17,11 @@ import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {locations :: [LocationId]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype HawkEyeFoldingCamera = HawkEyeFoldingCamera (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hawkEyeFoldingCamera :: AssetCard HawkEyeFoldingCamera
 hawkEyeFoldingCamera =

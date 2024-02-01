@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 oldBookOfLore :: AssetCard OldBookOfLore
 oldBookOfLore = asset OldBookOfLore Cards.oldBookOfLore

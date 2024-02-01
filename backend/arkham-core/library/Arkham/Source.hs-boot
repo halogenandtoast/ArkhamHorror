@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 data Source
 
+instance NoThunks Source
 instance Data Source
 instance ToJSON Source
 instance FromJSON Source

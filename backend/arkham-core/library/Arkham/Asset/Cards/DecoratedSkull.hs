@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype DecoratedSkull = DecoratedSkull AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 decoratedSkull :: AssetCard DecoratedSkull
 decoratedSkull = asset DecoratedSkull Cards.decoratedSkull

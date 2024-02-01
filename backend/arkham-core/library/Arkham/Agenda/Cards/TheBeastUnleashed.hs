@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theBeastUnleashed :: AgendaCard TheBeastUnleashed
 theBeastUnleashed =

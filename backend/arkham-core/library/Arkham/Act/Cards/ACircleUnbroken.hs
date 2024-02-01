@@ -11,7 +11,7 @@ import Arkham.Prelude
 
 newtype ACircleUnbroken = ACircleUnbroken ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aCircleUnbroken :: ActCard ACircleUnbroken
 aCircleUnbroken = act (4, A) ACircleUnbroken Cards.aCircleUnbroken Nothing

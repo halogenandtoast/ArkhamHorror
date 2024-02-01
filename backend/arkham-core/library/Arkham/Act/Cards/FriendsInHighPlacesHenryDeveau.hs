@@ -20,7 +20,7 @@ import Arkham.Projection
 
 newtype FriendsInHighPlacesHenryDeveau = FriendsInHighPlacesHenryDeveau ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 friendsInHighPlacesHenryDeveau :: ActCard FriendsInHighPlacesHenryDeveau
 friendsInHighPlacesHenryDeveau =

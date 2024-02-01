@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 coldSpringGlen_245 :: LocationCard ColdSpringGlen_245
 coldSpringGlen_245 =

@@ -11,7 +11,7 @@ import Arkham.Skill.Runner
 
 newtype DesperateSearch = DesperateSearch SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 desperateSearch :: SkillCard DesperateSearch
 desperateSearch = skill DesperateSearch Cards.desperateSearch

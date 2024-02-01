@@ -18,7 +18,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype TheGeistTrap = TheGeistTrap LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theGeistTrap :: LocationCard TheGeistTrap
 theGeistTrap = location TheGeistTrap Cards.theGeistTrap 4 (PerPlayer 1)

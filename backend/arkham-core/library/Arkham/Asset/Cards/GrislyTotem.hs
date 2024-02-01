@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype GrislyTotem = GrislyTotem AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 grislyTotem :: AssetCard GrislyTotem
 grislyTotem = asset GrislyTotem Cards.grislyTotem

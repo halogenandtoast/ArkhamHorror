@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype Waylay = Waylay EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 waylay :: EventCard Waylay
 waylay = event Waylay Cards.waylay

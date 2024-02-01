@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RecoverTheRelic = RecoverTheRelic ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 recoverTheRelic :: ActCard RecoverTheRelic
 recoverTheRelic = act (3, A) RecoverTheRelic Cards.recoverTheRelic Nothing

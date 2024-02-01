@@ -18,7 +18,7 @@ import Arkham.Trait qualified as Trait
 
 newtype AnotherWay = AnotherWay StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 anotherWay :: StoryCard AnotherWay
 anotherWay = story AnotherWay Cards.anotherWay

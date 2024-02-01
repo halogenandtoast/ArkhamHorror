@@ -13,7 +13,8 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 data ActionRestriction = AbilitiesOnly | NoRestriction
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data AdditionalActionType
   = TraitRestrictedAdditionalAction Trait ActionRestriction
@@ -21,10 +22,12 @@ data AdditionalActionType
   | EffectAction Text EffectId
   | AnyAdditionalAction
   | BountyAction -- Tony Morgan
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data AdditionalAction = AdditionalAction {label :: Text, source :: Source, kind :: AdditionalActionType}
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 additionalActionType :: AdditionalAction -> AdditionalActionType
 additionalActionType (AdditionalAction _ _ aType) = aType

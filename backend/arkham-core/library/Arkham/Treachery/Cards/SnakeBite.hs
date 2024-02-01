@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype SnakeBite = SnakeBite TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 snakeBite :: TreacheryCard SnakeBite
 snakeBite = treachery SnakeBite Cards.snakeBite

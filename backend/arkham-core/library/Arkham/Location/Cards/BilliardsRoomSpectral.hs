@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype BilliardsRoomSpectral = BilliardsRoomSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 billiardsRoomSpectral :: LocationCard BilliardsRoomSpectral
 billiardsRoomSpectral =

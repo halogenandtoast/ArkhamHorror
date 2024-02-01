@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype SelfDestructive = SelfDestructive TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 selfDestructive :: TreacheryCard SelfDestructive
 selfDestructive = treachery SelfDestructive Cards.selfDestructive

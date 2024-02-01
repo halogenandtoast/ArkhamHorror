@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype OfficeSpectral = OfficeSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 officeSpectral :: LocationCard OfficeSpectral
 officeSpectral = location OfficeSpectral Cards.officeSpectral 4 (PerPlayer 2)

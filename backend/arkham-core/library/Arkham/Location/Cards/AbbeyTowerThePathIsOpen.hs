@@ -20,7 +20,7 @@ import Arkham.ScenarioLogKey
 
 newtype AbbeyTowerThePathIsOpen = AbbeyTowerThePathIsOpen LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 abbeyTowerThePathIsOpen :: LocationCard AbbeyTowerThePathIsOpen
 abbeyTowerThePathIsOpen =

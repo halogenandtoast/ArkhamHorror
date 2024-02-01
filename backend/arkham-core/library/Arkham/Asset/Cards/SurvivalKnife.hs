@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype SurvivalKnife = SurvivalKnife AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 survivalKnife :: AssetCard SurvivalKnife
 survivalKnife = asset SurvivalKnife Cards.survivalKnife

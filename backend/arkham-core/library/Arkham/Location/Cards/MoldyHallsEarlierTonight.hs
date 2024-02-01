@@ -20,7 +20,7 @@ import Arkham.ScenarioLogKey
 
 newtype MoldyHallsEarlierTonight = MoldyHallsEarlierTonight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 moldyHallsEarlierTonight :: LocationCard MoldyHallsEarlierTonight
 moldyHallsEarlierTonight =

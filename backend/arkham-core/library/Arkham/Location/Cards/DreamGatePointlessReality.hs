@@ -20,7 +20,7 @@ import Arkham.Projection
 
 newtype DreamGatePointlessReality = DreamGatePointlessReality LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dreamGatePointlessReality :: LocationCard DreamGatePointlessReality
 dreamGatePointlessReality = location DreamGatePointlessReality Cards.dreamGatePointlessReality 6 (Static 0)

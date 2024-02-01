@@ -8,7 +8,8 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 data Timing = When | AtIf | After
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance IsLabel "when" Timing where
   fromLabel = When

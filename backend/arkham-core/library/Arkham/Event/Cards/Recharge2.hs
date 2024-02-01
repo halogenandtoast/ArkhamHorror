@@ -19,11 +19,11 @@ import Arkham.Window qualified as Window
 
 newtype Meta = Meta {chosenAsset :: Maybe AssetId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype Recharge2 = Recharge2 (EventAttrs `With` Meta)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 recharge2 :: EventCard Recharge2
 recharge2 = event (Recharge2 . (`With` Meta Nothing)) Cards.recharge2

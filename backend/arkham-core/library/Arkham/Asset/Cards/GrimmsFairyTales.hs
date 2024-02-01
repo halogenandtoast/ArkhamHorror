@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype GrimmsFairyTales = GrimmsFairyTales AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 grimmsFairyTales :: AssetCard GrimmsFairyTales
 grimmsFairyTales = asset GrimmsFairyTales Cards.grimmsFairyTales

@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype Montparnasse = Montparnasse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 montparnasse :: LocationCard Montparnasse
 montparnasse = location Montparnasse Cards.montparnasse 2 (PerPlayer 1)

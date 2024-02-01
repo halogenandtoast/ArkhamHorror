@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 northsideTrainStation :: LocationCard NorthsideTrainStation
 northsideTrainStation =

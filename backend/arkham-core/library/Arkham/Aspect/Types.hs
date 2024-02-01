@@ -6,8 +6,8 @@ import Arkham.SkillType
 
 data Aspect = InsteadOfAspect InsteadOf
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data InsteadOf = InsteadOf SkillType SkillType
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)

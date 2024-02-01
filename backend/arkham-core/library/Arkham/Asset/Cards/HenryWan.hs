@@ -14,11 +14,11 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype Metadata = Metadata {revealedChaosTokens :: [ChaosToken]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype HenryWan = HenryWan (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 henryWan :: AssetCard HenryWan
 henryWan = ally (HenryWan . (`with` Metadata [])) Cards.henryWan (1, 2)

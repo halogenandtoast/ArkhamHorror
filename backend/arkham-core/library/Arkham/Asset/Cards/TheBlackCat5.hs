@@ -12,7 +12,7 @@ import Arkham.ChaosToken
 
 newtype TheBlackCat5 = TheBlackCat5 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theBlackCat5 :: AssetCard TheBlackCat5
 theBlackCat5 = ally TheBlackCat5 Cards.theBlackCat5 (3, 3)

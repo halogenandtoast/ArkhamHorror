@@ -16,7 +16,7 @@ import Arkham.Placement
 
 newtype OpenGate = OpenGate EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 openGate :: EventCard OpenGate
 openGate = event OpenGate Cards.openGate

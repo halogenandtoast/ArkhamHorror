@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (CrimeScene))
 
 newtype ConspicuousStaff = ConspicuousStaff EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 conspicuousStaff :: EnemyCard ConspicuousStaff
 conspicuousStaff =

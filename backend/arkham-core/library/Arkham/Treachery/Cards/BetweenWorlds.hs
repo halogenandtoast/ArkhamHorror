@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype BetweenWorlds = BetweenWorlds TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 betweenWorlds :: TreacheryCard BetweenWorlds
 betweenWorlds = treachery BetweenWorlds Cards.betweenWorlds

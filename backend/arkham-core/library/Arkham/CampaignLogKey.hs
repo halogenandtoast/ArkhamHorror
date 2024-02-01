@@ -253,7 +253,8 @@ data CampaignLogKey
   | TheHourIsNigh
   | YouHaveTranslatedTheTome
   | YouHaveInterpretedTheDreams
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Eq, Show, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''CampaignLogKey)
 
@@ -261,7 +262,8 @@ instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
 
 data Recorded a = Recorded a | CrossedOut a
-  deriving stock (Show, Ord, Eq)
+  deriving stock (Show, Ord, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance ToJSON a => ToJSON (Recorded a) where
   toJSON (Recorded a) = object ["tag" .= String "Recorded", "contents" .= a]
@@ -339,6 +341,7 @@ data SomeRecorded where
   SomeRecorded :: Recordable a => RecordableType a -> Recorded a -> SomeRecorded
 
 deriving stock instance Show SomeRecorded
+deriving via AllowThunk SomeRecorded instance NoThunks SomeRecorded
 
 instance Eq SomeRecorded where
   (SomeRecorded _ (a :: a)) == (SomeRecorded _ (b :: b)) = case eqT @a @b of

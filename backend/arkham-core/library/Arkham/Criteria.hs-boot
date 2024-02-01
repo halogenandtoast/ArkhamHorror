@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 data Criterion
 
+instance NoThunks Criterion
 instance Data Criterion
 instance Show Criterion
 instance Eq Criterion

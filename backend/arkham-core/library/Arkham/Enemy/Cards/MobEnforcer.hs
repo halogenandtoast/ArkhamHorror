@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mobEnforcer :: EnemyCard MobEnforcer
 mobEnforcer =

@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype DianneDevine = DianneDevine EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dianneDevine :: EnemyCard DianneDevine
 dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)

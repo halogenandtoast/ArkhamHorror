@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype Serannian = Serannian LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 serannian :: LocationCard Serannian
 serannian = location Serannian Cards.serannian 3 (PerPlayer 1)

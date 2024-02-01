@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype ForbiddenTome = ForbiddenTome AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 forbiddenTome :: AssetCard ForbiddenTome
 forbiddenTome = asset ForbiddenTome Cards.forbiddenTome

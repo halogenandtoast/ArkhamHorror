@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype TheOath = TheOath ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 theOath :: ActCard TheOath
 theOath =

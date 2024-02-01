@@ -50,6 +50,7 @@ data Entities = Entities
   , entitiesStories :: EntityMap Story
   }
   deriving stock (Eq, Show, Generic)
+  deriving anyclass (NoThunks)
 
 instance ToJSON Entities where
   toJSON = genericToJSON $ aesonOptions $ Just "entities"
@@ -107,9 +108,14 @@ instance HasAbilities Entities where
       <> concatMap getAbilities (toList entitiesStories)
 
 data SomeEntity where
-  SomeEntity :: (Entity a, HasModifiersFor a, Targetable a, Show a) => a -> SomeEntity
+  SomeEntity :: (Entity a, NoThunks a, HasModifiersFor a, Targetable a, Show a) => a -> SomeEntity
 
 deriving stock instance Show SomeEntity
+
+instance NoThunks SomeEntity where
+  noThunks ctx (SomeEntity a) = noThunks ctx a
+  wNoThunks ctx (SomeEntity a) = wNoThunks ctx a
+  showTypeOf _ = "SomeEntity"
 
 instance Targetable SomeEntity where
   toTarget (SomeEntity e) = toTarget e

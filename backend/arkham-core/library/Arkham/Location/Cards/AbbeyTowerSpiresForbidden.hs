@@ -15,7 +15,7 @@ import Arkham.ScenarioLogKey
 
 newtype AbbeyTowerSpiresForbidden = AbbeyTowerSpiresForbidden LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 abbeyTowerSpiresForbidden :: LocationCard AbbeyTowerSpiresForbidden
 abbeyTowerSpiresForbidden =

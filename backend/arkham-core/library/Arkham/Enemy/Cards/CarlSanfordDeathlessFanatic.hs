@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype CarlSanfordDeathlessFanatic = CarlSanfordDeathlessFanatic EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 carlSanfordDeathlessFanatic :: EnemyCard CarlSanfordDeathlessFanatic
 carlSanfordDeathlessFanatic =

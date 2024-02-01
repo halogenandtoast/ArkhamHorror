@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype HallowedMirror3 = HallowedMirror3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hallowedMirror3 :: AssetCard HallowedMirror3
 hallowedMirror3 = asset HallowedMirror3 Cards.hallowedMirror3

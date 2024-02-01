@@ -19,7 +19,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SerpentsHaven = SerpentsHaven LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 serpentsHaven :: LocationCard SerpentsHaven
 serpentsHaven = location SerpentsHaven Cards.serpentsHaven 2 (PerPlayer 2)

@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype DarkHorse = DarkHorse AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 darkHorse :: AssetCard DarkHorse
 darkHorse = asset DarkHorse Cards.darkHorse

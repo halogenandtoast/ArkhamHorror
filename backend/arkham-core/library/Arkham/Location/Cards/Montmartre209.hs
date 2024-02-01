@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 
 newtype Montmartre209 = Montmartre209 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 montmartre209 :: LocationCard Montmartre209
 montmartre209 = location Montmartre209 Cards.montmartre209 3 (PerPlayer 1)

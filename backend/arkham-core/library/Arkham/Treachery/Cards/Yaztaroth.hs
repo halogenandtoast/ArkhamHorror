@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype Yaztaroth = Yaztaroth TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 yaztaroth :: TreacheryCard Yaztaroth
 yaztaroth = treachery Yaztaroth Cards.yaztaroth

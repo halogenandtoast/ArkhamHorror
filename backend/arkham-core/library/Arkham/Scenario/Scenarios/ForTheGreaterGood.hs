@@ -35,7 +35,7 @@ import Arkham.Trait qualified as Trait
 
 newtype ForTheGreaterGood = ForTheGreaterGood ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 forTheGreaterGood :: Difficulty -> ForTheGreaterGood
 forTheGreaterGood difficulty =

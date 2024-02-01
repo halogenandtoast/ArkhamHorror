@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype DreamEnhancingSerum = DreamEnhancingSerum AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dreamEnhancingSerum :: AssetCard DreamEnhancingSerum
 dreamEnhancingSerum = asset DreamEnhancingSerum Cards.dreamEnhancingSerum

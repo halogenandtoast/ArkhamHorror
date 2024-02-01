@@ -15,11 +15,11 @@ import Arkham.Matcher
 
 newtype Metadata = Metadata {drawnCards :: [EncounterCard]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype ParallelFates2 = ParallelFates2 (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 parallelFates2 :: EventCard ParallelFates2
 parallelFates2 =

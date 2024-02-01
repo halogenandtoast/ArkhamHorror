@@ -14,7 +14,7 @@ import Arkham.Helpers.Investigator
 
 newtype Stargazing1 = Stargazing1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 stargazing1 :: EventCard Stargazing1
 stargazing1 = event Stargazing1 Cards.stargazing1

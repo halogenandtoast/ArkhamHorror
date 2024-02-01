@@ -9,7 +9,7 @@ import Arkham.Story.Runner
 
 newtype TheCryptOfZulanThek = TheCryptOfZulanThek StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theCryptOfZulanThek :: StoryCard TheCryptOfZulanThek
 theCryptOfZulanThek = story TheCryptOfZulanThek Cards.theCryptOfZulanThek

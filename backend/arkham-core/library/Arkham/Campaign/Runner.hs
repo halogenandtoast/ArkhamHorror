@@ -79,14 +79,14 @@ defaultCampaignRunner msg a = case msg of
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid deck -> do
     playerCount <- getPlayerCount
-    (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
+    (!deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
     pid <- getPlayer iid
     let purchaseTrauma = initDeckTrauma deck' iid pid CampaignTarget
     pushAll
       $ map (AddCampaignCardToDeck iid) randomWeaknesses
       <> purchaseTrauma
-
-    pure $ updateAttrs a $ decksL %~ insertMap iid deck'
+    let !result = updateAttrs a $ decksL %~ insertMap iid deck'
+    pure result
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" CampaignTarget) -> do
     let physical = getChoiceAmount "Physical" choiceMap
     let mental = getChoiceAmount "Mental" choiceMap
@@ -106,7 +106,7 @@ defaultCampaignRunner msg a = case msg of
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     playerCount <- getPlayerCount
-    (deck', _) <- addRandomBasicWeaknessIfNeeded playerCount deck
+    (!deck', _) <- addRandomBasicWeaknessIfNeeded playerCount deck
     pushAll purchaseTrauma
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of

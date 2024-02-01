@@ -15,7 +15,7 @@ import Arkham.Zone
 
 newtype OnTheHunt = OnTheHunt EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 onTheHunt :: EventCard OnTheHunt
 onTheHunt = event OnTheHunt Cards.onTheHunt

@@ -11,7 +11,7 @@ import Arkham.Treachery.Cards.EagerForDeath
 import Arkham.Treachery.Runner
 
 newtype EagerForDeathUnionAndDisillusion = EagerForDeathUnionAndDisillusion EagerForDeath
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, IsTreachery, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, IsTreachery, HasModifiersFor, HasAbilities)
 
 eagerForDeathUnionAndDisillusion :: TreacheryCard EagerForDeathUnionAndDisillusion
 eagerForDeathUnionAndDisillusion =

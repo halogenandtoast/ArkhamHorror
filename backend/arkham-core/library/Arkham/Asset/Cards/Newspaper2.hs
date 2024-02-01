@@ -18,11 +18,11 @@ import Arkham.Timing qualified as Timing
 
 newtype Metadata = Metadata {active :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype Newspaper2 = Newspaper2 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 newspaper2 :: AssetCard Newspaper2
 newspaper2 = asset (Newspaper2 . (`with` Metadata False)) Cards.newspaper2

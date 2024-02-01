@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Cultist, SilverTwilight))
 
 newtype TheHierophantV = TheHierophantV AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theHierophantV :: AgendaCard TheHierophantV
 theHierophantV = agenda (1, A) TheHierophantV Cards.theHierophantV (Static 8)

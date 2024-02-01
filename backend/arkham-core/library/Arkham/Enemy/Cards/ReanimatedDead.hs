@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 
 newtype ReanimatedDead = ReanimatedDead EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 reanimatedDead :: EnemyCard ReanimatedDead
 reanimatedDead = enemy ReanimatedDead Cards.reanimatedDead (1, Static 1, 1) (1, 0)

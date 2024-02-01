@@ -20,7 +20,7 @@ import Arkham.SkillType
 
 newtype Yaotl1 = Yaotl1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 yaotl1 :: AssetCard Yaotl1
 yaotl1 = ally Yaotl1 Cards.yaotl1 (2, 2)
@@ -51,7 +51,7 @@ instance RunMessage Yaotl1 where
 
 newtype Yaotl1Effect = Yaotl1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 yaotl1Effect :: EffectArgs -> Yaotl1Effect
 yaotl1Effect = Yaotl1Effect . uncurry4 (baseAttrs "04035")

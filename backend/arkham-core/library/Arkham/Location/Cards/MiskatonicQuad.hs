@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 miskatonicQuad :: LocationCard MiskatonicQuad
 miskatonicQuad = location MiskatonicQuad Cards.miskatonicQuad 3 (Static 0)

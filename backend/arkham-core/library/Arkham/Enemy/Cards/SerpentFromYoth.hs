@@ -13,7 +13,7 @@ import Arkham.Keyword qualified as Keyword
 
 newtype SerpentFromYoth = SerpentFromYoth EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 serpentFromYoth :: EnemyCard SerpentFromYoth
 serpentFromYoth =

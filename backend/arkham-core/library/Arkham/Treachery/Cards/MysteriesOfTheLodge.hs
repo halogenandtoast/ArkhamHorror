@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype MysteriesOfTheLodge = MysteriesOfTheLodge TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mysteriesOfTheLodge :: TreacheryCard MysteriesOfTheLodge
 mysteriesOfTheLodge = treachery MysteriesOfTheLodge Cards.mysteriesOfTheLodge
@@ -55,7 +55,7 @@ instance RunMessage MysteriesOfTheLodge where
 
 newtype MysteriesOfTheLodgeEffect = MysteriesOfTheLodgeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mysteriesOfTheLodgeEffect :: EffectArgs -> MysteriesOfTheLodgeEffect
 mysteriesOfTheLodgeEffect =

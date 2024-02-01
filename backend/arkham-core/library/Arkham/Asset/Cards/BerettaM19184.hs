@@ -12,7 +12,7 @@ import Arkham.Asset.Runner
 
 newtype BerettaM19184 = BerettaM19184 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 berettaM19184 :: AssetCard BerettaM19184
 berettaM19184 = asset BerettaM19184 Cards.berettaM19184

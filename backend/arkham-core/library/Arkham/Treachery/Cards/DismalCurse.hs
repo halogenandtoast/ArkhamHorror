@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype DismalCurse = DismalCurse TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 dismalCurse :: TreacheryCard DismalCurse
 dismalCurse = treachery DismalCurse Cards.dismalCurse

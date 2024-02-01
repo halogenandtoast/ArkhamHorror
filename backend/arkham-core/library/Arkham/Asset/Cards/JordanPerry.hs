@@ -10,7 +10,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype JordanPerry = JordanPerry AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jordanPerry :: AssetCard JordanPerry
 jordanPerry = asset JordanPerry Cards.jordanPerry

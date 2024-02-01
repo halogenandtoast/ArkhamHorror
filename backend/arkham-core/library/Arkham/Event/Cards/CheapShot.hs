@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype CheapShot = CheapShot EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cheapShot :: EventCard CheapShot
 cheapShot = event CheapShot Cards.cheapShot

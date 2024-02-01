@@ -8,7 +8,8 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 data DamageType = HorrorType | DamageType
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance IsLabel "horror" DamageType where
   fromLabel = HorrorType

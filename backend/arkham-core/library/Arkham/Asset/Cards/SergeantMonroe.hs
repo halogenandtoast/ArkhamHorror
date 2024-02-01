@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype SergeantMonroe = SergeantMonroe AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sergeantMonroe :: AssetCard SergeantMonroe
 sergeantMonroe = ally SergeantMonroe Cards.sergeantMonroe (3, 3)

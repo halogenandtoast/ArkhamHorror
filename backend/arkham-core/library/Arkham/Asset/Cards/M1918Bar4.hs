@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype M1918Bar4 = M1918Bar4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 m1918Bar4 :: AssetCard M1918Bar4
 m1918Bar4 = asset M1918Bar4 Cards.m1918Bar4

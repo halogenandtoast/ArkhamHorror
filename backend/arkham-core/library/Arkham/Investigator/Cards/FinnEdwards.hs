@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype FinnEdwards = FinnEdwards InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 finnEdwards :: InvestigatorCard FinnEdwards
 finnEdwards =

@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype SpiresOfCarcosa = SpiresOfCarcosa TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 spiresOfCarcosa :: TreacheryCard SpiresOfCarcosa
 spiresOfCarcosa = treachery SpiresOfCarcosa Cards.spiresOfCarcosa

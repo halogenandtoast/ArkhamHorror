@@ -17,7 +17,7 @@ import Arkham.Zone qualified as Zone
 
 newtype RandallCho = RandallCho AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 randallCho :: AssetCard RandallCho
 randallCho = ally RandallCho Cards.randallCho (1, 3)

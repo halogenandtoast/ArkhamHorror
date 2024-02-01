@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype MarkedByTheSign = MarkedByTheSign TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 markedByTheSign :: TreacheryCard MarkedByTheSign
 markedByTheSign = treachery MarkedByTheSign Cards.markedByTheSign

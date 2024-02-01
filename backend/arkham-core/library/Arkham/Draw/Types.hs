@@ -12,13 +12,15 @@ import Data.Aeson.TH
 import GHC.Records
 
 data CardDrawRules = ShuffleBackInEachWeakness | AfterDrawDiscard Int
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data CardDrawState
   = UnresolvedCardDraw
   | InProgress [Card]
   | ResolvedCardDraw [Card]
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data CardDraw = CardDraw
   { cardDrawId :: CardDrawId
@@ -30,7 +32,8 @@ data CardDraw = CardDraw
   , cardDrawAction :: Bool
   , cardDrawRules :: Set CardDrawRules
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 instance HasField "investigator" CardDraw InvestigatorId where
   getField = cardDrawInvestigator

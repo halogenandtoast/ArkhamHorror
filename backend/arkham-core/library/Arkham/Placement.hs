@@ -27,7 +27,8 @@ data Placement
   | Limbo
   | Global
   | OutOfPlay OutOfPlayZone
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 placementToAttached :: Placement -> Maybe Target
 placementToAttached = \case
@@ -78,7 +79,8 @@ data TreacheryPlacement
   | TreacheryInHandOf InvestigatorId
   | TreacheryNextToAgenda
   | TreacheryLimbo
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''Placement)
 $(deriveJSON defaultOptions ''TreacheryPlacement)

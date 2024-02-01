@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype Contraband2 = Contraband2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 contraband2 :: EventCard Contraband2
 contraband2 = event Contraband2 Cards.contraband2

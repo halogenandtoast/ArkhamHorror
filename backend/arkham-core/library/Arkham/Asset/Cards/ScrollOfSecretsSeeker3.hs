@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype ScrollOfSecretsSeeker3 = ScrollOfSecretsSeeker3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 scrollOfSecretsSeeker3 :: AssetCard ScrollOfSecretsSeeker3
 scrollOfSecretsSeeker3 =

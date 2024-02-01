@@ -11,7 +11,7 @@ import Arkham.Story.Runner
 
 newtype ThePattern = ThePattern StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thePattern :: StoryCard ThePattern
 thePattern = story ThePattern Cards.thePattern

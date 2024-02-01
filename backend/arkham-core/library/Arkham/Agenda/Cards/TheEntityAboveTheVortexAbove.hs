@@ -19,7 +19,7 @@ import Arkham.Trait
 
 newtype TheEntityAboveTheVortexAbove = TheEntityAboveTheVortexAbove AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theEntityAboveTheVortexAbove :: AgendaCard TheEntityAboveTheVortexAbove
 theEntityAboveTheVortexAbove =

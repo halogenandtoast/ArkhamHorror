@@ -10,7 +10,7 @@ import Arkham.Movement
 
 newtype Elusive = Elusive EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 elusive :: EventCard Elusive
 elusive = event Elusive Cards.elusive

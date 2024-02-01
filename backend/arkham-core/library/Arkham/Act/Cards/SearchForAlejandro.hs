@@ -16,7 +16,7 @@ import Arkham.Placement
 
 newtype SearchForAlejandro = SearchForAlejandro ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 searchForAlejandro :: ActCard SearchForAlejandro
 searchForAlejandro =

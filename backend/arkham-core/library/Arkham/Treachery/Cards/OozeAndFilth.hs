@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype OozeAndFilth = OozeAndFilth TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 oozeAndFilth :: TreacheryCard OozeAndFilth
 oozeAndFilth = treachery OozeAndFilth Cards.oozeAndFilth

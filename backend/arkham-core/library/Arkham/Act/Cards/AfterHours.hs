@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype AfterHours = AfterHours ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 afterHours :: ActCard AfterHours
 afterHours = act (1, A) AfterHours Cards.afterHours (groupClueCost (PerPlayer 3))

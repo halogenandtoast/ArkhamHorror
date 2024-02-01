@@ -10,7 +10,7 @@ import Arkham.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sureGamble3 :: EventCard SureGamble3
 sureGamble3 = event SureGamble3 Cards.sureGamble3

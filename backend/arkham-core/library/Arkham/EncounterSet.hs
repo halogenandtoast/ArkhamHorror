@@ -135,6 +135,7 @@ data EncounterSet
   | VileExperiments
   | SinsOfThePast
   | Test
-  deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
+  deriving stock (Show, Eq, Ord, Bounded, Enum, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''EncounterSet)

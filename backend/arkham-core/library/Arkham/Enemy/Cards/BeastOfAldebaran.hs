@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype BeastOfAldebaran = BeastOfAldebaran EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 beastOfAldebaran :: EnemyCard BeastOfAldebaran
 beastOfAldebaran =

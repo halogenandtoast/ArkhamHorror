@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 interstellarTraveler :: EnemyCard InterstellarTraveler
 interstellarTraveler =

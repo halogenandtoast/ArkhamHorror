@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype GraspingHands = GraspingHands TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 graspingHands :: TreacheryCard GraspingHands
 graspingHands = treachery GraspingHands Cards.graspingHands

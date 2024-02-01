@@ -38,6 +38,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasModifiersFor a
   , RunMessage a
   , HasChaosTokenValue a
@@ -121,7 +122,8 @@ data ScenarioAttrs = ScenarioAttrs
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 setStandaloneCampaignLog :: CampaignLog -> ScenarioAttrs -> ScenarioAttrs
 setStandaloneCampaignLog standaloneCampaignLog attrs =
@@ -215,6 +217,11 @@ instance Sourceable ScenarioAttrs where
 
 data Scenario where
   Scenario :: IsScenario a => a -> Scenario
+
+instance NoThunks Scenario where
+  noThunks ctx (Scenario a) = noThunks ctx a
+  wNoThunks ctx (Scenario a) = wNoThunks ctx a
+  showTypeOf _ = "Scenario"
 
 instance Targetable Scenario where
   toTarget _ = ScenarioTarget

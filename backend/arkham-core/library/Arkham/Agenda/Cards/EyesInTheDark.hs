@@ -16,7 +16,7 @@ import Arkham.Matcher hiding (InvestigatorDefeated)
 
 newtype EyesInTheDark = EyesInTheDark AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 eyesInTheDark :: AgendaCard EyesInTheDark
 eyesInTheDark =

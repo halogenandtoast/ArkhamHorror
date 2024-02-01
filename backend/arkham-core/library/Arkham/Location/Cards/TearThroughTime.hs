@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 
 newtype TearThroughTime = TearThroughTime LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tearThroughTime :: LocationCard TearThroughTime
 tearThroughTime =

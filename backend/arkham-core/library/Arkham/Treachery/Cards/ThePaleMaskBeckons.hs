@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype ThePaleMaskBeckons = ThePaleMaskBeckons TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thePaleMaskBeckons :: TreacheryCard ThePaleMaskBeckons
 thePaleMaskBeckons = treachery ThePaleMaskBeckons Cards.thePaleMaskBeckons

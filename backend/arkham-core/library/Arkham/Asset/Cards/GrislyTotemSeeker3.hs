@@ -21,7 +21,7 @@ import Arkham.Window qualified as Window
 
 newtype GrislyTotemSeeker3 = GrislyTotemSeeker3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 grislyTotemSeeker3 :: AssetCard GrislyTotemSeeker3
 grislyTotemSeeker3 = asset GrislyTotemSeeker3 Cards.grislyTotemSeeker3
@@ -64,7 +64,7 @@ instance RunMessage GrislyTotemSeeker3 where
 
 newtype GrislyTotemSeeker3Effect = GrislyTotemSeeker3Effect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 grislyTotemSeeker3Effect :: EffectArgs -> GrislyTotemSeeker3Effect
 grislyTotemSeeker3Effect = cardEffect GrislyTotemSeeker3Effect Cards.grislyTotemSeeker3

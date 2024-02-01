@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype LolaSantiago3 = LolaSantiago3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lolaSantiago3 :: AssetCard LolaSantiago3
 lolaSantiago3 = ally LolaSantiago3 Cards.lolaSantiago3 (2, 2)

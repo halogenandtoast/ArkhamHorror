@@ -11,7 +11,7 @@ import Arkham.Effect.Runner
 
 newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 curseOfTheRougarouTabletToken :: EffectArgs -> CurseOfTheRougarouTabletToken
 curseOfTheRougarouTabletToken =

@@ -17,7 +17,7 @@ import Arkham.Skill.Runner
 
 newtype ExpeditiousRetreat1 = ExpeditiousRetreat1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 expeditiousRetreat1 :: SkillCard ExpeditiousRetreat1
 expeditiousRetreat1 = skill ExpeditiousRetreat1 Cards.expeditiousRetreat1

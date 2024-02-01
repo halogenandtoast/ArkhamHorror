@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype Backpack2 = Backpack2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 backpack2 :: AssetCard Backpack2
 backpack2 = asset Backpack2 Cards.backpack2

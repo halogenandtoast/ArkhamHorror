@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype FaubourgMarigny = FaubourgMarigny LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 faubourgMarigny :: LocationCard FaubourgMarigny
 faubourgMarigny = location FaubourgMarigny Cards.faubourgMarigny 4 (Static 0)

@@ -21,7 +21,7 @@ import Arkham.ScenarioLogKey
 
 newtype StrangeRelicsMariaDeSilva = StrangeRelicsMariaDeSilva ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 strangeRelicsMariaDeSilva :: ActCard StrangeRelicsMariaDeSilva
 strangeRelicsMariaDeSilva =

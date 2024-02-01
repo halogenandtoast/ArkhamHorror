@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 data FieldCost
 
+instance NoThunks FieldCost
 instance Data FieldCost
 instance ToJSON FieldCost
 instance FromJSON FieldCost
@@ -15,6 +16,7 @@ instance Ord FieldCost
 
 data MaybeFieldCost
 
+instance NoThunks MaybeFieldCost
 instance Data MaybeFieldCost
 instance ToJSON MaybeFieldCost
 instance FromJSON MaybeFieldCost

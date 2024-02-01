@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype FashionablyLate = FashionablyLate AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fashionablyLate :: AgendaCard FashionablyLate
 fashionablyLate =

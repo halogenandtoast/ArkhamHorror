@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BurialPit = BurialPit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 burialPit :: LocationCard BurialPit
 burialPit =

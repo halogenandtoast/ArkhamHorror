@@ -31,7 +31,7 @@ data Metadata = Metadata
   , yithians :: Set InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 instance Semigroup Metadata where
   Metadata a1 b1 <> Metadata a2 b2 = Metadata (a1 <> a2) (b1 <> b2)
@@ -40,7 +40,7 @@ instance Monoid Metadata where
   mempty = Metadata mempty mempty
 
 newtype TheForgottenAge = TheForgottenAge (CampaignAttrs `With` Metadata)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, NoThunks)
 
 instance IsCampaign TheForgottenAge where
   nextStep a = case campaignStep (toAttrs a) of

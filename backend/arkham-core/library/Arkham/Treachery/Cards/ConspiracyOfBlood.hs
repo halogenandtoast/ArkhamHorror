@@ -19,7 +19,7 @@ import Arkham.Treachery.Runner
 
 newtype ConspiracyOfBlood = ConspiracyOfBlood TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 conspiracyOfBlood :: TreacheryCard ConspiracyOfBlood
 conspiracyOfBlood = treachery ConspiracyOfBlood Cards.conspiracyOfBlood

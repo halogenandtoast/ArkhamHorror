@@ -14,7 +14,7 @@ import Arkham.Skill.Runner
 
 newtype Leadership = Leadership SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 leadership :: SkillCard Leadership
 leadership = skill Leadership Cards.leadership

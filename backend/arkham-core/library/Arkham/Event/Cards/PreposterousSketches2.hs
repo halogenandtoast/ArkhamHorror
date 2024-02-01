@@ -11,7 +11,7 @@ import Arkham.Event.Runner
 
 newtype PreposterousSketches2 = PreposterousSketches2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 preposterousSketches2 :: EventCard PreposterousSketches2
 preposterousSketches2 = event PreposterousSketches2 Cards.preposterousSketches2

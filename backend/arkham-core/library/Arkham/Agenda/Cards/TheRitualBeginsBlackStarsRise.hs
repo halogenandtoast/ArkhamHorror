@@ -19,7 +19,7 @@ import Arkham.Projection
 
 newtype TheRitualBeginsBlackStarsRise = TheRitualBeginsBlackStarsRise AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theRitualBeginsBlackStarsRise :: AgendaCard TheRitualBeginsBlackStarsRise
 theRitualBeginsBlackStarsRise =

@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jennysTwin45s :: AssetCard JennysTwin45s
 jennysTwin45s = asset JennysTwin45s Cards.jennysTwin45s

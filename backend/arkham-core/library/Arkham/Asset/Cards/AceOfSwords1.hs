@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype AceOfSwords1 = AceOfSwords1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 aceOfSwords1 :: AssetCard AceOfSwords1
 aceOfSwords1 = asset AceOfSwords1 Cards.aceOfSwords1

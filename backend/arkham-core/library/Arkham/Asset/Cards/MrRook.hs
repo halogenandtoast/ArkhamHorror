@@ -13,11 +13,11 @@ import Arkham.Matcher
 
 newtype Metadata = Metadata {chosenCards :: [Card]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype MrRook = MrRook (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mrRook :: AssetCard MrRook
 mrRook = ally (MrRook . (`with` Metadata [])) Cards.mrRook (2, 2)

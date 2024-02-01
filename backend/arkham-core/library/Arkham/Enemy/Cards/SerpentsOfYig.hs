@@ -16,7 +16,7 @@ import Arkham.Scenario.Types (Field (..))
 
 newtype SerpentsOfYig = SerpentsOfYig EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 serpentsOfYig :: EnemyCard SerpentsOfYig
 serpentsOfYig =

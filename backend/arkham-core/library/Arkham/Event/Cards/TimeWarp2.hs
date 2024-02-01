@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype TimeWarp2 = TimeWarp2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 timeWarp2 :: EventCard TimeWarp2
 timeWarp2 = event TimeWarp2 Cards.timeWarp2

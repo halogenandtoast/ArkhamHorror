@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype MindOverMatter2 = MindOverMatter2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mindOverMatter2 :: EventCard MindOverMatter2
 mindOverMatter2 = event MindOverMatter2 Cards.mindOverMatter2
@@ -38,7 +38,7 @@ instance RunMessage MindOverMatter2 where
 
 newtype MindOverMatter2Effect = MindOverMatter2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mindOverMatter2Effect :: EffectArgs -> MindOverMatter2Effect
 mindOverMatter2Effect = cardEffect MindOverMatter2Effect Cards.mindOverMatter2

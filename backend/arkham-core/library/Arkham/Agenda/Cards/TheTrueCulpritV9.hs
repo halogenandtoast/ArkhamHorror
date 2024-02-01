@@ -19,7 +19,7 @@ import Arkham.Treachery.Cards qualified as Cards
 
 newtype TheTrueCulpritV9 = TheTrueCulpritV9 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theTrueCulpritV9 :: AgendaCard TheTrueCulpritV9
 theTrueCulpritV9 = agenda (3, A) TheTrueCulpritV9 Cards.theTrueCulpritV9 (Static 6)

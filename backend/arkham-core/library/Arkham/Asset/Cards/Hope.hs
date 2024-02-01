@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype Hope = Hope AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hope :: AssetCard Hope
 hope = asset Hope Cards.hope

@@ -14,7 +14,7 @@ import Arkham.GameValue
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 timeIsRunningShort :: AgendaCard TimeIsRunningShort
 timeIsRunningShort =

@@ -34,25 +34,30 @@ data DeckRestriction
   | PerDeckLimit Int
   | MultiplayerOnly
   | PurchaseAtDeckCreation
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data AttackOfOpportunityModifier
   = DoesNotProvokeAttacksOfOpportunity
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data EventChoicesRepeatable
   = EventChoicesRepeatable
   | EventChoicesNotRepeatable
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data EventChoice = EventChooseN Int EventChoicesRepeatable
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data CardLimit
   = LimitPerInvestigator Int
   | LimitPerTrait Trait Int
   | MaxPerGame Int
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 $(deriveJSON defaultOptions ''DeckRestriction)
 $(deriveJSON defaultOptions ''AttackOfOpportunityModifier)
@@ -72,7 +77,7 @@ data IsRevelation
   | IsRevelation
   | CannotBeCanceledRevelation
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 isRevelation :: IsRevelation -> Bool
 isRevelation = \case
@@ -86,7 +91,7 @@ data PurchaseTrauma
   | PurchasePhysicalTrauma Int
   | PurchaseAnyTrauma Int
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 data CardDef = CardDef
   { cdCardCode :: CardCode
@@ -140,7 +145,8 @@ data CardDef = CardDef
   , cdBeforeEffect :: Bool
   , cdCustomizations :: Map Customization Int
   }
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance Exists CardDef where
   exists def = case cdCardType def of
@@ -161,7 +167,7 @@ instance Exists CardDef where
     ScenarioType -> error "Not implemented"
 
 emptyCardDef :: CardCode -> Name -> CardType -> CardDef
-emptyCardDef cCode name cType =
+emptyCardDef !cCode !name !cType =
   CardDef
     { cdCardCode = cCode
     , cdName = name

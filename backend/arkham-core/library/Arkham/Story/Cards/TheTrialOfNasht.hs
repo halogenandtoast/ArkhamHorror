@@ -10,7 +10,7 @@ import Arkham.Story.Runner
 
 newtype TheTrialOfNasht = TheTrialOfNasht StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theTrialOfNasht :: StoryCard TheTrialOfNasht
 theTrialOfNasht = story TheTrialOfNasht Cards.theTrialOfNasht

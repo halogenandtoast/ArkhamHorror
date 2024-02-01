@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype FuryThatShakesTheEarth = FuryThatShakesTheEarth AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 furyThatShakesTheEarth :: AgendaCard FuryThatShakesTheEarth
 furyThatShakesTheEarth =

@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype Newspaper = Newspaper AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 newspaper :: AssetCard Newspaper
 newspaper = asset Newspaper Cards.newspaper

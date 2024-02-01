@@ -13,7 +13,8 @@ data OutOfPlayZone
   | SetAsideZone
   | VictoryDisplayZone
   | RemovedZone
-  deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
+  deriving stock (Show, Eq, Ord, Enum, Bounded, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data Zone
   = FromHand
@@ -24,13 +25,15 @@ data Zone
   | FromPlay
   | FromOutOfPlay OutOfPlayZone
   | FromCollection
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 data ScenarioZone
   = FromEncounterDeck
   | FromEncounterDiscard
   | FromOutOfPlayArea OutOfPlayZone
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 pattern FromVoid :: ScenarioZone
 pattern FromVoid <- FromOutOfPlayArea VoidZone

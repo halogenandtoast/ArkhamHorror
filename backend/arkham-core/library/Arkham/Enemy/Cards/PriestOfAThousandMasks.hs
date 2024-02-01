@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype PriestOfAThousandMasks = PriestOfAThousandMasks EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 priestOfAThousandMasks :: EnemyCard PriestOfAThousandMasks
 priestOfAThousandMasks = enemy PriestOfAThousandMasks Cards.priestOfAThousandMasks (2, Static 2, 2) (0, 1)

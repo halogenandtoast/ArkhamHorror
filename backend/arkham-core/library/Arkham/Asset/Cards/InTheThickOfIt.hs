@@ -6,7 +6,7 @@ import Arkham.Asset.Runner
 
 newtype InTheThickOfIt = InTheThickOfIt AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 inTheThickOfIt :: AssetCard InTheThickOfIt
 inTheThickOfIt = asset InTheThickOfIt Cards.inTheThickOfIt

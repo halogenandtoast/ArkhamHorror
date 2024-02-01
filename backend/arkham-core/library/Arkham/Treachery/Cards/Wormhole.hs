@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype Wormhole = Wormhole TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wormhole :: TreacheryCard Wormhole
 wormhole = treachery Wormhole Cards.wormhole

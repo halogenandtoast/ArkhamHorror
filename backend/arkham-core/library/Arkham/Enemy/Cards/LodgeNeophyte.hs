@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LodgeNeophyte = LodgeNeophyte EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 lodgeNeophyte :: EnemyCard LodgeNeophyte
 lodgeNeophyte =

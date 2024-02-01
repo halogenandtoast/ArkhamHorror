@@ -10,7 +10,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Ulthar = Ulthar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ulthar :: LocationCard Ulthar
 ulthar = locationWith Ulthar Cards.ulthar 1 (PerPlayer 1) (canBeFlippedL .~ True)

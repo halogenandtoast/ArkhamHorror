@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype TheTatteredCloak = TheTatteredCloak AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theTatteredCloak :: AssetCard TheTatteredCloak
 theTatteredCloak =

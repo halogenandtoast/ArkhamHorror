@@ -25,7 +25,7 @@ import Arkham.Story.Runner
 
 newtype GavriellasFate = GavriellasFate StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 gavriellasFate :: StoryCard GavriellasFate
 gavriellasFate = story GavriellasFate Cards.gavriellasFate
@@ -70,7 +70,7 @@ instance RunMessage GavriellasFate where
 
 newtype GavriellasFateEffect = GavriellasFateEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 gavriellasFateEffect :: EffectArgs -> GavriellasFateEffect
 gavriellasFateEffect = cardEffect GavriellasFateEffect Cards.gavriellasFate

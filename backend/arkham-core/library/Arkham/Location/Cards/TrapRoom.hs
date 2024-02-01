@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TrapRoom = TrapRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 trapRoom :: LocationCard TrapRoom
 trapRoom = location TrapRoom Cards.trapRoom 3 (PerPlayer 1)

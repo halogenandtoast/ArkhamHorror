@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype Chronophobia = Chronophobia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chronophobia :: TreacheryCard Chronophobia
 chronophobia = treachery Chronophobia Cards.chronophobia

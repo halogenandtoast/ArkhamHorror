@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype Kitchen = Kitchen LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 kitchen :: LocationCard Kitchen
 kitchen = location Kitchen Cards.kitchen 2 (PerPlayer 1)

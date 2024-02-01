@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 downtownFirstBankOfArkham :: LocationCard DowntownFirstBankOfArkham
 downtownFirstBankOfArkham = location DowntownFirstBankOfArkham Cards.downtownFirstBankOfArkham 3 (PerPlayer 1)

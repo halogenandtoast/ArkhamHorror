@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype PossessionTorturous = PossessionTorturous TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 possessionTorturous :: TreacheryCard PossessionTorturous
 possessionTorturous = treachery PossessionTorturous Cards.possessionTorturous

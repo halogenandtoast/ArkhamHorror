@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype PiperOfAzathoth = PiperOfAzathoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, AsId)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, AsId)
 
 piperOfAzathoth :: EnemyCard PiperOfAzathoth
 piperOfAzathoth = enemy PiperOfAzathoth Cards.piperOfAzathoth (5, Static 7, 2) (0, 2)

@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (City, Surface))
 
 newtype CorsairOfLeng = CorsairOfLeng EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 corsairOfLeng :: EnemyCard CorsairOfLeng
 corsairOfLeng =

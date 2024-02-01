@@ -32,7 +32,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DisappearanceAtTheTwilightEstate = DisappearanceAtTheTwilightEstate ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 disappearanceAtTheTwilightEstate
   :: Difficulty -> DisappearanceAtTheTwilightEstate

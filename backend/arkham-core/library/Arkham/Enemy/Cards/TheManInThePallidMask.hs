@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype TheManInThePallidMask = TheManInThePallidMask EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theManInThePallidMask :: EnemyCard TheManInThePallidMask
 theManInThePallidMask =

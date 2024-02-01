@@ -15,7 +15,7 @@ import Arkham.Prelude
 
 newtype EnchantedWoodsLostWoods = EnchantedWoodsLostWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 enchantedWoodsLostWoods :: LocationCard EnchantedWoodsLostWoods
 enchantedWoodsLostWoods = location EnchantedWoodsLostWoods Cards.enchantedWoodsLostWoods 4 (PerPlayer 1)
@@ -36,7 +36,7 @@ instance RunMessage EnchantedWoodsLostWoods where
 
 newtype EnchantedWoodsLostWoodsEffect = EnchantedWoodsLostWoodsEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 enchantedWoodsLostWoodsEffect :: EffectArgs -> EnchantedWoodsLostWoodsEffect
 enchantedWoodsLostWoodsEffect = cardEffect EnchantedWoodsLostWoodsEffect Cards.enchantedWoodsLostWoods

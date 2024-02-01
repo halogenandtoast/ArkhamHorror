@@ -31,6 +31,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -76,6 +77,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDiscardedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 instance AsId TreacheryAttrs where
   type IdOf TreacheryAttrs = TreacheryId
@@ -249,6 +251,11 @@ is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
 data Treachery = forall a. IsTreachery a => Treachery a
+
+instance NoThunks Treachery where
+  noThunks ctx (Treachery a) = noThunks ctx a
+  wNoThunks ctx (Treachery a) = wNoThunks ctx a
+  showTypeOf _ = "Treachery"
 
 instance HasField "owner" Treachery (Maybe InvestigatorId) where
   getField (Treachery a) = attr treacheryOwner a

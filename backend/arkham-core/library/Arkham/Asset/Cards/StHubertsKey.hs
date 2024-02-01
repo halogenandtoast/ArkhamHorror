@@ -14,7 +14,7 @@ import Arkham.Message qualified as Msg
 
 newtype StHubertsKey = StHubertsKey AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 stHubertsKey :: AssetCard StHubertsKey
 stHubertsKey = asset StHubertsKey Cards.stHubertsKey

@@ -14,7 +14,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype TomeOfRituals = TomeOfRituals AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 tomeOfRituals :: AssetCard TomeOfRituals
 tomeOfRituals = asset TomeOfRituals Cards.tomeOfRituals

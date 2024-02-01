@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 
 newtype HenryDeveauAlejandrosKidnapper = HenryDeveauAlejandrosKidnapper EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 henryDeveauAlejandrosKidnapper :: EnemyCard HenryDeveauAlejandrosKidnapper
 henryDeveauAlejandrosKidnapper =

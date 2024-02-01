@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 sordidAndSilent :: TreacheryCard SordidAndSilent
 sordidAndSilent = treachery SordidAndSilent Cards.sordidAndSilent

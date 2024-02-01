@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype FightOrFlight = FightOrFlight EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fightOrFlight :: EffectArgs -> FightOrFlight
 fightOrFlight = FightOrFlight . uncurry4 (baseAttrs "03155")

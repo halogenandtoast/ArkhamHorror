@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype DeVermisMysteriis2 = DeVermisMysteriis2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 deVermisMysteriis2 :: AssetCard DeVermisMysteriis2
 deVermisMysteriis2 = asset DeVermisMysteriis2 Cards.deVermisMysteriis2

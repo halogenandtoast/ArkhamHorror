@@ -17,7 +17,7 @@ import Data.List.NonEmpty qualified as NE
 
 newtype ExploringPnakotus = ExploringPnakotus ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 exploringPnakotus :: ActCard ExploringPnakotus
 exploringPnakotus =

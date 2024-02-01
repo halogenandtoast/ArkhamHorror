@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype CollapsingReality = CollapsingReality TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 collapsingReality :: TreacheryCard CollapsingReality
 collapsingReality = treachery CollapsingReality Cards.collapsingReality

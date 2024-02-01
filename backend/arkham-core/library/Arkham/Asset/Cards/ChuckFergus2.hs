@@ -22,7 +22,7 @@ import Arkham.Window qualified as Window
 
 newtype ChuckFergus2 = ChuckFergus2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chuckFergus2 :: AssetCard ChuckFergus2
 chuckFergus2 = ally ChuckFergus2 Cards.chuckFergus2 (2, 2)

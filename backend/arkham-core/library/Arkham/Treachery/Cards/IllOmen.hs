@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype IllOmen = IllOmen TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 illOmen :: TreacheryCard IllOmen
 illOmen = treachery IllOmen Cards.illOmen

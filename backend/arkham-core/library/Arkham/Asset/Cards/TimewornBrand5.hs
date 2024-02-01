@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Elite))
 
 newtype TimewornBrand5 = TimewornBrand5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 timewornBrand5 :: AssetCard TimewornBrand5
 timewornBrand5 = asset TimewornBrand5 Cards.timewornBrand5

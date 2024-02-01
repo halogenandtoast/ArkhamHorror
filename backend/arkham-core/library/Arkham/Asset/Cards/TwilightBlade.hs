@@ -22,7 +22,7 @@ import Arkham.SkillType
 
 newtype TwilightBlade = TwilightBlade AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 twilightBlade :: AssetCard TwilightBlade
 twilightBlade =
@@ -59,7 +59,7 @@ instance RunMessage TwilightBlade where
 
 newtype TwilightBladeEffect = TwilightBladeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 twilightBladeEffect :: EffectArgs -> TwilightBladeEffect
 twilightBladeEffect = cardEffect TwilightBladeEffect Cards.twilightBlade

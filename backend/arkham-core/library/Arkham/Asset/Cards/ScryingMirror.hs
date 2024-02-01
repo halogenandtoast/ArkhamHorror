@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ScryingMirror = ScryingMirror AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 scryingMirror :: AssetCard ScryingMirror
 scryingMirror = asset ScryingMirror Cards.scryingMirror

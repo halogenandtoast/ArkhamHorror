@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype SignMagick3 = SignMagick3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 signMagick3 :: AssetCard SignMagick3
 signMagick3 =

@@ -15,7 +15,7 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype VoiceOfRa = VoiceOfRa EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 voiceOfRa :: EventCard VoiceOfRa
 voiceOfRa = event VoiceOfRa Cards.voiceOfRa

@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype MoldyHalls = MoldyHalls LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 moldyHalls :: LocationCard MoldyHalls
 moldyHalls = location MoldyHalls Cards.moldyHalls 4 (PerPlayer 1)

@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype Plucky1 = Plucky1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 plucky1 :: AssetCard Plucky1
 plucky1 = assetWith Plucky1 Cards.plucky1 (sanityL ?~ 1)

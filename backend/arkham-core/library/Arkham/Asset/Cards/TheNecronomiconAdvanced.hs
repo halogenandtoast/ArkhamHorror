@@ -15,7 +15,7 @@ import Arkham.Window (defaultWindows)
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theNecronomiconAdvanced :: AssetCard TheNecronomiconAdvanced
 theNecronomiconAdvanced =

@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype FirstAid = FirstAid AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 firstAid :: AssetCard FirstAid
 firstAid = assetWith FirstAid Cards.firstAid discardWhenNoUses

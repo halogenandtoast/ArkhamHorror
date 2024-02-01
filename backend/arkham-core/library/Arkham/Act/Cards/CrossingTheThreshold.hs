@@ -19,11 +19,11 @@ import Arkham.Trait
 
 newtype Metadata = Metadata {advancingInvestigator :: Maybe InvestigatorId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype CrossingTheThreshold = CrossingTheThreshold (ActAttrs `With` Metadata)
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crossingTheThreshold :: ActCard CrossingTheThreshold
 crossingTheThreshold =

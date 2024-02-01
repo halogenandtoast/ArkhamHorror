@@ -9,7 +9,7 @@ import Arkham.Matcher hiding (EnemyEvaded)
 
 newtype CunningDistraction = CunningDistraction EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cunningDistraction :: EventCard CunningDistraction
 cunningDistraction = event CunningDistraction Cards.cunningDistraction

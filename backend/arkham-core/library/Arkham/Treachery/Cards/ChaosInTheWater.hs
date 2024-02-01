@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype ChaosInTheWater = ChaosInTheWater TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 chaosInTheWater :: TreacheryCard ChaosInTheWater
 chaosInTheWater = treachery ChaosInTheWater Cards.chaosInTheWater

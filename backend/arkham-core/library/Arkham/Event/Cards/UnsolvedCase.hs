@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 
 newtype UnsolvedCase = UnsolvedCase EventAttrs
   deriving anyclass (IsEvent)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 unsolvedCase :: EventCard UnsolvedCase
 unsolvedCase = eventWith UnsolvedCase Cards.unsolvedCase $ afterPlayL .~ RemoveThisFromGame

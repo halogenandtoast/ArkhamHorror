@@ -16,16 +16,19 @@ data Movement = Movement
   , moveMeans :: MovementMeans
   , moveCancelable :: Bool
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 data MovementMeans = Direct
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 uncancellableMove :: Movement -> Movement
 uncancellableMove m = m {moveCancelable = False}
 
 data Destination = ToLocation LocationId | ToLocationMatching LocationMatcher
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (NoThunks)
 
 move
   :: (Targetable target, Sourceable source)

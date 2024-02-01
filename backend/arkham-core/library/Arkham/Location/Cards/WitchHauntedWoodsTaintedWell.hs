@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype WitchHauntedWoodsTaintedWell = WitchHauntedWoodsTaintedWell LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 witchHauntedWoodsTaintedWell :: LocationCard WitchHauntedWoodsTaintedWell
 witchHauntedWoodsTaintedWell =

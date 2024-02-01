@@ -11,7 +11,7 @@ import Arkham.Effect.Runner
 
 newtype MindWipe3 = MindWipe3 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mindWipe3 :: EffectArgs -> MindWipe3
 mindWipe3 = MindWipe3 . uncurry4 (baseAttrs "50008")

@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 exhibitHallAthabaskanExhibit :: LocationCard ExhibitHallAthabaskanExhibit
 exhibitHallAthabaskanExhibit =

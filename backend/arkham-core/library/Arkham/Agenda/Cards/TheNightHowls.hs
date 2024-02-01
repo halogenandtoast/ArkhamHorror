@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Curse, Omen, Witch))
 
 newtype TheNightHowls = TheNightHowls AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theNightHowls :: AgendaCard TheNightHowls
 theNightHowls = agenda (2, A) TheNightHowls Cards.theNightHowls (Static 12)

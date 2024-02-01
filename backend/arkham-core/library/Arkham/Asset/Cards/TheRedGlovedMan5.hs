@@ -13,11 +13,11 @@ import Arkham.SkillType
 
 newtype Metadata = Metadata {chosenSkills :: [SkillType]}
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype TheRedGlovedMan5 = TheRedGlovedMan5 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theRedGlovedMan5 :: AssetCard TheRedGlovedMan5
 theRedGlovedMan5 = ally (TheRedGlovedMan5 . (`with` Metadata [])) Cards.theRedGlovedMan5 (4, 4)

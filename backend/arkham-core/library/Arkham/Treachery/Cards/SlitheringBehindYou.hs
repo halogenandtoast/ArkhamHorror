@@ -18,7 +18,7 @@ import Arkham.Zone
 
 newtype SlitheringBehindYou = SlitheringBehindYou TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 slitheringBehindYou :: TreacheryCard SlitheringBehindYou
 slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou

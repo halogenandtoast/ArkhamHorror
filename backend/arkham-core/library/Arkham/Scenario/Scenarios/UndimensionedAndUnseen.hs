@@ -38,7 +38,7 @@ import Arkham.Window (defaultWindows)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen
 undimensionedAndUnseen difficulty =

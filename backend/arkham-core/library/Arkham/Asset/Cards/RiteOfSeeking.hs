@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 riteOfSeeking :: AssetCard RiteOfSeeking
 riteOfSeeking = asset RiteOfSeeking Cards.riteOfSeeking
@@ -44,7 +44,7 @@ instance RunMessage RiteOfSeeking where
 
 newtype RiteOfSeekingEffect = RiteOfSeekingEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 riteOfSeekingEffect :: EffectArgs -> RiteOfSeekingEffect
 riteOfSeekingEffect = cardEffect RiteOfSeekingEffect Cards.riteOfSeeking

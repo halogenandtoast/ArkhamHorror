@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype BaseOfTheSteps = BaseOfTheSteps LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 baseOfTheSteps :: LocationCard BaseOfTheSteps
 baseOfTheSteps = location BaseOfTheSteps Cards.baseOfTheSteps 3 (PerPlayer 1)

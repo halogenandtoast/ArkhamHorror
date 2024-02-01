@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner hiding (EnemyEvaded)
 
 newtype DrivenToMadness = DrivenToMadness TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 drivenToMadness :: TreacheryCard DrivenToMadness
 drivenToMadness = treachery DrivenToMadness Cards.drivenToMadness

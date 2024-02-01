@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype MerchantDistrict_300 = MerchantDistrict_300 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 merchantDistrict_300 :: LocationCard MerchantDistrict_300
 merchantDistrict_300 = location MerchantDistrict_300 Cards.merchantDistrict_300 2 (Static 0)

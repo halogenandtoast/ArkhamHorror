@@ -20,11 +20,11 @@ import Arkham.Window qualified as Window
 
 newtype Meta = Meta {active :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype LukeRobinson = LukeRobinson (InvestigatorAttrs `With` Meta)
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasModifiersFor LukeRobinson where
   getModifiersFor target (LukeRobinson (a `With` meta)) | a `is` target && active meta = do

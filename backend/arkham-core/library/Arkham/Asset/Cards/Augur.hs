@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype Augur = Augur AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 augur :: AssetCard Augur
 augur = asset Augur Cards.augur

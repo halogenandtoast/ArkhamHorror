@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 
 newtype FleshEater = FleshEater EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 fleshEater :: EnemyCard FleshEater
 fleshEater = enemyWith FleshEater Cards.fleshEater (4, Static 4, 1) (1, 2) (spawnAtL ?~ "Attic")

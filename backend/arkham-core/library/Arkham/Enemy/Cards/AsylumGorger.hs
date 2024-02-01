@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 
 newtype AsylumGorger = AsylumGorger EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 instance HasModifiersFor AsylumGorger where
   getModifiersFor target (AsylumGorger a) | isTarget a target = do

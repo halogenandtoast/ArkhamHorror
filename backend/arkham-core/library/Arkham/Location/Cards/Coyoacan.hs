@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype Coyoacan = Coyoacan LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 coyoacan :: LocationCard Coyoacan
 coyoacan = locationWith Coyoacan Cards.coyoacan 2 (Static 0) (labelL .~ "star")

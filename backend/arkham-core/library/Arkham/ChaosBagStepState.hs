@@ -20,10 +20,12 @@ data ChaosBagStepState
   | Decided {step :: ChaosBagStep}
   | Undecided {step :: ChaosBagStep}
   | Deciding {step :: ChaosBagStep}
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data ChaosTokenStrategy = ResolveChoice | CancelChoice | IgnoreChoice
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 data ChaosBagStep
   = Draw
@@ -47,7 +49,8 @@ data ChaosBagStep
       , tokenGroups :: [[ChaosToken]]
       , tokenMatcherChoices :: [(ChaosTokenMatcher, (Text, ChaosBagStep))]
       }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (NoThunks)
 
 $( do
     tokenStrategy <- deriveJSON defaultOptions ''ChaosTokenStrategy

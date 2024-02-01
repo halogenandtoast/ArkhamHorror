@@ -15,7 +15,7 @@ import Arkham.Phase
 
 newtype VipArea = VipArea LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 vipArea :: LocationCard VipArea
 vipArea = location VipArea Cards.vipArea 3 (PerPlayer 1)

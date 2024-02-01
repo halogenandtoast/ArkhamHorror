@@ -17,7 +17,7 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype StoneAltar = StoneAltar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 stoneAltar :: LocationCard StoneAltar
 stoneAltar = location StoneAltar Cards.stoneAltar 3 (PerPlayer 1)

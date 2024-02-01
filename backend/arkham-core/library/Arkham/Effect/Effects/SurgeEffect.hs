@@ -13,7 +13,7 @@ import Arkham.Keyword qualified as Keyword
 
 newtype SurgeEffect = SurgeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 surgeEffect :: EffectArgs -> SurgeEffect
 surgeEffect = SurgeEffect . uncurry4 (baseAttrs "surge")

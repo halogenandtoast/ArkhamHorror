@@ -18,7 +18,7 @@ import Arkham.Scenarios.ThePallidMask.Helpers
 
 newtype ThroughTheCatacombs = ThroughTheCatacombs ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 throughTheCatacombs :: ActCard ThroughTheCatacombs
 throughTheCatacombs =

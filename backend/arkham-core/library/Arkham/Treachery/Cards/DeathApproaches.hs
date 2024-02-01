@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype DeathApproaches = DeathApproaches TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 deathApproaches :: TreacheryCard DeathApproaches
 deathApproaches = treachery DeathApproaches Cards.deathApproaches

@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype Switchblade2 = Switchblade2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 switchblade2 :: AssetCard Switchblade2
 switchblade2 = asset Switchblade2 Cards.switchblade2

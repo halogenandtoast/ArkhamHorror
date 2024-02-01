@@ -17,7 +17,7 @@ import Arkham.Zone
 
 newtype MeddlesomeFamiliar = MeddlesomeFamiliar TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 meddlesomeFamiliar :: TreacheryCard MeddlesomeFamiliar
 meddlesomeFamiliar = treachery MeddlesomeFamiliar Cards.meddlesomeFamiliar

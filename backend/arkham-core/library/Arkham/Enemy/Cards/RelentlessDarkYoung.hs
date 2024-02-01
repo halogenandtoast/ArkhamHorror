@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung
 relentlessDarkYoung =

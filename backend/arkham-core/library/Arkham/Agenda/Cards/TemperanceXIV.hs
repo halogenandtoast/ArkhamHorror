@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Witch))
 
 newtype TemperanceXIV = TemperanceXIV AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 temperanceXIV :: AgendaCard TemperanceXIV
 temperanceXIV = agenda (1, A) TemperanceXIV Cards.temperanceXIV (Static 8)

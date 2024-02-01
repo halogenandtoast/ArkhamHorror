@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype Safeguard2 = Safeguard2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 safeguard2 :: AssetCard Safeguard2
 safeguard2 = asset Safeguard2 Cards.safeguard2

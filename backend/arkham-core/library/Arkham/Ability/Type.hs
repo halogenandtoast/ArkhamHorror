@@ -75,7 +75,8 @@ data AbilityType
   | Haunted
   | Cosmos
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
-  deriving stock (Show, Ord, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data, Generic)
+  deriving anyclass (NoThunks)
 
 abilityTypeCostL :: Traversal' AbilityType Cost
 abilityTypeCostL f = \case

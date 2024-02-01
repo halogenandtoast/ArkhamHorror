@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 curseOfTheRougarou :: TreacheryCard CurseOfTheRougarou
 curseOfTheRougarou = treachery CurseOfTheRougarou Cards.curseOfTheRougarou

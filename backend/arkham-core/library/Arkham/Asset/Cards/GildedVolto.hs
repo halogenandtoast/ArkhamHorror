@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GildedVolto = GildedVolto AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 gildedVolto :: AssetCard GildedVolto
 gildedVolto = asset GildedVolto Cards.gildedVolto

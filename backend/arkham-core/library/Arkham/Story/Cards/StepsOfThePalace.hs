@@ -14,7 +14,7 @@ import Arkham.Story.Runner
 
 newtype StepsOfThePalace = StepsOfThePalace StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 stepsOfThePalace :: StoryCard StepsOfThePalace
 stepsOfThePalace = story StepsOfThePalace Cards.stepsOfThePalace

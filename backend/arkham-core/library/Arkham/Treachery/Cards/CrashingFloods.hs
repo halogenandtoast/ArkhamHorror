@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype CrashingFloods = CrashingFloods TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crashingFloods :: TreacheryCard CrashingFloods
 crashingFloods = treachery CrashingFloods Cards.crashingFloods

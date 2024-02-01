@@ -12,7 +12,7 @@ import Arkham.Projection
 
 newtype AgencyBackup5 = AgencyBackup5 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 agencyBackup5 :: AssetCard AgencyBackup5
 agencyBackup5 = ally AgencyBackup5 Cards.agencyBackup5 (4, 4)

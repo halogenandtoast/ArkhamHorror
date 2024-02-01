@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 
 newtype MuseumEntrance = MuseumEntrance LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 museumEntrance :: LocationCard MuseumEntrance
 museumEntrance = location MuseumEntrance Cards.museumEntrance 3 (Static 2)

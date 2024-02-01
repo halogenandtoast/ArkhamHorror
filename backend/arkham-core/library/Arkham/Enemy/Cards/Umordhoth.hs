@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Umordhoth = Umordhoth EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 umordhoth :: EnemyCard Umordhoth
 umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)

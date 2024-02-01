@@ -23,11 +23,11 @@ import Data.UUID qualified as UUID
 -- The metadata makes it so that the silent forced ability triggers only once
 newtype Metadata = Metadata {discarding :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype RationalThought = RationalThought (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 rationalThought :: TreacheryCard RationalThought
 rationalThought =

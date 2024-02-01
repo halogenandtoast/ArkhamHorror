@@ -20,7 +20,7 @@ api.prof:
 	  --interleaved-output \
 	  --file-watch \
 		$(EXTRA_STACK_FLAGS) \
-	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec --profile -- arkham-api +RTS -p -s -l -hT &\"" \
+	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec --profile -- arkham-api +RTS -p -s -l -hy &\"" \
 
 ## Generate a tags file for source-code navigation
 .PHONY: tags

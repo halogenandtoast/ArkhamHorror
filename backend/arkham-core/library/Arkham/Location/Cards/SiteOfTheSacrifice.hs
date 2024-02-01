@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype SiteOfTheSacrifice = SiteOfTheSacrifice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 siteOfTheSacrifice :: LocationCard SiteOfTheSacrifice
 siteOfTheSacrifice =

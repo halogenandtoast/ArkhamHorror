@@ -16,7 +16,7 @@ import Arkham.Window (defaultWindows)
 
 newtype AnnaKaslow4 = AnnaKaslow4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 annaKaslow4 :: AssetCard AnnaKaslow4
 annaKaslow4 = ally AnnaKaslow4 Cards.annaKaslow4 (1, 1)

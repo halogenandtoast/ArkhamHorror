@@ -11,7 +11,7 @@ import Arkham.Prelude
 
 newtype AncientHall = AncientHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 ancientHall :: LocationCard AncientHall
 ancientHall =

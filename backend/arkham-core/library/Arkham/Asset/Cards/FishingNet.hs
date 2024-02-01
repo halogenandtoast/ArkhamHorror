@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype FishingNet = FishingNet AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 fishingNet :: AssetCard FishingNet
 fishingNet = assetWith FishingNet Cards.fishingNet (isStoryL .~ True)

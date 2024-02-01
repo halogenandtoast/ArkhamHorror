@@ -22,7 +22,7 @@ import Arkham.Trait (Trait (Shattered))
 
 newtype MendTheShatter = MendTheShatter ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 mendTheShatter :: ActCard MendTheShatter
 mendTheShatter = act (4, A) MendTheShatter Cards.mendTheShatter Nothing

@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Blessed, Item))
 
 newtype JoeMazurewiczsRoom = JoeMazurewiczsRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 joeMazurewiczsRoom :: LocationCard JoeMazurewiczsRoom
 joeMazurewiczsRoom =

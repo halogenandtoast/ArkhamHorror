@@ -19,7 +19,7 @@ import Arkham.Treachery.Runner
 
 newtype Wracked = Wracked TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 wracked :: TreacheryCard Wracked
 wracked = treachery Wracked Cards.wracked

@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype Overzealous = Overzealous TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 overzealous :: TreacheryCard Overzealous
 overzealous = treachery Overzealous Cards.overzealous

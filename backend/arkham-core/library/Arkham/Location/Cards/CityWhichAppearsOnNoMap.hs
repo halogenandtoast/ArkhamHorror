@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 
 newtype CityWhichAppearsOnNoMap = CityWhichAppearsOnNoMap LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 cityWhichAppearsOnNoMap :: LocationCard CityWhichAppearsOnNoMap
 cityWhichAppearsOnNoMap = location CityWhichAppearsOnNoMap Cards.cityWhichAppearsOnNoMap 6 (PerPlayer 2)

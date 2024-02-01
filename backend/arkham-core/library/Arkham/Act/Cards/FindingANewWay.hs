@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype FindingANewWay = FindingANewWay ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 findingANewWay :: ActCard FindingANewWay
 findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing

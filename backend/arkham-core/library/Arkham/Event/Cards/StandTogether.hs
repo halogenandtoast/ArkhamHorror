@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype StandTogether = StandTogether EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 standTogether :: EventCard StandTogether
 standTogether = event StandTogether Cards.standTogether

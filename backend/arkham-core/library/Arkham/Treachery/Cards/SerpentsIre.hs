@@ -20,11 +20,11 @@ import Arkham.Zone
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype SerpentsIre = SerpentsIre (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 serpentsIre :: TreacheryCard SerpentsIre
 serpentsIre =

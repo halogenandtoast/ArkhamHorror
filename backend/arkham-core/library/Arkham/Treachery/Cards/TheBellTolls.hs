@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype TheBellTolls = TheBellTolls TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theBellTolls :: TreacheryCard TheBellTolls
 theBellTolls = treachery TheBellTolls Cards.theBellTolls

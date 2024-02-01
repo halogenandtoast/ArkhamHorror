@@ -16,11 +16,11 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype Metadata = Metadata {drawnCards :: [EncounterCard]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype ParallelFates = ParallelFates (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 parallelFates :: EventCard ParallelFates
 parallelFates =

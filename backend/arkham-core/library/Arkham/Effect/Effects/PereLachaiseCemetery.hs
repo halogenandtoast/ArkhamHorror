@@ -11,7 +11,7 @@ import Arkham.Game.Helpers
 
 newtype PereLachaiseCemetery = PereLachaiseCemetery EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 pereLachaiseCemetery :: EffectArgs -> PereLachaiseCemetery
 pereLachaiseCemetery = PereLachaiseCemetery . uncurry4 (baseAttrs "03215")

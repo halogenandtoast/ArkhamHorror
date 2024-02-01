@@ -13,7 +13,7 @@ import Arkham.Window qualified as Window
 
 newtype GlimpseOfTheUnderworld = GlimpseOfTheUnderworld TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 glimpseOfTheUnderworld :: TreacheryCard GlimpseOfTheUnderworld
 glimpseOfTheUnderworld = treachery GlimpseOfTheUnderworld Cards.glimpseOfTheUnderworld

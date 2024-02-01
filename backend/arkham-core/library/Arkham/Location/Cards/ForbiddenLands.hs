@@ -10,11 +10,11 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Meta = Meta {skillTestCount :: Int}
   deriving stock (Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 newtype ForbiddenLands = ForbiddenLands LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 forbiddenLands :: LocationCard ForbiddenLands
 forbiddenLands =

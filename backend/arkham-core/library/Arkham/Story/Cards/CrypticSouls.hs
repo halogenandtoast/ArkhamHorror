@@ -13,7 +13,7 @@ import Arkham.Story.Runner
 
 newtype CrypticSouls = CrypticSouls StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 crypticSouls :: StoryCard CrypticSouls
 crypticSouls = story CrypticSouls Cards.crypticSouls

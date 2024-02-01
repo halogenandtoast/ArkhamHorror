@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype AshleighClarke = AshleighClarke EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 ashleighClarke :: EnemyCard AshleighClarke
 ashleighClarke =

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype JeromeDavids = JeromeDavids AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 jeromeDavids :: AssetCard JeromeDavids
 jeromeDavids =

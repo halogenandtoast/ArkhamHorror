@@ -15,6 +15,7 @@ data CampaignLog = CampaignLog
   , campaignLogOptions :: Set CampaignOption
   }
   deriving stock (Show, Generic, Eq)
+  deriving anyclass (NoThunks)
 
 emptyCampaignLog :: CampaignLog -> Bool
 emptyCampaignLog CampaignLog {..} =

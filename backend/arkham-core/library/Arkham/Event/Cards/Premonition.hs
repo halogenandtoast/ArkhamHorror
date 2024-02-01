@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Premonition = Premonition EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 premonition :: EventCard Premonition
 premonition = event Premonition Cards.premonition

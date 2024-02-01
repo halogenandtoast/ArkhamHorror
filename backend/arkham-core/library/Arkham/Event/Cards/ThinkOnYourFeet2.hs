@@ -13,7 +13,7 @@ import Arkham.Movement
 
 newtype ThinkOnYourFeet2 = ThinkOnYourFeet2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 thinkOnYourFeet2 :: EventCard ThinkOnYourFeet2
 thinkOnYourFeet2 = event ThinkOnYourFeet2 Cards.thinkOnYourFeet2

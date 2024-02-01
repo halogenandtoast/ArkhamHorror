@@ -20,7 +20,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheHangedManXII = TheHangedManXII AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theHangedManXII :: AgendaCard TheHangedManXII
 theHangedManXII = agenda (1, A) TheHangedManXII Cards.theHangedManXII (Static 8)

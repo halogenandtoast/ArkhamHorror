@@ -15,7 +15,7 @@ import Arkham.Skill.Runner
 
 newtype ThreeAces1 = ThreeAces1 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 threeAces1 :: SkillCard ThreeAces1
 threeAces1 = skill ThreeAces1 Cards.threeAces1

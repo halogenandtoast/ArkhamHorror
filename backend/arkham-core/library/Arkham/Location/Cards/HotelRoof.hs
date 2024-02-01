@@ -19,7 +19,7 @@ import Arkham.Projection
 
 newtype HotelRoof = HotelRoof LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 hotelRoof :: LocationCard HotelRoof
 hotelRoof = location HotelRoof Cards.hotelRoof 3 (PerPlayer 1)

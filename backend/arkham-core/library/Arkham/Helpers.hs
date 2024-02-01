@@ -47,6 +47,7 @@ newtype Deck a = Deck {unDeck :: [a]}
     , MonoFoldable
     , SemiSequence
     , GrowingAppend
+    , NoThunks
     )
 
 type instance Element (Deck a) = a

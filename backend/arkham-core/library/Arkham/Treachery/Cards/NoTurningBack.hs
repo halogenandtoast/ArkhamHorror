@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype NoTurningBack = NoTurningBack TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 noTurningBack :: TreacheryCard NoTurningBack
 noTurningBack = treachery NoTurningBack Cards.noTurningBack

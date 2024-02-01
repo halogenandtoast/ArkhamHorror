@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype WatchersGaze = WatchersGaze TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 watchersGaze :: TreacheryCard WatchersGaze
 watchersGaze = treachery WatchersGaze Cards.watchersGaze

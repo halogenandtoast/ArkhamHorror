@@ -8,4 +8,4 @@ data EncounterCardSource
   | FromTheVoid
   | FromVictoryDisplay
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)

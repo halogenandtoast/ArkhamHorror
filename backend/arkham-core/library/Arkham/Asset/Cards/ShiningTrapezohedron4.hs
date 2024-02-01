@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype ShiningTrapezohedron4 = ShiningTrapezohedron4 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 shiningTrapezohedron4 :: AssetCard ShiningTrapezohedron4
 shiningTrapezohedron4 = asset ShiningTrapezohedron4 Cards.shiningTrapezohedron4

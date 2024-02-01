@@ -13,7 +13,7 @@ import Arkham.Prelude
 
 newtype SettingSun = SettingSun AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 settingSun :: AgendaCard SettingSun
 settingSun = agenda (2, A) SettingSun Cards.settingSun (Static 5)

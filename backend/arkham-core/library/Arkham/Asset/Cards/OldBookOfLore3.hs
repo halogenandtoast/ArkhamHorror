@@ -22,7 +22,7 @@ import Arkham.Window qualified as Window
 
 newtype OldBookOfLore3 = OldBookOfLore3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 oldBookOfLore3 :: AssetCard OldBookOfLore3
 oldBookOfLore3 = asset OldBookOfLore3 Cards.oldBookOfLore3
@@ -94,7 +94,7 @@ instance RunMessage OldBookOfLore3 where
 
 newtype OldBookOfLore3Effect = OldBookOfLore3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 oldBookOfLore3Effect :: EffectArgs -> OldBookOfLore3Effect
 oldBookOfLore3Effect = cardEffect OldBookOfLore3Effect Cards.oldBookOfLore3

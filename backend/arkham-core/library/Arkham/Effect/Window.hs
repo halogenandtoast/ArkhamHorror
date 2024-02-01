@@ -27,7 +27,7 @@ data EffectWindow
   | EffectCardCostWindow CardId
   | EffectUI
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks)
 
 instance IsLabel "skillTest" EffectWindow where
   fromLabel = EffectSkillTestWindow

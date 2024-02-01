@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype EztliGuardian = EztliGuardian EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 eztliGuardian :: EnemyCard EztliGuardian
 eztliGuardian =

@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype TenebrousNightgaunt = TenebrousNightgaunt EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 tenebrousNightgaunt :: EnemyCard TenebrousNightgaunt
 tenebrousNightgaunt = enemy TenebrousNightgaunt Cards.tenebrousNightgaunt (4, Static 4, 1) (1, 1)

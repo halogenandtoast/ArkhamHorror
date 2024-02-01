@@ -18,7 +18,7 @@ import Arkham.Window
 
 newtype JoeyTheRatVigil = JoeyTheRatVigil AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 joeyTheRatVigil :: AssetCard JoeyTheRatVigil
 joeyTheRatVigil = ally JoeyTheRatVigil Cards.joeyTheRatVigil (3, 2)

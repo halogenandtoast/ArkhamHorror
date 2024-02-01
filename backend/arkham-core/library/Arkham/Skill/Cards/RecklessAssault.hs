@@ -11,7 +11,7 @@ import Arkham.Skill.Runner
 
 newtype RecklessAssault = RecklessAssault SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 recklessAssault :: SkillCard RecklessAssault
 recklessAssault = skill RecklessAssault Cards.recklessAssault

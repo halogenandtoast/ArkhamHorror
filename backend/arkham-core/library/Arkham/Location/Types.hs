@@ -45,6 +45,7 @@ class
   , FromJSON a
   , Eq a
   , Show a
+  , NoThunks a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -285,6 +286,11 @@ locationAbility ability = case abilitySource ability of
   _ -> ability
 
 data Location = forall a. IsLocation a => Location a
+
+instance NoThunks Location where
+  noThunks ctx (Location a) = noThunks ctx a
+  wNoThunks ctx (Location a) = wNoThunks ctx a
+  showTypeOf _ = "Location"
 
 instance HasField "id" Location LocationId where
   getField (Location a) = attr locationId a

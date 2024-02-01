@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype Nightriders = Nightriders EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 nightriders :: EnemyCard Nightriders
 nightriders = enemy Nightriders Cards.nightriders (2, Static 2, 5) (0, 1)

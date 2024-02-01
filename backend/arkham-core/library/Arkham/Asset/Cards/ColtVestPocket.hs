@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype ColtVestPocket = ColtVestPocket AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 coltVestPocket :: AssetCard ColtVestPocket
 coltVestPocket = asset ColtVestPocket Cards.coltVestPocket

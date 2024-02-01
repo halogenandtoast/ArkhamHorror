@@ -16,7 +16,7 @@ import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 
 newtype TheRougarouFeeds = TheRougarouFeeds AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 theRougarouFeeds :: AgendaCard TheRougarouFeeds
 theRougarouFeeds =

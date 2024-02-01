@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype MadameLabranche = MadameLabranche AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 madameLabranche :: AssetCard MadameLabranche
 madameLabranche = ally MadameLabranche Cards.madameLabranche (2, 2)

@@ -11,7 +11,7 @@ import Arkham.Event.Runner
 
 newtype EmergencyCache2 = EmergencyCache2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 emergencyCache2 :: EventCard EmergencyCache2
 emergencyCache2 = event EmergencyCache2 Cards.emergencyCache2

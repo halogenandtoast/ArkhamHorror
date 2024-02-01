@@ -15,7 +15,7 @@ import Arkham.SkillTest.Base
 
 newtype Mu = Mu LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
 
 mu :: LocationCard Mu
 mu = location Mu Cards.mu 1 (Static 4)

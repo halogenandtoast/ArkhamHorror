@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype NetherMist = NetherMist EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 instance HasAbilities NetherMist where
   getAbilities (NetherMist a) =

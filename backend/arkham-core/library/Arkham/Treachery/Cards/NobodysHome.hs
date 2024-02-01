@@ -19,7 +19,7 @@ import Arkham.Treachery.Runner
 
 newtype NobodysHome = NobodysHome TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
 
 nobodysHome :: TreacheryCard NobodysHome
 nobodysHome = treachery NobodysHome Cards.nobodysHome

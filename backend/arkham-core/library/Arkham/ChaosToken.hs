@@ -4,13 +4,14 @@ module Arkham.ChaosToken where
 
 import Arkham.Prelude
 
+import Arkham.Id ()
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 import GHC.Records
 
 newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: UUID}
   deriving stock (Data)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random, NoThunks)
 
 data ChaosTokenModifier
   = PositiveModifier Int
@@ -20,7 +21,8 @@ data ChaosTokenModifier
   | AutoFailModifier
   | AutoSuccessModifier
   | NoModifier
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance Monoid ChaosTokenModifier where
   mempty = NoModifier
@@ -48,7 +50,8 @@ instance Semigroup ChaosTokenModifier where
         LT -> NegativeModifier calc
 
 data ChaosTokenValue = ChaosTokenValue ChaosTokenFace ChaosTokenModifier
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Data, Generic)
+  deriving anyclass (NoThunks)
 
 chaosTokenValue :: ChaosTokenValue -> Maybe Int
 chaosTokenValue (ChaosTokenValue _ modifier) = chaosTokenModifierToInt modifier
@@ -67,7 +70,8 @@ data ChaosToken = ChaosToken
   { chaosTokenId :: ChaosTokenId
   , chaosTokenFace :: ChaosTokenFace
   }
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance HasField "face" ChaosToken ChaosTokenFace where
   getField = chaosTokenFace
@@ -91,7 +95,8 @@ data ChaosTokenFace
   | ElderSign
   | CurseToken
   | BlessToken
-  deriving stock (Bounded, Enum, Show, Eq, Ord, Data)
+  deriving stock (Bounded, Enum, Show, Eq, Ord, Data, Generic)
+  deriving anyclass (NoThunks)
 
 instance IsLabel "skull" ChaosTokenFace where
   fromLabel = Skull

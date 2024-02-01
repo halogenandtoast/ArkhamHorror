@@ -1123,6 +1123,7 @@ data AbilityMatcher
   | AssetAbility AssetMatcher
   | HauntedAbility
   | PerformableAbility [ModifierType]
+  | TriggeredAbility
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup AbilityMatcher where

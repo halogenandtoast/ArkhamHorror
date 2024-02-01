@@ -2382,7 +2382,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (RunWindow investigatorId windows)
   RunWindow iid windows
     | iid == toId a
-    , (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
+    , not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
         actions <- nub . concat <$> traverse (getActions iid) windows
         playableCards <- getPlayableCards a UnpaidCost windows
         runWindow a windows actions playableCards

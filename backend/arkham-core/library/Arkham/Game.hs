@@ -1138,6 +1138,7 @@ abilityMatches a@Ability {..} = \case
   AssetAbility assetMatcher -> do
     abilities <- concatMap getAbilities <$> (traverse getAsset =<< selectList assetMatcher)
     pure $ a `elem` abilities
+  TriggeredAbility -> pure $ isTriggeredAbility a
   AbilityOnCardControlledBy iid -> do
     let
       sourceMatch = \case

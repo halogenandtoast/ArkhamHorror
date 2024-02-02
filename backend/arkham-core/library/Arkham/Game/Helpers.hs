@@ -1256,14 +1256,13 @@ passesCriteria iid mcard source windows' = \case
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
     hand <-
-      liftA2
-        (<>)
-        (fieldMap InvestigatorHand (map toCardId) iid)
-        (map toCardId <$> getAsIfInHandCards iid)
+      liftA2 (<>) (fieldMap InvestigatorHand (map toCardId) iid) (map toCardId <$> getAsIfInHandCards iid)
     case source of
       EventSource eid -> do
-        cardId <- field InHandEventCardId eid
-        pure $ cardId `elem` hand
+        mCardId <- fieldMay InHandEventCardId eid
+        case mCardId of
+          Nothing -> pure False
+          Just cardId -> pure $ cardId `elem` hand
       AssetSource aid -> do
         inPlay <- selectAny $ Matcher.AssetWithId aid
         if inPlay

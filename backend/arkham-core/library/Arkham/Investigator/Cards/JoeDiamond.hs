@@ -1,9 +1,4 @@
-module Arkham.Investigator.Cards.JoeDiamond (
-  joeDiamond,
-  JoeDiamond (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.JoeDiamond (joeDiamond, JoeDiamond (..)) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -18,6 +13,7 @@ import Arkham.Investigator.Deck
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
@@ -53,7 +49,7 @@ instance HasModifiersFor JoeDiamond where
 
 instance HasAbilities JoeDiamond where
   getAbilities (JoeDiamond (a `With` _)) =
-    [restrictedAbility a 1 Self $ ForcedAbility $ PhaseBegins #when #investigation]
+    [restrictedAbility a 1 Self $ forced $ PhaseBegins #when #investigation]
 
 instance HasChaosTokenValue JoeDiamond where
   getChaosTokenValue iid ElderSign (JoeDiamond (attrs `With` _)) | attrs `is` iid = do
@@ -82,7 +78,7 @@ instance RunMessage JoeDiamond where
           let
             unsolvedCase =
               fromJustNote "Deck missing unsolved case"
-                $ find (`cardMatch` (cardIs Events.unsolvedCase)) insights
+                $ find (`cardMatch` cardIs Events.unsolvedCase) insights
             remainingInsights = filter (/= unsolvedCase) insights
           player <- getPlayer (toId attrs)
           pushAll
@@ -90,8 +86,9 @@ instance RunMessage JoeDiamond where
             , ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
             , questionLabel "Choose 10 more cards for hunch deck" player
                 $ ChooseN 10
-                $ [ targetLabel (toCardId insight)
-                    $ [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
+                $ [ targetLabel
+                    (toCardId insight)
+                    [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
                   | insight <- remainingInsights
                   ]
             , UnfocusCards
@@ -114,10 +111,10 @@ instance RunMessage JoeDiamond where
           pushAll [wouldBeWindow, ShuffleCardsIntoDeck (Deck.HunchDeck iid) [x]]
         _ -> pure ()
       pure i
-    InitiatePlayCard iid card mTarget windows' _ | attrs `is` iid && Just (toCardId card) == revealedHunchCard meta -> do
+    InitiatePlayCard iid card mTarget windows' asAction | attrs `is` iid && Just (toCardId card) == revealedHunchCard meta -> do
       pushAll
         [ addToHand iid card
-        , InitiatePlayCard iid card mTarget windows' False
+        , InitiatePlayCard iid card mTarget windows' asAction
         ]
       let hunchDeck' = filter (/= card) (hunchDeck attrs)
       pure $ JoeDiamond . (`with` Metadata Nothing) $ attrs & decksL . at HunchDeck ?~ hunchDeck'
@@ -130,8 +127,9 @@ instance RunMessage JoeDiamond where
       pushIfAny insights
         $ chooseOne player
         $ Label "Do not move an insight" []
-        : [ targetLabel (toCardId insight)
-            $ [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
+        : [ targetLabel
+            (toCardId insight)
+            [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
           | insight <- insights
           ]
       pure i

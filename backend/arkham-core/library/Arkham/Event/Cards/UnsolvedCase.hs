@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.UnsolvedCase (
-  unsolvedCase,
-  UnsolvedCase (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.UnsolvedCase (unsolvedCase, UnsolvedCase (..)) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -15,8 +10,8 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype UnsolvedCase = UnsolvedCase EventAttrs
   deriving anyclass (IsEvent)
@@ -34,46 +29,40 @@ instance HasModifiersFor UnsolvedCase where
 instance HasAbilities UnsolvedCase where
   getAbilities (UnsolvedCase a) =
     [ restrictedAbility a 1 InYourHand
-        $ ForcedAbility
-        $ WouldBeShuffledIntoDeck
-          (DeckIs (HunchDeck (eventOwner a)))
-          (CardWithId $ toCardId a)
+        $ forced
+        $ WouldBeShuffledIntoDeck (DeckIs $ HunchDeck (eventOwner a)) (CardWithId $ toCardId a)
     , restrictedAbility a 2 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ OrWindowMatcher
-          [ GameEnds Timing.When
-          , InvestigatorEliminated Timing.When (InvestigatorWithId $ eventOwner a)
-          ]
+        $ forced
+        $ oneOf [GameEnds #when, InvestigatorEliminated #when (InvestigatorWithId $ eventOwner a)]
     ]
 
 instance RunMessage UnsolvedCase where
   runMessage msg e@(UnsolvedCase attrs) = case msg of
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
-      | iid == iid' -> do
-          popMessageMatching_ $ \case
-            ShuffleCardsIntoDeck (HunchDeck _) [card] ->
-              card == toCard attrs
-            _ -> False
-          push $ CreateEventAt iid (toCard attrs) (InThreatArea iid)
-          pure e
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid == iid' -> do
+      popMessageMatching_ $ \case
+        ShuffleCardsIntoDeck (HunchDeck _) [card] ->
+          card == toCard attrs
+        _ -> False
+      push $ CreateEventAt iid (toCard attrs) (InThreatArea iid)
+      pure e
+    PlayThisEvent iid eid | eid == toId attrs -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
       highestShroud <- selectList $ HighestShroud Anywhere
       player <- getPlayer iid
       pushAll
-        $ [ chooseOrRunOne
-            player
-            [ targetLabel
-              location
-              [ RemoveClues (toSource attrs) (toTarget iid) 1
-              , PlaceClues (toSource attrs) (toTarget location) 1
-              ]
-            | location <- highestShroud
+        [ chooseOrRunOne
+          player
+          [ targetLabel
+            location
+            [ RemoveClues (toSource attrs) (toTarget iid) 1
+            , PlaceClues (toSource attrs) (toTarget location) 1
             ]
-          | notNull highestShroud && hasClues
+          | location <- highestShroud
           ]
+        | notNull highestShroud && hasClues
+        ]
       pure e
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       -- no-op, handled in HasModifiersFor
       pure e
     _ -> UnsolvedCase <$> runMessage msg attrs

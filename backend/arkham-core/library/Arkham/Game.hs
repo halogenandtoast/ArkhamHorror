@@ -367,9 +367,12 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     skills <- selectList (SkillWithPlacement $ InPlayArea $ toId investigator')
     events <-
       selectList
-        ( eventControlledBy (toId investigator')
-            <> oneOf (map EventWithPlacement [Limbo, Unplaced, InPlayArea (toId investigator')])
-        )
+        $ eventControlledBy (toId investigator')
+        <> oneOf
+          ( map
+              EventWithPlacement
+              [Limbo, Unplaced, InPlayArea (toId investigator'), InThreatArea (toId investigator')]
+          )
     treacheries <- selectList (treacheryInThreatAreaOf $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
     let
